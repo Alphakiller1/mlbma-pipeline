@@ -133,7 +133,7 @@ Handoff numbered 1–7 plus leftover risks from the WP0 agent.
 | WP1-A2 | Rework `dashboard/mlbma_design_system.css` to TIER 2 semantic roles (`--mark-*`, `--value-*`, `--surface-*`, `--text-primary/secondary/meta/disabled`, `--metric-very-weak`…`--metric-elite` via var). Migrate `--surface-*` `/` `--r-*` `/` `--e-*` `/` `--s-*` into role names; aliases = `var()` not hex | mlbma | **done** | `mlbma_design_system.css` `:root` | Component **rule bodies** still contain decorative hex |
 | WP1-A3 | DELETE inline `:root` in `index.html` and `team_rankings.html`. Strip `var(...,#hex)` from `lineup_view.js` | mlbma | **done** | index / team_rankings / glossary `:root` palettes removed; `lineup_view.js` | Print `@media` `:root` remains. Mockup HTML `:root` allowlisted |
 | WP1-A4 | Fold `theme.css` into tier-2 **or** pure alias layer. One definition per token. No duplicate `--text`/`--bg`/`--v-bg` with different values | mlbma | **done** | `theme.css` `:root` is `var()` aliases | Chip class hex in rule bodies remain |
-| WP1-A5 | Single `DESIGN_LAYER_VERSION`; all pages same `?v=` for design-layer files | mlbma | **done** | stamp `20260908d`; `design/DESIGN_LAYER_VERSION`; `dashboard/design_layer_version.js`; `scripts/design_layer_version.py` | Non-design CSS/JS stamps stay heterogeneous |
+| WP1-A5 | Single `DESIGN_LAYER_VERSION`; all pages same `?v=` for design-layer files | mlbma | **done** | stamp `20260911f`; `design/DESIGN_LAYER_VERSION`; `dashboard/design_layer_version.js`; `scripts/design_layer_version.py` | Non-design CSS/JS stamps stay heterogeneous |
 
 ### B. Enforcement (items 6–8)
 
@@ -231,6 +231,9 @@ Picks = `priced_markets`. Gems = `flagged_tiles`. No `--fetch-odds`. Preserve `a
 | WP4B-4 | Window vs career | mlbma | **N/A** | NFL/CFB boards are weekly slates | |
 | WP4B-5 | Token + DataStatus | mlbma | **done** | ChaseDataStatus at view time; sport is not hardcoded to nfl | |
 | WP4B-6 | Do not deploy | mlbma | **N/A** | Draft stacked PR | |
+| WP4B-7 | NFL starting units by exact position | mlbma | **done** | ESPN depth chart projected to identity-only offense/base-defense elevens; `away_lineups` / `home_lineups` pass the public allowlist | Optional FB/NB package alternatives are intentionally excluded from the named eleven |
+| WP4B-8 | Starter availability attached honestly | mlbma | **done** | `public_game_detail.js` joins official injury entries by normalized player name; absent report entry = `No Designation`, absent report = `Report Pending` | Name normalization is contract-tested; source remains ESPN |
+| WP4B-9 | NFL season scope changes content | mlbma | **done** | Combined shows named source seasons; current-only hides prior-only scheme panels and retains current form/radar with an explicit empty notice | Never relabel a prior-season aggregate as current |
 
 ---
 
@@ -427,3 +430,4 @@ curl -sS https://<sport-pages>/board.json | head
 | 2026-09-08 | D-08 hunt logged; WP4 Pilot A dual-render lens; pitching render mount; artifact NOW captures; WP6-6 report. Still no production deploy. |
 | 2026-09-08 | Prompt 3 QA: stamp `20260908d`; Last_Updated fetch unified on `ChaseDataStatus.fetchLastUpdated`; `starters_rankings` registry points at `render/pitcher_intelligence.html`; wrangler.toml excluded from upload; WP3/WP5 rows match shipped scaffolding. |
 | 2026-09-08 | WP4A/WP5: root home is a real entry page; Team Rankings public CTAs go to Matchup Compare; every sport gets matchups+results; glossary term cards are capture artifacts. |
+| 2026-09-11 | NFL matchup UX: position-grouped 11-player offense/base-defense units, per-starter availability, keyboard unit tabs, and a season control that changes visible evidence. Verified at 375/390/768/1024/1440 with no console or overflow failures. |

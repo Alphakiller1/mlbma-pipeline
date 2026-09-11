@@ -19,7 +19,7 @@
     away_bullpen: 1, home_bullpen: 1, away_rest_days: 1, home_rest_days: 1,
     away_travel: 1, home_travel: 1, freshness: 1,
     away_form: 1, home_form: 1, away_scheme: 1, home_scheme: 1, scheme_source: 1,
-    away_players: 1, home_players: 1,
+    away_players: 1, home_players: 1, away_lineups: 1, home_lineups: 1,
     away_lineup: 1, home_lineup: 1, away_team_id: 1, home_team_id: 1, venue_id: 1,
     away_short_week: 1, home_short_week: 1, away_travel_km: 1, home_travel_km: 1,
     away_tz_shift: 1, home_tz_shift: 1, venue_country: 1
@@ -123,6 +123,8 @@
       scheme_source: g.scheme_source || null,
       away_players: g.away_players || null,
       home_players: g.home_players || null,
+      away_lineups: g.away_lineups || null,
+      home_lineups: g.home_lineups || null,
       away_lineup: g.away_lineup || null,
       home_lineup: g.home_lineup || null,
       away_team_id: g.away_team_id || null,

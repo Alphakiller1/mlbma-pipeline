@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-09-11T07:22:51Z",
+  "generated_at_utc": "2026-09-11T20:27:29Z",
   "data_through_utc": "2026-09-11T00:35Z",
   "games": [
     {
@@ -20,7 +20,7 @@
       "venue": "Lumen Field",
       "venue_city": "Seattle, WA",
       "broadcast": "NBC",
-      "away_availability": "8 out \u00b7 1 questionable",
+      "away_availability": "8 out",
       "home_availability": "6 out \u00b7 1 doubtful",
       "away_availability_list": [
         {
@@ -74,8 +74,8 @@
         {
           "name": "A.J. Brown",
           "position": "WR",
-          "status": "Questionable",
-          "detail": ""
+          "status": "Injured Reserve",
+          "detail": "ankle"
         },
         {
           "name": "Bryce Baringer",
@@ -507,13 +507,13 @@
           "name": "Tommy DeVito",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4240391.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Behren Morton",
           "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4431465.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Rhamondre Stevenson",
@@ -563,13 +563,13 @@
           "name": "Drew Lock",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3924327.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Jalen Milroe",
           "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4432734.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Jadarian Price",
@@ -608,6 +608,266 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/i0esiguve9if4ts5mm1q"
         }
       ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:27:15Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Christian Barmore",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Cory Durden",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Milton Williams",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Elijah Ponder",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Christian Elliss",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Robert Spillane",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Dre'Mont Jones",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Carlton Davis III",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Craig Woodson",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Kevin Byard",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Christian Gonzalez",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "A.J. Brown",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/qfhvjyssf0lwsh0kienp"
+            },
+            {
+              "name": "Romeo Doubs",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/yxvzijmgwyyigljxfmyb"
+            },
+            {
+              "name": "DeMario Douglas",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cm9vnzqu5phlmsocjwgc"
+            },
+            {
+              "name": "Will Campbell",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Alijah Vera-Tucker",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jared Wilson",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Mike Onwenu",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Morgan Moses",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Drake Maye",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/s1nmoon2xnrc3bnyulv4"
+            },
+            {
+              "name": "Hunter Henry",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cvlunbqgztudbhjrug7l"
+            },
+            {
+              "name": "Rhamondre Stevenson",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/zmpuirvuw4r04inxth5i"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:27:15Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Leonard Williams",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Byron Murphy II",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Jarran Reed",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "DeMarcus Lawrence",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Drake Thomas",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Ernest Jones IV",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Uchenna Nwosu",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Devon Witherspoon",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Ty Okada",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Julian Love",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Josh Jobe",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Jaxon Smith-Njigba",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/yx1xjrupbqdknnjaq4a6"
+            },
+            {
+              "name": "Rashid Shaheed",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ku2naisfbxmzgagxojnm"
+            },
+            {
+              "name": "Cooper Kupp",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/kjixprihktsfog6wx9sq"
+            },
+            {
+              "name": "Charles Cross",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Grey Zabel",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jalen Sundell",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Anthony Bradford",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Abraham Lucas",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Sam Darnold",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/fyay8vruj0cqmhopufzk"
+            },
+            {
+              "name": "AJ Barner",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/i0esiguve9if4ts5mm1q"
+            },
+            {
+              "name": "Jadarian Price",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/toy90i08oumgbdlvctja"
+            }
+          ]
+        }
+      },
       "away_travel": "2,485 miles home, 3h back",
       "home_travel": "No travel, at home",
       "away_travel_km": 3999,
@@ -1131,13 +1391,13 @@
           "name": "Mac Jones",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4241464.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Kurtis Rourke",
           "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4430431.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Christian McCaffrey",
@@ -1187,19 +1447,19 @@
           "name": "Stetson Bennett IV",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4259553.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Ty Simpson",
           "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4685522.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Matthew Caldwell",
           "position": "QB",
           "depth_rank": 4,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4877717.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Kyren Williams",
@@ -1238,6 +1498,266 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/qsyrgtfjj06wryahnxc9"
         }
       ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:19Z",
+        "defense": {
+          "package": "Base 4-3 D",
+          "players": [
+            {
+              "name": "Keion White",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Osa Odighizuwa",
+              "position": "LDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Gracen Halton",
+              "position": "RDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Nick Bosa",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Dre Greenlaw",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Fred Warner",
+              "position": "MLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Luke Gifford",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Renardo Green",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Malik Mustapha",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Ji'Ayir Brown",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Deommodore Lenoir",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Mike Evans",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/zc4ujpmndyxrbiyyjomz"
+            },
+            {
+              "name": "Deebo Samuel Sr.",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ntgyhqg6hq7fanhhsqiw"
+            },
+            {
+              "name": "De'Zhaun Stribling",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/eu1nxtlztiwr5ko48iwz"
+            },
+            {
+              "name": "Trent Williams",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Connor Colby",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jake Brendel",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Dominick Puni",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Colton McKivitz",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Brock Purdy",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/xs2fyj1sqdgwvt9ihbri"
+            },
+            {
+              "name": "George Kittle",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/vkicdglglkyukgyxtmpx"
+            },
+            {
+              "name": "Christian McCaffrey",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/st82s2ytyzanatcmkqck"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:17Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Kobie Turner",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Poona Ford",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Aaron Donald",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Byron Young",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Nate Landman",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Omar Speights",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Myles Garrett",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Jaylen Watson",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Kamren Kinchens",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Kam Curl",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Trent McDuffie",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Puka Nacua",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ipy6qw7hdygdfc8k86ba"
+            },
+            {
+              "name": "Davante Adams",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/tdzluk4xau3arxqk9zsl"
+            },
+            {
+              "name": "Jordan Whittington",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/enqcg1lgjkuk0hqz3qjc"
+            },
+            {
+              "name": "Alaric Jackson",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Steve Avila",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Coleman Shelton",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Kevin Dotson",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Warren McClendon Jr.",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Matthew Stafford",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/jwpkjfrkzufdyh8u1mg7"
+            },
+            {
+              "name": "Colby Parkinson",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/qsyrgtfjj06wryahnxc9"
+            },
+            {
+              "name": "Kyren Williams",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/xti3pek6rmojqchakxpy"
+            }
+          ]
+        }
+      },
       "away_travel": "7,873 miles home, 17h ahead",
       "home_travel": "7,929 miles home, 17h ahead",
       "away_travel_km": 12670,
@@ -1262,26 +1782,26 @@
       "venue": "Paycor Stadium",
       "venue_city": "Cincinnati, OH",
       "broadcast": "FOX",
-      "away_availability": "4 questionable",
-      "home_availability": "2 questionable",
+      "away_availability": "2 doubtful \u00b7 2 questionable",
+      "home_availability": "1 doubtful",
       "away_availability_list": [
+        {
+          "name": "Jalen McMillan",
+          "position": "WR",
+          "status": "Doubtful",
+          "detail": "knee"
+        },
+        {
+          "name": "Sean Tucker",
+          "position": "RB",
+          "status": "Doubtful",
+          "detail": "hamstring"
+        },
         {
           "name": "Christian Rozeboom",
           "position": "LB",
           "status": "Questionable",
           "detail": "foot"
-        },
-        {
-          "name": "Sean Tucker",
-          "position": "RB",
-          "status": "Questionable",
-          "detail": "hamstring"
-        },
-        {
-          "name": "Jalen McMillan",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "knee"
         },
         {
           "name": "Justin Skule",
@@ -1318,14 +1838,8 @@
         {
           "name": "Shemar Stewart",
           "position": "DE",
-          "status": "Questionable",
+          "status": "Doubtful",
           "detail": "knee"
-        },
-        {
-          "name": "DJ Turner II",
-          "position": "CB",
-          "status": "Questionable",
-          "detail": ""
         },
         {
           "name": "Brian Parker II",
@@ -1719,13 +2233,7 @@
           "name": "Jalon Daniels",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4596472.png&w=160&h=160"
-        },
-        {
-          "name": "Easton Stick",
-          "position": "QB",
-          "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3120590.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Bucky Irving",
@@ -1775,19 +2283,7 @@
           "name": "Joe Flacco",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/11252.png&w=160&h=160"
-        },
-        {
-          "name": "Sean Clifford",
-          "position": "QB",
-          "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4259592.png&w=160&h=160"
-        },
-        {
-          "name": "Josh Johnson",
-          "position": "QB",
-          "depth_rank": 4,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/11394.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Chase Brown",
@@ -1826,6 +2322,266 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/dykckg6we3cnw9yhpggi"
         }
       ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:19Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Calijah Kancey",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Vita Vea",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "A'Shawn Robinson",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Rueben Bain Jr.",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Alex Anzalone",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Josiah Trotter",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Yaya Diaby",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Zyon McCollum",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Tykee Smith",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Antoine Winfield Jr.",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Benjamin Morrison",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Emeka Egbuka",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/z224kbzs62rjuykc0vha"
+            },
+            {
+              "name": "Chris Godwin Jr.",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ilkheljdx4hbjpisulke"
+            },
+            {
+              "name": "Jalen McMillan",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/s8tlj5wsi6cq8kjhp06v"
+            },
+            {
+              "name": "Tristan Wirfs",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Ben Bredeson",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Graham Barton",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Cody Mauch",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Luke Goedeke",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Baker Mayfield",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/gjb8e69jtt1ffqf1afue"
+            },
+            {
+              "name": "Cade Otton",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/yanr6h9aplae3jyzimf7"
+            },
+            {
+              "name": "Bucky Irving",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/vkc00rvnix3f2b96vkwo"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:16Z",
+        "defense": {
+          "package": "Base 4-3 D",
+          "players": [
+            {
+              "name": "Boye Mafe",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Dexter Lawrence II",
+              "position": "LDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Jonathan Allen",
+              "position": "RDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Myles Murphy",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Demetrius Knight Jr.",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Barrett Carter",
+              "position": "MLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Oren Burks",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Dax Hill",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Jordan Battle",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Bryan Cook",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "DJ Turner II",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Ja'Marr Chase",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/qya3dtjb5kgofcuj2tuw"
+            },
+            {
+              "name": "Tee Higgins",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/gpwtyv3viwy9q4ewderl"
+            },
+            {
+              "name": "Andrei Iosivas",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/xhrvbt81iohroyftuyj2"
+            },
+            {
+              "name": "Orlando Brown Jr.",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Dylan Fairchild",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Ted Karras",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Dalton Risner",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Amarius Mims",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Joe Burrow",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/gnnvcgui1cijybukk2w7"
+            },
+            {
+              "name": "Mike Gesicki",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/dykckg6we3cnw9yhpggi"
+            },
+            {
+              "name": "Chase Brown",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/tch3y6jlj7khvyi9jg0c"
+            }
+          ]
+        }
+      },
       "away_travel": "777 miles home",
       "home_travel": "No travel, at home",
       "away_travel_km": 1250,
@@ -1850,9 +2606,21 @@
       "venue": "Ford Field",
       "venue_city": "Detroit, MI",
       "broadcast": "FOX",
-      "away_availability": "2 out \u00b7 3 questionable",
+      "away_availability": "4 out \u00b7 1 questionable",
       "home_availability": "3 out \u00b7 2 questionable",
       "away_availability_list": [
+        {
+          "name": "Oscar Delp",
+          "position": "TE",
+          "status": "Out",
+          "detail": "hamstring"
+        },
+        {
+          "name": "Audric Estime",
+          "position": "RB",
+          "status": "Out",
+          "detail": "thigh"
+        },
         {
           "name": "Cameron Jordan",
           "position": "DE",
@@ -1864,18 +2632,6 @@
           "position": "WR",
           "status": "Out",
           "detail": "leg"
-        },
-        {
-          "name": "Oscar Delp",
-          "position": "TE",
-          "status": "Questionable",
-          "detail": "hamstring"
-        },
-        {
-          "name": "Audric Estime",
-          "position": "RB",
-          "status": "Questionable",
-          "detail": "thigh"
         },
         {
           "name": "Alvin Kamara",
@@ -2343,13 +3099,13 @@
           "name": "Spencer Rattler",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4426339.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Zach Wilson",
           "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4361259.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Travis Etienne",
@@ -2399,13 +3155,7 @@
           "name": "Joshua Dobbs",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3044720.png&w=160&h=160"
-        },
-        {
-          "name": "Luke Altmyer",
-          "position": "QB",
-          "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4597679.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Jahmyr Gibbs",
@@ -2444,6 +3194,264 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/wxlk7ysg2nfq6h6ntdcu"
         }
       ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:18Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Cameron Jordan",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Davon Godchaux",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Colby Wooden",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Carl Granderson",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Kaden Elliss",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Pete Werner",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Chase Young",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Kool-Aid McKinstry",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Justin Reid",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Julian Blackmon",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Quincy Riley",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Chris Olave",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/onmxufsprtvglhejg94o"
+            },
+            {
+              "name": "Devaughn Vele",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/fa3dwsu8nxzkbf2knczm"
+            },
+            {
+              "name": "Barion Brown",
+              "position": "WR",
+              "group": "Receivers"
+            },
+            {
+              "name": "Kelvin Banks Jr.",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "David Edwards",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Erik McCoy",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Cesar Ruiz",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Taliese Fuaga",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Tyler Shough",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/toiafc7qighw86geo7jf"
+            },
+            {
+              "name": "Juwan Johnson",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ahzqkvhjot6lygwr4ccb"
+            },
+            {
+              "name": "Travis Etienne Jr.",
+              "position": "RB",
+              "group": "Backfield"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:16Z",
+        "defense": {
+          "package": "Base 4-3 D",
+          "players": [
+            {
+              "name": "Aidan Hutchinson",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Alim McNeill",
+              "position": "LDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Levi Onwuzurike",
+              "position": "RDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "DJ Wonnum",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Derrick Barnes",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Jack Campbell",
+              "position": "MLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Malcolm Rodriguez",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "D.J. Reed",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Avonte Maddox",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Chuck Clark",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Keith Abney II",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Amon-Ra St. Brown",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/fd8nwhm6pvxfyzphzl6i"
+            },
+            {
+              "name": "Jameson Williams",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/byiptqggtglvy5qrw5wp"
+            },
+            {
+              "name": "Isaac TeSlaa",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ducfhbiy2a8loytcjymn"
+            },
+            {
+              "name": "Penei Sewell",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Christian Mahogany",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Juice Scruggs",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Tate Ratledge",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Blake Miller",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jared Goff",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/kaicbot8qhzrvddilbtp"
+            },
+            {
+              "name": "Sam LaPorta",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/wxlk7ysg2nfq6h6ntdcu"
+            },
+            {
+              "name": "Jahmyr Gibbs",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cursejnmmp1i9hnxihkj"
+            }
+          ]
+        }
+      },
       "away_travel": "941 miles home, 1h ahead",
       "home_travel": "No travel, at home",
       "away_travel_km": 1514,
@@ -2468,9 +3476,21 @@
       "venue": "Nissan Stadium",
       "venue_city": "Nashville, TN",
       "broadcast": "CBS",
-      "away_availability": "1 out \u00b7 3 questionable",
-      "home_availability": "2 questionable",
+      "away_availability": "3 out \u00b7 2 doubtful",
+      "home_availability": "1 out \u00b7 1 questionable",
       "away_availability_list": [
+        {
+          "name": "Joseph Ossai",
+          "position": "DE",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Tim Patrick",
+          "position": "WR",
+          "status": "Out",
+          "detail": "groin"
+        },
         {
           "name": "Tyler Baron",
           "position": "DE",
@@ -2478,22 +3498,16 @@
           "detail": "knee"
         },
         {
-          "name": "Tim Patrick",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "groin"
-        },
-        {
-          "name": "Joseph Ossai",
-          "position": "DE",
-          "status": "Questionable",
+          "name": "D'Angelo Ponds",
+          "position": "CB",
+          "status": "Doubtful",
           "detail": ""
         },
         {
-          "name": "D'Angelo Ponds",
-          "position": "CB",
-          "status": "Questionable",
-          "detail": "calf"
+          "name": "Kene Nwangwu",
+          "position": "RB",
+          "status": "Doubtful",
+          "detail": ""
         },
         {
           "name": "VJ Payne",
@@ -2530,7 +3544,7 @@
         {
           "name": "Cedric Gray",
           "position": "LB",
-          "status": "Questionable",
+          "status": "Out",
           "detail": ""
         },
         {
@@ -2961,13 +3975,7 @@
           "name": "Cade Klubnik",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4685413.png&w=160&h=160"
-        },
-        {
-          "name": "Bailey Zappe",
-          "position": "QB",
-          "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4250360.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Breece Hall",
@@ -3017,13 +4025,7 @@
           "name": "Mitchell Trubisky",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3039707.png&w=160&h=160"
-        },
-        {
-          "name": "Hendon Hooker",
-          "position": "QB",
-          "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4240858.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Tony Pollard",
@@ -3062,6 +4064,266 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/hewm6ztgka7xkbl6ybvb"
         }
       ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:18Z",
+        "defense": {
+          "package": "Base 4-3 D",
+          "players": [
+            {
+              "name": "Kingsley Enagbare",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "T'Vondre Sweat",
+              "position": "LDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Harrison Phillips",
+              "position": "RDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Will McDonald IV",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Demario Davis",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Jamien Sherwood",
+              "position": "MLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Kiko Mauigoa",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Nahshon Wright",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Dane Belton",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Minkah Fitzpatrick",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Brandon Stephens",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Garrett Wilson",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/upxwxmhdd8xluztgqwhe"
+            },
+            {
+              "name": "Adonai Mitchell",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/hwwacoa3pqapd7pgahfx"
+            },
+            {
+              "name": "Omar Cooper Jr.",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/lmua2lbg0m77ibvydvaq"
+            },
+            {
+              "name": "Olu Fashanu",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Dylan Parham",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Josh Myers",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Joe Tippmann",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Armand Membou",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Geno Smith",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/zppfqqcyjfma14jjif3a"
+            },
+            {
+              "name": "Mason Taylor",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/xittx9gih104lw1atfiv"
+            },
+            {
+              "name": "Breece Hall",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/i01xtqbfajfq68lb6orh"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:19Z",
+        "defense": {
+          "package": "Base 4-3 D",
+          "players": [
+            {
+              "name": "John Franklin-Myers",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Jeffery Simmons",
+              "position": "LDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Jordan Elliott",
+              "position": "RDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Jermaine Johnson II",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Cedric Gray",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Cody Barton",
+              "position": "MLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "James Williams Sr.",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Cor'Dale Flott",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Amani Hooker",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Kevin Winston Jr.",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Alontae Taylor",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Carnell Tate",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ghpmpzcnigxrdbyvcxke"
+            },
+            {
+              "name": "Wan'Dale Robinson",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/yzcvyhmilvxedfjfjglc"
+            },
+            {
+              "name": "Calvin Ridley",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/zrv8bjm7zdtboyka2jvr"
+            },
+            {
+              "name": "Dan Moore Jr.",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Peter Skoronski",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Austin Schlottmann",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Fernando Carmona",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "JC Latham",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Cam Ward",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/l7switu6stlwd2irm8yo"
+            },
+            {
+              "name": "Gunnar Helm",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/hewm6ztgka7xkbl6ybvb"
+            },
+            {
+              "name": "Tony Pollard",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/mb2xdrqiys6ktlcuah2n"
+            }
+          ]
+        }
+      },
       "away_travel": "757 miles home, 1h back",
       "home_travel": "No travel, at home",
       "away_travel_km": 1218,
@@ -3086,13 +4348,19 @@
       "venue": "Lucas Oil Stadium",
       "venue_city": "Indianapolis, IN",
       "broadcast": "CBS",
-      "away_availability": "3 questionable",
+      "away_availability": "2 out \u00b7 1 questionable",
       "home_availability": "2 questionable",
       "away_availability_list": [
         {
+          "name": "Teddye Buchanan",
+          "position": "LB",
+          "status": "Out",
+          "detail": ""
+        },
+        {
           "name": "Nnamdi Madubuike",
           "position": "DT",
-          "status": "Questionable",
+          "status": "Out",
           "detail": "neck"
         },
         {
@@ -3100,12 +4368,6 @@
           "position": "WR",
           "status": "Questionable",
           "detail": "groin"
-        },
-        {
-          "name": "Teddye Buchanan",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": "knee"
         },
         {
           "name": "Bilhal Kone",
@@ -3552,22 +4814,22 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/eno6s5qzl9grbfbfwhoa"
         },
         {
-          "name": "Joe Fagnano",
-          "position": "QB",
-          "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4429582.png&w=160&h=160"
-        },
-        {
           "name": "Tyler Huntley",
           "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": null
+        },
+        {
+          "name": "Joe Fagnano",
+          "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4035671.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Skylar Thompson",
           "position": "QB",
           "depth_rank": 4,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4036419.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Derrick Henry",
@@ -3614,16 +4876,16 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ohvvctuykzwrpqer7xgl"
         },
         {
-          "name": "Riley Leonard",
-          "position": "QB",
-          "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4683423.png&w=160&h=160"
-        },
-        {
           "name": "Anthony Richardson Sr.",
           "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": null
+        },
+        {
+          "name": "Riley Leonard",
+          "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4429084.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Jonathan Taylor",
@@ -3662,6 +4924,266 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/f1mfwwrr3qvnxuiackgq"
         }
       ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:15Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Nnamdi Madubuike",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Travis Jones",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Calais Campbell",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Tavius Robinson",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Roquan Smith",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Teddye Buchanan",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Trey Hendrickson",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Nate Wiggins",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Jaylinn Hawkins",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Malaki Starks",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Marlon Humphrey",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Zay Flowers",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/xzhto2dejy2pflkfx40c"
+            },
+            {
+              "name": "Rashod Bateman",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/gtktmsfcxc1eijwpwzyq"
+            },
+            {
+              "name": "Ja'Kobi Lane",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/gjezd2a8imfrxyv16wuj"
+            },
+            {
+              "name": "Ronnie Stanley",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "John Simpson",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jovaughn Gwyn",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Olaivavega Ioane",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Roger Rosengarten",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Lamar Jackson",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/eno6s5qzl9grbfbfwhoa"
+            },
+            {
+              "name": "Mark Andrews",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/u4xzz7tclch0tpzm9hhz"
+            },
+            {
+              "name": "Derrick Henry",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/tm79x0iknqg6hms3ypyt"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:17Z",
+        "defense": {
+          "package": "Base 4-3 D",
+          "players": [
+            {
+              "name": "Arden Key",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Grover Stewart",
+              "position": "LDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "DeForest Buckner",
+              "position": "RDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Laiatu Latu",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Jaylon Carlies",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Akeem Davis-Gaither",
+              "position": "MLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Bryce Boettcher",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Sauce Gardner",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "A.J. Haulcy",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Cam Bynum",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Charvarius Ward",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Alec Pierce",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/qcg9t51wgp3hicavmkmy"
+            },
+            {
+              "name": "Josh Downs",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/z3wahaxpmc6d5lcxgh60"
+            },
+            {
+              "name": "Keenan Allen",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ri267r6lzfwarh89hsn6"
+            },
+            {
+              "name": "Bernhard Raimann",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Quenton Nelson",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Tanor Bortolini",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Matt Goncalves",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jalen Travis",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Daniel Jones",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ohvvctuykzwrpqer7xgl"
+            },
+            {
+              "name": "Tyler Warren",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/f1mfwwrr3qvnxuiackgq"
+            },
+            {
+              "name": "Jonathan Taylor",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/yw46ky6akdm7h7siofu8"
+            }
+          ]
+        }
+      },
       "away_travel": "510 miles home",
       "home_travel": "No travel, at home",
       "away_travel_km": 820,
@@ -3686,12 +5208,18 @@
       "venue": "Acrisure Stadium",
       "venue_city": "Pittsburgh, PA",
       "broadcast": "FOX",
-      "away_availability": "3 out \u00b7 8 questionable",
+      "away_availability": "6 out \u00b7 1 questionable",
       "home_availability": "1 out \u00b7 1 questionable",
       "away_availability_list": [
         {
-          "name": "Storm Norton",
-          "position": "OT",
+          "name": "Cameron Williams",
+          "position": "OL",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Billy Bowman Jr.",
+          "position": "CB",
           "status": "Out",
           "detail": ""
         },
@@ -3702,56 +5230,26 @@
           "detail": "knee"
         },
         {
+          "name": "Tua Tagovailoa",
+          "position": "QB",
+          "status": "Out",
+          "detail": "oblique"
+        },
+        {
+          "name": "Storm Norton",
+          "position": "OT",
+          "status": "Out",
+          "detail": ""
+        },
+        {
           "name": "Anterio Thompson",
           "position": "DT",
           "status": "Out",
           "detail": "undisclosed"
         },
         {
-          "name": "Tua Tagovailoa",
-          "position": "QB",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Zachariah Branch",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "hamstring"
-        },
-        {
-          "name": "Da'Shawn Hand",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Jawaan Taylor",
-          "position": "OT",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Kendal Daniels",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Billy Bowman Jr.",
-          "position": "CB",
-          "status": "Questionable",
-          "detail": "Achilles"
-        },
-        {
           "name": "Za'Darius Smith",
           "position": "DE",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Brandon Dorlus",
-          "position": "DT",
           "status": "Questionable",
           "detail": ""
         },
@@ -4179,19 +5677,19 @@
           "name": "Michael Penix Jr.",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4360423.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Cooper Rush",
           "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/2972515.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Jack Strand",
           "position": "QB",
           "depth_rank": 4,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/5344782.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Bijan Robinson",
@@ -4238,22 +5736,22 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/dypvakakxhccxs67tb0y"
         },
         {
-          "name": "Drew Allar",
+          "name": "Mason Rudolph",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4714771.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Will Howard",
           "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4429955.png&w=160&h=160"
+          "headshot_url": null
         },
         {
-          "name": "Mason Rudolph",
+          "name": "Drew Allar",
           "position": "QB",
           "depth_rank": 4,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3116407.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Jaylen Warren",
@@ -4292,6 +5790,264 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/pyrdsypgggjshiaygkr7"
         }
       ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:15Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "LaCale London",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Gervon Dexter Sr.",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Brandon Dorlus",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Za'Darius Smith",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Kendal Daniels",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Divine Deablo",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Samson Ebukam",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "A.J. Terrell Jr.",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Jessie Bates III",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Xavier Watts",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Mike Hughes",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Drake London",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/mcllowcfrmmdeo4zy3g1"
+            },
+            {
+              "name": "Jahan Dotson",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/gwuibfw7ljxudxtldcvh"
+            },
+            {
+              "name": "Olamide Zaccheaus",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/zsnzd30ysrewgufbv06y"
+            },
+            {
+              "name": "Jake Matthews",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Matthew Bergeron",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Ryan Neuzil",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Chris Lindstrom",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jawaan Taylor",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Tua Tagovailoa",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/tmm4ohds7qci0vqoobhm"
+            },
+            {
+              "name": "Kyle Pitts Sr.",
+              "position": "TE",
+              "group": "Receivers"
+            },
+            {
+              "name": "Bijan Robinson",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/esii5yb8yn9edboi4mlq"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:19Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Derrick Harmon",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Keeanu Benton",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Cameron Heyward",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "T.J. Watt",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Payton Wilson",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Patrick Queen",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Alex Highsmith",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Joey Porter Jr.",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Rayshawn Jenkins",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Jaquan Brisker",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Jamel Dean",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "DK Metcalf",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/kxql4sjfelubhxawu2zh"
+            },
+            {
+              "name": "Michael Pittman Jr.",
+              "position": "WR",
+              "group": "Receivers"
+            },
+            {
+              "name": "Roman Wilson",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/xuhjoscmhmmsutbvfmrs"
+            },
+            {
+              "name": "Troy Fautanu",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Mason McCormick",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Zach Frazier",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Spencer Anderson",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Dylan Cook",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Aaron Rodgers",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/dypvakakxhccxs67tb0y"
+            },
+            {
+              "name": "Pat Freiermuth",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/pyrdsypgggjshiaygkr7"
+            },
+            {
+              "name": "Jaylen Warren",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/dkiteytgnxar1mpaxcxv"
+            }
+          ]
+        }
+      },
       "away_travel": "521 miles home",
       "home_travel": "No travel, at home",
       "away_travel_km": 839,
@@ -4317,7 +6073,7 @@
       "venue_city": "Charlotte, NC",
       "broadcast": "FOX",
       "away_availability": "2 out \u00b7 4 questionable",
-      "home_availability": "3 out \u00b7 2 questionable",
+      "home_availability": "4 out",
       "away_availability_list": [
         {
           "name": "Kyler Gordon",
@@ -4332,6 +6088,12 @@
           "detail": ""
         },
         {
+          "name": "Rome Odunze",
+          "position": "WR",
+          "status": "Questionable",
+          "detail": "calf"
+        },
+        {
           "name": "Xavier Woods",
           "position": "S",
           "status": "Questionable",
@@ -4342,12 +6104,6 @@
           "position": "QB",
           "status": "Questionable",
           "detail": "back"
-        },
-        {
-          "name": "Rome Odunze",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "calf"
         },
         {
           "name": "Ozzy Trapilo",
@@ -4394,6 +6150,12 @@
       ],
       "home_availability_list": [
         {
+          "name": "Patrick Jones II",
+          "position": "LB",
+          "status": "Out",
+          "detail": ""
+        },
+        {
           "name": "Taylor Moton",
           "position": "OT",
           "status": "Out",
@@ -4410,18 +6172,6 @@
           "position": "DT",
           "status": "Out",
           "detail": "neck"
-        },
-        {
-          "name": "Patrick Jones II",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": "back"
-        },
-        {
-          "name": "Jonathon Brooks",
-          "position": "RB",
-          "status": "Questionable",
-          "detail": "groin"
         },
         {
           "name": "Trevor Etienne",
@@ -4821,13 +6571,13 @@
           "name": "Tyson Bagent",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4434153.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Case Keenum",
           "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/15168.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "D'Andre Swift",
@@ -4874,16 +6624,16 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/vcvhmxvxw2a3armle0af"
         },
         {
-          "name": "Haynes King",
-          "position": "QB",
-          "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4428993.png&w=160&h=160"
-        },
-        {
           "name": "Kenny Pickett",
           "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": null
+        },
+        {
+          "name": "Haynes King",
+          "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4240703.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Chuba Hubbard",
@@ -4922,6 +6672,266 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/t7wjikfv09d3o1q7wjdx"
         }
       ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:16Z",
+        "defense": {
+          "package": "Base 4-3 D",
+          "players": [
+            {
+              "name": "Montez Sweat",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Grady Jarrett",
+              "position": "LDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Kentavius Street",
+              "position": "RDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Dayo Odeyingbo",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Devin Bush",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "T.J. Edwards",
+              "position": "MLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "D'Marco Jackson",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Jaylon Johnson",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Dillon Thieneman",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Xavier Woods",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Tyrique Stevenson",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Rome Odunze",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/niewdl2p2325kpohbw9v"
+            },
+            {
+              "name": "Luther Burden III",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/iyuwdz7pbowdkwzq2tg5"
+            },
+            {
+              "name": "Kalif Raymond",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/dpdv6dm0almcbjdppizx"
+            },
+            {
+              "name": "Braxton Jones",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Joe Thuney",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Garrett Bradbury",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jonah Jackson",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Darnell Wright",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Caleb Williams",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/h4qs11kutwiw7whekmyt"
+            },
+            {
+              "name": "Colston Loveland",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cnxiyi76jeahgx94nh6d"
+            },
+            {
+              "name": "D'Andre Swift",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/owpmwzoilitcodc6cmxo"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:16Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Derrick Brown",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Lee Hunter",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Bobby Brown III",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Patrick Jones II",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Devin Lloyd",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Bobby Okereke",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Jaelan Phillips",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Mike Jackson",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Tre'von Moehrig",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Nick Scott",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Jaycee Horn",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Tetairoa McMillan",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/gilgvjemumd6kpc9eiku"
+            },
+            {
+              "name": "Jalen Coker",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/yynz8rxen6tsvhojggiv"
+            },
+            {
+              "name": "Xavier Legette",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/yoyxkitrdqbkhyqncy5p"
+            },
+            {
+              "name": "Rasheed Walker",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Damien Lewis",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Luke Fortner",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Robert Hunt",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Monroe Freeling",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Bryce Young",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/vcvhmxvxw2a3armle0af"
+            },
+            {
+              "name": "Tommy Tremble",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/t7wjikfv09d3o1q7wjdx"
+            },
+            {
+              "name": "Chuba Hubbard",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/rzsvnt0pxsaize2ndhxm"
+            }
+          ]
+        }
+      },
       "away_travel": "586 miles home, 1h ahead",
       "home_travel": "No travel, at home",
       "away_travel_km": 943,
@@ -4946,9 +6956,15 @@
       "venue": "EverBank Stadium",
       "venue_city": "Jacksonville, FL",
       "broadcast": "CBS",
-      "away_availability": "2 out \u00b7 2 questionable",
+      "away_availability": "3 out \u00b7 1 questionable",
       "home_availability": "3 questionable",
       "away_availability_list": [
+        {
+          "name": "Teven Jenkins",
+          "position": "G",
+          "status": "Out",
+          "detail": "back"
+        },
         {
           "name": "Jeremiah Owusu-Koramoah",
           "position": "LB",
@@ -4962,14 +6978,8 @@
           "detail": "personal"
         },
         {
-          "name": "Teven Jenkins",
-          "position": "G",
-          "status": "Questionable",
-          "detail": "back"
-        },
-        {
-          "name": "Maliek Collins",
-          "position": "DT",
+          "name": "Jamari Thrash",
+          "position": "WR",
           "status": "Questionable",
           "detail": ""
         },
@@ -5002,26 +7012,20 @@
           "position": "DT",
           "status": "Injured Reserve",
           "detail": "quadriceps"
-        },
-        {
-          "name": "Alex Wright",
-          "position": "DE",
-          "status": "Injured Reserve",
-          "detail": ""
         }
       ],
       "home_availability_list": [
-        {
-          "name": "LeQuint Allen Jr.",
-          "position": "RB",
-          "status": "Questionable",
-          "detail": "hip"
-        },
         {
           "name": "Jakobi Meyers",
           "position": "WR",
           "status": "Questionable",
           "detail": "thumb"
+        },
+        {
+          "name": "LeQuint Allen Jr.",
+          "position": "RB",
+          "status": "Questionable",
+          "detail": "hip"
         },
         {
           "name": "Cole Van Lanen",
@@ -5442,22 +7446,22 @@
           "headshot_url": "https://static.www.nfl.com/image/private/f_auto,q_auto/league/otfs2docj6eahaebo5xn"
         },
         {
-          "name": "Taylen Green",
-          "position": "QB",
-          "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4431325.png&w=160&h=160"
-        },
-        {
           "name": "Shedeur Sanders",
           "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": null
+        },
+        {
+          "name": "Taylen Green",
+          "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4432762.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Dillon Gabriel",
           "position": "QB",
           "depth_rank": 4,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4427238.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Quinshon Judkins",
@@ -5507,19 +7511,7 @@
           "name": "Quinn Ewers",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4889929.png&w=160&h=160"
-        },
-        {
-          "name": "Joey Aguilar",
-          "position": "QB",
-          "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/5151948.png&w=160&h=160"
-        },
-        {
-          "name": "Nick Mullens",
-          "position": "QB",
-          "depth_rank": 4,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3059989.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Bhayshul Tuten",
@@ -5558,6 +7550,266 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/devxzxwf1sfficgncggm"
         }
       ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:16Z",
+        "defense": {
+          "package": "Base 4-3 D",
+          "players": [
+            {
+              "name": "Isaiah McGuire",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Mason Graham",
+              "position": "LDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Maliek Collins",
+              "position": "RDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Jared Verse",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Easton Mascarenas-Arnold",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Carson Schwesinger",
+              "position": "MLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Quincy Williams",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Denzel Ward",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Grant Delpit",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Ronnie Hickman",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Tyson Campbell",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Jerry Jeudy",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/szca1v9butuqkjs7ekpm"
+            },
+            {
+              "name": "KC Concepcion",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ztdyzyngqr1pexyghlt3"
+            },
+            {
+              "name": "Denzel Boston",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ybkny6eh5eegq3bqmony"
+            },
+            {
+              "name": "Spencer Fano",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Zion Johnson",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Elgton Jenkins",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Teven Jenkins",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Tytus Howard",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Deshaun Watson",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/private/f_auto,q_auto/league/otfs2docj6eahaebo5xn"
+            },
+            {
+              "name": "Harold Fannin Jr.",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/fxublmpnxx9uggsddwik"
+            },
+            {
+              "name": "Quinshon Judkins",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ojtce2im0wp2ltyel0vc"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:17Z",
+        "defense": {
+          "package": "Base 4-3 D",
+          "players": [
+            {
+              "name": "Travon Walker",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Arik Armstead",
+              "position": "LDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "DaVon Hamilton",
+              "position": "RDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Josh Hines-Allen",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Foyesade Oluokun",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Ventrell Miller",
+              "position": "MLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Dennis Gardeck",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Travis Hunter",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Eric Murray",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Antonio Johnson",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Montaric Brown",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Brian Thomas Jr.",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/plnekkriys4cm11rnxwl"
+            },
+            {
+              "name": "Parker Washington",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/yn0hc5xrz5nqeccg8two"
+            },
+            {
+              "name": "Jakobi Meyers",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/zrs4ij8mvw7wr1uujwew"
+            },
+            {
+              "name": "Anton Harrison",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Emmanuel Pregnon",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Robert Hainsey",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Ezra Cleveland",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Cole Van Lanen",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Trevor Lawrence",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/k9uzdernqkx7oquy7dkg"
+            },
+            {
+              "name": "Brenton Strange",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/devxzxwf1sfficgncggm"
+            },
+            {
+              "name": "Bhayshul Tuten",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ryjnphuyjbedmgpx5qqj"
+            }
+          ]
+        }
+      },
       "away_travel": "772 miles home",
       "home_travel": "No travel, at home",
       "away_travel_km": 1243,
@@ -5598,16 +7850,16 @@
           "detail": ""
         },
         {
-          "name": "T.J. Sanders",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": "knee"
-        },
-        {
           "name": "Ty Johnson",
           "position": "RB",
           "status": "Questionable",
           "detail": "hamstring"
+        },
+        {
+          "name": "T.J. Sanders",
+          "position": "DT",
+          "status": "Questionable",
+          "detail": "knee"
         },
         {
           "name": "Jordan Hancock",
@@ -6075,13 +8327,7 @@
           "name": "Kyle Allen",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3115293.png&w=160&h=160"
-        },
-        {
-          "name": "Shane Buechele",
-          "position": "QB",
-          "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4039034.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "James Cook",
@@ -6131,19 +8377,13 @@
           "name": "Davis Mills",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4242546.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Graham Mertz",
           "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4426335.png&w=160&h=160"
-        },
-        {
-          "name": "Mark Gronowski",
-          "position": "QB",
-          "depth_rank": 4,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4695400.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "David Montgomery",
@@ -6182,6 +8422,264 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ym8sbkev8l4scnrc0vd8"
         }
       ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:15Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "T.J. Sanders",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Deone Walker",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Ed Oliver",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Greg Rousseau",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Dorian Williams",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Terrel Bernard",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Bradley Chubb",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Christian Benford",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Cole Bishop",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "C.J. Gardner-Johnson",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Maxwell Hairston",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "DJ Moore",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/lsavpxtqoqu25emwcnvy"
+            },
+            {
+              "name": "Khalil Shakir",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/syvp3hficobwcsim3i9v"
+            },
+            {
+              "name": "Keon Coleman",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cm7g87waetksjouyjgvg"
+            },
+            {
+              "name": "Dion Dawkins",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Alec Anderson",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Connor McGovern",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "O'Cyrus Torrence",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Spencer Brown",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Josh Allen",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/mjwbioajzldkq1vzoz2d"
+            },
+            {
+              "name": "Dalton Kincaid",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/z7k857flehljboaixj8m"
+            },
+            {
+              "name": "James Cook III",
+              "position": "RB",
+              "group": "Backfield"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:17Z",
+        "defense": {
+          "package": "Base 4-3 D",
+          "players": [
+            {
+              "name": "Will Anderson Jr.",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Tommy Togiai",
+              "position": "LDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Sheldon Rankins",
+              "position": "RDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Danielle Hunter",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Henry To'oTo'o",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Azeez Al-Shaair",
+              "position": "MLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Jake Hummel",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Derek Stingley Jr.",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Reed Blankenship",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Calen Bullock",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Kamari Lassiter",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Nico Collins",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/fguybjrn1kwflxm5szwq"
+            },
+            {
+              "name": "Kayshon Boutte",
+              "position": "WR",
+              "group": "Receivers"
+            },
+            {
+              "name": "Xavier Hutchinson",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/n5baiu6sg9wh3xhhewkd"
+            },
+            {
+              "name": "Aireontae Ersery",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Keylan Rutledge",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Evan Brown",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Ed Ingram",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Trent Brown",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "C.J. Stroud",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/tt4zrtxlhifaljhj0rn7"
+            },
+            {
+              "name": "Dalton Schultz",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ym8sbkev8l4scnrc0vd8"
+            },
+            {
+              "name": "David Montgomery",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/csz0c9roa4pqsccothxg"
+            }
+          ]
+        }
+      },
       "away_travel": "1,290 miles home, 1h back",
       "home_travel": "No travel, at home",
       "away_travel_km": 2076,
@@ -6206,7 +8704,7 @@
       "venue": "Allegiant Stadium",
       "venue_city": "Las Vegas, NV",
       "broadcast": "FOX",
-      "away_availability": "2 out \u00b7 2 questionable",
+      "away_availability": "2 out",
       "home_availability": "1 out",
       "away_availability_list": [
         {
@@ -6220,18 +8718,6 @@
           "position": "CB",
           "status": "Out",
           "detail": "undisclosed"
-        },
-        {
-          "name": "Will Kacmarek",
-          "position": "TE",
-          "status": "Questionable",
-          "detail": "calf"
-        },
-        {
-          "name": "Ronnie Harrison Jr.",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": ""
         },
         {
           "name": "Trey Moore",
@@ -6678,16 +9164,16 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/txvgdbwbryzyyqq6gfet"
         },
         {
-          "name": "Brady Cook",
-          "position": "QB",
-          "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4429435.png&w=160&h=160"
-        },
-        {
           "name": "Kyle McCord",
           "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": null
+        },
+        {
+          "name": "Brady Cook",
+          "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4433971.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "De'Von Achane",
@@ -6737,13 +9223,13 @@
           "name": "Fernando Mendoza",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4837248.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Aidan O'Connell",
           "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4260394.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Ashton Jeanty",
@@ -6782,6 +9268,265 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/waorceny0ggpaeckaol8"
         }
       ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:18Z",
+        "defense": {
+          "package": "Base 4-3 D",
+          "players": [
+            {
+              "name": "Chop Robinson",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Jordan Phillips",
+              "position": "LDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Zach Sieler",
+              "position": "RDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Josh Uche",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Jordyn Brooks",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Jacob Rodriguez",
+              "position": "MLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Willie Gay Jr.",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Jason Marshall Jr.",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Dante Trader Jr.",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Zayne Anderson",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "JuJu Brents",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Malik Washington",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/dmaiwnmaal9nrwfskl28"
+            },
+            {
+              "name": "Caleb Douglas",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/stwypvmutplwvi1zzbmu"
+            },
+            {
+              "name": "Chris Bell",
+              "position": "WR",
+              "group": "Receivers"
+            },
+            {
+              "name": "Patrick Paul",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Kadyn Proctor",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Aaron Brewer",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jonah Savaiinaea",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Austin Jackson",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Malik Willis",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/txvgdbwbryzyyqq6gfet"
+            },
+            {
+              "name": "Greg Dulcich",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/kw4cwgjl4kywh6le4sfh"
+            },
+            {
+              "name": "De'Von Achane",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/xk1xwio0bryfxo1ylweu"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:18Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Jonah Laulu",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Adam Butler",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Tonka Hemingway",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Maxx Crosby",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Nakobe Dean",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Quay Walker",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Kwity Paye",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Eric Stokes",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Jeremy Chinn",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Treydan Stukes",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Darien Porter",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Tre Tucker",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/hazzk3hrcequzosdgzgv"
+            },
+            {
+              "name": "Jalen Nailor",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/nojopyt8hxuwycxyaokb"
+            },
+            {
+              "name": "Jack Bech",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/feplgtl0x1svqen9szwv"
+            },
+            {
+              "name": "Kolton Miller",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Spencer Burford",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Tyler Linderbaum",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jackson Powers-Johnson",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "DJ Glaze",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Kirk Cousins",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/za7cynvpwlsro1tsaijk"
+            },
+            {
+              "name": "Brock Bowers",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/waorceny0ggpaeckaol8"
+            },
+            {
+              "name": "Ashton Jeanty",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/syspis1mntov9kgspb7r"
+            }
+          ]
+        }
+      },
       "away_travel": "2,170 miles home, 3h back",
       "home_travel": "No travel, at home",
       "away_travel_km": 3493,
@@ -6806,9 +9551,15 @@
       "venue": "U.S. Bank Stadium",
       "venue_city": "Minneapolis, MN",
       "broadcast": "CBS",
-      "away_availability": "4 out \u00b7 6 questionable",
-      "home_availability": "3 questionable",
+      "away_availability": "5 out \u00b7 3 questionable",
+      "home_availability": "6 designated",
       "away_availability_list": [
+        {
+          "name": "Warren Brinson",
+          "position": "DT",
+          "status": "Out",
+          "detail": ""
+        },
         {
           "name": "Josh Jacobs",
           "position": "RB",
@@ -6832,24 +9583,6 @@
           "position": "DE",
           "status": "Out",
           "detail": "knee"
-        },
-        {
-          "name": "Devonte Wyatt",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": "ankle"
-        },
-        {
-          "name": "Javon Hargrave",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": "knee"
-        },
-        {
-          "name": "Barryn Sorrell",
-          "position": "DE",
-          "status": "Questionable",
-          "detail": ""
         },
         {
           "name": "Ty'Ron Hopper",
@@ -6880,33 +9613,9 @@
           "position": "DE",
           "status": "Injured Reserve",
           "detail": ""
-        },
-        {
-          "name": "Trey Dean III",
-          "position": "S",
-          "status": "Injured Reserve",
-          "detail": "undisclosed"
         }
       ],
       "home_availability_list": [
-        {
-          "name": "Jakobe Thomas",
-          "position": "S",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Jacob Thomas",
-          "position": "S",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Caleb Tiernan",
-          "position": "OT",
-          "status": "Questionable",
-          "detail": ""
-        },
         {
           "name": "Ben Yurosek",
           "position": "TE",
@@ -7323,13 +10032,7 @@
           "name": "Tyrod Taylor",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/14163.png&w=160&h=160"
-        },
-        {
-          "name": "Kedon Slovis",
-          "position": "QB",
-          "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4428512.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "MarShawn Lloyd",
@@ -7376,22 +10079,16 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/btfruyf33adgnjzpcuen"
         },
         {
-          "name": "J.J. McCarthy",
-          "position": "QB",
-          "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4433970.png&w=160&h=160"
-        },
-        {
           "name": "Carson Wentz",
           "position": "QB",
-          "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/2573079.png&w=160&h=160"
+          "depth_rank": 2,
+          "headshot_url": null
         },
         {
-          "name": "Max Brosmer",
+          "name": "J.J. McCarthy",
           "position": "QB",
-          "depth_rank": 4,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4573398.png&w=160&h=160"
+          "depth_rank": 3,
+          "headshot_url": null
         },
         {
           "name": "Aaron Jones",
@@ -7430,6 +10127,265 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/rs8o65x0u0n9xzde0fd6"
         }
       ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:17Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Karl Brooks",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Javon Hargrave",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Devonte Wyatt",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Lukas Van Ness",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Edgerrin Cooper",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Zaire Franklin",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Barryn Sorrell",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Keisean Nixon",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Evan Williams",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Xavier McKinney",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Brandon Cisse",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Christian Watson",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/tumeg4d32sirkab2xzu5"
+            },
+            {
+              "name": "Jayden Reed",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/uhb95fij1uo92ymqxpmg"
+            },
+            {
+              "name": "Matthew Golden",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/dbjki6b0swksr7mk17wk"
+            },
+            {
+              "name": "Jordan Morgan",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Aaron Banks",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Sean Rhyan",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jacob Monk",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Zach Bako-Bewele",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jordan Love",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/thz8stjkbjwddxqnozi5"
+            },
+            {
+              "name": "Tucker Kraft",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/n6vu44jbq31rydoaadaq"
+            },
+            {
+              "name": "MarShawn Lloyd",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/xp8sd4enimuk4zd0aqgu"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:18Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Levi Drake Rodriguez",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Caleb Banks",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Jalen Redmond",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Andrew Van Ginkel",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Eric Wilson",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Blake Cashman",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Dallas Turner",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Charles Demmings",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Joshua Metellus",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Harrison Smith",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "James Pierre",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Justin Jefferson",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/htjevkugzk6ietrjysny"
+            },
+            {
+              "name": "Jordan Addison",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/mi4lzk9gvjrvo6rwdf1e"
+            },
+            {
+              "name": "Jauan Jennings",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ben8kbygzzlid6ltmdum"
+            },
+            {
+              "name": "Christian Darrisaw",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Donovan Jackson",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Blake Brandel",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Will Fries",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Brian O'Neill",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Kyler Murray",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/btfruyf33adgnjzpcuen"
+            },
+            {
+              "name": "T.J. Hockenson",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/rs8o65x0u0n9xzde0fd6"
+            },
+            {
+              "name": "Aaron Jones Sr.",
+              "position": "RB",
+              "group": "Backfield"
+            }
+          ]
+        }
+      },
       "away_travel": "257 miles home",
       "home_travel": "No travel, at home",
       "away_travel_km": 414,
@@ -7454,7 +10410,7 @@
       "venue": "Lincoln Financial Field",
       "venue_city": "Philadelphia, PA",
       "broadcast": "FOX",
-      "away_availability": "1 out \u00b7 4 questionable",
+      "away_availability": "1 out \u00b7 3 questionable",
       "home_availability": "2 questionable",
       "away_availability_list": [
         {
@@ -7480,12 +10436,6 @@
           "position": "DT",
           "status": "Questionable",
           "detail": "knee"
-        },
-        {
-          "name": "Jacory Croskey-Merritt",
-          "position": "RB",
-          "status": "Questionable",
-          "detail": "groin"
         },
         {
           "name": "Jer'Zhan Newton",
@@ -7926,22 +10876,16 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/gfz8k5onuqjrche9ogqc"
         },
         {
-          "name": "Athan Kaliakmanis",
-          "position": "QB",
-          "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4432722.png&w=160&h=160"
-        },
-        {
           "name": "Marcus Mariota",
           "position": "QB",
-          "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/2576980.png&w=160&h=160"
+          "depth_rank": 2,
+          "headshot_url": null
         },
         {
-          "name": "Sam Hartman",
+          "name": "Athan Kaliakmanis",
           "position": "QB",
-          "depth_rank": 4,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4361994.png&w=160&h=160"
+          "depth_rank": 3,
+          "headshot_url": null
         },
         {
           "name": "Jacory Croskey-Merritt",
@@ -7991,19 +10935,19 @@
           "name": "Andy Dalton",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/14012.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Tanner McKee",
           "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4685201.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Cole Payton",
           "position": "QB",
           "depth_rank": 4,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4879250.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Saquon Barkley",
@@ -8042,6 +10986,266 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/bafepstxu7vvxb9v5vua"
         }
       ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:19Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Tim Settle",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Daron Payne",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Javon Kinlaw",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Odafe Oweh",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Frankie Luvu",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Sonny Styles",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Dorance Armstrong",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Rasul Douglas",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Nick Cross",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Jeremy Reaves",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Mike Sainristil",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Terry McLaurin",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/tmfl2zruajmkrtcg4zxp"
+            },
+            {
+              "name": "Stefon Diggs",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cemcexmscsarpvwhafln"
+            },
+            {
+              "name": "Antonio Williams",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/noywrsgaqoqlv64c12yw"
+            },
+            {
+              "name": "Brandon Coleman",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Chris Paul",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Nick Allegretti",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Sam Cosmi",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Josh Conerly Jr.",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jayden Daniels",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/gfz8k5onuqjrche9ogqc"
+            },
+            {
+              "name": "Chig Okonkwo",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/pzcez6pi9tpdqkmjjnzk"
+            },
+            {
+              "name": "Jacory Croskey-Merritt",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/qew4qhlj4yuf50voko61"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:18Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Jalen Carter",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Jordan Davis",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Moro Ojomo",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Nolan Smith Jr.",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Zack Baun",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Jihaad Campbell",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Jonathan Greenard",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Riq Woolen",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Marcus Epps",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Andrew Mukuba",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Quinyon Mitchell",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "DeVonta Smith",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/k724kq3hyv7jc0y9s03x"
+            },
+            {
+              "name": "Dontayvion Wicks",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/v1lt8kpvkn0qw5elyaoz"
+            },
+            {
+              "name": "Makai Lemon",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ys2i2o7c0bl36xvlrojz"
+            },
+            {
+              "name": "Jordan Mailata",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Landon Dickerson",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Cam Jurgens",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Tyler Steen",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Lane Johnson",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jalen Hurts",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/xow5yvxjeqa6witmofmp"
+            },
+            {
+              "name": "Dallas Goedert",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/bafepstxu7vvxb9v5vua"
+            },
+            {
+              "name": "Saquon Barkley",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/qcayrzjpura2zydszonh"
+            }
+          ]
+        }
+      },
       "away_travel": "114 miles home",
       "home_travel": "No travel, at home",
       "away_travel_km": 183,
@@ -8076,6 +11280,12 @@
           "detail": "ankle"
         },
         {
+          "name": "Jeremiyah Love",
+          "position": "RB",
+          "status": "Questionable",
+          "detail": "ankle"
+        },
+        {
           "name": "Garrett Williams",
           "position": "CB",
           "status": "Questionable",
@@ -8086,12 +11296,6 @@
           "position": "S",
           "status": "Questionable",
           "detail": "ribs"
-        },
-        {
-          "name": "Jeremiyah Love",
-          "position": "RB",
-          "status": "Questionable",
-          "detail": "ankle"
         },
         {
           "name": "Isaiah Adams",
@@ -8556,16 +11760,16 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/qjswiunczrn5xmdiqhlz"
         },
         {
-          "name": "Carson Beck",
-          "position": "QB",
-          "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4430841.png&w=160&h=160"
-        },
-        {
           "name": "Gardner Minshew II",
           "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": null
+        },
+        {
+          "name": "Carson Beck",
+          "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4038524.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Jeremiyah Love",
@@ -8615,13 +11819,7 @@
           "name": "Trey Lance",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4383351.png&w=160&h=160"
-        },
-        {
-          "name": "DJ Uiagalelei",
-          "position": "QB",
-          "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4429020.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Omarion Hampton",
@@ -8660,6 +11858,266 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/g75ws8vkqz9cqwifhcy7"
         }
       ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:15Z",
+        "defense": {
+          "package": "Base 4-3 D",
+          "players": [
+            {
+              "name": "Josh Sweat",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Roy Lopez",
+              "position": "LDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Walter Nolen III",
+              "position": "RDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Dante Stills",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Jack Gibbens",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Mack Wilson Sr.",
+              "position": "MLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Zaven Collins",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Will Johnson",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Budda Baker",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Andrew Wingard",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Denzel Burke",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Marvin Harrison Jr.",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/hwpoo1icpnh8emjvqaii"
+            },
+            {
+              "name": "Michael Wilson",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/hm2b9z4zujjmbiyldh8n"
+            },
+            {
+              "name": "Kendrick Bourne",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/yzfa94cmhpcqamrwzdzk"
+            },
+            {
+              "name": "Paris Johnson Jr.",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Isaac Seumalo",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Hjalte Froholdt",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Isaiah Adams",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Elijah Wilkinson",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jacoby Brissett",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/qjswiunczrn5xmdiqhlz"
+            },
+            {
+              "name": "Trey McBride",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/psasp10nn5pcvkli9kil"
+            },
+            {
+              "name": "Jeremiyah Love",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/b12gtjsylmql5v7iyyla"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:17Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Teair Tart",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Dalvin Tomlinson",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Jamaree Caldwell",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Tuli Tuipulotu",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Daiyan Henley",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Troy Dye",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Khalil Mack",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Cam Hart",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Derwin James Jr.",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Elijah Molden",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Donte Jackson",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Ladd McConkey",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/q2sk7yforrkiusvruo1o"
+            },
+            {
+              "name": "Quentin Johnston",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/lyvsrjh4mjb4dqwp6shm"
+            },
+            {
+              "name": "Tre' Harris",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/v5ofh8jggzo8rygtpwl7"
+            },
+            {
+              "name": "Rashawn Slater",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Kayode Awosika",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jake Slaughter",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Cole Strange",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Joe Alt",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Justin Herbert",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/jnkspnntgebegzp4ghve"
+            },
+            {
+              "name": "Charlie Kolar",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/g75ws8vkqz9cqwifhcy7"
+            },
+            {
+              "name": "Omarion Hampton",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/lf2jxvxnbexlinoydbej"
+            }
+          ]
+        }
+      },
       "away_travel": "350 miles home",
       "home_travel": "No travel, at home",
       "away_travel_km": 564,
@@ -8684,9 +12142,15 @@
       "venue": "MetLife Stadium",
       "venue_city": "East Rutherford, NJ",
       "broadcast": "NBC",
-      "away_availability": "1 questionable",
+      "away_availability": "1 out \u00b7 1 questionable",
       "home_availability": "1 questionable",
       "away_availability_list": [
+        {
+          "name": "Malik Davis",
+          "position": "RB",
+          "status": "Out",
+          "detail": ""
+        },
         {
           "name": "Ajani Cornelius",
           "position": "OT",
@@ -9147,13 +12611,7 @@
           "name": "Sam Howell",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4426875.png&w=160&h=160"
-        },
-        {
-          "name": "Joe Milton III",
-          "position": "QB",
-          "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4360698.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Javonte Williams",
@@ -9203,13 +12661,7 @@
           "name": "Jameis Winston",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/2969939.png&w=160&h=160"
-        },
-        {
-          "name": "Jake Haener",
-          "position": "QB",
-          "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4243322.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Cam Skattebo",
@@ -9248,6 +12700,266 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/b1pahldt9ixp9lssxi2d"
         }
       ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:16Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Quinnen Williams",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Otito Ogbonnia",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Kenny Clark",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Rashan Gary",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "DeMarvion Overshown",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Dee Winters",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Donovan Ezeiruaku",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Cobie Durant",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Jalen Thompson",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Malik Hooker",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "DaRon Bland",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "CeeDee Lamb",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/mbblzwtynxr15ovzkevi"
+            },
+            {
+              "name": "George Pickens",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cbpyykoguf7rsxezqzvk"
+            },
+            {
+              "name": "Ryan Flournoy",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/tqwq3cgpqu7j9hzoyicx"
+            },
+            {
+              "name": "Tyler Guyton",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "T.J. Bass",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Cooper Beebe",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Tyler Booker",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Terence Steele",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Dak Prescott",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/yvscmqq1qki8zfsemmcd"
+            },
+            {
+              "name": "Jake Ferguson",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/xpykb0tbosfwsn6dqstb"
+            },
+            {
+              "name": "Javonte Williams",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/xvwroirev2kie6oiphtz"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:18Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Shelby Harris",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "DJ Reader",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Chauncey Golston",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Brian Burns",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Arvell Reese",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Tremaine Edmunds",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Abdul Carter",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Deonte Banks",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Tyler Nubin",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Jevon Holland",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Greg Newsome II",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Malik Nabers",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/w3edoyyuomqlovvp9ixc"
+            },
+            {
+              "name": "Malachi Fields",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/tpls1aptxx9x8xaqvjtj"
+            },
+            {
+              "name": "Darnell Mooney",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/eaejonwaflt9drrs9ika"
+            },
+            {
+              "name": "Andrew Thomas",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jon Runyan",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "John Michael Schmitz Jr.",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Francis Mauigoa",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jermaine Eluemunor",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Jaxson Dart",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/n6uymxssgiicjmxkzxoc"
+            },
+            {
+              "name": "Isaiah Likely",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/b1pahldt9ixp9lssxi2d"
+            },
+            {
+              "name": "Cam Skattebo",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/hlggiqdfvj1f4kntkafr"
+            }
+          ]
+        }
+      },
       "away_travel": "1,385 miles home, 1h ahead",
       "home_travel": "No travel, at home",
       "away_travel_km": 2229,
@@ -9726,16 +13438,16 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/zvo9xatffmqn9lnukpgk"
         },
         {
-          "name": "Sam Ehlinger",
-          "position": "QB",
-          "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4241820.png&w=160&h=160"
-        },
-        {
           "name": "Jarrett Stidham",
           "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": null
+        },
+        {
+          "name": "Sam Ehlinger",
+          "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3892775.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "J.K. Dobbins",
@@ -9785,13 +13497,13 @@
           "name": "Justin Fields",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4362887.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Garrett Nussmeier",
           "position": "QB",
           "depth_rank": 3,
-          "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4567747.png&w=160&h=160"
+          "headshot_url": null
         },
         {
           "name": "Kenneth Walker III",
@@ -9830,6 +13542,265 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/dpxovcfku6ud2aohgf6a"
         }
       ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:16Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "Zach Allen",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "D.J. Jones",
+              "position": "NT",
+              "group": "Front"
+            },
+            {
+              "name": "Malcolm Roach",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Jonah Elliss",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Alex Singleton",
+              "position": "LILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Justin Strnad",
+              "position": "RILB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Nik Bonitto",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Pat Surtain II",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Talanoa Hufanga",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Brandon Jones",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Riley Moss",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Jaylen Waddle",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/gkh7m1jedon9mwn5jlf1"
+            },
+            {
+              "name": "Courtland Sutton",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/kqwmqcrlrwmqcvfuguhs"
+            },
+            {
+              "name": "Marvin Mims Jr.",
+              "position": "WR",
+              "group": "Receivers"
+            },
+            {
+              "name": "Garett Bolles",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Ben Powers",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Luke Wattenberg",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Quinn Meinerz",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Mike McGlinchey",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Bo Nix",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/zvo9xatffmqn9lnukpgk"
+            },
+            {
+              "name": "Evan Engram",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/nucl2dxmpvhlywhyro8o"
+            },
+            {
+              "name": "J.K. Dobbins",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cevotvl3ho5h1mioruyg"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-11T20:26:17Z",
+        "defense": {
+          "package": "Base 4-3 D",
+          "players": [
+            {
+              "name": "George Karlaftis",
+              "position": "LDE",
+              "group": "Front"
+            },
+            {
+              "name": "Chris Jones",
+              "position": "LDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Khyiris Tonga",
+              "position": "RDT",
+              "group": "Secondary"
+            },
+            {
+              "name": "Felix Anudike-Uzomah",
+              "position": "RDE",
+              "group": "Front"
+            },
+            {
+              "name": "Drue Tranquill",
+              "position": "WLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Nick Bolton",
+              "position": "MLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "Jeffrey Bassa",
+              "position": "SLB",
+              "group": "Linebackers"
+            },
+            {
+              "name": "L'Jarius Sneed",
+              "position": "LCB",
+              "group": "Secondary"
+            },
+            {
+              "name": "Chamarri Conner",
+              "position": "SS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Alohi Gilman",
+              "position": "FS",
+              "group": "Secondary"
+            },
+            {
+              "name": "Mansoor Delane",
+              "position": "RCB",
+              "group": "Secondary"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Rashee Rice",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/qhkbqrydjeur8zvrrmfl"
+            },
+            {
+              "name": "Xavier Worthy",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/u6fmnffwteccoxn3uguq"
+            },
+            {
+              "name": "Tyquan Thornton",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/bjqzuempyiwxe0hl7e5a"
+            },
+            {
+              "name": "Josh Simmons",
+              "position": "LT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Kingsley Suamataia",
+              "position": "LG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Creed Humphrey",
+              "position": "C",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Trey Smith",
+              "position": "RG",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Kahlil Benson",
+              "position": "RT",
+              "group": "Offensive Line"
+            },
+            {
+              "name": "Patrick Mahomes",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/wdckwtob1lybvkmxnf7p"
+            },
+            {
+              "name": "Travis Kelce",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/dpxovcfku6ud2aohgf6a"
+            },
+            {
+              "name": "Kenneth Walker III",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/vk6nruaqdewdglofcwwg"
+            }
+          ]
+        }
+      },
       "away_travel": "564 miles home, 1h ahead",
       "home_travel": "No travel, at home",
       "away_travel_km": 908,

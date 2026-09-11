@@ -79,6 +79,7 @@
     "away_hand",
     "away_lineup",
     "away_lineup_state",
+    "away_lineups",
     "away_name",
     "away_players",
     "away_record",
@@ -106,6 +107,7 @@
     "home_hand",
     "home_lineup",
     "home_lineup_state",
+    "home_lineups",
     "home_name",
     "home_players",
     "home_record",
@@ -136,7 +138,9 @@
   ],
   "notes": {
     "away_availability_list": "Official injury designations: name, position, status, body part. factual-status. No projection, snap share or confidence.",
+    "away_lineups": "ESPN depth-chart starters by offensive and defensive position. Identity and published order only; no projection or snap share.",
     "home_availability_list": "Official injury designations: name, position, status, body part. factual-status. No projection, snap share or confidence.",
+    "home_lineups": "ESPN depth-chart starters by offensive and defensive position. Identity and published order only; no projection or snap share.",
     "roof": "Venue roof state reported by the official schedule feed. identity."
   }
 }

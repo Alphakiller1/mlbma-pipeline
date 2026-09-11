@@ -347,6 +347,23 @@ class AdapterHoleTests(unittest.TestCase):
         shell = (ROOT / "dashboard" / "chase_shell.js").read_text(encoding="utf-8")
         self.assertIn("opts.context !== false", shell)
 
+    def test_nfl_detail_has_real_season_scope_and_two_unit_lineups(self):
+        detail = (ROOT / "dashboard" / "public_game_detail.js").read_text(encoding="utf-8")
+        css = (ROOT / "dashboard" / "styles" / "chase-public.css").read_text(encoding="utf-8")
+        adapter = (ROOT / "dashboard" / "sports" / "chase_public_slate.js").read_text(
+            encoding="utf-8")
+        for text in (
+            "data-lineup-unit", "data-lineup-panel", "Offensive Line", "Linebackers",
+            "No designation", "Report pending", "data-scheme-seasons",
+            "panel.hidden = !show", "seasons.length === 1", "Full Injury Report",
+        ):
+            self.assertIn(text, detail)
+        self.assertIn("away_lineups", adapter)
+        self.assertIn("home_lineups", adapter)
+        self.assertIn(".ca-lineup-board", css)
+        self.assertIn("min-height: var(--touch-min)", css)
+        self.assertNotIn(".ca-formation", css)
+
     def test_no_formatclock_in_nav(self):
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
         self.assertNotIn("function formatClock", nav)

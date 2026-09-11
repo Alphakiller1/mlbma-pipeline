@@ -351,6 +351,9 @@ Compare against:
 | `dashboard/research_lab.js` | Research Lab compare / trends / splits |
 | `dashboard/pitcher_lab.js` | Pitcher Intelligence |
 | `dashboard/platform_dashboard.js` | Matchups hero |
+| `dashboard/public_game_detail.js` | Public sport matchup detail; NFL unit tabs, availability joins, scheme/form/radar presentation |
+| `dashboard/sports/chase_public_slate.js` | Public-slate client allowlist and normalization, including NFL offense/defense lineups |
+| `outputs/nfl_public_context.py` | Identity-only NFL depth-chart projection plus observed team/scheme context |
 | `docs/AUDIT_BACKLOG.md` | Prioritized fix list |
 
 ---

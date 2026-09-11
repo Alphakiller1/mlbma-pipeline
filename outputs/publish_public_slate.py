@@ -655,6 +655,7 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
     form = context.get("form") or {}
     scheme = context.get("scheme") or {}
     players = context.get("players") or {}
+    lineups = context.get("lineups") or {}
     rest = rest_history if rest_history is not None else {}
     games = []
     for event in payload.get("events") or []:
@@ -745,6 +746,8 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             "scheme_source": context.get("source"),
             "away_players": players.get(away_abbr),
             "home_players": players.get(home_abbr),
+            "away_lineups": lineups.get(away_abbr),
+            "home_lineups": lineups.get(home_abbr),
             "away_rest_days": away_ctx["rest_days"],
             "home_rest_days": home_ctx["rest_days"],
             "away_travel": away_ctx["travel"],

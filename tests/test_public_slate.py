@@ -35,6 +35,29 @@ class PublicSlateProjectionTests(unittest.TestCase):
             self.assertEqual(slate["schema"], "chase-public-slate/1")
             self.assertTrue(slate["games"])
 
+    def test_nfl_starting_units_survive_the_public_allowlist(self):
+        import sys
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from project_public_slate import project_slate
+
+        lineups = {
+            "source": "ESPN depth chart",
+            "offense": {"package": "3WR 1TE", "players": [
+                {"name": "A Passer", "position": "QB", "group": "Backfield",
+                 "depth_rank": 1, "headshot_url": None},
+            ]},
+            "defense": {"package": "Base 4-3 D", "players": [
+                {"name": "A Corner", "position": "LCB", "group": "Secondary",
+                 "depth_rank": 1, "headshot_url": None},
+            ]},
+        }
+        out = project_slate("nfl", {"games": [{
+            "id": "nfl-x", "away": "AAA", "home": "BBB",
+            "away_lineups": lineups, "home_lineups": lineups,
+        }]})
+        self.assertEqual(out["games"][0]["away_lineups"]["defense"]["players"][0]["name"],
+                         "A Corner")
+
     def test_public_slates_are_tracked_not_gitignored(self):
         import subprocess
 

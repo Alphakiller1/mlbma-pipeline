@@ -1,9 +1,9 @@
 # Cross-sport programme — honest release status
 
-**Date:** 2026-09-08  
+**Date:** 2026-09-11
 **Repo:** `Alphakiller1/mlbma-pipeline`  
-**Branch:** `cursor/wp1-design-layer-4ee4` (draft PR #27; stacked #36–#38 merged into the trunk)  
-**Not a production release.** No merge to `master`, no Pages/Cloudflare production deploy, no live `chase-analytics.com` cutover.
+**Branch:** `codex/nfl-matchup-ux-v2` from `master` at `c7319630fc05258a46278dd78e335ce762a95392`
+This report records the source being promoted to `master`. Live status is established only by the Cloudflare workflow and the post-deploy production smoke.
 
 This report is the WP6-6 artefact **for this repo**. Items that live in other repositories are listed as blocked or out of scope, not as shipped.
 
@@ -12,7 +12,7 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 | Work | Evidence |
 |------|----------|
 | WP0 site trunk reconcile | Draft PR [#26](https://github.com/Alphakiller1/mlbma-pipeline/pull/26); `docs/RECONCILE_WP0.md` |
-| WP1 A/B/D token spine | Draft PR [#27](https://github.com/Alphakiller1/mlbma-pipeline/pull/27); `design/tokens/chase-tokens.css`; `scripts/check_tokens.py`; `tests/test_contrast.py`; stamp `20260908b` |
+| WP1 A/B/D token spine | `design/tokens/chase-tokens.css`; `scripts/check_tokens.py`; `tests/test_contrast.py`; current stamp `20260911f` |
 | Design-doc INDEX | `design/INDEX.md` (WP6-7) |
 | WP2 kits vendored (not applied to model remotes) | `docs/wp2-patches/` |
 | WP3 DataStatus + Last_Updated collapse | `ChaseDataStatus.fetchLastUpdated` is the only Last_Updated probe. Failed fetches render `unknown`. |
@@ -24,6 +24,7 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 | WP6-1 mlb-model contracts | Done on mlb-model `main` (`docs/DESIGN_INDEX.md`). |
 | WP6 content-engine | Done on chase-content-engine `main` (bundled fonts, `validate_bundle`, no `or 0` fabricated OSI). |
 | WP4 Pilot B (NFL matchups) | `/nfl/matchups.html` from `scripts/build_sport_routes.py`: chase_nav hamburger, expandable evidence, model/market/published columns, `edge_withheld_reason`, priced markets labelled **not Picks**, authority as **text** via `ChaseModelStatus`. |
+| NFL matchup detail UX | ESPN depth-chart identity/order supplies an honest 11-player offense and base defense for each club. Exact positions are grouped into scan lanes, every starter carries official availability or an explicit `No Designation` / `Report Pending`, and keyboard-operable unit tabs switch offense/defense. The evidence-window control now actually removes prior-season scheme panels in current-only mode while retaining current form/radar. |
 | WP4A capture guards | `captureSlateRelax()` in `matchup_shared.js` (localhost, `/render/`, `hubdebug`/`capture`/`snapshot`). `render/pitcher_intelligence.html` sets `_captureBoot` and still mounts PitcherLab; `.pl-rank-table` can render from SP_Profiles when slate starters are empty. Capture script follows `.mc-slate-pick` and appends `hubdebug=1`. |
 | WP4A `/render/` copies + 301s + glossary | PR #27; root `_redirects` |
 | Artifact **NOW** pixel captures | `docs/artifact-parity/` — team_rankings, starters (render + index), card, banner, radar, offense, pitcher, bullpen all OK on 8766 |
@@ -36,8 +37,8 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 
 | Item | Owner | Status |
 |------|-------|--------|
-| Merge WP0/WP1 as a release | mlbma | **Must not** — draft PRs only |
-| Production deploy chase-analytics.com | pages | **Not done** |
+| Merge WP0/WP1 as a release | mlbma | **Done on master** — historical draft branches are superseded |
+| Production deploy chase-analytics.com | pages | **Pending workflow verification for this revision** |
 | 62 uncommitted files from the other machine | — | **Recovered** — commit `82a5012a` (170 files) is on origin; `docs/UNRECOVERED_WIP.md` |
 | WP1.C model-repo token/board.css / smokes | four model repos | **done on each `main`** (mlb-model #31, wnba #12, nfl-model #1, cfb #1) |
 | WP2 `board.json` producers | mlb/wnba | **code on `main`**; live Pages `board.json` still needs those deploys |
@@ -50,7 +51,7 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 
 ## What “done” does not mean
 
-- Token spine on a **draft** branch is not a live CORS `/design/chase-tokens-v1.css`.
+- Token spine on this local branch is not proof of the live `/design/chase-tokens-v1.css` until production is deployed.
 - `/render/` files are capture targets; production `_redirects` do nothing until a **root** Pages deploy.
 - Dual-render values still come from live Sheets/Supabase; pixels are data-dependent.
 - Sport hubs fetch `board.json` when published; producers are still not on origin for MLB/WNBA.
@@ -59,7 +60,8 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 
 | Gate | Result |
 |------|--------|
-| `python3 scripts/check_tokens.py` | **OK** (stamp `20260908g`) |
-| `python3 -m unittest discover -s tests -p 'test_*.py'` | **37 OK** |
-| `dashboard_runtime_diag.py` team_rankings **8766** | **13/14** — table/model PASS; leftover console CORS on Supabase from `127.0.0.1:8766` (snapshot still paints `.lv-table`). Same class of leftover as the prior 8766 render report. |
+| `python scripts/check_tokens.py` | **OK** (stamp `20260911f`; rule-body hex count remains informational) |
+| `python -m unittest discover -s tests -p 'test_*.py'` | **131 OK** |
+| Public/runtime boundary diagnostics on **8766** | **OK** — public-site runtime, public-boundary crawl, platform UI, and strict 360/375/390 mobile-overflow checks exit 0 |
+| NFL matchup visual/browser audit | **OK** at 375/390/768/1024/1440 — 22 offensive and 22 defensive starters across the fixture, 44px tabs, a designation on every starter, zero clipped cards/horizontal overflow/severe console errors; current-only hides all prior-season scheme panels |
 | `scripts/capture_artifact_parity.py` **8766** | **9/9 required selectors OK** including render `.pl-rank-table` and compare banner/radar/offense/pitcher/bullpen |

@@ -89,6 +89,65 @@ BOARD = {
     ],
 }
 
+DEPTH_CHART = {
+    "timestamp": "2026-09-11T20:05:33Z",
+    "team": {"abbreviation": "AAA"},
+    "depthchart": [
+        {
+            "name": "Base 3-4 D",
+            "positions": {
+                "lde": {
+                    "position": {"abbreviation": "LDE"},
+                    "athletes": [
+                        {"displayName": "Left End"},
+                        {"displayName": "Reserve End"},
+                    ],
+                },
+                "lilb": {
+                    "position": {"abbreviation": "LILB"},
+                    "athletes": [{"displayName": "Inside Backer"}],
+                },
+                "lcb": {
+                    "position": {"abbreviation": "LCB"},
+                    "athletes": [{"displayName": "Left Corner"}],
+                },
+                "nb": {
+                    "position": {"abbreviation": "NB"},
+                    "athletes": [{"displayName": "Package Nickel"}],
+                },
+            },
+        },
+        {"name": "Special Teams", "positions": {
+            "pk": {"position": {"abbreviation": "PK"},
+                   "athletes": [{"displayName": "Kicker"}]},
+        }},
+        {
+            "name": "3WR 1TE",
+            "positions": {
+                "qb": {
+                    "position": {"abbreviation": "QB"},
+                    "athletes": [
+                        {"displayName": "A Passer"},
+                        {"displayName": "Next Passer"},
+                    ],
+                },
+                "wr1": {
+                    "position": {"abbreviation": "WR"},
+                    "athletes": [{"displayName": "Wide One"}],
+                },
+                "lt": {
+                    "position": {"abbreviation": "LT"},
+                    "athletes": [{"displayName": "Left Tackle"}],
+                },
+                "fb": {
+                    "position": {"abbreviation": "FB"},
+                    "athletes": [{"displayName": "Package Fullback"}],
+                },
+            },
+        },
+    ],
+}
+
 FORBIDDEN_ANYWHERE = (
     "rating", "projected_wins", "win_division", "make_playoffs", "top_seed",
     "offense_index", "defense_index", "efficiency_rating", "confidence",
@@ -100,7 +159,7 @@ FORBIDDEN_ANYWHERE = (
 
 class NflPublicContextTests(unittest.TestCase):
     def setUp(self):
-        self.ctx = ctx.build(BOARD)
+        self.ctx = ctx.build(BOARD, rooms={}, lineups={})
 
     def test_ranks_are_recomputed_not_borrowed(self):
         """teams[].rank ranks a model rating; a descriptive rank must not."""
@@ -152,6 +211,37 @@ class NflPublicContextTests(unittest.TestCase):
         url = self.ctx["players"]["AAA"][0]["headshot_url"]
         self.assertIn("w_160,h_160,c_fill,g_face", url)
         self.assertTrue(url.endswith("/league/abc"))
+
+    def test_depth_chart_projects_offense_and_defense_starters_only(self):
+        lineup = ctx.parse_depth_chart(DEPTH_CHART)
+        self.assertEqual(lineup["offense"]["package"], "3WR 1TE")
+        self.assertEqual(lineup["defense"]["package"], "Base 3-4 D")
+        self.assertEqual(
+            [player["name"] for player in lineup["offense"]["players"]],
+            ["A Passer", "Wide One", "Left Tackle"],
+        )
+        self.assertEqual(
+            [player["group"] for player in lineup["defense"]["players"]],
+            ["Front", "Linebackers", "Secondary"],
+        )
+        self.assertNotIn("Kicker", json.dumps(lineup))
+        self.assertNotIn("Reserve End", json.dumps(lineup))
+        self.assertNotIn("Package Fullback", json.dumps(lineup))
+        self.assertNotIn("Package Nickel", json.dumps(lineup))
+
+    def test_depth_chart_quarterback_room_keeps_published_order(self):
+        room = ctx._quarterbacks_from_depth(DEPTH_CHART)
+        self.assertEqual([player["name"] for player in room],
+                         ["A Passer", "Next Passer"])
+        self.assertTrue(all(player["headshot_url"] is None for player in room))
+
+    def test_espn_headshot_is_only_transformed_when_source_publishes_it(self):
+        self.assertIsNone(ctx.sized_espn_headshot(None))
+        supplied = "https://a.espncdn.com/i/headshots/nfl/players/full/123.png"
+        self.assertEqual(
+            ctx.sized_espn_headshot(supplied),
+            "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/123.png&w=160&h=160",
+        )
 
     def test_team_codes_match_the_public_schedule(self):
         """The board writes LA; the schedule writes LAR."""

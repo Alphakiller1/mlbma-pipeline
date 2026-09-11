@@ -103,23 +103,70 @@
       '<div class="ca-detail-section__body" data-body="' + esc(id) + '">' + body + '</div></section>';
   }
 
-  /* The season control. There is no second dataset to swap in until the board
-     charts the new season, so choosing it says that plainly instead of
-     relabelling last season's numbers - and the moment the board publishes
-     current-season charting, `schemeSeasons` sees it and the branch that says
-     "nothing yet" stops firing on its own. */
+  /* The season control changes the evidence on screen. A previous version
+     changed only the pressed button, leaving every 2025 table visible under
+     "2026 Only". A display scope must never relabel an older sample. */
   function wireSeasonToggle(host) {
     host.addEventListener('click', function (event) {
       var btn = event.target.closest && event.target.closest('[data-season-scope]');
       if (!btn || !host.contains(btn)) return;
-      var group = btn.parentNode;
+      var group = btn.closest('.ca-season-toggle');
+      if (!group) return;
       Array.prototype.forEach.call(group.querySelectorAll('[data-season-scope]'), function (b) {
         var on = b === btn;
         b.classList.toggle('is-on', on);
         b.setAttribute('aria-pressed', String(on));
       });
-      var note = group.parentNode.querySelector('[data-season-empty]');
-      if (note) note.hidden = btn.getAttribute('data-season-scope') !== 'now';
+      var scope = btn.getAttribute('data-season-scope');
+      var current = Number(group.getAttribute('data-current-season'));
+      var visible = 0;
+      Array.prototype.forEach.call(host.querySelectorAll('[data-scheme-seasons]'), function (panel) {
+        var seasons = String(panel.getAttribute('data-scheme-seasons') || '')
+          .split(',').map(Number).filter(Number.isFinite);
+        var isCurrentOnly = seasons.length === 1 && seasons[0] === current;
+        var show = scope !== 'current' || isCurrentOnly;
+        panel.hidden = !show;
+        if (show) visible += 1;
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('[data-season-prior-only]'), function (node) {
+        node.hidden = scope === 'current';
+      });
+      var note = host.querySelector('[data-season-empty]');
+      if (note) note.hidden = scope !== 'current' || visible > 0;
+      host.setAttribute('data-season-scope', scope);
+    });
+  }
+
+  function activateLineupTab(btn) {
+    var board = btn.closest('.ca-lineup-board');
+    if (!board) return;
+    var unit = btn.getAttribute('data-lineup-unit');
+    Array.prototype.forEach.call(board.querySelectorAll('[data-lineup-unit]'), function (tab) {
+      var on = tab === btn;
+      tab.classList.toggle('is-on', on);
+      tab.setAttribute('aria-selected', String(on));
+      tab.setAttribute('tabindex', on ? '0' : '-1');
+    });
+    Array.prototype.forEach.call(board.querySelectorAll('[data-lineup-panel]'), function (panel) {
+      panel.hidden = panel.getAttribute('data-lineup-panel') !== unit;
+    });
+  }
+
+  function wireLineupTabs(host) {
+    host.addEventListener('click', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-lineup-unit]');
+      if (btn && host.contains(btn)) activateLineupTab(btn);
+    });
+    host.addEventListener('keydown', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-lineup-unit]');
+      if (!btn || !host.contains(btn) || ['ArrowLeft', 'ArrowRight'].indexOf(event.key) < 0) return;
+      var tabs = Array.prototype.slice.call(
+        btn.closest('.ca-lineup-tabs').querySelectorAll('[data-lineup-unit]'));
+      var step = event.key === 'ArrowRight' ? 1 : -1;
+      var next = tabs[(tabs.indexOf(btn) + step + tabs.length) % tabs.length];
+      event.preventDefault();
+      activateLineupTab(next);
+      next.focus();
     });
   }
 
@@ -2113,27 +2160,28 @@
     var charted = schemeSeasons(game);
     var now = currentSeason(game);
     if (!charted.length) return '';
-    var span = charted.length > 1
-      ? charted[0] + '–' + charted[charted.length - 1]
-      : String(charted[0]);
-    var hasNow = charted.indexOf(now) >= 0;
+    var shown = charted.concat([now]).filter(function (year, index, all) {
+      return all.indexOf(year) === index;
+    }).sort();
     var options = [
-      ['all', span + (hasNow ? '' : ' · Charted'), 'Every season the board has charted'],
-      ['now', String(now) + ' Only', hasNow
-        ? 'This season alone'
-        : 'No plays charted for ' + now + ' yet']
+      ['combined', shown.join(' + '), 'Prior-season charting and current-season form'],
+      ['current', String(now) + ' Only', 'Current-season evidence only']
     ];
-    return '<div class="ca-season-toggle" role="group" aria-label="Seasons shown">' +
-      '<span class="ca-season-toggle__label">Seasons</span>' +
+    return '<aside class="ca-analysis-scope" aria-label="Analysis scope"><div>' +
+      '<span class="ca-analysis-scope__eyebrow">Evidence Window</span>' +
+      '<strong>Choose The Seasons In View</strong></div>' +
+      '<div class="ca-season-toggle" role="group" aria-label="Statistics shown" ' +
+      'data-current-season="' + now + '">' +
       options.map(function (opt, i) {
         return '<button type="button" class="ca-season-toggle__btn' + (i === 0 ? ' is-on' : '') +
           '" data-season-scope="' + opt[0] + '" aria-pressed="' + (i === 0) + '" title="' +
           esc(opt[2]) + '">' + esc(opt[1]) + '</button>';
       }).join('') +
-      '</div>' +
-      (hasNow ? '' : '<p class="ca-season-toggle__note" data-season-empty hidden>' +
-        'The board has charted no ' + now + ' plays yet, so there is nothing to show for ' +
-        'this season on its own. Everything above is ' + esc(span) + '.</p>');
+      '</div><p class="ca-analysis-scope__copy">Combined keeps prior-season scheme context ' +
+      'beside current form. Current-only never relabels an older sample.</p>' +
+      '<p class="ca-season-toggle__note" data-season-empty hidden>No ' + now +
+      '-only scheme charting is published yet. Current Team Form and Radar remain below.</p>' +
+      '</aside>';
   }
 
   /* ---------------------------------------------------------------------
@@ -2208,7 +2256,12 @@
     var offName = fullName(sport, game, offSide);
     var defName = fullName(sport, game, defSide);
     var charted = (((game[defSide + '_scheme'] || {}).source_seasons) || []).join(', ');
-    var head = '<section class="ca-scheme-panel"><h3>' + esc(offName) +
+    var panelSeasons = [].concat((offScheme || {}).source_seasons || [],
+      (defScheme || {}).source_seasons || []).map(Number).filter(Number.isFinite)
+      .filter(function (year, index, all) { return all.indexOf(year) === index; })
+      .join(',');
+    var head = '<section class="ca-scheme-panel" data-scheme-seasons="' +
+      esc(panelSeasons) + '"><h3>' + esc(offName) +
       ' Offence Versus ' + esc(defName) + ' Defence</h3>' +
       (charted ? '<p class="ca-lineup-context">Charted ' + esc(charted) + '</p>' : '');
     if (!offScheme || !defScheme) {
@@ -2311,97 +2364,119 @@
       '<div class="ca-form-grid">' + cells + '</div></section>';
   }
 
-  /* The named offence, with faces. Identity, position and depth only - the
-     rest of the row those names came from is the model's output and never
-     leaves the producer. */
-  /* ---------------------------------------------------------------------
-   * The named offence, as a formation.
-   *
-   * A flat row of nine headshots says who is on the depth chart and nothing
-   * else: the reader has to read every position badge and rebuild the shape in
-   * their head. Standing them where they line up says it in one look - the
-   * receivers are wide, the tight end is on the line, the quarterback is off it
-   * and the back is behind him - and it costs no extra data, because position
-   * and depth rank are already what the chart carries.
-   *
-   * 11 personnel, shotgun, read from behind the offence: three receivers, a
-   * tight end, a back. Grid coordinates are the alignment; nothing is placed by
-   * hand. A club that publishes some other shape still renders, because a
-   * position with no slot falls to the depth strip rather than being dropped.
-   *
-   * Identity, position and depth order only. Nothing here is a projection and
-   * no snap-share or target number goes near it.
-   * ------------------------------------------------------------------ */
-  var FORMATION = {
-    // position + depth -> [column, row] on a nine-column field
-    'WR1': [1, 1], 'TE1': [4, 1], 'WR3': [6, 1], 'WR2': [9, 1],
-    'QB1': [5, 2], 'RB1': [4, 3], 'FB1': [6, 3]
-  };
-
-  function personCard(pl, status, cls) {
-    var shot = pl.headshot_url
-      ? '<img class="ca-person__shot" src="' + esc(pl.headshot_url) + '" alt="' +
-        esc(pl.name) + '" width="56" height="56" loading="lazy" decoding="async">'
-      : '<span class="ca-person__shot" aria-hidden="true"></span>';
-    return '<div class="ca-person ' + (cls || '') + '">' + shot +
-      '<span class="ca-person__slot">' + esc(pl.position) +
-      (pl.depth_rank > 1 ? String(pl.depth_rank) : '') + '</span>' +
-      '<span class="ca-person__name">' + esc(pl.name) + '</span>' +
-      (status ? '<span class="ca-status-pill" data-status="' +
-        esc(String(status).toLowerCase().replace(/\s+/g, '-')) + '">' + esc(status) +
-        '</span>' : '') + '</div>';
+  /* Identity-only starting units, arranged for scanning rather than forced
+     into a miniature field. The source names a position and its first player;
+     this renderer never invents a snap share or turns a roster into a start. */
+  function playerNameKey(name) {
+    return String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
   }
 
-  function playerRow(players, designations) {
-    if (!players || !players.length) return '';
-    var byName = {};
-    (designations || []).forEach(function (entry) {
-      byName[String(entry.name || '').toLowerCase()] = entry.status;
-    });
-    var statusOf = function (pl) { return byName[String(pl.name || '').toLowerCase()]; };
+  function initials(name) {
+    return String(name || '').split(/\s+/).filter(Boolean).slice(0, 2)
+      .map(function (part) { return part.charAt(0); }).join('').toUpperCase() || '—';
+  }
 
-    // A club lists three receivers by depth; on the field they are two outside
-    // and one in the slot, so the third receiver takes the slot alignment
-    // rather than being stacked behind the first.
-    var taken = {};
-    var onField = [];
-    var bench = [];
-    players.forEach(function (pl) {
-      var key = String(pl.position || '').toUpperCase() + (pl.depth_rank || 1);
-      var spot = FORMATION[key];
-      if (spot && !taken[key]) {
-        taken[key] = true;
-        onField.push({ player: pl, col: spot[0], row: spot[1] });
-      } else {
-        bench.push(pl);
+  function designationMap(entries) {
+    var out = {};
+    (entries || []).forEach(function (entry) {
+      out[playerNameKey(entry.name)] = entry;
+    });
+    return out;
+  }
+
+  function designationFor(player, entries, byName) {
+    return byName[playerNameKey(player.name)] || {
+      status: Array.isArray(entries) ? 'No designation' : 'Report pending',
+      detail: ''
+    };
+  }
+
+  function playerGroup(player, unit) {
+    if (player.group) return player.group;
+    var pos = String(player.position || '').toUpperCase();
+    if (unit === 'offense') {
+      if (['QB', 'RB', 'FB'].indexOf(pos) >= 0) return 'Backfield';
+      if (['WR', 'TE'].indexOf(pos) >= 0) return 'Receivers';
+      return 'Offensive Line';
+    }
+    if (['LDE', 'DE', 'RDE', 'DT', 'NT'].indexOf(pos) >= 0) return 'Front';
+    if (['WLB', 'OLB', 'LILB', 'ILB', 'MLB', 'RILB', 'SLB', 'LB'].indexOf(pos) >= 0) {
+      return 'Linebackers';
+    }
+    return 'Secondary';
+  }
+
+  function playerPortrait(player) {
+    if (player.headshot_url) {
+      return '<img class="ca-lineup-player__shot" src="' + esc(player.headshot_url) +
+        '" alt="" width="48" height="48" loading="lazy" decoding="async">';
+    }
+    return '<span class="ca-lineup-player__initials" aria-hidden="true">' +
+      esc(initials(player.name)) + '</span>';
+  }
+
+  function lineupPlayer(player, designation) {
+    var status = designation.status || 'No designation';
+    var statusKey = String(status).toLowerCase().replace(/\s+/g, '-');
+    return '<article class="ca-lineup-player" data-position="' + esc(player.position) + '">' +
+      playerPortrait(player) + '<div class="ca-lineup-player__identity">' +
+      '<span class="ca-lineup-player__position">' + esc(player.position) + '</span>' +
+      '<strong>' + esc(player.name) + '</strong></div>' +
+      '<div class="ca-lineup-player__availability"><span class="ca-status-pill" data-status="' +
+      esc(statusKey) + '">' + esc(status) + '</span>' +
+      (designation.detail ? '<small>' + esc(designation.detail) + '</small>' : '') +
+      '</div></article>';
+  }
+
+  function legacyOffense(game, side) {
+    var starters = [];
+    (game[side + '_players'] || []).forEach(function (player) {
+      var position = String(player.position || '').toUpperCase();
+      var rank = Number(player.depth_rank || 1);
+      if ((position === 'WR' && rank <= 3) ||
+          (['QB', 'RB', 'TE', 'FB'].indexOf(position) >= 0 && rank === 1)) {
+        starters.push(player);
       }
     });
+    return starters.length ? { package: 'Published Skill Starters', players: starters } : null;
+  }
 
-    if (!onField.length) {
-      return '<ul class="ca-person-row">' +
-        players.map(function (pl) {
-          return '<li>' + personCard(pl, statusOf(pl)) + '</li>';
-        }).join('') + '</ul>';
+  function unitData(game, side, unit) {
+    var lineups = game[side + '_lineups'] || {};
+    return lineups[unit] || (unit === 'offense' ? legacyOffense(game, side) : null);
+  }
+
+  function lineupUnit(game, side, unit, entries, tabId, panelId) {
+    var data = unitData(game, side, unit);
+    var hidden = unit === 'defense' ? ' hidden' : '';
+    if (!data || !data.players || !data.players.length) {
+      return '<section class="ca-lineup-unit" role="tabpanel" id="' + panelId +
+        '" aria-labelledby="' + tabId + '" data-lineup-panel="' + unit + '"' + hidden + '>' +
+        pending((unit === 'offense' ? 'Offensive' : 'Defensive') +
+          ' starters are not published for this club.') + '</section>';
     }
-
-    var field = onField.map(function (spot) {
-      return '<div class="ca-formation__spot" style="grid-column:' + spot.col +
-        ';grid-row:' + spot.row + '">' +
-        personCard(spot.player, statusOf(spot.player), 'is-onfield') + '</div>';
-    }).join('');
-
-    var depth = bench.length
-      ? '<ul class="ca-person-row ca-person-row--depth">' +
-        bench.map(function (pl) {
-          return '<li>' + personCard(pl, statusOf(pl), 'is-depth') + '</li>';
-        }).join('') + '</ul>'
-      : '';
-
-    return '<div class="ca-formation" role="img" aria-label="' +
-      esc(onField.map(function (spot) {
-        return spot.player.position + ' ' + spot.player.name;
-      }).join(', ')) + '">' + field +
-      '<span class="ca-formation__los" aria-hidden="true"></span></div>' + depth;
+    var groups = {};
+    data.players.forEach(function (player) {
+      var group = playerGroup(player, unit);
+      (groups[group] = groups[group] || []).push(player);
+    });
+    var order = unit === 'offense'
+      ? ['Backfield', 'Receivers', 'Offensive Line']
+      : ['Front', 'Linebackers', 'Secondary'];
+    var byName = designationMap(entries);
+    var content = order.filter(function (group) { return groups[group] && groups[group].length; })
+      .map(function (group) {
+        return '<section class="ca-lineup-group"><header><h4>' + esc(group) + '</h4><span>' +
+          groups[group].length + '</span></header><div class="ca-lineup-group__players">' +
+          groups[group].map(function (player) {
+            return lineupPlayer(player, designationFor(player, entries, byName));
+          }).join('') + '</div></section>';
+      }).join('');
+    return '<section class="ca-lineup-unit" role="tabpanel" id="' + panelId +
+      '" aria-labelledby="' + tabId + '" data-lineup-panel="' + unit + '"' + hidden + '>' +
+      '<div class="ca-lineup-unit__meta"><strong>' + esc(data.package || titleCase(unit)) +
+      '</strong><span>' + data.players.length + ' Published Starters</span></div>' +
+      '<div class="ca-lineup-groups">' + content + '</div></section>';
   }
 
   function namedQuarterback(game, side) {
@@ -2412,32 +2487,43 @@
     return game[side + '_starter'] || '';
   }
 
-  function availabilityPanel(sport, game, side) {
+  function injuryReport(entries) {
+    if (!entries) return pending('Injury report not published for this club.');
+    if (!entries.length) return pending('No designations reported.');
+    var rows = entries.map(function (entry) {
+      return '<li class="ca-avail-row"><span class="ca-avail-pos">' +
+        esc(entry.position || '—') + '</span><strong class="ca-avail-name">' +
+        esc(entry.name) + '</strong><span class="ca-avail-detail">' +
+        esc(entry.detail || 'No detail') + '</span><span class="ca-status-pill" data-status="' +
+        esc(String(entry.status || '').toLowerCase().replace(/\s+/g, '-')) + '">' +
+        esc(entry.status) + '</span></li>';
+    }).join('');
+    return '<details class="ca-injury-report"><summary>Full Injury Report <span>' +
+      entries.length + ' Player' + (entries.length === 1 ? '' : 's') +
+      '</span></summary><ul class="ca-avail-list">' + rows + '</ul></details>';
+  }
+
+  function lineupBoard(sport, game, side) {
     var entries = game[side + '_availability_list'];
     var label = fullName(sport, game, side);
     var qb = namedQuarterback(game, side);
-    var head = '<section class="ca-avail-panel"><h3>' + esc(label) + '</h3>' +
-      '<p class="ca-lineup-context">' +
-      (qb ? 'Quarterback: ' + esc(qb) : 'Quarterback not published') + '</p>' +
-      playerRow(game[side + '_players'], entries);
-    if (!entries) {
-      return head + pending('Injury report not published for this club.') + '</section>';
-    }
-    if (!entries.length) {
-      return head + pending('No designations reported.') + '</section>';
-    }
-    var rows = entries.map(function (entry) {
-      return '<tr>' +
-        '<td class="ca-lineup-name">' + esc(entry.name) + '</td>' +
-        '<td>' + esc(entry.position || '\u2014') + '</td>' +
-        '<td><span class="ca-status-pill" data-status="' +
-        esc(String(entry.status || '').toLowerCase().replace(/\s+/g, '-')) + '">' +
-        esc(entry.status) + '</span></td>' +
-        '<td>' + esc(entry.detail || '\u2014') + '</td></tr>';
-    }).join('');
-    return head + '<div class="ca-lineup-scroll"><table class="ca-lineup-table">' +
-      '<thead><tr><th>Player</th><th>Pos</th><th>Designation</th><th>Detail</th></tr></thead>' +
-      '<tbody>' + rows + '</tbody></table></div></section>';
+    var key = side === 'away' ? 'away' : 'home';
+    var offenseTab = key + '-offense-tab';
+    var defenseTab = key + '-defense-tab';
+    var offensePanel = key + '-offense-panel';
+    var defensePanel = key + '-defense-panel';
+    return '<article class="ca-lineup-board"><header class="ca-lineup-board__head">' +
+      logo(sport, game, side, 44, 'ca-lineup-board__logo') + '<div><h3>' + esc(label) + '</h3>' +
+      '<p>' + (qb ? 'QB ' + esc(qb) + ' · ' : '') +
+      esc(value(game[side + '_availability'], 'Injury Report Pending')) + '</p></div></header>' +
+      '<div class="ca-lineup-tabs" role="tablist" aria-label="' + esc(label) + ' starting unit">' +
+      '<button type="button" role="tab" id="' + offenseTab + '" aria-controls="' + offensePanel +
+      '" aria-selected="true" tabindex="0" class="ca-lineup-tab is-on" data-lineup-unit="offense">Offense</button>' +
+      '<button type="button" role="tab" id="' + defenseTab + '" aria-controls="' + defensePanel +
+      '" aria-selected="false" tabindex="-1" class="ca-lineup-tab" data-lineup-unit="defense">Defense</button>' +
+      '</div>' + lineupUnit(game, side, 'offense', entries, offenseTab, offensePanel) +
+      lineupUnit(game, side, 'defense', entries, defenseTab, defensePanel) +
+      injuryReport(entries) + '</article>';
   }
 
   var NFL_FORM_ORDER = ['off_epa', 'off_first_down', 'off_explosive', 'off_sack',
@@ -2471,27 +2557,44 @@
       '</div>' + rows + '</div>';
   }
 
+  function nflQuickRail(sport, game) {
+    var seasons = schemeSeasons(game);
+    var current = currentSeason(game);
+    var evidence = (seasons.length ? seasons.join('–') + ' Scheme · ' : '') +
+      current + ' Form';
+    return '<nav class="ca-matchup-lens" aria-label="Matchup briefing">' +
+      '<a href="#availability"><span>Starting Units</span><strong>Offense + Defense</strong>' +
+      '<small>Every published starter by position</small></a>' +
+      '<a href="#availability"><span>Availability</span><strong>' +
+      esc(game.away) + ' · ' + esc(value(game.away_availability, 'report pending')) +
+      '</strong><small>' + esc(game.home) + ' · ' +
+      esc(value(game.home_availability, 'report pending')) + '</small></a>' +
+      '<a href="#scheme"><span>Evidence</span><strong>' + esc(evidence) +
+      '</strong><small>Source seasons stay visible</small></a>' +
+      '<a href="#team-context"><span>Travel</span><strong>' +
+      esc(value(game.away_travel)) + '</strong><small>' +
+      esc(fullName(sport, game, 'away')) + '</small></a></nav>';
+  }
+
   function nflSections(sport, game) {
     var source = game.scheme_source || {};
-    return [
-      section('availability', 'Quarterbacks And Availability',
-        'Official Designations For This Week',
-        '<div class="ca-detail-duo">' +
-        availabilityPanel(sport, game, 'away') +
-        availabilityPanel(sport, game, 'home') + '</div>' +
+    return nflQuickRail(sport, game) + [
+      section('availability', 'Starting Lineups And Availability',
+        'Offense, Defense And Official Designations',
+        '<div class="ca-detail-duo ca-lineup-duo">' +
+        lineupBoard(sport, game, 'away') +
+        lineupBoard(sport, game, 'home') + '</div>' +
         '<p class="ca-detail-source-note">Designations come from the official injury report. ' +
-        'Players listed active are not repeated here, because active is the default state. ' +
-        'The named offence is the club\u2019s current depth chart: identity, position and ' +
-        'depth order only. A designation shown beside a name is that player\u2019s own ' +
-        'entry on the injury report.</p>'),
+        'A player absent from a published report is marked No Designation; a missing report ' +
+        'is marked Report Pending. Starting units follow the published depth chart and carry ' +
+        'identity and position only—never a snap projection.</p>'),
 
       section('scheme', 'Scheme Confrontation',
         'Charted Tendencies, Each Offence Against The Other Defence',
-        seasonToggle(game) +
         '<div class="ca-detail-stack-inner">' +
         schemePanel(sport, game, 'away', 'home') +
         schemePanel(sport, game, 'home', 'away') + '</div>' +
-        '<p class="ca-detail-source-note">Every rate here describes snaps that have already ' +
+        '<p class="ca-detail-source-note" data-season-prior-only>Every rate here describes snaps that have already ' +
         'been charted, in the season named under each heading. At the start of a season that ' +
         'season is LAST season, and a prior-season rate is not a statement about this game — ' +
         'which is why the seasons are named on the control above rather than in a footnote. ' +
@@ -2533,7 +2636,7 @@
       ? [['overview', 'Overview'], ['starters', 'Starters'], ['arsenal', 'Pitch Mix'],
          ['lineups', 'Lineup Vs Starter'], ['club-splits', 'Club Splits'], ['recent', 'Last Ten'], ['form', 'Offensive Form'],
          ['radar', 'Radar'], ['bullpens', 'Bullpens']]
-      : [['overview', 'Overview'], ['availability', 'Availability'], ['scheme', 'Scheme'],
+      : [['overview', 'Overview'], ['availability', 'Lineups'], ['scheme', 'Scheme'],
          ['form', 'Team Form'], ['radar', 'Radar'], ['team-context', 'Rest And Travel']];
     var html = '<a class="ca-detail-back" href="/' + sport + '/">← Back To ' + sport.toUpperCase() + ' Matchups</a>' +
       '<article class="ca-detail-hero" id="overview"><header class="ca-detail-hero__meta">' +
@@ -2551,7 +2654,8 @@
         var glyph = item[0] === 'overview' ? ico('info', 'ca-detail-nav__ico', 14)
           : (SECTION_ICON[item[0]] ? ico(SECTION_ICON[item[0]], 'ca-detail-nav__ico', 14) : '');
         return '<a href="#' + item[0] + '">' + glyph + item[1] + '</a>';
-      }).join('') + '</nav><div class="ca-detail-stack">' +
+      }).join('') + '</nav>' + (sport === 'nfl' ? seasonToggle(game) : '') +
+      '<div class="ca-detail-stack">' +
       (sport === 'mlb' ? mlbSections(sport, game, extra) : nflSections(sport, game)) +
       '</div>';
     host.innerHTML = html;
@@ -2559,6 +2663,7 @@
     // Delegated once on the host, so a repainted section keeps working.
     if (!host.dataset.seasonWired) {
       wireSeasonToggle(host);
+      wireLineupTabs(host);
       host.dataset.seasonWired = '1';
     }
   }

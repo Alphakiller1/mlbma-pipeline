@@ -20,6 +20,7 @@ Two rules the board makes easy to break:
 from __future__ import annotations
 
 import json
+import re
 import urllib.request
 from pathlib import Path
 
@@ -243,14 +244,11 @@ def key_players(board: dict) -> dict[str, list[dict]]:
     return by_team
 
 
-ESPN_ROSTER = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/{team}/roster"
+ESPN_DEPTH_CHART = (
+    "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/{team}/depthcharts"
+)
 
-# ESPN serves the full-size headshot at a quarter of a megabyte. Its combiner
-# returns the same image at display size for a tenth of that.
-ESPN_HEADSHOT = ("https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/"
-                 "full/{pid}.png&w=160&h=160")
-
-ROSTER_TEAMS = (
+TEAM_SLUGS = (
     "ari", "atl", "bal", "buf", "car", "chi", "cin", "cle", "dal", "den",
     "det", "gb", "hou", "ind", "jax", "kc", "lac", "lar", "lv", "mia",
     "min", "ne", "no", "nyg", "nyj", "phi", "pit", "sea", "sf", "tb",
@@ -258,41 +256,161 @@ ROSTER_TEAMS = (
 )
 
 
-def fetch_quarterback_rooms() -> dict[str, list[dict]]:
-    """Every quarterback on every roster, with a headshot.
+def sized_espn_headshot(url: str | None) -> str | None:
+    """Request an ESPN-supplied portrait at card size without inventing one."""
+    if not url or "/i/headshots/nfl/players/full/" not in url:
+        return url
+    path = url.split("espncdn.com", 1)[-1]
+    return "https://a.espncdn.com/combiner/i?img=" + path + "&w=160&h=160"
 
-    The model board publishes one quarterback per club, which is fine until
-    that one is ruled out - then a card that promotes the next man up has
-    nowhere to look, and says "not published" about a position every team
-    fills. The roster is the whole room.
+
+DEFENSIVE_SLOTS = {
+    "LDE", "DE", "RDE", "DT", "NT",
+    "WLB", "OLB", "LILB", "ILB", "MLB", "RILB", "SLB", "LB",
+    "LCB", "CB", "RCB", "NB", "SS", "S", "FS",
+}
+
+
+def position_group(position: str, phase: str) -> str:
+    """A small, stable set of scan groups; the exact depth-chart slot remains."""
+    pos = str(position or "").upper()
+    if phase == "offense":
+        if pos in {"QB", "RB", "FB"}:
+            return "Backfield"
+        if pos in {"WR", "TE"}:
+            return "Receivers"
+        return "Offensive Line"
+    if pos in {"LDE", "DE", "RDE", "DT", "NT"}:
+        return "Front"
+    if pos in {"WLB", "OLB", "LILB", "ILB", "MLB", "RILB", "SLB", "LB"}:
+        return "Linebackers"
+    return "Secondary"
+
+
+def parse_depth_chart(payload: dict) -> dict:
+    """Project ESPN's ordered depth chart to identity-only starting units.
+
+    The first athlete in each published position is the depth-chart starter.
+    No player metric, role forecast, snap share or model output is carried.
+    ESPN also lists package alternatives beside the named eleven (fullback in
+    3WR/1TE and nickel back in a base defence). Those alternates are excluded
+    so the public surface does not mislabel twelve names as eleven starters.
     """
-    import urllib.request
+    out: dict = {
+        "source": "ESPN depth chart",
+        "observed_at_utc": payload.get("timestamp"),
+    }
+    for chart in payload.get("depthchart") or []:
+        positions = chart.get("positions") or {}
+        abbreviations = {
+            str((node.get("position") or {}).get("abbreviation") or key).upper()
+            for key, node in positions.items()
+        }
+        phase = "offense" if "QB" in abbreviations else (
+            "defense" if abbreviations & DEFENSIVE_SLOTS else ""
+        )
+        if not phase or phase in out:
+            continue
+        players = []
+        for key, node in positions.items():
+            athletes = node.get("athletes") or []
+            if not athletes:
+                continue
+            athlete = athletes[0]
+            name = athlete.get("displayName") or athlete.get("shortName")
+            position = str(
+                (node.get("position") or {}).get("abbreviation") or key
+            ).upper()
+            if not name:
+                continue
+            player = {
+                "name": name,
+                "position": position,
+                "group": position_group(position, phase),
+            }
+            headshot = sized_espn_headshot(
+                ((athlete.get("headshot") or {}).get("href")))
+            if headshot:
+                player["headshot_url"] = headshot
+            players.append(player)
+        package = chart.get("name") or (
+            "Offense" if phase == "offense" else "Base Defense"
+        )
+        package_key = str(package).lower().replace(" ", "")
+        if phase == "offense" and "3wr1te" in package_key:
+            players = [player for player in players if player["position"] != "FB"]
+        if phase == "defense" and package_key.startswith("base"):
+            players = [player for player in players if player["position"] != "NB"]
+        if players:
+            out[phase] = {
+                "package": package,
+                "players": players,
+            }
+    return out
 
+
+def _quarterbacks_from_depth(payload: dict) -> list[dict]:
+    for chart in payload.get("depthchart") or []:
+        for key, node in (chart.get("positions") or {}).items():
+            position = str(
+                (node.get("position") or {}).get("abbreviation") or key
+            ).upper()
+            if position != "QB":
+                continue
+            return [
+                {
+                    "name": athlete.get("displayName") or athlete.get("shortName") or "",
+                    "position": "QB",
+                    "headshot_url": sized_espn_headshot(
+                        ((athlete.get("headshot") or {}).get("href"))),
+                }
+                for athlete in (node.get("athletes") or [])
+                if athlete.get("displayName") or athlete.get("shortName")
+            ]
+    return []
+
+
+def fetch_depth_chart_context() -> tuple[dict[str, dict], dict[str, list[dict]]]:
+    """Fetch each club once and return its starting units plus quarterback room."""
+    lineups: dict[str, dict] = {}
     rooms: dict[str, list[dict]] = {}
-    for team in ROSTER_TEAMS:
+    for team in TEAM_SLUGS:
         try:
-            with urllib.request.urlopen(ESPN_ROSTER.format(team=team), timeout=25) as response:
+            with urllib.request.urlopen(
+                    ESPN_DEPTH_CHART.format(team=team), timeout=25) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except Exception:
             continue
         abbr = canon(((payload.get("team") or {}).get("abbreviation")) or team)
-        arms = []
-        for group in payload.get("athletes") or []:
-            for athlete in group.get("items") or []:
-                if ((athlete.get("position") or {}).get("abbreviation")) != "QB":
-                    continue
-                name = athlete.get("displayName") or athlete.get("fullName")
-                if not name:
-                    continue
-                arms.append({
-                    "name": name,
-                    "position": "QB",
-                    "headshot_url": (ESPN_HEADSHOT.format(pid=athlete["id"])
-                                     if athlete.get("id") else None),
-                })
+        projected = parse_depth_chart(payload)
+        if projected.get("offense") or projected.get("defense"):
+            lineups[abbr] = projected
+        arms = _quarterbacks_from_depth(payload)
         if arms:
             rooms[abbr] = arms
-    return rooms
+    return lineups, rooms
+
+
+def attach_known_headshots(lineups: dict[str, dict],
+                           players: dict[str, list[dict]]) -> dict[str, dict]:
+    """Reuse already-published portraits where names match; never invent URLs."""
+    def name_key(value: object) -> str:
+        return re.sub(r"[^a-z0-9]", "", str(value or "").lower())
+
+    for team, lineup in lineups.items():
+        known = {
+            name_key(player.get("name")): player.get("headshot_url")
+            for player in players.get(team, [])
+            if player.get("headshot_url")
+        }
+        for phase in ("offense", "defense"):
+            for player in (lineup.get(phase) or {}).get("players") or []:
+                headshot = known.get(name_key(player["name"]))
+                if headshot:
+                    player["headshot_url"] = headshot
+                else:
+                    player.pop("headshot_url", None)
+    return lineups
 
 
 def merge_quarterbacks(players: dict[str, list[dict]],
@@ -322,7 +440,8 @@ def merge_quarterbacks(players: dict[str, list[dict]],
     return players
 
 
-def build(board: dict | None = None, rooms: dict | None = None) -> dict:
+def build(board: dict | None = None, rooms: dict | None = None,
+          lineups: dict | None = None) -> dict:
     """Public NFL context, or empty dicts when the board is unreachable.
 
     Failing soft is deliberate: a missing board must leave the affected
@@ -331,13 +450,19 @@ def build(board: dict | None = None, rooms: dict | None = None) -> dict:
     """
     board = board if board is not None else load_board()
     if not board:
-        return {"form": {}, "scheme": {}, "players": {}, "source": None}
+        return {"form": {}, "scheme": {}, "players": {}, "lineups": {}, "source": None}
+    if rooms is None and lineups is None:
+        lineups, rooms = fetch_depth_chart_context()
+    elif lineups is None:
+        lineups, _ = fetch_depth_chart_context()
+    elif rooms is None:
+        rooms = {}
+    players = merge_quarterbacks(key_players(board), rooms)
     return {
         "form": team_form(board),
         "scheme": team_scheme(board),
-        "players": merge_quarterbacks(
-            key_players(board),
-            rooms if rooms is not None else fetch_quarterback_rooms()),
+        "players": players,
+        "lineups": attach_known_headshots(lineups, players),
         "source": {
             "season": board.get("season"),
             "week": board.get("week"),
