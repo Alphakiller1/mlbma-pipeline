@@ -156,10 +156,16 @@
     // run of pitching a club has already faced.
     xwoba: { label: 'xwOBA', digits: 3 },
     xfip: { label: 'xFIP', digits: 2 },
-    pals: { label: 'SOS', digits: 1 }
+    pals: { label: 'SOS', digits: 1 },
+    winPct: { label: 'Win%', digits: 1 },
+    f5WinPct: { label: 'F5 Win%', digits: 1 },
+    pitcherWinPct: { label: 'SP Win%', digits: 1 }
   };
+  // The head-to-head comparison stays the ten that describe how a club scores
+  // and what it has faced; the full board below carries the winning family too.
   var FORM_KEYS = ['osi', 'wrc', 'woba', 'xwoba', 'rcv', 'abq', 'obr',
     'pitchScore', 'xfip', 'pals'];
+  var BOARD_KEYS = FORM_KEYS.concat(['winPct', 'f5WinPct', 'pitcherWinPct']);
 
   function fetchJson(url) {
     return fetch(url, { cache: 'no-store' }).then(function (r) {
@@ -949,6 +955,20 @@
       '</span></div>';
   }
 
+  function parkFact(game) {
+    var parks = (window.__caLeagueBoard || {}).parks || {};
+    var canon = (global.ChaseMatchupCard && ChaseMatchupCard.canonTeam) ||
+      function (c) { return String(c || '').toUpperCase(); };
+    var park = parks[canon(game.home)];
+    if (!park) return fact('Park Factor', 'Not Published');
+    return '<div class="ca-detail-fact"><span>Park Factor</span><strong>' +
+      '<span class="' + rankTone(park.rank, park.of) + '">' + park.factor + '</span>' +
+      '<i class="ca-fact-note">' + park.rank + ordinal(park.rank) + ' of ' + park.of +
+      ' \u00b7 ' + park.runs_per_game_home.toFixed(1) + ' R/G here vs ' +
+      park.runs_per_game_road.toFixed(1) + ' away \u00b7 ' + park.home_games +
+      ' games</i></strong></div>';
+  }
+
   function ballparkBody(game, venueRecord) {
     var info = (venueRecord && venueRecord.fieldInfo) || {};
     var loc = (venueRecord && venueRecord.location) || {};
@@ -965,10 +985,13 @@
       fact('Capacity', info.capacity != null ? Number(info.capacity).toLocaleString('en-US') : 'Not Published') +
       fact('Elevation', loc.elevation != null ? loc.elevation + ' ft' : 'Not Published') +
       fact('Outfield', dims.length === 5 ? dims.join(' \u00b7 ') + ' ft' : 'Not Published') +
+      parkFact(game) +
       fact('Start', clock(game.kickoff_utc)) + '</div>' +
-      '<p class="ca-detail-source-note">Dimensions run left line, left-centre, centre, right-centre, ' +
-      'right line. Ballpark facts come from the official venue record; no park factor is published ' +
-      'here because none is measured.</p>';
+      '<p class="ca-detail-source-note">Dimensions run left line, left-centre, centre, ' +
+      'right-centre, right line, from the official venue record. Park factor is total runs ' +
+      'per game here, both clubs counted, against the same club\u2019s runs per game on the ' +
+      'road \u2014 100 is neutral. It describes how this park has played this season, with ' +
+      'its sample beside it, and is not a coefficient from a model.</p>';
   }
 
   function bullpenPanel(sport, game, side, report, quality) {
@@ -1072,7 +1095,7 @@
     here[canon(game.away)] = 'away';
     here[canon(game.home)] = 'home';
 
-    var keys = FORM_KEYS.filter(function (key) {
+    var keys = BOARD_KEYS.filter(function (key) {
       return codes.some(function (code) { return teams[code][key]; });
     });
     if (!keys.length) return '';
@@ -1107,10 +1130,11 @@
         '</td>' + cells + '</tr>';
     }).join('');
 
-    return '<details class="ca-disclosure"><summary>Compare With The League</summary>' +
+    return '<details class="ca-disclosure" open><summary>The Full Board · All ' +
+      codes.length + ' Clubs</summary>' +
       '<div class="ca-disclosure__body">' +
-      '<p class="ca-lineup-context">All ' + codes.length + ' Clubs \u00b7 Sorted By ' +
-      esc(STAT_SPECS[sortKey].label) + '</p>' +
+      '<p class="ca-lineup-context">Sorted By ' + esc(STAT_SPECS[sortKey].label) +
+      ' \u00b7 The Two Clubs In This Game Are Marked</p>' +
       '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-league-table">' +
       '<thead>' + head + '</thead><tbody>' + rows + '</tbody></table></div>' +
       '<p class="ca-detail-source-note">The small figure beside each value is that ' +
@@ -1122,6 +1146,60 @@
   /* Ten squares, oldest to newest, each one a game. Won or lost is carried by
      the letter as well as the colour, and every square states its own score,
      opponent and date to a screen reader and on hover. */
+  var WINDOW_ORDER = ['ytd', 'l30', 'l14', 'l7'];
+  var WINDOW_LABEL = { ytd: 'YTD', l30: 'L30', l14: 'L14', l7: 'L7' };
+
+  /* The trend line the earlier card carried, rebuilt on what the data actually
+     holds. The legacy sparkline plotted OSI across these four windows; OSI is a
+     plate-appearance quality index and the game record does not carry its
+     inputs, so this is not that line relabelled - it plots runs per game, which
+     is what the completed-game record measures, and it says so.
+
+     Drawn as an inline SVG polyline over a shared scale, with each window's
+     value and its league rank printed underneath. A chart nobody can read the
+     numbers off is decoration. */
+  function sparkline(rolling, colour) {
+    if (!rolling || !rolling.windows) return '';
+    var points = WINDOW_ORDER
+      .filter(function (key) { return rolling.windows[key]; })
+      .map(function (key) {
+        var w = rolling.windows[key];
+        return { key: key, value: Number(w.runs_per_game), rank: w.rank, of: w.of, games: w.games };
+      });
+    if (points.length < 2) return '';
+
+    var values = points.map(function (p) { return p.value; });
+    var lo = Math.min.apply(null, values), hi = Math.max.apply(null, values);
+    var pad = (hi - lo) < 0.4 ? 0.4 : (hi - lo) * 0.18;
+    lo -= pad; hi += pad;
+    var W = 168, H = 44;
+    var step = points.length > 1 ? W / (points.length - 1) : W;
+    var coords = points.map(function (p, i) {
+      var y = H - ((p.value - lo) / (hi - lo)) * H;
+      return [i * step, Math.max(3, Math.min(H - 3, y))];
+    });
+    var line = coords.map(function (c) { return c[0].toFixed(1) + ',' + c[1].toFixed(1); }).join(' ');
+    var dots = coords.map(function (c, i) {
+      var last = i === coords.length - 1;
+      return '<circle cx="' + c[0].toFixed(1) + '" cy="' + c[1].toFixed(1) + '" r="' +
+        (last ? 3.6 : 2.4) + '"' + (last ? ' class="is-now"' : '') + '/>';
+    }).join('');
+
+    var readout = points.map(function (p) {
+      return '<span class="ca-spark__step">' +
+        '<i>' + WINDOW_LABEL[p.key] + '</i>' +
+        '<b>' + p.value.toFixed(2) + '</b>' +
+        '<span class="ca-rank ' + rankTone(p.rank, p.of) + '">' + p.rank + ordinal(p.rank) + '</span>' +
+        '</span>';
+    }).join('');
+
+    return '<div class="ca-spark"' + (colour ? ' style="--club:' + esc(colour) + '"' : '') + '>' +
+      '<svg class="ca-spark__chart" viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H +
+      '" role="img" aria-label="Runs per game across the season, last 30, last 14 and last 7 games" ' +
+      'preserveAspectRatio="none"><polyline points="' + line + '"/>' + dots + '</svg>' +
+      '<span class="ca-spark__read">' + readout + '</span></div>';
+  }
+
   function recentStrip(sport, game, side, results) {
     var label = fullName(sport, game, side);
     if (!results) {
@@ -1141,11 +1219,15 @@
         (r.won ? 'W' : 'L') + '</abbr>' +
         '<i>' + esc(r.scored) + '\u2013' + esc(r.allowed) + '</i></span>';
     }).join('');
+    var rolling = ((window.__caLeagueBoard || {}).rolling || {})[
+      ((global.ChaseMatchupCard && ChaseMatchupCard.canonTeam) ||
+        function (c) { return String(c || '').toUpperCase(); })(game[side])];
     return '<div class="ca-recent">' +
       '<span class="ca-recent__team">' + logo(sport, game, side, 24, 'ca-recent__crest') +
       esc(label) + '</span>' +
       '<span class="ca-recent__record">' + wins + '\u2013' + (results.length - wins) +
       '<i>Last ' + results.length + '</i></span>' +
+      sparkline(rolling, clubColour(sport, game, side)) +
       '<span class="ca-recent__games">' + squares + '</span></div>';
   }
 
@@ -1153,7 +1235,10 @@
     return '<div class="ca-recent-stack">' +
       recentStrip(sport, game, 'away', extra.awayRecent) +
       recentStrip(sport, game, 'home', extra.homeRecent) + '</div>' +
-      '<p class="ca-detail-source-note">Oldest on the left. Each square is one ' +
+      '<p class="ca-detail-source-note">The line is runs scored per game across ' +
+      'the season, the last thirty, the last fourteen and the last seven \u2014 the ' +
+      'trend the completed-game record actually measures, with each window\u2019s ' +
+      'league rank beneath it. Oldest on the left. Each square is one ' +
       'completed game with its final score; hover or focus for the opponent and ' +
       'date. Won and lost are carried by the letter as well as the colour.</p>';
   }
@@ -1698,6 +1783,8 @@
           if (!board) return;
           window.__caLeagueBoard = board;
           paintSection(host, 'form', formBody(sport, game));
+          paintSection(host, 'recent', recentBody(sport, game, extra));
+          paintSection(host, 'conditions', ballparkBody(game, extra.venue));
         });
 
         // Stage 2 - pitch mix and the ballpark record.

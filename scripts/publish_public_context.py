@@ -37,7 +37,7 @@ PUBLIC = ROOT / "data" / "public"
 # the classification and should never have been swept out with them; xFIP is
 # the same class of number, and PALS describes the schedule a club has already
 # faced. The two forecasts are excluded by name, not the family by accident.
-PUBLIC_FAMILIES = ("scoring", "difficulty", "status")
+PUBLIC_FAMILIES = ("scoring", "difficulty", "status", "surface")
 FORECAST_KEYS = ("projOSI", "ppGap")
 
 # Which metric each family contributes, how many digits it is meaningful to,
@@ -52,12 +52,17 @@ PUBLIC_METRICS = {
     "xwoba": (3, "high"),
     # xFIP is an ERA-scale rate, so low is good.
     "xfip": (2, "low"),
+    # The winning family. All three are records of games already played.
+    "winPct": (1, "high"),
+    "f5WinPct": (1, "high"),
+    "pitcherWinPct": (1, "high"),
 }
 
 METRIC_LABELS = {
     "osi": "OSI", "wrc": "wRC+", "woba": "wOBA", "rcv": "RCV", "abq": "ABQ",
     "obr": "OBR", "pitchScore": "Pitch Score", "pals": "SOS",
     "xwoba": "xwOBA", "xfip": "xFIP",
+    "winPct": "Win%", "f5WinPct": "F5 Win%", "pitcherWinPct": "SP Win%",
 }
 
 # Baseline keys a public page may know. Anything modelled or expected is out.
@@ -176,6 +181,133 @@ def pitch_type_board(data_dir: Path) -> dict:
     return board
 
 
+# Rolling form from the per-game record.
+#
+# The legacy card carried a sparkline of OSI across YTD / L30 / L14 / L7 and it
+# is the one graphic still missing. OSI cannot be rebuilt here - it is a
+# plate-appearance quality index and game results do not carry the inputs - so
+# this is not that line relabelled. It is the trend that IS in the data: runs
+# scored per game and win rate over the same four windows, off the completed
+# game record. It is named for what it measures.
+FORM_WINDOWS = (("l7", 7), ("l14", 14), ("l30", 30))
+
+
+def rolling_form(data_dir: Path) -> dict:
+    import csv
+
+    path = Path(data_dir) / "game_results.csv"
+    if not path.is_file():
+        return {}
+    by_team: dict[str, list[dict]] = {}
+    with path.open(encoding="utf-8-sig", newline="") as handle:
+        for row in csv.DictReader(handle):
+            team = canon(row.get("team"))
+            if not team or not row.get("date"):
+                continue
+            try:
+                runs = int(float(row.get("team_runs") or 0))
+                allowed = int(float(row.get("opp_runs") or 0))
+            except ValueError:
+                continue
+            by_team.setdefault(team, []).append({
+                "date": row["date"], "runs": runs, "allowed": allowed,
+                "won": str(row.get("result") or "").upper().startswith("W"),
+            })
+
+    out: dict[str, dict] = {}
+    for team, games in by_team.items():
+        games.sort(key=lambda g: g["date"])
+        windows = {}
+        for name, size in FORM_WINDOWS:
+            span = games[-size:]
+            if not span:
+                continue
+            windows[name] = {
+                "games": len(span),
+                "runs_per_game": round(sum(g["runs"] for g in span) / len(span), 2),
+                "allowed_per_game": round(sum(g["allowed"] for g in span) / len(span), 2),
+                "wins": sum(1 for g in span if g["won"]),
+            }
+        if games:
+            windows["ytd"] = {
+                "games": len(games),
+                "runs_per_game": round(sum(g["runs"] for g in games) / len(games), 2),
+                "allowed_per_game": round(sum(g["allowed"] for g in games) / len(games), 2),
+                "wins": sum(1 for g in games if g["won"]),
+            }
+        out[team] = {"windows": windows,
+                     "through": games[-1]["date"] if games else None}
+
+    # Rank each window's scoring against the league, so a trend line can say
+    # where the club sits as well as which way it is moving.
+    for name, _ in list(FORM_WINDOWS) + [("ytd", 0)]:
+        pool = [(t, v["windows"][name]["runs_per_game"])
+                for t, v in out.items() if name in v["windows"]]
+        ordered = sorted(pool, key=lambda pair: pair[1], reverse=True)
+        for index, (team, _) in enumerate(ordered):
+            out[team]["windows"][name]["rank"] = index + 1
+            out[team]["windows"][name]["of"] = len(ordered)
+    return out
+
+
+def park_factors(data_dir: Path) -> dict:
+    """How a park has actually played, from the completed-game record.
+
+    The basic form: total runs per game at the park, both clubs counted,
+    against that club's total runs per game on the road. 100 is neutral, 115
+    means fifteen per cent more scoring than the same clubs produced away.
+
+    It is a description of this season at this park - the sample is stated so
+    the reader can weigh it - and not a coefficient lifted from a model. A park
+    with fewer than twenty games either side is left out rather than estimated.
+    """
+    import csv
+
+    path = Path(data_dir) / "game_results.csv"
+    if not path.is_file():
+        return {}
+    home: dict[str, list[int]] = {}
+    away: dict[str, list[int]] = {}
+    for source in (home, away):
+        source.clear()
+    with path.open(encoding="utf-8-sig", newline="") as handle:
+        for row in csv.DictReader(handle):
+            team = canon(row.get("team"))
+            if not team:
+                continue
+            try:
+                total = int(float(row.get("team_runs") or 0)) + int(float(row.get("opp_runs") or 0))
+            except ValueError:
+                continue
+            bucket = home if str(row.get("home_away")) == "home" else away
+            slot = bucket.setdefault(team, [0, 0])
+            slot[0] += total
+            slot[1] += 1
+
+    out: dict[str, dict] = {}
+    for team, (runs, games) in home.items():
+        road = away.get(team)
+        if not road or games < 20 or road[1] < 20:
+            continue
+        at_home = runs / games
+        on_road = road[0] / road[1]
+        if on_road <= 0:
+            continue
+        out[team] = {
+            "factor": round(100 * at_home / on_road),
+            "runs_per_game_home": round(at_home, 2),
+            "runs_per_game_road": round(on_road, 2),
+            "home_games": games,
+            "road_games": road[1],
+        }
+
+    pool = sorted(out.items(), key=lambda pair: pair[1]["factor"], reverse=True)
+    for index, (team, value) in enumerate(pool):
+        value["rank"] = index + 1
+        value["of"] = len(pool)
+    return out
+
+
 def main(argv: list[str]) -> int:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     written = 0
@@ -202,6 +334,19 @@ def main(argv: list[str]) -> int:
                 },
                 "teams": teams,
             }
+            source_dir = Path(argv[1]) if len(argv) > 1 else ROOT / "data"
+            parks = park_factors(source_dir)
+            if parks:
+                out["parks"] = parks
+                out["formulas"]["park_factor"] = (
+                    "Total runs per game at the park, both clubs counted, against "
+                    "the same club's total runs per game on the road. 100 is neutral")
+            form = rolling_form(Path(argv[1]) if len(argv) > 1 else ROOT / "data")
+            if form:
+                out["rolling"] = form
+                out["formulas"]["rolling"] = (
+                    "Runs scored and allowed per game over the last 7, 14 and 30 "
+                    "completed games, and season to date")
             dest = PUBLIC / "team_context.json"
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
