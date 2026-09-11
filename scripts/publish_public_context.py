@@ -125,7 +125,12 @@ def team_context(snapshot: dict) -> dict:
 PITCH_METRICS = {
     # key: (digits, better-for-the-hitting-team)
     "xwoba": (3, "high"),
-    "whiff_rate": (1, "low"),
+    # Contact rate, not whiff rate. They are the same measurement read from
+    # opposite ends - contact is 100 minus whiff - but a column of contact
+    # rates reads the same direction as every other hitting number beside it,
+    # where whiff rate alone was the one figure on the row a reader had to
+    # invert in their head.
+    "contact_rate": (1, "high"),
     "batting_avg": (3, "high"),
 }
 
@@ -159,6 +164,14 @@ def pitch_type_board(data_dir: Path) -> dict:
                     entry[key] = float(row[key])
                 except (TypeError, ValueError, KeyError):
                     entry[key] = None
+            # Derived from the whiff rate the source does carry, once, here -
+            # rather than in each consumer, where two of them would eventually
+            # disagree about whether it was a share or a percentage.
+            if entry.get("contact_rate") is None:
+                try:
+                    entry["contact_rate"] = round(100.0 - float(row["whiff_rate"]), 1)
+                except (TypeError, ValueError, KeyError):
+                    entry["contact_rate"] = None
             rows.append(entry)
 
     board: dict = {}

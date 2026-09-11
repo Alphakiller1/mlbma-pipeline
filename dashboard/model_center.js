@@ -94,20 +94,55 @@
      mlbma_assets.js measures each crest against the dark ground and serves the
      full-colour asset or ESPN's dark variant accordingly, so a club that would
      otherwise vanish on this background still reads. */
+  /* A solid club-colour tile with the abbreviation on it.
+     The board is read by scanning down a column of twelve cards for one club,
+     and a crest on a dark tile is a small detailed picture that has to be
+     decoded; a block of Dodger blue with LAD on it is found at a glance. The
+     colour is the identity, the letters are the fact, and neither depends on
+     the other. */
   function chip(sport, abbr, fullName) {
     var code = String(abbr || '').toUpperCase();
-    var crest = '';
-    if (code && global.MLBMAAssets && MLBMAAssets.teamLogoImg) {
-      crest = MLBMAAssets.teamLogoImg(code, 28, 'mc-chip__crest', sport);
+    var tint = '';
+    if (code && global.MLBMAAssets && MLBMAAssets.teamBarColor) {
+      var hex = MLBMAAssets.teamBarColor(code, sport);
+      if (hex) tint = ' style="--club:' + esc(hex) + '"';
     }
-    return '<span class="mc-chip"' + (fullName ? ' title="' + esc(fullName) + '"' : '') + '>' +
-      crest + '<span class="mc-chip__code">' + esc(code || '--') + '</span></span>';
+    return '<span class="mc-chip"' + tint +
+      (fullName ? ' title="' + esc(fullName) + '"' : '') + '>' +
+      '<span class="mc-chip__code">' + esc(code || '--') + '</span></span>';
   }
 
   /* One axis places both marks and both tick labels, and the domain is fixed
      per sport so every card on the board shares a scale and can be compared.
      MLB is run margin, NFL is point margin. */
   function domainFor(sport) { return String(sport).toLowerCase() === 'nfl' ? 10 : 3; }
+
+  /* The scale under the track, drawn as a scale.
+     Three numbers at the ends and the middle tell a reader the domain but not
+     where a mark sits inside it - a pin two thirds along is read as "somewhere
+     past zero". Ticks at quarter intervals turn the track into something a
+     value can be read off, which is the entire point of plotting it rather
+     than printing it. */
+  function axis(half) {
+    // Ticks on round numbers of the unit being measured - runs for MLB, points
+    // for NFL - rather than on fractions of the track. A baseball axis reading
+    // "-0.8" describes nothing anybody scores; one reading "-1" does.
+    // Five or seven labels, not thirteen. A crowded axis stops being a scale
+    // and becomes a grey band of digits under the track - the reader counts
+    // ticks instead of reading the mark that sits on them.
+    var step = half >= 10 ? 5 : (half >= 5 ? 2 : 1);
+    var steps = [];
+    for (var v = -half; v <= half + 0.001; v += step) steps.push(Math.round(v * 100) / 100);
+    var marks = steps.map(function (value) {
+      var left = ((value / half + 1) / 2) * 100;
+      var zero = Math.abs(value) < 0.001;
+      var text = zero ? '0' : (value > 0 ? '+' : '') +
+        (Math.abs(value % 1) > 0.001 ? value.toFixed(1) : String(value));
+      return '<span class="mc-gauge__tick' + (zero ? ' is-zero' : '') +
+        '" style="left:' + left.toFixed(2) + '%"><i></i><b>' + esc(text) + '</b></span>';
+    }).join('');
+    return '<div class="mc-gauge__axis">' + marks + '</div>';
+  }
 
   function gauge(sport, modelVal, marketVal) {
     var m = num(modelVal), k = num(marketVal);
@@ -122,7 +157,11 @@
     // wide, so when the two marks are closer than that the labels would print
     // over each other ("MODMARKET"); below the threshold they fall back to
     // opposite ends of the track, which still reads correctly.
-    var LABEL_CLEARANCE = 30;
+    // A legend is about 52px wide against a ~300px track, so two of them need
+    // roughly 18% of the track between their centres to clear each other. The
+    // threshold was 30, which on a three-run axis sent almost every card's
+    // labels to opposite ends - furthest from the marks they name.
+    var LABEL_CLEARANCE = 12;
     var apart = (m != null && k != null) ? Math.abs(pct(m) - pct(k)) : 100;
     var label = function (cls, name, v, side) {
       var align;
@@ -152,7 +191,7 @@
     if (k != null) parts += '<div class="mc-gauge__pin mc-gauge__pin--market" style="left:' + pct(k).toFixed(2) + '%"></div>';
     if (m != null) parts += '<div class="mc-gauge__pin" style="left:' + pct(m).toFixed(2) + '%"></div>';
     parts += '</div>';
-    parts += '<div class="mc-gauge__axis"><span>' + (-half) + '</span><span>0</span><span>+' + half + '</span></div>';
+    parts += axis(half);
     return parts + '</div>';
   }
 
@@ -243,6 +282,65 @@
     return html + trustPanel(rawBoard);
   }
 
+  /* An NFL week is not a flat list. It is Thursday, then four or five Sunday
+     windows, then Sunday night and Monday night - and a reader looks for a
+     window before they look for a game. A single grid of sixteen cards throws
+     that structure away and makes them read every kickoff time to rebuild it.
+
+     The slot label comes from the kickoff itself, so a flexed game moves
+     between windows on its own and nothing here has to be told. */
+  function slotOf(g) {
+    var raw = g.kickoff_utc || g.kickoff || g.start_time;
+    var d = raw ? new Date(raw) : null;
+    if (!d || isNaN(d.getTime())) return g.kickoff_display || 'Kickoff not published';
+    var opts = { timeZone: 'America/New_York' };
+    var day = d.toLocaleDateString('en-US', Object.assign({ weekday: 'long' }, opts));
+    var hour = Number(d.toLocaleString('en-US', Object.assign({ hour: 'numeric', hour12: false }, opts)));
+    if (day === 'Sunday' && hour >= 19) return 'Sunday Night';
+    if (day === 'Monday' && hour >= 17) return 'Monday Night';
+    if (day === 'Thursday') return 'Thursday Night';
+    if (day !== 'Sunday') return day;
+    var time = d.toLocaleTimeString('en-US',
+      Object.assign({ hour: 'numeric', minute: '2-digit' }, opts));
+    return 'Sunday ' + time;
+  }
+
+  function kickoffMs(g) {
+    var raw = g.kickoff_utc || g.kickoff || g.start_time;
+    var t = raw ? Date.parse(raw) : NaN;
+    return isNaN(t) ? Infinity : t;
+  }
+
+  function groupedGrid(sport, games) {
+    var order = [];
+    var bySlot = {};
+    var earliest = {};
+    games.forEach(function (g) {
+      var slot = slotOf(g);
+      if (!bySlot[slot]) { bySlot[slot] = []; order.push(slot); }
+      bySlot[slot].push(g);
+      var t = kickoffMs(g);
+      if (!(slot in earliest) || t < earliest[slot]) earliest[slot] = t;
+    });
+    // Windows read in the order they are played. Grouping alone left a 4:25
+    // window above a 4:05 one whenever the board happened to list them that
+    // way, which is exactly the structure the grouping exists to show.
+    order.sort(function (a, b) { return earliest[a] - earliest[b]; });
+    if (order.length < 2) {
+      return '<div class="mc-grid">' +
+        games.map(function (g) { return gameCard(sport, g); }).join('') + '</div>';
+    }
+    return order.map(function (slot) {
+      var rows = bySlot[slot];
+      // A standalone window holds one game, so its card takes the full width
+      // rather than sitting in a third of a row with two empty thirds beside it.
+      var cls = rows.length === 1 ? 'mc-grid mc-grid--single' : 'mc-grid';
+      return '<section class="mc-slot"><h3 class="mc-slot__title">' + esc(slot) + '</h3>' +
+        '<div class="' + cls + '">' +
+        rows.map(function (g) { return gameCard(sport, g); }).join('') + '</div></section>';
+    }).join('');
+  }
+
   function renderBoard(sport, payload) {
     var host = $('mcBoard');
     if (!host) return;
@@ -275,14 +373,23 @@
       paintGate('No priced games', 'Entitlement is verified. This sport has no published Model Center rows yet.');
       return;
     }
-    var title = sport === 'nfl' ? 'The week' : "Today's slate";
-    var html = '<div class="mc-board"><header class="mc-board__head">' +
+    var title = sport === 'nfl' ? 'The Week' : "Today's Slate";
+    var body = sport === 'nfl' ? groupedGrid(sport, games)
+      : '<div class="mc-grid">' + games.map(function (g) {
+          return gameCard(sport, g);
+        }).join('') + '</div>';
+    // Both boards are published; both are reachable.
+    var sports = '<nav class="mc-sports" aria-label="Model Center sports">' +
+      [['mlb', 'MLB'], ['nfl', 'NFL']].map(function (pair) {
+        return '<a href="?sport=' + pair[0] + '"' +
+          (pair[0] === sport ? ' aria-current="page"' : '') + '>' + pair[1] + '</a>';
+      }).join('') + '</nav>';
+
+    var html = sports + '<div class="mc-board"><header class="mc-board__head">' +
       '<h2 class="mc-board__title">' + esc(title) + '</h2>' +
       '<span class="mc-board__meta">' + games.length +
       (games.length === 1 ? ' game' : ' games') + ' · ' + esc(sport.toUpperCase()) + '</span></header>' +
-      '<div class="mc-grid">' +
-      games.map(function (g) { return gameCard(sport, g); }).join('') +
-      '</div>' + trustPanel(board) + '</div>';
+      body + trustPanel(board) + '</div>';
     host.innerHTML = html;
   }
 

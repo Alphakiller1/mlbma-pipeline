@@ -5,17 +5,20 @@
 (function (global) {
   'use strict';
 
+  /* The header used to carry a freshness pill here. On every route that had no
+     public slate URL to check - Model Center among them - it rendered
+     "Published: unknown - no public slate url", which is an error state dressed
+     as a badge: it told a reader nothing except that something was wrong, in
+     the most prominent chrome on the page.
+     
+     The header already shows freshness in `.chase-timestamp`, and every page
+     that depends on a published artifact states its own cutoff beside the
+     numbers it came from. An existing slot is still returned so anything that
+     paints one keeps working; nothing is created. */
   function slotInHeader() {
     var header = document.getElementById('chaseHeader');
     if (!header) return null;
-    var slot = header.querySelector('#caDataStatusSlot');
-    if (slot) return slot;
-    slot = document.createElement('div');
-    slot.id = 'caDataStatusSlot';
-    var status = header.querySelector('.chase-status');
-    if (status) status.insertBefore(slot, status.firstChild);
-    else header.appendChild(slot);
-    return slot;
+    return header.querySelector('#caDataStatusSlot');
   }
 
   function bindSearch(host) {

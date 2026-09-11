@@ -3630,7 +3630,17 @@ body[data-ca-product="research"] {
 .ca-radar__ring { fill: none; stroke: var(--border-subtle); stroke-width: 1; }
 .ca-radar__spoke { stroke: var(--border-subtle); stroke-width: 1; }
 
-.ca-radar__area { stroke-width: 2; fill-opacity: 0.18; vector-effect: non-scaling-stroke; }
+/* Both shapes stay readable where they cross. A flat 18% fill let the larger
+   club's polygon bury the smaller one, so the pair read as a single lumpy
+   outline; a lighter fill plus `screen` makes the overlap BRIGHTER than either
+   shape alone, which is exactly the region a reader is looking for. The stroke
+   carries each club's outline at full strength either way. */
+.ca-radar__area {
+  stroke-width: 2.25;
+  fill-opacity: 0.13;
+  mix-blend-mode: screen;
+  vector-effect: non-scaling-stroke;
+}
 .ca-radar__area.is-away { stroke: var(--series-1); fill: var(--series-1); }
 .ca-radar__area.is-home { stroke: var(--series-4); fill: var(--series-4); }
 
@@ -3667,15 +3677,18 @@ body[data-ca-product="research"] {
 .ca-pc-table td.num, .ca-pc-table th.num { min-width: 44px; text-align: center; }
 .ca-pc { font-family: var(--font-display); font-weight: 800;
          font-variant-numeric: tabular-nums; color: var(--text-muted); }
-/* A workload ramp, dim to hot - deliberately NOT the green-to-red grade scale
-   the stat columns use. Fifteen pitches is a light day, not a good one, and
-   painting it the green that means "elite" elsewhere on the page would assert
-   something nobody measured. Only the top two steps take a hue, because only
-   the top two steps are what a reader is scanning the grid for. */
+/* A usage heat scale, cool to hot across its whole range.
+ *
+ * Read this one as availability, not as quality: green is an arm that is fresh
+ * enough to go tonight, red is one that has been leaned on. That is the same
+ * direction as every other green and red on the desk - green is the good
+ * outcome for the reader's question - even though the question here is "can he
+ * pitch" rather than "is he good". The count is printed in every cell, so the
+ * shade is always a second reading of a number that is already there. */
 .ca-pc, .ca-pc-total { transition: none; }
 .ca-pc.p-zero  { color: var(--text-disabled); font-weight: 600; }
-.ca-pc.p-touch { background: var(--surface-raised); color: var(--text-secondary); }
-.ca-pc.p-light { background: var(--surface-elevated); color: var(--text-primary); }
+.ca-pc.p-touch { background: var(--tint-positive); color: var(--metric-elite); }
+.ca-pc.p-light { background: var(--tint-positive); color: var(--metric-good); }
 .ca-pc.p-full  { background: var(--tint-caution); color: var(--metric-watch); }
 .ca-pc.p-heavy { background: var(--tint-negative); color: var(--metric-poor); }
 
@@ -3783,3 +3796,359 @@ body[data-ca-product="research"] {
    ever lands here the table scrolls rather than growing three rows tall. */
 .ca-split-table tbody td:first-child,
 .ca-split-table thead th:first-child { white-space: nowrap; width: 5rem; }
+
+/* ===========================================================================
+ * THE DESK SYMBOL SET
+ * ---------------------------------------------------------------------------
+ * Glyphs from Lucide (ISC), vendored in dashboard/chase_icons.js. One weight,
+ * one size relationship to the type beside them, on currentColor - so a symbol
+ * inherits the colour of its row and a grade class tints the glyph with its
+ * number rather than leaving a grey mark next to a green figure.
+ *
+ * They sit beside a label, never instead of one, so nothing here needs to
+ * carry a tooltip or an aria-label; each is aria-hidden and the word next to
+ * it is what a screen reader announces.
+ * ======================================================================== */
+.ca-ico {
+  flex: 0 0 auto;
+  vertical-align: -0.15em;
+  /* Slightly lighter than the type it sits next to: at 16px a 2px stroke reads
+     heavier than 600-weight text and the symbol starts shouting over the word. */
+  stroke-width: 1.75;
+}
+
+/* Weather is the one symbol on the card that carries information the text also
+   carries, so it takes the accent and becomes the thing the eye lands on. */
+.ca-ico--wx { color: var(--text-accent); stroke-width: 2; }
+
+.ca-matchup-card__ico {
+  margin-right: 5px;
+  color: var(--text-muted);
+}
+
+/* The venue glyph leads the card's top edge, so it takes the venue's own
+   weight rather than the muted caption grey. */
+.ca-matchup-card__ico--venue { color: var(--text-accent); margin-right: 6px; }
+
+.ca-matchup-card__fact span { display: inline-flex; align-items: center; }
+.ca-matchup-card__kick { display: inline-flex; align-items: center; }
+.ca-matchup-card__venue { align-items: center; }
+
+/* Inside a chip the glyph is small and takes the chip's colour. */
+.ca-matchup-card__venue-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.ca-matchup-card__venue-tag .ca-ico { color: inherit; }
+
+/* ===========================================================================
+ * THE NAMED OFFENCE, AS A FORMATION
+ * ---------------------------------------------------------------------------
+ * Nine headshots in a row say who is on the chart. Standing them where they
+ * line up says the shape of the offence as well, for the same nine headshots
+ * and no extra data - position and depth order are already what the chart
+ * carries. Alignment comes from grid coordinates in the builder; nothing here
+ * places a player by hand.
+ * ======================================================================== */
+.ca-formation {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  grid-auto-rows: minmax(0, auto);
+  gap: var(--space-3) var(--space-1);
+  padding: var(--space-4) var(--space-3) var(--space-3);
+  margin-bottom: var(--space-3);
+  background:
+    /* Yard lines, as the faintest possible reading of a field: enough for the
+       eye to register depth behind the line of scrimmage, not enough to
+       compete with nine faces. */
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 43px,
+      var(--border-subtle) 43px,
+      var(--border-subtle) 44px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+/* The line of scrimmage: the one rule on the field that means something
+   specific, so it is the one that is not a hairline. */
+.ca-formation__los {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--space-4) + 86px);
+  height: 2px;
+  background: var(--border-strong);
+  opacity: 0.7;
+}
+
+.ca-formation__spot {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+  z-index: 1;
+}
+
+.ca-person.is-onfield {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  text-align: center;
+  min-width: 0;
+}
+
+.ca-person.is-onfield .ca-person__shot {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--surface-elevated);
+  border: 2px solid var(--border-default);
+}
+
+.ca-person.is-onfield .ca-person__slot {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 800;
+  letter-spacing: var(--tracking-caps);
+  color: var(--text-accent);
+}
+
+.ca-person.is-onfield .ca-person__name {
+  font-size: var(--type-12);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+  /* Two lines for a long surname, then ellipsis, so one name cannot push the
+     row it sits in taller than the others. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+/* Everyone else on the chart, under the field, at a size that says "behind
+   the starter" without hiding them - the second quarterback is the whole
+   reason this list exists. */
+.ca-person-row--depth {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.ca-person.is-depth {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--type-12);
+}
+
+.ca-person.is-depth .ca-person__shot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--surface-elevated);
+}
+
+.ca-person.is-depth .ca-person__slot {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.ca-person.is-depth .ca-person__name { color: var(--text-secondary); }
+
+@media (max-width: 720px) {
+  /* Nine columns of 52px faces do not fit a phone. The formation collapses to
+     its three depths - receivers, quarterback, back - which keeps the one
+     thing the diagram is for. */
+  .ca-formation { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ca-formation__spot { grid-column: auto !important; grid-row: auto !important; }
+  .ca-formation__los { display: none; }
+}
+
+/* --- Reliever roles ------------------------------------------------------
+ * Read off the season each arm has already had - saves, holds, games finished
+ * - so the tag is a record, not a depth chart somebody typed. An arm whose
+ * usage has no shape carries no tag at all: "Middle" on every row would be a
+ * column of noise.
+ *
+ * The closer takes the accent because he is the one name a reader is looking
+ * for; the rest are quiet labels. */
+.ca-role {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: var(--surface-elevated);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.ca-role[data-role="closer"] {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  border-color: var(--accent-strong);
+}
+
+.ca-role[data-role="set-up"] { color: var(--text-secondary); }
+
+/* --- An axis that answers for itself ------------------------------------ */
+.ca-radar__axis { cursor: help; }
+.ca-radar__hit { fill: transparent; }
+
+.ca-radar__axis:hover .ca-radar__label,
+.ca-radar__axis:focus-visible .ca-radar__label { fill: var(--text-primary); }
+
+.ca-radar__axis:focus { outline: none; }
+.ca-radar__axis:focus-visible .ca-radar__hit {
+  stroke: var(--accent);
+  stroke-width: 2;
+  fill: var(--accent-soft);
+}
+
+/* The card is inert until asked for, and paints above everything when it is. */
+.ca-radar__tip { opacity: 0; pointer-events: none; transition: opacity 90ms ease-out; }
+.ca-radar__axis:hover .ca-radar__tip,
+.ca-radar__axis:focus-visible .ca-radar__tip { opacity: 1; }
+
+/* Raising the hovered axis above its siblings is what keeps the card on top of
+   the next axis along; SVG has no z-index, so paint order is the only lever
+   and `isolation` gives the group its own stacking context. */
+.ca-radar svg { isolation: isolate; }
+.ca-radar__axis:hover, .ca-radar__axis:focus-visible { isolation: isolate; }
+
+.ca-radar__tip rect {
+  fill: var(--surface-overlay);
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+
+.ca-radar__tip-line {
+  font-size: var(--type-12);
+  fill: var(--text-secondary);
+  font-family: var(--font-ui);
+}
+
+.ca-radar__tip-line.is-head {
+  font-family: var(--font-display);
+  font-weight: 800;
+  fill: var(--text-primary);
+  letter-spacing: var(--tracking-caps);
+}
+
+.ca-radar__tip-line.is-value {
+  fill: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ca-radar__tip { transition: none; }
+}
+
+/* --- Symbols on the section stack ---------------------------------------- */
+.ca-detail-section__head h2 { display: flex; align-items: center; gap: 9px; }
+
+.ca-detail-section__ico {
+  flex: 0 0 auto;
+  color: var(--text-accent);
+  /* The heading is chrome-filled via background-clip, which would clip the
+     glyph to the gradient too; the icon opts out and keeps its own colour. */
+  -webkit-background-clip: initial;
+  background-clip: initial;
+}
+
+.ca-detail-nav a { display: inline-flex; align-items: center; gap: 6px; }
+.ca-detail-nav__ico { color: var(--text-muted); }
+.ca-detail-nav a:hover .ca-detail-nav__ico,
+.ca-detail-nav a:focus-visible .ca-detail-nav__ico { color: var(--text-accent); }
+
+/* --- Season scope control ------------------------------------------------ */
+.ca-season-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: var(--space-3);
+  padding: 4px;
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+}
+
+.ca-season-toggle__label {
+  padding-left: 8px;
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ca-season-toggle__btn {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.ca-season-toggle__btn:hover { color: var(--text-primary); }
+.ca-season-toggle__btn.is-on {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  box-shadow: inset 0 0 0 1px var(--accent-strong);
+}
+.ca-season-toggle__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.ca-season-toggle__note {
+  margin: 0 0 var(--space-3);
+  font-size: var(--type-12);
+  color: var(--metric-watch);
+}
+
+/* --- Situation by situation ---------------------------------------------
+ * Two columns of EPA on one scale, so the reader compares across a row rather
+ * than holding one number in their head while they find the other. */
+.ca-sit-block { margin-bottom: var(--space-4); }
+.ca-sit-block > h4 { margin: 0 0 var(--space-2); }
+
+.ca-sit {
+  display: block;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* What the row measures, under its name. A situation label like "Under
+   Pressure" is a phrase, not a definition, and the definition costs one line. */
+.ca-sit__means {
+  display: block;
+  font-size: var(--type-12);
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.ca-sit-table th.num, .ca-sit-table td.num { width: 8rem; }
+.ca-sit-table td:first-child { width: auto; }

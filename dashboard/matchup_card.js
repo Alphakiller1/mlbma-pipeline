@@ -193,45 +193,10 @@
    * one, and every icon carries its text in the label a screen reader gets.
    * ------------------------------------------------------------------ */
 
-  var WEATHER_PATHS = {
-    // Each entry draws at 16x16 on currentColor.
-    clear: '<circle cx="8" cy="8" r="3.4"/><g stroke="currentColor" stroke-width="1.4" stroke-linecap="round">' +
-      '<path d="M8 1v1.6M8 13.4V15M15 8h-1.6M2.6 8H1M12.9 3.1l-1.1 1.1M4.2 11.8l-1.1 1.1M12.9 12.9l-1.1-1.1M4.2 4.2L3.1 3.1"/></g>',
-    partly: '<circle cx="5.6" cy="5.6" r="2.6"/><path d="M6.6 13.6a3 3 0 0 1-.3-6 4.1 4.1 0 0 1 7.7 1.1 2.5 2.5 0 0 1-.5 4.9z"/>',
-    cloudy: '<path d="M4.6 13.4a3.3 3.3 0 0 1-.3-6.6 4.5 4.5 0 0 1 8.6 1.2 2.8 2.8 0 0 1-.6 5.4z"/>',
-    rain: '<path d="M4.6 10.4a3.3 3.3 0 0 1-.3-6.6 4.5 4.5 0 0 1 8.6 1.2 2.8 2.8 0 0 1-.6 5.4z"/>' +
-      '<g stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M5.4 12.4l-.8 2.2M8.4 12.4l-.8 2.2M11.4 12.4l-.8 2.2"/></g>',
-    snow: '<path d="M4.6 10.4a3.3 3.3 0 0 1-.3-6.6 4.5 4.5 0 0 1 8.6 1.2 2.8 2.8 0 0 1-.6 5.4z"/>' +
-      '<g stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5 13h1.2M9.8 13H11M6.6 12.2v1.6M10.2 12.2v1.6"/></g>',
-    storm: '<path d="M4.6 9.4a3.3 3.3 0 0 1-.3-6.6 4.5 4.5 0 0 1 8.6 1.2 2.8 2.8 0 0 1-.6 5.4z"/>' +
-      '<path d="M8.8 9.6L6 13.2h2.2l-1 2.6 3.4-4.2H8.4z"/>',
-    wind: '<g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none">' +
-      '<path d="M2 6.2h7.4a2 2 0 1 0-2-2M2 9.8h9.2a2 2 0 1 1-2 2M2 13h5"/></g>',
-    roof: '<path d="M8 2L1.6 6.4h1.5V14h9.8V6.4h1.5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>'
-  };
-
-  function weatherKey(game) {
-    var roof = String(game.roof || '').toLowerCase();
-    if (roof.indexOf('closed') >= 0 || roof.indexOf('dome') >= 0 || roof.indexOf('indoor') >= 0) return 'roof';
-    var text = (String(game.conditions || '') + ' ' + String(game.weather_cond || '')).toLowerCase();
-    if (!text.trim()) return null;
-    if (text.indexOf('dome') >= 0 || text.indexOf('roof closed') >= 0) return 'roof';
-    if (text.indexOf('thunder') >= 0 || text.indexOf('storm') >= 0) return 'storm';
-    if (text.indexOf('snow') >= 0 || text.indexOf('sleet') >= 0 || text.indexOf('flurr') >= 0) return 'snow';
-    if (text.indexOf('rain') >= 0 || text.indexOf('drizzle') >= 0 || text.indexOf('shower') >= 0) return 'rain';
-    if (text.indexOf('partly') >= 0 || text.indexOf('mostly sunny') >= 0 || text.indexOf('partial') >= 0) return 'partly';
-    if (text.indexOf('cloud') >= 0 || text.indexOf('overcast') >= 0) return 'cloudy';
-    if (text.indexOf('clear') >= 0 || text.indexOf('sunny') >= 0 || text.indexOf('fair') >= 0) return 'clear';
-    if (text.indexOf('wind') >= 0 || text.indexOf('breez') >= 0) return 'wind';
-    return null;
-  }
-
-  function weatherIcon(game) {
-    var key = weatherKey(game);
-    if (!key) return '';
-    return '<svg class="ca-wx" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" ' +
-      'focusable="false" fill="currentColor">' + WEATHER_PATHS[key] + '</svg>';
-  }
+  /* Weather symbols now come from the shared desk set (dashboard/chase_icons.js)
+     rather than from a filled 16x16 table kept here. Two icon vocabularies on
+     one card - a filled weather glyph beside stroked outlines everywhere else -
+     read as two different products stacked. */
 
   /* A number on a card should say how good it is without the reader having to
      know the league. The chip class comes from the published league baseline,
@@ -308,10 +273,29 @@
       '<strong>' + esc(name) + '</strong><span>' + esc(starterMeta(game, side, sport)) + '</span></div></div>';
   }
 
-  function miniFact(label, value, tone) {
-    return '<div class="ca-matchup-card__fact"><span>' + esc(label) + '</span><strong class="' +
+  /* The desk symbol set (dashboard/chase_icons.js, glyphs from Lucide).
+     Guarded, because a card must still render every word if the icon file has
+     not loaded - the symbol is a second channel beside the label, never the
+     label itself. */
+  function ico(name, cls, px) {
+    return (global.ChaseIcons && ChaseIcons.icon) ? ChaseIcons.icon(name, cls, px) : '';
+  }
+
+  function wxIco(text) {
+    return (global.ChaseIcons && ChaseIcons.weatherIcon)
+      ? ChaseIcons.weatherIcon(text, 'ca-matchup-card__ico', 16)
+      : '';
+  }
+
+  /* A fact reads as symbol, then label, then value. The symbol is what makes a
+     row of three cells scannable at a glance instead of three grey captions
+     that all look alike. */
+  function miniFact(label, value, tone, glyph) {
+    return '<div class="ca-matchup-card__fact"><span>' +
+      (glyph ? ico(glyph, 'ca-matchup-card__ico') : '') + esc(label) + '</span><strong class="' +
       esc(tone || '') + '">' + esc(value || 'Not published') + '</strong></div>';
   }
+
 
   /* Offensive context, straight from the published team-rankings snapshot.
      Rendered as value plus league rank so it reads as a description of the
@@ -470,6 +454,8 @@
   function bullpenSummary(game) {
     var away = game.away_bullpen, home = game.home_bullpen;
     if (!away && !home) return 'Workload Not Published';
+    // Arms over pitches, away club first. The label names the window; the
+    // slash is what says these are two numbers and not one.
     return [away || '—', home || '—'].join(' · ');
   }
 
@@ -497,13 +483,21 @@
       // Where the game is played is the first thing a reader orients on, so it
       // sits above everything else rather than fourth in a row of small facts.
       // The building's own facts - roof, surface - travel with its name.
-      '<div class="ca-matchup-card__venue"><span class="ca-matchup-card__venue-name">' +
+      '<div class="ca-matchup-card__venue">' +
+            // `landmark` for both sports. The stadium bowl is the more literal symbol
+      // but at fifteen pixels two nested ellipses read as an eye, and a venue
+      // line is the wrong place to make a reader work out what they are seeing.
+      ico('landmark', 'ca-matchup-card__ico ca-matchup-card__ico--venue', 15) +
+      '<span class="ca-matchup-card__venue-name">' +
       esc(game.venue || 'Venue Not Published') + '</span>' +
       (game.venue_city ? '<span class="ca-matchup-card__venue-city">' + esc(game.venue_city) + '</span>' : '') +
-      (roof ? '<span class="ca-matchup-card__venue-tag">' + esc(roof) + '</span>' : '') +
+      (roof ? '<span class="ca-matchup-card__venue-tag">' +
+        (/dome|indoor|closed|retract/i.test(String(roof)) ? ico('roof', 'ca-matchup-card__ico', 13) : '') +
+        esc(roof) + '</span>' : '') +
       '<span class="ca-status-chip ' + state.tone + '">' + state.label + '</span></div>' +
-      '<header class="ca-matchup-card__head"><span class="ca-matchup-card__kick">' + kickoff(game) + '</span>' +
-      (hasWx ? '<span class="ca-matchup-card__wx">' + weatherIcon(game) + esc(wxText) + '</span>' : '') +
+      '<header class="ca-matchup-card__head"><span class="ca-matchup-card__kick">' +
+      ico('clock', 'ca-matchup-card__ico') + kickoff(game) + '</span>' +
+      (hasWx ? '<span class="ca-matchup-card__wx">' + wxIco(wxText) + esc(wxText) + '</span>' : '') +
       '</header>' +
       '<div class="ca-matchup-card__teams">' + teamBlock(sport, game, 'away') +
       '<span class="ca-matchup-card__versus" aria-hidden="true">At</span>' + teamBlock(sport, game, 'home') + '</div>' +
@@ -513,10 +507,12 @@
       // Three compact factual cells, one row - the collapsed anatomy the style
       // lock specifies (design/GPT_IMAGE_PROMPTS_CHASE_DESK.md).
       '<div class="ca-matchup-card__summary">' +
-      miniFact(sport === 'mlb' ? 'Bullpen Arms/P, L3' : 'Travel',
-        sport === 'mlb' ? bullpenSummary(game) : (game.away_travel || restSummary(game))) +
-      miniFact(sport === 'mlb' ? 'Lineup Status' : 'Availability', statusLine) +
-      miniFact('Broadcast', game.broadcast || 'Not Published') +
+      miniFact(sport === 'mlb' ? 'Bullpen, L3' : 'Travel',
+        sport === 'mlb' ? bullpenSummary(game) : (game.away_travel || restSummary(game)),
+        '', sport === 'mlb' ? 'users' : 'plane') +
+      miniFact(sport === 'mlb' ? 'Lineup Status' : 'Availability', statusLine,
+        '', sport === 'mlb' ? 'lineup' : 'whistle') +
+      miniFact('Broadcast', game.broadcast || 'Not Published', '', 'tv') +
       '</div>' +
       expandedHtml(sport, game, panelId) +
       '<footer class="ca-matchup-card__actions">' +
