@@ -359,6 +359,7 @@ class AdapterHoleTests(unittest.TestCase):
         ):
             self.assertIn(text, detail)
         self.assertIn("away_lineups", adapter)
+        self.assertIn("away_player_coverage", adapter)
         self.assertIn("home_lineups", adapter)
         self.assertIn(".ca-lineup-board", css)
         self.assertIn("min-height: var(--touch-min)", css)

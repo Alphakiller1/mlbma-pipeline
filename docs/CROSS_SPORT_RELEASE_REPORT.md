@@ -12,7 +12,7 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 | Work | Evidence |
 |------|----------|
 | WP0 site trunk reconcile | Draft PR [#26](https://github.com/Alphakiller1/mlbma-pipeline/pull/26); `docs/RECONCILE_WP0.md` |
-| WP1 A/B/D token spine | `design/tokens/chase-tokens.css`; `scripts/check_tokens.py`; `tests/test_contrast.py`; current stamp `20260911f` |
+| WP1 A/B/D token spine | `design/tokens/chase-tokens.css`; `scripts/check_tokens.py`; `tests/test_contrast.py`; current stamp `20260912a` |
 | Design-doc INDEX | `design/INDEX.md` (WP6-7) |
 | WP2 kits vendored (not applied to model remotes) | `docs/wp2-patches/` |
 | WP3 DataStatus + Last_Updated collapse | `ChaseDataStatus.fetchLastUpdated` is the only Last_Updated probe. Failed fetches render `unknown`. |
@@ -60,7 +60,7 @@ This report is the WP6-6 artefact **for this repo**. Items that live in other re
 
 | Gate | Result |
 |------|--------|
-| `python scripts/check_tokens.py` | **OK** (stamp `20260911f`; rule-body hex count remains informational) |
+| `python scripts/check_tokens.py` | **OK** (stamp `20260912a`; rule-body hex count remains informational) |
 | `python -m unittest discover -s tests -p 'test_*.py'` | **131 OK** |
 | Public/runtime boundary diagnostics on **8766** | **OK** — public-site runtime, public-boundary crawl, platform UI, and strict 360/375/390 mobile-overflow checks exit 0 |
 | NFL matchup visual/browser audit | **OK** at 375/390/768/1024/1440 — 22 offensive and 22 defensive starters across the fixture, 44px tabs, a designation on every starter, zero clipped cards/horizontal overflow/severe console errors; current-only hides all prior-season scheme panels |

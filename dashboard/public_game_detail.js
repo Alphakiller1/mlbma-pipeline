@@ -2012,13 +2012,13 @@
    * ------------------------------------------------------------------ */
 
   var COVERAGE_SHELLS = [
-    ['cover_0_rate', 'Cover 0'],
-    ['cover_1_rate', 'Cover 1'],
-    ['cover_2_rate', 'Cover 2'],
-    ['cover_2_man_rate', 'Cover 2 man'],
-    ['cover_3_rate', 'Cover 3'],
-    ['cover_4_rate', 'Cover 4'],
-    ['cover_6_rate', 'Cover 6']
+    ['cover_0_rate', 'pass_epa_cover_0', 'Cover 0'],
+    ['cover_1_rate', 'pass_epa_cover_1', 'Cover 1'],
+    ['cover_2_rate', 'pass_epa_cover_2', 'Cover 2'],
+    ['cover_2_man_rate', 'pass_epa_cover_2_man', '2-Man'],
+    ['cover_3_rate', 'pass_epa_cover_3', 'Cover 3'],
+    ['cover_4_rate', 'pass_epa_cover_4', 'Cover 4'],
+    ['cover_6_rate', 'pass_epa_cover_6', 'Cover 6']
   ];
 
   var PRESSURE_ROWS = [
@@ -2116,7 +2116,7 @@
   }
 
   function provenanceLine(scheme) {
-    var seasons = (scheme.source_seasons || []).join(', ');
+    var seasons = (scheme.participation_source_seasons || scheme.source_seasons || []).join(', ');
     var bits = [];
     if (seasons) bits.push('Charted from the ' + seasons + ' season');
     if (scheme.charting_samples != null) bits.push(Number(scheme.charting_samples).toLocaleString('en-US') + ' charted plays');
@@ -2143,7 +2143,8 @@
   function schemeSeasons(game) {
     var out = {};
     ['away', 'home'].forEach(function (side) {
-      ((game[side + '_scheme'] || {}).source_seasons || []).forEach(function (y) {
+      var profile = game[side + '_scheme'] || {};
+      (profile.participation_source_seasons || profile.source_seasons || []).forEach(function (y) {
         out[Number(y)] = true;
       });
     });
@@ -2227,6 +2228,7 @@
   function epaText(value, isRate) {
     var v = Number(value);
     if (!isFinite(v)) return '—';
+    if (Math.abs(v) < 0.0005) v = 0;
     return isRate ? (v * 100).toFixed(1) + '%' : (v > 0 ? '+' : '') + v.toFixed(3);
   }
 
@@ -2250,13 +2252,99 @@
       '</tr></thead><tbody>' + rows + '</tbody></table></div>';
   }
 
+  function coverageMatrix(sport, game, offSide, defSide) {
+    var off = ((game[offSide + '_scheme'] || {}).offense || {}).response || {};
+    var defScheme = (game[defSide + '_scheme'] || {}).defense || {};
+    var def = defScheme.response || {};
+    var tendencies = defScheme.coverage || {};
+    var rows = [
+      ['man_rate', 'pass_epa_man', 'Man'],
+      ['zone_rate', 'pass_epa_zone', 'Zone']
+    ].concat(COVERAGE_SHELLS).map(function (spec) {
+      var tendency = tendencies[spec[0]];
+      var offValue = off[spec[1]];
+      var defValue = def[spec[1]];
+      if (tendency == null && offValue == null && defValue == null) return '';
+      var width = tendency == null ? 0 : Math.max(0, Math.min(100, Number(tendency) * 100));
+      return '<div class="ca-coverage-row">' +
+        '<div class="ca-coverage-result ' + epaTone(offValue, true) + '"><strong>' +
+        esc(epaText(offValue, false)) + '</strong><span>Off EPA / play</span></div>' +
+        '<div class="ca-coverage-look"><span>' + esc(spec[2]) + '</span>' +
+        '<div class="ca-coverage-track" aria-label="' + esc(spec[2]) + ' used ' +
+        esc(pctText(tendency)) + '"><i style="width:' + width.toFixed(1) + '%"></i></div>' +
+        '<strong>' + esc(pctText(tendency)) + ' Used</strong></div>' +
+        '<div class="ca-coverage-result ca-coverage-result--def ' + epaTone(defValue, false) + '">' +
+        '<strong>' + esc(epaText(defValue, false)) + '</strong><span>EPA allowed / play</span></div>' +
+        '</div>';
+    }).filter(Boolean).join('');
+    if (!rows) return '';
+    return '<div class="ca-coverage-matrix"><header><div>' +
+      logo(sport, game, offSide, 32, 'ca-coverage-crest') + '<span><b>' +
+      esc(fullName(sport, game, offSide)) + '</b><small>Offensive response</small></span></div>' +
+      '<strong>Coverage</strong><div><span><b>' + esc(fullName(sport, game, defSide)) +
+      '</b><small>Defensive tendency + allowance</small></span>' +
+      logo(sport, game, defSide, 32, 'ca-coverage-crest') + '</div></header>' + rows + '</div>';
+  }
+
+  function playerCoveragePanels(sport, game, offSide) {
+    var profiles = game[offSide + '_player_coverage'] || [];
+    var offense = unitData(game, offSide, 'offense');
+    var starterNames = {};
+    ((offense || {}).players || []).forEach(function (player) {
+      if (['RB', 'WR', 'TE'].indexOf(String(player.position || '').toUpperCase()) >= 0) {
+        starterNames[playerNameKey(player.name)] = true;
+      }
+    });
+    profiles = profiles.filter(function (profile) {
+      return starterNames[playerNameKey(profile.player_name)];
+    });
+    if (!profiles.length) {
+      return '<section class="ca-player-coverage"><h4>Skill Players By Coverage</h4>' +
+        pending('No season-labelled player coverage splits are published for these starters.') + '</section>';
+    }
+    var bySeason = {};
+    profiles.forEach(function (profile) {
+      (bySeason[profile.source_season] = bySeason[profile.source_season] || []).push(profile);
+    });
+    return Object.keys(bySeason).sort().reverse().map(function (season) {
+      var cards = bySeason[season].map(function (profile) {
+        var splits = (profile.splits || []).filter(function (split) {
+          return split.coverage !== 'all' && Number(split.targets) >= 3;
+        }).sort(function (a, b) { return Number(b.targets) - Number(a.targets); }).slice(0, 5);
+        if (!splits.length) return '';
+        var rows = splits.map(function (split) {
+          var label = String(split.coverage || '').replace(/^cover_/, 'Cover ').replace(/_/g, ' ');
+          return '<tr><td>' + esc(titleCase(label)) + '</td><td class="num">' +
+            esc(split.targets) + '</td><td class="num">' + esc(pctText(split.catch_rate)) +
+            '</td><td class="num">' + esc(split.yards_per_target == null ? '—' :
+              Number(split.yards_per_target).toFixed(1)) +
+            '</td><td class="num">' + esc(epaText(split.epa_per_target, false)) + '</td></tr>';
+        }).join('');
+        return '<article class="ca-player-coverage-card"><header><span class="ca-lineup-player__position">' +
+          esc(profile.position) + '</span><strong>' + esc(profile.player_name) + '</strong></header>' +
+          '<div class="ca-lineup-scroll"><table><thead><tr><th>Coverage</th><th class="num">Tgt</th>' +
+          '<th class="num">Catch</th><th class="num">Y/T</th><th class="num">EPA/T</th></tr></thead>' +
+          '<tbody>' + rows + '</tbody></table></div></article>';
+      }).filter(Boolean).join('');
+      if (!cards) return '';
+      return '<section class="ca-player-coverage" data-scheme-seasons="' + esc(season) + '">' +
+        '<div class="ca-player-coverage__head"><div><h4>Skill Players By Coverage</h4><p>' +
+        esc(fullName(sport, game, offSide)) + ' targets against charted ' + season + ' coverages</p></div>' +
+        '<span>Minimum 3 targets shown</span></div><div class="ca-player-coverage-grid">' + cards +
+        '</div></section>';
+    }).join('');
+  }
+
   function schemePanel(sport, game, offSide, defSide) {
     var offScheme = game[offSide + '_scheme'];
     var defScheme = game[defSide + '_scheme'];
     var offName = fullName(sport, game, offSide);
     var defName = fullName(sport, game, defSide);
-    var charted = (((game[defSide + '_scheme'] || {}).source_seasons) || []).join(', ');
-    var panelSeasons = [].concat((offScheme || {}).source_seasons || [],
+    var charted = ((defScheme || {}).participation_source_seasons ||
+      (defScheme || {}).source_seasons || []).join(', ');
+    var panelSeasons = [].concat((offScheme || {}).participation_source_seasons ||
+      (offScheme || {}).source_seasons || [],
+      (defScheme || {}).participation_source_seasons ||
       (defScheme || {}).source_seasons || []).map(Number).filter(Number.isFinite)
       .filter(function (year, index, all) { return all.indexOf(year) === index; })
       .join(',');
@@ -2273,27 +2361,11 @@
     var offPersonnel = (offScheme.offense || {}).personnel || {};
     var offResponse = (offScheme.offense || {}).response || {};
     var offTargets = (offScheme.offense || {}).target_share || {};
-    var seasons = (defScheme.source_seasons || []).join(', ');
-
     var versus = confrontation(sport, game, offSide, defSide);
-    var manZone = '';
-    if (defCov.man_rate != null && defCov.zone_rate != null) {
-      manZone = '<div class="ca-rate-block"><h4>Coverage split</h4>' +
-        stackedBar([
-          { label: 'Man', value: Number(defCov.man_rate) },
-          { label: 'Zone', value: Number(defCov.zone_rate) }
-        ]) +
-        '<p class="ca-detail-source-note">' + esc(defName) + ' played zone on ' +
-        pctText(defCov.zone_rate) + ' of the charted sample' +
-        (seasons ? ' in ' + esc(seasons) : '') + '.</p></div>';
-    }
-
-    var shells = COVERAGE_SHELLS
-      .filter(function (row) { return defCov[row[0]] != null; })
-      .map(function (row) { return { label: row[1], value: Number(defCov[row[0]]) }; });
-    var shellBlock = shells.length
-      ? '<div class="ca-rate-block"><h4>Coverage shells</h4>' + stackedBar(shells) + '</div>'
-      : '';
+    var coverage = coverageMatrix(sport, game, offSide, defSide);
+    var coverageNote = defCov.zone_rate == null ? '' :
+      '<p class="ca-detail-source-note">' + esc(defName) + ' played zone on ' +
+      pctText(defCov.zone_rate) + ' of its charted coverage snaps.</p>';
 
     var targets = TARGET_ROWS
       .filter(function (row) { return offTargets[row[0]] != null; })
@@ -2310,6 +2382,7 @@
        pile; naming the two halves makes the pairing the point. */
     return head +
       '<p class="ca-lineup-context">' + esc(provenanceLine(defScheme)) + '</p>' +
+      coverage + coverageNote +
       // The direct confrontation first: what this offence has done in each
       // situation, beside what the defence it meets has given up in the same
       // one. The distribution bars below say how often each look happens; this
@@ -2321,14 +2394,14 @@
         'directions. Success rates are shares of plays that stayed on schedule.</p></div>' : '') +
       '<div class="ca-scheme-duo">' +
       '<div class="ca-scheme-col"><h4 class="ca-scheme-col__head">' + esc(defName) +
-      ' defence</h4>' + manZone + shellBlock +
+      ' defence</h4>' +
       rateTable('Pressure', PRESSURE_ROWS, defPressure) + '</div>' +
       '<div class="ca-scheme-col"><h4 class="ca-scheme-col__head">' + esc(offName) +
       ' offence</h4>' +
       rateTable('Personnel And Formation', PERSONNEL_ROWS, offPersonnel) +
       rateTable('Response By Look', RESPONSE_ROWS, offResponse) +
       targetBlock + '</div>' +
-      '</div></section>';
+      '</div>' + playerCoveragePanels(sport, game, offSide) + '</section>';
   }
 
   function formRow(entry) {
@@ -2364,9 +2437,8 @@
       '<div class="ca-form-grid">' + cells + '</div></section>';
   }
 
-  /* Identity-only starting units, arranged for scanning rather than forced
-     into a miniature field. The source names a position and its first player;
-     this renderer never invents a snap share or turns a roster into a start. */
+  /* Identity-only starting units arranged in formation rows. The source names
+     a position and its first player; this renderer never invents a snap share. */
   function playerNameKey(name) {
     return String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
   }
@@ -2409,7 +2481,7 @@
   function playerPortrait(player) {
     if (player.headshot_url) {
       return '<img class="ca-lineup-player__shot" src="' + esc(player.headshot_url) +
-        '" alt="" width="48" height="48" loading="lazy" decoding="async">';
+        '" alt="" width="160" height="160" loading="lazy" decoding="async">';
     }
     return '<span class="ca-lineup-player__initials" aria-hidden="true">' +
       esc(initials(player.name)) + '</span>';
@@ -2461,12 +2533,13 @@
       (groups[group] = groups[group] || []).push(player);
     });
     var order = unit === 'offense'
-      ? ['Backfield', 'Receivers', 'Offensive Line']
-      : ['Front', 'Linebackers', 'Secondary'];
+      ? ['Receivers', 'Offensive Line', 'Backfield']
+      : ['Secondary', 'Linebackers', 'Front'];
     var byName = designationMap(entries);
     var content = order.filter(function (group) { return groups[group] && groups[group].length; })
       .map(function (group) {
-        return '<section class="ca-lineup-group"><header><h4>' + esc(group) + '</h4><span>' +
+        return '<section class="ca-lineup-group" data-lineup-group="' +
+          esc(group.toLowerCase().replace(/\s+/g, '-')) + '"><header><h4>' + esc(group) + '</h4><span>' +
           groups[group].length + '</span></header><div class="ca-lineup-group__players">' +
           groups[group].map(function (player) {
             return lineupPlayer(player, designationFor(player, entries, byName));

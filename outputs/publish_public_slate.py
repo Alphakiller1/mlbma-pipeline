@@ -656,7 +656,22 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
     scheme = context.get("scheme") or {}
     players = context.get("players") or {}
     lineups = context.get("lineups") or {}
+    player_coverage = context.get("player_coverage") or {}
     rest = rest_history if rest_history is not None else {}
+
+    def starter_coverage(team: str) -> list[dict]:
+        """Keep coverage history for the published RB/WR/TE starters only."""
+        lineup = lineups.get(team) or {}
+        names = {
+            re.sub(r"[^a-z0-9]", "", str(player.get("name") or "").lower())
+            for player in ((lineup.get("offense") or {}).get("players") or [])
+            if str(player.get("position") or "").upper() in {"RB", "WR", "TE"}
+        }
+        return [
+            profile for profile in player_coverage.get(team, [])
+            if re.sub(r"[^a-z0-9]", "", str(profile.get("player_name") or "").lower())
+            in names
+        ]
     games = []
     for event in payload.get("events") or []:
         comps = event.get("competitions") or []
@@ -748,6 +763,8 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             "home_players": players.get(home_abbr),
             "away_lineups": lineups.get(away_abbr),
             "home_lineups": lineups.get(home_abbr),
+            "away_player_coverage": starter_coverage(away_abbr),
+            "home_player_coverage": starter_coverage(home_abbr),
             "away_rest_days": away_ctx["rest_days"],
             "home_rest_days": home_ctx["rest_days"],
             "away_travel": away_ctx["travel"],

@@ -2087,7 +2087,7 @@ body[data-ca-product="research"] {
    filters: which lineup, home or away, against which hand. */
 .ca-lineup-context {
   margin: 0 0 var(--space-3);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: var(--type-12);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
@@ -2319,6 +2319,87 @@ body[data-ca-product="research"] {
   color: var(--text-primary);
 }
 
+/* Both clubs hold fixed mirrored columns around one coverage axis. EPA and
+   tendency remain separate units, but line up for direct comparison. */
+.ca-coverage-matrix {
+  margin: var(--space-4) 0;
+  overflow: hidden;
+  background: var(--surface-inset);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  box-shadow: inset 0 1px 0 var(--border-strong);
+}
+.ca-coverage-matrix > header,
+.ca-coverage-row {
+  display: grid;
+  grid-template-columns: minmax(132px, .8fr) minmax(190px, 1.4fr) minmax(132px, .8fr);
+  align-items: stretch;
+}
+.ca-coverage-matrix > header {
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 58px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-board-raised);
+  border-bottom: 1px solid var(--border-default);
+}
+.ca-coverage-matrix > header > div { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.ca-coverage-matrix > header > div:last-child { justify-content: flex-end; text-align: right; }
+.ca-coverage-matrix > header span { display: grid; min-width: 0; }
+.ca-coverage-matrix > header b { color: var(--text-primary); font-size: var(--type-14); }
+.ca-coverage-matrix > header small { color: var(--text-muted); font-size: var(--type-12); }
+.ca-coverage-matrix > header > strong {
+  text-align: center;
+  color: var(--text-accent);
+  font-family: var(--font-sans);
+  font-size: var(--type-12);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+.ca-coverage-crest { width: 32px; height: 32px; object-fit: contain; flex: 0 0 auto; }
+.ca-coverage-row { border-bottom: 1px solid var(--border-subtle); }
+.ca-coverage-row:last-child { border-bottom: 0; }
+.ca-coverage-result,
+.ca-coverage-look { display: grid; align-content: center; min-height: 66px; padding: var(--space-2) var(--space-3); }
+.ca-coverage-result { border-right: 1px solid var(--border-subtle); }
+.ca-coverage-result--def { border-right: 0; border-left: 1px solid var(--border-subtle); text-align: right; }
+.ca-coverage-result strong {
+  color: var(--grade, var(--text-primary));
+  font-family: var(--font-display);
+  font-size: var(--type-20);
+  font-variant-numeric: tabular-nums;
+}
+.ca-coverage-result span { color: var(--text-muted); font-size: var(--type-12); }
+.ca-coverage-look { grid-template-columns: 64px minmax(52px, 1fr) auto; align-items: center; gap: var(--space-2); }
+.ca-coverage-look > span { color: var(--text-primary); font-weight: 800; }
+.ca-coverage-look > strong { color: var(--text-secondary); font-size: var(--type-12); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ca-coverage-track { height: 7px; overflow: hidden; background: var(--surface-raised); border-radius: var(--radius-pill); }
+.ca-coverage-track i { display: block; height: 100%; background: var(--accent); border-radius: inherit; }
+
+.ca-player-coverage { margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--border-default); }
+.ca-player-coverage > h4,
+.ca-player-coverage__head h4 { margin: 0; color: var(--text-primary); }
+.ca-player-coverage__head { display: flex; align-items: end; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
+.ca-player-coverage__head p { margin: 2px 0 0; color: var(--text-secondary); font-size: var(--type-12); }
+.ca-player-coverage__head > span {
+  color: var(--text-accent);
+  font-family: var(--font-sans);
+  font-size: var(--type-12);
+  font-weight: 800;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+.ca-player-coverage-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+.ca-player-coverage-card { min-width: 0; overflow: hidden; background: var(--surface-field); border: 1px solid var(--border-subtle); border-radius: var(--radius-xs); }
+.ca-player-coverage-card > header { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border-subtle); }
+.ca-player-coverage-card > header strong { color: var(--text-primary); }
+.ca-player-coverage-card table { width: 100%; min-width: 390px; border-collapse: collapse; font-size: var(--type-12); font-variant-numeric: tabular-nums; }
+.ca-player-coverage-card th,
+.ca-player-coverage-card td { padding: 7px var(--space-2); border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); }
+.ca-player-coverage-card tr:last-child td { border-bottom: 0; }
+.ca-player-coverage-card th { color: var(--text-muted); font-family: var(--font-sans); text-transform: uppercase; letter-spacing: var(--tracking-caps); text-align: left; }
+.ca-player-coverage-card .num { text-align: right; }
+
 /* Two columns, split the way the confrontation is: that defence on one side,
    this offence on the other. */
 .ca-scheme-duo {
@@ -2333,7 +2414,7 @@ body[data-ca-product="research"] {
 
 .ca-scheme-col__head {
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: var(--type-14);
   font-weight: 800;
   letter-spacing: var(--tracking-caps);
@@ -2474,8 +2555,8 @@ body[data-ca-product="research"] {
 }
 
 /* --- NFL starting units --------------------------------------------------
- * A depth chart is a reading surface, not a miniature field. Exact position
- * stays on every card while related positions form three stable scan lanes. */
+ * Formation rows follow the attached broadcast-board reference: portraits
+ * lead, position and name share one plate, and availability stays attached. */
 .ca-lineup-board {
   min-width: 0;
   padding: var(--space-4);
@@ -2502,7 +2583,7 @@ body[data-ca-product="research"] {
 
 .ca-lineup-board__head h3 {
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: var(--type-20);
   color: var(--text-primary);
 }
@@ -2571,28 +2652,30 @@ body[data-ca-product="research"] {
   white-space: nowrap;
 }
 
-.ca-lineup-groups { display: grid; gap: var(--space-3); }
-
-.ca-lineup-group {
-  overflow: hidden;
-  background: var(--surface-field);
+.ca-lineup-groups {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--surface-inset);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-sm);
+  box-shadow: inset 0 1px 0 var(--border-default);
 }
+
+.ca-lineup-group { min-width: 0; }
 
 .ca-lineup-group > header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 7px var(--space-3);
+  padding: 0 0 var(--space-2);
   border-bottom: 1px solid var(--border-subtle);
-  background: var(--surface-inset);
 }
 
 .ca-lineup-group > header h4 {
   margin: 0;
   color: var(--text-accent);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: var(--type-12);
   font-weight: 800;
   letter-spacing: var(--tracking-caps);
@@ -2606,80 +2689,111 @@ body[data-ca-product="research"] {
 }
 
 .ca-lineup-group__players {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
 }
 
 .ca-lineup-player {
+  position: relative;
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr) auto;
-  grid-template-areas: "shot identity availability";
-  align-items: center;
-  gap: var(--space-2);
+  grid-template-rows: 108px auto auto;
+  align-content: start;
+  flex: 1 1 0;
+  max-width: 156px;
   min-width: 0;
-  min-height: 66px;
-  padding: var(--space-2) var(--space-3);
-  border-bottom: 1px solid var(--border-subtle);
-  transition: background 100ms ease-out, box-shadow 100ms ease-out;
+  min-height: 176px;
+  overflow: hidden;
+  background: var(--surface-board-raised);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--elevation-1), inset 0 1px 0 var(--border-strong);
+  transition: transform 100ms ease-out, border-color 100ms ease-out, box-shadow 100ms ease-out;
 }
 
 .ca-lineup-player:hover {
-  background: var(--surface-raised);
-  box-shadow: inset 3px 0 0 var(--accent-strong);
+  transform: translateY(-2px);
+  border-color: var(--accent-strong);
+  box-shadow: var(--elevation-2), inset 0 2px 0 var(--accent-strong);
 }
 
 .ca-lineup-player__shot,
 .ca-lineup-player__initials {
-  grid-area: shot;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-default);
+  width: 100%;
+  height: 108px;
+  border: 0;
+  border-bottom: 1px solid var(--border-default);
   background: var(--surface-raised);
 }
 
-.ca-lineup-player__shot { object-fit: cover; }
+.ca-lineup-player__shot { object-fit: contain; object-position: center bottom; }
 
 .ca-lineup-player__initials {
   display: grid;
   place-items: center;
   color: var(--text-accent);
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-24);
   font-weight: 800;
   letter-spacing: .04em;
 }
 
-.ca-lineup-player__identity { grid-area: identity; display: grid; min-width: 0; }
+.ca-lineup-player__identity {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 5px 4px;
+  background: var(--surface-field);
+  border-bottom: 1px solid var(--border-subtle);
+}
 .ca-lineup-player__identity strong {
   color: var(--text-primary);
-  font-size: var(--type-14);
-  line-height: 1.2;
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  line-height: 1.05;
+  text-transform: uppercase;
   overflow-wrap: anywhere;
 }
 
 .ca-lineup-player__position {
-  color: var(--text-accent);
-  font-family: var(--font-display);
+  display: inline-grid;
+  place-items: center;
+  min-width: 30px;
+  min-height: 26px;
+  padding: 2px 3px;
+  color: var(--accent-text);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-strong);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
   font-size: var(--type-12);
   font-weight: 800;
   letter-spacing: var(--tracking-caps);
 }
 
 .ca-lineup-player__availability {
-  grid-area: availability;
-  display: grid;
-  justify-items: end;
-  gap: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 3px 5px;
   min-width: 0;
+  min-height: 27px;
+  padding: 3px 5px;
+  background: var(--surface-inset);
 }
 
 .ca-lineup-player__availability small {
-  max-width: 96px;
+  max-width: 100%;
   color: var(--text-muted);
   font-size: var(--type-12);
   overflow-wrap: anywhere;
-  text-align: right;
+  text-align: center;
 }
 
 .ca-status-pill[data-status="no-designation"],
@@ -2716,25 +2830,18 @@ body[data-ca-product="research"] {
 
 @media (max-width: 1100px) {
   .ca-lineup-duo { grid-template-columns: 1fr; }
+  .ca-lineup-player { max-width: 180px; }
 }
 
 @media (max-width: 520px) {
   .ca-lineup-board { padding: var(--space-3); }
   .ca-lineup-unit__meta { align-items: flex-start; flex-direction: column; }
-  .ca-lineup-player {
-    grid-template-columns: 38px minmax(0, 1fr);
-    grid-template-areas: "shot identity" "availability availability";
-  }
+  .ca-lineup-groups { padding: var(--space-3); }
+  .ca-lineup-group__players { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ca-lineup-player { max-width: none; min-height: 166px; grid-template-rows: 98px auto auto; }
   .ca-lineup-player__shot,
-  .ca-lineup-player__initials { width: 36px; height: 36px; }
-  .ca-lineup-player__availability {
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: center;
-    justify-items: start;
-    width: 100%;
-    padding-left: 46px;
-  }
-  .ca-lineup-player__availability small { max-width: none; text-align: left; }
+  .ca-lineup-player__initials { height: 98px; }
+  .ca-lineup-player__availability small { max-width: none; }
   .ca-status-pill { white-space: normal; }
 }
 
@@ -4202,7 +4309,7 @@ body[data-ca-product="research"] {
 
 .ca-matchup-lens span {
   color: var(--text-muted);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: var(--type-12);
   font-weight: 800;
   letter-spacing: var(--tracking-caps);
@@ -4241,7 +4348,7 @@ body[data-ca-product="research"] {
 
 .ca-analysis-scope__eyebrow {
   color: var(--text-accent);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: var(--type-12);
   font-weight: 800;
   letter-spacing: var(--tracking-caps);
@@ -4274,7 +4381,7 @@ body[data-ca-product="research"] {
   border-radius: var(--radius-pill);
   background: transparent;
   color: var(--text-secondary);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: var(--type-12);
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -4299,6 +4406,7 @@ body[data-ca-product="research"] {
   .ca-matchup-lens { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ca-analysis-scope { grid-template-columns: 1fr auto; }
   .ca-analysis-scope__copy { grid-column: 1 / -1; }
+  .ca-player-coverage-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 560px) {
@@ -4307,6 +4415,23 @@ body[data-ca-product="research"] {
   .ca-analysis-scope { grid-template-columns: 1fr; padding: var(--space-3); }
   .ca-season-toggle { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ca-analysis-scope__copy { grid-column: auto; }
+  .ca-coverage-matrix > header { grid-template-columns: 1fr 1fr; }
+  .ca-coverage-matrix > header > strong { display: none; }
+  .ca-coverage-matrix > header b { font-size: var(--type-12); }
+  .ca-coverage-matrix > header small { display: none; }
+  .ca-coverage-row { grid-template-columns: minmax(72px, .65fr) minmax(132px, 1.3fr) minmax(72px, .65fr); }
+  .ca-coverage-result,
+  .ca-coverage-look { min-height: 62px; padding: 6px var(--space-2); }
+  .ca-coverage-result strong { font-size: var(--type-16); }
+  .ca-coverage-result span { font-size: var(--type-12); line-height: 1.15; }
+  .ca-coverage-look { grid-template-columns: 1fr auto; gap: 2px 6px; }
+  .ca-coverage-track { grid-column: 1 / -1; grid-row: 2; }
+  .ca-player-coverage__head { align-items: start; flex-direction: column; }
+  .ca-player-coverage-card table { min-width: 0; table-layout: fixed; }
+  .ca-player-coverage-card th,
+  .ca-player-coverage-card td { padding: 6px 3px; }
+  .ca-player-coverage-card th:first-child,
+  .ca-player-coverage-card td:first-child { width: 27%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

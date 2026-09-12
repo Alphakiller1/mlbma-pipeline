@@ -58,6 +58,26 @@ class PublicSlateProjectionTests(unittest.TestCase):
         self.assertEqual(out["games"][0]["away_lineups"]["defense"]["players"][0]["name"],
                          "A Corner")
 
+    def test_nfl_player_coverage_survives_the_public_allowlist(self):
+        import sys
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from project_public_slate import project_slate
+
+        rows = [{
+            "player_id": "wr-1", "player_name": "Wide One", "position": "WR",
+            "source_season": 2025, "splits": [{
+                "coverage": "man", "targets": 12, "receptions": 8,
+                "receiving_yards": 120.0, "touchdowns": 1,
+                "catch_rate": 0.6667, "yards_per_target": 10.0,
+                "epa_per_target": 0.2,
+            }],
+        }]
+        out = project_slate("nfl", {"games": [{
+            "id": "nfl-x", "away": "AAA", "home": "BBB",
+            "away_player_coverage": rows, "home_player_coverage": rows,
+        }]})
+        self.assertEqual(out["games"][0]["away_player_coverage"][0]["splits"][0]["targets"], 12)
+
     def test_public_slates_are_tracked_not_gitignored(self):
         import subprocess
 

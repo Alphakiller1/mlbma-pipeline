@@ -75,6 +75,17 @@ BOARD = {
         },
     ],
     "scheme_matchups": [{"team": "AAA", "expected_zone_rate": 0.8, "target_multipliers": {}}],
+    "player_coverage_profiles": [{
+        "player_id": "wr-1", "player_name": "Wide One", "team": "AAA",
+        "position": "WR", "source_season": 2025,
+        "splits": {
+            "man": {"targets": 20, "receptions": 12, "receiving_yards": 180.0,
+                    "touchdowns": 2, "catch_rate": 0.6, "yards_per_target": 9.0,
+                    "epa_per_target": 0.14},
+            "unknown_future_field": {"targets": 999, "private_score": 1.0},
+        },
+        "confidence": 0.99,
+    }],
     "player_projections": [
         {
             "team": "AAA", "player_name": "A Passer", "position": "QB", "depth_rank": 1,
@@ -133,7 +144,7 @@ DEPTH_CHART = {
                 },
                 "wr1": {
                     "position": {"abbreviation": "WR"},
-                    "athletes": [{"displayName": "Wide One"}],
+                    "athletes": [{"id": "123", "displayName": "Wide One"}],
                 },
                 "lt": {
                     "position": {"abbreviation": "LT"},
@@ -229,6 +240,23 @@ class NflPublicContextTests(unittest.TestCase):
         self.assertNotIn("Package Fullback", json.dumps(lineup))
         self.assertNotIn("Package Nickel", json.dumps(lineup))
 
+    def test_player_coverage_is_field_allowlisted_and_season_labelled(self):
+        profile = self.ctx["player_coverage"]["AAA"][0]
+        self.assertEqual(profile["player_name"], "Wide One")
+        self.assertEqual(profile["source_season"], 2025)
+        self.assertEqual(profile["splits"][0]["coverage"], "man")
+        self.assertEqual(profile["splits"][0]["targets"], 20)
+        self.assertNotIn("private_score", json.dumps(profile))
+        self.assertNotIn("unknown_future_field", json.dumps(profile))
+
+    def test_espn_portraits_survive_when_model_has_no_matching_portrait(self):
+        lineups = {"AAA": {"offense": {"players": [{
+            "name": "Wide One", "position": "WR", "group": "Receivers",
+            "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/123.png&w=160&h=160",
+        }]}}}
+        attached = ctx.attach_known_headshots(lineups, {})
+        self.assertIn("headshot_url", attached["AAA"]["offense"]["players"][0])
+
     def test_depth_chart_quarterback_room_keeps_published_order(self):
         room = ctx._quarterbacks_from_depth(DEPTH_CHART)
         self.assertEqual([player["name"] for player in room],
@@ -242,6 +270,8 @@ class NflPublicContextTests(unittest.TestCase):
             ctx.sized_espn_headshot(supplied),
             "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/123.png&w=160&h=160",
         )
+        lineup = ctx.parse_depth_chart(DEPTH_CHART)
+        self.assertIn("/full/123.png", lineup["offense"]["players"][1]["headshot_url"])
 
     def test_team_codes_match_the_public_schedule(self):
         """The board writes LA; the schedule writes LAR."""

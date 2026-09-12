@@ -1,461 +1,1519 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-09-11T07:22:09Z",
-  "data_through_utc": "2026-09-11T07:22:09Z",
+  "generated_at_utc": "2026-09-12T17:58:32Z",
+  "data_through_utc": "2026-09-12T17:58:32Z",
   "games": [
     {
-      "id": "824631",
+      "id": "824224",
       "sport": "mlb",
-      "game_state": "scheduled",
-      "kickoff_utc": "2026-09-11T18:20:00Z",
-      "game_pk": 824631,
-      "away": "PIT",
-      "home": "CHC",
-      "away_name": "Pittsburgh Pirates",
-      "home_name": "Chicago Cubs",
-      "away_record": "74-73",
-      "home_record": "81-66",
-      "venue": "Wrigley Field",
-      "venue_city": "Chicago, IL",
-      "broadcast": "SportsNet Pittsburgh, Marquee Sports Network",
-      "away_starter": "Wilber Dotel",
-      "home_starter": "Shota Imanaga",
-      "away_starter_id": 696062,
-      "home_starter_id": 684007,
-      "away_hand": "R",
-      "home_hand": "L",
-      "away_era": "4.41",
-      "home_era": "3.91",
-      "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
-      "away_team_id": 134,
-      "home_team_id": 112,
-      "venue_id": 17,
-      "away_bullpen": "8/195",
-      "home_bullpen": "7/129"
-    },
-    {
-      "id": "824227",
-      "sport": "mlb",
-      "game_state": "scheduled",
-      "kickoff_utc": "2026-09-11T22:40:00Z",
-      "game_pk": 824227,
+      "game_state": "live",
+      "kickoff_utc": "2026-09-12T17:10:00Z",
+      "game_pk": 824224,
       "away": "COL",
       "home": "DET",
       "away_name": "Colorado Rockies",
       "home_name": "Detroit Tigers",
-      "away_record": "55-91",
-      "home_record": "67-79",
+      "away_record": "55-92",
+      "home_record": "68-79",
+      "away_score": 3,
+      "home_score": 1,
       "venue": "Comerica Park",
       "venue_city": "Detroit, MI",
       "broadcast": "Rockies.TV, Detroit SportsNet",
-      "away_starter": "Mason Adams",
-      "home_starter": "Framber Valdez",
-      "away_starter_id": 690279,
-      "home_starter_id": 664285,
+      "conditions": "78\u00b0 \u00b7 Partly Cloudy \u00b7 6 mph, In From RF",
+      "weather_temp": "78",
+      "weather_cond": "Partly Cloudy",
+      "weather_wind": "6 mph, In From RF",
+      "away_starter": "Tanner Gordon",
+      "home_starter": "Andrew Sears",
+      "away_starter_id": 685299,
+      "home_starter_id": 808825,
       "away_hand": "R",
       "home_hand": "L",
-      "away_era": "3.95",
-      "home_era": "4.17",
-      "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
+      "away_era": "5.38",
+      "home_era": "5.28",
+      "away_lineup_state": "Confirmed",
+      "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 664983,
+          "name": "Jake McCarthy",
+          "position": "LF"
+        },
+        {
+          "slot": 2,
+          "person_id": 681393,
+          "name": "Connor Norby",
+          "position": "2B"
+        },
+        {
+          "slot": 3,
+          "person_id": 696100,
+          "name": "Hunter Goodman",
+          "position": "C"
+        },
+        {
+          "slot": 4,
+          "person_id": 681198,
+          "name": "TJ Rumfield",
+          "position": "1B"
+        },
+        {
+          "slot": 5,
+          "person_id": 694249,
+          "name": "Cole Carrigg",
+          "position": "CF"
+        },
+        {
+          "slot": 6,
+          "person_id": 691720,
+          "name": "Kyle Karros",
+          "position": "3B"
+        },
+        {
+          "slot": 7,
+          "person_id": 687597,
+          "name": "Jordan Beck",
+          "position": "RF"
+        },
+        {
+          "slot": 8,
+          "person_id": 691182,
+          "name": "Adael Amador",
+          "position": "DH"
+        },
+        {
+          "slot": 9,
+          "person_id": 678662,
+          "name": "Ezequiel Tovar",
+          "position": "SS"
+        }
+      ],
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 805808,
+          "name": "Kevin McGonigle",
+          "position": "3B"
+        },
+        {
+          "slot": 2,
+          "person_id": 701678,
+          "name": "Hao-Yu Lee",
+          "position": "2B"
+        },
+        {
+          "slot": 3,
+          "person_id": 690993,
+          "name": "Colt Keith",
+          "position": "DH"
+        },
+        {
+          "slot": 4,
+          "person_id": 682985,
+          "name": "Riley Greene",
+          "position": "LF"
+        },
+        {
+          "slot": 5,
+          "person_id": 680664,
+          "name": "Eduardo Valencia",
+          "position": "C"
+        },
+        {
+          "slot": 6,
+          "person_id": 703601,
+          "name": "Max Clark",
+          "position": "CF"
+        },
+        {
+          "slot": 7,
+          "person_id": 679529,
+          "name": "Spencer Torkelson",
+          "position": "1B"
+        },
+        {
+          "slot": 8,
+          "person_id": 814430,
+          "name": "Brett Callahan",
+          "position": "RF"
+        },
+        {
+          "slot": 9,
+          "person_id": 807726,
+          "name": "John Peck",
+          "position": "SS"
+        }
+      ],
       "away_team_id": 115,
       "home_team_id": 116,
       "venue_id": 2394,
-      "away_bullpen": "7/165",
-      "home_bullpen": "7/122"
+      "away_bullpen": "6/186",
+      "home_bullpen": "7/125"
     },
     {
-      "id": "822684",
+      "id": "823496",
       "sport": "mlb",
-      "game_state": "scheduled",
-      "kickoff_utc": "2026-09-11T22:45:00Z",
-      "game_pk": 822684,
-      "away": "LAA",
-      "home": "WSH",
-      "away_name": "Los Angeles Angels",
-      "home_name": "Washington Nationals",
-      "away_record": "56-90",
-      "home_record": "67-81",
-      "venue": "Nationals Park",
-      "venue_city": "Washington, DC",
-      "broadcast": "Nationals.TV, ABTV, presented by Pechanga Resort Casino",
-      "away_starter": "Yusei Kikuchi",
-      "home_starter": "Cade Cavalli",
-      "away_starter_id": 579328,
-      "home_starter_id": 676917,
-      "away_hand": "L",
-      "home_hand": "R",
-      "away_era": "4.96",
-      "home_era": "3.12",
-      "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
-      "away_team_id": 108,
-      "home_team_id": 120,
-      "venue_id": 3309,
-      "away_bullpen": "5/122",
-      "home_bullpen": "8/205"
-    },
-    {
-      "id": "823498",
-      "sport": "mlb",
-      "game_state": "scheduled",
-      "kickoff_utc": "2026-09-11T23:05:00Z",
-      "game_pk": 823498,
+      "game_state": "live",
+      "kickoff_utc": "2026-09-12T17:35:00Z",
+      "game_pk": 823496,
       "away": "NYM",
       "home": "NYY",
       "away_name": "New York Mets",
       "home_name": "New York Yankees",
-      "away_record": "68-78",
-      "home_record": "84-62",
+      "away_record": "68-79",
+      "home_record": "85-62",
+      "away_score": 1,
+      "home_score": 0,
       "venue": "Yankee Stadium",
       "venue_city": "Bronx, NY",
-      "broadcast": "WPIX, YES",
-      "away_starter": "Nolan McLean",
-      "home_starter": "Carlos Rod\u00f3n",
-      "away_starter_id": 690997,
-      "home_starter_id": 607074,
-      "away_hand": "R",
-      "home_hand": "L",
-      "away_era": "3.06",
-      "home_era": "3.09",
-      "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
+      "broadcast": "MLB Network, SNY",
+      "conditions": "78\u00b0 \u00b7 Cloudy \u00b7 10 mph, Out To LF",
+      "weather_temp": "78",
+      "weather_cond": "Cloudy",
+      "weather_wind": "10 mph, Out To LF",
+      "away_starter": "Zac Thornton",
+      "home_starter": "Gerrit Cole",
+      "away_starter_id": 804267,
+      "home_starter_id": 543037,
+      "away_hand": "L",
+      "home_hand": "R",
+      "away_era": "3.48",
+      "home_era": "3.43",
+      "away_lineup_state": "Confirmed",
+      "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 596019,
+          "name": "Francisco Lindor",
+          "position": "SS"
+        },
+        {
+          "slot": 2,
+          "person_id": 665742,
+          "name": "Juan Soto",
+          "position": "DH"
+        },
+        {
+          "slot": 3,
+          "person_id": 666182,
+          "name": "Bo Bichette",
+          "position": "3B"
+        },
+        {
+          "slot": 4,
+          "person_id": 701807,
+          "name": "Carson Benge",
+          "position": "RF"
+        },
+        {
+          "slot": 5,
+          "person_id": 676724,
+          "name": "Jared Young",
+          "position": "1B"
+        },
+        {
+          "slot": 6,
+          "person_id": 543760,
+          "name": "Marcus Semien",
+          "position": "2B"
+        },
+        {
+          "slot": 7,
+          "person_id": 805999,
+          "name": "A.J. Ewing",
+          "position": "CF"
+        },
+        {
+          "slot": 8,
+          "person_id": 620443,
+          "name": "Luis Torrens",
+          "position": "C"
+        },
+        {
+          "slot": 9,
+          "person_id": 703492,
+          "name": "Nick Morabito",
+          "position": "LF"
+        }
+      ],
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 502671,
+          "name": "Paul Goldschmidt",
+          "position": "1B"
+        },
+        {
+          "slot": 2,
+          "person_id": 592450,
+          "name": "Aaron Judge",
+          "position": "DH"
+        },
+        {
+          "slot": 3,
+          "person_id": 641355,
+          "name": "Cody Bellinger",
+          "position": "LF"
+        },
+        {
+          "slot": 4,
+          "person_id": 671218,
+          "name": "Heliot Ramos",
+          "position": "RF"
+        },
+        {
+          "slot": 5,
+          "person_id": 642708,
+          "name": "Amed Rosario",
+          "position": "3B"
+        },
+        {
+          "slot": 6,
+          "person_id": 682987,
+          "name": "Spencer Jones",
+          "position": "CF"
+        },
+        {
+          "slot": 7,
+          "person_id": 806146,
+          "name": "George Lombard Jr.",
+          "position": "SS"
+        },
+        {
+          "slot": 8,
+          "person_id": 683011,
+          "name": "Anthony Volpe",
+          "position": "2B"
+        },
+        {
+          "slot": 9,
+          "person_id": 669224,
+          "name": "Austin Wells",
+          "position": "C"
+        }
+      ],
       "away_team_id": 121,
       "home_team_id": 147,
       "venue_id": 3313,
-      "away_bullpen": "8/182",
-      "home_bullpen": "8/174"
+      "away_bullpen": "7/162",
+      "home_bullpen": "7/206"
     },
     {
-      "id": "822767",
+      "id": "824630",
+      "sport": "mlb",
+      "game_state": "live",
+      "kickoff_utc": "2026-09-12T18:20:00Z",
+      "game_pk": 824630,
+      "away": "PIT",
+      "home": "CHC",
+      "away_name": "Pittsburgh Pirates",
+      "home_name": "Chicago Cubs",
+      "away_record": "74-74",
+      "home_record": "82-66",
+      "away_score": 0,
+      "home_score": 0,
+      "venue": "Wrigley Field",
+      "venue_city": "Chicago, IL",
+      "broadcast": "SportsNet Pittsburgh, Marquee Sports Network",
+      "conditions": "83\u00b0 \u00b7 Partly Cloudy \u00b7 11 mph, Out To RF",
+      "weather_temp": "83",
+      "weather_cond": "Partly Cloudy",
+      "weather_wind": "11 mph, Out To RF",
+      "away_starter": "Paul Skenes",
+      "home_starter": "Clay Holmes",
+      "away_starter_id": 694973,
+      "home_starter_id": 605280,
+      "away_hand": "R",
+      "home_hand": "R",
+      "away_era": "3.83",
+      "home_era": "2.83",
+      "away_lineup_state": "Confirmed",
+      "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 665833,
+          "name": "Oneil Cruz",
+          "position": "CF"
+        },
+        {
+          "slot": 2,
+          "person_id": 664040,
+          "name": "Brandon Lowe",
+          "position": "2B"
+        },
+        {
+          "slot": 3,
+          "person_id": 668804,
+          "name": "Bryan Reynolds",
+          "position": "LF"
+        },
+        {
+          "slot": 4,
+          "person_id": 804606,
+          "name": "Konnor Griffin",
+          "position": "SS"
+        },
+        {
+          "slot": 5,
+          "person_id": 656811,
+          "name": "Ryan O'Hearn",
+          "position": "DH"
+        },
+        {
+          "slot": 6,
+          "person_id": 687462,
+          "name": "Spencer Horwitz",
+          "position": "1B"
+        },
+        {
+          "slot": 7,
+          "person_id": 663968,
+          "name": "Jake Mangum",
+          "position": "RF"
+        },
+        {
+          "slot": 8,
+          "person_id": 694378,
+          "name": "Jacob Gonzalez",
+          "position": "3B"
+        },
+        {
+          "slot": 9,
+          "person_id": 680779,
+          "name": "Henry Davis",
+          "position": "C"
+        }
+      ],
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 691718,
+          "name": "Pete Crow-Armstrong",
+          "position": "CF"
+        },
+        {
+          "slot": 2,
+          "person_id": 608324,
+          "name": "Alex Bregman",
+          "position": "3B"
+        },
+        {
+          "slot": 3,
+          "person_id": 683737,
+          "name": "Michael Busch",
+          "position": "1B"
+        },
+        {
+          "slot": 4,
+          "person_id": 664023,
+          "name": "Ian Happ",
+          "position": "LF"
+        },
+        {
+          "slot": 5,
+          "person_id": 663538,
+          "name": "Nico Hoerner",
+          "position": "SS"
+        },
+        {
+          "slot": 6,
+          "person_id": 624424,
+          "name": "Michael Conforto",
+          "position": "DH"
+        },
+        {
+          "slot": 7,
+          "person_id": 608348,
+          "name": "Carson Kelly",
+          "position": "C"
+        },
+        {
+          "slot": 8,
+          "person_id": 699393,
+          "name": "Pedro Ram\u00edrez",
+          "position": "2B"
+        },
+        {
+          "slot": 9,
+          "person_id": 621438,
+          "name": "Tyrone Taylor",
+          "position": "RF"
+        }
+      ],
+      "away_team_id": 134,
+      "home_team_id": 112,
+      "venue_id": 17,
+      "away_bullpen": "9/263",
+      "home_bullpen": "5/89"
+    },
+    {
+      "id": "822768",
       "sport": "mlb",
       "game_state": "scheduled",
-      "kickoff_utc": "2026-09-11T23:07:00Z",
-      "game_pk": 822767,
+      "kickoff_utc": "2026-09-12T19:07:00Z",
+      "game_pk": 822768,
       "away": "BAL",
       "home": "TOR",
       "away_name": "Baltimore Orioles",
       "home_name": "Toronto Blue Jays",
-      "away_record": "71-76",
-      "home_record": "73-74",
+      "away_record": "72-76",
+      "home_record": "73-75",
       "venue": "Rogers Centre",
       "venue_city": "Toronto, ON",
       "broadcast": "MASN, Sportsnet",
-      "away_starter": "Chris Bassitt",
-      "home_starter": "Max Scherzer",
-      "away_starter_id": 605135,
-      "home_starter_id": 453286,
+      "conditions": "72\u00b0 \u00b7 Sunny \u00b7 6 mph, R To L",
+      "weather_temp": "72",
+      "weather_cond": "Sunny",
+      "weather_wind": "6 mph, R To L",
+      "away_starter": "Kyle Bradish",
+      "home_starter": "Spencer Miles",
+      "away_starter_id": 680694,
+      "home_starter_id": 693686,
       "away_hand": "R",
       "home_hand": "R",
-      "away_era": "4.96",
-      "home_era": "6.03",
-      "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
+      "away_era": "3.91",
+      "home_era": "2.77",
+      "away_lineup_state": "Confirmed",
+      "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 687637,
+          "name": "Dylan Beavers",
+          "position": "LF"
+        },
+        {
+          "slot": 2,
+          "person_id": 624413,
+          "name": "Pete Alonso",
+          "position": "1B"
+        },
+        {
+          "slot": 3,
+          "person_id": 702616,
+          "name": "Jackson Holliday",
+          "position": "2B"
+        },
+        {
+          "slot": 4,
+          "person_id": 691723,
+          "name": "Coby Mayo",
+          "position": "DH"
+        },
+        {
+          "slot": 5,
+          "person_id": 683002,
+          "name": "Gunnar Henderson",
+          "position": "SS"
+        },
+        {
+          "slot": 6,
+          "person_id": 687952,
+          "name": "Christian Encarnacion-Strand",
+          "position": "3B"
+        },
+        {
+          "slot": 7,
+          "person_id": 677008,
+          "name": "Heston Kjerstad",
+          "position": "RF"
+        },
+        {
+          "slot": 8,
+          "person_id": 681297,
+          "name": "Colton Cowser",
+          "position": "CF"
+        },
+        {
+          "slot": 9,
+          "person_id": 665966,
+          "name": "Carlos Narv\u00e1ez",
+          "position": "C"
+        }
+      ],
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 703520,
+          "name": "Brett Bateman",
+          "position": "CF"
+        },
+        {
+          "slot": 2,
+          "person_id": 543807,
+          "name": "George Springer",
+          "position": "DH"
+        },
+        {
+          "slot": 3,
+          "person_id": 665489,
+          "name": "Vladimir Guerrero Jr.",
+          "position": "1B"
+        },
+        {
+          "slot": 4,
+          "person_id": 672386,
+          "name": "Alejandro Kirk",
+          "position": "C"
+        },
+        {
+          "slot": 5,
+          "person_id": 664770,
+          "name": "Nathan Lukes",
+          "position": "RF"
+        },
+        {
+          "slot": 6,
+          "person_id": 672960,
+          "name": "Kazuma Okamoto",
+          "position": "3B"
+        },
+        {
+          "slot": 7,
+          "person_id": 669701,
+          "name": "Josh Smith",
+          "position": "2B"
+        },
+        {
+          "slot": 8,
+          "person_id": 665926,
+          "name": "Andr\u00e9s Gim\u00e9nez",
+          "position": "SS"
+        },
+        {
+          "slot": 9,
+          "person_id": 657675,
+          "name": "Rudy Martin Jr.",
+          "position": "LF"
+        }
+      ],
       "away_team_id": 110,
       "home_team_id": 141,
       "venue_id": 14,
-      "away_bullpen": "8/143",
-      "home_bullpen": "6/123"
+      "away_bullpen": "5/122",
+      "home_bullpen": "8/178"
     },
     {
-      "id": "824711",
+      "id": "822685",
       "sport": "mlb",
       "game_state": "scheduled",
-      "kickoff_utc": "2026-09-11T23:10:00Z",
-      "game_pk": 824711,
+      "kickoff_utc": "2026-09-12T20:05:00Z",
+      "game_pk": 822685,
+      "away": "LAA",
+      "home": "WSH",
+      "away_name": "Los Angeles Angels",
+      "home_name": "Washington Nationals",
+      "away_record": "56-91",
+      "home_record": "68-81",
+      "venue": "Nationals Park",
+      "venue_city": "Washington, DC",
+      "broadcast": "Nationals.TV, ABTV, presented by Pechanga Resort Casino",
+      "conditions": "82\u00b0 \u00b7 Partly Cloudy \u00b7 9 mph, Out To LF",
+      "weather_temp": "82",
+      "weather_cond": "Partly Cloudy",
+      "weather_wind": "9 mph, Out To LF",
+      "away_starter": "Walbert Ure\u00f1a",
+      "home_starter": "Andrew Alvarez",
+      "away_starter_id": 700712,
+      "home_starter_id": 674841,
+      "away_hand": "R",
+      "home_hand": "L",
+      "away_era": "2.74",
+      "home_era": "3.60",
+      "away_lineup_state": "Confirmed",
+      "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 687263,
+          "name": "Zach Neto",
+          "position": "SS"
+        },
+        {
+          "slot": 2,
+          "person_id": 545361,
+          "name": "Mike Trout",
+          "position": "CF"
+        },
+        {
+          "slot": 3,
+          "person_id": 642350,
+          "name": "Jose Siri",
+          "position": "LF"
+        },
+        {
+          "slot": 4,
+          "person_id": 687093,
+          "name": "Vaughn Grissom",
+          "position": "1B"
+        },
+        {
+          "slot": 5,
+          "person_id": 695681,
+          "name": "Christian Moore",
+          "position": "2B"
+        },
+        {
+          "slot": 6,
+          "person_id": 672724,
+          "name": "Oswald Peraza",
+          "position": "DH"
+        },
+        {
+          "slot": 7,
+          "person_id": 694203,
+          "name": "Denzer Guzman",
+          "position": "3B"
+        },
+        {
+          "slot": 8,
+          "person_id": 677347,
+          "name": "Kyren Paris",
+          "position": "RF"
+        },
+        {
+          "slot": 9,
+          "person_id": 623168,
+          "name": "Tyler Heineman",
+          "position": "C"
+        }
+      ],
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 695578,
+          "name": "James Wood",
+          "position": "DH"
+        },
+        {
+          "slot": 2,
+          "person_id": 694673,
+          "name": "Abimelec Ortiz",
+          "position": "1B"
+        },
+        {
+          "slot": 3,
+          "person_id": 686611,
+          "name": "Dylan Crews",
+          "position": "RF"
+        },
+        {
+          "slot": 4,
+          "person_id": 682928,
+          "name": "CJ Abrams",
+          "position": "SS"
+        },
+        {
+          "slot": 5,
+          "person_id": 691781,
+          "name": "Brady House",
+          "position": "3B"
+        },
+        {
+          "slot": 6,
+          "person_id": 695734,
+          "name": "Daylen Lile",
+          "position": "LF"
+        },
+        {
+          "slot": 7,
+          "person_id": 660688,
+          "name": "Keibert Ruiz",
+          "position": "C"
+        },
+        {
+          "slot": 8,
+          "person_id": 678391,
+          "name": "Jorbit Vivas",
+          "position": "2B"
+        },
+        {
+          "slot": 9,
+          "person_id": 696285,
+          "name": "Jacob Young",
+          "position": "CF"
+        }
+      ],
+      "away_team_id": 108,
+      "home_team_id": 120,
+      "venue_id": 3309,
+      "away_bullpen": "6/119",
+      "home_bullpen": "6/149"
+    },
+    {
+      "id": "823170",
+      "sport": "mlb",
+      "game_state": "scheduled",
+      "kickoff_utc": "2026-09-12T20:05:00Z",
+      "game_pk": 823170,
+      "away": "SD",
+      "home": "SF",
+      "away_name": "San Diego Padres",
+      "home_name": "San Francisco Giants",
+      "away_record": "79-68",
+      "home_record": "62-86",
+      "venue": "Oracle Park",
+      "venue_city": "San Francisco, CA",
+      "broadcast": "NBCS BA, Padres.TV Presented by UC San Diego Health",
+      "conditions": "62\u00b0 \u00b7 Sunny \u00b7 22 mph, Out To CF",
+      "weather_temp": "62",
+      "weather_cond": "Sunny",
+      "weather_wind": "22 mph, Out To CF",
+      "away_starter": "Michael King",
+      "home_starter": "Cesar Perdomo",
+      "away_starter_id": 650633,
+      "home_starter_id": 702885,
+      "away_hand": "R",
+      "home_hand": "L",
+      "away_era": "3.00",
+      "home_era": "0.90",
+      "away_lineup_state": "Confirmed",
+      "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 665487,
+          "name": "Fernando Tatis Jr.",
+          "position": "2B"
+        },
+        {
+          "slot": 2,
+          "person_id": 687957,
+          "name": "Dustin Harris",
+          "position": "RF"
+        },
+        {
+          "slot": 3,
+          "person_id": 592518,
+          "name": "Manny Machado",
+          "position": "3B"
+        },
+        {
+          "slot": 4,
+          "person_id": 669134,
+          "name": "Luis Campusano",
+          "position": "C"
+        },
+        {
+          "slot": 5,
+          "person_id": 701538,
+          "name": "Jackson Merrill",
+          "position": "CF"
+        },
+        {
+          "slot": 6,
+          "person_id": 669720,
+          "name": "Austin Hays",
+          "position": "DH"
+        },
+        {
+          "slot": 7,
+          "person_id": 593428,
+          "name": "Xander Bogaerts",
+          "position": "SS"
+        },
+        {
+          "slot": 8,
+          "person_id": 630105,
+          "name": "Jake Cronenworth",
+          "position": "1B"
+        },
+        {
+          "slot": 9,
+          "person_id": 669392,
+          "name": "Samad Taylor",
+          "position": "LF"
+        }
+      ],
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 687551,
+          "name": "Drew Gilbert",
+          "position": "CF"
+        },
+        {
+          "slot": 2,
+          "person_id": 646240,
+          "name": "Rafael Devers",
+          "position": "DH"
+        },
+        {
+          "slot": 3,
+          "person_id": 805811,
+          "name": "Bryce Eldridge",
+          "position": "1B"
+        },
+        {
+          "slot": 4,
+          "person_id": 813841,
+          "name": "Jonah Cox",
+          "position": "2B"
+        },
+        {
+          "slot": 5,
+          "person_id": 806367,
+          "name": "Turner Hill",
+          "position": "LF"
+        },
+        {
+          "slot": 6,
+          "person_id": 808982,
+          "name": "Jung Hoo Lee",
+          "position": "RF"
+        },
+        {
+          "slot": 7,
+          "person_id": 694376,
+          "name": "Shay Whitcomb",
+          "position": "3B"
+        },
+        {
+          "slot": 8,
+          "person_id": 701852,
+          "name": "Drew Cavanaugh",
+          "position": "C"
+        },
+        {
+          "slot": 9,
+          "person_id": 683766,
+          "name": "Christian Koss",
+          "position": "SS"
+        }
+      ],
+      "away_team_id": 135,
+      "home_team_id": 137,
+      "venue_id": 2395,
+      "away_bullpen": "8/149",
+      "home_bullpen": "4/134"
+    },
+    {
+      "id": "824712",
+      "sport": "mlb",
+      "game_state": "scheduled",
+      "kickoff_utc": "2026-09-12T20:10:00Z",
+      "game_pk": 824712,
       "away": "KC",
       "home": "BOS",
       "away_name": "Kansas City Royals",
       "home_name": "Boston Red Sox",
-      "away_record": "65-82",
-      "home_record": "80-67",
+      "away_record": "66-82",
+      "home_record": "80-68",
       "venue": "Fenway Park",
       "venue_city": "Boston, MA",
       "broadcast": "Royals.TV, NESN",
-      "away_starter": "Seth Lugo",
-      "home_starter": "Sonny Gray",
-      "away_starter_id": 607625,
-      "home_starter_id": 543243,
+      "conditions": "75\u00b0 \u00b7 Partly Cloudy \u00b7 9 mph, In From RF",
+      "weather_temp": "75",
+      "weather_cond": "Partly Cloudy",
+      "weather_wind": "9 mph, In From RF",
+      "away_starter": "Randy Dobnak",
+      "home_starter": "Ranger Suarez",
+      "away_starter_id": 677976,
+      "home_starter_id": 624133,
       "away_hand": "R",
-      "home_hand": "R",
-      "away_era": "5.04",
-      "home_era": "2.69",
-      "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
+      "home_hand": "L",
+      "away_era": "2.54",
+      "home_era": "3.44",
+      "away_lineup_state": "Confirmed",
+      "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 695600,
+          "name": "Carter Jensen",
+          "position": "C"
+        },
+        {
+          "slot": 2,
+          "person_id": 677951,
+          "name": "Bobby Witt Jr.",
+          "position": "SS"
+        },
+        {
+          "slot": 3,
+          "person_id": 521692,
+          "name": "Salvador Perez",
+          "position": "DH"
+        },
+        {
+          "slot": 4,
+          "person_id": 686469,
+          "name": "Vinnie Pasquantino",
+          "position": "1B"
+        },
+        {
+          "slot": 5,
+          "person_id": 679845,
+          "name": "Nick Loftin",
+          "position": "3B"
+        },
+        {
+          "slot": 6,
+          "person_id": 686681,
+          "name": "Michael Massey",
+          "position": "2B"
+        },
+        {
+          "slot": 7,
+          "person_id": 670231,
+          "name": "John Rave",
+          "position": "RF"
+        },
+        {
+          "slot": 8,
+          "person_id": 683090,
+          "name": "Matthew Lugo",
+          "position": "LF"
+        },
+        {
+          "slot": 9,
+          "person_id": 664728,
+          "name": "Kyle Isbel",
+          "position": "CF"
+        }
+      ],
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 701350,
+          "name": "Roman Anthony",
+          "position": "LF"
+        },
+        {
+          "slot": 2,
+          "person_id": 681508,
+          "name": "Mickey Gasper",
+          "position": "DH"
+        },
+        {
+          "slot": 3,
+          "person_id": 668939,
+          "name": "Adley Rutschman",
+          "position": "C"
+        },
+        {
+          "slot": 4,
+          "person_id": 677800,
+          "name": "Wilyer Abreu",
+          "position": "RF"
+        },
+        {
+          "slot": 5,
+          "person_id": 596115,
+          "name": "Trevor Story",
+          "position": "SS"
+        },
+        {
+          "slot": 6,
+          "person_id": 686765,
+          "name": "Nick Sogard",
+          "position": "1B"
+        },
+        {
+          "slot": 7,
+          "person_id": 680776,
+          "name": "Jarren Duran",
+          "position": "CF"
+        },
+        {
+          "slot": 8,
+          "person_id": 702332,
+          "name": "Caleb Durbin",
+          "position": "3B"
+        },
+        {
+          "slot": 9,
+          "person_id": 678011,
+          "name": "Anthony Seigler",
+          "position": "2B"
+        }
+      ],
       "away_team_id": 118,
       "home_team_id": 111,
       "venue_id": 3,
-      "away_bullpen": "8/163",
-      "home_bullpen": "5/93"
+      "away_bullpen": "7/116",
+      "home_bullpen": "5/97"
     },
     {
-      "id": "822930",
+      "id": "823657",
       "sport": "mlb",
       "game_state": "scheduled",
-      "kickoff_utc": "2026-09-11T23:10:00Z",
-      "game_pk": 822930,
+      "kickoff_utc": "2026-09-12T20:10:00Z",
+      "game_pk": 823657,
+      "away": "CLE",
+      "home": "MIN",
+      "away_name": "Cleveland Guardians",
+      "home_name": "Minnesota Twins",
+      "away_record": "75-73",
+      "home_record": "69-78",
+      "venue": "Target Field",
+      "venue_city": "Minneapolis, MN",
+      "broadcast": "Guardians.TV Presented by Progressive, Twins.TV Presented by Progressive",
+      "conditions": "73\u00b0 \u00b7 Sunny \u00b7 14 mph, Out To RF",
+      "weather_temp": "73",
+      "weather_cond": "Sunny",
+      "weather_wind": "14 mph, Out To RF",
+      "away_starter": "Daniel Espino",
+      "home_starter": "Connor Prielipp",
+      "away_starter_id": 682982,
+      "home_starter_id": 687570,
+      "away_hand": "R",
+      "home_hand": "L",
+      "away_era": "2.70",
+      "home_era": "5.25",
+      "away_lineup_state": "Confirmed",
+      "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 680757,
+          "name": "Steven Kwan",
+          "position": "CF"
+        },
+        {
+          "slot": 2,
+          "person_id": 608070,
+          "name": "Jos\u00e9 Ram\u00edrez",
+          "position": "3B"
+        },
+        {
+          "slot": 3,
+          "person_id": 800050,
+          "name": "Chase DeLauter",
+          "position": "DH"
+        },
+        {
+          "slot": 4,
+          "person_id": 666176,
+          "name": "Jo Adell",
+          "position": "RF"
+        },
+        {
+          "slot": 5,
+          "person_id": 682657,
+          "name": "Angel Mart\u00ednez",
+          "position": "LF"
+        },
+        {
+          "slot": 6,
+          "person_id": 681807,
+          "name": "David Fry",
+          "position": "1B"
+        },
+        {
+          "slot": 7,
+          "person_id": 683953,
+          "name": "Travis Bazzana",
+          "position": "2B"
+        },
+        {
+          "slot": 8,
+          "person_id": 595978,
+          "name": "Austin Hedges",
+          "position": "C"
+        },
+        {
+          "slot": 9,
+          "person_id": 677587,
+          "name": "Brayan Rocchio",
+          "position": "SS"
+        }
+      ],
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 807712,
+          "name": "Luke Keaschall",
+          "position": "RF"
+        },
+        {
+          "slot": 2,
+          "person_id": 686797,
+          "name": "Brooks Lee",
+          "position": "3B"
+        },
+        {
+          "slot": 3,
+          "person_id": 665019,
+          "name": "Kody Clemens",
+          "position": "2B"
+        },
+        {
+          "slot": 4,
+          "person_id": 605137,
+          "name": "Josh Bell",
+          "position": "DH"
+        },
+        {
+          "slot": 5,
+          "person_id": 668904,
+          "name": "Royce Lewis",
+          "position": "1B"
+        },
+        {
+          "slot": 6,
+          "person_id": 701785,
+          "name": "Kaelen Culpepper",
+          "position": "SS"
+        },
+        {
+          "slot": 7,
+          "person_id": 605170,
+          "name": "Victor Caratini",
+          "position": "C"
+        },
+        {
+          "slot": 8,
+          "person_id": 668885,
+          "name": "Austin Martin",
+          "position": "LF"
+        },
+        {
+          "slot": 9,
+          "person_id": 691181,
+          "name": "Emmanuel Rodriguez",
+          "position": "CF"
+        }
+      ],
+      "away_team_id": 114,
+      "home_team_id": 142,
+      "venue_id": 3312,
+      "away_bullpen": "7/119",
+      "home_bullpen": "7/167"
+    },
+    {
+      "id": "823819",
+      "sport": "mlb",
+      "game_state": "scheduled",
+      "kickoff_utc": "2026-09-12T20:10:00Z",
+      "game_pk": 823819,
+      "away": "LAD",
+      "home": "MIA",
+      "away_name": "Los Angeles Dodgers",
+      "home_name": "Miami Marlins",
+      "away_record": "90-57",
+      "home_record": "72-76",
+      "venue": "loanDepot park",
+      "venue_city": "Miami, FL",
+      "broadcast": "SportsNet LA, Marlins.TV presented by Werner, Hoffman, Greig & Garcia",
+      "conditions": "72\u00b0 \u00b7 Roof Closed \u00b7 0 mph, None",
+      "weather_temp": "72",
+      "weather_cond": "Roof Closed",
+      "weather_wind": "0 mph, None",
+      "away_starter": "Tyler Glasnow",
+      "home_starter": "Tyler Phillips",
+      "away_starter_id": 607192,
+      "home_starter_id": 663969,
+      "away_hand": "R",
+      "home_hand": "R",
+      "away_era": "3.12",
+      "home_era": "3.51",
+      "away_lineup_state": "Confirmed",
+      "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 669242,
+          "name": "Tommy Edman",
+          "position": "CF"
+        },
+        {
+          "slot": 2,
+          "person_id": 518692,
+          "name": "Freddie Freeman",
+          "position": "1B"
+        },
+        {
+          "slot": 3,
+          "person_id": 605141,
+          "name": "Mookie Betts",
+          "position": "SS"
+        },
+        {
+          "slot": 4,
+          "person_id": 571970,
+          "name": "Max Muncy",
+          "position": "3B"
+        },
+        {
+          "slot": 5,
+          "person_id": 663656,
+          "name": "Kyle Tucker",
+          "position": "RF"
+        },
+        {
+          "slot": 6,
+          "person_id": 606192,
+          "name": "Teoscar Hern\u00e1ndez",
+          "position": "LF"
+        },
+        {
+          "slot": 7,
+          "person_id": 800543,
+          "name": "Josue De Paula",
+          "position": "DH"
+        },
+        {
+          "slot": 8,
+          "person_id": 676439,
+          "name": "Hunter Feduccia",
+          "position": "C"
+        },
+        {
+          "slot": 9,
+          "person_id": 690976,
+          "name": "Alex Freeland",
+          "position": "2B"
+        }
+      ],
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 669065,
+          "name": "Kyle Stowers",
+          "position": "1B"
+        },
+        {
+          "slot": 2,
+          "person_id": 681715,
+          "name": "Heriberto Hern\u00e1ndez",
+          "position": "LF"
+        },
+        {
+          "slot": 3,
+          "person_id": 665052,
+          "name": "Griffin Conine",
+          "position": "DH"
+        },
+        {
+          "slot": 4,
+          "person_id": 672640,
+          "name": "Otto Lopez",
+          "position": "SS"
+        },
+        {
+          "slot": 5,
+          "person_id": 805300,
+          "name": "Jakob Marsee",
+          "position": "CF"
+        },
+        {
+          "slot": 6,
+          "person_id": 691594,
+          "name": "Javier Sanoja",
+          "position": "2B"
+        },
+        {
+          "slot": 7,
+          "person_id": 683357,
+          "name": "Owen Caissie",
+          "position": "RF"
+        },
+        {
+          "slot": 8,
+          "person_id": 688363,
+          "name": "Graham Pauley",
+          "position": "3B"
+        },
+        {
+          "slot": 9,
+          "person_id": 691788,
+          "name": "Joe Mack",
+          "position": "C"
+        }
+      ],
+      "away_team_id": 119,
+      "home_team_id": 146,
+      "venue_id": 4169,
+      "away_bullpen": "5/98",
+      "home_bullpen": "8/172"
+    },
+    {
+      "id": "822927",
+      "sport": "mlb",
+      "game_state": "scheduled",
+      "kickoff_utc": "2026-09-12T22:10:00Z",
+      "game_pk": 822927,
       "away": "HOU",
       "home": "TB",
       "away_name": "Houston Astros",
       "home_name": "Tampa Bay Rays",
-      "away_record": "75-72",
-      "home_record": "87-59",
+      "away_record": "75-73",
+      "home_record": "88-59",
       "venue": "Tropicana Field",
       "venue_city": "St. Petersburg, FL",
       "broadcast": "Space City Home Network, Rays.TV",
-      "away_starter": "Miguel Ullola",
-      "home_starter": "Drew Rasmussen",
-      "away_starter_id": 699044,
-      "home_starter_id": 656876,
+      "away_starter": "Peter Lambert",
+      "home_starter": "Ian Seymour",
+      "away_starter_id": 663567,
+      "home_starter_id": 693855,
       "away_hand": "R",
-      "home_hand": "R",
-      "away_era": "3.86",
-      "home_era": "2.88",
+      "home_hand": "L",
+      "away_era": "3.67",
+      "home_era": "4.33",
       "away_lineup_state": "Expected",
       "home_lineup_state": "Expected",
       "away_team_id": 117,
       "home_team_id": 139,
       "venue_id": 12,
-      "away_bullpen": "7/177",
-      "home_bullpen": "7/137"
+      "away_bullpen": "8/220",
+      "home_bullpen": "8/120"
     },
     {
-      "id": "823817",
+      "id": "823737",
       "sport": "mlb",
       "game_state": "scheduled",
-      "kickoff_utc": "2026-09-11T23:10:00Z",
-      "game_pk": 823817,
-      "away": "LAD",
-      "home": "MIA",
-      "away_name": "Los Angeles Dodgers",
-      "home_name": "Miami Marlins",
-      "away_record": "89-57",
-      "home_record": "72-75",
-      "venue": "loanDepot park",
-      "venue_city": "Miami, FL",
-      "broadcast": "SportsNet LA, Marlins.TV presented by Werner, Hoffman, Greig & Garcia",
-      "home_starter": "Ryan Gusto",
-      "home_starter_id": 687473,
-      "home_hand": "R",
-      "home_era": "4.23",
-      "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
-      "away_team_id": 119,
-      "home_team_id": 146,
-      "venue_id": 4169,
-      "away_bullpen": "4/60",
-      "home_bullpen": "8/190"
-    },
-    {
-      "id": "824873",
-      "sport": "mlb",
-      "game_state": "scheduled",
-      "kickoff_utc": "2026-09-11T23:15:00Z",
-      "game_pk": 824873,
-      "away": "PHI",
-      "home": "ATL",
-      "away_name": "Philadelphia Phillies",
-      "home_name": "Atlanta Braves",
-      "away_record": "82-65",
-      "home_record": "86-61",
-      "venue": "Truist Park",
-      "venue_city": "Atlanta, GA",
-      "broadcast": "NBCSP, BravesVision",
-      "away_starter": "Aaron Nola",
-      "home_starter": "Chris Sale",
-      "away_starter_id": 605400,
-      "home_starter_id": 519242,
-      "away_hand": "R",
-      "home_hand": "L",
-      "away_era": "4.76",
-      "home_era": "2.10",
-      "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
-      "away_team_id": 143,
-      "home_team_id": 144,
-      "venue_id": 4705,
-      "away_bullpen": "7/154",
-      "home_bullpen": "7/171"
-    },
-    {
-      "id": "823736",
-      "sport": "mlb",
-      "game_state": "scheduled",
-      "kickoff_utc": "2026-09-11T23:45:00Z",
-      "game_pk": 823736,
+      "kickoff_utc": "2026-09-12T23:10:00Z",
+      "game_pk": 823737,
       "away": "CIN",
       "home": "MIL",
       "away_name": "Cincinnati Reds",
       "home_name": "Milwaukee Brewers",
-      "away_record": "69-77",
-      "home_record": "91-56",
+      "away_record": "69-78",
+      "home_record": "92-56",
       "venue": "American Family Field",
       "venue_city": "Milwaukee, WI",
-      "broadcast": "Apple TV",
-      "away_starter": "Andrew Abbott",
-      "home_starter": "Dustin May",
-      "away_starter_id": 671096,
-      "home_starter_id": 669160,
-      "away_hand": "L",
-      "home_hand": "R",
-      "away_era": "4.43",
-      "home_era": "4.69",
+      "broadcast": "Reds.TV, Brewers.TV Presented by Potawatomi Sportsbook",
+      "away_starter": "Brady Singer",
+      "home_starter": "Shane Drohan",
+      "away_starter_id": 663903,
+      "home_starter_id": 675660,
+      "away_hand": "R",
+      "home_hand": "L",
+      "away_era": "5.03",
+      "home_era": "4.09",
       "away_lineup_state": "Expected",
       "home_lineup_state": "Expected",
       "away_team_id": 113,
       "home_team_id": 158,
       "venue_id": 32,
-      "away_bullpen": "6/142",
-      "home_bullpen": "8/143"
+      "away_bullpen": "7/188",
+      "home_bullpen": "4/110"
     },
     {
-      "id": "823659",
+      "id": "824870",
       "sport": "mlb",
       "game_state": "scheduled",
-      "kickoff_utc": "2026-09-12T00:10:00Z",
-      "game_pk": 823659,
-      "away": "CLE",
-      "home": "MIN",
-      "away_name": "Cleveland Guardians",
-      "home_name": "Minnesota Twins",
-      "away_record": "74-73",
-      "home_record": "69-77",
-      "venue": "Target Field",
-      "venue_city": "Minneapolis, MN",
-      "broadcast": "Guardians.TV Presented by Progressive, Twins.TV Presented by Progressive",
-      "away_starter": "Parker Messick",
-      "home_starter": "Taj Bradley",
-      "away_starter_id": 800048,
-      "home_starter_id": 671737,
-      "away_hand": "L",
+      "kickoff_utc": "2026-09-12T23:15:00Z",
+      "game_pk": 824870,
+      "away": "PHI",
+      "home": "ATL",
+      "away_name": "Philadelphia Phillies",
+      "home_name": "Atlanta Braves",
+      "away_record": "82-66",
+      "home_record": "87-61",
+      "venue": "Truist Park",
+      "venue_city": "Atlanta, GA",
+      "broadcast": "NBCSP, BravesVision",
+      "home_starter": "Tyler Mahle",
+      "home_starter_id": 641816,
       "home_hand": "R",
-      "away_era": "2.53",
-      "home_era": "3.95",
+      "home_era": "4.05",
       "away_lineup_state": "Expected",
       "home_lineup_state": "Expected",
-      "away_team_id": 114,
-      "home_team_id": 142,
-      "venue_id": 3312,
-      "away_bullpen": "7/145",
-      "home_bullpen": "8/166"
+      "away_team_id": 143,
+      "home_team_id": 144,
+      "venue_id": 4705,
+      "away_bullpen": "6/149",
+      "home_bullpen": "6/130"
     },
     {
-      "id": "823012",
+      "id": "823009",
       "sport": "mlb",
       "game_state": "scheduled",
-      "kickoff_utc": "2026-09-12T00:15:00Z",
-      "game_pk": 823012,
+      "kickoff_utc": "2026-09-12T23:15:00Z",
+      "game_pk": 823009,
       "away": "CWS",
       "home": "STL",
       "away_name": "Chicago White Sox",
       "home_name": "St. Louis Cardinals",
-      "away_record": "75-71",
-      "home_record": "72-75",
+      "away_record": "75-72",
+      "home_record": "73-75",
       "venue": "Busch Stadium",
       "venue_city": "St. Louis, MO",
       "broadcast": "Chicago Sports Network, Cardinals.TV Presented by bet365",
-      "away_starter": "Anthony Kay",
-      "home_starter": "Matthew Liberatore",
-      "away_starter_id": 641743,
-      "home_starter_id": 669461,
+      "away_starter": "Sean Newcomb",
+      "home_starter": "Kyle Leahy",
+      "away_starter_id": 656794,
+      "home_starter_id": 681517,
       "away_hand": "L",
-      "home_hand": "L",
-      "away_era": "4.47",
-      "home_era": "5.57",
+      "home_hand": "R",
+      "away_era": "2.71",
+      "home_era": "3.41",
       "away_lineup_state": "Expected",
       "home_lineup_state": "Expected",
       "away_team_id": 145,
       "home_team_id": 138,
       "venue_id": 2889,
-      "away_bullpen": "9/300",
-      "home_bullpen": "5/99"
+      "away_bullpen": "7/257",
+      "home_bullpen": "7/150"
     },
     {
-      "id": "824954",
+      "id": "825035",
       "sport": "mlb",
       "game_state": "scheduled",
-      "kickoff_utc": "2026-09-12T01:40:00Z",
-      "game_pk": 824954,
-      "away": "SEA",
-      "home": "ATH",
-      "away_name": "Seattle Mariners",
-      "home_name": "Athletics",
-      "away_record": "69-78",
-      "home_record": "59-88",
-      "venue": "Sutter Health Park",
-      "venue_city": "Sacramento, CA",
-      "broadcast": "NBCSCA, Mariners.TV",
-      "away_starter": "George Kirby",
-      "home_starter": "Jeffrey Springs",
-      "away_starter_id": 669923,
-      "home_starter_id": 605488,
-      "away_hand": "R",
-      "home_hand": "L",
-      "away_era": "4.18",
-      "home_era": "6.02",
-      "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
-      "away_team_id": 136,
-      "home_team_id": 133,
-      "venue_id": 2529,
-      "away_bullpen": "9/193",
-      "home_bullpen": "6/126"
-    },
-    {
-      "id": "825036",
-      "sport": "mlb",
-      "game_state": "scheduled",
-      "kickoff_utc": "2026-09-12T01:40:00Z",
-      "game_pk": 825036,
+      "kickoff_utc": "2026-09-13T00:10:00Z",
+      "game_pk": 825035,
       "away": "TEX",
       "home": "AZ",
       "away_name": "Texas Rangers",
       "home_name": "Arizona Diamondbacks",
-      "away_record": "72-75",
-      "home_record": "78-69",
+      "away_record": "72-76",
+      "home_record": "79-69",
       "venue": "Chase Field",
       "venue_city": "Phoenix, AZ",
       "broadcast": "DBACKS.TV, Rangers Sports Network, presented by Progressive",
+      "away_starter": "Kumar Rocker",
+      "home_starter": "Brandon Pfaadt",
+      "away_starter_id": 677958,
+      "home_starter_id": 694297,
+      "away_hand": "R",
+      "home_hand": "R",
+      "away_era": "4.61",
+      "home_era": "3.53",
       "away_lineup_state": "Expected",
       "home_lineup_state": "Expected",
       "away_team_id": 140,
       "home_team_id": 109,
       "venue_id": 15,
-      "away_bullpen": "6/147",
-      "home_bullpen": "8/182"
+      "away_bullpen": "8/175",
+      "home_bullpen": "6/133"
     },
     {
-      "id": "823173",
+      "id": "824955",
       "sport": "mlb",
       "game_state": "scheduled",
-      "kickoff_utc": "2026-09-12T02:15:00Z",
-      "game_pk": 823173,
-      "away": "SD",
-      "home": "SF",
-      "away_name": "San Diego Padres",
-      "home_name": "San Francisco Giants",
-      "away_record": "78-68",
-      "home_record": "62-85",
-      "venue": "Oracle Park",
-      "venue_city": "San Francisco, CA",
-      "broadcast": "Apple TV",
-      "away_starter": "Robbie Ray",
-      "home_starter": "Anthony Molina",
-      "away_starter_id": 592662,
-      "home_starter_id": 683627,
-      "away_hand": "L",
-      "home_hand": "R",
-      "away_era": "3.39",
-      "home_era": "2.79",
+      "kickoff_utc": "2026-09-13T01:40:00Z",
+      "game_pk": 824955,
+      "away": "SEA",
+      "home": "ATH",
+      "away_name": "Seattle Mariners",
+      "home_name": "Athletics",
+      "away_record": "69-79",
+      "home_record": "60-88",
+      "venue": "Sutter Health Park",
+      "venue_city": "Sacramento, CA",
+      "broadcast": "NBCSCA, Mariners.TV",
+      "away_starter": "Bryan Woo",
+      "home_starter": "Gage Jump",
+      "away_starter_id": 693433,
+      "home_starter_id": 695611,
+      "away_hand": "R",
+      "home_hand": "L",
+      "away_era": "4.03",
+      "home_era": "5.12",
       "away_lineup_state": "Expected",
       "home_lineup_state": "Expected",
-      "away_team_id": 135,
-      "home_team_id": 137,
-      "venue_id": 2395,
-      "away_bullpen": "7/110",
-      "home_bullpen": "6/116"
+      "away_team_id": 136,
+      "home_team_id": 133,
+      "venue_id": 2529,
+      "away_bullpen": "6/136",
+      "home_bullpen": "5/130"
     }
   ]
 }

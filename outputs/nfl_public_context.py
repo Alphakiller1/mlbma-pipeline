@@ -84,7 +84,9 @@ SCHEME_GROUPS = {
     "response": (
         "pass_epa", "rush_epa", "pass_success_rate", "rush_success_rate",
         "pass_epa_man", "pass_epa_zone", "pass_epa_blitz", "pass_epa_pressure",
-        "pass_epa_play_action",
+        "pass_epa_play_action", "pass_epa_cover_0", "pass_epa_cover_1",
+        "pass_epa_cover_2", "pass_epa_cover_3", "pass_epa_cover_4",
+        "pass_epa_cover_6", "pass_epa_cover_2_man",
     ),
     "target_share": ("target_share_rb_all", "target_share_wr_all", "target_share_te_all"),
 }
@@ -167,6 +169,7 @@ def team_scheme(board: dict) -> dict[str, dict]:
             continue
         entry = {
             "source_seasons": row.get("source_seasons") or [],
+            "participation_source_seasons": row.get("participation_source_seasons") or [],
             "charting_samples": row.get("charting_samples"),
             "coverage_samples": row.get("coverage_samples"),
             "offense_plays": row.get("offense_plays"),
@@ -242,6 +245,47 @@ def key_players(board: dict) -> dict[str, list[dict]]:
     for team, players in by_team.items():
         players.sort(key=lambda pl: (order.index(pl["position"]), pl["depth_rank"]))
     return by_team
+
+
+PLAYER_COVERAGE_SPLITS = {
+    "all", "man", "zone", "cover_0", "cover_1", "cover_2", "cover_3",
+    "cover_4", "cover_6", "cover_2_man",
+}
+PLAYER_COVERAGE_FIELDS = (
+    "targets", "receptions", "receiving_yards", "touchdowns", "catch_rate",
+    "yards_per_target", "epa_per_target",
+)
+
+
+def player_coverage(board: dict) -> dict[str, list[dict]]:
+    """Allowlist observed RB/WR/TE coverage splits from the producer board."""
+    out: dict[str, list[dict]] = {}
+    for row in board.get("player_coverage_profiles") or []:
+        team = canon(row.get("team"))
+        position = str(row.get("position") or "").upper()
+        name = str(row.get("player_name") or "").strip()
+        season = row.get("source_season")
+        if not team or position not in {"RB", "WR", "TE"} or not name or season is None:
+            continue
+        splits = []
+        for coverage, values in (row.get("splits") or {}).items():
+            if coverage not in PLAYER_COVERAGE_SPLITS or not isinstance(values, dict):
+                continue
+            stats = {key: values[key] for key in PLAYER_COVERAGE_FIELDS
+                     if values.get(key) is not None}
+            if not stats.get("targets"):
+                continue
+            splits.append({"coverage": coverage, **stats})
+        if not splits:
+            continue
+        out.setdefault(team, []).append({
+            "player_id": str(row.get("player_id") or ""),
+            "player_name": name,
+            "position": position,
+            "source_season": int(season),
+            "splits": splits,
+        })
+    return out
 
 
 ESPN_DEPTH_CHART = (
@@ -330,6 +374,11 @@ def parse_depth_chart(payload: dict) -> dict:
             }
             headshot = sized_espn_headshot(
                 ((athlete.get("headshot") or {}).get("href")))
+            athlete_id = str(athlete.get("id") or "").strip()
+            if not headshot and athlete_id.isdigit():
+                headshot = sized_espn_headshot(
+                    f"https://a.espncdn.com/i/headshots/nfl/players/full/{athlete_id}.png"
+                )
             if headshot:
                 player["headshot_url"] = headshot
             players.append(player)
@@ -393,7 +442,7 @@ def fetch_depth_chart_context() -> tuple[dict[str, dict], dict[str, list[dict]]]
 
 def attach_known_headshots(lineups: dict[str, dict],
                            players: dict[str, list[dict]]) -> dict[str, dict]:
-    """Reuse already-published portraits where names match; never invent URLs."""
+    """Prefer model portraits while preserving official ESPN depth-chart art."""
     def name_key(value: object) -> str:
         return re.sub(r"[^a-z0-9]", "", str(value or "").lower())
 
@@ -408,8 +457,6 @@ def attach_known_headshots(lineups: dict[str, dict],
                 headshot = known.get(name_key(player["name"]))
                 if headshot:
                     player["headshot_url"] = headshot
-                else:
-                    player.pop("headshot_url", None)
     return lineups
 
 
@@ -450,7 +497,8 @@ def build(board: dict | None = None, rooms: dict | None = None,
     """
     board = board if board is not None else load_board()
     if not board:
-        return {"form": {}, "scheme": {}, "players": {}, "lineups": {}, "source": None}
+        return {"form": {}, "scheme": {}, "players": {}, "lineups": {},
+                "player_coverage": {}, "source": None}
     if rooms is None and lineups is None:
         lineups, rooms = fetch_depth_chart_context()
     elif lineups is None:
@@ -463,6 +511,7 @@ def build(board: dict | None = None, rooms: dict | None = None,
         "scheme": team_scheme(board),
         "players": players,
         "lineups": attach_known_headshots(lineups, players),
+        "player_coverage": player_coverage(board),
         "source": {
             "season": board.get("season"),
             "week": board.get("week"),
