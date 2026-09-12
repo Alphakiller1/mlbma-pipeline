@@ -2642,28 +2642,9 @@
       '</div>' + rows + '</div>';
   }
 
-  function nflQuickRail(sport, game) {
-    var seasons = schemeSeasons(game);
-    var current = currentSeason(game);
-    var evidence = (seasons.length ? seasons.join('–') + ' Scheme · ' : '') +
-      current + ' Form';
-    return '<nav class="ca-matchup-lens" aria-label="Matchup briefing">' +
-      '<a href="#availability"><span>Starting Units</span><strong>Offense + Defense</strong>' +
-      '<small>Every published starter by position</small></a>' +
-      '<a href="#availability"><span>Availability</span><strong>' +
-      esc(game.away) + ' · ' + esc(value(game.away_availability, 'report pending')) +
-      '</strong><small>' + esc(game.home) + ' · ' +
-      esc(value(game.home_availability, 'report pending')) + '</small></a>' +
-      '<a href="#scheme"><span>Evidence</span><strong>' + esc(evidence) +
-      '</strong><small>Source seasons stay visible</small></a>' +
-      '<a href="#team-context"><span>Travel</span><strong>' +
-      esc(value(game.away_travel)) + '</strong><small>' +
-      esc(fullName(sport, game, 'away')) + '</small></a></nav>';
-  }
-
   function nflSections(sport, game) {
     var source = game.scheme_source || {};
-    return nflQuickRail(sport, game) + [
+    return [
       section('availability', 'Starting Lineups And Availability',
         'Offense, Defense And Official Designations',
         '<div class="ca-detail-duo ca-lineup-duo">' +
