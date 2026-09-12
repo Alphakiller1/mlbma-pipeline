@@ -357,6 +357,8 @@ class AdapterHoleTests(unittest.TestCase):
             "status: Array.isArray(entries) ? 'Active' : 'Report pending'",
             "var status = designation.status || 'Active'", "Report pending", "data-scheme-seasons",
             "panel.hidden = !show", "seasons.length === 1", "Full Injury Report",
+            "Math.round(Number(tendency) * 10)", "segmentIndex < activeSegments",
+            "scroll horizontally on small screens",
         ):
             self.assertIn(text, detail)
         self.assertIn("away_lineups", adapter)
@@ -364,6 +366,9 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("home_lineups", adapter)
         self.assertIn(".ca-lineup-board", css)
         self.assertIn("min-height: var(--touch-min)", css)
+        self.assertIn("grid-template-columns: repeat(10, minmax(0, 1fr))", css)
+        self.assertIn(".ca-coverage-track i.is-on", css)
+        self.assertIn("scroll-snap-type: x mandatory", css)
         self.assertNotIn(".ca-formation", css)
 
     def test_no_formatclock_in_nav(self):

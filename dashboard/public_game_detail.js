@@ -2265,14 +2265,18 @@
       var offValue = off[spec[1]];
       var defValue = def[spec[1]];
       if (tendency == null && offValue == null && defValue == null) return '';
-      var width = tendency == null ? 0 : Math.max(0, Math.min(100, Number(tendency) * 100));
+      var activeSegments = tendency == null ? 0 : Math.max(0, Math.min(10, Math.round(Number(tendency) * 10)));
+      var segments = '';
+      for (var segmentIndex = 0; segmentIndex < 10; segmentIndex += 1) {
+        segments += '<i' + (segmentIndex < activeSegments ? ' class="is-on"' : '') + '></i>';
+      }
       return '<div class="ca-coverage-row">' +
         '<div class="ca-coverage-result ' + epaTone(offValue, true) + '"><strong>' +
         esc(epaText(offValue, false)) + '</strong><span>Off EPA / play</span></div>' +
         '<div class="ca-coverage-look"><span>' + esc(spec[2]) + '</span>' +
         '<div class="ca-coverage-track" aria-label="' + esc(spec[2]) + ' used ' +
-        esc(pctText(tendency)) + '"><i style="width:' + width.toFixed(1) + '%"></i></div>' +
-        '<strong>' + esc(pctText(tendency)) + ' Used</strong></div>' +
+        esc(pctText(tendency)) + '">' + segments + '</div>' +
+        '<strong>' + esc(pctText(tendency)) + '</strong></div>' +
         '<div class="ca-coverage-result ca-coverage-result--def ' + epaTone(defValue, false) + '">' +
         '<strong>' + esc(epaText(defValue, false)) + '</strong><span>EPA allowed / play</span></div>' +
         '</div>';
@@ -2320,7 +2324,7 @@
               Number(split.yards_per_target).toFixed(1)) +
             '</td><td class="num">' + esc(epaText(split.epa_per_target, false)) + '</td></tr>';
         }).join('');
-        return '<article class="ca-player-coverage-card"><header><span class="ca-lineup-player__position">' +
+        return '<article class="ca-player-coverage-card" role="listitem"><header><span class="ca-lineup-player__position">' +
           esc(profile.position) + '</span><strong>' + esc(profile.player_name) + '</strong></header>' +
           '<div class="ca-lineup-scroll"><table><thead><tr><th>Coverage</th><th class="num">Tgt</th>' +
           '<th class="num">Catch</th><th class="num">Y/T</th><th class="num">EPA/T</th></tr></thead>' +
@@ -2330,7 +2334,8 @@
       return '<section class="ca-player-coverage" data-scheme-seasons="' + esc(season) + '">' +
         '<div class="ca-player-coverage__head"><div><h4>Skill Players By Coverage</h4><p>' +
         esc(fullName(sport, game, offSide)) + ' targets against charted ' + season + ' coverages</p></div>' +
-        '<span>Minimum 3 targets shown</span></div><div class="ca-player-coverage-grid">' + cards +
+        '<span>Minimum 3 targets shown</span></div><div class="ca-player-coverage-grid" role="list" ' +
+        'aria-label="Skill player coverage cards; scroll horizontally on small screens">' + cards +
         '</div></section>';
     }).join('');
   }
