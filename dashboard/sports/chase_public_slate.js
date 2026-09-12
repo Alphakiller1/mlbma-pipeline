@@ -6,7 +6,7 @@
   'use strict';
 
   var ALLOWED = {
-    id: 1, sport: 1, game_state: 1, kickoff_utc: 1, kickoff_display: 1,
+    id: 1, sport: 1, week: 1, game_state: 1, kickoff_utc: 1, kickoff_display: 1,
     game_pk: 1, away: 1, home: 1, away_name: 1, home_name: 1,
     away_record: 1, home_record: 1, away_score: 1, home_score: 1,
     venue: 1, venue_city: 1, broadcast: 1, conditions: 1, surface: 1,
@@ -72,6 +72,7 @@
     var row = {
       id: String(g.id || g.game_id || (away + '@' + home)),
       sport: sport,
+      week: g.week != null ? g.week : (g.scheme_source && g.scheme_source.week),
       game_state: String(state).toLowerCase(),
       kickoff_utc: kickoffUtc(g),
       kickoff_display: g.kickoff_display || null,
@@ -183,11 +184,19 @@
     return dateLabel + ' · ' + windowLabel;
   }
 
+  function nflWeek(game) {
+    game = game || {};
+    var raw = game.week != null ? game.week : (game.scheme_source && game.scheme_source.week);
+    var week = Number(raw);
+    return Number.isInteger(week) && week > 0 ? week : null;
+  }
+
   global.ChasePublicSlate = {
     mapGame: mapGame,
     sortGames: sortGames,
     normalize: normalize,
     kickoffWindow: kickoffWindow,
+    nflWeek: nflWeek,
     ALLOWED_GAME_KEYS: Object.keys(ALLOWED)
   };
 })(typeof window !== 'undefined' ? window : this);

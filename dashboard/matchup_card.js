@@ -870,7 +870,8 @@
         '<button type="button" class="ca-desk-dates__today" data-date-today>' + longDate(desk.dateIso || easternDateIso()) + '</button>' +
         '<button type="button" data-date-shift="1" aria-label="Next day">→</button></div>';
     } else {
-      html += '<strong class="ca-desk-window-label">' + (desk.results ? 'Completed games' : 'Kickoff windows') + '</strong>';
+      html += '<strong class="ca-desk-window-label">' +
+        (desk.results ? 'Completed games' : (sport === 'nfl' ? 'NFL Weeks' : 'Kickoff windows')) + '</strong>';
     }
     // Search moved to the header (#chaseNavSearch drives the same filter), so
     // the toolbar no longer carries a duplicate field.
@@ -887,15 +888,22 @@
 
   function renderGroups(sport, games) {
     if (sport !== 'nfl') return '<div class="ca-slate-grid">' + games.map(function (game) { return cardHtml(sport, game); }).join('') + '</div>';
-    var groups = {};
+    var groups = [];
+    var byKey = {};
     games.forEach(function (game) {
-      var label = global.ChasePublicSlate.kickoffWindow(game.kickoff_utc);
-      (groups[label] = groups[label] || []).push(game);
+      var week = global.ChasePublicSlate.nflWeek(game);
+      var key = week == null ? 'unknown' : String(week);
+      if (!byKey[key]) {
+        byKey[key] = { label: week == null ? 'Week Unavailable' : 'Week ' + week, games: [] };
+        groups.push(byKey[key]);
+      }
+      byKey[key].games.push(game);
     });
-    return Object.keys(groups).map(function (label) {
-      return '<section class="ca-kickoff-window"><header><h2>' + esc(label) + '</h2><span>' + groups[label].length +
-        (groups[label].length === 1 ? ' game' : ' games') + '</span></header><div class="ca-slate-grid">' +
-        groups[label].map(function (game) { return cardHtml(sport, game); }).join('') + '</div></section>';
+    return groups.map(function (group) {
+      var ordered = global.ChasePublicSlate.sortGames(group.games);
+      return '<section class="ca-kickoff-window"><header><h2>' + esc(group.label) + '</h2><span>' + ordered.length +
+        (ordered.length === 1 ? ' game' : ' games') + ' · chronological</span></header><div class="ca-slate-grid">' +
+        ordered.map(function (game) { return cardHtml(sport, game); }).join('') + '</div></section>';
     }).join('');
   }
 

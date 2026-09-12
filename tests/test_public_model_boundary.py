@@ -127,12 +127,18 @@ class PublicModelBoundaryTests(unittest.TestCase):
         self.assertIn("Open Matchup Analysis", lab)
         self.assertNotIn("Three focused tools", lab)
 
-    def test_public_matchups_group_by_kickoff_not_weekday_labels(self):
+    def test_public_matchups_group_nfl_cards_by_week_in_kickoff_order(self):
         src = (ROOT / "scripts" / "build_sport_routes.py").read_text(encoding="utf-8")
         blob = src.split("MATCHUPS_JS = r\"\"\"", 1)[1].split("\"\"\"", 1)[0]
         card = (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8")
         slate = (ROOT / "dashboard" / "sports" / "chase_public_slate.js").read_text(encoding="utf-8")
         self.assertIn("kickoffWindow", slate)
+        self.assertIn("nflWeek", slate)
+        self.assertIn("Week Unavailable", card)
+        self.assertIn("'Week ' + week", card)
+        self.assertIn("sortGames(group.games)", card)
+        self.assertNotIn("kickoffWindow(game.kickoff_utc)", card)
+        self.assertIn("sport === 'nfl' ? 'NFL Weeks'", card)
         self.assertNotIn("Thursday", blob)
         self.assertNotIn("Sunday Night", blob)
         self.assertIn("/matchup.html?game=", card)
