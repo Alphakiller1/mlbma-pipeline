@@ -2293,14 +2293,14 @@
   function playerCoveragePanels(sport, game, offSide) {
     var profiles = game[offSide + '_player_coverage'] || [];
     var offense = unitData(game, offSide, 'offense');
-    var starterNames = {};
+    var starterProfiles = {};
     ((offense || {}).players || []).forEach(function (player) {
       if (['RB', 'WR', 'TE'].indexOf(String(player.position || '').toUpperCase()) >= 0) {
-        starterNames[playerNameKey(player.name)] = true;
+        starterProfiles[playerNameKey(player.name)] = player;
       }
     });
     profiles = profiles.filter(function (profile) {
-      return starterNames[playerNameKey(profile.player_name)];
+      return starterProfiles[playerNameKey(profile.player_name)];
     });
     if (!profiles.length) {
       return '<section class="ca-player-coverage"><h4>Skill Players By Coverage</h4>' +
@@ -2312,6 +2312,7 @@
     });
     return Object.keys(bySeason).sort().reverse().map(function (season) {
       var cards = bySeason[season].map(function (profile) {
+        var starter = starterProfiles[playerNameKey(profile.player_name)] || {};
         var splits = (profile.splits || []).filter(function (split) {
           return split.coverage !== 'all' && Number(split.targets) >= 3;
         }).sort(function (a, b) { return Number(b.targets) - Number(a.targets); }).slice(0, 5);
@@ -2324,8 +2325,14 @@
               Number(split.yards_per_target).toFixed(1)) +
             '</td><td class="num">' + esc(epaText(split.epa_per_target, false)) + '</td></tr>';
         }).join('');
-        return '<article class="ca-player-coverage-card" role="listitem"><header><span class="ca-lineup-player__position">' +
-          esc(profile.position) + '</span><strong>' + esc(profile.player_name) + '</strong></header>' +
+        var portrait = starter.headshot_url
+          ? '<img class="ca-player-coverage-card__shot" src="' + esc(starter.headshot_url) +
+            '" alt="" width="64" height="64" loading="lazy" decoding="async">'
+          : '<span class="ca-player-coverage-card__initials" aria-hidden="true">' +
+            esc(initials(profile.player_name)) + '</span>';
+        return '<article class="ca-player-coverage-card" role="listitem"><header>' + portrait +
+          '<div class="ca-player-coverage-card__identity"><span class="ca-lineup-player__position">' +
+          esc(profile.position) + '</span><strong>' + esc(profile.player_name) + '</strong></div></header>' +
           '<div class="ca-lineup-scroll"><table><thead><tr><th>Coverage</th><th class="num">Tgt</th>' +
           '<th class="num">Catch</th><th class="num">Y/T</th><th class="num">EPA/T</th></tr></thead>' +
           '<tbody>' + rows + '</tbody></table></div></article>';

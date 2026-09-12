@@ -358,7 +358,8 @@ class AdapterHoleTests(unittest.TestCase):
             "var status = designation.status || 'Active'", "Report pending", "data-scheme-seasons",
             "panel.hidden = !show", "seasons.length === 1", "Full Injury Report",
             "Math.round(Number(tendency) * 10)", "segmentIndex < activeSegments",
-            "scroll horizontally on small screens",
+            "scroll horizontally on small screens", "ca-player-coverage-card__shot",
+            "starterProfiles[playerNameKey(profile.player_name)]",
         ):
             self.assertIn(text, detail)
         self.assertIn("away_lineups", adapter)
@@ -369,6 +370,7 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("grid-template-columns: repeat(10, minmax(0, 1fr))", css)
         self.assertIn(".ca-coverage-track i.is-on", css)
         self.assertIn("scroll-snap-type: x mandatory", css)
+        self.assertIn(".ca-player-coverage-card__shot", css)
         self.assertNotIn(".ca-formation", css)
 
     def test_no_formatclock_in_nav(self):
