@@ -2458,7 +2458,7 @@
 
   function designationFor(player, entries, byName) {
     return byName[playerNameKey(player.name)] || {
-      status: Array.isArray(entries) ? 'No designation' : 'Report pending',
+      status: Array.isArray(entries) ? 'Active' : 'Report pending',
       detail: ''
     };
   }
@@ -2488,7 +2488,7 @@
   }
 
   function lineupPlayer(player, designation) {
-    var status = designation.status || 'No designation';
+    var status = designation.status || 'Active';
     var statusKey = String(status).toLowerCase().replace(/\s+/g, '-');
     return '<article class="ca-lineup-player" data-position="' + esc(player.position) + '">' +
       playerPortrait(player) + '<div class="ca-lineup-player__identity">' +
@@ -2658,7 +2658,7 @@
         lineupBoard(sport, game, 'away') +
         lineupBoard(sport, game, 'home') + '</div>' +
         '<p class="ca-detail-source-note">Designations come from the official injury report. ' +
-        'A player absent from a published report is marked No Designation; a missing report ' +
+        'A published starter absent from the injury report is marked Active; a missing report ' +
         'is marked Report Pending. Starting units follow the published depth chart and carry ' +
         'identity and position only—never a snap projection.</p>'),
 

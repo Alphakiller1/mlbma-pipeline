@@ -2796,7 +2796,12 @@ body[data-ca-product="research"] {
   text-align: center;
 }
 
-.ca-status-pill[data-status="no-designation"],
+.ca-status-pill[data-status="active"] {
+  color: var(--status-ok);
+  border-color: var(--status-ok);
+  background: var(--surface-inset);
+}
+
 .ca-status-pill[data-status="report-pending"] {
   color: var(--text-muted);
   border-color: var(--border-subtle);

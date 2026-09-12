@@ -354,7 +354,8 @@ class AdapterHoleTests(unittest.TestCase):
             encoding="utf-8")
         for text in (
             "data-lineup-unit", "data-lineup-panel", "Offensive Line", "Linebackers",
-            "No designation", "Report pending", "data-scheme-seasons",
+            "status: Array.isArray(entries) ? 'Active' : 'Report pending'",
+            "var status = designation.status || 'Active'", "Report pending", "data-scheme-seasons",
             "panel.hidden = !show", "seasons.length === 1", "Full Injury Report",
         ):
             self.assertIn(text, detail)
