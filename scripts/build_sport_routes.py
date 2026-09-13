@@ -266,7 +266,7 @@ def models_page() -> str:
     <header class="ca-public-page__head">
       <div class="ca-public-page__copy">
         <h1 class="ca-public-page__title">Model Center</h1>
-        <p class="ca-public-page__lede">Projections, model-versus-market gaps and priced markets for every game on the slate.</p>
+        <p class="ca-public-page__lede">Every game on today’s slate, with projected scores and the model’s position against the market.</p>
       </div>
     </header>
     <!-- The sign-in panel is collapsed behind a disclosure so the board is the

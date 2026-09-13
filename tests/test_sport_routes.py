@@ -243,6 +243,16 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("function pickScore", js)
         self.assertIn("market_gap", js)
         self.assertIn("sport === 'mlb' ? 2.5 : 6", js)
+        self.assertIn("g.projected_away", js)
+        self.assertIn("g.projected_home", js)
+        self.assertIn("g.key", js)
+
+    def test_model_center_cards_pair_scores_with_line_view(self):
+        js = (ROOT / "dashboard" / "model_center.js").read_text(encoding="utf-8")
+        self.assertIn('class="mc-score', js)
+        self.assertIn('class="mc-game__visuals"', js)
+        self.assertIn("scores published", js)
+        self.assertIn("games.map(function (g)", js)
 
     def test_public_adapters_do_not_fetch_performance_ledgers(self):
         for sport in ("mlb", "nfl", "wnba", "cfb"):
