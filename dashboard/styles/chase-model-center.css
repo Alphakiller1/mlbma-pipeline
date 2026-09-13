@@ -673,7 +673,7 @@ body:has(.mc-access-disclosure) .mc-row:hover {
   margin-bottom: var(--space-3);
   background: var(--surface-mc-field);
   border: 1px solid var(--border-violet);
-  border-radius: var(--radius-pill);
+  border-radius: 0;
 }
 
 .mc-sports a {
@@ -683,7 +683,7 @@ body:has(.mc-access-disclosure) .mc-row:hover {
   align-items: center;
   min-height: 44px;
   padding: 8px 18px;
-  border-radius: var(--radius-pill);
+  border-radius: 0;
   font-family: var(--font-display);
   font-size: var(--type-14);
   font-weight: 700;

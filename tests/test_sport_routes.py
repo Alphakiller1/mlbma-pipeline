@@ -258,6 +258,14 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertNotIn("trustPanel", js)
         self.assertNotIn(".mc-trust", css)
 
+    def test_model_center_sport_switch_has_square_corners(self):
+        css = (ROOT / "dashboard" / "styles" / "chase-model-center.css").read_text(
+            encoding="utf-8")
+        sport_switch = css.split(".mc-sports {", 1)[1].split("}", 1)[0]
+        sport_link = css.split(".mc-sports a {", 1)[1].split("}", 1)[0]
+        self.assertIn("border-radius: 0;", sport_switch)
+        self.assertIn("border-radius: 0;", sport_link)
+
     def test_mlb_matchup_uses_lineup_model_ranker(self):
         adapter = (ROOT / "dashboard" / "sports" / "mlb.js").read_text(encoding="utf-8")
         view = (ROOT / "dashboard" / "lineup_view.js").read_text(encoding="utf-8")
