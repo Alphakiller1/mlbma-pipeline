@@ -645,9 +645,10 @@ body[data-ca-product="research"] {
 
 .ca-detail-nav {
   position: sticky;
-  top: calc(var(--shell-header-h) + var(--shell-context-h));
+  top: var(--shell-header-h);
   z-index: calc(var(--z-header) - 1);
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(max-content, 1fr));
   gap: var(--space-1);
   margin: var(--space-3) 0;
   padding: var(--space-1);
@@ -660,8 +661,10 @@ body[data-ca-product="research"] {
 .ca-detail-nav a {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  height: var(--touch-min);
   min-height: var(--touch-min);
-  padding: var(--space-2) var(--space-3);
+  padding: 0 var(--space-3);
   border-radius: var(--radius-xs);
   color: var(--text-secondary);
   font-size: var(--type-12);
@@ -684,7 +687,7 @@ body[data-ca-product="research"] {
   position: relative;
   padding: var(--space-4);
   overflow: hidden;
-  scroll-margin-top: calc(var(--shell-header-h) + var(--shell-context-h) + 64px);
+  scroll-margin-top: calc(var(--shell-header-h) + 60px);
 }
 
 .ca-detail-section__head {
@@ -2448,7 +2451,8 @@ body[data-ca-product="research"] {
 }
 .ca-coverage-track i.is-on { background: var(--accent); border-color: var(--accent); }
 
-.ca-player-coverage { margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--border-default); }
+.ca-player-coverage,
+.ca-player-scheme { margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--border-default); }
 .ca-player-coverage > h4,
 .ca-player-coverage__head h4 { margin: 0; color: var(--text-primary); }
 .ca-player-coverage__head { display: flex; align-items: end; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
@@ -2487,6 +2491,16 @@ body[data-ca-product="research"] {
 }
 .ca-player-coverage-card__identity { display: flex; align-items: center; flex: 1 1 auto; gap: var(--space-2); min-width: 0; padding-bottom: 7px; }
 .ca-player-coverage-card__identity strong { min-width: 0; overflow-wrap: anywhere; }
+.ca-player-scheme-card .ca-player-coverage-card__identity {
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+.ca-player-scheme-card .ca-player-coverage-card__identity small {
+  color: var(--text-muted);
+  font-size: var(--type-12);
+}
 .ca-player-coverage-card__grade {
   display: grid;
   align-content: center;
@@ -2921,7 +2935,9 @@ body[data-ca-product="research"] {
 
 .ca-injury-report {
   margin-top: var(--space-3);
-  border-top: 1px solid var(--border-subtle);
+  border: 1px solid var(--accent-border);
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
 }
 
 .ca-injury-report summary {
@@ -2930,19 +2946,36 @@ body[data-ca-product="research"] {
   justify-content: space-between;
   gap: var(--space-2);
   min-height: var(--touch-min);
-  padding: var(--space-2) 0 0;
-  color: var(--text-secondary);
+  padding: 0 var(--space-3);
+  color: var(--text-primary);
   cursor: pointer;
   font-family: var(--font-display);
-  font-size: var(--type-14);
+  font-size: var(--type-16);
   font-weight: 800;
 }
 
 .ca-injury-report summary:hover,
-.ca-injury-report summary:focus-visible { color: var(--text-primary); }
+.ca-injury-report summary:focus-visible { color: var(--text-accent); background: var(--surface-hover); }
 .ca-injury-report summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.ca-injury-report summary span { color: var(--text-muted); font-size: var(--type-12); }
-.ca-injury-report .ca-avail-list { margin-top: var(--space-2); }
+.ca-injury-report__label { color: inherit; }
+.ca-injury-report__count {
+  padding: 4px 8px;
+  color: var(--text-primary);
+  border: 1px solid var(--accent-border);
+  background: var(--surface-raised);
+  font-family: var(--font-body);
+  font-size: var(--type-12);
+}
+.ca-injury-report .ca-avail-list { margin: var(--space-2) var(--space-3) var(--space-3); }
+
+@media (max-width: 720px) {
+  .ca-detail-nav {
+    display: flex;
+    top: var(--shell-header-h-phone);
+  }
+  .ca-detail-nav a { flex: 0 0 auto; }
+  .ca-detail-section { scroll-margin-top: calc(var(--shell-header-h-phone) + 60px); }
+}
 
 @media (max-width: 1100px) {
   .ca-lineup-duo { grid-template-columns: 1fr; }
@@ -4640,6 +4673,11 @@ body[data-ca-product="research"] {
 .ca-pressure-row > div:last-child strong { color: inherit; font-family: var(--font-display); font-size: var(--type-18); }
 
 .ca-player-coverage-groups { display: grid; gap: var(--space-4); min-width: 0; }
+.ca-player-scheme .ca-player-coverage-groups {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+.ca-player-scheme .ca-player-coverage-grid { grid-template-columns: minmax(0, 1fr); }
 .ca-player-coverage-group { width: 100%; min-width: 0; max-width: 100%; }
 .ca-player-coverage-group > h5 {
   margin: 0 0 var(--space-2);
@@ -4661,4 +4699,8 @@ body[data-ca-product="research"] {
 @media (max-width: 560px) {
   .ca-pressure-row { grid-template-columns: 1fr; }
   .ca-pressure-row > div:last-child { justify-items: start; text-align: left; }
+}
+
+@media (max-width: 900px) {
+  .ca-player-scheme .ca-player-coverage-groups { grid-template-columns: minmax(0, 1fr); }
 }

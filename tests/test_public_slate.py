@@ -78,6 +78,20 @@ class PublicSlateProjectionTests(unittest.TestCase):
         }]})
         self.assertEqual(out["games"][0]["away_player_coverage"][0]["splits"][0]["targets"], 12)
 
+    def test_nfl_player_scheme_survives_the_public_allowlist(self):
+        import sys
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from project_public_slate import project_slate
+
+        rows = [{"player_name": "Quarterback", "position": "QB", "source_season": 2025,
+                 "play_family": "passing", "splits": [{"look": "zone", "dropbacks": 50}]}]
+        payload = {"schema_version": 1, "generated_at_utc": "2026-09-13T12:00:00Z",
+                   "sport": "nfl", "games": [{"id": "a", "away": "AAA", "home": "BBB",
+                   "kickoff_utc": "2026-09-13T17:00:00Z", "away_player_scheme": rows,
+                   "home_player_scheme": rows}]}
+        out = project_slate("nfl", payload)
+        self.assertEqual(out["games"][0]["away_player_scheme"][0]["splits"][0]["dropbacks"], 50)
+
     def test_public_slates_are_tracked_not_gitignored(self):
         import subprocess
 

@@ -137,6 +137,14 @@
     });
   }
 
+  function kickoffTime(iso) {
+    var date = new Date(iso || '');
+    if (!iso || isNaN(date.getTime())) return 'Time Not Published';
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York'
+    }) + ' ET';
+  }
+
   function activateLineupTab(btn) {
     var board = btn.closest('.ca-lineup-board');
     if (!board) return;
@@ -233,9 +241,9 @@
     var state = String(game.game_state || '').toLowerCase();
     if ((state === 'live' || state === 'final') && game.away_score != null && game.home_score != null) {
       return '<strong>' + esc(game.away_score) + '–' + esc(game.home_score) + '</strong>' +
-        '<p>' + esc(clock(game.kickoff_utc)) + '</p>';
+        '<p>' + esc(kickoffTime(game.kickoff_utc)) + '</p>';
     }
-    return '<strong>' + esc(clock(game.kickoff_utc)) + '</strong>';
+    return '<strong>' + esc(kickoffTime(game.kickoff_utc)) + '</strong>';
   }
 
   /* ---------------------------------------------------------------------
@@ -2430,13 +2438,12 @@
           '<tbody>' + rows + '</tbody></table></div></article>';
       }
       var labels = { QB: 'Quarterbacks', RB: 'Running Backs', WR: 'Wide Receivers', TE: 'Tight Ends' };
-      var groups = ['QB', 'RB', 'WR', 'TE'].map(function (position) {
+      var groups = ['RB', 'WR', 'TE'].map(function (position) {
         var cards = bySeason[season].filter(function (profile) {
           return String(profile.position || '').toUpperCase() === position;
         }).map(playerCard).filter(Boolean).join('');
-        if (!cards && position !== 'QB') return '';
-        var content = cards || pending('Quarterback-level coverage splits are not published. ' +
-          'Use Offensive Response in the comparison above.');
+        if (!cards) return '';
+        var content = cards;
         return '<section class="ca-player-coverage-group" data-position="' + position + '"><h5>' +
           labels[position] + '</h5><div class="ca-player-coverage-grid" role="list" ' +
           'aria-label="' + labels[position] + ' coverage cards; scroll horizontally on small screens">' +
@@ -2448,6 +2455,99 @@
         esc(fullName(sport, game, offSide)) + ' · ' + season + ' receiving splits</p></div>' +
         '<span>League rank within position · 20+ overall targets; rows 3+ targets</span></div>' +
         '<div class="ca-player-coverage-groups">' + groups + '</div></section>';
+    }).join('');
+  }
+
+  function playerSchemePanels(sport, game, offSide) {
+    var profiles = game[offSide + '_player_scheme'] || [];
+    var offense = unitData(game, offSide, 'offense');
+    var starters = {};
+    ((offense || {}).players || []).forEach(function (player) {
+      if (['QB', 'RB'].indexOf(String(player.position || '').toUpperCase()) >= 0) {
+        starters[playerNameKey(player.name)] = player;
+      }
+    });
+    profiles = profiles.filter(function (profile) {
+      return starters[playerNameKey(profile.player_name)];
+    });
+    if (!profiles.length) return '<section class="ca-player-scheme"><div class="ca-player-coverage__head">' +
+      '<div><h4>Quarterbacks And Running Backs By Scheme</h4><p>' +
+      esc(fullName(sport, game, offSide)) + '</p></div></div>' +
+      pending('Observed player-level QB passing and RB rushing scheme splits are not published for these starters.') +
+      '</section>';
+
+    function ranked(value, rank, formatter) {
+      var shown = value == null ? '—' : formatter(value);
+      if (!rank) return '<td class="num">' + esc(shown) + '</td>';
+      return '<td class="num ' + rankTone(rank.place, rank.of) + '" title="' +
+        rank.place + ordinal(rank.place) + ' of ' + rank.of + ' at this position for this look">' +
+        esc(shown) + '<small>' + rank.place + ordinal(rank.place) + '</small></td>';
+    }
+    function card(profile) {
+      var starter = starters[playerNameKey(profile.player_name)] || {};
+      var position = String(profile.position || '').toUpperCase();
+      var volume = position === 'QB' ? 'dropbacks' : 'carries';
+      var minimum = position === 'QB' ? 10 : 5;
+      var order = position === 'QB'
+        ? ['man', 'zone', 'blitz', 'no_blitz', 'pressure', 'clean', 'cover_0', 'cover_1',
+           'cover_2', 'cover_3', 'cover_4', 'cover_6', 'cover_2_man']
+        : ['stacked_box', 'light_box', 'left', 'middle', 'right', 'gap_guard', 'gap_tackle', 'gap_end'];
+      var splits = (profile.splits || []).filter(function (split) {
+        return split.look !== 'all' && Number(split[volume]) >= minimum;
+      }).sort(function (a, b) {
+        var ai = order.indexOf(a.look); var bi = order.indexOf(b.look);
+        return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
+      }).slice(0, 8);
+      if (!splits.length) return '';
+      var portrait = starter.headshot_url
+        ? '<img class="ca-player-coverage-card__shot" src="' + esc(starter.headshot_url) +
+          '" alt="" width="64" height="64" loading="lazy" decoding="async">'
+        : '<span class="ca-player-coverage-card__initials" aria-hidden="true">' +
+          esc(initials(profile.player_name)) + '</span>';
+      var rows = splits.map(function (split) {
+        var label = String(split.look || '').replace(/^cover_/, 'Cover ').replace(/^gap_/, '')
+          .replace(/_/g, ' ');
+        var ranks = split.league_ranks || {};
+        if (position === 'QB') {
+          return '<tr><td>' + esc(titleCase(label)) + '</td><td class="num">' +
+            esc(split.dropbacks) + '</td>' + ranked(split.completion_rate, ranks.completion_rate, pctText) +
+            ranked(split.yards_per_attempt, ranks.yards_per_attempt, function (v) { return Number(v).toFixed(1); }) +
+            ranked(split.epa_per_dropback, ranks.epa_per_dropback, function (v) { return epaText(v, false); }) +
+            '</tr>';
+        }
+        return '<tr><td>' + esc(titleCase(label)) + '</td><td class="num">' + esc(split.carries) +
+          '</td>' + ranked(split.yards_per_carry, ranks.yards_per_carry, function (v) { return Number(v).toFixed(1); }) +
+          ranked(split.epa_per_carry, ranks.epa_per_carry, function (v) { return epaText(v, false); }) +
+          ranked(split.success_rate, ranks.success_rate, pctText) + '</tr>';
+      }).join('');
+      var headings = position === 'QB'
+        ? '<th>Defensive Look</th><th class="num">DB</th><th class="num">Cmp</th><th class="num">Y/A</th><th class="num">EPA/DB</th>'
+        : '<th>Run Look</th><th class="num">Att</th><th class="num">YPC</th><th class="num">EPA/Att</th><th class="num">Success</th>';
+      return '<article class="ca-player-coverage-card ca-player-scheme-card" role="listitem"><header>' + portrait +
+        '<div class="ca-player-coverage-card__identity"><span class="ca-lineup-player__position">' +
+        esc(position) + '</span><strong>' + esc(profile.player_name) + '</strong><small>' +
+        esc(position === 'QB' ? 'Passing Response' : 'Rushing Response') + '</small></div></header>' +
+        '<div class="ca-lineup-scroll"><table><thead><tr>' + headings + '</tr></thead><tbody>' + rows +
+        '</tbody></table></div></article>';
+    }
+    var seasons = {};
+    profiles.forEach(function (profile) {
+      (seasons[profile.source_season] = seasons[profile.source_season] || []).push(profile);
+    });
+    return Object.keys(seasons).sort().reverse().map(function (season) {
+      var groups = ['QB', 'RB'].map(function (position) {
+        var cards = seasons[season].filter(function (profile) { return profile.position === position; })
+          .map(card).filter(Boolean).join('');
+        if (!cards) return '';
+        return '<section class="ca-player-coverage-group" data-position="' + position + '"><h5>' +
+          (position === 'QB' ? 'Quarterbacks' : 'Running Backs') + '</h5>' +
+          '<div class="ca-player-coverage-grid" role="list">' + cards + '</div></section>';
+      }).filter(Boolean).join('');
+      return groups ? '<section class="ca-player-scheme" data-scheme-seasons="' + esc(season) + '">' +
+        '<div class="ca-player-coverage__head"><div><h4>Quarterbacks And Running Backs By Scheme</h4><p>' +
+        esc(fullName(sport, game, offSide)) + ' · ' + season + ' observed player splits</p></div>' +
+        '<span>Green to red by same-position league rank · QB 10+ dropbacks; RB 5+ carries</span></div>' +
+        '<div class="ca-player-coverage-groups">' + groups + '</div></section>' : '';
     }).join('');
   }
 
@@ -2503,6 +2603,7 @@
       ' offence and ' + esc(defName) + ' defence scheme details">' +
       pressureMatchups(sport, game, offSide, defSide) + personnelBlock +
       responseBlock + targetBlock + '</div>' +
+      playerSchemePanels(sport, game, offSide) +
       playerCoveragePanels(sport, game, offSide) + '</section>';
   }
 
@@ -2558,7 +2659,8 @@
   /* Identity-only starting units arranged in formation rows. The source names
      a position and its first player; this renderer never invents a snap share. */
   function playerNameKey(name) {
-    return String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    return String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+      .replace(/(?:jr|sr|ii|iii|iv)$/, '');
   }
 
   function initials(name) {
@@ -2689,7 +2791,7 @@
         esc(String(entry.status || '').toLowerCase().replace(/\s+/g, '-')) + '">' +
         esc(entry.status) + '</span></li>';
     }).join('');
-    return '<details class="ca-injury-report"><summary>Full Injury Report <span>' +
+    return '<details class="ca-injury-report"><summary><span class="ca-injury-report__label">Full Injury Report</span><span class="ca-injury-report__count">' +
       entries.length + ' Player' + (entries.length === 1 ? '' : 's') +
       '</span></summary><ul class="ca-avail-list">' + rows + '</ul></details>';
   }

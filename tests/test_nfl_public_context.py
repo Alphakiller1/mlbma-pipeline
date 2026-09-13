@@ -87,6 +87,17 @@ BOARD = {
         },
         "confidence": 0.99,
     }],
+    "player_scheme_profiles": [{
+        "player_id": "qb-1", "player_name": "A Passer", "team": "AAA",
+        "position": "QB", "source_season": 2025, "play_family": "passing",
+        "splits": {
+            "zone": {"dropbacks": 120, "attempts": 112, "completions": 76,
+                     "passing_yards": 940, "passing_tds": 7, "interceptions": 2,
+                     "completion_rate": 0.6786, "yards_per_attempt": 8.39,
+                     "epa_per_dropback": 0.16, "success_rate": 0.51},
+            "invented": {"dropbacks": 999, "private_score": 1.0},
+        },
+    }],
     "player_projections": [
         {
             "team": "AAA", "player_name": "A Passer", "position": "QB", "depth_rank": 1,
@@ -231,6 +242,20 @@ class NflPublicContextTests(unittest.TestCase):
         bbb = profiles["BBB"][0]["splits"][0]["league_ranks"]["epa_per_target"]
         self.assertEqual((aaa["place"], aaa["of"]), (2, 2))
         self.assertEqual((bbb["place"], bbb["of"]), (1, 2))
+
+    def test_player_scheme_is_observed_allowlisted_and_ranked(self):
+        board = copy.deepcopy(BOARD)
+        second = copy.deepcopy(board["player_scheme_profiles"][0])
+        second.update({"player_id": "qb-2", "player_name": "Other Passer", "team": "BBB"})
+        second["splits"]["zone"]["epa_per_dropback"] = 0.25
+        board["player_scheme_profiles"].append(second)
+        profiles = ctx.player_scheme(board)
+        aaa = profiles["AAA"][0]
+        self.assertEqual(set(aaa), {"player_id", "player_name", "position", "source_season",
+                                    "play_family", "splits"})
+        self.assertEqual([split["look"] for split in aaa["splits"]], ["zone"])
+        rank = aaa["splits"][0]["league_ranks"]["epa_per_dropback"]
+        self.assertEqual((rank["place"], rank["of"]), (2, 2))
 
     def test_coverage_shells_sum_to_one(self):
         cov = self.ctx["scheme"]["AAA"]["defense"]["coverage"]

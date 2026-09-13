@@ -81,6 +81,7 @@
     "away_lineup_state",
     "away_lineups",
     "away_player_coverage",
+    "away_player_scheme",
     "away_name",
     "away_players",
     "away_record",
@@ -110,6 +111,7 @@
     "home_lineup_state",
     "home_lineups",
     "home_player_coverage",
+    "home_player_scheme",
     "home_name",
     "home_players",
     "home_record",
@@ -142,9 +144,11 @@
     "away_availability_list": "Official injury designations: name, position, status, body part. factual-status. No projection, snap share or confidence.",
     "away_lineups": "ESPN depth-chart starters by offensive and defensive position. Identity and published order only; no projection or snap share.",
     "away_player_coverage": "Observed, season-labelled receiving outcomes by charted coverage. Descriptive only; sample size is always carried.",
+    "away_player_scheme": "Observed, season-labelled starting-QB passing and starting-RB rushing outcomes by charted defensive look. Descriptive only; sample size is always carried.",
     "home_availability_list": "Official injury designations: name, position, status, body part. factual-status. No projection, snap share or confidence.",
     "home_lineups": "ESPN depth-chart starters by offensive and defensive position. Identity and published order only; no projection or snap share.",
     "home_player_coverage": "Observed, season-labelled receiving outcomes by charted coverage. Descriptive only; sample size is always carried.",
+    "home_player_scheme": "Observed, season-labelled starting-QB passing and starting-RB rushing outcomes by charted defensive look. Descriptive only; sample size is always carried.",
     "roof": "Venue roof state reported by the official schedule feed. identity."
   }
 }

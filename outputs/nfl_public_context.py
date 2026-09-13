@@ -343,6 +343,82 @@ def player_coverage(board: dict) -> dict[str, list[dict]]:
     return out
 
 
+PLAYER_SCHEME_SPLITS = {
+    "all", "man", "zone", "cover_0", "cover_1", "cover_2", "cover_3",
+    "cover_4", "cover_6", "cover_2_man", "blitz", "no_blitz", "pressure",
+    "clean", "stacked_box", "light_box", "left", "middle", "right",
+    "gap_guard", "gap_tackle", "gap_end",
+}
+PLAYER_SCHEME_FIELDS = {
+    "QB": ("dropbacks", "completion_rate", "yards_per_attempt", "epa_per_dropback"),
+    "RB": ("carries", "yards_per_carry", "epa_per_carry", "success_rate"),
+}
+
+
+def player_scheme(board: dict) -> dict[str, list[dict]]:
+    """Allowlist and league-rank observed QB passing and RB rushing splits."""
+    out: dict[str, list[dict]] = {}
+    for row in board.get("player_scheme_profiles") or []:
+        team = canon(row.get("team"))
+        position = str(row.get("position") or "").upper()
+        family = str(row.get("play_family") or "").lower()
+        name = str(row.get("player_name") or "").strip()
+        season = row.get("source_season")
+        expected = "passing" if position == "QB" else "rushing"
+        if (not team or position not in PLAYER_SCHEME_FIELDS or family != expected
+                or not name or season is None):
+            continue
+        splits = []
+        volume = "dropbacks" if position == "QB" else "carries"
+        for look, values in (row.get("splits") or {}).items():
+            if look not in PLAYER_SCHEME_SPLITS or not isinstance(values, dict):
+                continue
+            stats = {key: values[key] for key in PLAYER_SCHEME_FIELDS[position]
+                     if values.get(key) is not None}
+            if not stats.get(volume):
+                continue
+            splits.append({"look": look, **stats})
+        if splits:
+            out.setdefault(team, []).append({
+                "player_id": str(row.get("player_id") or ""), "player_name": name,
+                "position": position, "source_season": int(season),
+                "play_family": family, "splits": splits,
+            })
+    rows = [profile for profiles in out.values() for profile in profiles]
+    for position in ("QB", "RB"):
+        volume = "dropbacks" if position == "QB" else "carries"
+        metrics = (("completion_rate", "yards_per_attempt", "epa_per_dropback", "success_rate")
+                   if position == "QB" else
+                   ("yards_per_carry", "epa_per_carry", "success_rate"))
+        seasons = {profile["source_season"] for profile in rows
+                   if profile["position"] == position}
+        for season in seasons:
+            looks = {split["look"] for profile in rows if profile["position"] == position
+                     and profile["source_season"] == season for split in profile["splits"]}
+            for look in looks:
+                minimum = 100 if look == "all" and position == "QB" else (
+                    50 if look == "all" else (10 if position == "QB" else 5))
+                for metric in metrics:
+                    pool = []
+                    for profile in rows:
+                        if profile["position"] != position or profile["source_season"] != season:
+                            continue
+                        split = next((item for item in profile["splits"] if item["look"] == look), None)
+                        if split and split.get(volume, 0) >= minimum and split.get(metric) is not None:
+                            pool.append((profile["player_id"] or profile["player_name"], float(split[metric])))
+                    if len(pool) < 2:
+                        continue
+                    ranks = _ranked(pool, "high")
+                    for profile in rows:
+                        split = next((item for item in profile["splits"] if item["look"] == look), None)
+                        identity = profile["player_id"] or profile["player_name"]
+                        if (profile["position"] == position and profile["source_season"] == season
+                                and split and identity in ranks):
+                            split.setdefault("league_ranks", {})[metric] = {
+                                "place": ranks[identity], "of": len(pool)}
+    return out
+
+
 ESPN_DEPTH_CHART = (
     "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/{team}/depthcharts"
 )
@@ -553,7 +629,7 @@ def build(board: dict | None = None, rooms: dict | None = None,
     board = board if board is not None else load_board()
     if not board:
         return {"form": {}, "scheme": {}, "players": {}, "lineups": {},
-                "player_coverage": {}, "source": None}
+                "player_coverage": {}, "player_scheme": {}, "source": None}
     if rooms is None and lineups is None:
         lineups, rooms = fetch_depth_chart_context()
     elif lineups is None:
@@ -567,6 +643,7 @@ def build(board: dict | None = None, rooms: dict | None = None,
         "players": players,
         "lineups": attach_known_headshots(lineups, players),
         "player_coverage": player_coverage(board),
+        "player_scheme": player_scheme(board),
         "source": {
             "season": board.get("season"),
             "week": board.get("week"),

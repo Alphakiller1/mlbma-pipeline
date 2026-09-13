@@ -657,6 +657,7 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
     players = context.get("players") or {}
     lineups = context.get("lineups") or {}
     player_coverage = context.get("player_coverage") or {}
+    player_scheme = context.get("player_scheme") or {}
     rest = rest_history if rest_history is not None else {}
 
     def starter_coverage(team: str) -> list[dict]:
@@ -671,6 +672,24 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             profile for profile in player_coverage.get(team, [])
             if re.sub(r"[^a-z0-9]", "", str(profile.get("player_name") or "").lower())
             in names
+        ]
+
+    def starter_scheme(team: str) -> list[dict]:
+        """Keep observed QB/RB scheme history for the published starters only."""
+        def player_key(value: object) -> str:
+            return re.sub(r"(?:jr|sr|ii|iii|iv)$", "",
+                          re.sub(r"[^a-z0-9]", "", str(value or "").lower()))
+
+        lineup = lineups.get(team) or {}
+        names = {
+            player_key(player.get("name"))
+            for player in ((lineup.get("offense") or {}).get("players") or [])
+            if str(player.get("position") or "").upper() in {"QB", "RB"}
+        }
+        all_profiles = [profile for profiles in player_scheme.values() for profile in profiles]
+        return [
+            profile for profile in all_profiles
+            if player_key(profile.get("player_name")) in names
         ]
     games = []
     for event in payload.get("events") or []:
@@ -765,6 +784,8 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             "home_lineups": lineups.get(home_abbr),
             "away_player_coverage": starter_coverage(away_abbr),
             "home_player_coverage": starter_coverage(home_abbr),
+            "away_player_scheme": starter_scheme(away_abbr),
+            "home_player_scheme": starter_scheme(home_abbr),
             "away_rest_days": away_ctx["rest_days"],
             "home_rest_days": home_ctx["rest_days"],
             "away_travel": away_ctx["travel"],
