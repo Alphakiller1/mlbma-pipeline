@@ -21,3 +21,14 @@ class PipelineOrderTests(unittest.TestCase):
         self.assertNotIn("${{ github.run_id }}", yml)
         self.assertIn("timeout-minutes: 90", yml)
         self.assertIn("python -u -m pipeline.main --skip-fangraphs", yml)
+
+    def test_ci_publishes_only_allowlisted_mlb_artifacts(self) -> None:
+        yml = (ROOT / ".github" / "workflows" / "run-pipeline.yml").read_text(
+            encoding="utf-8")
+        self.assertIn("contents: write", yml)
+        self.assertIn("Publish refreshed MLB artifacts to master", yml)
+        self.assertIn("python scripts/validate_public_fields.py", yml)
+        self.assertIn("data/public/mlb/slate.json", yml)
+        self.assertNotIn("data/public/nfl/slate.json\n", yml.split("public_files=(", 1)[1])
+        self.assertIn('git pull --rebase origin "$TARGET_BRANCH"', yml)
+        self.assertIn('git push origin "HEAD:$TARGET_BRANCH"', yml)

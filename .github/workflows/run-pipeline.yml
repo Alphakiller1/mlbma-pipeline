@@ -19,7 +19,10 @@ on:
     - cron: "0 11 * * *"
 
 permissions:
-  contents: read
+  # The pipeline produces the allowlisted files the public site reads. The
+  # runner must be able to commit those files so the existing master deploy
+  # workflow can publish them; no source or private model files are staged.
+  contents: write
 
 concurrency:
   group: run-pipeline
@@ -87,3 +90,38 @@ jobs:
           else
             python -u -m pipeline.main --skip-fangraphs
           fi
+
+      - name: Publish refreshed MLB artifacts to master
+        env:
+          TARGET_BRANCH: master
+        run: |
+          set -euo pipefail
+          public_files=(
+            data/public/mlb/slate.json
+            data/public/batter_context.json
+            data/public/league_baselines.json
+            data/public/pitch_run_value.json
+            data/public/pitch_type_board.json
+            data/public/starter_splits.json
+            data/public/team_context.json
+          )
+
+          # Validate the exact public tree before creating a commit. This is
+          # the same boundary guard the production deployment runs later.
+          python scripts/validate_public_fields.py
+          git add -- "${public_files[@]}"
+          if git diff --cached --quiet; then
+            echo "Public MLB artifacts are already current; no commit needed."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "data: refresh public MLB artifacts"
+
+          # Long pipeline runs can overlap ordinary site releases. Keep those
+          # newer master commits and replay only this generated-data commit.
+          # Non-public working files stay runner-local and are never pushed.
+          git stash push -m "runner-only pipeline outputs" || true
+          git pull --rebase origin "$TARGET_BRANCH"
+          git push origin "HEAD:$TARGET_BRANCH"
