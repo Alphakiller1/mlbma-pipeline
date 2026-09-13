@@ -170,6 +170,38 @@
     });
   }
 
+  function activateSchemeTab(btn) {
+    var switcher = btn.closest('.ca-scheme-switch');
+    if (!switcher) return;
+    var direction = btn.getAttribute('data-scheme-direction');
+    Array.prototype.forEach.call(switcher.querySelectorAll('[data-scheme-direction]'), function (tab) {
+      var on = tab === btn;
+      tab.classList.toggle('is-on', on);
+      tab.setAttribute('aria-selected', String(on));
+      tab.setAttribute('tabindex', on ? '0' : '-1');
+    });
+    Array.prototype.forEach.call(switcher.querySelectorAll('[data-scheme-direction-panel]'), function (panel) {
+      panel.hidden = panel.getAttribute('data-scheme-direction-panel') !== direction;
+    });
+  }
+
+  function wireSchemeTabs(host) {
+    host.addEventListener('click', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-scheme-direction]');
+      if (btn && host.contains(btn)) activateSchemeTab(btn);
+    });
+    host.addEventListener('keydown', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-scheme-direction]');
+      if (!btn || !host.contains(btn) || ['ArrowLeft', 'ArrowRight'].indexOf(event.key) < 0) return;
+      var tabs = Array.prototype.slice.call(btn.closest('.ca-scheme-switch__tabs')
+        .querySelectorAll('[data-scheme-direction]'));
+      var next = tabs[(tabs.indexOf(btn) + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+      event.preventDefault();
+      activateSchemeTab(next);
+      next.focus();
+    });
+  }
+
   function paintSection(host, id, body) {
     var node = host.querySelector('[data-body="' + id + '"]');
     if (node) node.innerHTML = body;
@@ -2092,7 +2124,7 @@
     return (((((scheme || {}).league_frequency_ranks || {})[phase] || {})[group] || {})[key]) || null;
   }
 
-  function rateTable(caption, rows, source, scheme, phase, group) {
+  function rateTable(caption, rows, source, scheme, phase, group, modifier) {
     var body = rows.map(function (row) {
       var raw = source[row[0]];
       if (raw == null) return '';
@@ -2110,7 +2142,7 @@
         ordinal(rankText.place) + ' of ' + rankText.of + ' frequency</small>' : '') + '</td></tr>';
     }).filter(Boolean).join('');
     if (!body) return '';
-    return '<div class="ca-rate-block"><h4>' + esc(caption) + '</h4>' +
+    return '<div class="ca-rate-block' + (modifier ? ' ' + esc(modifier) : '') + '"><h4>' + esc(caption) + '</h4>' +
       '<table class="ca-rate-table"><tbody>' + body + '</tbody></table></div>';
   }
 
@@ -2133,7 +2165,7 @@
         esc(spec[3]) + '</small></div></div>';
     }).filter(Boolean).join('');
     if (!rows) return '';
-    return '<div class="ca-rate-block ca-pressure-matchup"><h4>Pressure Matchups</h4>' +
+    return '<div class="ca-rate-block ca-rate-block--pressure ca-pressure-matchup"><h4>Pressure Matchups</h4>' +
       rows + '</div>';
   }
 
@@ -2447,8 +2479,12 @@
       '<p class="ca-detail-source-note">' + esc(defName) + ' played zone on ' +
       pctText(defCov.zone_rate) + ' of its charted coverage snaps.</p>';
 
+    var personnelBlock = rateTable('Personnel And Formation', PERSONNEL_ROWS, offPersonnel,
+      offScheme, 'offense', 'personnel', 'ca-rate-block--personnel');
+    var responseBlock = rateTable('Response By Look', RESPONSE_ROWS, offResponse,
+      offScheme, 'offense', 'response', 'ca-rate-block--response');
     var targetBlock = rateTable('Target Share', TARGET_ROWS, offTargets,
-      offScheme, 'offense', 'target_share');
+      offScheme, 'offense', 'target_share', 'ca-rate-block--targets');
 
     /* Two columns, split the way the confrontation is: what that defence did,
        and what this offence did. A masonry of six unequal blocks read as a
@@ -2463,18 +2499,27 @@
         'offence’s point of view, so they sit on one scale: positive is good for the ' +
         'offence and bad for the defence, which is why the two grade in opposite ' +
         'directions. Success rates are shares of plays that stayed on schedule.</p></div>' : '') +
-      '<div class="ca-scheme-duo">' +
-      '<div class="ca-scheme-col"><h4 class="ca-scheme-col__head">' + esc(defName) +
-      ' defence</h4>' +
-      pressureMatchups(sport, game, offSide, defSide) + '</div>' +
-      '<div class="ca-scheme-col"><h4 class="ca-scheme-col__head">' + esc(offName) +
-      ' offence</h4>' +
-      rateTable('Personnel And Formation', PERSONNEL_ROWS, offPersonnel,
-        offScheme, 'offense', 'personnel') +
-      rateTable('Response By Look', RESPONSE_ROWS, offResponse,
-        offScheme, 'offense', 'response') +
-      targetBlock + '</div>' +
-      '</div>' + playerCoveragePanels(sport, game, offSide) + '</section>';
+      '<div class="ca-scheme-grid" aria-label="' + esc(offName) +
+      ' offence and ' + esc(defName) + ' defence scheme details">' +
+      pressureMatchups(sport, game, offSide, defSide) + personnelBlock +
+      responseBlock + targetBlock + '</div>' +
+      playerCoveragePanels(sport, game, offSide) + '</section>';
+  }
+
+  function schemeSwitcher(sport, game) {
+    return '<div class="ca-scheme-switch"><div class="ca-scheme-switch__tabs" role="tablist" ' +
+      'aria-label="Choose scheme confrontation">' +
+      '<button type="button" id="caSchemeAwayTab" class="ca-scheme-switch__tab is-on" role="tab" ' +
+      'aria-selected="true" aria-controls="caSchemeAwayPanel" data-scheme-direction="away">' +
+      '<strong>' + esc(game.away) + ' Offence</strong><span>vs ' + esc(game.home) + ' Defence</span></button>' +
+      '<button type="button" id="caSchemeHomeTab" class="ca-scheme-switch__tab" role="tab" ' +
+      'aria-selected="false" aria-controls="caSchemeHomePanel" tabindex="-1" data-scheme-direction="home">' +
+      '<strong>' + esc(game.home) + ' Offence</strong><span>vs ' + esc(game.away) + ' Defence</span></button>' +
+      '</div><div id="caSchemeAwayPanel" role="tabpanel" aria-labelledby="caSchemeAwayTab" ' +
+      'data-scheme-direction-panel="away">' + schemePanel(sport, game, 'away', 'home') + '</div>' +
+      '<div id="caSchemeHomePanel" role="tabpanel" aria-labelledby="caSchemeHomeTab" ' +
+      'data-scheme-direction-panel="home" hidden>' + schemePanel(sport, game, 'home', 'away') + '</div>' +
+      '</div>';
   }
 
   function formRow(entry) {
@@ -2718,9 +2763,7 @@
 
       section('scheme', 'Scheme Confrontation',
         'Charted Tendencies, Each Offence Against The Other Defence',
-        '<div class="ca-detail-stack-inner">' +
-        schemePanel(sport, game, 'away', 'home') +
-        schemePanel(sport, game, 'home', 'away') + '</div>' +
+        schemeSwitcher(sport, game) +
         '<p class="ca-detail-source-note" data-season-prior-only>Every rate here describes snaps that have already ' +
         'been charted, in the season selected above. At the start of a season that ' +
         'season is LAST season, and a prior-season rate is not a statement about this game — ' +
@@ -2791,6 +2834,7 @@
     if (!host.dataset.seasonWired) {
       wireSeasonToggle(host);
       wireLineupTabs(host);
+      wireSchemeTabs(host);
       host.dataset.seasonWired = '1';
     }
   }

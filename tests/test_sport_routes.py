@@ -378,6 +378,8 @@ class AdapterHoleTests(unittest.TestCase):
             "scroll horizontally on small screens", "ca-player-coverage-card__shot",
             "starterProfiles[playerNameKey(profile.player_name)]", "Position Rank",
             "Quarterbacks", "Running Backs", "Wide Receivers", "league_ranks",
+            "schemeSwitcher", "data-scheme-direction", "data-scheme-direction-panel",
+            "wireSchemeTabs", "ca-scheme-grid", "ca-rate-block--personnel",
         ):
             self.assertIn(text, detail)
         self.assertIn("away_lineups", adapter)
@@ -392,6 +394,10 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn(".ca-player-coverage-card__grade", css)
         self.assertIn("linear-gradient(180deg, var(--surface-elevated), var(--surface-inset))", css)
         self.assertIn(".ca-season-toggle", css)
+        self.assertIn(".ca-scheme-switch__tabs", css)
+        self.assertIn(".ca-scheme-grid", css)
+        self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr))", css)
+        self.assertIn("min-height: 354px", css)
         self.assertIn("border-radius: 0", css)
         self.assertIn("game.slate_date ||", (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8"))
         self.assertIn("game.slate_date = date", (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8"))

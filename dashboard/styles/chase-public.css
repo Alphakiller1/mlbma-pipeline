@@ -2331,6 +2331,53 @@ body[data-ca-product="research"] {
   color: var(--text-primary);
 }
 
+.ca-scheme-switch__tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.ca-scheme-switch__tab {
+  display: grid;
+  justify-items: start;
+  min-width: 0;
+  min-height: 52px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-field);
+  border: 1px solid var(--border-default);
+  border-radius: 0;
+  color: var(--text-secondary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ca-scheme-switch__tab strong {
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: var(--type-14);
+}
+
+.ca-scheme-switch__tab span { font-size: var(--type-12); }
+.ca-scheme-switch__tab:hover { border-color: var(--border-strong); }
+.ca-scheme-switch__tab.is-on {
+  background: var(--accent-soft);
+  border-color: var(--accent-strong);
+  color: var(--accent-text);
+  box-shadow: inset 0 -3px 0 var(--accent);
+}
+.ca-scheme-switch__tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.ca-scheme-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.ca-scheme-grid > .ca-rate-block { width: 100%; height: 100%; }
+
 /* Both clubs hold fixed mirrored columns around one coverage axis. EPA and
    tendency remain separate units, but line up for direct comparison. */
 .ca-coverage-matrix {
@@ -2414,8 +2461,8 @@ body[data-ca-product="research"] {
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
 }
-.ca-player-coverage-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
-.ca-player-coverage-card { min-width: 0; overflow: hidden; background: var(--surface-field); border: 1px solid var(--border-subtle); border-radius: var(--radius-xs); }
+.ca-player-coverage-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); width: 100%; min-width: 0; max-width: 100%; }
+.ca-player-coverage-card { width: 100%; min-width: 0; min-height: 354px; max-width: 100%; overflow: hidden; background: var(--surface-field); border: 1px solid var(--border-subtle); border-radius: var(--radius-xs); }
 .ca-player-coverage-card > header { display: flex; align-items: stretch; gap: var(--space-3); min-height: 72px; padding: 7px var(--space-3) 0; border-bottom: 1px solid var(--border-subtle); }
 .ca-player-coverage-card > header strong { color: var(--text-primary); }
 .ca-player-coverage-card__shot,
@@ -4470,7 +4517,9 @@ body[data-ca-product="research"] {
     scrollbar-width: thin;
   }
   .ca-player-coverage-card {
-    flex: 0 0 100%;
+    flex: 0 0 calc(100% - 1px);
+    width: calc(100% - 1px);
+    max-width: calc(100% - 1px);
     scroll-snap-align: start;
   }
   .ca-player-coverage-card > header { min-height: 62px; gap: var(--space-2); padding-inline: var(--space-2); }
@@ -4483,6 +4532,7 @@ body[data-ca-product="research"] {
   .ca-player-coverage-card td { padding: 6px 3px; }
   .ca-player-coverage-card th:first-child,
   .ca-player-coverage-card td:first-child { width: 27%; }
+  .ca-scheme-grid { grid-template-columns: 1fr; }
   .ca-radar-duo { gap: var(--space-3); margin-bottom: var(--space-2); }
   .ca-radar-duo > .ca-radar { flex-basis: 260px; }
   .ca-radar svg { max-width: 260px; }
@@ -4491,7 +4541,8 @@ body[data-ca-product="research"] {
 @media (prefers-reduced-motion: reduce) {
   .ca-lineup-tab,
   .ca-lineup-player,
-  .ca-season-toggle__btn { transition: none; }
+  .ca-season-toggle__btn,
+  .ca-scheme-switch__tab { transition: none; }
 }
 
 /* --- Situation by situation ---------------------------------------------
@@ -4588,7 +4639,8 @@ body[data-ca-product="research"] {
 .ca-pressure-row > div:last-child small { color: var(--text-muted); }
 .ca-pressure-row > div:last-child strong { color: inherit; font-family: var(--font-display); font-size: var(--type-18); }
 
-.ca-player-coverage-groups { display: grid; gap: var(--space-4); }
+.ca-player-coverage-groups { display: grid; gap: var(--space-4); min-width: 0; }
+.ca-player-coverage-group { width: 100%; min-width: 0; max-width: 100%; }
 .ca-player-coverage-group > h5 {
   margin: 0 0 var(--space-2);
   color: var(--text-primary);
