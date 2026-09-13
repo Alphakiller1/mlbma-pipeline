@@ -232,7 +232,8 @@
   function fullMatchupUrl(sport, game) {
     var href = '/' + sport + '/matchup.html?game=' + encodeURIComponent(game.id || '');
     if (game.game_pk) href += '&gamePk=' + encodeURIComponent(game.game_pk);
-    if (game.kickoff_utc) href += '&date=' + encodeURIComponent(easternDateIso(new Date(game.kickoff_utc)));
+    var slateDate = game.slate_date || (game.kickoff_utc && easternDateIso(new Date(game.kickoff_utc)));
+    if (slateDate) href += '&date=' + encodeURIComponent(slateDate);
     return href;
   }
 
@@ -657,6 +658,7 @@
       var published = parts[0].normalized;
       var official = parts[1];
       var games = mergeGames(official, published.games || []);
+      games.forEach(function (game) { game.slate_date = date; });
       if (!games.length && parts[0].error) throw parts[0].error;
       // Season lines and team context are additive; both resolve to empty on
       // failure so the slate still renders.

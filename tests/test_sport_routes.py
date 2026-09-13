@@ -373,6 +373,8 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn(".ca-player-coverage-card__shot", css)
         self.assertIn(".ca-season-toggle", css)
         self.assertIn("border-radius: 0", css)
+        self.assertIn("game.slate_date ||", (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8"))
+        self.assertIn("game.slate_date = date", (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8"))
         self.assertNotIn("ca-matchup-lens", detail)
         self.assertNotIn(".ca-matchup-lens", css)
         self.assertNotIn(".ca-formation", css)
