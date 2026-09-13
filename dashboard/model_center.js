@@ -231,24 +231,6 @@
       esc(value == null ? 'Not published' : value) + '</strong></div>';
   }
 
-  function trustPanel(board) {
-    var perf = board && board.performance;
-    var rows = '';
-    if (perf && typeof perf === 'object') {
-      Object.keys(perf).forEach(function (k) {
-        rows += tile(String(k).replace(/_/g, ' '), perf[k]);
-      });
-    }
-    return '<section class="mc-panel mc-trust">' +
-      '<div class="mc-trust__head"><h2 class="mc-panel__title">Model trust and performance</h2>' +
-      '<span class="mc-badge">Research only</span></div>' +
-      (rows ? '<div class="mc-tiles">' + rows + '</div>'
-            : '<p class="mc-withheld">Model performance is not published on this board.</p>') +
-      '<p class="mc-disclaimer">Not financial, investment, or wagering advice. ' +
-      'Models are experimental and for research purposes. The distance between ' +
-      'model and market is a gap, not a betting edge.</p></section>';
-  }
-
   function detailView(sport, rawBoard, g) {
     var html = '<section class="mc-panel"><p class="mc-eyebrow">' +
       esc(sport.toUpperCase()) + ' · Game detail</p><div class="mc-hero">' +
@@ -279,7 +261,7 @@
         Math.round(Number(g.win_probability) * (Number(g.win_probability) <= 1 ? 100 : 1)) + '%') +
       '</div></section>';
 
-    return html + trustPanel(rawBoard);
+    return html;
   }
 
   /* An NFL week is not a flat list. It is Thursday, then four or five Sunday
@@ -389,7 +371,7 @@
       '<h2 class="mc-board__title">' + esc(title) + '</h2>' +
       '<span class="mc-board__meta">' + games.length +
       (games.length === 1 ? ' game' : ' games') + ' · ' + esc(sport.toUpperCase()) + '</span></header>' +
-      body + trustPanel(board) + '</div>';
+      body + '</div>';
     host.innerHTML = html;
   }
 
@@ -459,9 +441,7 @@
       { id: 's6', away: 'SD', home: 'ARI', away_name: 'San Diego Padres', home_name: 'Arizona Diamondbacks',
         away_record: '76-68', home_record: '70-74', kickoff_display: '8:40 PM ET',
         model_margin: -0.5, market_margin: -1.0, lean: 'Model leans San Diego' }
-    ], performance: {
-      'MLB run prediction MAE': '0.62', 'Total runs MAE': '0.71', 'Directional accuracy': '58%'
-    } } },
+    ] } },
     nfl: { board: { games: [
       { id: 'n1', away: 'NE', home: 'SEA', away_name: 'New England Patriots', home_name: 'Seattle Seahawks',
         away_record: '0-0', home_record: '0-0', kickoff_display: 'Sun 1:00 PM ET',
@@ -473,9 +453,7 @@
       { id: 'n3', away: 'DAL', home: 'PHI', away_name: 'Dallas Cowboys', home_name: 'Philadelphia Eagles',
         away_record: '0-0', home_record: '0-0', kickoff_display: 'Sun 4:05 PM ET',
         model_margin: 1.0, market_margin: -1.0, lean: 'Model leans Philadelphia' }
-    ], performance: {
-      'NFL spread prediction MAE': '2.9', 'Total points MAE': '3.6', 'Directional accuracy': '61%'
-    } } }
+    ] } }
   };
 
   function paintSampleBanner() {

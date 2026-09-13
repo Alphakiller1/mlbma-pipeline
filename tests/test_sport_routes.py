@@ -249,6 +249,15 @@ class AdapterHoleTests(unittest.TestCase):
             js = (ROOT / "dashboard" / "sports" / f"{sport}.js").read_text(encoding="utf-8")
             self.assertNotIn("RECORD_URL", js)
 
+    def test_model_center_omits_trust_and_performance_panel(self):
+        js = (ROOT / "dashboard" / "model_center.js").read_text(encoding="utf-8")
+        css = (ROOT / "dashboard" / "styles" / "chase-model-center.css").read_text(
+            encoding="utf-8")
+        self.assertNotIn("Model trust and performance", js)
+        self.assertNotIn("Research only", js)
+        self.assertNotIn("trustPanel", js)
+        self.assertNotIn(".mc-trust", css)
+
     def test_mlb_matchup_uses_lineup_model_ranker(self):
         adapter = (ROOT / "dashboard" / "sports" / "mlb.js").read_text(encoding="utf-8")
         view = (ROOT / "dashboard" / "lineup_view.js").read_text(encoding="utf-8")
