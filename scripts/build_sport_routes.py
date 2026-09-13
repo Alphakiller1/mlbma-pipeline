@@ -70,6 +70,16 @@ def sport_nav() -> str:
     return html
 
 
+def model_nav() -> str:
+    """Model Center is fully public, so its header has no account control."""
+    return re.sub(
+        r'\s*<button type="button" class="chase-account" id="chaseAccount".*?</button>',
+        '',
+        sport_nav(),
+        flags=re.DOTALL,
+    )
+
+
 def parked_page(sport: str) -> str:
     label = sport.upper()
     return f"""<!DOCTYPE html>
@@ -261,7 +271,7 @@ def models_page() -> str:
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="evidence" data-ca-product="research">
-{sport_nav()}
+{model_nav()}
   <main class="ca-public-page ca-shell-main">
     <header class="ca-public-page__head">
       <div class="ca-public-page__copy">
@@ -269,32 +279,16 @@ def models_page() -> str:
         <p class="ca-public-page__lede">Every game on today’s slate, with projected scores and the model’s position against the market.</p>
       </div>
     </header>
-    <!-- The sign-in panel is collapsed behind a disclosure so the board is the
-         first thing on the page (owner decision 2026-09-10). model_center.js
-         renders the board's design with clearly-labelled sample data whenever
-         entitlement is absent; real numbers still require
-         /api/model-center/board to return 200. -->
     <div id="mcBoard"></div>
-    <details class="mc-access-disclosure" id="mcAccess">
-      <summary>Sign in for the live board</summary>
-      <div class="mc-access-body">
-        <p class="ca-helper">Model Center loads real projections only after a signed-in Premium session is verified by <code>/api/me</code> and <code>/api/model-center/board</code>.</p>
-        <div data-mlbma-auth-panel></div>
-        <p class="ca-helper" id="mcContext">Numbers load only after server-side entitlement.</p>
-      </div>
-    </details>
+    <p class="sr-only" id="mcContext">Loading the latest published model board.</p>
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
   <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
-  <script src="/dashboard/mlbma_config.js?v={STAMP}"></script>
-  <script src="/dashboard/mlbma_supabase_headers.js?v={STAMP}"></script>
   <!-- The board's team chips need the asset registry for crests; without it
        MLBMAAssets is undefined and every chip fell back to bare text. -->
   <script src="/dashboard/mlbma_assets.js?v={STAMP}"></script>
   <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
   <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
-  <script src="/dashboard/mlbma_auth.js?v={STAMP}"></script>
-  <script src="/dashboard/mlbma_auth_ui.js?v={STAMP}"></script>
   <script src="/dashboard/sports/chase_board.js?v={STAMP}"></script>
   <script src="/dashboard/model_center.js?v={STAMP}"></script>
 </body>

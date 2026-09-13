@@ -52,8 +52,10 @@
 
   function mapGame(g) {
     g = g || {};
-    var away = teamName(g.away) || teamName(g.teams && g.teams.away);
-    var home = teamName(g.home) || teamName(g.teams && g.teams.home);
+    var awayRaw = g.away || (g.teams && g.teams.away);
+    var homeRaw = g.home || (g.teams && g.teams.home);
+    var away = teamName(awayRaw);
+    var home = teamName(homeRaw);
     var priced = g.priced === true || g.has_price === true;
     return {
       id: g.id || g.game_id || g.key || (away + '@' + home),
@@ -62,6 +64,10 @@
       sort_key: sortKey(g),
       away: away,
       home: home,
+      away_logo: g.away_logo || (awayRaw && awayRaw.logo) || null,
+      home_logo: g.home_logo || (homeRaw && homeRaw.logo) || null,
+      away_color: g.away_color || (awayRaw && awayRaw.color) || null,
+      home_color: g.home_color || (homeRaw && homeRaw.color) || null,
       model_margin: g.model_margin != null ? g.model_margin : g.model,
       market_margin: g.market_margin != null ? g.market_margin : g.market,
       market_gap: g.market_gap != null ? g.market_gap : (
@@ -84,9 +90,10 @@
       home_name: g.home_name || teamName(g.home) || null,
       away_record: g.away_record || null,
       home_record: g.home_record || null,
-      away_projected: pickScore(g.away_projected, g.away_proj, g.projected_away),
-      home_projected: pickScore(g.home_projected, g.home_proj, g.projected_home),
+      away_projected: pickScore(g.away_projected, g.away_proj, g.projected_away, g.projected_away_score),
+      home_projected: pickScore(g.home_projected, g.home_proj, g.projected_home, g.projected_home_score),
       total_projected: pickScore(g.total_projected, g.total_proj, g.projected_total),
+      market_total: pickScore(g.market_total, g.book && g.book.total),
       win_probability: g.win_probability != null ? g.win_probability : g.win_prob,
       lean: g.lean || g.model_lean || g.headline || null
     };

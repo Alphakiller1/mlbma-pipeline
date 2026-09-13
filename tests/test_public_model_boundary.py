@@ -98,7 +98,7 @@ class PublicModelBoundaryTests(unittest.TestCase):
         self.assertFalse(spec["classes"]["model_private"]["public"])
         self.assertIn("ppGap", spec["model_private"])
 
-    def test_model_center_stub_has_no_preview_values(self):
+    def test_model_center_is_public_without_auth_or_sample_values(self):
         html = (ROOT / "models" / "index.html").read_text(encoding="utf-8")
         self.assertIn("Model Center", html)
         self.assertIn("hamburgerBtn", html)
@@ -109,13 +109,16 @@ class PublicModelBoundaryTests(unittest.TestCase):
         js = (ROOT / "dashboard" / "model_center.js").read_text(encoding="utf-8")
         self.assertIn("/api/model-center/board", js)
         self.assertNotIn("github.io", js)
-        self.assertIn("offline", js)
-        auth = (ROOT / "dashboard" / "mlbma_auth.js").read_text(encoding="utf-8")
-        self.assertIn("/dashboard/vendor/supabase.min.js", auth)
+        self.assertNotIn("fetchMe", js)
+        self.assertNotIn("SAMPLE_BOARD", js)
+        self.assertNotIn("mlbma_auth.js", html)
+        self.assertNotIn("data-mlbma-auth-panel", html)
+        self.assertNotIn("chaseAccount", html)
         board_api = (ROOT / "functions" / "api" / "model-center" / "board.js").read_text(encoding="utf-8")
-        self.assertIn("hasModelCenterAccess", board_api)
-        self.assertNotIn("github.io", board_api)
-        self.assertIn("hasModelCenterAccess", (ROOT / "functions" / "_shared" / "supabase.js").read_text(encoding="utf-8"))
+        self.assertNotIn("hasModelCenterAccess", board_api)
+        for sport in ("mlb", "nfl", "wnba", "cfb"):
+            self.assertIn(f"{sport}:", board_api)
+        self.assertIn("github.io", board_api)
 
     def test_research_lab_has_no_public_compare_tab(self):
         opening = (ROOT / "index.html").read_text(encoding="utf-8")

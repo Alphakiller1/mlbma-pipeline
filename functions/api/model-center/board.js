@@ -1,33 +1,26 @@
 /**
- * GET /api/model-center/board?sport=mlb|nfl
+ * GET /api/model-center/board?sport=mlb|nfl|wnba|cfb
  *
- * Entitled sessions only. Board URLs live in Cloudflare env, never in public JS.
- * Unentitled callers get 403 with no payload. Missing env is 503 without numbers.
+ * Public read-only proxy for the four producer boards. Keeping the sources
+ * server-side gives the client one stable same-origin contract while allowing
+ * each sport model to publish on its own cadence.
  */
-import { getUserFromRequest, getProfile, hasModelCenterAccess } from '../../_shared/supabase.js';
-import { json, errorResponse, requireEnv, HttpError } from '../../_shared/http.js';
+import { json, errorResponse, HttpError } from '../../_shared/http.js';
 
 const SPORTS = {
-  mlb: 'MLB_MODEL_BOARD_URL',
-  nfl: 'NFL_MODEL_BOARD_URL'
+  mlb: ['MLB_MODEL_BOARD_URL', 'https://alphakiller1.github.io/mlb-model/board.json'],
+  nfl: ['NFL_MODEL_BOARD_URL', 'https://alphakiller1.github.io/nfl-model/board.json'],
+  wnba: ['WNBA_MODEL_BOARD_URL', 'https://alphakiller1.github.io/wnba-edge-model/board.json'],
+  cfb: ['CFB_MODEL_BOARD_URL', 'https://alphakiller1.github.io/cfb-model/board.json']
 };
 
 export async function onRequestGet({ request, env }) {
   try {
-    requireEnv(env, ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']);
-    const user = await getUserFromRequest(request, env);
-    const profile = await getProfile(env, user.id);
-    if (!hasModelCenterAccess(profile)) {
-      throw new HttpError(403, 'not_entitled', 'Model Center requires an active Premium subscription');
-    }
     const url = new URL(request.url);
     const sport = String(url.searchParams.get('sport') || 'mlb').toLowerCase();
-    const envKey = SPORTS[sport];
-    if (!envKey) throw new HttpError(400, 'bad_sport', 'sport must be mlb or nfl');
-    const boardUrl = env[envKey];
-    if (!boardUrl || !/^https:\/\//i.test(String(boardUrl))) {
-      throw new HttpError(503, 'board_unconfigured', 'Model board source is not configured');
-    }
+    const source = SPORTS[sport];
+    if (!source) throw new HttpError(400, 'bad_sport', 'sport must be mlb, nfl, wnba, or cfb');
+    const boardUrl = (env && env[source[0]]) || source[1];
     const res = await fetch(boardUrl, { cache: 'no-store' });
     if (!res.ok) throw new HttpError(502, 'board_fetch_failed', 'Model board was not reachable');
     let board;

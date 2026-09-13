@@ -1,22 +1,11 @@
 /*
- * L7 - Model Center route. Signed-in surface: this is the only public-facing
+ * L7 - Model Center route. This is the public-facing
  * stylesheet allowed to lay out projections, model-versus-market gaps, and
- * model performance. Nothing here renders unless /api/model-center/board has
- * already returned 200, so the boundary is enforced upstream in
- * dashboard/model_center.js, not by hiding rules here.
+ * model performance. Values render only after the public read-only
+ * /api/model-center/board endpoint returns a producer payload.
  *
  * Consumes L2 roles only.
  */
-
-/* —— Access page ————————————————————————————————————————————— */
-.mc-access {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
-  gap: var(--space-5);
-  align-items: start;
-}
-
-.mc-access__copy p { max-width: 60ch; }
 
 .mc-panel {
   position: relative;
@@ -51,43 +40,6 @@
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
   color: var(--text-accent);
-}
-
-/* What entitlement unlocks. Structure only — every value slot is explicitly
-   withheld, so the page never shows a number it has not been served. */
-.mc-locked-list {
-  display: grid;
-  gap: var(--space-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.mc-locked-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3);
-  background: var(--surface-field);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-}
-
-.mc-locked-row > span { color: var(--text-secondary); font-size: var(--type-14); }
-
-.mc-locked-chip {
-  font-family: var(--font-display);
-  font-size: var(--type-12);
-  font-weight: 700;
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
-  color: var(--text-muted);
-  padding: var(--space-1) var(--space-3);
-  background: var(--surface-inset);
-  border: 1px dashed var(--border-default);
-  border-radius: var(--radius-pill);
-  white-space: nowrap;
 }
 
 /* —— Board list ——————————————————————————————————————————————— */
@@ -388,10 +340,6 @@
 .mc-bar > i[data-grade="watch"] { background: var(--metric-watch); }
 .mc-bar > i[data-grade="poor"] { background: var(--metric-poor); }
 
-@media (max-width: 900px) {
-  .mc-access { grid-template-columns: minmax(0, 1fr); }
-}
-
 @media (max-width: 620px) {
   .mc-hero { grid-template-columns: minmax(0, 1fr); }
   .mc-form__row { grid-template-columns: minmax(0, 1fr) 56px; }
@@ -404,49 +352,6 @@
 
 /* The model mark is the emphasised one; market sits behind it. */
 .mc-gauge__pin { box-shadow: 0 0 0 1px var(--surface-inset); }
-
-/* Sample-data banner. Deliberately loud: the numbers beneath it are invented,
-   and nothing about that should be discoverable only by reading the code. */
-.mc-sample-banner {
-  margin: 0 0 var(--space-4);
-  padding: var(--space-3) var(--space-4);
-  border: 1px dashed var(--mark-caution);
-  border-radius: var(--radius-sm);
-  background: var(--tint-caution);
-  color: var(--value-caution);
-  font-size: var(--type-14);
-  font-weight: 600;
-}
-
-/* Sign-in as a disclosure beneath the board, not a wall in front of it. */
-.mc-access-disclosure {
-  margin-top: var(--space-6);
-  background: var(--surface-board);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
-}
-
-.mc-access-disclosure > summary {
-  cursor: pointer;
-  padding: var(--space-3) var(--space-4);
-  min-height: var(--touch-min);
-  display: flex;
-  align-items: center;
-  font-family: var(--font-display);
-  font-size: var(--type-14);
-  font-weight: 700;
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
-  color: var(--text-secondary);
-}
-.mc-access-disclosure > summary:hover { color: var(--text-primary); }
-.mc-access-disclosure[open] > summary { border-bottom: 1px solid var(--border-default); }
-
-.mc-access-body { padding: var(--space-4); }
-.mc-access-body > :last-child { margin-bottom: 0; }
-
-/* The auth panel's full-bleed slabs were sized for a standalone page. */
-.mc-access-body [data-mlbma-auth-panel] { max-width: 420px; }
 
 /* Crest inside the board chip, sized like the card's identity block. */
 .mc-chip {
@@ -476,13 +381,12 @@
  * held back for navigation, and Model Center sits on a blue-shifted ink
  * (#141824) with deep violet fields carrying the brand into the surface.
  *
- * They had been sharing the desk's palette, so the entitled product looked
+ * They had been sharing the desk's palette, so the model product looked
  * like the free one. These overrides re-point the semantic surface tokens for
  * this route only — every component below keeps consuming the same token names
  * and inherits the layer without knowing about it.
  * ======================================================================== */
-body[data-ca-product="research"]:has(#mcBoard),
-body:has(.mc-access-disclosure) {
+body[data-ca-product="research"]:has(#mcBoard) {
   --surface-page: var(--surface-mc-page);
   --surface-panel: var(--surface-mc-panel);
   --surface-board: var(--surface-mc-panel);
@@ -499,12 +403,12 @@ body:has(.mc-access-disclosure) {
    have to fight it. The reference puts the board on the page ground and spends
    the violet on the accent rule and the model-to-market segment instead.
    The panels inside it keep their own ink. */
-body:has(.mc-access-disclosure) #mcBoard > section {
+body[data-ca-product="research"]:has(#mcBoard) #mcBoard > section {
   background: var(--surface-mc-panel);
   border-color: var(--border-violet);
 }
 
-body:has(.mc-access-disclosure) .mc-row:hover {
+body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
   background: var(--surface-mc-hover);
 }
 
@@ -880,6 +784,51 @@ body:has(.mc-access-disclosure) .mc-row:hover {
   line-height: 1.4;
 }
 
+.mc-total {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-mc-field);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.mc-total__label {
+  font-family: var(--font-display);
+  font-size: var(--type-12);
+  font-weight: 800;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.mc-total strong {
+  font-family: var(--font-display);
+  font-size: var(--type-18);
+  color: var(--text-accent);
+  text-transform: uppercase;
+}
+
+.mc-total__detail {
+  justify-self: end;
+  min-width: 0;
+  font-size: var(--type-12);
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.mc-total.is-withheld {
+  border-left-color: var(--border-strong);
+}
+
+.mc-total.is-withheld strong {
+  color: var(--text-primary);
+}
+
 .mc-game__read {
   padding-top: var(--space-2);
 }
@@ -896,7 +845,10 @@ body:has(.mc-access-disclosure) .mc-row:hover {
 
   .mc-game__head {
     align-items: flex-start;
+    flex-wrap: wrap;
   }
+
+  .mc-game__time { margin-left: auto; }
 
   .mc-game__visuals {
     grid-template-columns: minmax(0, 1fr);
@@ -909,5 +861,15 @@ body:has(.mc-access-disclosure) .mc-row:hover {
 
   .mc-score__match {
     max-width: 240px;
+  }
+
+  .mc-total {
+    grid-template-columns: auto 1fr;
+  }
+
+  .mc-total__detail {
+    grid-column: 1 / -1;
+    justify-self: start;
+    text-align: left;
   }
 }
