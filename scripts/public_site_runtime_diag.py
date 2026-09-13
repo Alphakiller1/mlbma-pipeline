@@ -221,25 +221,14 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("MLB radar draws both webs", webs == 2, f"webs={webs}")
         check("MLB radar overlays both clubs on each web", shapes == 4,
               f"shapes={shapes}")
-        # Club colour is identity, not grading - but half the league is navy,
-        # and a navy bar on a near-black panel is an invisible bar. Every mark
-        # must clear a measured floor against the panel it sits on.
-        try:
-            page.wait_for_selector("#form .ca-mirror__fill[data-club]", timeout=timeout_ms)
-        except Exception:
-            pass
-        bars = page.eval_on_selector_all(
-            "#form .ca-mirror__fill[data-club]",
-            "els => els.map(e => getComputedStyle(e).backgroundColor)")
-        def _lum(css):
-            nums = [int(n) / 255 for n in re.findall(r"\d+", css)[:3]]
-            chan = [(c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4) for c in nums]
-            return 0.2126 * chan[0] + 0.7152 * chan[1] + 0.0722 * chan[2]
-        panel = _lum("rgb(18, 20, 29)")
-        worst = min(((max(_lum(b), panel) + 0.05) / (min(_lum(b), panel) + 0.05))
-                    for b in bars) if bars else 0
-        check("club-colour bars clear the legibility floor",
-              bool(bars) and worst >= 2.5, f"{len(bars)} bars, worst {worst:.2f}:1")
+        form_meters = page.locator("#form .ca-segment-meter")
+        meter_count = form_meters.count()
+        meter_cells = page.locator("#form .ca-segment-meter > i").count()
+        check("MLB form uses ten-cell grade meters",
+              meter_count == 20 and meter_cells == meter_count * 10,
+              f"{meter_cells} cells across {meter_count} meters")
+        check("MLB form meters do not use club-brand grading",
+              page.locator("#form [data-club]").count() == 0)
         mlb_detail_text = page.locator("main").inner_text()
         match = PROHIBITED.search(mlb_detail_text)
         check("MLB detail public copy boundary", match is None, match.group(0) if match else "")
