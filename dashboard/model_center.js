@@ -161,7 +161,7 @@
     // roughly 18% of the track between their centres to clear each other. The
     // threshold was 30, which on a three-run axis sent almost every card's
     // labels to opposite ends - furthest from the marks they name.
-    var LABEL_CLEARANCE = 12;
+    var LABEL_CLEARANCE = 20;
     var apart = (m != null && k != null) ? Math.abs(pct(m) - pct(k)) : 100;
     var label = function (cls, name, v, side) {
       var align;
@@ -214,6 +214,25 @@
       (vals ? '<div class="mc-game__values">' + vals + '</div>' : '') + '</div>';
   }
 
+  function projectedScore(g) {
+    var away = fixed(g.away_projected, 1);
+    var home = fixed(g.home_projected, 1);
+    var published = away != null && home != null;
+    var label = published
+      ? ('Projected score: ' + (g.away || 'Away') + ' ' + away + ', ' +
+        (g.home || 'Home') + ' ' + home)
+      : 'Projected score not published';
+    return '<section class="mc-score' + (published ? '' : ' is-withheld') +
+      '" aria-label="' + esc(label) + '">' +
+      '<span class="mc-score__label">Projected score</span>' +
+      (published
+        ? '<div class="mc-score__match"><span><b>' + esc(g.away || 'Away') +
+          '</b><strong>' + esc(away) + '</strong></span><i aria-hidden="true">–</i>' +
+          '<span><b>' + esc(g.home || 'Home') + '</b><strong>' + esc(home) + '</strong></span></div>'
+        : '<strong class="mc-score__pending">Not published</strong>') +
+      '</section>';
+  }
+
   function gameCard(sport, g) {
     var kick = g.kickoff_display || g.time || '';
     return '<article class="mc-game">' +
@@ -221,7 +240,9 @@
       chip(sport, g.away) + chip(sport, g.home) + '</div>' +
       (kick ? '<span class="mc-game__time">' + esc(kick) + '</span>' : '') +
       '</header>' +
-      gauge(sport, g.model_margin, g.market_margin) +
+      '<div class="mc-game__visuals">' + projectedScore(g) +
+      '<section class="mc-line"><span class="mc-line__label">Model vs market</span>' +
+      gauge(sport, g.model_margin, g.market_margin) + '</section></div>' +
       readRow(g) +
       '</article>';
   }
@@ -323,12 +344,13 @@
     }).join('');
   }
 
-  function renderBoard(sport, payload) {
+  function renderBoard(sport, payload, options) {
     var host = $('mcBoard');
     if (!host) return;
+    options = options || {};
     // Entitlement succeeded, so the sign-in disclosure is redundant.
     var access = $('mcAccess');
-    if (access) access.hidden = true;
+    if (access) access.hidden = !options.preview;
     var board = payload && payload.board;
     // normalize(sport, board, extra) takes the sport FIRST. This used to call
     // normalize(board), which put the payload in the sport slot and left the
@@ -367,10 +389,14 @@
           (pair[0] === sport ? ' aria-current="page"' : '') + '>' + pair[1] + '</a>';
       }).join('') + '</nav>';
 
+    var projected = games.filter(function (g) {
+      return num(g.away_projected) != null && num(g.home_projected) != null;
+    }).length;
     var html = sports + '<div class="mc-board"><header class="mc-board__head">' +
-      '<h2 class="mc-board__title">' + esc(title) + '</h2>' +
-      '<span class="mc-board__meta">' + games.length +
-      (games.length === 1 ? ' game' : ' games') + ' · ' + esc(sport.toUpperCase()) + '</span></header>' +
+      '<div><p class="mc-board__eyebrow">' + esc(sport.toUpperCase()) + ' projections</p>' +
+      '<h2 class="mc-board__title">' + esc(title) + '</h2></div>' +
+      '<div class="mc-board__status"><strong>' + projected + '/' + games.length + '</strong>' +
+      '<span>scores published</span></div></header>' +
       body + '</div>';
     host.innerHTML = html;
   }
@@ -430,17 +456,21 @@
         away_projected: 4.6, home_projected: 3.6, total_projected: 8.2, win_probability: 0.58 },
       { id: 's3', away: 'CHC', home: 'STL', away_name: 'Chicago Cubs', home_name: 'St. Louis Cardinals',
         away_record: '78-66', home_record: '72-75', kickoff_display: '7:15 PM ET',
-        model_margin: 0.5, market_margin: 1.0, lean: 'Model prefers Chicago' },
+        model_margin: 0.5, market_margin: 1.0, lean: 'Model prefers Chicago',
+        away_projected: 4.4, home_projected: 4.1, total_projected: 8.5, win_probability: 0.53 },
       { id: 's4', away: 'ATL', home: 'PHI', away_name: 'Atlanta Braves', home_name: 'Philadelphia Phillies',
         away_record: '77-64', home_record: '81-64', kickoff_display: '6:40 PM ET',
         model_margin: -1.0, market_margin: -0.5,
+        away_projected: 3.9, home_projected: 4.7, total_projected: 8.6, win_probability: 0.57,
         edge_withheld_reason: 'Edge withheld: lineup not confirmed' },
       { id: 's5', away: 'HOU', home: 'TEX', away_name: 'Houston Astros', home_name: 'Texas Rangers',
         away_record: '78-66', home_record: '71-72', kickoff_display: '7:05 PM ET',
-        model_margin: 1.5, market_margin: 1.0, lean: 'Model prefers Texas' },
+        model_margin: 1.5, market_margin: 1.0, lean: 'Model prefers Texas',
+        away_projected: 4.0, home_projected: 4.8, total_projected: 8.8, win_probability: 0.55 },
       { id: 's6', away: 'SD', home: 'ARI', away_name: 'San Diego Padres', home_name: 'Arizona Diamondbacks',
         away_record: '76-68', home_record: '70-74', kickoff_display: '8:40 PM ET',
-        model_margin: -0.5, market_margin: -1.0, lean: 'Model leans San Diego' }
+        model_margin: -0.5, market_margin: -1.0, lean: 'Model leans San Diego',
+        away_projected: 4.5, home_projected: 4.2, total_projected: 8.7, win_probability: 0.52 }
     ] } },
     nfl: { board: { games: [
       { id: 'n1', away: 'NE', home: 'SEA', away_name: 'New England Patriots', home_name: 'Seattle Seahawks',
@@ -449,10 +479,12 @@
         away_projected: 24.1, home_projected: 20.0, total_projected: 44.1, win_probability: 0.62 },
       { id: 'n2', away: 'KC', home: 'LAC', away_name: 'Kansas City Chiefs', home_name: 'Los Angeles Chargers',
         away_record: '0-0', home_record: '0-0', kickoff_display: 'Sun 4:25 PM ET',
-        model_margin: 2.5, market_margin: 1.0, lean: 'Model prefers Los Angeles' },
+        model_margin: 2.5, market_margin: 1.0, lean: 'Model prefers Los Angeles',
+        away_projected: 23.8, home_projected: 26.3, total_projected: 50.1, win_probability: 0.58 },
       { id: 'n3', away: 'DAL', home: 'PHI', away_name: 'Dallas Cowboys', home_name: 'Philadelphia Eagles',
         away_record: '0-0', home_record: '0-0', kickoff_display: 'Sun 4:05 PM ET',
-        model_margin: 1.0, market_margin: -1.0, lean: 'Model leans Philadelphia' }
+        model_margin: 1.0, market_margin: -1.0, lean: 'Model leans Philadelphia',
+        away_projected: 21.4, home_projected: 24.7, total_projected: 46.1, win_probability: 0.61 }
     ] } }
   };
 
@@ -473,7 +505,7 @@
     // The access panel is a collapsed disclosure now, not a wall - leave it in
     // place so signing in stays one click away beneath the board.
     paintSampleBanner();
-    renderBoard(sport, SAMPLE_BOARD[sport] || SAMPLE_BOARD.mlb);
+    renderBoard(sport, SAMPLE_BOARD[sport] || SAMPLE_BOARD.mlb, { preview: true });
   }
 
   function boot() {

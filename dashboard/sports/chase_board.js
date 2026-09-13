@@ -56,9 +56,9 @@
     var home = teamName(g.home) || teamName(g.teams && g.teams.home);
     var priced = g.priced === true || g.has_price === true;
     return {
-      id: g.id || g.game_id || (away + '@' + home),
+      id: g.id || g.game_id || g.key || (away + '@' + home),
       kickoff_utc: kickoffUtc(g),
-      kickoff_display: g.kickoff_display || g.kickoff || g.start_et || null,
+      kickoff_display: g.kickoff_display || g.kickoff || g.start_et || g.start || null,
       sort_key: sortKey(g),
       away: away,
       home: home,
@@ -84,11 +84,11 @@
       home_name: g.home_name || teamName(g.home) || null,
       away_record: g.away_record || null,
       home_record: g.home_record || null,
-      away_projected: g.away_projected != null ? g.away_projected : g.away_proj,
-      home_projected: g.home_projected != null ? g.home_projected : g.home_proj,
-      total_projected: g.total_projected != null ? g.total_projected : g.total_proj,
+      away_projected: pickScore(g.away_projected, g.away_proj, g.projected_away),
+      home_projected: pickScore(g.home_projected, g.home_proj, g.projected_home),
+      total_projected: pickScore(g.total_projected, g.total_proj, g.projected_total),
       win_probability: g.win_probability != null ? g.win_probability : g.win_prob,
-      lean: g.lean || g.model_lean || null
+      lean: g.lean || g.model_lean || g.headline || null
     };
   }
 
