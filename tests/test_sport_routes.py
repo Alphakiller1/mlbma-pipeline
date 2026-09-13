@@ -371,6 +371,8 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn(".ca-coverage-track i.is-on", css)
         self.assertIn("scroll-snap-type: x mandatory", css)
         self.assertIn(".ca-player-coverage-card__shot", css)
+        self.assertIn(".ca-season-toggle", css)
+        self.assertIn("border-radius: 0", css)
         self.assertNotIn("ca-matchup-lens", detail)
         self.assertNotIn(".ca-matchup-lens", css)
         self.assertNotIn(".ca-formation", css)

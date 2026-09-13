@@ -4387,7 +4387,7 @@ body[data-ca-product="research"] {
   padding: 4px;
   background: var(--surface-field);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-pill);
+  border-radius: 0;
 }
 
 .ca-season-toggle__btn {
@@ -4396,7 +4396,7 @@ body[data-ca-product="research"] {
   border: 0;
   cursor: pointer;
   padding: 5px 12px;
-  border-radius: var(--radius-pill);
+  border-radius: 0;
   background: transparent;
   color: var(--text-secondary);
   font-family: var(--font-sans);
