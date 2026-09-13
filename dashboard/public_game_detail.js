@@ -2310,9 +2310,33 @@
     profiles.forEach(function (profile) {
       (bySeason[profile.source_season] = bySeason[profile.source_season] || []).push(profile);
     });
+    function allCoverage(profile) {
+      return (profile.splits || []).find(function (split) {
+        return split.coverage === 'all' && Number(split.targets) >= 20 &&
+          isFinite(Number(split.epa_per_target));
+      }) || null;
+    }
+    function positionalValue(profile) {
+      var overall = allCoverage(profile);
+      if (!overall) return null;
+      var position = String(profile.position || '').toUpperCase();
+      var season = String(profile.source_season || '');
+      var pool = [].concat(game.away_player_coverage || [], game.home_player_coverage || [])
+        .filter(function (candidate) {
+          return String(candidate.position || '').toUpperCase() === position &&
+            String(candidate.source_season || '') === season && allCoverage(candidate);
+        }).sort(function (a, b) {
+          return Number(allCoverage(b).epa_per_target) - Number(allCoverage(a).epa_per_target);
+        });
+      var rank = 1 + pool.filter(function (candidate) {
+        return Number(allCoverage(candidate).epa_per_target) > Number(overall.epa_per_target);
+      }).length;
+      return { rank: rank, of: pool.length, overall: overall, tone: rankTone(rank, pool.length) };
+    }
     return Object.keys(bySeason).sort().reverse().map(function (season) {
       var cards = bySeason[season].map(function (profile) {
         var starter = starterProfiles[playerNameKey(profile.player_name)] || {};
+        var positionValue = positionalValue(profile);
         var splits = (profile.splits || []).filter(function (split) {
           return split.coverage !== 'all' && Number(split.targets) >= 3;
         }).sort(function (a, b) { return Number(b.targets) - Number(a.targets); }).slice(0, 5);
@@ -2330,9 +2354,18 @@
             '" alt="" width="64" height="64" loading="lazy" decoding="async">'
           : '<span class="ca-player-coverage-card__initials" aria-hidden="true">' +
             esc(initials(profile.player_name)) + '</span>';
+        var grade = positionValue
+          ? '<div class="ca-player-coverage-card__grade ' + esc(positionValue.tone) +
+            '" title="Ranked by season EPA per target among same-position players in this matchup with at least 20 targets">' +
+            '<span>Position Rank</span><strong>' + positionValue.rank + ordinal(positionValue.rank) +
+            ' / ' + positionValue.of + '</strong><small>' +
+            esc(epaText(positionValue.overall.epa_per_target, false)) + ' EPA/T</small></div>'
+          : '<div class="ca-player-coverage-card__grade c-na"><span>Position Rank</span>' +
+            '<strong>—</strong><small>No 20-target sample</small></div>';
         return '<article class="ca-player-coverage-card" role="listitem"><header>' + portrait +
           '<div class="ca-player-coverage-card__identity"><span class="ca-lineup-player__position">' +
-          esc(profile.position) + '</span><strong>' + esc(profile.player_name) + '</strong></div></header>' +
+          esc(profile.position) + '</span><strong>' + esc(profile.player_name) + '</strong></div>' +
+          grade + '</header>' +
           '<div class="ca-lineup-scroll"><table><thead><tr><th>Coverage</th><th class="num">Tgt</th>' +
           '<th class="num">Catch</th><th class="num">Y/T</th><th class="num">EPA/T</th></tr></thead>' +
           '<tbody>' + rows + '</tbody></table></div></article>';
@@ -2341,7 +2374,8 @@
       return '<section class="ca-player-coverage" data-scheme-seasons="' + esc(season) + '">' +
         '<div class="ca-player-coverage__head"><div><h4>Skill Players By Coverage</h4><p>' +
         esc(fullName(sport, game, offSide)) + ' targets against charted ' + season + ' coverages</p></div>' +
-        '<span>Minimum 3 targets shown</span></div><div class="ca-player-coverage-grid" role="list" ' +
+        '<span>Position rank: season EPA/T among matchup peers · 20+ targets; rows 3+ targets</span></div>' +
+        '<div class="ca-player-coverage-grid" role="list" ' +
         'aria-label="Skill player coverage cards; scroll horizontally on small screens">' + cards +
         '</div></section>';
     }).join('');

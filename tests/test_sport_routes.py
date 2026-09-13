@@ -359,7 +359,8 @@ class AdapterHoleTests(unittest.TestCase):
             "panel.hidden = !show", "seasons.length === 1", "Full Injury Report",
             "Math.round(Number(tendency) * 10)", "segmentIndex < activeSegments",
             "scroll horizontally on small screens", "ca-player-coverage-card__shot",
-            "starterProfiles[playerNameKey(profile.player_name)]",
+            "starterProfiles[playerNameKey(profile.player_name)]", "Position Rank",
+            "Ranked by season EPA per target among same-position players",
         ):
             self.assertIn(text, detail)
         self.assertIn("away_lineups", adapter)
@@ -371,6 +372,8 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn(".ca-coverage-track i.is-on", css)
         self.assertIn("scroll-snap-type: x mandatory", css)
         self.assertIn(".ca-player-coverage-card__shot", css)
+        self.assertIn(".ca-player-coverage-card__grade", css)
+        self.assertIn("linear-gradient(180deg, var(--surface-elevated), var(--surface-inset))", css)
         self.assertIn(".ca-season-toggle", css)
         self.assertIn("border-radius: 0", css)
         self.assertIn("game.slate_date ||", (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8"))
