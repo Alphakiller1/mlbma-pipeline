@@ -91,25 +91,24 @@
   }
 
   /* Official crest plus abbreviation, matching the public matchup cards.
-     mlbma_assets.js measures each crest against the dark ground and serves the
-     full-colour asset or ESPN's dark variant accordingly, so a club that would
-     otherwise vanish on this background still reads. */
-  /* A solid club-colour tile with the abbreviation on it.
-     The board is read by scanning down a column of twelve cards for one club,
-     and a crest on a dark tile is a small detailed picture that has to be
-     decoded; a block of Dodger blue with LAD on it is found at a glance. The
-     colour is the identity, the letters are the fact, and neither depends on
-     the other. */
+     mlbma_assets.js selects the legible logo variant for the dark ground and
+     provides an initials fallback if both CDN requests fail. The abbreviation
+     remains visible beside the crest, so team identity never depends on the
+     image alone. */
   function chip(sport, abbr, fullName) {
     var code = String(abbr || '').toUpperCase();
     var tint = '';
+    var crest = '';
     if (code && global.MLBMAAssets && MLBMAAssets.teamBarColor) {
       var hex = MLBMAAssets.teamBarColor(code, sport);
       if (hex) tint = ' style="--club:' + esc(hex) + '"';
     }
+    if (code && global.MLBMAAssets && MLBMAAssets.teamLogoImg) {
+      crest = MLBMAAssets.teamLogoImg(code, 28, 'mc-chip__crest', sport);
+    }
     return '<span class="mc-chip"' + tint +
       (fullName ? ' title="' + esc(fullName) + '"' : '') + '>' +
-      '<span class="mc-chip__code">' + esc(code || '--') + '</span></span>';
+      crest + '<span class="mc-chip__code">' + esc(code || '--') + '</span></span>';
   }
 
   /* One axis places both marks and both tick labels, and the domain is fixed
