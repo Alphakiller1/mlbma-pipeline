@@ -8,6 +8,7 @@ arrives because it happened to sit next to a publishable one.
 from __future__ import annotations
 
 import json
+import copy
 import unittest
 from pathlib import Path
 
@@ -206,6 +207,30 @@ class NflPublicContextTests(unittest.TestCase):
         self.assertEqual(scheme["coverage_samples"], 660)
         for key in ("confidence", "staff_continuity", "carryover_weight", "model_version"):
             self.assertNotIn(key, scheme)
+
+    def test_scheme_frequency_ranks_are_recomputed_from_raw_rates(self):
+        board = copy.deepcopy(BOARD)
+        second = copy.deepcopy(board["scheme_profiles"][0])
+        second["team"] = "BBB"
+        second["defense"]["blitz_rate"] = 0.40
+        board["scheme_profiles"].append(second)
+        schemes = ctx.team_scheme(board)
+        aaa = schemes["AAA"]["league_frequency_ranks"]["defense"]["pressure"]["blitz_rate"]
+        bbb = schemes["BBB"]["league_frequency_ranks"]["defense"]["pressure"]["blitz_rate"]
+        self.assertEqual((aaa["place"], aaa["of"]), (2, 2))
+        self.assertEqual((bbb["place"], bbb["of"]), (1, 2))
+
+    def test_player_coverage_grades_against_same_position_and_coverage(self):
+        board = copy.deepcopy(BOARD)
+        second = copy.deepcopy(board["player_coverage_profiles"][0])
+        second.update({"player_id": "wr-2", "player_name": "Wide Two", "team": "BBB"})
+        second["splits"]["man"]["epa_per_target"] = 0.30
+        board["player_coverage_profiles"].append(second)
+        profiles = ctx.player_coverage(board)
+        aaa = profiles["AAA"][0]["splits"][0]["league_ranks"]["epa_per_target"]
+        bbb = profiles["BBB"][0]["splits"][0]["league_ranks"]["epa_per_target"]
+        self.assertEqual((aaa["place"], aaa["of"]), (2, 2))
+        self.assertEqual((bbb["place"], bbb["of"]), (1, 2))
 
     def test_coverage_shells_sum_to_one(self):
         cov = self.ctx["scheme"]["AAA"]["defense"]["coverage"]

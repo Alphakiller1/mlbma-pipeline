@@ -233,6 +233,7 @@
     "pass_epa_man",
     "pass_epa_play_action",
     "pass_epa_pressure",
+    "rush_epa_stacked_box",
     "pass_epa_zone",
     "pass_success_rate",
     "percentage",
@@ -308,6 +309,9 @@
   ],
   "derived_descriptive": [
     "depth_rank",
+    "league_frequency_ranks",
+    "league_ranks",
+    "place",
     "fip_rank",
     "formula",
     "high_lev_era_rank",

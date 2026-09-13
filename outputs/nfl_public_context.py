@@ -86,7 +86,7 @@ SCHEME_GROUPS = {
         "pass_epa_man", "pass_epa_zone", "pass_epa_blitz", "pass_epa_pressure",
         "pass_epa_play_action", "pass_epa_cover_0", "pass_epa_cover_1",
         "pass_epa_cover_2", "pass_epa_cover_3", "pass_epa_cover_4",
-        "pass_epa_cover_6", "pass_epa_cover_2_man",
+        "pass_epa_cover_6", "pass_epa_cover_2_man", "rush_epa_stacked_box",
     ),
     "target_share": ("target_share_rb_all", "target_share_wr_all", "target_share_te_all"),
 }
@@ -184,6 +184,24 @@ def team_scheme(board: dict) -> dict[str, dict]:
                     grouped[group] = values
             entry[phase] = grouped
         out[team] = entry
+
+    # Frequency rank means "used most often", not "best". Keep this metadata
+    # beside the raw values so existing consumers still receive plain numbers.
+    for phase in ("offense", "defense"):
+        for group in ("coverage", "pressure", "personnel", "target_share"):
+            for key in SCHEME_GROUPS[group]:
+                rows = [
+                    (team, float(entry[phase][group][key]))
+                    for team, entry in out.items()
+                    if (entry.get(phase) or {}).get(group, {}).get(key) is not None
+                ]
+                if not rows:
+                    continue
+                ranks = _ranked(rows, "high")
+                for team, _value in rows:
+                    rank_group = (out[team].setdefault("league_frequency_ranks", {})
+                                  .setdefault(phase, {}).setdefault(group, {}))
+                    rank_group[key] = {"place": ranks[team], "of": len(rows)}
     return out
 
 
@@ -285,6 +303,43 @@ def player_coverage(board: dict) -> dict[str, list[dict]]:
             "source_season": int(season),
             "splits": splits,
         })
+    # Grade each rate against players at the same position, in the same season
+    # and coverage. A split needs three targets (twenty for the all-coverage
+    # summary) before it enters a pool; volume itself is not graded as quality.
+    rows = [profile for profiles in out.values() for profile in profiles]
+    for position in ("RB", "WR", "TE"):
+        seasons = {profile["source_season"] for profile in rows
+                   if profile["position"] == position}
+        for season in seasons:
+            coverages = {split["coverage"] for profile in rows
+                         if profile["position"] == position and
+                         profile["source_season"] == season
+                         for split in profile["splits"]}
+            for coverage in coverages:
+                minimum = 20 if coverage == "all" else 3
+                for metric in ("catch_rate", "yards_per_target", "epa_per_target"):
+                    pool = []
+                    for profile in rows:
+                        if profile["position"] != position or profile["source_season"] != season:
+                            continue
+                        split = next((item for item in profile["splits"]
+                                      if item["coverage"] == coverage), None)
+                        if split and split.get("targets", 0) >= minimum and split.get(metric) is not None:
+                            pool.append((profile["player_id"] or profile["player_name"],
+                                         float(split[metric])))
+                    if len(pool) < 2:
+                        continue
+                    ranks = _ranked(pool, "high")
+                    for profile in rows:
+                        if profile["position"] != position or profile["source_season"] != season:
+                            continue
+                        split = next((item for item in profile["splits"]
+                                      if item["coverage"] == coverage), None)
+                        identity = profile["player_id"] or profile["player_name"]
+                        if split and identity in ranks:
+                            split.setdefault("league_ranks", {})[metric] = {
+                                "place": ranks[identity], "of": len(pool)
+                            }
     return out
 
 

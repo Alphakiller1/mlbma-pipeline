@@ -650,9 +650,20 @@
   function percentBar(rank, of) {
     if (!(of > 1) || !(rank >= 1)) return '';
     var pct = Math.round(((of - rank) / (of - 1)) * 100);
-    return '<span class="ca-pct-bar" role="img" aria-label="' + pct +
-      ' percent of clubs rate below this value">' +
-      '<span class="ca-pct-bar__fill" style="width:' + pct + '%"></span></span>';
+    return segmentedMeter(pct, rankTone(rank, of), pct +
+      ' percent of clubs rate below this value');
+  }
+
+  function segmentedMeter(percent, tone, label, reverse) {
+    var pct = Math.max(0, Math.min(100, Number(percent) || 0));
+    var active = Math.max(0, Math.min(10, Math.round(pct / 10)));
+    var cells = '';
+    for (var i = 0; i < 10; i += 1) {
+      cells += '<i' + (i < active ? ' class="is-on"' : '') + '></i>';
+    }
+    return '<span class="ca-segment-meter ' + esc(tone || 'c-mid') +
+      (reverse ? ' is-reverse' : '') + '" role="img" aria-label="' + esc(label) + '">' +
+      cells + '</span>';
   }
 
   function formatStat(input, digits) {
@@ -719,8 +730,9 @@
   }
 
   function percentOf(entry) {
-    if (!entry || !(entry.of > 1) || !(entry.rank >= 1)) return null;
-    return ((entry.of - entry.rank) / (entry.of - 1)) * 100;
+    var place = entry && (entry.rank || entry.place);
+    if (!entry || !(entry.of > 1) || !(place >= 1)) return null;
+    return ((entry.of - place) / (entry.of - 1)) * 100;
   }
 
   function mirrorRow(label, away, home, format, styles) {
@@ -747,9 +759,9 @@
           ? blank + '<span class="' + track + '"></span>'
           : '<span class="' + track + '"></span>' + blank;
       }
-      var bar = '<span class="' + track + '"><span class="ca-mirror__fill"' +
-        (styles[which] ? ' data-club="1"' : '') + ' style="width:' +
-        (pct == null ? 0 : pct.toFixed(1)) + '%"></span></span>';
+      var bar = '<span class="' + track + '">' + segmentedMeter(
+        pct == null ? 0 : pct, rankTone(entry.rank, entry.of),
+        (pct == null ? 0 : Math.round(pct)) + ' league percentile', which === 'away') + '</span>';
       // The grade class goes on the value, so the figure and the rank beneath
       // it carry the same reading - and the row's winner is left to the bars.
       var value = '<span class="' + val + ' ' + rankTone(entry.rank, entry.of) + '">' +
@@ -2022,10 +2034,9 @@
   ];
 
   var PRESSURE_ROWS = [
-    ['blitz_rate', 'Blitz Rate', 'pct'],
-    ['pressure_rate', 'Pressure Rate', 'pct'],
-    ['stacked_box_rate', 'Stacked Box Rate', 'pct'],
-    ['avg_box', 'Average Box Count', 'num']
+    ['blitz_rate', 'pass_epa_blitz', 'Blitz', 'Pass EPA / play when blitzed'],
+    ['pressure_rate', 'pass_epa_pressure', 'Pressure', 'Pass EPA / play under pressure'],
+    ['stacked_box_rate', 'rush_epa_stacked_box', 'Stacked Box', 'Rush EPA / play vs stacked boxes']
   ];
 
   var PERSONNEL_ROWS = [
@@ -2044,17 +2055,15 @@
   var RESPONSE_ROWS = [
     ['pass_epa_man', 'Pass EPA Vs Man', 'epa'],
     ['pass_epa_zone', 'Pass EPA Vs Zone', 'epa'],
-    ['pass_epa_blitz', 'Pass EPA When Blitzed', 'epa'],
-    ['pass_epa_pressure', 'Pass EPA Under Pressure', 'epa'],
     ['pass_epa_play_action', 'Pass EPA On Play Action', 'epa'],
     ['pass_success_rate', 'Pass Success Rate', 'pct'],
     ['rush_success_rate', 'Rush Success Rate', 'pct']
   ];
 
   var TARGET_ROWS = [
-    ['target_share_rb_all', 'Running Backs'],
-    ['target_share_wr_all', 'Receivers'],
-    ['target_share_te_all', 'Tight Ends']
+    ['target_share_rb_all', 'Running Backs', 'pct'],
+    ['target_share_wr_all', 'Wide Receivers', 'pct'],
+    ['target_share_te_all', 'Tight Ends', 'pct']
   ];
 
   function pctText(value) {
@@ -2079,49 +2088,53 @@
      scannable instead of being twelve numbers to read one at a time.
      EPA is a signed per-play margin on a different scale entirely, so it keeps
      the number alone rather than being given a bar that would imply one. */
-  function rateTable(caption, rows, source) {
+  function frequencyRank(scheme, phase, group, key) {
+    return (((((scheme || {}).league_frequency_ranks || {})[phase] || {})[group] || {})[key]) || null;
+  }
+
+  function rateTable(caption, rows, source, scheme, phase, group) {
     var body = rows.map(function (row) {
       var raw = source[row[0]];
       if (raw == null) return '';
       var bar = '';
       if (row[2] === 'pct') {
-        var pct = Math.max(0, Math.min(100, Number(raw) * 100));
-        bar = '<span class="ca-rate-bar" aria-hidden="true"><span style="width:' +
-          pct.toFixed(1) + '%"></span></span>';
+        var rank = frequencyRank(scheme, phase, group, row[0]);
+        bar = rank ? segmentedMeter(percentOf(rank), rankTone(rank.place, rank.of),
+          row[1] + ': ' + rank.place + ordinal(rank.place) + ' of ' + rank.of +
+          ' by league frequency') : '';
       }
-      return '<tr><td>' + esc(row[1]) + bar + '</td><td class="num">' +
-        esc(schemeValue(raw, row[2])) + '</td></tr>';
+      var rankText = row[2] === 'pct' ? frequencyRank(scheme, phase, group, row[0]) : null;
+      return '<tr><td>' + esc(row[1]) + bar + '</td><td class="num ' +
+        (rankText ? rankTone(rankText.place, rankText.of) : '') + '">' +
+        esc(schemeValue(raw, row[2])) + (rankText ? '<small>' + rankText.place +
+        ordinal(rankText.place) + ' of ' + rankText.of + ' frequency</small>' : '') + '</td></tr>';
     }).filter(Boolean).join('');
     if (!body) return '';
     return '<div class="ca-rate-block"><h4>' + esc(caption) + '</h4>' +
       '<table class="ca-rate-table"><tbody>' + body + '</tbody></table></div>';
   }
 
-  /* A 100% stacked bar. The segments are the shells themselves, so the bar can
-     only ever say how the charted snaps divided up. */
-  function stackedBar(segments) {
-    var total = segments.reduce(function (sum, seg) { return sum + seg.value; }, 0);
-    if (!(total > 0)) return '';
-    var bar = segments.map(function (seg, i) {
-      var share = (seg.value / total) * 100;
-      return '<span class="ca-stack__seg ca-stack__seg--' + ((i % 7) + 1) + '" style="width:' +
-        share.toFixed(2) + '%" title="' + esc(seg.label) + ' ' + share.toFixed(1) + '%"></span>';
-    }).join('');
-    var key = segments.map(function (seg, i) {
-      var share = (seg.value / total) * 100;
-      return '<li><span class="ca-stack__swatch ca-stack__swatch--' + ((i % 7) + 1) +
-        '"></span>' + esc(seg.label) + ' <strong>' + share.toFixed(1) + '%</strong></li>';
-    }).join('');
-    return '<div class="ca-stack">' + bar + '</div><ul class="ca-stack__key">' + key + '</ul>';
-  }
-
-  function provenanceLine(scheme) {
-    var seasons = (scheme.participation_source_seasons || scheme.source_seasons || []).join(', ');
-    var bits = [];
-    if (seasons) bits.push('Charted from the ' + seasons + ' season');
-    if (scheme.charting_samples != null) bits.push(Number(scheme.charting_samples).toLocaleString('en-US') + ' charted plays');
-    if (scheme.coverage_samples != null) bits.push(Number(scheme.coverage_samples).toLocaleString('en-US') + ' coverage snaps');
-    return bits.join(' \u00b7 ');
+  function pressureMatchups(sport, game, offSide, defSide) {
+    var offResponse = (((game[offSide + '_scheme'] || {}).offense || {}).response) || {};
+    var defScheme = game[defSide + '_scheme'] || {};
+    var pressure = ((defScheme.defense || {}).pressure) || {};
+    var rows = PRESSURE_ROWS.map(function (spec) {
+      var frequency = pressure[spec[0]], response = offResponse[spec[1]];
+      if (frequency == null && response == null) return '';
+      var rank = frequencyRank(defScheme, 'defense', 'pressure', spec[0]);
+      var meter = rank ? segmentedMeter(percentOf(rank), rankTone(rank.place, rank.of),
+        spec[2] + ': ' + rank.place + ordinal(rank.place) + ' of ' + rank.of +
+        ' by league frequency') : '';
+      return '<div class="ca-pressure-row"><div><strong>' + esc(spec[2]) + '</strong><span>' +
+        esc(pctText(frequency)) + (rank ? ' · ' + rank.place + ordinal(rank.place) +
+        ' of ' + rank.of : '') + '</span>' + meter + '</div><div class="' +
+        epaTone(response, true) + '"><span>' + esc(fullName(sport, game, offSide)) +
+        '</span><strong>' + esc(epaText(response, false)) + '</strong><small>' +
+        esc(spec[3]) + '</small></div></div>';
+    }).filter(Boolean).join('');
+    if (!rows) return '';
+    return '<div class="ca-rate-block ca-pressure-matchup"><h4>Pressure Matchups</h4>' +
+      rows + '</div>';
   }
 
   /* One direction of the confrontation: this offence against that defence. */
@@ -2265,18 +2278,16 @@
       var offValue = off[spec[1]];
       var defValue = def[spec[1]];
       if (tendency == null && offValue == null && defValue == null) return '';
-      var activeSegments = tendency == null ? 0 : Math.max(0, Math.min(10, Math.round(Number(tendency) * 10)));
-      var segments = '';
-      for (var segmentIndex = 0; segmentIndex < 10; segmentIndex += 1) {
-        segments += '<i' + (segmentIndex < activeSegments ? ' class="is-on"' : '') + '></i>';
-      }
+      var rank = frequencyRank(game[defSide + '_scheme'], 'defense', 'coverage', spec[0]);
+      var meter = rank ? segmentedMeter(percentOf(rank), rankTone(rank.place, rank.of),
+        spec[2] + ': ' + rank.place + ordinal(rank.place) + ' of ' + rank.of +
+        ' by league frequency') : '';
       return '<div class="ca-coverage-row">' +
         '<div class="ca-coverage-result ' + epaTone(offValue, true) + '"><strong>' +
         esc(epaText(offValue, false)) + '</strong><span>Off EPA / play</span></div>' +
         '<div class="ca-coverage-look"><span>' + esc(spec[2]) + '</span>' +
-        '<div class="ca-coverage-track" aria-label="' + esc(spec[2]) + ' used ' +
-        esc(pctText(tendency)) + '">' + segments + '</div>' +
-        '<strong>' + esc(pctText(tendency)) + '</strong></div>' +
+        meter + '<strong>' + esc(pctText(tendency)) +
+        (rank ? ' · ' + rank.place + ordinal(rank.place) : '') + '</strong></div>' +
         '<div class="ca-coverage-result ca-coverage-result--def ' + epaTone(defValue, false) + '">' +
         '<strong>' + esc(epaText(defValue, false)) + '</strong><span>EPA allowed / play</span></div>' +
         '</div>';
@@ -2295,17 +2306,20 @@
     var offense = unitData(game, offSide, 'offense');
     var starterProfiles = {};
     ((offense || {}).players || []).forEach(function (player) {
-      if (['RB', 'WR', 'TE'].indexOf(String(player.position || '').toUpperCase()) >= 0) {
+      if (['QB', 'RB', 'WR', 'TE'].indexOf(String(player.position || '').toUpperCase()) >= 0) {
         starterProfiles[playerNameKey(player.name)] = player;
       }
     });
     profiles = profiles.filter(function (profile) {
       return starterProfiles[playerNameKey(profile.player_name)];
     });
-    if (!profiles.length) {
-      return '<section class="ca-player-coverage"><h4>Skill Players By Coverage</h4>' +
-        pending('No season-labelled player coverage splits are published for these starters.') + '</section>';
-    }
+    if (!profiles.length) return '<section class="ca-player-coverage"><h4>Players By Coverage</h4>' +
+      '<div class="ca-player-coverage-groups"><section class="ca-player-coverage-group"><h5>Quarterbacks</h5>' +
+      pending('Quarterback-level coverage splits are not published. Use Offensive Response in the comparison above.') +
+      '</section><section class="ca-player-coverage-group"><h5>Running Backs</h5>' +
+      pending('No season-labelled coverage splits are published for these starters.') +
+      '</section><section class="ca-player-coverage-group"><h5>Wide Receivers</h5>' +
+      pending('No season-labelled coverage splits are published for these starters.') + '</section></div></section>';
     var bySeason = {};
     profiles.forEach(function (profile) {
       (bySeason[profile.source_season] = bySeason[profile.source_season] || []).push(profile);
@@ -2319,6 +2333,9 @@
     function positionalValue(profile) {
       var overall = allCoverage(profile);
       if (!overall) return null;
+      var published = (overall.league_ranks || {}).epa_per_target;
+      if (published) return { rank: published.place, of: published.of, overall: overall,
+        tone: rankTone(published.place, published.of) };
       var position = String(profile.position || '').toUpperCase();
       var season = String(profile.source_season || '');
       var pool = [].concat(game.away_player_coverage || [], game.home_player_coverage || [])
@@ -2333,8 +2350,15 @@
       }).length;
       return { rank: rank, of: pool.length, overall: overall, tone: rankTone(rank, pool.length) };
     }
+    function rankedPlayerCell(value, rank, format) {
+      var shown = value == null ? '—' : format(value);
+      if (!rank) return '<td class="num">' + esc(shown) + '</td>';
+      return '<td class="num ' + rankTone(rank.place, rank.of) + '" title="' +
+        rank.place + ordinal(rank.place) + ' of ' + rank.of + ' at this position and coverage">' +
+        esc(shown) + '<small>' + rank.place + ordinal(rank.place) + '</small></td>';
+    }
     return Object.keys(bySeason).sort().reverse().map(function (season) {
-      var cards = bySeason[season].map(function (profile) {
+      function playerCard(profile) {
         var starter = starterProfiles[playerNameKey(profile.player_name)] || {};
         var positionValue = positionalValue(profile);
         var splits = (profile.splits || []).filter(function (split) {
@@ -2343,11 +2367,14 @@
         if (!splits.length) return '';
         var rows = splits.map(function (split) {
           var label = String(split.coverage || '').replace(/^cover_/, 'Cover ').replace(/_/g, ' ');
+          var ranks = split.league_ranks || {};
           return '<tr><td>' + esc(titleCase(label)) + '</td><td class="num">' +
-            esc(split.targets) + '</td><td class="num">' + esc(pctText(split.catch_rate)) +
-            '</td><td class="num">' + esc(split.yards_per_target == null ? '—' :
-              Number(split.yards_per_target).toFixed(1)) +
-            '</td><td class="num">' + esc(epaText(split.epa_per_target, false)) + '</td></tr>';
+            esc(split.targets) + '</td>' +
+            rankedPlayerCell(split.catch_rate, ranks.catch_rate, pctText) +
+            rankedPlayerCell(split.yards_per_target, ranks.yards_per_target,
+              function (v) { return Number(v).toFixed(1); }) +
+            rankedPlayerCell(split.epa_per_target, ranks.epa_per_target,
+              function (v) { return epaText(v, false); }) + '</tr>';
         }).join('');
         var portrait = starter.headshot_url
           ? '<img class="ca-player-coverage-card__shot" src="' + esc(starter.headshot_url) +
@@ -2369,15 +2396,26 @@
           '<div class="ca-lineup-scroll"><table><thead><tr><th>Coverage</th><th class="num">Tgt</th>' +
           '<th class="num">Catch</th><th class="num">Y/T</th><th class="num">EPA/T</th></tr></thead>' +
           '<tbody>' + rows + '</tbody></table></div></article>';
+      }
+      var labels = { QB: 'Quarterbacks', RB: 'Running Backs', WR: 'Wide Receivers', TE: 'Tight Ends' };
+      var groups = ['QB', 'RB', 'WR', 'TE'].map(function (position) {
+        var cards = bySeason[season].filter(function (profile) {
+          return String(profile.position || '').toUpperCase() === position;
+        }).map(playerCard).filter(Boolean).join('');
+        if (!cards && position !== 'QB') return '';
+        var content = cards || pending('Quarterback-level coverage splits are not published. ' +
+          'Use Offensive Response in the comparison above.');
+        return '<section class="ca-player-coverage-group" data-position="' + position + '"><h5>' +
+          labels[position] + '</h5><div class="ca-player-coverage-grid" role="list" ' +
+          'aria-label="' + labels[position] + ' coverage cards; scroll horizontally on small screens">' +
+          content + '</div></section>';
       }).filter(Boolean).join('');
-      if (!cards) return '';
+      if (!groups) return '';
       return '<section class="ca-player-coverage" data-scheme-seasons="' + esc(season) + '">' +
-        '<div class="ca-player-coverage__head"><div><h4>Skill Players By Coverage</h4><p>' +
-        esc(fullName(sport, game, offSide)) + ' targets against charted ' + season + ' coverages</p></div>' +
-        '<span>Position rank: season EPA/T among matchup peers · 20+ targets; rows 3+ targets</span></div>' +
-        '<div class="ca-player-coverage-grid" role="list" ' +
-        'aria-label="Skill player coverage cards; scroll horizontally on small screens">' + cards +
-        '</div></section>';
+        '<div class="ca-player-coverage__head"><div><h4>Players By Coverage</h4><p>' +
+        esc(fullName(sport, game, offSide)) + ' · ' + season + ' receiving splits</p></div>' +
+        '<span>League rank within position · 20+ overall targets; rows 3+ targets</span></div>' +
+        '<div class="ca-player-coverage-groups">' + groups + '</div></section>';
     }).join('');
   }
 
@@ -2386,8 +2424,6 @@
     var defScheme = game[defSide + '_scheme'];
     var offName = fullName(sport, game, offSide);
     var defName = fullName(sport, game, defSide);
-    var charted = ((defScheme || {}).participation_source_seasons ||
-      (defScheme || {}).source_seasons || []).join(', ');
     var panelSeasons = [].concat((offScheme || {}).participation_source_seasons ||
       (offScheme || {}).source_seasons || [],
       (defScheme || {}).participation_source_seasons ||
@@ -2396,14 +2432,12 @@
       .join(',');
     var head = '<section class="ca-scheme-panel" data-scheme-seasons="' +
       esc(panelSeasons) + '"><h3>' + esc(offName) +
-      ' Offence Versus ' + esc(defName) + ' Defence</h3>' +
-      (charted ? '<p class="ca-lineup-context">Charted ' + esc(charted) + '</p>' : '');
+      ' Offence Versus ' + esc(defName) + ' Defence</h3>';
     if (!offScheme || !defScheme) {
       return head + pending('Charted scheme profiles are not published for this pairing.') +
         '</section>';
     }
     var defCov = (defScheme.defense || {}).coverage || {};
-    var defPressure = (defScheme.defense || {}).pressure || {};
     var offPersonnel = (offScheme.offense || {}).personnel || {};
     var offResponse = (offScheme.offense || {}).response || {};
     var offTargets = (offScheme.offense || {}).target_share || {};
@@ -2413,25 +2447,16 @@
       '<p class="ca-detail-source-note">' + esc(defName) + ' played zone on ' +
       pctText(defCov.zone_rate) + ' of its charted coverage snaps.</p>';
 
-    var targets = TARGET_ROWS
-      .filter(function (row) { return offTargets[row[0]] != null; })
-      .map(function (row) { return { label: row[1], value: Number(offTargets[row[0]]) }; });
-    var targetBlock = targets.length
-      ? '<div class="ca-rate-block"><h4>Target share</h4>' +
-        stackedBar(targets) +
-        '<p class="ca-detail-source-note">Observed shares of charted targets. It describes ' +
-        'the sample named above and says nothing about this game.</p></div>'
-      : '';
+    var targetBlock = rateTable('Target Share', TARGET_ROWS, offTargets,
+      offScheme, 'offense', 'target_share');
 
     /* Two columns, split the way the confrontation is: what that defence did,
        and what this offence did. A masonry of six unequal blocks read as a
        pile; naming the two halves makes the pairing the point. */
-    return head +
-      '<p class="ca-lineup-context">' + esc(provenanceLine(defScheme)) + '</p>' +
-      coverage + coverageNote +
+    return head + coverage + coverageNote +
       // The direct confrontation first: what this offence has done in each
       // situation, beside what the defence it meets has given up in the same
-      // one. The distribution bars below say how often each look happens; this
+       // one. The frequency meters below say how a look ranks across the league; this
       // says what happens when it does, which is the question a reader has.
       (versus ? '<div class="ca-sit-block"><h4>Situation By Situation</h4>' + versus +
         '<p class="ca-detail-source-note">Both columns are EPA per play from the ' +
@@ -2441,11 +2466,13 @@
       '<div class="ca-scheme-duo">' +
       '<div class="ca-scheme-col"><h4 class="ca-scheme-col__head">' + esc(defName) +
       ' defence</h4>' +
-      rateTable('Pressure', PRESSURE_ROWS, defPressure) + '</div>' +
+      pressureMatchups(sport, game, offSide, defSide) + '</div>' +
       '<div class="ca-scheme-col"><h4 class="ca-scheme-col__head">' + esc(offName) +
       ' offence</h4>' +
-      rateTable('Personnel And Formation', PERSONNEL_ROWS, offPersonnel) +
-      rateTable('Response By Look', RESPONSE_ROWS, offResponse) +
+      rateTable('Personnel And Formation', PERSONNEL_ROWS, offPersonnel,
+        offScheme, 'offense', 'personnel') +
+      rateTable('Response By Look', RESPONSE_ROWS, offResponse,
+        offScheme, 'offense', 'response') +
       targetBlock + '</div>' +
       '</div>' + playerCoveragePanels(sport, game, offSide) + '</section>';
   }
@@ -2662,7 +2689,7 @@
         return String(entry.label).indexOf('EPA') >= 0
           ? (n > 0 ? '+' : '') + n.toFixed(3)
           : (n * 100).toFixed(1) + '%';
-      }, clubPair(sport, game));
+      });
     }).filter(Boolean).join('');
     if (!rows) return '';
     return '<div class="ca-mirror">' +
@@ -2695,10 +2722,10 @@
         schemePanel(sport, game, 'away', 'home') +
         schemePanel(sport, game, 'home', 'away') + '</div>' +
         '<p class="ca-detail-source-note" data-season-prior-only>Every rate here describes snaps that have already ' +
-        'been charted, in the season named under each heading. At the start of a season that ' +
+        'been charted, in the season selected above. At the start of a season that ' +
         'season is LAST season, and a prior-season rate is not a statement about this game — ' +
         'which is why the seasons are named on the control above rather than in a footnote. ' +
-        'Distribution bars are shares of the charted sample and sum to 100%.</p>'),
+        'Frequency meters show where each rate ranks across the 32-team pool.</p>'),
 
       section('form', 'Team Form',
         'Ten Observed Rates, Graded Against The 32-Team League Pool',

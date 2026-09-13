@@ -279,14 +279,18 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # inner_text() returns rendered text, and the provenance line is
         # uppercased by the stylesheet, so the comparison is case-insensitive.
         scheme_text = page.locator("#scheme").inner_text().lower()
-        check("NFL scheme states its source season", "charted from the" in scheme_text)
+        check("NFL scheme removes redundant charting banner", "charted from the" not in scheme_text)
         check("NFL scheme speaks in the past tense", "played zone on" in scheme_text)
-        stacks = page.eval_on_selector_all(
-            ".ca-stack",
-            "els => els.map(e => [...e.children].reduce((sum, c) => sum + parseFloat(c.style.width), 0))")
-        check("NFL distribution bars sum to 100%",
-              bool(stacks) and all(abs(total - 100) < 0.5 for total in stacks),
-              f"{len(stacks)} bars, worst {max((abs(t-100) for t in stacks), default=0):.2f}pp off")
+        meters = page.locator("#scheme .ca-segment-meter")
+        meter_count = meters.count()
+        cells = page.locator("#scheme .ca-segment-meter > i").count()
+        check("NFL analysis uses ten-cell league-rank meters",
+              meter_count > 0 and cells == meter_count * 10,
+              f"{cells} cells across {meter_count} meters")
+        check("NFL form removes continuous fill bars",
+              page.locator("#form .ca-mirror__fill").count() == 0)
+        check("NFL pressure rows pair tendency with opponent response",
+              page.locator("#scheme .ca-pressure-row").count() == 6)
         # Team form is a mirrored comparison now: one row per rate, both clubs
         # on one axis, a rank under every value.
         rows = page.locator("#form .ca-mirror__row").count()

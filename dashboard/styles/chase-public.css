@@ -4536,3 +4536,77 @@ body[data-ca-product="research"] {
 
 /* Run value needs room for a signed figure and its percentile chip. */
 .ca-arsenal-table th.num, .ca-arsenal-table td.num { width: 6.5rem; }
+
+/* Segmented rank meter: every analytical meter uses the same ten-cell visual
+   language and the same red-yellow-green grade ramp. */
+.ca-segment-meter {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 3px;
+  width: 100%;
+  min-width: 0;
+}
+
+.ca-segment-meter.is-reverse { direction: rtl; }
+.ca-segment-meter i {
+  display: block;
+  height: 10px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1px;
+}
+.ca-segment-meter i.is-on { background: var(--grade); border-color: var(--grade); }
+.ca-pct-bar.ca-segment-meter { height: auto; background: transparent; overflow: visible; }
+
+.ca-mirror__track { height: auto; border: 0; background: transparent; overflow: visible; }
+.ca-mirror__track .ca-segment-meter { flex: 1 1 auto; }
+
+.ca-rate-table td.num small,
+.ca-player-coverage-card td.num small {
+  display: block;
+  color: inherit;
+  font-size: var(--type-12);
+  opacity: 0.78;
+}
+
+.ca-pressure-matchup { overflow: hidden; }
+.ca-pressure-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 0.72fr);
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ca-pressure-row:last-child { border-bottom: 0; }
+.ca-pressure-row > div { min-width: 0; }
+.ca-pressure-row > div:first-child { display: grid; grid-template-columns: 1fr auto; gap: 4px var(--space-2); }
+.ca-pressure-row > div:first-child > span { color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.ca-pressure-row .ca-segment-meter { grid-column: 1 / -1; }
+.ca-pressure-row > div:last-child { display: grid; justify-items: end; color: var(--grade); text-align: right; }
+.ca-pressure-row > div:last-child span,
+.ca-pressure-row > div:last-child small { color: var(--text-muted); }
+.ca-pressure-row > div:last-child strong { color: inherit; font-family: var(--font-display); font-size: var(--type-18); }
+
+.ca-player-coverage-groups { display: grid; gap: var(--space-4); }
+.ca-player-coverage-group > h5 {
+  margin: 0 0 var(--space-2);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: var(--type-14);
+}
+.ca-player-coverage-card td.c-elite,
+.ca-player-coverage-card td.c-good,
+.ca-player-coverage-card td.c-mid,
+.ca-player-coverage-card td.c-weak,
+.ca-player-coverage-card td.c-poor,
+.ca-rate-table td.c-elite,
+.ca-rate-table td.c-good,
+.ca-rate-table td.c-mid,
+.ca-rate-table td.c-weak,
+.ca-rate-table td.c-poor { color: var(--grade); }
+
+@media (max-width: 560px) {
+  .ca-pressure-row { grid-template-columns: 1fr; }
+  .ca-pressure-row > div:last-child { justify-items: start; text-align: left; }
+}

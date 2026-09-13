@@ -357,10 +357,10 @@ class AdapterHoleTests(unittest.TestCase):
             "status: Array.isArray(entries) ? 'Active' : 'Report pending'",
             "var status = designation.status || 'Active'", "Report pending", "data-scheme-seasons",
             "panel.hidden = !show", "seasons.length === 1", "Full Injury Report",
-            "Math.round(Number(tendency) * 10)", "segmentIndex < activeSegments",
+            "segmentedMeter", "league_frequency_ranks", "Pressure Matchups",
             "scroll horizontally on small screens", "ca-player-coverage-card__shot",
             "starterProfiles[playerNameKey(profile.player_name)]", "Position Rank",
-            "Ranked by season EPA per target among same-position players",
+            "Quarterbacks", "Running Backs", "Wide Receivers", "league_ranks",
         ):
             self.assertIn(text, detail)
         self.assertIn("away_lineups", adapter)
@@ -369,7 +369,7 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn(".ca-lineup-board", css)
         self.assertIn("min-height: var(--touch-min)", css)
         self.assertIn("grid-template-columns: repeat(10, minmax(0, 1fr))", css)
-        self.assertIn(".ca-coverage-track i.is-on", css)
+        self.assertIn(".ca-segment-meter i.is-on", css)
         self.assertIn("scroll-snap-type: x mandatory", css)
         self.assertIn(".ca-player-coverage-card__shot", css)
         self.assertIn(".ca-player-coverage-card__grade", css)
@@ -381,6 +381,8 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertNotIn("ca-matchup-lens", detail)
         self.assertNotIn(".ca-matchup-lens", css)
         self.assertNotIn(".ca-formation", css)
+        self.assertNotIn("Charted from the ", detail)
+        self.assertNotIn("Charted ' + esc(charted)", detail)
 
     def test_no_formatclock_in_nav(self):
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
