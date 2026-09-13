@@ -148,19 +148,18 @@ def main(argv: list[str]) -> int:
             status = page.request.get(f"{base}/{sport}/results.html").status
             check(f"{sport}: results route is gone", status == 404, f"status={status}")
 
-        # Model Center is the one route allowed to touch the entitlement path at
-        # all. Signed out it asks /api/me and stops there - it must not request
-        # the board itself without an entitled answer.
+        # Model Center is public and loads its read-only board directly. It must
+        # not make an auth/profile request or wait on an entitled session.
         mc_calls: list[str] = []
         page.on("request", lambda r: mc_calls.append(r.url.split("?")[0])
                 if ("/api/me" in r.url or "/api/model-center/" in r.url) else None)
         page.goto(f"{base}/model-center/", wait_until="networkidle", timeout=60000)
         page.wait_for_timeout(4000)
-        check("model center: checks entitlement",
-              any(url.endswith("/api/me") for url in mc_calls),
+        check("model center: skips sign-in",
+              not any(url.endswith("/api/me") for url in mc_calls),
               f"calls={sorted(set(mc_calls))}")
-        check("model center: does not request the board unentitled",
-              not any("/api/model-center/board" in url for url in mc_calls))
+        check("model center: requests the public board",
+              any("/api/model-center/board" in url for url in mc_calls))
 
         browser.close()
 

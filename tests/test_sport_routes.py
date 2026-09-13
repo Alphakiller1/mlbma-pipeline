@@ -259,6 +259,9 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("crest + '<span class=\"mc-chip__code\">'", js)
         self.assertIn(".mc-chip__crest,", css)
         self.assertIn("box-shadow: inset 3px 0 0 var(--club, var(--accent));", css)
+        self.assertIn("function totalRead(g)", js)
+        self.assertIn("Market total not published · no lean available", js)
+        self.assertIn("['mlb', 'MLB'], ['nfl', 'NFL'], ['wnba', 'WNBA'], ['cfb', 'CFB']", js)
 
     def test_public_adapters_do_not_fetch_performance_ledgers(self):
         for sport in ("mlb", "nfl", "wnba", "cfb"):

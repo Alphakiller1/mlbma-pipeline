@@ -11,6 +11,8 @@
 # Model Center (server-side only; never put these URLs in dashboard JS):
 #   MLB_MODEL_BOARD_URL
 #   NFL_MODEL_BOARD_URL
+#   WNBA_MODEL_BOARD_URL
+#   CFB_MODEL_BOARD_URL
 # Production static deploy uses repo-root `_site` rsync (cloudflare-deploy.yml),
 # not pages_build_output_dir below.
 name = "mlbma-pipeline"

@@ -1,6 +1,6 @@
 /**
- * Model Center client. Board URLs stay on the server.
- * Numbers load only after /api/model-center/board returns 200.
+ * Model Center client. All published producer boards load through the public,
+ * read-only /api/model-center/board proxy.
  */
 (function (global) {
   'use strict';
@@ -9,7 +9,8 @@
 
   function esc(s) {
     return String(s == null ? '' : s)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
   function qs() {
@@ -28,49 +29,16 @@
     host.innerHTML = '<div class="ca-card ca-card-pad"><h2>' + esc(title) + '</h2><p>' + esc(body) + '</p></div>';
   }
 
-  function authHeaders() {
-    var fallback = global.MLBMA_supabaseStoredToken ? MLBMA_supabaseStoredToken() : null;
-    var pending = (global.MLBMA_AUTH && MLBMA_AUTH.getAccessToken)
-      ? MLBMA_AUTH.getAccessToken()
-      : Promise.resolve(fallback);
-    return pending.then(function (jwt) {
-      var headers = { Accept: 'application/json' };
-      if (jwt) headers.Authorization = 'Bearer ' + jwt;
-      return headers;
-    });
-  }
-
-  function fetchMe() {
-    return authHeaders().then(function (headers) {
-      return fetch('/api/me', { headers: headers, cache: 'no-store' });
-    }).then(function (r) {
-      var ct = String(r.headers.get('content-type') || '');
-      if (r.status === 401) return { signedIn: false, entitled: false };
-      if (r.status === 404 || r.status === 405 || ct.indexOf('application/json') < 0) {
-        return { signedIn: false, entitled: false, offline: true };
-      }
-      if (!r.ok) return { signedIn: false, entitled: false, error: true };
-      return r.json().then(function (body) {
-        return {
-          signedIn: true,
-          entitled: !!(body && body.model_center && body.model_center.entitled),
-          profile: body && body.profile
-        };
-      });
-    }).catch(function () {
-      return { signedIn: false, entitled: false, offline: true };
-    });
-  }
-
   /* ---------------------------------------------------------------------
    * Board rendering (2026-09-09). Implements the Model Center reference
    * renderings: a model-versus-market slate board, and a game detail view
    * when ?game= names one.
    *
-   * Every value here comes from the entitled /api/model-center/board payload.
-   * Nothing is defaulted, derived, or filled in: a field the board did not
-   * publish renders as "Not published", never as 0 or a guess. Edge is read
-   * from the payload and never recomputed client-side (chase-board/1).
+   * Every value here comes from the public /api/model-center/board payload.
+   * A field the board did not publish renders as "Not published", never as 0
+   * or a guess. The one arithmetic presentation is projected total = away +
+   * home when both scores exist. Edge is read from the payload and is never
+   * recomputed client-side (chase-board/1).
    * ------------------------------------------------------------------ */
 
   function num(v) {
@@ -95,15 +63,20 @@
      provides an initials fallback if both CDN requests fail. The abbreviation
      remains visible beside the crest, so team identity never depends on the
      image alone. */
-  function chip(sport, abbr, fullName) {
+  function chip(sport, abbr, fullName, suppliedLogo, suppliedColor) {
     var code = String(abbr || '').toUpperCase();
     var tint = '';
     var crest = '';
-    if (code && global.MLBMAAssets && MLBMAAssets.teamBarColor) {
+    if (suppliedColor && /^#[0-9a-f]{6}$/i.test(String(suppliedColor))) {
+      tint = ' style="--club:' + esc(suppliedColor) + '"';
+    } else if (code && global.MLBMAAssets && MLBMAAssets.teamBarColor) {
       var hex = MLBMAAssets.teamBarColor(code, sport);
       if (hex) tint = ' style="--club:' + esc(hex) + '"';
     }
-    if (code && global.MLBMAAssets && MLBMAAssets.teamLogoImg) {
+    if (suppliedLogo && /^https:\/\//i.test(String(suppliedLogo))) {
+      crest = '<img class="mc-chip__crest" src="' + esc(suppliedLogo) +
+        '" width="28" height="28" alt="' + esc(code) + '" loading="lazy" decoding="async">';
+    } else if (code && global.MLBMAAssets && MLBMAAssets.teamLogoImg) {
       crest = MLBMAAssets.teamLogoImg(code, 28, 'mc-chip__crest', sport);
     }
     return '<span class="mc-chip"' + tint +
@@ -114,7 +87,12 @@
   /* One axis places both marks and both tick labels, and the domain is fixed
      per sport so every card on the board shares a scale and can be compared.
      MLB is run margin, NFL is point margin. */
-  function domainFor(sport) { return String(sport).toLowerCase() === 'nfl' ? 10 : 3; }
+  function domainFor(sport) {
+    sport = String(sport).toLowerCase();
+    if (sport === 'cfb') return 20;
+    if (sport === 'nfl' || sport === 'wnba') return 10;
+    return 3;
+  }
 
   /* The scale under the track, drawn as a scale.
      Three numbers at the ends and the middle tell a reader the domain but not
@@ -232,16 +210,57 @@
       '</section>';
   }
 
+  function projectedTotal(g) {
+    var total = num(g.total_projected);
+    var away = num(g.away_projected), home = num(g.home_projected);
+    if (total == null && away != null && home != null) total = away + home;
+    return total;
+  }
+
+  function totalRead(g) {
+    var model = projectedTotal(g), market = num(g.market_total);
+    if (model == null) {
+      return '<section class="mc-total is-withheld"><span class="mc-total__label">Total lean</span>' +
+        '<strong>Not published</strong></section>';
+    }
+    if (market == null) {
+      return '<section class="mc-total is-withheld"><span class="mc-total__label">Projected total</span>' +
+        '<strong>' + esc(model.toFixed(1)) + '</strong>' +
+        '<span class="mc-total__detail">Market total not published · no lean available</span></section>';
+    }
+    var delta = model - market;
+    var direction = Math.abs(delta) < 0.05 ? 'At market' : (delta > 0 ? 'Over' : 'Under');
+    var cls = delta > 0.05 ? ' is-over' : (delta < -0.05 ? ' is-under' : ' is-even');
+    return '<section class="mc-total' + cls + '" aria-label="Total lean: ' + esc(direction) +
+      '. Model ' + esc(model.toFixed(1)) + ', market ' + esc(market.toFixed(1)) + '">' +
+      '<span class="mc-total__label">Total lean</span><strong>' + esc(direction) + '</strong>' +
+      '<span class="mc-total__detail">Model ' + esc(model.toFixed(1)) + ' · Market ' +
+      esc(market.toFixed(1)) + ' · ' + esc(signed(delta)) + '</span></section>';
+  }
+
+  function kickoffLabel(g) {
+    var raw = g.kickoff_display || g.time || '';
+    if (!/^\d{4}-\d{2}-\d{2}T/.test(String(raw))) return raw;
+    var date = new Date(raw);
+    if (isNaN(date.getTime())) return raw;
+    return date.toLocaleString('en-US', {
+      timeZone: 'America/New_York',
+      month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+    }) + ' ET';
+  }
+
   function gameCard(sport, g) {
-    var kick = g.kickoff_display || g.time || '';
+    var kick = kickoffLabel(g);
     return '<article class="mc-game">' +
       '<header class="mc-game__head"><div class="mc-teams">' +
-      chip(sport, g.away) + chip(sport, g.home) + '</div>' +
+      chip(sport, g.away, g.away_name, g.away_logo, g.away_color) +
+      chip(sport, g.home, g.home_name, g.home_logo, g.home_color) + '</div>' +
       (kick ? '<span class="mc-game__time">' + esc(kick) + '</span>' : '') +
       '</header>' +
       '<div class="mc-game__visuals">' + projectedScore(g) +
       '<section class="mc-line"><span class="mc-line__label">Model vs market</span>' +
       gauge(sport, g.model_margin, g.market_margin) + '</section></div>' +
+      totalRead(g) +
       readRow(g) +
       '</article>';
   }
@@ -254,7 +273,7 @@
   function detailView(sport, rawBoard, g) {
     var html = '<section class="mc-panel"><p class="mc-eyebrow">' +
       esc(sport.toUpperCase()) + ' · Game detail</p><div class="mc-hero">' +
-      '<div class="mc-hero__side">' + chip(sport, g.away, g.away_name) +
+      '<div class="mc-hero__side">' + chip(sport, g.away, g.away_name, g.away_logo, g.away_color) +
       '<span class="mc-hero__name">' + esc(g.away_name || g.away || '') + '</span>' +
       (g.away_record ? '<span class="mc-hero__sub">' + esc(g.away_record) + '</span>' : '') + '</div>';
 
@@ -263,20 +282,21 @@
       (aScore != null && hScore != null ? esc(aScore) + ' - ' + esc(hScore) : 'Not published') +
       '</div><div class="mc-hero__label">Projected score</div></div>';
 
-    html += '<div class="mc-hero__side">' + chip(sport, g.home, g.home_name) +
+    html += '<div class="mc-hero__side">' + chip(sport, g.home, g.home_name, g.home_logo, g.home_color) +
       '<span class="mc-hero__name">' + esc(g.home_name || g.home || '') + '</span>' +
       (g.home_record ? '<span class="mc-hero__sub">' + esc(g.home_record) + '</span>' : '') +
       '</div></div></section>';
 
     html += '<section class="mc-panel"><h2 class="mc-panel__title">Model versus market</h2>' +
-      gauge(sport, g.model_margin, g.market_margin) + readRow(g) + '</section>';
+      gauge(sport, g.model_margin, g.market_margin) + totalRead(g) + readRow(g) + '</section>';
 
-    var totalLabel = sport === 'nfl' ? 'Total points' : 'Total runs';
+    var totalLabel = sport === 'mlb' ? 'Total runs' : 'Total points';
     html += '<section class="mc-panel"><h2 class="mc-panel__title">Key projections</h2>' +
       '<div class="mc-tiles">' +
       tile((g.away || 'Away') + ' projected', aScore) +
       tile((g.home || 'Home') + ' projected', hScore) +
-      tile(totalLabel, fixed(g.total_projected, 1)) +
+      tile(totalLabel, fixed(projectedTotal(g), 1)) +
+      tile('Market total', fixed(g.market_total, 1)) +
       tile('Win probability', g.win_probability == null ? null :
         Math.round(Number(g.win_probability) * (Number(g.win_probability) <= 1 ? 100 : 1)) + '%') +
       '</div></section>';
@@ -292,7 +312,7 @@
      The slot label comes from the kickoff itself, so a flexed game moves
      between windows on its own and nothing here has to be told. */
   function slotOf(g) {
-    var raw = g.kickoff_utc || g.kickoff || g.start_time;
+    var raw = g.kickoff_utc || g.kickoff || g.start_time || g.kickoff_display;
     var d = raw ? new Date(raw) : null;
     if (!d || isNaN(d.getTime())) return g.kickoff_display || 'Kickoff not published';
     var opts = { timeZone: 'America/New_York' };
@@ -346,10 +366,6 @@
   function renderBoard(sport, payload, options) {
     var host = $('mcBoard');
     if (!host) return;
-    options = options || {};
-    // Entitlement succeeded, so the sign-in disclosure is redundant.
-    var access = $('mcAccess');
-    if (access) access.hidden = !options.preview;
     var board = payload && payload.board;
     // normalize(sport, board, extra) takes the sport FIRST. This used to call
     // normalize(board), which put the payload in the sport slot and left the
@@ -359,6 +375,11 @@
       ? ChaseBoard.normalize(sport, board)
       : board;
     var games = (mapped && mapped.games) || (board && board.games) || [];
+    var sports = '<nav class="mc-sports" aria-label="Model Center sports">' +
+      [['mlb', 'MLB'], ['nfl', 'NFL'], ['wnba', 'WNBA'], ['cfb', 'CFB']].map(function (pair) {
+        return '<a href="?sport=' + pair[0] + '"' +
+          (pair[0] === sport ? ' aria-current="page"' : '') + '>' + pair[1] + '</a>';
+      }).join('') + '</nav>';
     var want = qs().get('game');
     if (want) {
       var one = games.filter(function (g) {
@@ -366,28 +387,28 @@
       })[0];
       if (!one) {
         paintGate('Game not on this board',
-          'Entitlement is verified, but the requested game is not in the published Model Center rows.');
+          'The requested game is not in the currently published Model Center rows.');
         return;
       }
       host.innerHTML = '<div class="mc-board">' + detailView(sport, board, one) + '</div>';
       return;
     }
     if (!games.length) {
-      paintGate('No priced games', 'Entitlement is verified. This sport has no published Model Center rows yet.');
+      host.innerHTML = sports + '<div class="mc-board"><header class="mc-board__head">' +
+        '<div><p class="mc-board__eyebrow">' + esc(sport.toUpperCase()) + ' projections</p>' +
+        '<h2 class="mc-board__title">Today\'s Slate</h2></div>' +
+        '<div class="mc-board__status"><strong>0/0</strong><span>scores published</span></div>' +
+        '</header><div class="ca-card ca-card-pad"><h2>No games today</h2>' +
+        '<p>The producer is current, but this sport has no games on its published board today.</p>' +
+        '</div></div>';
       return;
     }
-    var title = sport === 'nfl' ? 'The Week' : "Today's Slate";
-    var body = sport === 'nfl' ? groupedGrid(sport, games)
+    var weekly = sport === 'nfl' || sport === 'cfb';
+    var title = weekly ? 'The Week' : "Today's Slate";
+    var body = weekly ? groupedGrid(sport, games)
       : '<div class="mc-grid">' + games.map(function (g) {
           return gameCard(sport, g);
         }).join('') + '</div>';
-    // Both boards are published; both are reachable.
-    var sports = '<nav class="mc-sports" aria-label="Model Center sports">' +
-      [['mlb', 'MLB'], ['nfl', 'NFL']].map(function (pair) {
-        return '<a href="?sport=' + pair[0] + '"' +
-          (pair[0] === sport ? ' aria-current="page"' : '') + '>' + pair[1] + '</a>';
-      }).join('') + '</nav>';
-
     var projected = games.filter(function (g) {
       return num(g.away_projected) != null && num(g.home_projected) != null;
     }).length;
@@ -401,147 +422,39 @@
   }
 
   function loadBoard(sport) {
-    return authHeaders().then(function (headers) {
-      return fetch('/api/model-center/board?sport=' + encodeURIComponent(sport), {
-        headers: headers,
-        cache: 'no-store'
-      });
+    return fetch('/api/model-center/board?sport=' + encodeURIComponent(sport), {
+      headers: { Accept: 'application/json' },
+      cache: 'no-store'
     }).then(function (r) {
-      if (r.status === 403) {
-        paintGate('Premium required', 'Sign in with an active Chase Analytics Premium subscription to open Model Center.');
-        return;
-      }
-      if (r.status === 401) {
-        paintGate('Sign in', 'Model Center is a signed-in product. Use the account panel to continue.');
-        return;
-      }
       if (r.status === 503 || r.status === 404) {
-        paintGate('Board withheld', 'Entitlement is verified. The model board source is not attached to this environment, so no numbers are shown.');
+        paintGate('Board unavailable', 'This sport’s model feed is not attached to the current environment.');
         return;
       }
       if (!r.ok) {
-        paintGate('Unavailable', 'Model Center could not load the authenticated board.');
+        paintGate('Unavailable', 'Model Center could not load this sport’s published board.');
         return;
       }
       return r.json().then(function (payload) { renderBoard(sport, payload); });
     }).catch(function () {
-      paintGate('Unavailable', 'Model Center could not reach the entitlement API.');
+      paintGate('Unavailable', 'Model Center could not reach the board service.');
     });
-  }
-
-  /* ---------------------------------------------------------------------
-   * Design preview (2026-09-10, owner request).
-   *
-   * Model Center previously showed a sign-in wall and nothing else, so the
-   * board's design could not be reviewed without an entitled session. It now
-   * renders the full board layout from a SAMPLE payload whenever entitlement
-   * is absent, behind an unmissable banner.
-   *
-   * The numbers below are invented. They are not a Chase Analytics projection,
-   * they are not derived from any model, and the real board still requires
-   * /api/model-center/board to return 200 - loadBoard() is untouched. This is
-   * a design surface, not a data leak: nothing here reaches a public matchup
-   * page, and the banner says so on the page itself.
-   * ------------------------------------------------------------------ */
-  var SAMPLE_BOARD = {
-    mlb: { board: { games: [
-      { id: 's1', away: 'NYY', home: 'BOS', away_name: 'New York Yankees', home_name: 'Boston Red Sox',
-        away_record: '82-61', home_record: '74-68', kickoff_display: '1:05 PM ET',
-        model_margin: -1.5, market_margin: -0.5, lean: 'Model favors New York',
-        away_projected: 4.1, home_projected: 3.3, total_projected: 7.4, win_probability: 0.56 },
-      { id: 's2', away: 'LAD', home: 'SF', away_name: 'Los Angeles Dodgers', home_name: 'San Francisco Giants',
-        away_record: '84-57', home_record: '72-70', kickoff_display: '3:45 PM ET',
-        model_margin: -1.0, market_margin: -0.5, lean: 'Model leans Los Angeles',
-        away_projected: 4.6, home_projected: 3.6, total_projected: 8.2, win_probability: 0.58 },
-      { id: 's3', away: 'CHC', home: 'STL', away_name: 'Chicago Cubs', home_name: 'St. Louis Cardinals',
-        away_record: '78-66', home_record: '72-75', kickoff_display: '7:15 PM ET',
-        model_margin: 0.5, market_margin: 1.0, lean: 'Model prefers Chicago',
-        away_projected: 4.4, home_projected: 4.1, total_projected: 8.5, win_probability: 0.53 },
-      { id: 's4', away: 'ATL', home: 'PHI', away_name: 'Atlanta Braves', home_name: 'Philadelphia Phillies',
-        away_record: '77-64', home_record: '81-64', kickoff_display: '6:40 PM ET',
-        model_margin: -1.0, market_margin: -0.5,
-        away_projected: 3.9, home_projected: 4.7, total_projected: 8.6, win_probability: 0.57,
-        edge_withheld_reason: 'Edge withheld: lineup not confirmed' },
-      { id: 's5', away: 'HOU', home: 'TEX', away_name: 'Houston Astros', home_name: 'Texas Rangers',
-        away_record: '78-66', home_record: '71-72', kickoff_display: '7:05 PM ET',
-        model_margin: 1.5, market_margin: 1.0, lean: 'Model prefers Texas',
-        away_projected: 4.0, home_projected: 4.8, total_projected: 8.8, win_probability: 0.55 },
-      { id: 's6', away: 'SD', home: 'ARI', away_name: 'San Diego Padres', home_name: 'Arizona Diamondbacks',
-        away_record: '76-68', home_record: '70-74', kickoff_display: '8:40 PM ET',
-        model_margin: -0.5, market_margin: -1.0, lean: 'Model leans San Diego',
-        away_projected: 4.5, home_projected: 4.2, total_projected: 8.7, win_probability: 0.52 }
-    ] } },
-    nfl: { board: { games: [
-      { id: 'n1', away: 'NE', home: 'SEA', away_name: 'New England Patriots', home_name: 'Seattle Seahawks',
-        away_record: '0-0', home_record: '0-0', kickoff_display: 'Sun 1:00 PM ET',
-        model_margin: -3.5, market_margin: -1.5, lean: 'Model favors Seattle',
-        away_projected: 24.1, home_projected: 20.0, total_projected: 44.1, win_probability: 0.62 },
-      { id: 'n2', away: 'KC', home: 'LAC', away_name: 'Kansas City Chiefs', home_name: 'Los Angeles Chargers',
-        away_record: '0-0', home_record: '0-0', kickoff_display: 'Sun 4:25 PM ET',
-        model_margin: 2.5, market_margin: 1.0, lean: 'Model prefers Los Angeles',
-        away_projected: 23.8, home_projected: 26.3, total_projected: 50.1, win_probability: 0.58 },
-      { id: 'n3', away: 'DAL', home: 'PHI', away_name: 'Dallas Cowboys', home_name: 'Philadelphia Eagles',
-        away_record: '0-0', home_record: '0-0', kickoff_display: 'Sun 4:05 PM ET',
-        model_margin: 1.0, market_margin: -1.0, lean: 'Model leans Philadelphia',
-        away_projected: 21.4, home_projected: 24.7, total_projected: 46.1, win_probability: 0.61 }
-    ] } }
-  };
-
-  function paintSampleBanner() {
-    var host = $('mcBoard');
-    if (!host || document.getElementById('mcSampleBanner')) return;
-    var banner = document.createElement('p');
-    banner.id = 'mcSampleBanner';
-    banner.className = 'mc-sample-banner';
-    banner.setAttribute('role', 'status');
-    banner.textContent =
-      'Design preview. Every number below is sample data, not a Chase Analytics ' +
-      'projection. Sign in with Premium to load the real board.';
-    host.parentNode.insertBefore(banner, host);
-  }
-
-  function previewBoard(sport) {
-    // The access panel is a collapsed disclosure now, not a wall - leave it in
-    // place so signing in stays one click away beneath the board.
-    paintSampleBanner();
-    renderBoard(sport, SAMPLE_BOARD[sport] || SAMPLE_BOARD.mlb, { preview: true });
   }
 
   function boot() {
     var sport = (qs().get('sport') || 'mlb').toLowerCase();
-    if (sport !== 'nfl') sport = 'mlb';
+    if (['mlb', 'nfl', 'wnba', 'cfb'].indexOf(sport) < 0) sport = 'mlb';
     var game = qs().get('game');
     setContext(game
-      ? ('Requested ' + sport.toUpperCase() + ' game ' + game + '. Numbers load only after server-side entitlement.')
-      : 'Numbers load only after server-side entitlement.');
-    paintGate('Checking access', 'Verifying the session before any model numbers load.');
-    var start = global.MLBMA_AUTH && MLBMA_AUTH.init
-      ? MLBMA_AUTH.init().catch(function () { return null; })
-      : Promise.resolve(null);
-    start.then(function () {
-      if (global.MLBMA_AUTH_UI && MLBMA_AUTH_UI.mount) {
-        document.querySelectorAll('[data-mlbma-auth-panel]').forEach(function (el) {
-          MLBMA_AUTH_UI.mount(el);
-        });
-      }
-      return fetchMe();
-    }).then(function (me) {
-      // No entitled session: show the board's design with sample data rather
-      // than a wall. loadBoard() is untouched, so real numbers still require
-      // /api/model-center/board to return 200.
-      if (me.offline || !me.signedIn || !me.entitled) {
-        previewBoard(sport);
-        return;
-      }
-      return loadBoard(sport);
-    });
+      ? ('Requested ' + sport.toUpperCase() + ' game ' + game + '.')
+      : ('Loading the latest published ' + sport.toUpperCase() + ' board.'));
+    paintGate('Loading board', 'Fetching the latest published projections.');
+    loadBoard(sport);
   }
 
   global.ChaseModelCenter = { renderBoard: renderBoard };
 
   // The fixture harness under dashboard/mockups/ sets this so it can drive
-  // renderBoard directly. Production pages never set it, so the entitlement
-  // path below is the only way real numbers reach the DOM.
+  // renderBoard directly without starting a network request.
   if (global.CHASE_MC_NO_BOOT) return;
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
