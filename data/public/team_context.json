@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-team-context/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-09-11T15:37:11Z",
+  "generated_at_utc": "2026-09-14T17:55:54Z",
   "data_through_utc": "2026-09-10T05:49:25.323102+00:00",
   "formulas": {
     "osi": "0.43*RCV + 0.37*ABQ + 0.20*OBR",
@@ -2804,10 +2804,10 @@
   },
   "parks": {
     "SF": {
-      "factor": 94,
-      "runs_per_game_home": 8.58,
+      "factor": 95,
+      "runs_per_game_home": 8.71,
       "runs_per_game_road": 9.17,
-      "home_games": 72,
+      "home_games": 75,
       "road_games": 75,
       "rank": 19,
       "of": 30
@@ -2816,88 +2816,88 @@
       "factor": 84,
       "runs_per_game_home": 8.33,
       "runs_per_game_road": 9.97,
-      "home_games": 72,
+      "home_games": 75,
+      "road_games": 75,
+      "rank": 28,
+      "of": 30
+    },
+    "SEA": {
+      "factor": 83,
+      "runs_per_game_home": 7.75,
+      "runs_per_game_road": 9.35,
+      "home_games": 75,
       "road_games": 75,
       "rank": 29,
       "of": 30
     },
-    "SEA": {
-      "factor": 85,
-      "runs_per_game_home": 7.76,
-      "runs_per_game_road": 9.1,
-      "home_games": 74,
-      "road_games": 72,
-      "rank": 27,
-      "of": 30
-    },
     "SD": {
-      "factor": 84,
+      "factor": 83,
       "runs_per_game_home": 7.65,
-      "runs_per_game_road": 9.11,
+      "runs_per_game_road": 9.22,
       "home_games": 75,
-      "road_games": 71,
+      "road_games": 74,
       "rank": 30,
       "of": 30
     },
     "PHI": {
-      "factor": 121,
-      "runs_per_game_home": 9.57,
-      "runs_per_game_road": 7.92,
-      "home_games": 74,
-      "road_games": 72,
-      "rank": 2,
+      "factor": 117,
+      "runs_per_game_home": 9.48,
+      "runs_per_game_road": 8.11,
+      "home_games": 75,
+      "road_games": 75,
+      "rank": 3,
       "of": 30
     },
     "NYM": {
       "factor": 97,
       "runs_per_game_home": 8.72,
-      "runs_per_game_road": 9.01,
+      "runs_per_game_road": 9.0,
       "home_games": 74,
-      "road_games": 72,
+      "road_games": 75,
       "rank": 16,
       "of": 30
     },
     "MIL": {
-      "factor": 95,
-      "runs_per_game_home": 8.69,
+      "factor": 98,
+      "runs_per_game_home": 8.99,
       "runs_per_game_road": 9.17,
-      "home_games": 75,
+      "home_games": 78,
       "road_games": 72,
-      "rank": 18,
+      "rank": 15,
       "of": 30
     },
     "LAD": {
       "factor": 96,
       "runs_per_game_home": 8.64,
-      "runs_per_game_road": 9.0,
+      "runs_per_game_road": 8.97,
       "home_games": 75,
-      "road_games": 71,
-      "rank": 17,
+      "road_games": 74,
+      "rank": 18,
       "of": 30
     },
     "HOU": {
-      "factor": 93,
+      "factor": 94,
       "runs_per_game_home": 9.0,
-      "runs_per_game_road": 9.66,
+      "runs_per_game_road": 9.55,
       "home_games": 75,
-      "road_games": 71,
+      "road_games": 75,
       "rank": 20,
       "of": 30
     },
     "CIN": {
-      "factor": 92,
+      "factor": 90,
       "runs_per_game_home": 8.85,
-      "runs_per_game_road": 9.57,
+      "runs_per_game_road": 9.84,
       "home_games": 74,
-      "road_games": 72,
-      "rank": 21,
+      "road_games": 75,
+      "rank": 26,
       "of": 30
     },
     "CHC": {
       "factor": 102,
-      "runs_per_game_home": 9.85,
+      "runs_per_game_home": 9.83,
       "runs_per_game_road": 9.64,
-      "home_games": 72,
+      "home_games": 75,
       "road_games": 75,
       "rank": 11,
       "of": 30
@@ -2905,17 +2905,17 @@
     "BAL": {
       "factor": 91,
       "runs_per_game_home": 8.76,
-      "runs_per_game_road": 9.61,
+      "runs_per_game_road": 9.63,
       "home_games": 75,
-      "road_games": 72,
-      "rank": 23,
+      "road_games": 75,
+      "rank": 22,
       "of": 30
     },
     "TOR": {
-      "factor": 98,
-      "runs_per_game_home": 8.21,
+      "factor": 99,
+      "runs_per_game_home": 8.28,
       "runs_per_game_road": 8.35,
-      "home_games": 72,
+      "home_games": 75,
       "road_games": 75,
       "rank": 14,
       "of": 30
@@ -2924,43 +2924,43 @@
       "factor": 91,
       "runs_per_game_home": 8.45,
       "runs_per_game_road": 9.26,
-      "home_games": 75,
+      "home_games": 78,
       "road_games": 72,
-      "rank": 24,
+      "rank": 23,
       "of": 30
     },
     "ATL": {
-      "factor": 106,
-      "runs_per_game_home": 8.64,
+      "factor": 107,
+      "runs_per_game_home": 8.73,
       "runs_per_game_road": 8.18,
-      "home_games": 74,
+      "home_games": 78,
       "road_games": 72,
       "rank": 9,
       "of": 30
     },
     "KC": {
-      "factor": 111,
+      "factor": 113,
       "runs_per_game_home": 9.63,
-      "runs_per_game_road": 8.67,
+      "runs_per_game_road": 8.53,
       "home_games": 75,
-      "road_games": 72,
+      "road_games": 75,
       "rank": 7,
       "of": 30
     },
     "AZ": {
-      "factor": 100,
-      "runs_per_game_home": 8.83,
+      "factor": 101,
+      "runs_per_game_home": 8.89,
       "runs_per_game_road": 8.81,
-      "home_games": 72,
+      "home_games": 75,
       "road_games": 75,
       "rank": 13,
       "of": 30
     },
     "WSH": {
-      "factor": 117,
-      "runs_per_game_home": 11.01,
+      "factor": 116,
+      "runs_per_game_home": 10.96,
       "runs_per_game_road": 9.44,
-      "home_games": 73,
+      "home_games": 76,
       "road_games": 75,
       "rank": 4,
       "of": 30
@@ -2968,108 +2968,108 @@
     "TEX": {
       "factor": 91,
       "runs_per_game_home": 8.18,
-      "runs_per_game_road": 8.99,
+      "runs_per_game_road": 9.01,
       "home_games": 72,
-      "road_games": 74,
-      "rank": 25,
+      "road_games": 78,
+      "rank": 24,
       "of": 30
     },
     "PIT": {
-      "factor": 117,
+      "factor": 118,
       "runs_per_game_home": 10.21,
-      "runs_per_game_road": 8.72,
+      "runs_per_game_road": 8.65,
       "home_games": 72,
-      "road_games": 74,
-      "rank": 5,
+      "road_games": 78,
+      "rank": 2,
       "of": 30
     },
     "NYY": {
-      "factor": 114,
-      "runs_per_game_home": 8.77,
+      "factor": 115,
+      "runs_per_game_home": 8.82,
       "runs_per_game_road": 7.68,
-      "home_games": 70,
+      "home_games": 74,
       "road_games": 75,
       "rank": 6,
       "of": 30
     },
     "MIN": {
-      "factor": 92,
-      "runs_per_game_home": 9.18,
+      "factor": 91,
+      "runs_per_game_home": 9.15,
       "runs_per_game_road": 10.03,
-      "home_games": 72,
+      "home_games": 75,
       "road_games": 74,
-      "rank": 22,
+      "rank": 25,
       "of": 30
     },
     "LAA": {
       "factor": 85,
       "runs_per_game_home": 7.91,
-      "runs_per_game_road": 9.31,
+      "runs_per_game_road": 9.32,
       "home_games": 74,
-      "road_games": 72,
-      "rank": 28,
+      "road_games": 75,
+      "rank": 27,
       "of": 30
     },
     "DET": {
-      "factor": 91,
-      "runs_per_game_home": 8.0,
+      "factor": 93,
+      "runs_per_game_home": 8.15,
       "runs_per_game_road": 8.8,
-      "home_games": 72,
+      "home_games": 75,
       "road_games": 74,
-      "rank": 26,
+      "rank": 21,
       "of": 30
     },
     "COL": {
-      "factor": 118,
+      "factor": 116,
       "runs_per_game_home": 11.31,
-      "runs_per_game_road": 9.59,
+      "runs_per_game_road": 9.72,
       "home_games": 71,
-      "road_games": 74,
-      "rank": 3,
+      "road_games": 78,
+      "rank": 5,
       "of": 30
     },
     "CLE": {
       "factor": 103,
       "runs_per_game_home": 8.36,
-      "runs_per_game_road": 8.12,
+      "runs_per_game_road": 8.13,
       "home_games": 75,
-      "road_games": 72,
+      "road_games": 75,
       "rank": 10,
       "of": 30
     },
     "CWS": {
-      "factor": 98,
-      "runs_per_game_home": 9.05,
-      "runs_per_game_road": 9.28,
-      "home_games": 73,
-      "road_games": 72,
-      "rank": 15,
+      "factor": 97,
+      "runs_per_game_home": 8.96,
+      "runs_per_game_road": 9.24,
+      "home_games": 74,
+      "road_games": 75,
+      "rank": 17,
       "of": 30
     },
     "BOS": {
-      "factor": 109,
-      "runs_per_game_home": 8.69,
+      "factor": 108,
+      "runs_per_game_home": 8.56,
       "runs_per_game_road": 7.95,
-      "home_games": 72,
+      "home_games": 75,
       "road_games": 75,
       "rank": 8,
       "of": 30
     },
     "ATH": {
-      "factor": 139,
-      "runs_per_game_home": 11.67,
+      "factor": 141,
+      "runs_per_game_home": 11.81,
       "runs_per_game_road": 8.39,
-      "home_games": 72,
+      "home_games": 75,
       "road_games": 75,
       "rank": 1,
       "of": 30
     },
     "TB": {
-      "factor": 101,
-      "runs_per_game_home": 8.78,
-      "runs_per_game_road": 8.66,
-      "home_games": 72,
-      "road_games": 73,
+      "factor": 102,
+      "runs_per_game_home": 8.79,
+      "runs_per_game_road": 8.59,
+      "home_games": 75,
+      "road_games": 74,
       "rank": 12,
       "of": 30
     }
@@ -3080,1110 +3080,1110 @@
         "l7": {
           "games": 7,
           "runs_per_game": 4.86,
-          "allowed_per_game": 2.57,
+          "allowed_per_game": 3.86,
           "wins": 5,
-          "rank": 10,
+          "rank": 12,
           "of": 30
         },
         "l14": {
           "games": 14,
           "runs_per_game": 5.07,
-          "allowed_per_game": 3.21,
+          "allowed_per_game": 3.86,
           "wins": 9,
           "rank": 10,
           "of": 30
         },
         "l30": {
           "games": 30,
-          "runs_per_game": 4.5,
-          "allowed_per_game": 3.07,
+          "runs_per_game": 4.73,
+          "allowed_per_game": 3.4,
           "wins": 19,
-          "rank": 13,
+          "rank": 7,
           "of": 30
         },
         "ytd": {
-          "games": 145,
-          "runs_per_game": 4.53,
-          "allowed_per_game": 3.68,
-          "wins": 83,
+          "games": 149,
+          "runs_per_game": 4.54,
+          "allowed_per_game": 3.7,
+          "wins": 86,
           "rank": 12,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
     },
     "SF": {
       "windows": {
         "l7": {
           "games": 7,
-          "runs_per_game": 4.71,
+          "runs_per_game": 4.43,
           "allowed_per_game": 5.0,
-          "wins": 4,
-          "rank": 11,
+          "wins": 3,
+          "rank": 17,
           "of": 30
         },
         "l14": {
           "games": 14,
-          "runs_per_game": 5.5,
-          "allowed_per_game": 5.36,
-          "wins": 8,
-          "rank": 5,
+          "runs_per_game": 5.21,
+          "allowed_per_game": 5.86,
+          "wins": 6,
+          "rank": 9,
           "of": 30
         },
         "l30": {
           "games": 30,
-          "runs_per_game": 4.43,
-          "allowed_per_game": 4.8,
-          "wins": 13,
-          "rank": 15,
+          "runs_per_game": 4.67,
+          "allowed_per_game": 5.13,
+          "wins": 12,
+          "rank": 10,
           "of": 30
         },
         "ytd": {
-          "games": 147,
-          "runs_per_game": 4.2,
-          "allowed_per_game": 4.69,
+          "games": 150,
+          "runs_per_game": 4.21,
+          "allowed_per_game": 4.73,
           "wins": 62,
           "rank": 24,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
     },
     "STL": {
       "windows": {
         "l7": {
           "games": 7,
-          "runs_per_game": 5.29,
-          "allowed_per_game": 5.86,
-          "wins": 2,
-          "rank": 6,
+          "runs_per_game": 5.14,
+          "allowed_per_game": 4.57,
+          "wins": 3,
+          "rank": 11,
           "of": 30
         },
         "l14": {
           "games": 14,
-          "runs_per_game": 5.86,
-          "allowed_per_game": 5.71,
+          "runs_per_game": 5.64,
+          "allowed_per_game": 5.43,
           "wins": 6,
-          "rank": 2,
+          "rank": 4,
           "of": 30
         },
         "l30": {
           "games": 30,
-          "runs_per_game": 5.33,
+          "runs_per_game": 5.37,
           "allowed_per_game": 5.37,
           "wins": 14,
           "rank": 3,
           "of": 30
         },
         "ytd": {
-          "games": 147,
-          "runs_per_game": 4.54,
-          "allowed_per_game": 4.63,
-          "wins": 72,
+          "games": 150,
+          "runs_per_game": 4.55,
+          "allowed_per_game": 4.6,
+          "wins": 74,
           "rank": 11,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
     },
     "TB": {
       "windows": {
         "l7": {
           "games": 7,
-          "runs_per_game": 5.29,
-          "allowed_per_game": 5.14,
-          "wins": 4,
-          "rank": 7,
+          "runs_per_game": 5.86,
+          "allowed_per_game": 3.0,
+          "wins": 5,
+          "rank": 6,
           "of": 30
         },
         "l14": {
           "games": 14,
-          "runs_per_game": 5.0,
-          "allowed_per_game": 4.21,
+          "runs_per_game": 5.07,
+          "allowed_per_game": 3.93,
           "wins": 9,
           "rank": 11,
           "of": 30
         },
         "l30": {
           "games": 30,
-          "runs_per_game": 4.97,
-          "allowed_per_game": 4.43,
-          "wins": 18,
-          "rank": 4,
+          "runs_per_game": 4.7,
+          "allowed_per_game": 4.33,
+          "wins": 17,
+          "rank": 8,
           "of": 30
         },
         "ytd": {
-          "games": 145,
-          "runs_per_game": 4.56,
-          "allowed_per_game": 4.16,
-          "wins": 87,
-          "rank": 10,
+          "games": 149,
+          "runs_per_game": 4.58,
+          "allowed_per_game": 4.11,
+          "wins": 90,
+          "rank": 9,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
     },
     "CLE": {
       "windows": {
         "l7": {
           "games": 7,
-          "runs_per_game": 4.57,
-          "allowed_per_game": 5.29,
+          "runs_per_game": 5.43,
+          "allowed_per_game": 4.29,
           "wins": 4,
-          "rank": 12,
+          "rank": 9,
           "of": 30
         },
         "l14": {
           "games": 14,
-          "runs_per_game": 4.21,
-          "allowed_per_game": 5.0,
-          "wins": 7,
-          "rank": 19,
+          "runs_per_game": 4.93,
+          "allowed_per_game": 4.57,
+          "wins": 8,
+          "rank": 14,
           "of": 30
         },
         "l30": {
           "games": 30,
-          "runs_per_game": 4.37,
-          "allowed_per_game": 4.17,
-          "wins": 16,
-          "rank": 17,
+          "runs_per_game": 4.6,
+          "allowed_per_game": 3.87,
+          "wins": 18,
+          "rank": 12,
           "of": 30
         },
         "ytd": {
-          "games": 147,
-          "runs_per_game": 4.07,
-          "allowed_per_game": 4.18,
-          "wins": 74,
+          "games": 150,
+          "runs_per_game": 4.1,
+          "allowed_per_game": 4.15,
+          "wins": 76,
           "rank": 27,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
     },
     "SEA": {
       "windows": {
         "l7": {
           "games": 7,
-          "runs_per_game": 4.29,
-          "allowed_per_game": 5.0,
-          "wins": 3,
-          "rank": 14,
-          "of": 30
-        },
-        "l14": {
-          "games": 14,
-          "runs_per_game": 3.93,
-          "allowed_per_game": 5.43,
-          "wins": 5,
-          "rank": 22,
-          "of": 30
-        },
-        "l30": {
-          "games": 30,
-          "runs_per_game": 3.97,
-          "allowed_per_game": 6.0,
-          "wins": 12,
-          "rank": 26,
-          "of": 30
-        },
-        "ytd": {
-          "games": 146,
-          "runs_per_game": 3.95,
-          "allowed_per_game": 4.47,
-          "wins": 68,
-          "rank": 30,
-          "of": 30
-        }
-      },
-      "through": "2026-09-09"
-    },
-    "DET": {
-      "windows": {
-        "l7": {
-          "games": 7,
-          "runs_per_game": 4.43,
-          "allowed_per_game": 3.29,
-          "wins": 3,
-          "rank": 13,
-          "of": 30
-        },
-        "l14": {
-          "games": 14,
-          "runs_per_game": 3.5,
-          "allowed_per_game": 4.79,
-          "wins": 5,
-          "rank": 29,
-          "of": 30
-        },
-        "l30": {
-          "games": 30,
-          "runs_per_game": 3.77,
-          "allowed_per_game": 4.5,
-          "wins": 11,
-          "rank": 28,
-          "of": 30
-        },
-        "ytd": {
-          "games": 146,
-          "runs_per_game": 4.39,
-          "allowed_per_game": 4.01,
-          "wins": 67,
-          "rank": 19,
-          "of": 30
-        }
-      },
-      "through": "2026-09-09"
-    },
-    "SD": {
-      "windows": {
-        "l7": {
-          "games": 7,
-          "runs_per_game": 4.0,
-          "allowed_per_game": 3.57,
-          "wins": 5,
-          "rank": 20,
-          "of": 30
-        },
-        "l14": {
-          "games": 14,
-          "runs_per_game": 3.79,
-          "allowed_per_game": 3.64,
-          "wins": 7,
-          "rank": 25,
-          "of": 30
-        },
-        "l30": {
-          "games": 30,
-          "runs_per_game": 4.27,
-          "allowed_per_game": 3.27,
-          "wins": 18,
-          "rank": 21,
-          "of": 30
-        },
-        "ytd": {
-          "games": 146,
-          "runs_per_game": 4.24,
-          "allowed_per_game": 4.12,
-          "wins": 78,
-          "rank": 23,
-          "of": 30
-        }
-      },
-      "through": "2026-09-09"
-    },
-    "PHI": {
-      "windows": {
-        "l7": {
-          "games": 7,
-          "runs_per_game": 3.86,
-          "allowed_per_game": 3.71,
-          "wins": 3,
-          "rank": 21,
-          "of": 30
-        },
-        "l14": {
-          "games": 14,
-          "runs_per_game": 4.07,
-          "allowed_per_game": 2.79,
-          "wins": 9,
-          "rank": 20,
-          "of": 30
-        },
-        "l30": {
-          "games": 30,
-          "runs_per_game": 4.87,
-          "allowed_per_game": 3.67,
-          "wins": 20,
-          "rank": 6,
-          "of": 30
-        },
-        "ytd": {
-          "games": 146,
-          "runs_per_game": 4.51,
-          "allowed_per_game": 4.25,
-          "wins": 82,
-          "rank": 14,
-          "of": 30
-        }
-      },
-      "through": "2026-09-09"
-    },
-    "TEX": {
-      "windows": {
-        "l7": {
-          "games": 7,
-          "runs_per_game": 5.29,
-          "allowed_per_game": 5.14,
-          "wins": 3,
-          "rank": 8,
-          "of": 30
-        },
-        "l14": {
-          "games": 14,
-          "runs_per_game": 5.36,
-          "allowed_per_game": 5.57,
-          "wins": 6,
-          "rank": 7,
-          "of": 30
-        },
-        "l30": {
-          "games": 30,
-          "runs_per_game": 4.27,
-          "allowed_per_game": 4.53,
-          "wins": 14,
-          "rank": 22,
-          "of": 30
-        },
-        "ytd": {
-          "games": 146,
-          "runs_per_game": 4.16,
-          "allowed_per_game": 4.43,
-          "wins": 72,
-          "rank": 26,
-          "of": 30
-        }
-      },
-      "through": "2026-09-09"
-    },
-    "NYM": {
-      "windows": {
-        "l7": {
-          "games": 7,
-          "runs_per_game": 8.57,
-          "allowed_per_game": 6.29,
-          "wins": 6,
-          "rank": 1,
-          "of": 30
-        },
-        "l14": {
-          "games": 14,
-          "runs_per_game": 5.57,
-          "allowed_per_game": 5.64,
-          "wins": 8,
-          "rank": 4,
-          "of": 30
-        },
-        "l30": {
-          "games": 30,
-          "runs_per_game": 4.83,
-          "allowed_per_game": 4.63,
-          "wins": 18,
-          "rank": 7,
-          "of": 30
-        },
-        "ytd": {
-          "games": 146,
-          "runs_per_game": 4.29,
-          "allowed_per_game": 4.57,
-          "wins": 68,
-          "rank": 21,
-          "of": 30
-        }
-      },
-      "through": "2026-09-09"
-    },
-    "PIT": {
-      "windows": {
-        "l7": {
-          "games": 7,
-          "runs_per_game": 3.57,
-          "allowed_per_game": 2.57,
-          "wins": 5,
-          "rank": 23,
-          "of": 30
-        },
-        "l14": {
-          "games": 14,
-          "runs_per_game": 3.86,
-          "allowed_per_game": 3.21,
-          "wins": 10,
-          "rank": 24,
-          "of": 30
-        },
-        "l30": {
-          "games": 30,
-          "runs_per_game": 4.03,
-          "allowed_per_game": 3.8,
-          "wins": 16,
-          "rank": 24,
-          "of": 30
-        },
-        "ytd": {
-          "games": 146,
-          "runs_per_game": 4.84,
-          "allowed_per_game": 4.61,
-          "wins": 73,
-          "rank": 5,
-          "of": 30
-        }
-      },
-      "through": "2026-09-09"
-    },
-    "CWS": {
-      "windows": {
-        "l7": {
-          "games": 7,
-          "runs_per_game": 3.57,
-          "allowed_per_game": 4.14,
-          "wins": 2,
-          "rank": 24,
-          "of": 30
-        },
-        "l14": {
-          "games": 14,
-          "runs_per_game": 4.64,
-          "allowed_per_game": 4.14,
-          "wins": 7,
-          "rank": 13,
-          "of": 30
-        },
-        "l30": {
-          "games": 30,
-          "runs_per_game": 4.63,
-          "allowed_per_game": 4.33,
-          "wins": 16,
-          "rank": 11,
-          "of": 30
-        },
-        "ytd": {
-          "games": 145,
-          "runs_per_game": 4.72,
-          "allowed_per_game": 4.44,
-          "wins": 75,
-          "rank": 6,
-          "of": 30
-        }
-      },
-      "through": "2026-09-09"
-    },
-    "MIL": {
-      "windows": {
-        "l7": {
-          "games": 7,
-          "runs_per_game": 5.43,
-          "allowed_per_game": 5.43,
+          "runs_per_game": 6.43,
+          "allowed_per_game": 4.29,
           "wins": 4,
-          "rank": 4,
+          "rank": 3,
           "of": 30
         },
         "l14": {
           "games": 14,
           "runs_per_game": 5.86,
-          "allowed_per_game": 5.5,
-          "wins": 9,
+          "allowed_per_game": 5.36,
+          "wins": 6,
           "rank": 3,
           "of": 30
         },
         "l30": {
           "games": 30,
-          "runs_per_game": 5.37,
-          "allowed_per_game": 4.3,
-          "wins": 18,
-          "rank": 2,
+          "runs_per_game": 4.97,
+          "allowed_per_game": 6.17,
+          "wins": 14,
+          "rank": 4,
           "of": 30
         },
         "ytd": {
-          "games": 147,
-          "runs_per_game": 5.05,
-          "allowed_per_game": 3.88,
-          "wins": 91,
-          "rank": 3,
+          "games": 150,
+          "runs_per_game": 4.08,
+          "allowed_per_game": 4.47,
+          "wins": 70,
+          "rank": 28,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
     },
-    "AZ": {
+    "DET": {
       "windows": {
         "l7": {
           "games": 7,
-          "runs_per_game": 3.0,
-          "allowed_per_game": 2.86,
+          "runs_per_game": 5.86,
+          "allowed_per_game": 3.14,
           "wins": 5,
-          "rank": 29,
+          "rank": 7,
           "of": 30
         },
         "l14": {
           "games": 14,
-          "runs_per_game": 3.21,
-          "allowed_per_game": 3.5,
-          "wins": 8,
-          "rank": 30,
+          "runs_per_game": 5.07,
+          "allowed_per_game": 5.07,
+          "wins": 7,
+          "rank": 12,
           "of": 30
         },
         "l30": {
           "games": 30,
-          "runs_per_game": 3.87,
-          "allowed_per_game": 4.03,
-          "wins": 16,
-          "rank": 27,
+          "runs_per_game": 4.03,
+          "allowed_per_game": 4.67,
+          "wins": 11,
+          "rank": 25,
           "of": 30
         },
         "ytd": {
-          "games": 147,
-          "runs_per_game": 4.41,
-          "allowed_per_game": 4.41,
-          "wins": 78,
-          "rank": 18,
+          "games": 149,
+          "runs_per_game": 4.47,
+          "allowed_per_game": 4.0,
+          "wins": 70,
+          "rank": 15,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
     },
-    "LAD": {
+    "SD": {
       "windows": {
         "l7": {
           "games": 7,
-          "runs_per_game": 6.29,
-          "allowed_per_game": 3.0,
+          "runs_per_game": 5.86,
+          "allowed_per_game": 3.71,
           "wins": 7,
-          "rank": 2,
+          "rank": 8,
           "of": 30
         },
         "l14": {
           "games": 14,
-          "runs_per_game": 5.14,
-          "allowed_per_game": 3.79,
+          "runs_per_game": 4.71,
+          "allowed_per_game": 4.0,
           "wins": 9,
-          "rank": 9,
+          "rank": 15,
+          "of": 30
+        },
+        "l30": {
+          "games": 30,
+          "runs_per_game": 4.5,
+          "allowed_per_game": 3.43,
+          "wins": 19,
+          "rank": 17,
+          "of": 30
+        },
+        "ytd": {
+          "games": 149,
+          "runs_per_game": 4.29,
+          "allowed_per_game": 4.14,
+          "wins": 81,
+          "rank": 22,
+          "of": 30
+        }
+      },
+      "through": "2026-09-13"
+    },
+    "PHI": {
+      "windows": {
+        "l7": {
+          "games": 7,
+          "runs_per_game": 4.86,
+          "allowed_per_game": 5.29,
+          "wins": 3,
+          "rank": 13,
+          "of": 30
+        },
+        "l14": {
+          "games": 14,
+          "runs_per_game": 4.14,
+          "allowed_per_game": 3.86,
+          "wins": 7,
+          "rank": 22,
           "of": 30
         },
         "l30": {
           "games": 30,
           "runs_per_game": 4.7,
           "allowed_per_game": 3.7,
-          "wins": 20,
-          "rank": 10,
+          "wins": 19,
+          "rank": 9,
           "of": 30
         },
         "ytd": {
-          "games": 146,
-          "runs_per_game": 4.99,
-          "allowed_per_game": 3.83,
-          "wins": 89,
-          "rank": 4,
-          "of": 30
-        }
-      },
-      "through": "2026-09-09"
-    },
-    "HOU": {
-      "windows": {
-        "l7": {
-          "games": 7,
-          "runs_per_game": 4.14,
-          "allowed_per_game": 3.71,
-          "wins": 4,
-          "rank": 17,
-          "of": 30
-        },
-        "l14": {
-          "games": 14,
-          "runs_per_game": 3.93,
-          "allowed_per_game": 3.86,
-          "wins": 8,
-          "rank": 23,
-          "of": 30
-        },
-        "l30": {
-          "games": 30,
-          "runs_per_game": 4.0,
-          "allowed_per_game": 4.53,
-          "wins": 15,
-          "rank": 25,
-          "of": 30
-        },
-        "ytd": {
-          "games": 146,
-          "runs_per_game": 4.52,
-          "allowed_per_game": 4.8,
-          "wins": 74,
+          "games": 150,
+          "runs_per_game": 4.5,
+          "allowed_per_game": 4.29,
+          "wins": 83,
           "rank": 13,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
     },
-    "LAA": {
+    "TEX": {
       "windows": {
         "l7": {
           "games": 7,
-          "runs_per_game": 3.29,
-          "allowed_per_game": 2.71,
-          "wins": 3,
-          "rank": 27,
-          "of": 30
-        },
-        "l14": {
-          "games": 14,
-          "runs_per_game": 3.71,
-          "allowed_per_game": 3.79,
+          "runs_per_game": 5.29,
+          "allowed_per_game": 5.0,
           "wins": 4,
-          "rank": 26,
-          "of": 30
-        },
-        "l30": {
-          "games": 30,
-          "runs_per_game": 3.67,
-          "allowed_per_game": 3.6,
-          "wins": 11,
-          "rank": 29,
-          "of": 30
-        },
-        "ytd": {
-          "games": 146,
-          "runs_per_game": 4.05,
-          "allowed_per_game": 4.55,
-          "wins": 56,
-          "rank": 28,
-          "of": 30
-        }
-      },
-      "through": "2026-09-09"
-    },
-    "BOS": {
-      "windows": {
-        "l7": {
-          "games": 7,
-          "runs_per_game": 3.57,
-          "allowed_per_game": 2.86,
-          "wins": 5,
-          "rank": 25,
+          "rank": 10,
           "of": 30
         },
         "l14": {
           "games": 14,
-          "runs_per_game": 3.71,
-          "allowed_per_game": 5.07,
-          "wins": 7,
-          "rank": 27,
-          "of": 30
-        },
-        "l30": {
-          "games": 30,
-          "runs_per_game": 4.3,
-          "allowed_per_game": 4.37,
-          "wins": 16,
-          "rank": 19,
-          "of": 30
-        },
-        "ytd": {
-          "games": 147,
-          "runs_per_game": 4.44,
-          "allowed_per_game": 3.88,
-          "wins": 80,
-          "rank": 17,
-          "of": 30
-        }
-      },
-      "through": "2026-09-09"
-    },
-    "CIN": {
-      "windows": {
-        "l7": {
-          "games": 7,
-          "runs_per_game": 5.29,
-          "allowed_per_game": 6.71,
-          "wins": 3,
-          "rank": 9,
-          "of": 30
-        },
-        "l14": {
-          "games": 14,
-          "runs_per_game": 5.29,
-          "allowed_per_game": 6.93,
-          "wins": 7,
+          "runs_per_game": 5.5,
+          "allowed_per_game": 4.79,
+          "wins": 8,
           "rank": 8,
           "of": 30
         },
         "l30": {
           "games": 30,
-          "runs_per_game": 4.33,
-          "allowed_per_game": 6.13,
-          "wins": 13,
-          "rank": 18,
+          "runs_per_game": 4.3,
+          "allowed_per_game": 4.73,
+          "wins": 14,
+          "rank": 21,
           "of": 30
         },
         "ytd": {
-          "games": 146,
-          "runs_per_game": 4.18,
-          "allowed_per_game": 5.02,
-          "wins": 69,
-          "rank": 25,
+          "games": 150,
+          "runs_per_game": 4.16,
+          "allowed_per_game": 4.45,
+          "wins": 74,
+          "rank": 26,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
     },
-    "CHC": {
+    "NYM": {
       "windows": {
         "l7": {
           "games": 7,
-          "runs_per_game": 4.14,
-          "allowed_per_game": 4.71,
-          "wins": 3,
-          "rank": 18,
+          "runs_per_game": 7.29,
+          "allowed_per_game": 5.0,
+          "wins": 5,
+          "rank": 2,
           "of": 30
         },
         "l14": {
           "games": 14,
-          "runs_per_game": 6.07,
-          "allowed_per_game": 5.57,
-          "wins": 5,
-          "rank": 1,
+          "runs_per_game": 6.43,
+          "allowed_per_game": 5.0,
+          "wins": 9,
+          "rank": 2,
           "of": 30
         },
         "l30": {
           "games": 30,
-          "runs_per_game": 5.97,
-          "allowed_per_game": 5.1,
-          "wins": 13,
-          "rank": 1,
+          "runs_per_game": 4.8,
+          "allowed_per_game": 4.5,
+          "wins": 17,
+          "rank": 5,
           "of": 30
         },
         "ytd": {
-          "games": 147,
-          "runs_per_game": 5.31,
-          "allowed_per_game": 4.44,
-          "wins": 81,
-          "rank": 1,
+          "games": 149,
+          "runs_per_game": 4.32,
+          "allowed_per_game": 4.54,
+          "wins": 69,
+          "rank": 21,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
     },
-    "WSH": {
+    "PIT": {
       "windows": {
         "l7": {
           "games": 7,
-          "runs_per_game": 3.0,
-          "allowed_per_game": 6.29,
-          "wins": 0,
-          "rank": 30,
+          "runs_per_game": 3.57,
+          "allowed_per_game": 3.43,
+          "wins": 5,
+          "rank": 23,
           "of": 30
         },
         "l14": {
           "games": 14,
           "runs_per_game": 4.29,
-          "allowed_per_game": 5.57,
-          "wins": 5,
-          "rank": 18,
+          "allowed_per_game": 3.93,
+          "wins": 10,
+          "rank": 19,
           "of": 30
         },
         "l30": {
           "games": 30,
-          "runs_per_game": 4.27,
-          "allowed_per_game": 4.67,
-          "wins": 10,
-          "rank": 23,
+          "runs_per_game": 3.87,
+          "allowed_per_game": 3.7,
+          "wins": 17,
+          "rank": 28,
           "of": 30
         },
         "ytd": {
-          "games": 148,
-          "runs_per_game": 5.11,
-          "allowed_per_game": 5.11,
-          "wins": 67,
+          "games": 150,
+          "runs_per_game": 4.79,
+          "allowed_per_game": 4.61,
+          "wins": 75,
+          "rank": 5,
+          "of": 30
+        }
+      },
+      "through": "2026-09-13"
+    },
+    "CWS": {
+      "windows": {
+        "l7": {
+          "games": 7,
+          "runs_per_game": 3.57,
+          "allowed_per_game": 4.43,
+          "wins": 2,
+          "rank": 24,
+          "of": 30
+        },
+        "l14": {
+          "games": 14,
+          "runs_per_game": 3.14,
+          "allowed_per_game": 4.14,
+          "wins": 4,
+          "rank": 30,
+          "of": 30
+        },
+        "l30": {
+          "games": 30,
+          "runs_per_game": 4.3,
+          "allowed_per_game": 4.53,
+          "wins": 14,
+          "rank": 22,
+          "of": 30
+        },
+        "ytd": {
+          "games": 149,
+          "runs_per_game": 4.66,
+          "allowed_per_game": 4.44,
+          "wins": 76,
+          "rank": 7,
+          "of": 30
+        }
+      },
+      "through": "2026-09-13"
+    },
+    "MIL": {
+      "windows": {
+        "l7": {
+          "games": 7,
+          "runs_per_game": 8.57,
+          "allowed_per_game": 5.29,
+          "wins": 5,
+          "rank": 1,
+          "of": 30
+        },
+        "l14": {
+          "games": 14,
+          "runs_per_game": 7.07,
+          "allowed_per_game": 6.0,
+          "wins": 8,
+          "rank": 1,
+          "of": 30
+        },
+        "l30": {
+          "games": 30,
+          "runs_per_game": 6.3,
+          "allowed_per_game": 4.17,
+          "wins": 19,
+          "rank": 1,
+          "of": 30
+        },
+        "ytd": {
+          "games": 150,
+          "runs_per_game": 5.19,
+          "allowed_per_game": 3.89,
+          "wins": 93,
           "rank": 2,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
     },
-    "BAL": {
+    "AZ": {
       "windows": {
         "l7": {
           "games": 7,
-          "runs_per_game": 3.71,
-          "allowed_per_game": 4.71,
+          "runs_per_game": 4.57,
+          "allowed_per_game": 4.0,
+          "wins": 4,
+          "rank": 15,
+          "of": 30
+        },
+        "l14": {
+          "games": 14,
+          "runs_per_game": 3.5,
+          "allowed_per_game": 3.64,
+          "wins": 7,
+          "rank": 29,
+          "of": 30
+        },
+        "l30": {
+          "games": 30,
+          "runs_per_game": 3.97,
+          "allowed_per_game": 4.37,
+          "wins": 15,
+          "rank": 26,
+          "of": 30
+        },
+        "ytd": {
+          "games": 150,
+          "runs_per_game": 4.43,
+          "allowed_per_game": 4.42,
+          "wins": 79,
+          "rank": 18,
+          "of": 30
+        }
+      },
+      "through": "2026-09-13"
+    },
+    "LAD": {
+      "windows": {
+        "l7": {
+          "games": 7,
+          "runs_per_game": 6.14,
+          "allowed_per_game": 3.29,
+          "wins": 5,
+          "rank": 5,
+          "of": 30
+        },
+        "l14": {
+          "games": 14,
+          "runs_per_game": 5.57,
+          "allowed_per_game": 4.07,
+          "wins": 9,
+          "rank": 6,
+          "of": 30
+        },
+        "l30": {
+          "games": 30,
+          "runs_per_game": 4.8,
+          "allowed_per_game": 3.77,
+          "wins": 19,
+          "rank": 6,
+          "of": 30
+        },
+        "ytd": {
+          "games": 149,
+          "runs_per_game": 4.97,
+          "allowed_per_game": 3.83,
+          "wins": 90,
+          "rank": 4,
+          "of": 30
+        }
+      },
+      "through": "2026-09-13"
+    },
+    "HOU": {
+      "windows": {
+        "l7": {
+          "games": 7,
+          "runs_per_game": 3.43,
+          "allowed_per_game": 5.71,
+          "wins": 2,
+          "rank": 27,
+          "of": 30
+        },
+        "l14": {
+          "games": 14,
+          "runs_per_game": 3.64,
+          "allowed_per_game": 4.14,
+          "wins": 7,
+          "rank": 28,
+          "of": 30
+        },
+        "l30": {
+          "games": 30,
+          "runs_per_game": 3.77,
+          "allowed_per_game": 4.7,
+          "wins": 14,
+          "rank": 29,
+          "of": 30
+        },
+        "ytd": {
+          "games": 150,
+          "runs_per_game": 4.46,
+          "allowed_per_game": 4.81,
+          "wins": 75,
+          "rank": 16,
+          "of": 30
+        }
+      },
+      "through": "2026-09-13"
+    },
+    "LAA": {
+      "windows": {
+        "l7": {
+          "games": 7,
+          "runs_per_game": 3.86,
+          "allowed_per_game": 3.86,
           "wins": 2,
           "rank": 22,
           "of": 30
         },
         "l14": {
           "games": 14,
-          "runs_per_game": 4.07,
-          "allowed_per_game": 4.43,
+          "runs_per_game": 3.79,
+          "allowed_per_game": 3.71,
+          "wins": 4,
+          "rank": 26,
+          "of": 30
+        },
+        "l30": {
+          "games": 30,
+          "runs_per_game": 3.97,
+          "allowed_per_game": 3.37,
+          "wins": 11,
+          "rank": 27,
+          "of": 30
+        },
+        "ytd": {
+          "games": 149,
+          "runs_per_game": 4.05,
+          "allowed_per_game": 4.56,
+          "wins": 56,
+          "rank": 29,
+          "of": 30
+        }
+      },
+      "through": "2026-09-13"
+    },
+    "BOS": {
+      "windows": {
+        "l7": {
+          "games": 7,
+          "runs_per_game": 3.43,
+          "allowed_per_game": 2.86,
+          "wins": 4,
+          "rank": 28,
+          "of": 30
+        },
+        "l14": {
+          "games": 14,
+          "runs_per_game": 3.93,
+          "allowed_per_game": 4.71,
+          "wins": 8,
+          "rank": 23,
+          "of": 30
+        },
+        "l30": {
+          "games": 30,
+          "runs_per_game": 4.4,
+          "allowed_per_game": 4.1,
+          "wins": 18,
+          "rank": 19,
+          "of": 30
+        },
+        "ytd": {
+          "games": 150,
+          "runs_per_game": 4.42,
+          "allowed_per_game": 3.83,
+          "wins": 82,
+          "rank": 19,
+          "of": 30
+        }
+      },
+      "through": "2026-09-13"
+    },
+    "CIN": {
+      "windows": {
+        "l7": {
+          "games": 7,
+          "runs_per_game": 4.43,
+          "allowed_per_game": 9.57,
+          "wins": 2,
+          "rank": 18,
+          "of": 30
+        },
+        "l14": {
+          "games": 14,
+          "runs_per_game": 4.71,
+          "allowed_per_game": 8.07,
+          "wins": 6,
+          "rank": 16,
+          "of": 30
+        },
+        "l30": {
+          "games": 30,
+          "runs_per_game": 4.57,
+          "allowed_per_game": 6.8,
+          "wins": 13,
+          "rank": 13,
+          "of": 30
+        },
+        "ytd": {
+          "games": 149,
+          "runs_per_game": 4.19,
+          "allowed_per_game": 5.16,
+          "wins": 70,
+          "rank": 25,
+          "of": 30
+        }
+      },
+      "through": "2026-09-13"
+    },
+    "CHC": {
+      "windows": {
+        "l7": {
+          "games": 7,
+          "runs_per_game": 4.86,
+          "allowed_per_game": 5.0,
+          "wins": 2,
+          "rank": 14,
+          "of": 30
+        },
+        "l14": {
+          "games": 14,
+          "runs_per_game": 5.64,
+          "allowed_per_game": 5.0,
+          "wins": 6,
+          "rank": 5,
+          "of": 30
+        },
+        "l30": {
+          "games": 30,
+          "runs_per_game": 5.9,
+          "allowed_per_game": 4.93,
+          "wins": 13,
+          "rank": 2,
+          "of": 30
+        },
+        "ytd": {
+          "games": 150,
+          "runs_per_game": 5.33,
+          "allowed_per_game": 4.41,
+          "wins": 83,
+          "rank": 1,
+          "of": 30
+        }
+      },
+      "through": "2026-09-13"
+    },
+    "WSH": {
+      "windows": {
+        "l7": {
+          "games": 7,
+          "runs_per_game": 4.14,
+          "allowed_per_game": 5.29,
+          "wins": 3,
+          "rank": 19,
+          "of": 30
+        },
+        "l14": {
+          "games": 14,
+          "runs_per_game": 4.21,
+          "allowed_per_game": 5.36,
           "wins": 6,
           "rank": 21,
           "of": 30
         },
         "l30": {
           "games": 30,
-          "runs_per_game": 4.77,
-          "allowed_per_game": 4.4,
-          "wins": 15,
-          "rank": 9,
+          "runs_per_game": 4.1,
+          "allowed_per_game": 4.73,
+          "wins": 11,
+          "rank": 24,
           "of": 30
         },
         "ytd": {
-          "games": 147,
-          "runs_per_game": 4.5,
-          "allowed_per_game": 4.68,
-          "wins": 71,
-          "rank": 15,
+          "games": 151,
+          "runs_per_game": 5.11,
+          "allowed_per_game": 5.09,
+          "wins": 70,
+          "rank": 3,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
+    },
+    "BAL": {
+      "windows": {
+        "l7": {
+          "games": 7,
+          "runs_per_game": 4.57,
+          "allowed_per_game": 5.71,
+          "wins": 3,
+          "rank": 16,
+          "of": 30
+        },
+        "l14": {
+          "games": 14,
+          "runs_per_game": 3.86,
+          "allowed_per_game": 4.86,
+          "wins": 5,
+          "rank": 25,
+          "of": 30
+        },
+        "l30": {
+          "games": 30,
+          "runs_per_game": 4.47,
+          "allowed_per_game": 4.5,
+          "wins": 14,
+          "rank": 18,
+          "of": 30
+        },
+        "ytd": {
+          "games": 150,
+          "runs_per_game": 4.48,
+          "allowed_per_game": 4.71,
+          "wins": 72,
+          "rank": 14,
+          "of": 30
+        }
+      },
+      "through": "2026-09-13"
     },
     "MIN": {
       "windows": {
         "l7": {
           "games": 7,
-          "runs_per_game": 3.29,
-          "allowed_per_game": 6.14,
+          "runs_per_game": 2.57,
+          "allowed_per_game": 5.86,
           "wins": 2,
-          "rank": 28,
+          "rank": 30,
           "of": 30
         },
         "l14": {
           "games": 14,
-          "runs_per_game": 4.71,
-          "allowed_per_game": 4.86,
-          "wins": 5,
-          "rank": 12,
+          "runs_per_game": 4.57,
+          "allowed_per_game": 4.79,
+          "wins": 6,
+          "rank": 18,
           "of": 30
         },
         "l30": {
           "games": 30,
-          "runs_per_game": 4.53,
-          "allowed_per_game": 5.13,
+          "runs_per_game": 4.33,
+          "allowed_per_game": 5.23,
           "wins": 12,
-          "rank": 12,
+          "rank": 20,
           "of": 30
         },
         "ytd": {
-          "games": 146,
-          "runs_per_game": 4.62,
-          "allowed_per_game": 4.99,
-          "wins": 69,
-          "rank": 8,
+          "games": 149,
+          "runs_per_game": 4.58,
+          "allowed_per_game": 5.0,
+          "wins": 70,
+          "rank": 10,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
     },
     "ATH": {
       "windows": {
         "l7": {
           "games": 7,
-          "runs_per_game": 4.29,
-          "allowed_per_game": 3.29,
-          "wins": 5,
-          "rank": 15,
+          "runs_per_game": 3.57,
+          "allowed_per_game": 6.0,
+          "wins": 4,
+          "rank": 25,
           "of": 30
         },
         "l14": {
           "games": 14,
-          "runs_per_game": 4.5,
-          "allowed_per_game": 4.43,
-          "wins": 7,
-          "rank": 16,
+          "runs_per_game": 4.64,
+          "allowed_per_game": 5.71,
+          "wins": 8,
+          "rank": 17,
           "of": 30
         },
         "l30": {
           "games": 30,
-          "runs_per_game": 4.5,
-          "allowed_per_game": 5.23,
-          "wins": 13,
-          "rank": 14,
+          "runs_per_game": 4.53,
+          "allowed_per_game": 5.43,
+          "wins": 14,
+          "rank": 16,
           "of": 30
         },
         "ytd": {
-          "games": 147,
-          "runs_per_game": 4.36,
-          "allowed_per_game": 5.63,
-          "wins": 59,
+          "games": 150,
+          "runs_per_game": 4.37,
+          "allowed_per_game": 5.73,
+          "wins": 61,
           "rank": 20,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
     },
     "TOR": {
       "windows": {
         "l7": {
           "games": 7,
           "runs_per_game": 4.14,
-          "allowed_per_game": 3.43,
-          "wins": 4,
-          "rank": 19,
+          "allowed_per_game": 3.86,
+          "wins": 3,
+          "rank": 20,
           "of": 30
         },
         "l14": {
           "games": 14,
-          "runs_per_game": 4.64,
-          "allowed_per_game": 3.36,
+          "runs_per_game": 5.07,
+          "allowed_per_game": 3.14,
           "wins": 9,
-          "rank": 14,
+          "rank": 13,
           "of": 30
         },
         "l30": {
           "games": 30,
-          "runs_per_game": 4.43,
-          "allowed_per_game": 3.73,
+          "runs_per_game": 4.57,
+          "allowed_per_game": 3.67,
           "wins": 18,
-          "rank": 16,
+          "rank": 14,
           "of": 30
         },
         "ytd": {
-          "games": 147,
-          "runs_per_game": 4.01,
-          "allowed_per_game": 4.27,
-          "wins": 73,
-          "rank": 29,
+          "games": 150,
+          "runs_per_game": 4.05,
+          "allowed_per_game": 4.26,
+          "wins": 75,
+          "rank": 30,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
     },
     "COL": {
       "windows": {
         "l7": {
           "games": 7,
-          "runs_per_game": 5.43,
-          "allowed_per_game": 6.0,
-          "wins": 3,
-          "rank": 5,
-          "of": 30
-        },
-        "l14": {
-          "games": 14,
-          "runs_per_game": 4.5,
-          "allowed_per_game": 4.57,
-          "wins": 5,
-          "rank": 17,
-          "of": 30
-        },
-        "l30": {
-          "games": 30,
-          "runs_per_game": 4.3,
-          "allowed_per_game": 5.6,
-          "wins": 10,
-          "rank": 20,
-          "of": 30
-        },
-        "ytd": {
-          "games": 145,
-          "runs_per_game": 4.71,
-          "allowed_per_game": 5.72,
-          "wins": 55,
-          "rank": 7,
-          "of": 30
-        }
-      },
-      "through": "2026-09-09"
-    },
-    "MIA": {
-      "windows": {
-        "l7": {
-          "games": 7,
-          "runs_per_game": 6.0,
-          "allowed_per_game": 7.57,
-          "wins": 1,
-          "rank": 3,
-          "of": 30
-        },
-        "l14": {
-          "games": 14,
-          "runs_per_game": 5.43,
-          "allowed_per_game": 6.0,
-          "wins": 5,
-          "rank": 6,
-          "of": 30
-        },
-        "l30": {
-          "games": 30,
-          "runs_per_game": 4.97,
-          "allowed_per_game": 4.7,
-          "wins": 14,
-          "rank": 5,
-          "of": 30
-        },
-        "ytd": {
-          "games": 147,
-          "runs_per_game": 4.45,
-          "allowed_per_game": 4.4,
-          "wins": 72,
-          "rank": 16,
-          "of": 30
-        }
-      },
-      "through": "2026-09-09"
-    },
-    "ATL": {
-      "windows": {
-        "l7": {
-          "games": 7,
-          "runs_per_game": 3.43,
-          "allowed_per_game": 3.57,
-          "wins": 3,
+          "runs_per_game": 3.57,
+          "allowed_per_game": 8.0,
+          "wins": 0,
           "rank": 26,
           "of": 30
         },
         "l14": {
           "games": 14,
-          "runs_per_game": 3.57,
-          "allowed_per_game": 3.79,
-          "wins": 8,
-          "rank": 28,
+          "runs_per_game": 3.93,
+          "allowed_per_game": 6.0,
+          "wins": 3,
+          "rank": 24,
           "of": 30
         },
         "l30": {
           "games": 30,
-          "runs_per_game": 3.27,
-          "allowed_per_game": 3.67,
-          "wins": 15,
+          "runs_per_game": 4.27,
+          "allowed_per_game": 5.93,
+          "wins": 9,
+          "rank": 23,
+          "of": 30
+        },
+        "ytd": {
+          "games": 149,
+          "runs_per_game": 4.67,
+          "allowed_per_game": 5.81,
+          "wins": 55,
+          "rank": 6,
+          "of": 30
+        }
+      },
+      "through": "2026-09-13"
+    },
+    "MIA": {
+      "windows": {
+        "l7": {
+          "games": 7,
+          "runs_per_game": 6.43,
+          "allowed_per_game": 6.71,
+          "wins": 3,
+          "rank": 4,
+          "of": 30
+        },
+        "l14": {
+          "games": 14,
+          "runs_per_game": 5.57,
+          "allowed_per_game": 5.93,
+          "wins": 6,
+          "rank": 7,
+          "of": 30
+        },
+        "l30": {
+          "games": 30,
+          "runs_per_game": 4.67,
+          "allowed_per_game": 5.03,
+          "wins": 13,
+          "rank": 11,
+          "of": 30
+        },
+        "ytd": {
+          "games": 150,
+          "runs_per_game": 4.44,
+          "allowed_per_game": 4.4,
+          "wins": 74,
+          "rank": 17,
+          "of": 30
+        }
+      },
+      "through": "2026-09-13"
+    },
+    "ATL": {
+      "windows": {
+        "l7": {
+          "games": 7,
+          "runs_per_game": 4.0,
+          "allowed_per_game": 4.57,
+          "wins": 3,
+          "rank": 21,
+          "of": 30
+        },
+        "l14": {
+          "games": 14,
+          "runs_per_game": 4.29,
+          "allowed_per_game": 4.29,
+          "wins": 7,
+          "rank": 20,
+          "of": 30
+        },
+        "l30": {
+          "games": 30,
+          "runs_per_game": 3.6,
+          "allowed_per_game": 3.77,
+          "wins": 16,
           "rank": 30,
           "of": 30
         },
         "ytd": {
-          "games": 146,
-          "runs_per_game": 4.58,
-          "allowed_per_game": 3.84,
-          "wins": 85,
-          "rank": 9,
+          "games": 150,
+          "runs_per_game": 4.62,
+          "allowed_per_game": 3.85,
+          "wins": 88,
+          "rank": 8,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
     },
     "KC": {
       "windows": {
         "l7": {
           "games": 7,
-          "runs_per_game": 4.29,
-          "allowed_per_game": 4.14,
+          "runs_per_game": 3.29,
+          "allowed_per_game": 3.43,
           "wins": 3,
-          "rank": 16,
+          "rank": 29,
           "of": 30
         },
         "l14": {
           "games": 14,
-          "runs_per_game": 4.57,
-          "allowed_per_game": 4.5,
-          "wins": 6,
-          "rank": 15,
+          "runs_per_game": 3.79,
+          "allowed_per_game": 4.93,
+          "wins": 5,
+          "rank": 27,
           "of": 30
         },
         "l30": {
           "games": 30,
-          "runs_per_game": 4.83,
-          "allowed_per_game": 4.27,
+          "runs_per_game": 4.57,
+          "allowed_per_game": 4.0,
           "wins": 17,
-          "rank": 8,
+          "rank": 15,
           "of": 30
         },
         "ytd": {
-          "games": 147,
-          "runs_per_game": 4.28,
-          "allowed_per_game": 4.88,
-          "wins": 65,
-          "rank": 22,
+          "games": 150,
+          "runs_per_game": 4.23,
+          "allowed_per_game": 4.85,
+          "wins": 66,
+          "rank": 23,
           "of": 30
         }
       },
-      "through": "2026-09-09"
+      "through": "2026-09-13"
     }
   }
 }
