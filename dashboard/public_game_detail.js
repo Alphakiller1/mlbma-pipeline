@@ -213,6 +213,7 @@
   function paintSection(host, id, body) {
     var node = host.querySelector('[data-body="' + id + '"]');
     if (node) node.innerHTML = body;
+    if (id === 'radar') fitRadar(host);
   }
 
   function pending(message) {
@@ -1768,6 +1769,16 @@
     def_sack: 'Sacks', def_turnover: 'Takeaways'
   };
 
+  /* Every web is laid out in a box RADAR_W units wide and then scaled to the
+     column it lands in. Type set in those units scaled with the box - the axis
+     names measured 10.7px at 1440 and 8.7px on a phone - so the layout takes
+     `k`, box units per screen pixel, and sets every piece of type at k times
+     its screen size. fitRadar() measures the drawn width and redraws when k
+     has moved. The pixel sizes mirror the .ca-radar rules in chase-public.css,
+     which own the type; here they only size the room around it. */
+  var RADAR_W = 520;
+  var RADAR_LABEL_PX = 15;
+
   function radarPoints(ctx, keys, radius, cx, cy) {
     return keys.map(function (key, i) {
       var entry = ctx && ctx[key];
@@ -1775,96 +1786,177 @@
       // An axis with no value collapses to the centre rather than being skipped,
       // so the shape keeps its geometry and the gap is visible as a gap.
       var r = pct == null ? 0 : (pct / 100) * radius;
-      var angle = (Math.PI * 2 * i) / keys.length - Math.PI / 2;
+      var angle = radarAngle(i, keys.length);
       return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)];
     });
   }
 
-  function radarWeb(sport, game, spec, plan) {
-    // Sized for the labels, not for the pentagon: the widest axis name is
-    // about 85px at 12px display type, and it hangs outward from an anchor at
-    // radius + 18. A box drawn to the shape alone let neighbouring webs write
-    // their labels over each other.
-    var w = 360, h = 250, cx = w / 2, cy = 140, radius = 80, labelGap = 18;
-    var away = plan.away, home = plan.home;
-    var keys = spec.keys.filter(function (key) {
-      return plan.label(key) && ((away && away[key]) || (home && home[key]));
+  function radarAngle(i, count) {
+    return (Math.PI * 2 * i) / count - Math.PI / 2;
+  }
+
+  function radarKeys(spec, plan) {
+    return spec.keys.filter(function (key) {
+      return plan.label(key) && ((plan.away && plan.away[key]) || (plan.home && plan.home[key]));
     });
+  }
+
+  /* At phone scale a two-word axis name goes onto two lines, rather than the
+     whole web shrinking to make room for its longest name. */
+  function radarLabelLines(text, k) {
+    var words = String(text || '').split(' ');
+    if (k < 1.15 || words.length < 2) return [String(text || '')];
+    var best = null;
+    for (var i = 1; i < words.length; i++) {
+      var lines = [words.slice(0, i).join(' '), words.slice(i).join(' ')];
+      var longest = Math.max(lines[0].length, lines[1].length);
+      if (!best || longest < best.longest) best = { lines: lines, longest: longest };
+    }
+    return best.lines;
+  }
+
+  // Generous for a bold face on purpose: a name is never measured narrower
+  // than it draws.
+  function radarTextWidth(text, px) {
+    return String(text || '').length * px * 0.6;
+  }
+
+  /* Where each axis name sits, relative to a centre at 0,0. A name above the
+     web ends at its anchor, one below starts there, and one beside is centred
+     on it - so a two-line name grows away from the shape, never into it. */
+  function radarBlocks(keys, plan, geo) {
+    var px = geo.labelPx, lineH = px * 1.15;
+    return keys.map(function (key, i) {
+      var a = radarAngle(i, keys.length);
+      var sin = Math.sin(a), cos = Math.cos(a);
+      var lines = radarLabelLines(plan.label(key), geo.k);
+      var x = (geo.radius + geo.gap) * cos, y = (geo.radius + geo.gap) * sin;
+      var first;
+      if (sin < -0.3) first = y - (lines.length - 1) * lineH;
+      else if (sin > 0.3) first = y + px * 0.8;
+      else first = y + px * 0.35 - ((lines.length - 1) * lineH) / 2;
+      return {
+        key: key, x: x, y: y, lines: lines, first: first, lineH: lineH,
+        anchor: Math.abs(cos) < 0.3 ? 'middle' : (cos > 0 ? 'start' : 'end'),
+        top: first - px * 0.8,
+        bottom: first + (lines.length - 1) * lineH + px * 0.25
+      };
+    });
+  }
+
+  /* One geometry for both webs, so the pair is drawn to the same scale and
+     height: the largest radius at which every side-hung name still fits in the
+     box, and a box exactly tall enough for the highest and lowest names. */
+  function radarGeometry(specs, plan, k) {
+    var geo = {
+      k: k, w: RADAR_W, cx: RADAR_W / 2,
+      labelPx: RADAR_LABEL_PX * k, gap: 12 * k, pad: 8 * k
+    };
+    var radius = 150;
+    specs.forEach(function (spec) {
+      var keys = radarKeys(spec, plan);
+      keys.forEach(function (key, i) {
+        var cos = Math.abs(Math.cos(radarAngle(i, keys.length)));
+        if (cos < 0.3) return;
+        var width = Math.max.apply(null, radarLabelLines(plan.label(key), k).map(function (line) {
+          return radarTextWidth(line, geo.labelPx);
+        }));
+        radius = Math.min(radius, (geo.cx - geo.pad - width) / cos - geo.gap);
+      });
+    });
+    geo.radius = Math.max(56, Math.floor(radius));
+    var highest = -geo.radius, lowest = geo.radius;
+    specs.forEach(function (spec) {
+      radarBlocks(radarKeys(spec, plan), plan, geo).forEach(function (b) {
+        highest = Math.min(highest, b.top);
+        lowest = Math.max(lowest, b.bottom);
+      });
+    });
+    geo.cy = Math.ceil(geo.pad - highest);
+    geo.h = Math.ceil(geo.cy + lowest + geo.pad);
+    return geo;
+  }
+
+  function radarWeb(sport, game, spec, plan, geo) {
+    var away = plan.away, home = plan.home;
+    var keys = radarKeys(spec, plan);
     // Three axes is the fewest that makes a shape rather than a line.
     if (keys.length < 3) return '';
     if (!away && !home) return '';
 
+    var k = geo.k, w = geo.w, h = geo.h, cx = geo.cx, cy = geo.cy, radius = geo.radius;
+
     var rings = [0.25, 0.5, 0.75, 1].map(function (step) {
       var pts = keys.map(function (_, i) {
-        var a = (Math.PI * 2 * i) / keys.length - Math.PI / 2;
+        var a = radarAngle(i, keys.length);
         return (cx + radius * step * Math.cos(a)).toFixed(1) + ',' +
                (cy + radius * step * Math.sin(a)).toFixed(1);
       }).join(' ');
-      return '<polygon class="ca-radar__ring" points="' + pts + '"/>';
+      return '<polygon class="ca-radar__ring' + (step === 1 ? ' is-outer' : '') +
+        '" points="' + pts + '"/>';
     }).join('');
 
     var spokes = keys.map(function (_, i) {
-      var a = (Math.PI * 2 * i) / keys.length - Math.PI / 2;
-      return '<line class="ca-radar__spoke" x1="' + cx + '" y1="' + cy + '" x2="' +
-        (cx + radius * Math.cos(a)).toFixed(1) + '" y2="' +
+      var a = radarAngle(i, keys.length);
+      return '<line class="ca-radar__spoke" data-axis="' + i + '" x1="' + cx + '" y1="' + cy +
+        '" x2="' + (cx + radius * Math.cos(a)).toFixed(1) + '" y2="' +
         (cy + radius * Math.sin(a)).toFixed(1) + '"/>';
     }).join('');
 
-    /* Each axis is its own hoverable, focusable object carrying what the
-       metric measures and where both clubs sit on it. A radar shows shape
-       beautifully and values not at all; this is how the values get back. */
+    function place(n) { return n + ordinal(n); }
+
     function readout(ctx, key) {
       var entry = ctx && ctx[key];
       if (!entry) return 'not published';
       var pct = percentOf(entry);
-      var value = entry.value;
-      return value + (entry.rank ? '  ·  ' + entry.rank + ordinal(entry.rank) +
-        ' of ' + entry.of : '') + (pct == null ? '' : '  ·  ' + Math.round(pct) + 'th pct');
+      return String(entry.value) + (entry.rank ? ', ' + place(entry.rank) + ' of ' + entry.of : '') +
+        (pct == null ? '' : ', ' + place(Math.round(pct)) + ' percentile');
     }
 
-    function wrap(text, perLine) {
-      var words = String(text || '').split(' ');
-      var lines = [];
-      var line = '';
-      words.forEach(function (word) {
-        if ((line + ' ' + word).trim().length > perLine) { lines.push(line.trim()); line = word; }
-        else { line = (line + ' ' + word).trim(); }
-      });
-      if (line) lines.push(line);
-      return lines.slice(0, 3);
+    function code(side) { return String(game[side] || '').toUpperCase(); }
+
+    /* Each axis is its own hoverable, focusable object, and what it opens is
+       HTML rather than SVG. The first readout was drawn inside the web: it
+       scaled with the box (about 10px on screen), sat on a 60% black the spokes
+       showed through, and covered the axis names either side of the one being
+       read. The card is built here and placed by wireRadarReadout(). One row
+       per club, each carrying the club's own colour, so the numbers are read
+       against the same key as the shapes. */
+    function cardRow(ctx, side, key) {
+      var entry = ctx && ctx[key];
+      var colour = plan.colour[side];
+      var pct = entry ? percentOf(entry) : null;
+      return '<div class="ca-radar__card-row">' +
+        '<span class="ca-radar__card-club"><i class="ca-radar-key__swatch is-' + side + '"' +
+        (colour ? ' style="background:' + esc(colour) + '"' : '') + '></i>' + esc(code(side)) + '</span>' +
+        (entry
+          ? '<b>' + esc(String(entry.value)) + '</b>' +
+            '<span>' + (entry.rank ? esc(place(entry.rank) + ' of ' + entry.of) : '') + '</span>' +
+            '<span>' + (pct == null ? '' : esc(place(Math.round(pct)) + ' percentile')) + '</span>'
+          : '<b class="is-absent">Not published</b><span></span><span></span>') +
+        '</div>';
     }
 
-    var labels = keys.map(function (key, i) {
-      var a = (Math.PI * 2 * i) / keys.length - Math.PI / 2;
-      var lx = cx + (radius + labelGap) * Math.cos(a);
-      var ly = cy + (radius + labelGap) * Math.sin(a);
-      var anchor = Math.abs(Math.cos(a)) < 0.3 ? 'middle' : (Math.cos(a) > 0 ? 'start' : 'end');
-      var means = STAT_MEANS[key] || '';
-      var body = wrap(means, 42);
-      var awayLine = fullName(sport, game, 'away') + ':  ' + readout(away, key);
-      var homeLine = fullName(sport, game, 'home') + ':  ' + readout(home, key);
-      var rows = [plan.label(key)].concat(body, [awayLine, homeLine]);
-      var tipW = 250;
-      var tipH = 22 + rows.length * 15;
-      // The card is pinned toward the middle so it never leaves the box, and
-      // below the axis unless the axis is itself low.
-      var tx = Math.max(6, Math.min(w - tipW - 6, cx - tipW / 2));
-      var ty = ly < cy ? ly + 12 : ly - tipH - 14;
-      var tip = '<g class="ca-radar__tip" aria-hidden="true">' +
-        '<rect x="' + tx + '" y="' + ty.toFixed(1) + '" width="' + tipW + '" height="' + tipH +
-        '" rx="6"/>' +
-        rows.map(function (row, n) {
-          return '<text class="ca-radar__tip-line' + (n === 0 ? ' is-head' : '') +
-            (n >= rows.length - 2 ? ' is-value' : '') + '" x="' + (tx + 10) +
-            '" y="' + (ty + 18 + n * 15).toFixed(1) + '">' + esc(row) + '</text>';
-        }).join('') + '</g>';
-      return '<g class="ca-radar__axis" tabindex="0" role="button" aria-label="' +
-        esc(plan.label(key) + '. ' + means + '. ' + awayLine + '. ' + homeLine) + '">' +
+    var cards = [];
+    var labels = radarBlocks(keys, plan, geo).map(function (b, i) {
+      var lx = cx + b.x, ly = cy + b.y;
+      var name = plan.label(b.key);
+      var means = STAT_MEANS[b.key] || '';
+      cards.push('<div class="ca-radar__card" data-card="' + i + '" hidden aria-hidden="true">' +
+        '<p class="ca-radar__card-head">' + esc(name) + '<span>' + esc(spec.title) + '</span></p>' +
+        (means ? '<p class="ca-radar__card-means">' + esc(means) + '</p>' : '') +
+        cardRow(away, 'away', b.key) + cardRow(home, 'home', b.key) + '</div>');
+      var text = '<text class="ca-radar__label" text-anchor="' + b.anchor + '">' +
+        b.lines.map(function (line, n) {
+          return '<tspan x="' + lx.toFixed(1) + '" y="' +
+            (cy + b.first + n * b.lineH).toFixed(1) + '">' + esc(line) + '</tspan>';
+        }).join('') + '</text>';
+      return '<g class="ca-radar__axis" data-axis="' + i + '" data-low="' + (b.y > 1 ? '1' : '0') +
+        '" tabindex="0" role="button" aria-label="' +
+        esc(name + '. ' + means + ' ' + fullName(sport, game, 'away') + ': ' + readout(away, b.key) +
+          '. ' + fullName(sport, game, 'home') + ': ' + readout(home, b.key) + '.') + '">' +
         '<circle class="ca-radar__hit" cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) +
-        '" r="30"/>' +
-        '<text class="ca-radar__label" x="' + lx.toFixed(1) + '" y="' + (ly + 4).toFixed(1) +
-        '" text-anchor="' + anchor + '">' + esc(plan.label(key)) + '</text>' +
-        tip + '</g>';
+        '" r="' + (30 * k).toFixed(1) + '"/>' + text + '</g>';
     }).join('');
 
     function area(ctx, keys2) {
@@ -1877,10 +1969,10 @@
       }, 0);
     }
 
-    function ordered(a, h, colour) {
+    function ordered(a, hm, colour) {
       var pair = [
         { ctx: a, cls: 'is-away', colour: colour.away, size: area(a, keys) },
-        { ctx: h, cls: 'is-home', colour: colour.home, size: area(h, keys) }
+        { ctx: hm, cls: 'is-home', colour: colour.home, size: area(hm, keys) }
       ].sort(function (x, y) { return y.size - x.size; });
       return pair.map(function (one) {
         return shape(one.ctx, one.cls, one.colour);
@@ -1889,22 +1981,32 @@
 
     function shape(ctx, cls, colour) {
       if (!ctx) return '';
-      var pts = radarPoints(ctx, keys, radius, cx, cy)
-        .map(function (pt) { return pt[0].toFixed(1) + ',' + pt[1].toFixed(1); }).join(' ');
+      var points = radarPoints(ctx, keys, radius, cx, cy);
+      var pts = points.map(function (pt) { return pt[0].toFixed(1) + ',' + pt[1].toFixed(1); }).join(' ');
+      // A point on every axis that carries a value, so a reader can find where
+      // each club sits without tracing its outline back to the spoke.
+      var dots = points.map(function (pt, i) {
+        var entry = ctx[keys[i]];
+        if (!entry || percentOf(entry) == null) return '';
+        return '<circle class="ca-radar__dot ' + cls + '" data-axis="' + i + '" cx="' +
+          pt[0].toFixed(1) + '" cy="' + pt[1].toFixed(1) + '" r="' + (3.5 * k).toFixed(1) + '"' +
+          (colour ? ' style="fill:' + esc(colour) + '"' : '') + '/>';
+      }).join('');
       return '<polygon class="ca-radar__area ' + cls + '" points="' + pts + '"' +
-        (colour ? ' style="stroke:' + esc(colour) + ';fill:' + esc(colour) + '"' : '') + '/>';
+        (colour ? ' style="stroke:' + esc(colour) + ';fill:' + esc(colour) + '"' : '') + '/>' + dots;
     }
 
     return '<figure class="ca-radar">' +
       '<figcaption>' + esc(spec.title) + '</figcaption>' +
       '<svg viewBox="0 0 ' + w + ' ' + h + '" width="' + w + '" height="' + h +
-      '" role="img" aria-label="' + esc(spec.title) + ' percentile comparison">' +
+      '" data-k="' + k + '" style="--radar-k:' + k + '"' +
+      ' role="img" aria-label="' + esc(spec.title) + ' percentile comparison">' +
       // The bigger shape is drawn FIRST so the smaller one is never buried
       // under it. Two translucent fills over each other used to leave the
       // dominant club's outline as the only one a reader could follow, which
       // made the comparison look like one lumpy polygon instead of two.
       rings + spokes + ordered(away, home, plan.colour) + labels +
-      '</svg></figure>';
+      '</svg>' + cards.join('') + '</figure>';
   }
 
   /* Where each sport keeps its context, and what it calls each axis. The MLB
@@ -1933,49 +2035,51 @@
     };
   }
 
-  function hexRgb(hex) {
-    var m = /^#?([0-9a-f]{6})$/i.exec(String(hex || '').trim());
-    if (!m) return null;
-    var n = parseInt(m[1], 16);
-    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-  }
-
-  /* Are these two colours far enough apart to carry two overlaid shapes?
-     Plain Euclidean distance in RGB is crude, but it is the right kind of
-     crude here: the question is only "can a reader tell these apart", and a
-     club pair that fails it is rare enough that the fallback costs nothing. */
-  function tooClose(a, b) {
-    var x = hexRgb(a), y = hexRgb(b);
-    if (!x || !y) return false;
-    var d = Math.sqrt(Math.pow(x[0] - y[0], 2) + Math.pow(x[1] - y[1], 2) +
-                      Math.pow(x[2] - y[2], 2));
-    return d < 110;
-  }
-
+  /* Both clubs in their own colours wherever the pair can be told apart. The
+     first version dropped BOTH clubs to the chart pair whenever their first
+     colours were close - 47% of MLB pairings and 51% of NFL pairings, so the
+     radar lost club identity on half the slate, and most often where two navy
+     clubs met. A club's second colour is tried first now (see
+     MLBMAAssets.teamPairColors), and the chart pair is the last resort. */
   function radarPair(sport, game) {
-    var pair = clubPair(sport, game);
-    if (pair.away && pair.home && tooClose(pair.away, pair.home)) {
-      return { away: '', home: '', fellBack: true };
+    var assets = global.MLBMAAssets;
+    if (!(assets && assets.teamPairColors)) {
+      return { away: '', home: '', awayAlt: false, homeAlt: false, fellBack: false };
     }
-    return { away: pair.away, home: pair.home, fellBack: false };
+    return assets.teamPairColors(game.away, game.home, sport, { minRatio: 3 });
   }
 
-  function radarBody(sport, game) {
+  function radarBody(sport, game, k) {
+    k = k > 0 ? k : 1;
     var plan = radarPlan(sport, game);
     var pair = plan.colour;
     function swatch(colour) {
       return colour ? ' style="background:' + esc(colour) + '"' : '';
     }
     var specs = sport === 'nfl' ? NFL_RADARS : RADARS;
-    var webs = specs.map(function (spec) { return radarWeb(sport, game, spec, plan); })
+    var geo = radarGeometry(specs, plan, k);
+    var webs = specs.map(function (spec) { return radarWeb(sport, game, spec, plan, geo); })
       .filter(Boolean).join('');
     if (!webs) return pending('Team profile is not published for this pairing.');
+    var switched = [];
+    if (pair.awayAlt) switched.push(fullName(sport, game, 'away'));
+    if (pair.homeAlt) switched.push(fullName(sport, game, 'home'));
+    var colourNote = pair.fellBack
+      ? 'These two clubs wear colours too close to tell apart when the shapes overlap - ' +
+        'in their second colours as well - so the web uses the chart pair instead of the ' +
+        'club pair; the key names which is which.'
+      : switched.length
+        ? 'The two clubs’ first colours are too close to tell apart where the shapes ' +
+          'cross, so ' + esc(switched.join(' and ')) +
+          (switched.length > 1 ? ' are drawn in their' : ' is drawn in its') +
+          ' second club colour.'
+        : (pair.away && pair.home ? 'Each shape is drawn in its own club’s colour.' : '');
     return '<div class="ca-radar-duo">' + webs + '</div>' +
       '<p class="ca-radar-key">' +
-      '<span class="ca-radar-key__swatch is-away"' + swatch(pair.away) + '></span>' +
-      esc(fullName(sport, game, 'away')) +
-      '<span class="ca-radar-key__swatch is-home"' + swatch(pair.home) + '></span>' +
-      esc(fullName(sport, game, 'home')) +
+      '<span class="ca-radar-key__item"><span class="ca-radar-key__swatch is-away"' +
+      swatch(pair.away) + '></span>' + esc(fullName(sport, game, 'away')) + '</span>' +
+      '<span class="ca-radar-key__item"><span class="ca-radar-key__swatch is-home"' +
+      swatch(pair.home) + '></span>' + esc(fullName(sport, game, 'home')) + '</span>' +
       '</p>' +
       '<p class="ca-detail-source-note">Every axis is that club’s percentile on the ' +
       'metric named, against the same league pool the section above uses — the only ' +
@@ -1986,11 +2090,80 @@
           'the two phases of the game. '
         : 'The legacy web carried a projOSI axis; that is a forecast, so this one carries ' +
           'Pitch Score, a descriptive index over the same kind of inputs. ') +
-      (plan.colour.fellBack
-        ? 'These two clubs wear colours too close to tell apart when the shapes overlap, ' +
-          'so the web uses the chart pair instead of the club pair; the key names which is ' +
-          'which.'
-        : 'Each shape is drawn in its own club’s colour.') + '</p>';
+      colourNote + '</p>';
+  }
+
+  /* Redraw the radar at the scale it is actually shown at (see RADAR_W). Runs
+     after every paint of the section and whenever the page resizes; a change
+     under 4% is not worth a redraw, which is also what keeps a resize from
+     repainting on every frame. */
+  function fitRadar(host) {
+    var args = host.__caRadar;
+    var node = host.querySelector('[data-body="radar"]');
+    var svg = node && node.querySelector('.ca-radar svg');
+    if (!args || !svg) return;
+    var shown = svg.getBoundingClientRect().width;
+    if (!(shown > 0)) return;
+    var k = Math.round((RADAR_W / shown) * 100) / 100;
+    var drawn = Number(svg.getAttribute('data-k')) || 1;
+    if (Math.abs(k - drawn) / drawn < 0.04) return;
+    node.innerHTML = radarBody(args.sport, args.game, k);
+  }
+
+  /* One axis readout at a time, opened by hover and by focus - a tap on a
+     phone focuses the axis - and closed by leaving it, blurring it or Escape.
+     The card goes on the OUTSIDE of the name it belongs to: above a name in the
+     upper half of the web, below one in the lower half. So it never covers the
+     name being read, and it is held inside the section so it is never cut off
+     at the panel edge. Delegated once on the host, so a redrawn web keeps it. */
+  function wireRadarReadout(host) {
+    function each(list, fn) { Array.prototype.forEach.call(list, fn); }
+    function clear() {
+      each(host.querySelectorAll('.ca-radar__card:not([hidden])'), function (card) { card.hidden = true; });
+      each(host.querySelectorAll('.ca-radar .is-active'), function (el) { el.classList.remove('is-active'); });
+    }
+    function axisOf(node) {
+      return node && node.closest ? node.closest('.ca-radar__axis') : null;
+    }
+    function show(axis) {
+      var fig = axis.closest('.ca-radar');
+      var i = axis.getAttribute('data-axis');
+      var card = fig && fig.querySelector('.ca-radar__card[data-card="' + i + '"]');
+      if (!card || !card.hidden) return;
+      clear();
+      each(fig.querySelectorAll('[data-axis="' + i + '"]'), function (el) { el.classList.add('is-active'); });
+      card.hidden = false;
+      var gap = 10;
+      var name = axis.querySelector('.ca-radar__label').getBoundingClientRect();
+      var box = fig.getBoundingClientRect();
+      var bounds = (fig.closest('.ca-detail-section') || fig).getBoundingClientRect();
+      var width = card.offsetWidth, height = card.offsetHeight;
+      var top = axis.getAttribute('data-low') === '1' ? name.bottom + gap : name.top - gap - height;
+      if (top < bounds.top + gap) top = name.bottom + gap;
+      if (top + height > bounds.bottom - gap) top = name.top - gap - height;
+      var left = name.left + name.width / 2 - width / 2;
+      left = Math.max(bounds.left + gap, Math.min(bounds.right - gap - width, left));
+      card.style.left = Math.round(left - box.left) + 'px';
+      card.style.top = Math.round(top - box.top) + 'px';
+    }
+    host.addEventListener('mouseover', function (event) {
+      var axis = axisOf(event.target);
+      if (axis) show(axis);
+    });
+    host.addEventListener('mouseout', function (event) {
+      var axis = axisOf(event.target);
+      if (axis && !axis.contains(event.relatedTarget) && axis !== document.activeElement) clear();
+    });
+    host.addEventListener('focusin', function (event) {
+      var axis = axisOf(event.target);
+      if (axis) show(axis);
+    });
+    host.addEventListener('focusout', function (event) {
+      if (axisOf(event.target)) clear();
+    });
+    host.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && axisOf(event.target)) clear();
+    });
   }
 
   function formBody(sport, game) {
@@ -2932,11 +3105,17 @@
       '</div>';
     host.innerHTML = html;
     host.setAttribute('data-state', 'ready');
+    host.__caRadar = { sport: sport, game: game };
+    fitRadar(host);
     // Delegated once on the host, so a repainted section keeps working.
     if (!host.dataset.seasonWired) {
       wireSeasonToggle(host);
       wireLineupTabs(host);
       wireSchemeTabs(host);
+      wireRadarReadout(host);
+      if (global.ResizeObserver) {
+        new global.ResizeObserver(function () { fitRadar(host); }).observe(host);
+      }
       host.dataset.seasonWired = '1';
     }
   }

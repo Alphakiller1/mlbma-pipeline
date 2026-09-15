@@ -175,7 +175,7 @@
   padding: 0 var(--space-2);
   border-radius: var(--radius-pill);
   font-family: var(--font-ui);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;

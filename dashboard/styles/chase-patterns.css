@@ -22,7 +22,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-meta);
 }
 
@@ -50,7 +50,7 @@
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   background: var(--surface-inset);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-meta);
 }
 
@@ -121,7 +121,7 @@
   padding: 0 var(--space-3);
   border: 1px solid var(--border-default);
   border-radius: 0;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 700;
   color: var(--text-primary);
   background: var(--surface-inset);
@@ -135,7 +135,7 @@
   background: var(--surface-inset);
   color: var(--text-secondary);
   font: inherit;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 700;
   cursor: pointer;
 }
@@ -146,7 +146,7 @@
 }
 .ca-desk-count {
   margin: 0 0 var(--space-4);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-meta);
 }
 .ca-team-abbr img,
@@ -198,7 +198,7 @@
   justify-content: space-between;
   gap: var(--space-2);
   min-height: 28px;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-meta);
 }
 .ca-matchup-card__kick {
@@ -214,7 +214,7 @@
   min-height: 22px;
   padding: 0 8px;
   border-radius: 0;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 700;
   background: var(--surface-raised);
   color: var(--text-secondary);
@@ -252,12 +252,12 @@
 }
 .ca-matchup-card__name,
 .ca-matchup-card__record {
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-secondary);
 }
 .ca-matchup-card__center {
   text-align: center;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 600;
   color: var(--text-meta);
   padding-top: 18px;
@@ -289,7 +289,7 @@
 }
 .ca-matchup-card__sp-meta {
   display: block;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-meta);
 }
 .ca-matchup-card__facts {
@@ -299,14 +299,14 @@
 }
 .ca-matchup-card__fact-k {
   display: block;
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-meta);
 }
 .ca-matchup-card__fact-v {
   display: block;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-secondary);
 }
 .ca-matchup-card__fact-v.is-ok { color: var(--mark-positive); }
@@ -320,7 +320,7 @@
   min-height: var(--touch-min);
 }
 .ca-matchup-card__updated {
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-meta);
 }
 .ca-text-link--accent {
@@ -382,13 +382,13 @@
 }
 .ca-slate-card__at {
   color: var(--text-muted);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 800;
 }
 .ca-slate-card__time {
   margin-left: auto;
   color: var(--text-secondary);
-  font-size: var(--type-12);
+  font-size: var(--type-data);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -414,7 +414,7 @@
   background: var(--surface-inset);
 }
 .ca-rank-chip__lab {
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 800;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
