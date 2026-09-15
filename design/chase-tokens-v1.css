@@ -1,6 +1,6 @@
 /*
  * Chase Analytics — TIER 1 primitives.
- * DESIGN_LAYER_VERSION: 20260915a
+ * DESIGN_LAYER_VERSION: 20260915bp
  * Published at /design/chase-tokens-v1.css (this file, deploy-root copy).
  *
  * This is the ONLY file in mlbma-pipeline allowed to contain raw color literals
@@ -17,16 +17,22 @@
 :root {
   color-scheme: dark;
 
-  /* Ink / surfaces */
-  --ca-ink-1000: #050509;
-  --ca-ink-950: #08090F;
-  --ca-ink-900: #0E1018;
-  --ca-ink-850: #12141D;
-  --ca-ink-800: #181B26;
-  --ca-ink-750: #20232F;
+  /* Ink / surfaces - black premium pass (2026-09-15).
+     Owner direction: the desk read grey and immature. The six steps were a
+     blue-shifted slate (#08090F to #20232F) and every object sat on a
+     visibly different grey. They are now a neutral black ramp with small
+     even steps, so objects read as embedded in one surface rather than as
+     boxes stacked on it. Lines drop with them: the hairline is felt, not
+     seen, and separation comes from tone. */
+  --ca-ink-1000: #000000;
+  --ca-ink-950: #050506;
+  --ca-ink-900: #09090B;
+  --ca-ink-850: #0D0D10;
+  --ca-ink-800: #131316;
+  --ca-ink-750: #1A1A1E;
 
-  --ca-line-600: #262A38;
-  --ca-line-500: #363B4D;
+  --ca-line-600: #1C1C20;
+  --ca-line-500: #2A2A2F;
 
   --ca-paper-50: #F5F6FA;
   --ca-paper-100: #F5F5F7;
@@ -52,12 +58,12 @@
      brand into the surface itself, which is how its design layer was drawn - a
      blue-shifted ink with deep violet fields rather than the desk's flat
      black. */
-  --ca-mc-900: #141824;
-  --ca-mc-850: #191E2C;
-  --ca-mc-800: #1F2437;
-  --ca-violet-deep-900: #241C4A;
-  --ca-violet-deep-800: #2E2459;
-  --ca-violet-deep-700: #382D6F;
+  --ca-mc-900: #060608;
+  --ca-mc-850: #0C0C0F;
+  --ca-mc-800: #121216;
+  --ca-violet-deep-900: #110D1C;
+  --ca-violet-deep-800: #181226;
+  --ca-violet-deep-700: #211833;
 
   /* Status / metric ramp — all seven semantic steps clear 4.5:1 on dark surfaces. */
   --ca-green-500: #3CCB7F;
@@ -126,6 +132,9 @@
   --ca-white-a-10: rgba(255, 255, 255, 0.10);
   --ca-white-a-055: rgba(255, 255, 255, 0.055);
   --ca-white-a-052: rgba(255, 255, 255, 0.052);
+  --ca-white-a-03: rgba(255, 255, 255, 0.03);
+  --ca-white-a-045: rgba(255, 255, 255, 0.045);
+  --ca-white-a-12: rgba(255, 255, 255, 0.12);
   --ca-black-a-34: rgba(0, 0, 0, 0.34);
   --ca-black-a-35: rgba(0, 0, 0, 0.35);
   --ca-black-a-40: rgba(0, 0, 0, 0.4);
@@ -155,8 +164,8 @@
   --ca-glow-violet: 0 0 0 1px rgba(196, 176, 255, 0.13), 0 0 30px rgba(124, 77, 255, 0.24), 0 28px 78px rgba(0, 0, 0, 0.86), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   --ca-glow-violet-strong: 0 0 0 1px rgba(213, 196, 255, 0.29), 0 0 42px rgba(124, 77, 255, 0.38), 0 34px 96px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.11);
 
-  --ca-font-ui: 'DM Sans', system-ui, -apple-system, sans-serif;
-  --ca-font-display: 'Roboto Condensed', 'DM Sans', system-ui, sans-serif;
+  --ca-font-ui: 'Chase Sans', system-ui, -apple-system, sans-serif;
+  --ca-font-display: 'Chase Display', 'Chase Sans', system-ui, sans-serif;
   --ca-grad-bg-scrim: linear-gradient(
     180deg,
     rgba(5, 6, 14, 0.78) 0%,

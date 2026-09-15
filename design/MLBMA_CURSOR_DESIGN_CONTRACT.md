@@ -187,6 +187,20 @@ Implementation requirements:
 - Keep metric colors on the existing green-to-red grading scale; violet and gold are brand/editorial accents only.
 - Do not add fake stadium art, generated backgrounds, decorative bokeh, or extra hero sections to chase the image.
 
+### 4.0.2 Black Premium Surface (dated 2026-09-15, owner decision)
+
+The owner judged the desk visually immature: every object was boxed - a bordered card holding a bordered group holding bordered tiles holding bordered chips (37% of sized elements on the live slate drew a frame on three or more sides) - on a blue-grey slate ground, and the matchup routes rendered in the system fallback font because they never linked the font stylesheet. This section supersedes the conflicting parts of §4.0, §6 and §7.2; where they disagree, this wins.
+
+- **Ground.** A neutral black ramp, no blue cast: `--ca-ink-1000` `#000000`, `-950` `#050506` (canvas), `-900` `#09090B`, `-850` `#0D0D10`, `-800` `#131316`, `-750` `#1A1A1E`. The header sits on the canvas black, so masthead and desk are one surface. Model Center keeps a faint violet cast in its fields but shares the black ground.
+- **One slab per object.** A card or a section is `--surface-card` with a `--border-card` hairline (white 4.5%) and `--elevation-card` (1px of top light). Nothing inside it draws a frame of its own.
+- **Separation by tone and space, never outline.** Tiles inside a card step up to `--surface-field`; panels inside a section recess to `--surface-well`. Chips, buttons, inputs, meters and tracks are fills. A grade chip carries its grade as a 14% tint of its own colour, with the number and its label inside it, so colour is never the only cue.
+- **Borders.** Replaces "1.5px to 2px on major boards" and "visible border / border glow": major surfaces take the hairline only, internal dividers use `--border-subtle` (white 4.5%), and table row rules stay.
+- **Violet.** Navigation, links, focus and active controls. The 3px rail down every card and section is removed - fifteen rails on one page were segmentation, not brand. Club colour keeps its 3px tab on the club tile, the one edge left on a card, because it answers "whose side".
+- **Metal.** The silver fill stays on page titles and section `h2`s. Small titles (venue, team, starter and panel names) are solid `--text-primary`.
+- **Type.** Archivo, self-hosted, one variable family: `Chase Sans` at normal width and `Chase Display`, the same file pinned to 72% width. See §6.
+
+Reversal lives at the token and override level: the TIER 1 inks in `design/tokens/chase-tokens.css`, the roles in `chase-semantic.css`, the faces in `dashboard/assets/fonts/chase-fonts.css`, and the dated `BLACK PREMIUM SURFACE - 2026-09-15` blocks at the foot of `chase-public.css`, `chase-model-center.css` and `chase-shell.css`.
+
 ### 4.0.1 Icon Standard
 
 The generated infographic icons are bold poster marks, not thin generic line icons. Cursor must not treat default Lucide stroke icons as the finished visual standard on hero, workflow, research, matchup, or section-header surfaces.
@@ -316,14 +330,14 @@ Do not let violet dominate the entire UI. It is an accent, not the whole palette
 
 Use:
 
-- Display/editorial text: Roboto Condensed
-- UI text, labels, controls, and numbers: DM Sans
+- Display/editorial text: Archivo at 72% width, served as `Chase Display` (Roboto Condensed until 2026-09-15, see §4.0.2)
+- UI text, labels, controls, and numbers: Archivo at normal width, served as `Chase Sans` (DM Sans until 2026-09-15)
 
-If these fonts are already loaded, reuse the current loading method. If not, add them through the project-approved font mechanism.
+Both families load from `dashboard/assets/fonts/chase-fonts.css`, which every page must link before the token stylesheet. Rules name the families through `--font-ui` / `--font-display`, never the vendor face.
 
 ### 6.1 Display Typography
 
-Use Roboto Condensed for:
+Use the display family (`--font-display`) for:
 
 - dashboard title
 - section headers
@@ -343,7 +357,7 @@ Display style:
 
 ### 6.2 UI And Number Typography
 
-Use DM Sans for:
+Use the UI family (`--font-ui`) for:
 
 - controls
 - tabs
@@ -408,10 +422,10 @@ Existing dashboard section containers should feel like premium dark boards.
 Required treatment:
 
 - dark raised surface
-- visible border
+- a hairline border (`--border-card`), not a visible frame (§4.0.2)
 - subtle inner highlight
 - subtle shadow
-- violet top accent or header accent
+- no violet rail; the accent belongs to navigation and active controls (§4.0.2)
 - no excessive border radius
 - compact internal spacing
 - consistent header/body rhythm
@@ -809,7 +823,7 @@ The dashboard is acceptable when:
 - metric chips use the locked green=elite to red=poor scale
 - chips are solid, readable, and consistent
 - boards feel premium, dark, contained, and dense
-- typography uses Roboto Condensed and DM Sans as specified
+- typography uses the `Chase Sans` / `Chase Display` families as specified in §6
 - existing analyst/insight elements have a polished editorial treatment
 - loading and empty states behave honestly
 - there are no console errors
@@ -874,7 +888,7 @@ During edits:
 
 - Use existing tokens and helpers
 - Reuse `valChipHtml` / `metricColor` if present
-- Use Roboto Condensed + DM Sans
+- Use `Chase Sans` + `Chase Display` (Archivo) through the font tokens
 - Keep green=elite to red=poor metric scale
 - Preserve data placement
 - Preserve tabs and routing
@@ -927,10 +941,12 @@ Pages may set `data-mode` (`slate`, `rank`, `entry`, …) for future adapters. W
 
 Hex values are settled. Do not lighten `--text-3` to “fix” contrast; change usage, not the palette.
 
+The ratios above were measured on the pre-2026-09-15 panel `#12141D`. The black panel (`--ca-ink-850` `#0D0D10`) is darker, so each is now a floor rather than the measured value.
+
 ### 18.3 Five concepts
 
 1. **Surface** — opaque boards (`--surface-*`), not glass-only depth.
-2. **Type** — Roboto Condensed display; DM Sans UI; `tabular-nums`.
+2. **Type** — `Chase Display` / `Chase Sans` (Archivo, §6); `tabular-nums`.
 3. **Grade** — `--metric-very-weak` … `--metric-elite`; `valChipHtml` / `metricColor`.
 4. **Mark vs value** — chrome ≠ data (§18.2).
 5. **Identity** — three token tiers, one `DESIGN_LAYER_VERSION`.

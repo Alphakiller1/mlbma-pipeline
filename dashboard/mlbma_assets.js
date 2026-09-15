@@ -1165,7 +1165,7 @@
    * Both candidates clear 4.5:1 against every colour in the table above.
    */
   function teamInk(hex) {
-    return relativeLuminance(hex) > 0.32 ? '#0E1018' : '#FFFFFF';
+    return relativeLuminance(hex) > 0.32 ? '#0D0D10' : '#FFFFFF';
   }
 
   /**
@@ -1176,7 +1176,7 @@
   /* A club colour used as a MARK on the dark desk, not as a ground.
    *
    * Half the league is navy or near-black. Measured against the board panel
-   * (--ca-ink-850, #12141D), six of ten sampled clubs come in under 1.6:1 -
+   * (--ca-ink-850, then #12141D), six of ten sampled clubs came in under 1.6:1 -
    * Detroit and the Yankees at 1.16:1, which on screen is an invisible bar.
    * Team identity is worth having, but not at the cost of the reader being
    * unable to see the chart.
@@ -1188,7 +1188,9 @@
    * slate that read as nobody's colour. A navy club still reads as that club's
    * navy; it just reads.
    */
-  var BAR_GROUND = '#12141D';
+  /* Tracks --ca-ink-850, which the black premium pass (2026-09-15) took to
+   * #0D0D10. A darker ground lifts navy marks further, so the floor still holds. */
+  var BAR_GROUND = '#0D0D10';
   var BAR_MIN_RATIO = 2.6;
 
   function parseHex(hex) {

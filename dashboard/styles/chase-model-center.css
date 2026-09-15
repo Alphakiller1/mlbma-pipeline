@@ -873,3 +873,38 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
     text-align: left;
   }
 }
+
+/* ===========================================================================
+ * BLACK PREMIUM SURFACE - 2026-09-15
+ *
+ * Same law as the desk (see chase-public.css): one slab per object and no
+ * frames inside it. Model Center keeps what makes it the entitled product - the
+ * violet cast in its fields and the accent on the board head and the total -
+ * but its ground is now black like the desk's, so moving between the two no
+ * longer reads as a jump from black to slate. The rail down every panel goes.
+ * ======================================================================== */
+.mc-panel {
+  border-color: var(--border-card);
+  box-shadow: var(--elevation-card);
+}
+.mc-panel::before { content: none; }
+
+.mc-game {
+  border-color: var(--border-card);
+  box-shadow: var(--elevation-card);
+}
+
+.mc-tile,
+.mc-form__row,
+.mc-chip,
+.mc-sports,
+.mc-board__status,
+.mc-game__visuals,
+.mc-gauge__track { border-color: transparent; }
+
+.mc-total {
+  border-color: transparent;
+  border-left-color: var(--accent);
+}
+
+.mc-score { border-color: var(--border-card); }

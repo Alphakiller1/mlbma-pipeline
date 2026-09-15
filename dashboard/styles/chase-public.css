@@ -4785,3 +4785,253 @@ body[data-ca-product="research"] {
 @media (max-width: 900px) {
   .ca-player-scheme .ca-player-coverage-groups { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ===========================================================================
+ * BLACK PREMIUM SURFACE - 2026-09-15
+ *
+ * Owner direction: the desk read as immature because every object was boxed -
+ * a bordered card holding a bordered group holding bordered tiles holding
+ * bordered chips, on three blue-grey fills. Measured on the live slate, 37% of
+ * sized elements drew a frame on three or more sides. This pass makes the desk
+ * one black surface with objects embedded in it:
+ *
+ * 1. One slab per object. A card or a section is a single lifted black with a
+ *    hairline of top light; nothing inside it draws a frame of its own.
+ * 2. Separation by tone and space, never by outline. A panel inside a section
+ *    is a well - one step darker - so it reads as carved in, not stacked on.
+ * 3. Violet stays on navigation, links and focus. The 3px rail down every card
+ *    and section is gone: fifteen rails on one page were segmentation, not
+ *    brand. Club colour keeps its tab, because that answers "whose side".
+ * ======================================================================== */
+
+/* --- Slate card: one slab ------------------------------------------------ */
+.ca-matchup-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-card);
+}
+.ca-matchup-card::before { content: none; }
+.ca-matchup-card:hover,
+.ca-matchup-card:focus-within {
+  border-color: var(--border-hover);
+  box-shadow: var(--elevation-card);
+}
+
+.ca-matchup-card__venue {
+  background: none;
+  border-bottom: 0;
+}
+.ca-matchup-card__head { border-bottom: 0; }
+.ca-matchup-card__teams {
+  background: none;
+  border: 0;
+}
+
+/* Inner tiles step one tone up and draw no frame. The club's 3px colour tab is
+   the one edge left on the card. */
+.ca-matchup-card__club,
+.ca-matchup-card__arm,
+.ca-matchup-card__starter,
+.ca-avail-row {
+  background: var(--surface-field);
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+}
+.ca-matchup-card__arm,
+.ca-matchup-card__starter,
+.ca-avail-row { border-left-color: transparent; }
+
+.ca-matchup-card__arm .ca-matchup-card__shot,
+.ca-matchup-card__shot--empty { border-color: transparent; }
+
+/* A grade chip carries its grade as a tint of its own colour, not as a frame.
+   The number and its label still sit inside it, so colour is never alone. */
+.ca-matchup-card .ca-matchup-card__arm-era,
+.ca-detail-page .ca-rank {
+  border-color: transparent;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.ca-matchup-card__fact + .ca-matchup-card__fact,
+.ca-matchup-card__broadcast { border-left-color: var(--border-card); }
+.ca-matchup-card__actions { border-top: 0; }
+.ca-matchup-card__expand {
+  background: var(--surface-well);
+  border-color: transparent;
+}
+.ca-matchup-card__expand-btn {
+  background: var(--surface-field);
+  border-color: transparent;
+}
+.ca-matchup-card__expand-btn:hover { background: var(--control-bg-hover); }
+.ca-matchup-card__venue-tag {
+  background: var(--surface-field);
+  border-color: transparent;
+}
+
+.ca-status-chip,
+.ca-status-chip.is-final,
+.ca-status-chip.is-muted {
+  background: var(--surface-field);
+  border-color: transparent;
+}
+.ca-status-chip.is-live,
+.ca-status-chip.is-watch,
+.ca-status-chip.is-ok {
+  border-color: transparent;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+/* Small titles are type, not chrome. A silver gradient across a 14px venue
+   name or a panel heading reads as effect; the page title keeps the metal. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .ca-matchup-card__venue-name,
+  .ca-matchup-card__name,
+  .ca-starter-name,
+  .ca-lineup-panel > h3,
+  .ca-form-panel > h3,
+  .ca-arsenal-panel > h3,
+  .ca-scheme-panel > h3,
+  .ca-lineup-board__head h3,
+  .ca-bullpen-panel > h3 {
+    background: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    color: var(--text-primary);
+  }
+}
+
+/* --- Page chrome: headings in open space, controls as tone -------------- */
+.ca-public-page__head,
+.ca-opening-desk__head,
+.ca-opening-sport__head,
+.ca-kickoff-window > header,
+.ca-desk-toolbar { border-bottom-color: transparent; }
+
+.ca-desk-dates button,
+.ca-desk-dates__btn,
+.ca-desk-dates__now,
+.ca-desk-chip,
+.ca-desk-view-toggle button,
+.ca-public-page__links a,
+.ca-embedded-slate-head a {
+  background: var(--surface-field);
+  border-color: transparent;
+}
+.ca-desk-dates button:hover,
+.ca-desk-chip:hover,
+.ca-public-page__links a:hover,
+.ca-embedded-slate-head a:hover { background: var(--control-bg-hover); }
+.ca-desk-chip.is-on {
+  background: var(--control-bg-active);
+  border-color: transparent;
+  color: var(--text-accent);
+}
+
+.ca-loading-state,
+.ca-error-state,
+.ca-empty-state {
+  background: var(--surface-card);
+  border-color: var(--border-card);
+}
+
+/* --- Matchup analysis: sections are slabs, panels are wells ------------- */
+.ca-detail-hero,
+.ca-detail-section {
+  background: var(--surface-card);
+  border-color: var(--border-card);
+  box-shadow: var(--elevation-card);
+}
+.ca-detail-hero::before,
+.ca-detail-section::before { content: none; }
+.ca-detail-hero__meta { border-bottom-color: var(--border-card); }
+
+.ca-detail-nav {
+  background: color-mix(in srgb, var(--surface-canvas) 90%, transparent);
+  border-color: transparent;
+  box-shadow: 0 1px 0 var(--border-card);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.ca-detail-fact,
+.ca-detail-team-panel {
+  background: var(--surface-well);
+  border-color: transparent;
+}
+
+.ca-starter-panel,
+.ca-lineup-panel,
+.ca-form-panel,
+.ca-arsenal-panel,
+.ca-bullpen-panel,
+.ca-scheme-panel,
+.ca-mirror,
+.ca-lineup-board,
+.ca-coverage-matrix {
+  background: var(--surface-well);
+  border-color: transparent;
+  box-shadow: none;
+}
+.ca-coverage-matrix > header,
+.ca-mirror__head,
+.ca-lineup-table thead th { background: none; }
+
+.ca-starter-head,
+.ca-mirror__head,
+.ca-lineup-board__head,
+.ca-coverage-matrix > header,
+.ca-lineup-table th { border-bottom-color: var(--border-card); }
+
+.ca-starter-shot,
+.ca-player-coverage-card__shot,
+.ca-player-coverage-card__initials { border-color: transparent; }
+
+.ca-recent,
+.ca-wx-tile,
+.ca-disclosure,
+.ca-rate-block,
+.ca-player-coverage-card,
+.ca-lineup-groups,
+.ca-lineup-tabs,
+.ca-season-toggle,
+.ca-scheme-switch__tab,
+.ca-lineup-player,
+.ca-role,
+.ca-flag,
+.ca-stack {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* Meters and tracks are fills. An outlined empty pip, repeated down a table,
+   is exactly the line texture this pass removes. */
+.ca-arsenal-bar,
+.ca-usage__bar,
+.ca-mirror__track,
+.ca-usage__grid > i,
+.ca-segment-meter i,
+.ca-coverage-track i { border-color: transparent; }
+.ca-usage__grid > i,
+.ca-segment-meter i,
+.ca-coverage-track i { background: var(--surface-raised); }
+
+.ca-recent__game { border-color: var(--border-card); }
+
+.ca-lineup-table tbody tr:nth-child(even),
+.ca-arsenal-table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--surface-field) 55%, transparent);
+}
+
+/* --- Phone: the kickoff line wraps instead of running into the weather ---
+ * At 390px "Tuesday · 6:40 PM ET" overflowed its nowrap box and printed
+ * straight into "91° · Clear" ("ET91°"). */
+@media (max-width: 720px) {
+  .ca-matchup-card__head {
+    flex-wrap: wrap;
+    row-gap: 2px;
+    white-space: normal;
+  }
+}

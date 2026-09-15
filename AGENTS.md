@@ -35,7 +35,8 @@ product. A change that ships stale/garbage data or a broken layout is worse than
 
 - **The token layer is the law.** `dashboard/mlbma_design_system.css` defines the canonical
   tokens: `--bg`/`--bg-2..4`, `--text`/`--text-2..4`, `--border`, `--card`, and the brand
-  `--ca-brand: #9A6BFF` (deep purple) on a near-black (`#08090F`) dark theme. **Consume these
+  `--ca-brand: #9A6BFF` (deep purple) on a neutral black (`#050506`) dark theme - see the
+  2026-09-15 black premium pass, `design/MLBMA_CURSOR_DESIGN_CONTRACT.md` §4.0.2. **Consume these
   tokens — never hard-code colors and never redefine a token in another file.** A few duplicate
   definitions exist (`--text`, `--bg`, `--v-bg`); the direction is to *consolidate toward the
   design system*, not add more.

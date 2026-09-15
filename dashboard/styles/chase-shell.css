@@ -1,8 +1,9 @@
 /*
  * L6 — AppShell, SportSwitcher, TaskNav, ContextBar, grid, breakpoints, footer.
  * Content column is 1232px; at a 1280px viewport that leaves 24px on each side.
- * Fonts: DM Sans (UI/body/controls/meta) via --font-ui; Roboto Condensed
- * (H1–H3, scores, compact section titles) via --font-display. Display face is locked.
+ * Fonts: Chase Sans (UI/body/controls/meta) via --font-ui; Chase Display
+ * (H1–H3, scores, compact section titles) via --font-display. Both are Archivo,
+ * self-hosted in dashboard/assets/fonts/chase-fonts.css (2026-09-15).
  */
 
 .ca-app-shell,
@@ -740,3 +741,24 @@ body:has(.ca-context-bar) .chase-header .chase-timestamp { display: none; }
 
 .chase-account__label { font-weight: 600; }
 .chase-account.is-signed-out .chase-account__badge { display: none; }
+
+/* ---------------------------------------------------------------------------
+ * Black premium surface (2026-09-15).
+ *
+ * The header now sits on the page's own black (--surface-header follows the
+ * canvas), so masthead and desk read as one surface; the hairline under it is
+ * the only thing that marks where content scrolls beneath. Inputs and capsules
+ * in the chrome are tone, not outline. No backdrop-filter here on purpose: it
+ * would make the header the containing block for the fixed mobile menu.
+ * ------------------------------------------------------------------------ */
+.chase-nav-search input,
+.chase-timestamp,
+.ca-status-capsule,
+.ca-sport-select-pill {
+  background: var(--surface-field);
+  border-color: transparent;
+}
+.chase-account__badge { border-color: transparent; }
+.chase-nav-rule { background: var(--border-card); }
+.chase-dropdown-menu { border-color: var(--border-card); }
+.ca-shell-footer { border-top-color: var(--border-card); }

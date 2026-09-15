@@ -2,7 +2,9 @@
  * Chase Analytics design system — typography, brand, metric grading.
  * Global identity aligns with design_comp_v2 / visual spec.
  */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto+Condensed:wght@400;500;600;700&display=swap');
+/* Brand faces are self-hosted: every page links dashboard/assets/fonts/chase-fonts.css
+   before this file. The Google Fonts import that stood here was a redundant third-party
+   request for faces the desk no longer uses (2026-09-15). */
 /* responsive.css is linked from pages (must load last). Do not @import it here. */
 
 html {
@@ -228,7 +230,6 @@ body {
 }
 h1, h2, h3, .platform-title, .section-title, .ca-page-title, .ca-section-title {
   font-family: var(--font-display);
-  font-variation-settings: 'wdth' 125;
   letter-spacing: -0.015em;
 }
 
