@@ -188,6 +188,23 @@ def main(argv: list[str]) -> int:
         print(f"  skip: no batter or bullpen CSVs under {data_dir}")
         return 1
 
+    dest = PUBLIC / "batter_context.json"
+    # Scheduled runs skip FanGraphs, so batter_profiles.csv never exists on the
+    # runner while bullpen_individual.csv does. The skip above only fires when
+    # both are missing, so the 2026-09-14 scheduled refresh published an empty
+    # batter table over a good one - and the boundary test that guards it then
+    # failed every deploy. A missing source keeps the last good artifact, still
+    # dated by its own generated_at_utc, instead of overwriting it with nothing.
+    if not batters["splits"] and dest.is_file():
+        try:
+            previous = json.loads(dest.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            previous = {}
+        if previous.get("batters"):
+            print(f"  keep: no batter splits under {data_dir}; {dest.name} stays "
+                  f"at {previous.get('generated_at_utc')}")
+            return 0
+
     payload = {
         "schema": "chase-public-batters/1",
         "sport": "mlb",
@@ -206,7 +223,6 @@ def main(argv: list[str]) -> int:
             print(f"  ERROR: {bad} reached the public batter artifact")
             return 1
 
-    dest = PUBLIC / "batter_context.json"
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     counts = ", ".join(f"{k} {len(v)}" for k, v in batters["splits"].items())
