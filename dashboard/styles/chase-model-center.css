@@ -35,7 +35,7 @@
 .mc-eyebrow {
   margin: 0 0 var(--space-2);
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -70,7 +70,7 @@
 
 .mc-board__meta {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -141,7 +141,7 @@
 .mc-gauge__leg span {
   display: block;
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -197,7 +197,7 @@
 .mc-gauge__axis {
   display: flex;
   justify-content: space-between;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
@@ -222,14 +222,14 @@
 .mc-game__values {
   display: grid;
   gap: 2px;
-  font-size: var(--type-12);
+  font-size: var(--type-data);
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
 .mc-withheld {
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--value-caution);
 }
 
@@ -250,7 +250,7 @@
 .mc-tile span {
   display: block;
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -280,7 +280,7 @@
 .mc-hero__side { display: grid; gap: var(--space-2); justify-items: center; text-align: center; }
 .mc-hero__side .mc-chip { min-width: 96px; font-size: var(--type-28); padding: var(--space-3) var(--space-5); }
 .mc-hero__name { font-family: var(--font-display); font-size: var(--type-18); font-weight: 700; color: var(--text-primary); }
-.mc-hero__sub { font-size: var(--type-12); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.mc-hero__sub { font-size: var(--type-meta); color: var(--text-muted); font-variant-numeric: tabular-nums; }
 
 .mc-hero__center { text-align: center; }
 .mc-hero__score {
@@ -294,7 +294,7 @@
 .mc-hero__label {
   margin-top: var(--space-2);
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -477,7 +477,7 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 .mc-chip .team-logo-fallback {
   align-items: center;
   justify-content: center;
-  font-size: var(--type-12);
+  font-size: var(--type-floor);
   color: var(--text-secondary);
 }
 
@@ -528,7 +528,7 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 
 .mc-gauge__tick b {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--text-muted);
@@ -551,7 +551,7 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
    sized to fit side by side near the middle of a 300px track rather than to
    fill the card's width. */
 .mc-gauge__leg { gap: 4px; }
-.mc-gauge__leg span { font-size: var(--type-12); letter-spacing: var(--tracking-caps); }
+.mc-gauge__leg span { font-size: var(--type-meta); letter-spacing: var(--tracking-caps); }
 .mc-gauge__leg strong { font-size: var(--type-16); }
 
 /* --- The week, in windows ------------------------------------------------ */
@@ -560,7 +560,7 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 .mc-slot__title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 800;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -650,7 +650,7 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 .mc-board__eyebrow {
   margin: 0 0 2px;
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -676,7 +676,7 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 }
 
 .mc-board__status span {
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -721,7 +721,7 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 .mc-line__label {
   display: block;
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 800;
   letter-spacing: var(--tracking-caps);
   line-height: 1.2;
@@ -746,7 +746,7 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 .mc-score__match b {
   overflow: hidden;
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   letter-spacing: var(--tracking-caps);
   color: var(--text-muted);
   text-overflow: ellipsis;
@@ -799,7 +799,7 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 
 .mc-total__label {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 800;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -816,7 +816,7 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 .mc-total__detail {
   justify-self: end;
   min-width: 0;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-secondary);
   text-align: right;
 }

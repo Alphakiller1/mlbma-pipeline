@@ -1182,8 +1182,11 @@
    * unable to see the chart.
    *
    * So the hue is kept and the lightness is lifted until the mark clears a
-   * measured floor against the ground it sits on. A navy club still reads as
-   * that club's navy; it just reads.
+   * measured floor against the ground it sits on. The lift runs in OKLCH and
+   * holds the colour's saturation as it rises: mixing toward white, as this
+   * first did, greyed every navy on the way up - Detroit came out #556579, a
+   * slate that read as nobody's colour. A navy club still reads as that club's
+   * navy; it just reads.
    */
   var BAR_GROUND = '#12141D';
   var BAR_MIN_RATIO = 2.6;
@@ -1194,33 +1197,195 @@
     return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
   }
 
-  function mixToward(hex, target, amount) {
-    var a = parseHex(hex), b = parseHex(target);
-    if (!a || !b) return hex;
-    function ch(x, y) { return Math.round(x + (y - x) * amount); }
-    return '#' + [ch(a[0], b[0]), ch(a[1], b[1]), ch(a[2], b[2])]
-      .map(function (v) { return ('0' + Math.max(0, Math.min(255, v)).toString(16)).slice(-2); })
-      .join('').toUpperCase();
-  }
-
   function contrastRatio(one, two) {
     var a = relativeLuminance(one), b = relativeLuminance(two);
     var hi = Math.max(a, b), lo = Math.min(a, b);
     return (hi + 0.05) / (lo + 0.05);
   }
 
+  function hexToOklch(hex) {
+    var c = parseHex(hex);
+    if (!c) return null;
+    var r = srgbChannel(c[0]), g = srgbChannel(c[1]), b = srgbChannel(c[2]);
+    var l = Math.pow(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b, 1 / 3);
+    var m = Math.pow(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b, 1 / 3);
+    var s = Math.pow(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b, 1 / 3);
+    var A = 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s;
+    var B = 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s;
+    return {
+      l: 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,
+      c: Math.sqrt(A * A + B * B),
+      h: Math.atan2(B, A)
+    };
+  }
+
+  /** Linear sRGB for an OKLCH colour, or null when it falls outside sRGB. */
+  function oklchToLinear(L, C, h) {
+    var A = C * Math.cos(h), B = C * Math.sin(h);
+    var l = Math.pow(L + 0.3963377774 * A + 0.2158037573 * B, 3);
+    var m = Math.pow(L - 0.1055613458 * A - 0.0638541728 * B, 3);
+    var s = Math.pow(L - 0.0894841775 * A - 1.2914855480 * B, 3);
+    var rgb = [
+      4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+      -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+      -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s
+    ];
+    for (var i = 0; i < 3; i++) {
+      if (rgb[i] < -0.0005 || rgb[i] > 1.0005) return null;
+    }
+    return rgb;
+  }
+
+  function linearToHex(rgb) {
+    return '#' + rgb.map(function (v) {
+      v = v <= 0.0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - 0.055;
+      return ('0' + Math.round(Math.max(0, Math.min(1, v)) * 255).toString(16)).slice(-2);
+    }).join('').toUpperCase();
+  }
+
+  /* Out of gamut, chroma is given up and hue never is: the widest chroma that
+     still fits sRGB at this lightness, found by bisection. */
+  function oklchToHex(L, C, h) {
+    var rgb = oklchToLinear(L, C, h);
+    if (!rgb) {
+      var lo = 0, hi = C;
+      rgb = oklchToLinear(L, 0, h);
+      for (var n = 0; n < 12; n++) {
+        var mid = (lo + hi) / 2;
+        var trial = oklchToLinear(L, mid, h);
+        if (trial) { lo = mid; rgb = trial; } else { hi = mid; }
+      }
+    }
+    return rgb ? linearToHex(rgb) : null;
+  }
+
+  /** The first step up a colour's own hue that clears `minRatio` on `ground`;
+   *  the colour itself when it already does. */
+  function liftToFloor(base, ground, minRatio) {
+    if (contrastRatio(base, ground) >= minRatio) return String(base).toUpperCase();
+    var lch = hexToOklch(base);
+    if (!lch) return base;
+    var saturation = lch.l > 0 ? lch.c / lch.l : 0;
+    for (var L = lch.l + 0.02; L < 1; L += 0.02) {
+      var lifted = oklchToHex(L, saturation * L, lch.h);
+      if (lifted && contrastRatio(lifted, ground) >= minRatio) return lifted;
+    }
+    return '#FFFFFF';
+  }
+
   function teamBarColor(team, sport, ground) {
     var base = teamColor(team, sport);
     if (!base) return null;
-    var floor = ground || BAR_GROUND;
-    if (contrastRatio(base, floor) >= BAR_MIN_RATIO) return base;
-    // Walk toward white in small steps and stop at the first shade that clears
-    // the floor, so a club is lifted exactly as far as it has to be.
-    for (var amount = 0.1; amount <= 0.9; amount += 0.1) {
-      var lifted = mixToward(base, '#FFFFFF', amount);
-      if (contrastRatio(lifted, floor) >= BAR_MIN_RATIO) return lifted;
+    return liftToFloor(base, ground || BAR_GROUND, BAR_MIN_RATIO);
+  }
+
+  /* Each club's published SECOND colour, keyed like TEAM_COLORS. It is used in
+   * one place: a chart that overlays both clubs, when their first colours
+   * cannot be told apart - Detroit's navy over Toronto's blue, or New England
+   * and Seattle in the same #002244. */
+  var TEAM_ALT_COLORS = {
+    mlb: {
+      AZ: '#E3D4AD', ARI: '#E3D4AD',
+      ATL: '#13274F', BAL: '#000000', BOS: '#0C2340',
+      CHC: '#CC3433', CWS: '#C4CED4', CHW: '#C4CED4',
+      CIN: '#000000', CLE: '#E50022', COL: '#C4CED4', DET: '#FA4616',
+      HOU: '#EB6E1F', KC: '#BD9B60', KCR: '#BD9B60',
+      LAA: '#003263', ANA: '#003263', LAD: '#EF3E42',
+      MIA: '#EF3340', MIL: '#FFC52F', MIN: '#D31145',
+      NYM: '#FF5910', NYY: '#C4CED3',
+      ATH: '#EFB21E', OAK: '#EFB21E',
+      PHI: '#002D72', PIT: '#27251F',
+      SD: '#FFC425', SDP: '#FFC425', SF: '#27251F', SFG: '#27251F',
+      SEA: '#005C5C', STL: '#0C2340',
+      TB: '#8FBCE6', TBR: '#8FBCE6', TEX: '#C0111F', TOR: '#E8291C',
+      WSH: '#14225A', WSN: '#14225A', WAS: '#14225A'
+    },
+    nfl: {
+      ARI: '#000000', ATL: '#000000', BAL: '#9E7C0C', BUF: '#C60C30',
+      CAR: '#101820', CHI: '#C83803', CIN: '#000000', CLE: '#FF3C00',
+      DAL: '#869397', DEN: '#002244', DET: '#B0B7BC',
+      GB: '#FFB612', GNB: '#FFB612',
+      HOU: '#A71930', IND: '#A2AAAD', JAX: '#006778', JAC: '#006778',
+      KC: '#FFB81C', KAN: '#FFB81C',
+      LV: '#A5ACAF', LVR: '#A5ACAF', OAK: '#A5ACAF',
+      LAC: '#FFC20E', LAR: '#FFA300',
+      MIA: '#FC4C02', MIN: '#FFC62F',
+      NE: '#C60C30', NWE: '#C60C30',
+      NO: '#101820', NOR: '#101820',
+      NYG: '#A71930', NYJ: '#000000',
+      PHI: '#A5ACAF', PIT: '#101820',
+      SF: '#B3995D', SFO: '#B3995D', SEA: '#69BE28',
+      TB: '#34302B', TAM: '#34302B', TEN: '#4B92DB',
+      WAS: '#FFB612', WSH: '#FFB612'
     }
-    return mixToward(base, '#FFFFFF', 0.9);
+  };
+
+  function teamAltColor(team, sport) {
+    var table = TEAM_ALT_COLORS[String(sport || 'mlb').toLowerCase()];
+    if (!table) return null;
+    return table[String(team || '').toUpperCase()] || null;
+  }
+
+  /* Can two marks be told apart where they overlap? Measured on the LIFTED
+   * shades, not the brand hexes: lifting pulls every dark club toward the same
+   * lightness, so two navies that differ on paper land on one colour here.
+   *
+   * Hue does most of the work. On a calibration sheet of overlaid webs
+   * (2026-09-15), two blues 0.145 apart in OKLab still read as one colour
+   * while blue against teal read as two at 0.136 - so distance alone let the
+   * wrong pairs through. A chromatic pair needs a real step in hue, or a gap
+   * big enough to carry it without one; a grey against a colour needs less,
+   * because the colour itself is the difference. */
+  var MARK_MIN_RATIO = 3;
+  var GREY_CHROMA = 0.05;
+  var PAIR_HUE_STEP = 35 * Math.PI / 180;
+  var PAIR_HUE_DISTANCE = 0.10;
+  var PAIR_GREY_DISTANCE = 0.12;
+  var PAIR_MIN_DISTANCE = 0.18;
+
+  function distinguishable(one, two) {
+    var a = hexToOklch(one), b = hexToOklch(two);
+    if (!a || !b) return false;
+    var da = a.c * Math.cos(a.h) - b.c * Math.cos(b.h);
+    var db = a.c * Math.sin(a.h) - b.c * Math.sin(b.h);
+    var d = Math.sqrt((a.l - b.l) * (a.l - b.l) + da * da + db * db);
+    var greyA = a.c < GREY_CHROMA, greyB = b.c < GREY_CHROMA;
+    if (greyA !== greyB) return d >= PAIR_GREY_DISTANCE;
+    if (greyA) return d >= PAIR_MIN_DISTANCE;
+    var dh = Math.abs(a.h - b.h);
+    if (dh > Math.PI) dh = 2 * Math.PI - dh;
+    return (dh >= PAIR_HUE_STEP && d >= PAIR_HUE_DISTANCE) || d >= PAIR_MIN_DISTANCE;
+  }
+
+  /**
+   * Colours for two clubs drawn over each other. Each club keeps its first
+   * colour wherever the pair can be told apart. When it cannot, the away club
+   * switches to its second colour - the road side changes, as it does on the
+   * field - then the home club, then both. Only when no combination of the
+   * clubs' own colours separates is `fellBack` set, and the chart falls back
+   * to its neutral series pair.
+   */
+  function teamPairColors(away, home, sport, opts) {
+    opts = opts || {};
+    var ground = opts.ground || BAR_GROUND;
+    var floor = opts.minRatio || MARK_MIN_RATIO;
+    function shades(team) {
+      return [teamColor(team, sport), teamAltColor(team, sport)].map(function (hex) {
+        return hex ? liftToFloor(hex, ground, floor) : null;
+      });
+    }
+    var a = shades(away), h = shades(home);
+    if (!a[0] || !h[0]) {
+      return { away: a[0] || '', home: h[0] || '', awayAlt: false, homeAlt: false, fellBack: false };
+    }
+    var order = [[0, 0], [1, 0], [0, 1], [1, 1]];
+    for (var i = 0; i < order.length; i++) {
+      var x = a[order[i][0]], y = h[order[i][1]];
+      if (x && y && distinguishable(x, y)) {
+        return { away: x, home: y, awayAlt: order[i][0] === 1, homeAlt: order[i][1] === 1, fellBack: false };
+      }
+    }
+    return { away: '', home: '', awayAlt: false, homeAlt: false, fellBack: true };
   }
 
   function teamTabHtml(team, sport, cls, fullName) {
@@ -1244,6 +1409,8 @@
     teamLogoImg: teamLogoImg,
     teamColor: teamColor,
     teamBarColor: teamBarColor,
+    teamAltColor: teamAltColor,
+    teamPairColors: teamPairColors,
     teamInk: teamInk,
     teamTabHtml: teamTabHtml,
     headshotUrl: headshotUrl,

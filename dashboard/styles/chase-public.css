@@ -34,7 +34,7 @@ body[data-ca-product="research"] {
 .ca-detail-eyebrow {
   margin: 0 0 var(--space-1);
   color: var(--text-accent);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -140,7 +140,7 @@ body[data-ca-product="research"] {
 .ca-desk-count,
 .ca-desk-window-label {
   color: var(--text-secondary);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   white-space: nowrap;
 }
 
@@ -172,7 +172,7 @@ body[data-ca-product="research"] {
 
 .ca-kickoff-window > header span {
   color: var(--text-meta);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
 }
 
 .ca-matchup-card {
@@ -237,7 +237,7 @@ body[data-ca-product="research"] {
   padding-left: var(--space-2);
   border-left: 1px solid var(--border-default);
   color: var(--text-meta);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -255,7 +255,7 @@ body[data-ca-product="research"] {
   border-radius: var(--radius-pill);
   color: var(--text-secondary);
   background: var(--surface-raised);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 700;
   white-space: nowrap;
 }
@@ -322,12 +322,12 @@ body[data-ca-product="research"] {
 .ca-matchup-card__record {
   margin-top: var(--space-1);
   color: var(--text-meta);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
 }
 
 .ca-matchup-card__versus {
   color: var(--text-muted);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   text-align: center;
   text-transform: uppercase;
@@ -362,13 +362,13 @@ body[data-ca-product="research"] {
 
 .ca-matchup-card__fact > span {
   color: var(--text-meta);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
 }
 
 .ca-matchup-card__fact > strong {
-  margin-top: 2px;
+  margin-top: 0;
   color: var(--text-secondary);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 600;
   line-height: 1.25;
   overflow-wrap: anywhere;
@@ -392,7 +392,7 @@ body[data-ca-product="research"] {
   min-height: var(--touch-min);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 700;
 }
 
@@ -454,7 +454,7 @@ body[data-ca-product="research"] {
 
 .ca-matchup-card__starter-label {
   color: var(--text-meta);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   text-transform: uppercase;
   letter-spacing: var(--tracking-caps);
 }
@@ -466,7 +466,7 @@ body[data-ca-product="research"] {
 
 .ca-matchup-card__starter strong + span {
   color: var(--text-secondary);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
 }
 
 .ca-loading-state,
@@ -514,7 +514,7 @@ body[data-ca-product="research"] {
 .ca-embedded-slate-head {
   align-items: center;
   color: var(--text-meta);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
 }
 
 /* Factual game detail */
@@ -632,7 +632,7 @@ body[data-ca-product="research"] {
 
 .ca-detail-fact span {
   color: var(--text-meta);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   text-transform: uppercase;
   letter-spacing: var(--tracking-caps);
 }
@@ -667,7 +667,7 @@ body[data-ca-product="research"] {
   padding: 0 var(--space-3);
   border-radius: var(--radius-xs);
   color: var(--text-secondary);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 700;
   white-space: nowrap;
 }
@@ -705,7 +705,7 @@ body[data-ca-product="research"] {
 .ca-detail-section__head p {
   margin: 0;
   color: var(--text-meta);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
 }
 
 .ca-detail-duo {
@@ -742,7 +742,7 @@ body[data-ca-product="research"] {
 
 .ca-detail-team-panel__head p {
   color: var(--text-meta);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
 }
 
 .ca-detail-list {
@@ -773,7 +773,8 @@ body[data-ca-product="research"] {
 
 .ca-detail-source-note {
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: var(--leading-note);
+  max-width: var(--measure-note);
 }
 
 @media (max-width: 1100px) {
@@ -842,7 +843,7 @@ body[data-ca-product="research"] {
   .ca-detail-team__logo { width: 48px; height: 48px; }
   .ca-detail-team h1 { font-size: var(--type-16); line-height: 1.15; }
   .ca-detail-center strong { font-size: var(--type-20); }
-  .ca-detail-center p { max-width: 90px; margin-inline: auto; font-size: var(--type-12); line-height: 1.2; }
+  .ca-detail-center p { max-width: 90px; margin-inline: auto; font-size: var(--type-meta); line-height: 1.2; }
   .ca-detail-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
   .ca-detail-fact { padding: var(--space-2); }
   .ca-detail-list div { grid-template-columns: 1fr; gap: var(--space-1); }
@@ -939,7 +940,7 @@ body[data-ca-product="research"] {
 .ca-desk-count,
 .ca-desk-window-label {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -1045,7 +1046,7 @@ body[data-ca-product="research"] {
 
 .ca-matchup-card__broadcast {
   font-family: var(--font-ui);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 400;
   letter-spacing: 0.02em;
   color: var(--text-muted);
@@ -1088,7 +1089,7 @@ body[data-ca-product="research"] {
 .ca-matchup-card__club-copy {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 0;
   min-width: 0;
   align-items: flex-start;
   text-align: left;
@@ -1103,18 +1104,22 @@ body[data-ca-product="research"] {
   color: var(--text-primary);
 }
 
+/* The club's name is the first thing a card is read for. It sat at 12px/500
+   in a silver gradient - the smallest, faintest line on the card. */
 .ca-matchup-card__name {
   font-family: var(--font-ui);
-  font-size: var(--type-12);
-  font-weight: 500;
-  line-height: 1.25;
-  color: var(--text-secondary);
+  font-size: var(--type-14);
+  font-weight: 600;
+  /* 1.12, not 1.2: a two-line name is the tallest thing in the club block,
+     and the collapsed card is held to 350px (public_site_runtime_diag). */
+  line-height: 1.12;
+  color: var(--text-primary);
   white-space: normal;
   overflow-wrap: anywhere;
 }
 
 .ca-matchup-card__record {
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-variant-numeric: tabular-nums;
   color: var(--text-muted);
 }
@@ -1122,7 +1127,7 @@ body[data-ca-product="research"] {
 .ca-matchup-card__versus {
   align-self: center;
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -1145,7 +1150,7 @@ body[data-ca-product="research"] {
 
 .ca-matchup-card__fact > span {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -1174,7 +1179,7 @@ body[data-ca-product="research"] {
 
 .ca-matchup-card__starter-label {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -1207,7 +1212,7 @@ body[data-ca-product="research"] {
 
 .ca-matchup-card__updated {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -1217,9 +1222,10 @@ body[data-ca-product="research"] {
 /* Status chips read as lit controls rather than grey outlines. */
 .ca-status-chip {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.02em;
+  line-height: 1;
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-pill);
   white-space: nowrap;
@@ -1792,7 +1798,7 @@ body[data-ca-product="research"] {
 
 .ca-matchup-card__arm-meta {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -1818,7 +1824,7 @@ body[data-ca-product="research"] {
    "SEASON LINE NOT PUBLISHED" once per starter, twice per card. */
 .ca-matchup-card__arm-meta.is-absent {
   font-family: var(--font-ui);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 400;
   letter-spacing: 0;
   text-transform: none;
@@ -1855,7 +1861,7 @@ body[data-ca-product="research"] {
 .ca-ctx-head {
   margin: 0 0 var(--space-2);
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -1880,7 +1886,7 @@ body[data-ca-product="research"] {
 
 .ca-ctx-label {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   /* No uppercase transform: wRC+ and wOBA are proper metric names and
@@ -1899,14 +1905,14 @@ body[data-ca-product="research"] {
 }
 
 .ca-ctx-rank {
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
 }
 
 .ca-ctx-note {
   margin: var(--space-3) 0 0;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-muted);
 }
 
@@ -1940,7 +1946,7 @@ body[data-ca-product="research"] {
 
 .ca-avail-pos {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 800;
   letter-spacing: .04em;
   color: var(--text-muted);
@@ -1955,7 +1961,7 @@ body[data-ca-product="research"] {
 }
 
 .ca-avail-detail {
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -1964,7 +1970,7 @@ body[data-ca-product="research"] {
 
 .ca-avail-status {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -1979,7 +1985,7 @@ body[data-ca-product="research"] {
 .ca-avail-empty,
 .ca-avail-more {
   margin: var(--space-2) 0 0;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-muted);
 }
 
@@ -2074,7 +2080,7 @@ body[data-ca-product="research"] {
 .ca-starter-team {
   margin: 0;
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -2103,7 +2109,7 @@ body[data-ca-product="research"] {
 .ca-lineup-context {
   margin: 0 0 var(--space-3);
   font-family: var(--font-sans);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -2122,7 +2128,7 @@ body[data-ca-product="research"] {
 
 .ca-lineup-table th {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -2163,7 +2169,7 @@ body[data-ca-product="research"] {
 
 .ca-form-label {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   color: var(--text-muted);
@@ -2179,7 +2185,7 @@ body[data-ca-product="research"] {
 }
 
 .ca-form-rank {
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
 }
@@ -2276,7 +2282,7 @@ body[data-ca-product="research"] {
 
 .ca-arsenal-meta {
   grid-area: meta;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
@@ -2307,7 +2313,7 @@ body[data-ca-product="research"] {
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-xs);
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -2361,7 +2367,7 @@ body[data-ca-product="research"] {
   font-size: var(--type-14);
 }
 
-.ca-scheme-switch__tab span { font-size: var(--type-12); }
+.ca-scheme-switch__tab span { font-size: var(--type-meta); }
 .ca-scheme-switch__tab:hover { border-color: var(--border-strong); }
 .ca-scheme-switch__tab.is-on {
   background: var(--accent-soft);
@@ -2409,12 +2415,12 @@ body[data-ca-product="research"] {
 .ca-coverage-matrix > header > div:last-child { justify-content: flex-end; text-align: right; }
 .ca-coverage-matrix > header span { display: grid; min-width: 0; }
 .ca-coverage-matrix > header b { color: var(--text-primary); font-size: var(--type-14); }
-.ca-coverage-matrix > header small { color: var(--text-muted); font-size: var(--type-12); }
+.ca-coverage-matrix > header small { color: var(--text-muted); font-size: var(--type-meta); }
 .ca-coverage-matrix > header > strong {
   text-align: center;
   color: var(--text-accent);
   font-family: var(--font-sans);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
 }
@@ -2431,10 +2437,10 @@ body[data-ca-product="research"] {
   font-size: var(--type-20);
   font-variant-numeric: tabular-nums;
 }
-.ca-coverage-result span { color: var(--text-muted); font-size: var(--type-12); }
+.ca-coverage-result span { color: var(--text-muted); font-size: var(--type-meta); }
 .ca-coverage-look { grid-template-columns: 64px minmax(52px, 1fr) auto; align-items: center; gap: var(--space-2); }
 .ca-coverage-look > span { color: var(--text-primary); font-weight: 800; }
-.ca-coverage-look > strong { color: var(--text-secondary); font-size: var(--type-12); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ca-coverage-look > strong { color: var(--text-secondary); font-size: var(--type-data); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .ca-coverage-track {
   display: grid;
   grid-template-columns: repeat(10, minmax(0, 1fr));
@@ -2456,11 +2462,11 @@ body[data-ca-product="research"] {
 .ca-player-coverage > h4,
 .ca-player-coverage__head h4 { margin: 0; color: var(--text-primary); }
 .ca-player-coverage__head { display: flex; align-items: end; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
-.ca-player-coverage__head p { margin: 2px 0 0; color: var(--text-secondary); font-size: var(--type-12); }
+.ca-player-coverage__head p { margin: 2px 0 0; color: var(--text-secondary); font-size: var(--type-meta); }
 .ca-player-coverage__head > span {
   color: var(--text-accent);
   font-family: var(--font-sans);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 800;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -2499,7 +2505,7 @@ body[data-ca-product="research"] {
 }
 .ca-player-scheme-card .ca-player-coverage-card__identity small {
   color: var(--text-muted);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
 }
 .ca-player-coverage-card__grade {
   display: grid;
@@ -2513,11 +2519,11 @@ body[data-ca-product="research"] {
   font-variant-numeric: tabular-nums;
 }
 .ca-player-coverage-card__grade span,
-.ca-player-coverage-card__grade small { font-size: var(--type-12); line-height: 1.15; }
+.ca-player-coverage-card__grade small { font-size: var(--type-meta); line-height: 1.15; }
 .ca-player-coverage-card__grade span { color: var(--text-muted); font-weight: 800; letter-spacing: var(--tracking-caps); text-transform: uppercase; }
 .ca-player-coverage-card__grade strong { color: inherit; font-family: var(--font-display); font-size: var(--type-16); }
 .ca-player-coverage-card__grade small { color: inherit; }
-.ca-player-coverage-card table { width: 100%; min-width: 390px; border-collapse: collapse; font-size: var(--type-12); font-variant-numeric: tabular-nums; }
+.ca-player-coverage-card table { width: 100%; min-width: 390px; border-collapse: collapse; font-size: var(--type-meta); font-variant-numeric: tabular-nums; }
 .ca-player-coverage-card th,
 .ca-player-coverage-card td { padding: 7px var(--space-2); border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); }
 .ca-player-coverage-card tr:last-child td { border-bottom: 0; }
@@ -2557,7 +2563,7 @@ body[data-ca-product="research"] {
 .ca-rate-block h4 {
   margin: 0 0 var(--space-2);
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -2624,7 +2630,7 @@ body[data-ca-product="research"] {
   display: flex;
   flex-wrap: wrap;
   gap: 3px var(--space-3);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
 }
@@ -2656,7 +2662,7 @@ body[data-ca-product="research"] {
   border-radius: var(--radius-xs);
   border: 1px solid var(--border-default);
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -2714,7 +2720,7 @@ body[data-ca-product="research"] {
 
 .ca-lineup-board__head p {
   margin: 2px 0 0;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-muted);
 }
 
@@ -2772,7 +2778,7 @@ body[data-ca-product="research"] {
 
 .ca-lineup-unit__meta span {
   color: var(--text-muted);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   white-space: nowrap;
 }
 
@@ -2800,7 +2806,7 @@ body[data-ca-product="research"] {
   margin: 0;
   color: var(--text-accent);
   font-family: var(--font-sans);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 800;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -2808,7 +2814,7 @@ body[data-ca-product="research"] {
 
 .ca-lineup-group > header span {
   color: var(--text-muted);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-variant-numeric: tabular-nums;
 }
 
@@ -2878,7 +2884,7 @@ body[data-ca-product="research"] {
 .ca-lineup-player__identity strong {
   color: var(--text-primary);
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   line-height: 1.05;
   text-transform: uppercase;
   overflow-wrap: anywhere;
@@ -2896,7 +2902,7 @@ body[data-ca-product="research"] {
   border-radius: 2px;
   box-shadow: inset 0 1px 0 var(--border-subtle), inset 0 -1px 0 var(--surface-board);
   font-family: var(--font-sans);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 800;
   letter-spacing: var(--tracking-caps);
 }
@@ -2916,7 +2922,7 @@ body[data-ca-product="research"] {
 .ca-lineup-player__availability small {
   max-width: 100%;
   color: var(--text-muted);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   overflow-wrap: anywhere;
   text-align: center;
 }
@@ -2964,7 +2970,7 @@ body[data-ca-product="research"] {
   border: 1px solid var(--accent-border);
   background: var(--surface-raised);
   font-family: var(--font-body);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
 }
 .ca-injury-report .ca-avail-list { margin: var(--space-2) var(--space-3) var(--space-3); }
 
@@ -3042,7 +3048,7 @@ body[data-ca-product="research"] {
 }
 
 .ca-matchup-card__venue-city {
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-muted);
   min-width: 0;
 }
@@ -3055,7 +3061,7 @@ body[data-ca-product="research"] {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-secondary);
   min-width: 0;
 }
@@ -3090,7 +3096,7 @@ body[data-ca-product="research"] {
 
 .ca-matchup-card__arm-era i {
   font-style: normal;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   color: var(--text-muted);
@@ -3108,7 +3114,9 @@ body[data-ca-product="research"] {
  * Guarded: without background-clip:text a transparent colour erases the text,
  * so the fill only applies where the browser supports it. Small uppercase
  * labels and table headers are deliberately excluded - a gradient across
- * 11px tracked caps reads as a rendering fault, not as chrome. */
+ * 11px tracked caps reads as a rendering fault, not as chrome. The club name
+ * on a card is excluded for the same reason: at card size the gradient's
+ * dark band turned the most important word on the card grey. */
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
   .ca-public-page__title,
   .ca-opening-desk__title,
@@ -3122,8 +3130,7 @@ body[data-ca-product="research"] {
   .ca-scheme-panel > h3,
   .ca-lineup-board__head h3,
   .ca-bullpen-panel > h3,
-  .ca-matchup-card__venue-name,
-  .ca-matchup-card__name {
+  .ca-matchup-card__venue-name {
     background: var(--text-display-metal);
     -webkit-background-clip: text;
     background-clip: text;
@@ -3138,7 +3145,7 @@ body[data-ca-product="research"] {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-xs);
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -3201,7 +3208,7 @@ body[data-ca-product="research"] {
 .ca-mirror__axis {
   text-align: center;
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -3217,7 +3224,7 @@ body[data-ca-product="research"] {
 .ca-mirror__label {
   text-align: center;
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -3238,7 +3245,7 @@ body[data-ca-product="research"] {
 
 .ca-mirror__value i {
   font-style: normal;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 600;
   color: var(--text-muted);
 }
@@ -3290,7 +3297,7 @@ body[data-ca-product="research"] {
      three-part line: away, metric, home - still one row per metric. */
   .ca-mirror__head { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-2); }
   .ca-mirror__axis { display: none; }
-  .ca-mirror__team { align-items: flex-start; font-size: var(--type-12); line-height: 1.15; }
+  .ca-mirror__team { align-items: flex-start; font-size: var(--type-meta); line-height: 1.15; }
   .ca-mirror__team--home { grid-column: 2; }
   .ca-mirror__crest { width: 22px; height: 22px; }
   .ca-mirror__row {
@@ -3327,7 +3334,7 @@ body[data-ca-product="research"] {
 
 .ca-stat__label {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -3591,7 +3598,7 @@ body[data-ca-product="research"] {
   cursor: pointer;
   padding: var(--space-3);
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -3622,7 +3629,7 @@ body[data-ca-product="research"] {
    thirty rows of seven metrics stay one screen wide. */
 .ca-league-table td.num i {
   font-style: normal;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 600;
   color: var(--text-muted);
   margin-left: 5px;
@@ -3671,7 +3678,7 @@ body[data-ca-product="research"] {
 .ca-arsenal-row[data-pitch]::after {
   grid-area: meta;
   justify-self: end;
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -3700,7 +3707,7 @@ body[data-ca-product="research"] {
   align-items: baseline;
   gap: 3px var(--space-2);
   padding-top: 3px;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
 }
@@ -3736,7 +3743,7 @@ body[data-ca-product="research"] {
   border-radius: var(--radius-xs);
   border: 1px solid currentColor;
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -3787,7 +3794,7 @@ body[data-ca-product="research"] {
 }
 .ca-recent__record i {
   font-style: normal;
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -3816,7 +3823,7 @@ body[data-ca-product="research"] {
   border: 0;
 }
 
-.ca-recent__game i { font-style: normal; font-size: var(--type-12); color: var(--text-muted); }
+.ca-recent__game i { font-style: normal; font-size: var(--type-meta); color: var(--text-muted); }
 
 .ca-recent__game.is-win { color: var(--metric-elite); border-color: var(--metric-elite); }
 .ca-recent__game.is-loss { color: var(--metric-poor); border-color: var(--metric-poor); }
@@ -3864,13 +3871,13 @@ body[data-ca-product="research"] {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-muted);
 }
 
 .ca-wx-arrow { flex: 0 0 auto; color: var(--text-accent); }
 
-.ca-wx-note { margin: 0; font-size: var(--type-12); color: var(--text-muted); max-width: 42ch; }
+.ca-wx-note { margin: 0; font-size: var(--type-meta); color: var(--text-muted); max-width: 42ch; }
 
 /* ===========================================================================
  * PITCH MIX AS A TABLE
@@ -3927,7 +3934,7 @@ body[data-ca-product="research"] {
   align-items: baseline;
   gap: 2px var(--space-2);
   margin: 0 0 var(--space-3);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
 }
@@ -3945,7 +3952,7 @@ body[data-ca-product="research"] {
 .ca-split-block h4 {
   margin: 0 0 var(--space-2);
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -4037,7 +4044,7 @@ body[data-ca-product="research"] {
 .ca-spark__step i {
   font-style: normal;
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   color: var(--text-muted);
@@ -4085,7 +4092,8 @@ body[data-ca-product="research"] {
  * green and the losing bar red, so the comparison is read off the bars - where
  * length already carries it - and the grade is read off the numbers. */
 .ca-mirror__row .ca-mirror__value { color: var(--grade, var(--text-primary)); }
-.ca-mirror__value i { color: inherit; opacity: 0.78; }
+/* Full strength: at 78% a red rank measured 3.5:1 on the panel. */
+.ca-mirror__value i { color: inherit; }
 
 /* ===========================================================================
  * TEAM PROFILE RADAR
@@ -4102,28 +4110,39 @@ body[data-ca-product="research"] {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: var(--space-4) var(--space-6);
-  margin-bottom: var(--space-3);
+  gap: var(--space-5) var(--space-8);
+  margin-bottom: var(--space-4);
 }
 
-.ca-radar-duo > .ca-radar { flex: 0 1 320px; max-width: 100%; }
-.ca-radar svg { width: 100%; height: auto; max-width: 320px; }
+/* Up to 520px each. At 320px the pair filled a quarter of a 1440 panel and read
+   as a thumbnail. The 400px basis keeps the pair side by side down to a
+   tablet-width panel instead of stacking at the first squeeze. The type inside
+   does not scale with the box: fitRadar() redraws at the drawn width and sets
+   --radar-k, so every size below is a screen size at any column width. */
+.ca-radar-duo > .ca-radar { flex: 1 1 400px; max-width: 520px; min-width: 0; }
+.ca-radar svg { width: 100%; height: auto; max-width: 520px; }
 
 .ca-radar { margin: 0; display: grid; justify-items: center; gap: var(--space-2); }
 
 .ca-radar figcaption {
   font-family: var(--font-display);
-  font-size: var(--type-12);
-  font-weight: 700;
+  font-size: var(--type-caps);
+  font-weight: 800;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .ca-radar svg { overflow: visible; }
 
-.ca-radar__ring { fill: none; stroke: var(--border-subtle); stroke-width: 1; }
-.ca-radar__spoke { stroke: var(--border-subtle); stroke-width: 1; }
+.ca-radar__ring,
+.ca-radar__spoke {
+  fill: none;
+  stroke: var(--border-subtle);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.ca-radar__ring.is-outer { stroke: var(--border-default); }
 
 /* Both shapes stay readable where they cross. A flat 18% fill let the larger
    club's polygon bury the smaller one, so the pair read as a single lumpy
@@ -4131,20 +4150,29 @@ body[data-ca-product="research"] {
    shape alone, which is exactly the region a reader is looking for. The stroke
    carries each club's outline at full strength either way. */
 .ca-radar__area {
-  stroke-width: 2.25;
-  fill-opacity: 0.13;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  fill-opacity: 0.2;
   mix-blend-mode: screen;
   vector-effect: non-scaling-stroke;
 }
 .ca-radar__area.is-away { stroke: var(--series-1); fill: var(--series-1); }
 .ca-radar__area.is-home { stroke: var(--series-4); fill: var(--series-4); }
 
+/* The vertex marks ring themselves in the panel colour so two clubs sitting on
+   the same point still read as two points. */
+.ca-radar__dot { stroke: var(--surface-board); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.ca-radar__dot.is-away { fill: var(--series-1); }
+.ca-radar__dot.is-home { fill: var(--series-4); }
+
+/* Mixed-case names, so no caps tracking: spacing built for capitals opens the
+   gaps inside lower-case words and makes them slower to read. */
 .ca-radar__label {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: calc(var(--type-15) * var(--radar-k, 1));
   font-weight: 700;
-  letter-spacing: var(--tracking-caps);
-  fill: var(--text-secondary);
+  letter-spacing: 0.01em;
+  fill: var(--text-primary);
 }
 
 .ca-radar-key {
@@ -4152,18 +4180,21 @@ body[data-ca-product="research"] {
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 4px var(--space-3);
+  gap: var(--space-2) var(--space-6);
   margin: 0 0 var(--space-3);
-  font-size: var(--type-12);
-  color: var(--text-secondary);
+  font-size: var(--type-14);
+  font-weight: 600;
+  color: var(--text-primary);
 }
+
+.ca-radar-key__item { display: inline-flex; align-items: center; gap: var(--space-2); }
 
 .ca-radar-key__swatch {
   display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  margin-right: 5px;
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
 }
 .ca-radar-key__swatch.is-away { background: var(--series-1); }
 .ca-radar-key__swatch.is-home { background: var(--series-4); }
@@ -4181,7 +4212,9 @@ body[data-ca-product="research"] {
  * pitch" rather than "is he good". The count is printed in every cell, so the
  * shade is always a second reading of a number that is already there. */
 .ca-pc, .ca-pc-total { transition: none; }
-.ca-pc.p-zero  { color: var(--text-disabled); font-weight: 600; }
+/* A zero is a count, not a disabled control: it recedes by weight, and stays
+   readable - the disabled grey measured 2.3:1. */
+.ca-pc.p-zero  { color: var(--text-meta); font-weight: 500; }
 .ca-pc.p-touch { background: var(--tint-positive); color: var(--metric-elite); }
 .ca-pc.p-light { background: var(--tint-positive); color: var(--metric-good); }
 .ca-pc.p-full  { background: var(--tint-caution); color: var(--metric-watch); }
@@ -4190,7 +4223,7 @@ body[data-ca-product="research"] {
 /* The two summary columns take the same ramp on thresholds scaled to the days
    they cover, and keep their heavier frame so the eye still reads them as
    totals rather than as two more days. */
-.ca-pc-total.p-zero  { color: var(--text-disabled); }
+.ca-pc-total.p-zero  { color: var(--text-meta); font-weight: 500; }
 .ca-pc-total.p-full  { color: var(--metric-watch); }
 .ca-pc-total.p-heavy { color: var(--metric-poor); }
 .ca-pc-total { font-family: var(--font-display); font-weight: 800;
@@ -4352,7 +4385,7 @@ body[data-ca-product="research"] {
   padding: 1px 6px;
   border-radius: var(--radius-pill);
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -4374,9 +4407,6 @@ body[data-ca-product="research"] {
 .ca-radar__axis { cursor: help; }
 .ca-radar__hit { fill: transparent; }
 
-.ca-radar__axis:hover .ca-radar__label,
-.ca-radar__axis:focus-visible .ca-radar__label { fill: var(--text-primary); }
-
 .ca-radar__axis:focus { outline: none; }
 .ca-radar__axis:focus-visible .ca-radar__hit {
   stroke: var(--accent);
@@ -4384,43 +4414,94 @@ body[data-ca-product="research"] {
   fill: var(--accent-soft);
 }
 
-/* The card is inert until asked for, and paints above everything when it is. */
-.ca-radar__tip { opacity: 0; pointer-events: none; transition: opacity 90ms ease-out; }
-.ca-radar__axis:hover .ca-radar__tip,
-.ca-radar__axis:focus-visible .ca-radar__tip { opacity: 1; }
+/* The axis being read lights up across the whole web - its name, its spoke and
+   both clubs' points on it - so the card's numbers can be found on the shape. */
+.ca-radar__axis.is-active .ca-radar__label { fill: var(--text-accent); }
+.ca-radar__spoke.is-active { stroke: var(--text-muted); stroke-width: 1.5; }
+.ca-radar__dot.is-active { stroke: var(--text-primary); stroke-width: 2; }
 
-/* Raising the hovered axis above its siblings is what keeps the card on top of
-   the next axis along; SVG has no z-index, so paint order is the only lever
-   and `isolation` gives the group its own stacking context. */
-.ca-radar svg { isolation: isolate; }
-.ca-radar__axis:hover, .ca-radar__axis:focus-visible { isolation: isolate; }
+/* --- The axis readout ----------------------------------------------------
+ * HTML at reading size on an opaque card. The first readout was SVG inside the
+ * web: it scaled with the box to about 10px, sat on a 60% black the spokes
+ * showed through, and covered the axis names beside it. wireRadarReadout()
+ * places it outside the name it belongs to. */
+.ca-radar { position: relative; }
 
-.ca-radar__tip rect {
-  fill: var(--surface-overlay);
-  stroke: var(--border-strong);
-  stroke-width: 1;
+.ca-radar__card {
+  position: absolute;
+  z-index: 5;
+  width: min(340px, calc(100vw - 48px));
+  padding: var(--space-3) var(--space-4) var(--space-2);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--elevation-3);
+  color: var(--text-secondary);
+  text-align: left;
+  pointer-events: none;
 }
+.ca-radar__card[hidden] { display: none; }
 
-.ca-radar__tip-line {
-  font-size: var(--type-12);
-  fill: var(--text-secondary);
-  font-family: var(--font-ui);
-}
-
-.ca-radar__tip-line.is-head {
+.ca-radar__card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: 0;
   font-family: var(--font-display);
+  font-size: var(--type-16);
   font-weight: 800;
-  fill: var(--text-primary);
+  line-height: var(--leading-tight);
+  color: var(--text-primary);
+}
+
+.ca-radar__card-head span {
+  font-size: var(--type-caps);
+  font-weight: 700;
   letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
-.ca-radar__tip-line.is-value {
-  fill: var(--text-primary);
+.ca-radar__card-means {
+  margin: var(--space-1) 0 var(--space-2);
+  font-size: var(--type-meta);
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.ca-radar__card-row {
+  display: grid;
+  grid-template-columns: 3.6em auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--border-subtle);
+  font-size: var(--type-14);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .ca-radar__tip { transition: none; }
+.ca-radar__card-club {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ca-radar__card .ca-radar-key__swatch { width: 10px; height: 10px; border-radius: 2px; }
+
+.ca-radar__card-row b {
+  font-size: var(--type-16);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ca-radar__card-row b.is-absent {
+  font-size: var(--type-14);
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 /* --- Symbols on the section stack ---------------------------------------- */
@@ -4464,7 +4545,7 @@ body[data-ca-product="research"] {
 .ca-analysis-scope__eyebrow {
   color: var(--text-accent);
   font-family: var(--font-sans);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 800;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -4473,7 +4554,7 @@ body[data-ca-product="research"] {
 .ca-analysis-scope__copy {
   margin: 0;
   color: var(--text-muted);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   line-height: 1.4;
 }
 
@@ -4497,7 +4578,7 @@ body[data-ca-product="research"] {
   background: transparent;
   color: var(--text-secondary);
   font-family: var(--font-sans);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -4513,7 +4594,7 @@ body[data-ca-product="research"] {
 .ca-season-toggle__note {
   grid-column: 1 / -1;
   margin: 0;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--metric-watch);
 }
 
@@ -4530,13 +4611,13 @@ body[data-ca-product="research"] {
   .ca-analysis-scope__copy { grid-column: auto; }
   .ca-coverage-matrix > header { grid-template-columns: 1fr 1fr; }
   .ca-coverage-matrix > header > strong { display: none; }
-  .ca-coverage-matrix > header b { font-size: var(--type-12); }
+  .ca-coverage-matrix > header b { font-size: var(--type-meta); }
   .ca-coverage-matrix > header small { display: none; }
   .ca-coverage-row { grid-template-columns: minmax(72px, .65fr) minmax(132px, 1.3fr) minmax(72px, .65fr); }
   .ca-coverage-result,
   .ca-coverage-look { min-height: 62px; padding: 6px var(--space-2); }
   .ca-coverage-result strong { font-size: var(--type-16); }
-  .ca-coverage-result span { font-size: var(--type-12); line-height: 1.15; }
+  .ca-coverage-result span { font-size: var(--type-meta); line-height: 1.3; }
   .ca-coverage-look { grid-template-columns: 1fr auto; gap: 2px 6px; }
   .ca-coverage-track { grid-column: 1 / -1; grid-row: 2; gap: 2px; }
   .ca-player-coverage__head { align-items: start; flex-direction: column; }
@@ -4566,9 +4647,8 @@ body[data-ca-product="research"] {
   .ca-player-coverage-card th:first-child,
   .ca-player-coverage-card td:first-child { width: 27%; }
   .ca-scheme-grid { grid-template-columns: 1fr; }
-  .ca-radar-duo { gap: var(--space-3); margin-bottom: var(--space-2); }
-  .ca-radar-duo > .ca-radar { flex-basis: 260px; }
-  .ca-radar svg { max-width: 260px; }
+  .ca-radar-duo { gap: var(--space-5); margin-bottom: var(--space-3); }
+  .ca-radar-duo > .ca-radar { flex-basis: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4594,7 +4674,7 @@ body[data-ca-product="research"] {
    Pressure" is a phrase, not a definition, and the definition costs one line. */
 .ca-sit__means {
   display: block;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-muted);
   line-height: 1.35;
 }
@@ -4649,8 +4729,7 @@ body[data-ca-product="research"] {
 .ca-player-coverage-card td.num small {
   display: block;
   color: inherit;
-  font-size: var(--type-12);
-  opacity: 0.78;
+  font-size: var(--type-meta);
 }
 
 .ca-pressure-matchup { overflow: hidden; }
@@ -4670,6 +4749,8 @@ body[data-ca-product="research"] {
 .ca-pressure-row > div:last-child { display: grid; justify-items: end; color: var(--grade); text-align: right; }
 .ca-pressure-row > div:last-child span,
 .ca-pressure-row > div:last-child small { color: var(--text-muted); }
+/* A bare <small> takes the browser's "smaller" - 11.7px here, under the floor. */
+.ca-pressure-row > div:last-child small { font-size: var(--type-meta); }
 .ca-pressure-row > div:last-child strong { color: inherit; font-family: var(--font-display); font-size: var(--type-18); }
 
 .ca-player-coverage-groups { display: grid; gap: var(--space-4); min-width: 0; }

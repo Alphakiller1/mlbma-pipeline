@@ -159,7 +159,9 @@
 
   /* —— Type scale (px; floor is 12 — no user-facing text below) —— */
   --type-12: 12px;
+  --type-13: 13px;
   --type-14: 14px;
+  --type-15: 15px;
   --type-16: 16px;
   --type-18: 18px;
   --type-20: 20px;
@@ -169,7 +171,17 @@
   --type-40: 40px;
   --type-48: 48px;
   --type-64: 64px;
-  --type-meta: var(--type-12);
+  /* —— Reading roles ——
+     Measured 2026-09-15 across the public pages: 4,458 of 6,466 rendered text
+     nodes (69%) sat at exactly 12px, because every secondary line reached for
+     --type-12 by name. The scale above says which sizes exist; a role says
+     what a piece of text is for, and carries the size that job needs to be
+     read on a dark desk. Rules consume a role, never a bare scale step. */
+  --type-floor: var(--type-12);  /* the absolute minimum; badges and counters only */
+  --type-meta: var(--type-13);   /* the line under a primary one: records, cities, dates */
+  --type-caps: var(--type-13);   /* uppercase labels, eyebrows, column heads */
+  --type-data: var(--type-14);   /* numbers in tables, ranks, graded values */
+  --type-note: var(--type-15);   /* explanatory paragraphs */
   --type-ui: var(--type-14);
   --type-body: var(--type-14);
   --type-h3: var(--type-18);
@@ -182,7 +194,13 @@
   --type-section: clamp(20px, 1rem + 0.7vw, 26px);
   --leading-tight: 1.15;
   --leading-body: 1.45;
-  --tracking-caps: 0.08em;
+  --leading-note: 1.6;
+  /* A paragraph on this desk ran the full panel width - about 200 characters a
+     line at 1440 - so the eye lost its place on every return sweep. */
+  --measure-note: 72ch;
+  /* 0.08em was drawn for 11px capitals. At 13px it spreads a label wider than
+     the column it heads; 0.06em keeps the letters apart without that. */
+  --tracking-caps: 0.06em;
 
   /* —— Spacing: 4px scale only —— */
   --space-1: 4px;

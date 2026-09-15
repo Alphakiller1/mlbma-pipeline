@@ -161,7 +161,7 @@
   pointer-events: none;
 }
 .chase-dropdown-badge {
-  font-size: var(--type-12);
+  font-size: var(--type-floor);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -197,7 +197,7 @@
   background: var(--surface-inset);
   border: 1px solid var(--border-subtle);
   font-family: var(--font-ui);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   font-weight: 500;
   color: var(--text-meta);
   overflow: hidden;
@@ -312,7 +312,7 @@
 }
 .chase-mobile-section {
   padding: var(--space-3) var(--space-3) var(--space-1);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--tracking-caps);
@@ -363,7 +363,7 @@
   margin: 0 auto;
   max-width: var(--shell-max);
   padding: var(--space-2) var(--shell-gutter-sm);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-meta);
   border-bottom: 1px solid var(--border-subtle);
   position: sticky;
@@ -414,7 +414,7 @@
 
 .ca-entity-search-host label {
   display: block;
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-meta);
   margin-bottom: var(--space-1);
 }
@@ -429,7 +429,7 @@
   max-width: var(--shell-max);
   margin: 0 auto;
   padding: var(--space-6) var(--shell-gutter-sm) var(--space-9);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-meta);
   border-top: 1px solid var(--border-subtle);
 }
@@ -578,7 +578,7 @@
 
 .chase-nav-product {
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-caps);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -683,7 +683,7 @@
   border: 1px solid var(--border-default);
   color: var(--text-primary);
   font-family: var(--font-display);
-  font-size: var(--type-12);
+  font-size: var(--type-floor);
   font-weight: 800;
   letter-spacing: 0.04em;
 }
@@ -706,7 +706,7 @@
   padding: 0 var(--shell-gutter);
   min-height: var(--shell-context-h);
   font-family: var(--font-ui);
-  font-size: var(--type-12);
+  font-size: var(--type-meta);
   color: var(--text-muted);
 }
 
