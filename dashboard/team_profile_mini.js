@@ -24,10 +24,8 @@
 
   function wrcTierLabel(wrc) {
     if (wrc == null || isNaN(wrc)) return '—';
-    if (wrc >= 115) return 'Elite';
-    if (wrc >= 105) return 'Plus';
-    if (wrc >= 95) return 'Average';
-    return 'Below';
+    return (A && A.tierLabel
+      && A.tierLabel(wrc, 'wrc', ['Elite', 'Plus', 'Average', 'Below'])) || 'Average';
   }
 
   function esc(s) {
@@ -67,8 +65,11 @@
 
   function tierLabel(val) {
     if (val == null || isNaN(val)) return { label: '—', cls: 'tier-muted' };
+    // League tiers decide which label applies; the table is the vocabulary.
+    var tierName = A && A.tierLabel
+      ? A.tierLabel(val, 'osi', OSI_TIERS.map(function(t) { return t[1]; })) : null;
     for (var i = 0; i < OSI_TIERS.length; i++) {
-      if (val >= OSI_TIERS[i][0]) {
+      if (tierName ? OSI_TIERS[i][1] === tierName : val >= OSI_TIERS[i][0]) {
         return { label: OSI_TIERS[i][1], cls: 'tier-' + OSI_TIERS[i][1].toLowerCase().replace(/\s/g, '-') };
       }
     }
@@ -903,27 +904,9 @@
     return 'neutral';
   }
 
-  function heroRankTone(rank) {
-    if (rank == null || isNaN(rank)) return 'neutral';
-    if (rank <= 5) return 'elite';
-    if (rank <= 12) return 'strong';
-    if (rank <= 20) return 'mid';
-    return 'weak';
-  }
-
-  function heroPitchTone(ps) {
-    if (ps == null || isNaN(ps)) return 'neutral';
-    if (ps >= 70) return 'elite';
-    if (ps >= 55) return 'solid';
-    return 'weak';
-  }
-
-  function heroOsiTone(osi) {
-    if (osi == null || isNaN(osi)) return 'neutral';
-    if (osi >= 75) return 'elite';
-    if (osi >= 65) return 'strong';
-    if (osi >= 55) return 'mid';
-    return 'weak';
+  // The rank's place in its own denominator, on the site-wide five-tier scale.
+  function heroRankTone(rank, total) {
+    return (A && A.rankTier && A.rankTier(rank, total)) || 'neutral';
   }
 
   function heroStatChip(label, value, tone, chipOpts) {
@@ -942,8 +925,9 @@
       return '';
     }
     var rank = chipOpts.rank;
+    var rankOf = chipOpts.rankTotal;
     var rankHtml = rank != null
-      ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + esc(heroRankTone(rank)) + '" title="League rank #' + esc(String(rank)) + '">'
+      ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + esc(heroRankTone(rank, rankOf)) + '" title="League rank #' + esc(String(rank)) + (rankOf ? ' of ' + esc(String(rankOf)) : '') + '">'
         + '<span class="tp-offense-stat__rank-num">#' + esc(String(rank)) + '</span></span>'
       : '';
     return '<div class="tp-hero-stat tp-hero-stat--' + esc(tone || 'neutral') + '">'
@@ -952,23 +936,17 @@
       + '</div>';
   }
 
-  function heroRpgTone(rpg) {
-    if (rpg == null || isNaN(rpg)) return 'neutral';
-    if (rpg >= 5.2) return 'elite';
-    if (rpg >= 4.8) return 'strong';
-    if (rpg >= 4.3) return 'mid';
-    return 'weak';
-  }
-
   function renderInfographicHero(prof, team, m, ctx) {
     ctx = ctx || {};
     m = m || {};
     var accent = teamAccent(team);
     var logo = A ? A.teamLogoImg(team, 88, 'tp-team-banner__logo-img snapshot-logo') : '';
     var watermark = A ? A.teamLogoImg(team, 220, 'tp-team-banner__watermark-img') : '';
-    var rank = ctx.osiRank;
-    var rpgRankMeta = ctx.rpgRank || null;
-    var rpgRank = rpgRankMeta && rpgRankMeta.rank != null ? rpgRankMeta.rank : null;
+    // Both ranks arrive as { rank, total } so the colour reads the denominator.
+    var osiRankMeta = ctx.osiRank || {};
+    var rank = osiRankMeta.rank != null ? osiRankMeta.rank : null;
+    var rpgRankMeta = ctx.rpgRank || {};
+    var rpgRank = rpgRankMeta.rank != null ? rpgRankMeta.rank : null;
     var osi = num(m.osi);
     var rates = resolveOffenseRates(prof, ctx);
     var status = global.TeamProfileIntel && TeamProfileIntel.offenseStatusLabel
@@ -987,10 +965,10 @@
     var statRow = ''
       + heroStatChip('Record', ctx.recordWl ? esc(ctx.recordWl) : null, heroRecordTone(ctx.recordWl))
       + (osi != null && !isNaN(osi)
-        ? heroStatChip('OSI', null, 'neutral', { rank: rank, numeric: osi, context: 'osi', decimals: 1 })
+        ? heroStatChip('OSI', null, 'neutral', { rank: rank, rankTotal: osiRankMeta.total, numeric: osi, context: 'osi', decimals: 1 })
         : '')
       + (rpg != null && !isNaN(rpg)
-        ? heroStatChip('Runs Per Game', null, 'neutral', { rank: rpgRank, numeric: rpg, context: 'rpg', decimals: 2 })
+        ? heroStatChip('Runs Per Game', null, 'neutral', { rank: rpgRank, rankTotal: rpgRankMeta.total, numeric: rpg, context: 'rpg', decimals: 2 })
         : '');
 
     return '<section class="tp-team-banner tp-team-banner--hero" style="--tp-accent:' + esc(accent) + '">'

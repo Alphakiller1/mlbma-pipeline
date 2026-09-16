@@ -258,10 +258,10 @@
       }
       return '<div class="mc-lvp-metric-row">'
         + '<span class="mc-lvp-metric-val mc-lvp-metric-val--a' + (winner === 'a' ? ' mc-lvp-metric-val--win' : '') + '">'
-        + metricChip(va, row.ctx || 'osi', row.invertA, d) + '</span>'
+        + metricChip(va, row.ctxA || row.ctx || 'osi', row.invertA, d) + '</span>'
         + '<span class="mc-lvp-metric-label">' + esc(row.label) + '</span>'
         + '<span class="mc-lvp-metric-val mc-lvp-metric-val--b' + (winner === 'b' ? ' mc-lvp-metric-val--win' : '') + '">'
-        + metricChip(vb, row.ctx || 'osi', row.invertB, d) + '</span>'
+        + metricChip(vb, row.ctxB || row.ctx || 'osi', row.invertB, d) + '</span>'
         + '</div>';
     }).join('');
   }

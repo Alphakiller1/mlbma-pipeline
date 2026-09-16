@@ -50,16 +50,18 @@
       + '<p class="profile-analyst-take__text">' + esc(cleanGlyphs(text)) + '</p></div>';
   }
 
-  function toneFromScore(v, invert) {
+  function toneFromScore(v, invert, context) {
     if (v == null || isNaN(v)) return '';
-    if (invert) {
-      if (v <= 45) return 'elite';
-      if (v <= 55) return 'watch';
-      return 'risk';
-    }
-    if (v >= 65) return 'elite';
-    if (v >= 50) return 'watch';
-    return 'risk';
+    // The top two league tiers read elite, the middle watch, the bottom risk -
+    // so this agrees with the colour of the chip it sits beside instead of
+    // calling a league-average offence a risk.
+    var A = global.MLBMAAssets;
+    var tier = A && A.valueTier ? A.valueTier(v, context || 'osi', invert) : null;
+    if (tier === 'elite' || tier === 'strong') return 'elite';
+    if (tier === 'mid') return 'watch';
+    if (tier) return 'risk';
+    if (invert) return v <= 45 ? 'elite' : (v <= 55 ? 'watch' : 'risk');
+    return v >= 65 ? 'elite' : (v >= 50 ? 'watch' : 'risk');
   }
 
   global.ProfileShell = {

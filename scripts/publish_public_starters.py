@@ -77,6 +77,10 @@ RATES = {
 # here rather than in every consumer.
 PERCENTS = {"K%": ("k_pct", 1), "BB%": ("bb_pct", 1)}
 
+# An arm starts if its average outing is a start-shaped one. Used for the OPS+
+# denominator; core.compute_baselines applies the same rule to its pools.
+MIN_IP_PER_OUTING = 4.0
+
 
 def num(value):
     try:
@@ -131,11 +135,22 @@ def main(argv: list[str]) -> int:
     # the home and road lines because those two partition a pitcher's season
     # exactly once. The handedness pair covers it too, but weighting by which
     # hand he happened to face more would tilt the mean.
-    pool = [num(row.get("OPS"))
+    #
+    # Weighted by innings, so it is the league's OPS allowed and 100 really is
+    # league average. The plain mean of lines let a two-inning cameo count as
+    # much as a full season, and short lines run hot, so it sat above the league
+    # and pushed every average arm's OPS+ over 100.
+    # Starters only: these files carry every arm that has taken a start, and a
+    # reliever's inning is not part of the OPS a starting pitcher is measured
+    # against. The split endpoint leaves GS empty on these two cuts, so the test
+    # is the length of the average outing.
+    pool = [(num(row.get("OPS")), parse_ip(row.get("IP")), num(row.get("G")))
             for key in ("home", "away")
             for row in sources.get(key, {}).values()]
-    values = [v for v in pool if v]
-    league_ops = statistics.mean(values) if values else None
+    pool = [(ops, ip) for ops, ip, games in pool
+            if ops and ip and games and ip / games >= MIN_IP_PER_OUTING]
+    innings = sum(ip for _, ip in pool)
+    league_ops = sum(ops * ip for ops, ip in pool) / innings if innings else None
 
     starters: dict[str, dict] = {}
     for key, rows in sources.items():

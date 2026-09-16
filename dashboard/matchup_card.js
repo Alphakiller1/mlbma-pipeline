@@ -203,22 +203,19 @@
      so the colour is a statement about this season's distribution and not a
      threshold someone once typed in. */
   function gradeClass(value, context) {
+    var A = global.MLBMAAssets;
     var n = Number(value);
-    if (!isFinite(n)) return '';
-    if (global.MLBMAAssets && MLBMAAssets.solidChipClass) {
-      return MLBMAAssets.solidChipClass(n, context) || '';
-    }
-    return '';
+    if (value == null || value === '' || !isFinite(n) || !A || !A.valueTier) return '';
+    var tier = A.valueTier(n, context);
+    return tier ? A.TIER_CHIP[tier] : '';
   }
 
+  /* The same rank scale as the game page - the rank's place in its own
+     denominator. This copy used to cut at 0.88/0.65/0.35/0.15, so 26th of 30
+     read poor here and weak one click away. */
   function rankClass(rank, of) {
-    if (!(of > 1) || !(rank >= 1)) return '';
-    var pct = (of - rank) / (of - 1);
-    if (pct >= 0.88) return 'c-elite';
-    if (pct >= 0.65) return 'c-good';
-    if (pct >= 0.35) return 'c-mid';
-    if (pct >= 0.15) return 'c-weak';
-    return 'c-poor';
+    var A = global.MLBMAAssets;
+    return A && A.rankChipClass ? A.rankChipClass(rank, of) : '';
   }
 
   function kickoff(game) {
@@ -621,12 +618,17 @@
 
   function loadGames(sport, adapter, dateIso) {
     if (!adapter || !adapter.SLATE_URL) return Promise.reject(new Error('Public slate URL missing.'));
+    // Chips are graded as cards and game pages paint, so this season's league
+    // baselines must be in the registry first. It never rejects: a failed fetch
+    // leaves cells ungraded rather than holding the slate back.
+    var baselines = (global.MLBMAAssets && global.MLBMAAssets.baselinesReady) || Promise.resolve(null);
     var publicRequest = loadJson(adapter.SLATE_URL).then(function (slate) {
       var normalized = global.ChasePublicSlate.normalize(sport, slate);
       return { normalized: normalized, error: null };
     }).catch(function (error) { return { normalized: { games: [] }, error: error }; });
     if (sport !== 'mlb') {
-      return publicRequest.then(function (result) {
+      return Promise.all([publicRequest, baselines]).then(function (parts) {
+        var result = parts[0];
         if (result.error && !result.normalized.games.length) throw result.error;
         return {
           games: result.normalized.games, generatedAt: result.normalized.generated_at,
@@ -654,7 +656,7 @@
       });
       return games;
     }).catch(function () { return []; });
-    return Promise.all([publicRequest, officialRequest]).then(function (parts) {
+    return Promise.all([publicRequest, officialRequest, baselines]).then(function (parts) {
       var published = parts[0].normalized;
       var official = parts[1];
       var games = mergeGames(official, published.games || []);

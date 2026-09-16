@@ -8,19 +8,19 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chase Analytics — Team Profile</title>
-  <link rel="stylesheet" href="/dashboard/assets/fonts/chase-fonts.css?v=20260915bp">
-<link rel="stylesheet" href="mlbma_ui.css?v=20260915bp">
-<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260915bp">
-<link rel="stylesheet" href="mlbma_design_system.css?v=20260915bp">
-<link rel="stylesheet" href="theme.css?v=20260915bp">
-<link rel="stylesheet" href="styles/chase-semantic.css?v=20260915bp">
-<link rel="stylesheet" href="styles/chase-shell.css?v=20260915bp">
-<link rel="stylesheet" href="chase_nav.css?v=20260915bp">
-<link rel="stylesheet" href="landing_dashboard.css?v=20260915bp">
-<link rel="stylesheet" href="team_profile.css?v=20260915bp">
-<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260915bp">
-<link rel="stylesheet" href="profile_shell.css?v=20260915bp">
-<link rel="stylesheet" href="bullpen_usage.css?v=20260915bp">
+  <link rel="stylesheet" href="/dashboard/assets/fonts/chase-fonts.css?v=20260915c">
+<link rel="stylesheet" href="mlbma_ui.css?v=20260915c">
+<link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260915c">
+<link rel="stylesheet" href="mlbma_design_system.css?v=20260915c">
+<link rel="stylesheet" href="theme.css?v=20260915c">
+<link rel="stylesheet" href="styles/chase-semantic.css?v=20260915c">
+<link rel="stylesheet" href="styles/chase-shell.css?v=20260915c">
+<link rel="stylesheet" href="chase_nav.css?v=20260915c">
+<link rel="stylesheet" href="landing_dashboard.css?v=20260915c">
+<link rel="stylesheet" href="team_profile.css?v=20260915c">
+<link rel="stylesheet" href="team_profile_lineup_ui.css?v=20260915c">
+<link rel="stylesheet" href="profile_shell.css?v=20260915c">
+<link rel="stylesheet" href="bullpen_usage.css?v=20260915c">
   <link rel="icon" type="image/png" href="assets/chase-icon-filled.png">
 <script>
 (function() {
@@ -31,26 +31,26 @@
   if (window.MLBMA_PAGE_LOAD_BUST == null) window.MLBMA_PAGE_LOAD_BUST = Date.now();
 })();
 </script>
-<script src="mlbma_config.js?v=20260915bp"></script>
-<script src="chase_datastatus.js?v=20260915bp"></script>
-<script src="mlbma_assets.js?v=20260915bp"></script>
-<script src="mlbma_icons.js?v=20260915bp"></script>
-<script src="matchup_shared.js?v=20260915bp"></script>
-<script src="mlbma_standings.js?v=20260915bp"></script>
-<script src="team_profile_picker.js?v=20260915bp"></script>
-<script src="profile_shell.js?v=20260915bp"></script>
-<script src="team_profile_mini.js?v=20260915bp"></script>
-<script src="team_profile_sections.js?v=20260915bp"></script>
-<script src="team_profile_staff.js?v=20260915bp"></script>
-<script src="team_profile_intel.js?v=20260915bp"></script>
-<script src="mlbma_charts.js?v=20260915bp"></script>
-<script src="platform_dashboard.js?v=20260915bp"></script>
-<script src="profile_controls.js?v=20260915bp"></script>
-<script src="bullpen_usage.js?v=20260915bp"></script>
-<script src="mlbma_ui.js?v=20260915bp" data-page="team_profile.html"></script>
-<script src="mobile_cardify.js?v=20260915bp"></script>
-  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260915bp">
-  <link rel="stylesheet" href="responsive.css?v=20260915bp">
+<script src="mlbma_config.js?v=20260915c"></script>
+<script src="chase_datastatus.js?v=20260915c"></script>
+<script src="mlbma_assets.js?v=20260915c"></script>
+<script src="mlbma_icons.js?v=20260915c"></script>
+<script src="matchup_shared.js?v=20260915c"></script>
+<script src="mlbma_standings.js?v=20260915c"></script>
+<script src="team_profile_picker.js?v=20260915c"></script>
+<script src="profile_shell.js?v=20260915c"></script>
+<script src="team_profile_mini.js?v=20260915c"></script>
+<script src="team_profile_sections.js?v=20260915c"></script>
+<script src="team_profile_staff.js?v=20260915c"></script>
+<script src="team_profile_intel.js?v=20260915c"></script>
+<script src="mlbma_charts.js?v=20260915c"></script>
+<script src="platform_dashboard.js?v=20260915c"></script>
+<script src="profile_controls.js?v=20260915c"></script>
+<script src="bullpen_usage.js?v=20260915c"></script>
+<script src="mlbma_ui.js?v=20260915c" data-page="team_profile.html"></script>
+<script src="mobile_cardify.js?v=20260915c"></script>
+  <link rel="stylesheet" href="mlbma_backgrounds.css?v=20260915c">
+  <link rel="stylesheet" href="responsive.css?v=20260915c">
 </head>
 <body class="team-profile-page">
 <!-- Loading overlay injected by mlbma_ui.js -->
@@ -503,10 +503,15 @@ function teamKey(t) {
   return k;
 }
 
-function tierLabel(val, tiers) {
+function tierLabel(val, tiers, context) {
   if (val === null) return { label: EM_DASH, cls: '' };
+  // The league tier picks the label; the table stays as the vocabulary and as
+  // the fallback for the moment before the baselines land.
+  var A = window.MLBMAAssets;
+  var tierName = A && A.tierLabel
+    ? A.tierLabel(val, context || 'pitching', tiers.map(function(t) { return t[1]; })) : null;
   for (var i = 0; i < tiers.length; i++) {
-    if (val >= tiers[i][0]) return { label: tiers[i][1], cls: 'tier-' + tiers[i][1].toLowerCase().replace(/\s/g,'') };
+    if (tierName ? tiers[i][1] === tierName : val >= tiers[i][0]) return { label: tiers[i][1], cls: 'tier-' + tiers[i][1].toLowerCase().replace(/\s/g,'') };
   }
   return { label: EM_DASH, cls: '' };
 }
@@ -1491,30 +1496,18 @@ function bindUnitNavStrip() {
   });
 }
 
-function unitChipToneClass(val, ctx, invert, dec, rank) {
-  var A = window.MLBMAAssets;
-  var chipCls = 'c-na';
-  if (A && A.solidChipClass) {
-    chipCls = (rank != null && chipClassFromRank(rank))
-      ? chipClassFromRank(rank)
-      : A.solidChipClass(val, ctx, invert, {});
-  }
-  var toneMap = { 'c-elite': 'elite', 'c-good': 'strong', 'c-mid': 'mid', 'c-weak': 'weak', 'c-poor': 'poor' };
-  return toneMap[chipCls] || 'neutral';
-}
-
 function unitSnapshotChipRanked(label, val, rankMeta, ctx, invert, dec) {
   rankMeta = rankMeta || {};
   var rank = rankMeta.rank;
   var total = rankMeta.total;
   var rankHtml = rank != null
-    ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + snapshotRankTone(rank) + '" title="' + escHtml(total ? ('League rank #' + rank + ' of ' + total) : ('League rank #' + rank)) + '">'
+    ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + snapshotRankTone(rank, total) + '" title="' + escHtml(total ? ('League rank #' + rank + ' of ' + total) : ('League rank #' + rank)) + '">'
       + '<span class="tp-offense-stat__rank-num">#' + escHtml(String(rank)) + '</span>'
       + '</span>'
     : '';
   return '<div class="tp-offense-stat tp-offense-stat--inline" aria-label="' + escHtml(label) + '">'
     + '<span class="tp-offense-stat__label">' + escHtml(label) + '</span>'
-    + '<span class="tp-offense-stat__body">' + rankedValChip(val, rank, ctx, invert, dec) + rankHtml + '</span>'
+    + '<span class="tp-offense-stat__body">' + rankedValChip(val, rank, total, ctx, invert, dec) + rankHtml + '</span>'
     + '</div>';
 }
 
@@ -1522,26 +1515,24 @@ function unitSnapshotChip(label, val, ctx, invert, dec) {
   return unitSnapshotChipRanked(label, val, null, ctx, invert, dec);
 }
 
-function snapshotRankTone(rank) {
-  if (rank == null || isNaN(rank)) return 'neutral';
-  if (rank <= 5) return 'elite';
-  if (rank <= 12) return 'strong';
-  if (rank <= 20) return 'mid';
-  return 'weak';
+// Rank colour from the rank's place in its own denominator, on the site-wide
+// five-tier scale. Both of these used to hard-code a thirty-club ladder (top 5 /
+// 12 / 20 / the rest), which mis-stated every pool that is not thirty long and
+// left 21st and 30th sharing one colour.
+function snapshotRankTone(rank, total) {
+  var A = window.MLBMAAssets;
+  return (A && A.rankTier && A.rankTier(rank, total)) || 'neutral';
 }
 
-function chipClassFromRank(rank) {
-  if (rank == null || isNaN(rank)) return null;
-  if (rank <= 5) return 'c-elite';
-  if (rank <= 12) return 'c-good';
-  if (rank <= 20) return 'c-mid';
-  return 'c-weak';
+function chipClassFromRank(rank, total) {
+  var A = window.MLBMAAssets;
+  return (A && A.rankChipClass && A.rankChipClass(rank, total)) || null;
 }
 
-function rankedValChip(val, rank, ctx, invert, dec) {
+function rankedValChip(val, rank, total, ctx, invert, dec) {
   var d = dec == null ? 1 : dec;
   if (val == null || isNaN(val)) return valChip(val, ctx, invert, d);
-  var chipClass = chipClassFromRank(rank);
+  var chipClass = chipClassFromRank(rank, total);
   if (chipClass && window.MLBMAAssets && MLBMAAssets.valChipHtml) {
     return MLBMAAssets.valChipHtml(val, ctx, invert, d, { chipClass: chipClass });
   }
@@ -1712,7 +1703,7 @@ function renderUnitSnapshotStrip(prof, baseCtx) {
       : {};
     var staffRank = Staff && Staff.staffLeagueRank ? Staff.staffLeagueRank.bind(Staff) : function() { return { rank: null, total: null }; };
     var chips = unitSnapshotChipRanked('Rotation Pitch Score', avgPs, staffRank(rotCache, tk, 'avgPs', false), 'pitching', false, 0)
-      + unitSnapshotChipRanked('Rotation ERA', rotEra, staffRank(rotCache, tk, 'teamEra', true), 'era', true, 2)
+      + unitSnapshotChipRanked('Rotation ERA', rotEra, staffRank(rotCache, tk, 'teamEra', true), 'team_era', true, 2)
       + unitSnapshotChipRanked('Rotation IP/Start', ipStart, staffRank(rotCache, tk, 'ipStart', false), 'ipstart', false, 1);
     el.innerHTML = intelHtml + unitSnapshotMetricsRow(chips);
     syncIdentityStackLayout();
@@ -1748,7 +1739,7 @@ function renderUnitSnapshotStrip(prof, baseCtx) {
     var snapBpWin = bpEntry.bpWinPct;
     var bpRank = Staff && Staff.staffLeagueRank ? Staff.staffLeagueRank.bind(Staff) : function() { return { rank: null, total: null }; };
     var bpChips = unitSnapshotChipRanked('Bullpen Pitch Score', snapBpScore, bpRank(bpCache, bpTk, 'bpScore', false), 'bp_score', false, 0)
-      + unitSnapshotChipRanked('Bullpen ERA', snapBpEra, bpRank(bpCache, bpTk, 'bpEra', true), 'era', true, 2)
+      + unitSnapshotChipRanked('Bullpen ERA', snapBpEra, bpRank(bpCache, bpTk, 'bpEra', true), 'bp_era', true, 2)
       + unitSnapshotChipRanked('Bullpen Win%', snapBpWin, bpRank(bpCache, bpTk, 'bpWinPct', false), 'rpwin', false, 1);
     el.innerHTML = bpIntel + unitSnapshotMetricsRow(bpChips);
     syncIdentityStackLayout();
@@ -1971,7 +1962,7 @@ function mountBullpenUsage(team) {
 function computeOsiRank(team) {
   return computeRankAmong(team, DATA.profiles, function(prof) {
     return num(pickCol(prof, ['osi', 'OSI']));
-  }).rank;
+  });
 }
 
 function bindRotationProfileRows() {
@@ -2273,5 +2264,5 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
-  <script src="chase_nav.js?v=20260915bp"></script></body>
+  <script src="chase_nav.js?v=20260915c"></script></body>
 </html>

@@ -47,12 +47,9 @@
     return '<div class="tp-chip-row">' + items.join('') + '</div>';
   }
 
-  function rankTone(rank) {
-    if (rank == null || isNaN(rank)) return 'neutral';
-    if (rank <= 5) return 'elite';
-    if (rank <= 12) return 'strong';
-    if (rank <= 20) return 'mid';
-    return 'weak';
+  // The rank's place in its own denominator, on the site-wide five-tier scale.
+  function rankTone(rank, total) {
+    return (A && A.rankTier && A.rankTier(rank, total)) || 'neutral';
   }
 
   function staffLeagueRank(cache, team, field, invert) {
@@ -134,7 +131,7 @@
     var rank = rankMeta.rank;
     var total = rankMeta.total;
     var rankHtml = rank != null
-      ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + rankTone(rank) + '" title="' + esc(total ? ('League rank #' + rank + ' of ' + total) : ('League rank #' + rank)) + '">'
+      ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + rankTone(rank, total) + '" title="' + esc(total ? ('League rank #' + rank + ' of ' + total) : ('League rank #' + rank)) + '">'
         + '<span class="tp-offense-stat__rank-num">#' + esc(String(rank)) + '</span>'
         + '</span>'
       : '';

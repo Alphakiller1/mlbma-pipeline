@@ -88,12 +88,12 @@
     return METRIC_LABELS[key] || { abbr: key, gloss: '' };
   }
 
-  function rankTone(rank) {
-    if (rank == null || isNaN(rank)) return 'neutral';
-    if (rank <= 5) return 'elite';
-    if (rank <= 12) return 'strong';
-    if (rank <= 20) return 'mid';
-    return 'weak';
+  // The rank's place in its own denominator, on the site-wide five-tier scale.
+  // This used to stop at four tiers ("top 5 / 12 / 20 / everything else"), so
+  // 21st and 30th of 30 shared one colour and 13th-20th sat below the middle.
+  function rankTone(rank, total) {
+    var A = global.MLBMAAssets;
+    return (A && A.rankTier && A.rankTier(rank, total)) || 'neutral';
   }
 
   function teamKeyFromProf(prof, ctx) {
@@ -199,7 +199,7 @@
     var rank = rankMeta.rank;
     var total = rankMeta.total;
     var rankHtml = rank != null
-      ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + rankTone(rank) + '" title="' + esc(total ? ('League rank #' + rank + ' of ' + total) : ('League rank #' + rank)) + '">'
+      ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + rankTone(rank, total) + '" title="' + esc(total ? ('League rank #' + rank + ' of ' + total) : ('League rank #' + rank)) + '">'
         + '<span class="tp-offense-stat__rank-num">#' + esc(String(rank)) + '</span>'
         + '</span>'
       : '';
@@ -220,7 +220,7 @@
     rankMeta = rankMeta || {};
     var rank = rankMeta.rank;
     if (rank == null) return '<td class="num tp-offense-metrics__rank-cell">—</td>';
-    return '<td class="num tp-offense-metrics__rank-cell tp-offense-metrics__rank-cell--' + rankTone(rank) + '">'
+    return '<td class="num tp-offense-metrics__rank-cell tp-offense-metrics__rank-cell--' + rankTone(rank, rankMeta.total) + '">'
       + '<span class="tp-offense-stat__rank-num">#' + esc(String(rank)) + '</span></td>';
   }
 
@@ -453,7 +453,7 @@
     var rank = rankMeta.rank;
     var total = rankMeta.total;
     var rankHtml = rank != null
-      ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + rankTone(rank) + '" title="' + esc(total ? ('League rank #' + rank + ' of ' + total) : ('League rank #' + rank)) + '">'
+      ? '<span class="tp-offense-stat__rank tp-offense-stat__rank--' + rankTone(rank, total) + '" title="' + esc(total ? ('League rank #' + rank + ' of ' + total) : ('League rank #' + rank)) + '">'
         + '<span class="tp-offense-stat__rank-num">#' + esc(String(rank)) + '</span>'
         + '</span>'
       : '';
@@ -495,7 +495,7 @@
       : { rank: null, total: null };
     var rank = rankMeta.rank;
     var rankHtml = rank != null
-      ? '<div class="tp-offense-metrics__rank-cell tp-offense-metrics__rank-cell--' + rankTone(rank) + '">'
+      ? '<div class="tp-offense-metrics__rank-cell tp-offense-metrics__rank-cell--' + rankTone(rank, rankMeta.total) + '">'
         + '<span class="tp-offense-stat__rank-num">#' + esc(String(rank)) + '</span></div>'
       : '<div class="tp-offense-metrics__rank-cell tp-offense-metrics__rank-cell--neutral">—</div>';
     return '<td class="num tp-surface-wins__metric-cell">'

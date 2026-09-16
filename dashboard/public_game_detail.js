@@ -673,13 +673,8 @@
      same wherever it appears. The number is always printed, so the colour is a
      second reading of a fact that is already legible without it. */
   function rankTone(rank, of) {
-    if (!(of > 1) || !(rank >= 1)) return '';
-    var pct = (of - rank) / (of - 1);
-    if (pct >= 0.87) return 'c-elite';
-    if (pct >= 0.63) return 'c-good';
-    if (pct >= 0.37) return 'c-mid';
-    if (pct >= 0.13) return 'c-weak';
-    return 'c-poor';
+    var A = global.MLBMAAssets;
+    return A && A.rankChipClass ? A.rankChipClass(rank, of) : '';
   }
 
   function rankBadge(entry) {
@@ -898,64 +893,32 @@
     return ((13 * hr) + (3 * (bb + (isFinite(hbp) ? hbp : 0))) - (2 * k)) / ip + FIP_CONSTANT;
   }
 
-  /* Allowed rates read the other way round: a .200 opponent average is elite,
-     not poor. This flips the ramp for baselines measured on HITTERS (avg, ops)
-     being read against a pitcher. Baselines already declared low-is-good -
-     bbpct, era, whip, xfip - grade correctly on their own and must not pass
-     through here, or they invert twice. */
-  var GRADE_FLIP = { 'c-elite': 'c-poor', 'c-good': 'c-weak', 'c-mid': 'c-mid',
-    'c-weak': 'c-good', 'c-poor': 'c-elite' };
+  /* A number that carries its own grade, off the published league baseline of
+     the population it belongs to - a starter's split against every qualified
+     starter's line in that split, a batter against batters, a club against
+     clubs - so the reader does not have to know what a good ERA is this season.
 
-  function gradeAllowed(value, context) {
-    var cls = gradeFor(value, context);
-    return GRADE_FLIP[cls] || cls;
-  }
-
-  /* An index centred on 100 grades against 100 - there is no pool to take a
-     percentile from. */
-  /* A 0-100 percentile index grades against the middle of its own scale, not
-     against 100 the way an index centred on 100 does. */
-  function scoreTone(value) {
-    var v = Number(value);
-    if (!isFinite(v)) return '';
-    if (v >= 75) return 'c-elite';
-    if (v >= 60) return 'c-good';
-    if (v >= 40) return 'c-mid';
-    if (v >= 25) return 'c-weak';
-    return 'c-poor';
-  }
-
-  /* Roughly two starts in five is a league-average quality-start rate, so the
-     bands sit around that rather than around fifty. */
-  function qsTone(value) {
-    var v = Number(value);
-    if (!isFinite(v)) return '';
-    if (v >= 60) return 'c-elite';
-    if (v >= 48) return 'c-good';
-    if (v >= 33) return 'c-mid';
-    if (v >= 22) return 'c-weak';
-    return 'c-poor';
-  }
-
-  function indexTone(value) {
-    var v = Number(value);
-    if (!isFinite(v)) return '';
-    if (v >= 115) return 'c-elite';
-    if (v >= 105) return 'c-good';
-    if (v >= 95) return 'c-mid';
-    if (v >= 85) return 'c-weak';
-    return 'c-poor';
-  }
-
-  /* A number that carries its own grade, off the published league baseline, so
-     the reader does not have to know what a good ERA is this season. */
+     The fixed ramps that used to sit here are gone: Pitch Score was cut around
+     50 on a 75/60/40/25 ladder, QS% around a typed-in "two starts in five",
+     OPS+ at +-5/+-15, and allowed OPS was a HITTER club baseline flipped over.
+     None of those was the league's distribution. With no baseline the cell is
+     left ungraded rather than painted a neutral that would claim "average". */
   function gradeFor(value, context) {
+    var A = global.MLBMAAssets;
     var n = Number(value);
-    if (!isFinite(n)) return '';
-    if (global.MLBMAAssets && MLBMAAssets.solidChipClass) {
-      return MLBMAAssets.solidChipClass(n, context) || '';
-    }
-    return '';
+    if (value == null || value === '' || !isFinite(n) || !A || !A.valueTier) return '';
+    var tier = A.valueTier(n, context);
+    return tier ? A.TIER_CHIP[tier] : '';
+  }
+
+  /* A published 0-100 percentile is already a place in its league, so it takes
+     the rank scale directly. */
+  function percentileClass(percentile) {
+    var A = global.MLBMAAssets;
+    var p = Number(percentile);
+    if (percentile == null || !isFinite(p) || !A || !A.percentileTier) return '';
+    var tier = A.percentileTier(p / 100);
+    return tier ? A.TIER_CHIP[tier] : '';
   }
 
   function starterPanel(sport, game, side, people, splitBank) {
@@ -980,8 +943,9 @@
     var anySplit = seasonBank.home || seasonBank.away || seasonBank.vs_rhh || seasonBank.vs_lhh || {};
     var headline = [
       ['ERA', stat.era, gradeFor(stat.era, 'era')],
-      ['Pitch Score', anySplit.pitch_score, scoreTone(anySplit.pitch_score)],
-      ['QS%', anySplit.qs_pct == null ? null : anySplit.qs_pct + '%', qsTone(anySplit.qs_pct)],
+      // Season-level indices, graded against the starters they were built from.
+      ['Pitch Score', anySplit.pitch_score, gradeFor(anySplit.pitch_score, 'sp_pitch_score')],
+      ['QS%', anySplit.qs_pct == null ? null : anySplit.qs_pct + '%', gradeFor(anySplit.qs_pct, 'sp_qs_pct')],
       ['IP', stat.inningsPitched, '']
     ].map(function (row) {
       if (row[1] == null) return '';
@@ -1009,8 +973,11 @@
       ['Home', 'home'],
       ['Road', 'away']
     ];
-    // key, header, baseline to grade against, whether it is an allowed rate
-    // that must read the other way round, suffix.
+    // key, header, baseline stat, suffix. Each cell grades against the league
+    // distribution of that stat IN THAT SPLIT (context sp_<split>_<stat>, every
+    // qualified starter's line), because a line against left-handed batters and
+    // a road line are different populations. Direction travels with the
+    // published baseline: OPS allowed is low-is-good, OPS+ high-is-good.
     var SPLIT_COLS = [
       // WHIP rather than ERA. ERA cannot exist on a batter-hand cut - an
       // earned run belongs to an inning, not to the handedness of one plate
@@ -1018,22 +985,22 @@
       // reason no reader could be expected to infer. WHIP is attributable to
       // every split, carries the same kind of information, and the table has
       // no holes in it.
-      ['whip', 'WHIP', 'whip', false, ''],
+      ['whip', 'WHIP', 'whip', ''],
       // xFIP, not FIP. FIP still carries the home runs this arm actually gave
       // up, which on a two-month split is mostly the park and the luck; xFIP
       // is the same formula with that term normalised, and it is the one of
       // the two worth a column when there is only room for one.
-      ['xfip', 'xFIP', 'xfip', false, ''],
-      ['k_pct', 'K%', 'kpct', false, '%'],
-      ['bb_pct', 'BB%', 'bbpct', false, '%'],
-      ['hr9', 'HR/9', null, false, ''],
-      ['ops', 'OPS', 'ops', true, ''],
-      ['ops_plus', 'OPS+', null, false, ''],
-      ['pitches_per_inning', 'P/IP', null, false, '']
+      ['xfip', 'xFIP', 'xfip', ''],
+      ['k_pct', 'K%', 'kpct', '%'],
+      ['bb_pct', 'BB%', 'bbpct', '%'],
+      ['hr9', 'HR/9', null, ''],
+      ['ops', 'OPS', 'ops', ''],
+      ['ops_plus', 'OPS+', 'ops_plus', ''],
+      ['pitches_per_inning', 'P/IP', null, '']
     ];
 
     var banks = SPLIT_ROWS.map(function (row) {
-      return [row[0], ((bank && bank.splits) || {})[row[1]]];
+      return [row[0], ((bank && bank.splits) || {})[row[1]], row[1]];
     }).filter(function (pair) { return !!pair[1]; });
 
     var cols = SPLIT_COLS.filter(function (col) {
@@ -1045,9 +1012,8 @@
       var cells = cols.map(function (col) {
         var v = st[col[0]];
         if (v == null) return '<td class="num">&mdash;</td>';
-        var cls = col[0] === 'ops_plus' ? indexTone(v)
-          : (col[2] ? (col[3] ? gradeAllowed(v, col[2]) : gradeFor(v, col[2])) : '');
-        return '<td class="num ' + cls + '">' + esc(v) + col[4] + '</td>';
+        var cls = col[2] ? gradeFor(v, 'sp_' + pair[2] + '_' + col[2]) : '';
+        return '<td class="num ' + cls + '">' + esc(v) + col[3] + '</td>';
       }).join('');
       return '<tr><td>' + esc(pair[0]) + '</td>' + cells + '</tr>';
     }).join('');
@@ -1103,13 +1069,18 @@
         '. It appears here as soon as the club posts it.</p></section>';
     }
 
+    // A batter is graded against every qualified batter on the same split, not
+    // against the thirty clubs: one hitter's OPS versus one hand spreads three
+    // to four times wider than a club's, so the club baseline saturated nearly
+    // every row to elite or poor.
+    var split = oppHand === 'L' ? 'vl' : (oppHand === 'R' ? 'vr' : 'season');
     var rows = players.map(function (pl, i) {
       var person = people[pl.id] || {};
       var stat = person.stat || {};
       function cell(key, context) {
         var v = stat[key];
         if (v == null) return '<td class="num">&mdash;</td>';
-        return '<td class="num ' + gradeFor(v, context) + '">' + esc(v) + '</td>';
+        return '<td class="num ' + gradeFor(v, 'bat_' + split + '_' + context) + '">' + esc(v) + '</td>';
       }
       return '<tr>' +
         '<td class="ca-lineup-slot">' + (i + 1) + '</td>' +
@@ -1184,7 +1155,7 @@
   function rvCell(entry) {
     if (!entry || entry.run_value_per_100 == null) return '<td class="num">&mdash;</td>';
     var v = entry.run_value_per_100;
-    var tone = entry.percentile == null ? '' : scoreTone(entry.percentile);
+    var tone = percentileClass(entry.percentile);
     var badge = entry.percentile == null ? ''
       : '<span class="ca-rank ' + tone + '">' + Math.round(entry.percentile) + 'th</span>';
     return '<td class="num ' + tone + '">' + esc((v > 0 ? '+' : '') + v.toFixed(1)) +
@@ -1518,9 +1489,11 @@
       }
       var kPct = pa ? Math.round((Number(st.strikeOuts) / pa) * 1000) / 10 : null;
       var bbPct = pa ? Math.round((Number(st.baseOnBalls) / pa) * 1000) / 10 : null;
+      // Each split grades against the thirty clubs on that same split.
+      var tm = 'tm_' + spec[0] + '_';
       return '<tr><td>' + esc(spec[1]) + '</td>' +
-        cell(st.avg, 'avg') + cell(st.obp, 'obp') + cell(st.slg, 'slg') +
-        cell(st.ops, 'ops') +
+        cell(st.avg, tm + 'avg') + cell(st.obp, tm + 'obp') + cell(st.slg, tm + 'slg') +
+        cell(st.ops, tm + 'ops') +
         '<td class="num">' + esc(st.homeRuns == null ? '—' : st.homeRuns) + '</td>' +
         cell(kPct, null, '%') + cell(bbPct, null, '%') +
         '<td class="num">' + esc(pa || '—') + '</td></tr>';
@@ -2341,7 +2314,8 @@
       return '<div class="ca-pressure-row"><div><strong>' + esc(spec[2]) + '</strong><span>' +
         esc(pctText(frequency)) + (rank ? ' · ' + rank.place + ordinal(rank.place) +
         ' of ' + rank.of : '') + '</span>' + meter + '</div><div class="' +
-        epaTone(response, true) + '"><span>' + esc(fullName(sport, game, offSide)) +
+        responseTone(game[offSide + '_scheme'], 'offense', spec[1], response) + '"><span>' +
+        esc(fullName(sport, game, offSide)) +
         '</span><strong>' + esc(epaText(response, false)) + '</strong><small>' +
         esc(spec[3]) + '</small></div></div>';
     }).filter(Boolean).join('');
@@ -2437,18 +2411,19 @@
     ['rush_success_rate', 'Rush Success', 'Share of runs that gained enough to stay on schedule']
   ];
 
-  /* An EPA per play is a margin centred on zero, not a percentile, so it takes
-     its own ramp: a tenth of a point either side of zero is the difference
-     between a good offence and a bad one. */
-  function epaTone(value, goodHigh) {
-    var v = Number(value);
-    if (!isFinite(v)) return '';
-    var scaled = goodHigh ? v : -v;
-    if (scaled >= 0.15) return 'c-elite';
-    if (scaled >= 0.05) return 'c-good';
-    if (scaled > -0.05) return 'c-mid';
-    if (scaled > -0.15) return 'c-weak';
-    return 'c-poor';
+  /* Situational EPA and success rates grade against the league average of that
+     same situation, in that phase, in the 32 clubs' own spread. Zero is not
+     average: every offence gives EPA back under pressure and gains it off play
+     action, and a success rate is a share near 45% - so the fixed ramp around
+     zero that used to sit here painted every offence elite on success rate and
+     every defence poor, whatever they had actually done. Offence reads high as
+     good; the defensive column is EPA allowed, so low is good. No published
+     baseline, no colour. */
+  function responseTone(scheme, phase, key, value) {
+    var A = global.MLBMAAssets;
+    var baseline = ((((scheme || {}).league_response || {})[phase]) || {})[key];
+    if (!A || !A.baselineChipClass || !baseline) return '';
+    return A.baselineChipClass(value, baseline, phase === 'offense');
   }
 
   function epaText(value, isRate) {
@@ -2467,8 +2442,10 @@
       var isRate = spec[0].indexOf('success') >= 0;
       return '<tr><td><span class="ca-sit">' + esc(spec[1]) + '</span>' +
         '<span class="ca-sit__means">' + esc(spec[2]) + '</span></td>' +
-        '<td class="num ' + epaTone(a, true) + '">' + esc(epaText(a, isRate)) + '</td>' +
-        '<td class="num ' + epaTone(b, false) + '">' + esc(epaText(b, isRate)) + '</td></tr>';
+        '<td class="num ' + responseTone(game[offSide + '_scheme'], 'offense', spec[0], a) + '">' +
+        esc(epaText(a, isRate)) + '</td>' +
+        '<td class="num ' + responseTone(game[defSide + '_scheme'], 'defense', spec[0], b) + '">' +
+        esc(epaText(b, isRate)) + '</td></tr>';
     }).filter(Boolean).join('');
     if (!rows) return '';
     return '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-sit-table">' +
@@ -2496,12 +2473,14 @@
         spec[2] + ': ' + rank.place + ordinal(rank.place) + ' of ' + rank.of +
         ' by league frequency') : '';
       return '<div class="ca-coverage-row">' +
-        '<div class="ca-coverage-result ' + epaTone(offValue, true) + '"><strong>' +
+        '<div class="ca-coverage-result ' +
+        responseTone(game[offSide + '_scheme'], 'offense', spec[1], offValue) + '"><strong>' +
         esc(epaText(offValue, false)) + '</strong><span>Off EPA / play</span></div>' +
         '<div class="ca-coverage-look"><span>' + esc(spec[2]) + '</span>' +
         meter + '<strong>' + esc(pctText(tendency)) +
         (rank ? ' · ' + rank.place + ordinal(rank.place) : '') + '</strong></div>' +
-        '<div class="ca-coverage-result ca-coverage-result--def ' + epaTone(defValue, false) + '">' +
+        '<div class="ca-coverage-result ca-coverage-result--def ' +
+        responseTone(game[defSide + '_scheme'], 'defense', spec[1], defValue) + '">' +
         '<strong>' + esc(epaText(defValue, false)) + '</strong><span>EPA allowed / play</span></div>' +
         '</div>';
     }).filter(Boolean).join('');

@@ -533,26 +533,66 @@
       .replace(/"/g, '&quot;');
   }
 
+  /* Which league baseline each metric is graded against, and the scale the card
+     prints it on. Every card used to pass 'osi' (or 'bb_pct' for anything
+     inverted), so the page that documents the colour rule was breaking it: a
+     .328 wOBA was graded on a 0-100 composite and the inverted ramp rendered
+     seven identical red chips, because 35 through 88 are all impossible walk
+     rates. A metric with no published baseline shows no ramp rather than a
+     made-up one. `scale` converts a card's display units into the baseline's
+     (QS% is shown as .380 and graded in percentage points). */
+  var METRIC_CONTEXT = {
+    abq: { ctx: 'abq' }, rcv: { ctx: 'rcv' }, obr: { ctx: 'obr' }, osi: { ctx: 'osi' },
+    pals: { ctx: 'pals' }, oor: { ctx: 'oor' }, 'pitching-score': { ctx: 'pitching' },
+    'wrc-plus': { ctx: 'wrc' }, woba: { ctx: 'woba' }, xwoba: { ctx: 'xwoba' },
+    'qs-pct': { ctx: 'sp_qs_pct', scale: 100 },
+    'k-pct': { ctx: 'kpct' }, 'bb-pct': { ctx: 'bbpct' }, hr9: { ctx: 'hr9' },
+    era: { ctx: 'era' }, fip: { ctx: 'fip' },
+    'hi-leverage-era': { ctx: 'rp_era' }, 'med-leverage-era': { ctx: 'rp_era' }
+  };
+
+  function metricBaseline(m) {
+    var A = global.MLBMAAssets;
+    var spec = METRIC_CONTEXT[m.id];
+    if (!spec || !A || !A.valueTier) return null;
+    return { ctx: spec.ctx, scale: spec.scale || 1 };
+  }
+
+  function sampleChipHtml(m) {
+    var A = global.MLBMAAssets;
+    var spec = metricBaseline(m);
+    if (m.sample == null) return '<span class="val-chip c-na">—</span>';
+    if (!spec || !A || !A.valChipHtml) {
+      return '<span class="val-chip">' + esc(m.sample) + '</span>';
+    }
+    var tier = A.valueTier(m.sample * spec.scale, spec.ctx);
+    return A.valChipHtml(m.sample, spec.ctx, null, m.decimals,
+      { chipClass: tier ? A.TIER_CHIP[tier] : 'c-mid' });
+  }
+
+  /* The ramp is this metric's own league scale: one value per tier, placed at
+     the middle of each band around the published league average. */
+  var RAMP_SIGMAS = [-1.6, -0.75, 0, 0.75, 1.6];
+
   function gradeRampHtml(m) {
     var A = global.MLBMAAssets;
-    if (!A || !A.valChipHtml || m.sample == null) return '';
-    var steps = m.invert ? [88, 78, 70, 62, 55, 48, 35] : [35, 48, 55, 62, 70, 78, 88];
-    var ctx = m.invert ? 'bb_pct' : 'osi';
-    return '<div class="gloss-metric-card__ramp" aria-label="Grade ramp for ' + esc(m.name) + '">'
-      + steps.map(function (v) { return A.valChipHtml(v, ctx, m.invert, 0); }).join('')
+    var spec = metricBaseline(m);
+    if (!A || !A.valChipHtml || !spec) return '';
+    var pools = A.CONTEXT_BASELINES && A.CONTEXT_BASELINES[spec.ctx];
+    if (!pools) return '';
+    var decimals = m.decimals == null ? (Math.abs(pools.mean) < 5 ? 2 : 0) : m.decimals;
+    var steps = RAMP_SIGMAS.map(function (sigma) {
+      var direction = pools.hi === false ? -sigma : sigma;
+      return (pools.mean + direction * pools.std) / spec.scale;
+    });
+    return '<div class="gloss-metric-card__ramp" aria-label="Grade ramp for ' + esc(m.name)
+      + ', league average ' + esc((pools.mean / spec.scale).toFixed(decimals)) + '">'
+      + steps.map(function (v) { return A.valChipHtml(v, spec.ctx, null, decimals); }).join('')
       + '</div>';
   }
 
   function renderMetricCard(m) {
-    var A = global.MLBMAAssets;
-    var chip = '';
-    if (m.sample != null && A && A.valChipHtml) {
-      chip = A.valChipHtml(m.sample, m.invert ? 'bb_pct' : 'osi', m.invert, m.decimals);
-    } else if (m.sample != null) {
-      chip = '<span class="val-chip">' + esc(m.sample) + '</span>';
-    } else {
-      chip = '<span class="val-chip c-na">—</span>';
-    }
+    var chip = sampleChipHtml(m);
     return '<article class="gloss-metric-card glossary-term" id="' + esc(m.id) + '" data-term="' + esc(m.terms.join(' ')) + '" data-artifact="glossary-term">'
       + '<div class="gloss-metric-card__head">'
       + '<div class="gloss-metric-card__name">' + esc(m.name) + '</div>'
@@ -689,9 +729,17 @@
     renderMetricCard: renderMetricCard
   };
 
+  // The page that documents the colour rule has to be graded by it, so it waits
+  // for this season's league baselines before drawing a single chip.
+  function startGlossaryPage() {
+    var A = global.MLBMAAssets;
+    var ready = (A && A.baselinesReady) || Promise.resolve(null);
+    ready.then(initGlossaryPage, initGlossaryPage);
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initGlossaryPage);
+    document.addEventListener('DOMContentLoaded', startGlossaryPage);
   } else {
-    initGlossaryPage();
+    startGlossaryPage();
   }
 })(typeof window !== 'undefined' ? window : this);

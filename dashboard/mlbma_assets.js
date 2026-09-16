@@ -116,7 +116,10 @@
     swstr: { mean: 11.0, std: 2.0, hi: true },         // SwStr% (pitcher, higher better)
     ra_pg: { mean: 4.40, std: 0.40, hi: false },       // runs allowed / game
     ir: { mean: 33, std: 8, hi: false },               // inherited-runners scored % (lower better)
-    pitchinn: { mean: 16.65, std: 0.45, hi: true, sens: 1.2 },  // pitches/inning forced (higher = grind = harder lineup); tight cluster, measured from game_results
+    pitchinn: { mean: 16.65, std: 0.45, hi: true },  // pitches/inning forced (higher = grind = harder lineup); measured from game_results
+    // Starter season indices, graded against the population of starters.
+    sp_qs_pct: { mean: 36.1, std: 16.3, hi: true },     // quality-start rate %, starters with 5+ starts
+    sp_pitch_score: { mean: 50.4, std: 17.2, hi: true }, // per-arm Pitch Score (0-100 percentile blend)
     // Aggregate pitching contexts -- own-population baselines so team/bullpen cells aren't
     // graded against the (2.5-3x wider) individual-pitcher spread. Live-refreshed by
     // core.compute_baselines; values here are first-paint fallbacks. K%/BB% in pct points.
@@ -131,6 +134,9 @@
     bp_kpct: { mean: 23.7, std: 2.22, hi: true },
     bp_bbpct: { mean: 9.17, std: 1.71, hi: false },
     bp_score: { mean: 51.9, std: 2.45, hi: true },
+    bp_osi_allowed: { mean: 48.1, std: 2.45, hi: false }, // bullpen units; was graded on the 30-lineup OSI spread
+    rp_osi_allowed: { mean: 48.0, std: 9.0, hi: false },  // individual relievers, 10+ appearances
+    rp_abq_allowed: { mean: 46.0, std: 7.5, hi: false },
     rp_era: { mean: 3.40, std: 1.65, hi: false },     // individual relievers
     rp_fip: { mean: 3.51, std: 1.17, hi: false },
     rp_whip: { mean: 1.22, std: 0.29, hi: false },
@@ -580,19 +586,17 @@
   }
 
   function zScore(value, context) {
-    var cfg = CONTEXT_DEFAULTS[context] || CONTEXT_DEFAULTS.default;
     // League-average anchored: grade vs the fixed league baseline for this metric, so
     // the same value always gets the same color. The live pool is used ONLY when we
-    // have no baseline for this context (unknown metric), never to override one.
+    // have no baseline for this context, never to override one.
+    //
+    // A context with neither is NOT graded. It used to fall back to the OSI-shaped
+    // `default` (mean 50, std 12), which painted a .320 wOBA or a 3.40 ERA passed under
+    // the wrong name deep red or deep green with total confidence.
     var hasBaseline = Object.prototype.hasOwnProperty.call(CONTEXT_DEFAULTS, context);
-    var pool = hasBaseline ? null : LEAGUE_POOLS[context];
-    var mean = pool && pool.mean != null ? pool.mean : cfg.mean;
-    var std = pool && pool.std != null ? pool.std : cfg.std;
-    var z = (value - mean) / std;
-    // Optional per-metric sensitivity: scales the color spread for tightly-clustered
-    // metrics (e.g. ABQ) so near-average teams still differentiate. Same scaling feeds
-    // both the gradient and the discrete chips, so they stay consistent.
-    return cfg.sens ? z * cfg.sens : z;
+    var cfg = hasBaseline ? CONTEXT_DEFAULTS[context] : LEAGUE_POOLS[context];
+    if (!cfg || !(cfg.std > 0) || value == null || isNaN(value)) return null;
+    return (value - cfg.mean) / cfg.std;
   }
 
   /** Direction from the registry (lower-is-better => invert), unless caller overrides. */
@@ -611,7 +615,7 @@
   // Poor/weak lightened so red/orange values clear the contrast floor.
   var GRADIENT_STOPS = [
     { t: 0.00, c: [248, 113, 113] },  // poor      #F87171 legible red
-    { t: 0.27, c: [251, 146, 60] },   // weak      #FB923C orange
+    { t: 0.26, c: [251, 146, 60] },   // weak      #FB923C orange (mirror of 0.74)
     { t: 0.50, c: [251, 191, 36] },   // average   #FBBF24 amber (league avg)
     { t: 0.74, c: [123, 220, 90] },   // good      #7BDC5A lime
     { t: 1.00, c: [74, 222, 128] }    // elite     #4ADE80 green
@@ -644,35 +648,120 @@
 
   function gradientColor(value, context, invert) {
     if (value == null || isNaN(value)) return GRADE_COLORS.average;
-    var rgb = _gradRgb(_zToGradient(zScore(value, context), _resolveInvert(context, invert)));
+    var z = zScore(value, context);
+    if (z == null) return GRADE_COLORS.average;
+    var rgb = _gradRgb(_zToGradient(z, _resolveInvert(context, invert)));
     return 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
   }
 
-  // Bucket edges tuned for an n=30 league. With ~normal team data, z>1.5 is ~top 2-3
-  // teams (elite), z>0.85 the next ~4 (strong), the +/-0.30 core ~7 teams (average), and
-  // symmetric on the low side -- so all seven colors get used instead of everyone reading
-  // amber. (Old +/-2 / +/-1 edges left 'elite'/'veryWeak' essentially unreachable.)
-  function gradeKeyFromZ(z, invert) {
-    if (invert) z = -z;
-    if (z <= -1.5) return 'veryWeak';
-    if (z <= -0.85) return 'weak';
-    if (z <= -0.30) return 'belowAvg';
-    if (z <= 0.30) return 'average';
-    if (z <= 0.85) return 'aboveAvg';
-    if (z <= 1.5) return 'strong';
-    return 'elite';
+  /* ---------------------------------------------------------------------
+   * One grading scale for every value AND every rank on the site.
+   *
+   * Both are placed on a league percentile first:
+   *   - a rank by where it sits in the denominator it was ranked in
+   *     (1st of N = 1.0, Nth of N = 0.0), so 5th of 32 and 5th of 362 are not
+   *     given the colour a 5th of 30 used to get from a hard-coded "top 5";
+   *   - a value by its distance from the league average of that stat, in the
+   *     spread of the population being graded, read through the normal CDF.
+   * The five tiers are then cut at the same percentiles, symmetric about the
+   * 50th, so league average sits dead centre and "4th of 30" and "1.2 sd better
+   * than average" say the same thing in the same colour:
+   *     elite  top 13%  |  strong next 24%  |  mid middle 26%  |  weak  |  poor
+   * ------------------------------------------------------------------ */
+  var TIER_OUTER = 0.37;   // |p - 0.5| at or beyond this: elite / poor
+  var TIER_INNER = 0.13;   // |p - 0.5| at or beyond this: strong / weak
+  var TIER_EPS = 1e-9;
+
+  var TIER_CHIP = { elite: 'c-elite', strong: 'c-good', mid: 'c-mid', weak: 'c-weak', poor: 'c-poor' };
+
+  /** Legacy grade keys kept as aliases so existing callers keep resolving. */
+  var SOLID_CHIP_CLASS = {
+    elite: 'c-elite', strong: 'c-good', aboveAvg: 'c-good',
+    mid: 'c-mid', average: 'c-mid',
+    belowAvg: 'c-weak', weak: 'c-weak',
+    veryWeak: 'c-poor', poor: 'c-poor'
+  };
+
+  function percentileTier(p) {
+    if (p == null || !isFinite(p)) return null;
+    var d = p - 0.5;
+    var a = Math.abs(d);
+    if (a >= TIER_OUTER - TIER_EPS) return d > 0 ? 'elite' : 'poor';
+    if (a >= TIER_INNER - TIER_EPS) return d > 0 ? 'strong' : 'weak';
+    return 'mid';
   }
 
-  /** Map 7-step grade keys to 5 solid chip classes (reference spec). */
-  var SOLID_CHIP_CLASS = {
-    elite: 'c-elite',
-    strong: 'c-good',
-    aboveAvg: 'c-good',
-    average: 'c-mid',
-    belowAvg: 'c-mid',
-    weak: 'c-weak',
-    veryWeak: 'c-poor'
-  };
+  /** Standard normal CDF (Abramowitz-Stegun 7.1.26, |error| < 1.5e-7), exactly odd-symmetric. */
+  function normalCdf(z) {
+    var x = Math.abs(z) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * x);
+    var erf = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t
+      - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+    return z >= 0 ? 0.5 * (1 + erf) : 0.5 * (1 - erf);
+  }
+
+  /** Where a rank sits in its own denominator: 1st of N = 1, Nth of N = 0. */
+  function rankPercentile(rank, of) {
+    rank = Number(rank);
+    of = Number(of);
+    if (!(of > 1) || !(rank >= 1) || rank > of) return null;
+    return (of - rank) / (of - 1);
+  }
+
+  /** Tier for a rank, or null when there is no denominator to read it against. */
+  function rankTier(rank, of) {
+    return percentileTier(rankPercentile(rank, of));
+  }
+
+  function rankChipClass(rank, of) {
+    var tier = rankTier(rank, of);
+    return tier ? TIER_CHIP[tier] : '';
+  }
+
+  /** Tier for a value against an explicit league baseline {mean, std}. */
+  function baselineTier(value, baseline, higherIsBetter) {
+    var v = Number(value);
+    if (value == null || value === '' || !isFinite(v) || !baseline) return null;
+    var mean = Number(baseline.mean);
+    var std = Number(baseline.std);
+    if (!isFinite(mean) || !(std > 0)) return null;
+    var z = (v - mean) / std;
+    return percentileTier(normalCdf(higherIsBetter === false ? -z : z));
+  }
+
+  function baselineChipClass(value, baseline, higherIsBetter) {
+    var tier = baselineTier(value, baseline, higherIsBetter);
+    return tier ? TIER_CHIP[tier] : '';
+  }
+
+  /** Tier for a value against the registry baseline of its context. */
+  function valueTier(value, context, invert) {
+    if (value == null || isNaN(value)) return null;
+    var z = zScore(Number(value), context);
+    if (z == null) return null;
+    if (_resolveInvert(context, invert)) z = -z;
+    return percentileTier(normalCdf(z));
+  }
+
+  /**
+   * The label a value earns, from the tier it lands in. Pages keep their own
+   * vocabulary ("Ace / Solid / Average / Volatile", "Elite / High-Level / ...")
+   * and pass it best-first; a table of four folds weak and poor together. This
+   * exists so a label table cannot drift from the colour beside it - the OSI
+   * tables called a league-average lineup "Weak" and put "Elite" three standard
+   * deviations out, where no club ever reached it.
+   */
+  var TIER_ORDER = ['elite', 'strong', 'mid', 'weak', 'poor'];
+
+  function tierLabel(value, context, labels, invert) {
+    var tier = valueTier(value, context, invert);
+    if (!tier) return null;
+    if (!labels) return tier;
+    if (Object.prototype.toString.call(labels) === '[object Array]') {
+      return labels[Math.min(TIER_ORDER.indexOf(tier), labels.length - 1)] || null;
+    }
+    return labels[tier] || null;
+  }
 
   function metricGradeKey(value, context, invert) {
     if (value == null || isNaN(value)) return null;
@@ -680,8 +769,7 @@
       invert = context;
       context = 'osi';
     }
-    context = context || 'osi';
-    return gradeKeyFromZ(zScore(value, context), _resolveInvert(context, invert));
+    return valueTier(value, context || 'osi', invert);
   }
 
   function solidChipClass(value, context, invert, opts) {
@@ -695,15 +783,17 @@
       return SOLID_CHIP_CLASS.average;
     }
     context = context || 'osi';
+    // Competition difficulty is contextual, not good or bad: a hard schedule is
+    // flagged, a soft one is never painted as a failing. Cut at the same league
+    // tiers as everything else instead of a fixed 55.
     if (context === 'oor' || context === 'OOR' || opts.mode === 'contextual') {
-      if (value >= 55) return 'c-good';
-      if (value <= 45) return 'c-mid';
-      return 'c-mid';
+      var oorTier = valueTier(value, 'oor', false);
+      return oorTier === 'elite' || oorTier === 'strong' ? 'c-good' : 'c-mid';
     }
     if (context === 'sp_oor_faced') {
-      var oorZ = zScore(value, context);
-      if (oorZ >= 0.85) return 'c-oor-hard';
-      if (oorZ <= -0.85) return 'c-oor-soft';
+      var facedTier = valueTier(value, context, false);
+      if (facedTier === 'elite' || facedTier === 'strong') return 'c-oor-hard';
+      if (facedTier === 'weak' || facedTier === 'poor') return 'c-oor-soft';
       return 'c-oor-mid';
     }
     if (context === 'ppGap' || context === 'PP_GAP') {
@@ -724,8 +814,9 @@
       if (c.indexOf('purple') >= 0) return 'c-mid';
       return 'c-mid';
     }
-    var gk = metricGradeKey(value, context, invert);
-    return gk ? (SOLID_CHIP_CLASS[gk] || 'c-mid') : 'c-mid';
+    var tier = valueTier(value, context, invert);
+    // No baseline for this context: an honest neutral, never a borrowed grade.
+    return tier ? TIER_CHIP[tier] : 'c-mid';
   }
 
   /**
@@ -741,7 +832,12 @@
       context = 'osi';
     }
     context = context || 'osi';
-    var rgb = _gradRgb(_zToGradient(zScore(value, context), _resolveInvert(context, invert)));
+    // Sign-read gaps are centred on zero by construction, not on a league mean.
+    if (context === 'ppGap' || context === 'PP_GAP' || context === 'reg') return ppGapColor(value);
+    if (context === 'dfGap' || context === 'POWER_FLOOR') return dfGapColor(value);
+    var z = zScore(value, context);
+    if (z == null) return GRADE_COLORS.average;
+    var rgb = _gradRgb(_zToGradient(z, _resolveInvert(context, invert)));
     return 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
   }
 
@@ -758,7 +854,9 @@
       context = 'osi';
     }
     context = context || 'osi';
-    var rgb = _gradRgb(_zToGradient(zScore(value, context), _resolveInvert(context, invert)));
+    var z = zScore(value, context);
+    if (z == null) return HEAT_RGBA.average;
+    var rgb = _gradRgb(_zToGradient(z, _resolveInvert(context, invert)));
     return 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',0.85)';
   }
 
@@ -792,15 +890,21 @@
   function metricLegendHtml(opts) {
     opts = opts || {};
     var title = opts.title || 'Colors graded relative to league average';
+    // The legend IS the chip ramp: the same five classes, cut at the same league
+    // percentiles, so it cannot describe colours the tables never use.
+    var steps = [
+      ['c-poor', 'Poor', 'Bottom 13%'],
+      ['c-weak', 'Below avg', 'Next 24%'],
+      ['c-mid', 'League avg', 'Middle 26%'],
+      ['c-good', 'Above avg', 'Next 24%'],
+      ['c-elite', 'Elite', 'Top 13%']
+    ];
     return '<div class="ca-metric-legend" role="note">'
       + '<span class="ca-metric-legend-title">' + title + '</span>'
-      + '<span class="ca-metric-legend-step"><span class="ca-metric-legend-swatch" style="background:#EF4444"></span>Very weak</span>'
-      + '<span class="ca-metric-legend-step"><span class="ca-metric-legend-swatch" style="background:#F97316"></span>Weak</span>'
-      + '<span class="ca-metric-legend-step"><span class="ca-metric-legend-swatch" style="background:#FBBF24"></span>Below avg</span>'
-      + '<span class="ca-metric-legend-step"><span class="ca-metric-legend-swatch" style="background:#71717A"></span>Average</span>'
-      + '<span class="ca-metric-legend-step"><span class="ca-metric-legend-swatch" style="background:#86EFAC"></span>Above avg</span>'
-      + '<span class="ca-metric-legend-step"><span class="ca-metric-legend-swatch" style="background:#4ADE80"></span>Strong</span>'
-      + '<span class="ca-metric-legend-step"><span class="ca-metric-legend-swatch" style="background:#22C55E"></span>Elite</span>'
+      + steps.map(function(s) {
+        return '<span class="ca-metric-legend-step" title="' + s[2] + ' of the league">'
+          + '<span class="chip ' + s[0] + '">' + s[1] + '</span></span>';
+      }).join('')
       + '</div>';
   }
 
@@ -814,8 +918,9 @@
 
   function contextualOorColor(value) {
     if (value == null || isNaN(value)) return GRADE_COLORS.average;
-    if (value >= 55) return '#60A5FA';
-    if (value <= 45) return '#A78BFA';
+    var tier = valueTier(value, 'oor', false);
+    if (tier === 'elite' || tier === 'strong') return '#60A5FA';
+    if (tier === 'weak' || tier === 'poor') return '#A78BFA';
     return '#71717A';
   }
 
@@ -1050,12 +1155,16 @@
    * Guard: K%/BB% chips grade on percent points. A fraction-scale export (mean≈0.09)
    * against percent values (6–12) paints every walk rate deep red — auto ×100 if needed.
    */
+  // Legacy spellings that must move with their canonical context, or a live refresh
+  // of `kpct` leaves `k_pct` grading against the hand-typed first-paint numbers.
+  var CONTEXT_ALIASES = { k_pct: 'kpct', bb_pct: 'bbpct' };
+
   function applyLeagueBaselines(data) {
     var b = data && data.baselines;
     if (!b) return;
     Object.keys(b).forEach(function(ctx) {
       var live = b[ctx];
-      if (!CONTEXT_DEFAULTS[ctx] || !live || live.mean == null || !live.std) return;
+      if (!live || live.mean == null || !live.std) return;
       var mean = Number(live.mean);
       var std = Number(live.std);
       if (!isFinite(mean) || !isFinite(std) || std <= 0) return;
@@ -1063,8 +1172,22 @@
         mean *= 100;
         std *= 100;
       }
+      if (!CONTEXT_DEFAULTS[ctx]) {
+        // Population/split contexts the pipeline generates (bat_vl_ops, sp_home_whip,
+        // tm_vr_obp ...) carry their own direction. Without one they stay ungraded.
+        if (typeof live.hi !== 'boolean') return;
+        CONTEXT_DEFAULTS[ctx] = { mean: mean, std: std, hi: live.hi };
+        return;
+      }
       CONTEXT_DEFAULTS[ctx].mean = mean;
       CONTEXT_DEFAULTS[ctx].std = std;   // direction (hi) preserved
+    });
+    Object.keys(CONTEXT_ALIASES).forEach(function(alias) {
+      var canon = CONTEXT_DEFAULTS[CONTEXT_ALIASES[alias]];
+      if (canon && CONTEXT_DEFAULTS[alias]) {
+        CONTEXT_DEFAULTS[alias].mean = canon.mean;
+        CONTEXT_DEFAULTS[alias].std = canon.std;
+      }
     });
   }
 
@@ -1461,11 +1584,25 @@
     mountPlatformHeader: mountPlatformHeader,
     GRADE_COLORS: GRADE_COLORS,
     loadLeagueBaselines: loadLeagueBaselines,
+    applyLeagueBaselines: applyLeagueBaselines,
+    percentileTier: percentileTier,
+    rankPercentile: rankPercentile,
+    rankTier: rankTier,
+    rankChipClass: rankChipClass,
+    valueTier: valueTier,
+    tierLabel: tierLabel,
+    baselineTier: baselineTier,
+    baselineChipClass: baselineChipClass,
+    TIER_CHIP: TIER_CHIP,
     get registry() { return REGISTRY; },
+    // The live registry: league average, spread and direction per context, for
+    // surfaces that show the scale itself (the glossary ramp) rather than a value.
+    get CONTEXT_BASELINES() { return CONTEXT_DEFAULTS; },
     get leaguePools() { return LEAGUE_POOLS; }
   };
 
-  // Fetch live league baselines on load (best-effort). The JSON is tiny + local, so it
-  // typically resolves before a page's own (slower) data fetch + render.
-  loadLeagueBaselines();
+  // Fetch live league baselines on load (best-effort, never rejects). Pages that grade
+  // wait on this before their first paint: "typically resolves first" was a race, and a
+  // page that lost it graded every chip against the hand-typed fallbacks and stayed so.
+  global.MLBMAAssets.baselinesReady = loadLeagueBaselines();
 })(typeof window !== 'undefined' ? window : this);

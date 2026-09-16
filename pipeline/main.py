@@ -674,16 +674,30 @@ def run_public_slate_publish():
         # Each resolves its own source CSVs the same way publish_public_context
         # already did - relative to the checkout it is running from - so none
         # of them needs a path passed in here.
-        for script in (
-            "publish_public_context.py",
-            "publish_public_starters.py",
-            "publish_public_batters.py",
-            "publish_public_run_value.py",
-        ):
-            subprocess.run(
-                [sys.executable, str(ROOT / "scripts" / script)],
-                check=True,
-            )
+        #
+        # Order matters for the colour-grading baselines: the starter pool is read
+        # from the starter_splits.json written just before it, and the public
+        # projection of the baselines (inside publish_public_context) is taken
+        # after they are recomputed. They were never recomputed here at all, so
+        # every chip on the site graded against July's league until 2026-09-15.
+        def publisher(name):
+            return [sys.executable, str(ROOT / "scripts" / name)]
+
+        steps = (
+            (publisher("publish_public_starters.py"), True),
+            # League split pools and baselines are non-fatal: a failed pull carries
+            # the previous values forward (stamped with their own as_of) rather than
+            # stopping the publishers after it.
+            ([sys.executable, "-m", "scrapers.scrape_league_hitting_splits"], False),
+            ([sys.executable, "-m", "core.compute_baselines"], False),
+            (publisher("publish_public_context.py"), True),
+            (publisher("publish_public_batters.py"), True),
+            (publisher("publish_public_run_value.py"), True),
+        )
+        for command, required in steps:
+            result = subprocess.run(command, check=required, cwd=str(ROOT))
+            if result.returncode:
+                print(f"  [WARNING] {' '.join(command[1:])} exited {result.returncode}")
 
     _run_step(
         "Step 20b: outputs.publish_public_slate",

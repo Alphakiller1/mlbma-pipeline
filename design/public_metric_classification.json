@@ -36,6 +36,7 @@
     }
   },
   "provenance": [
+    "as_of",
     "better",
     "charting_samples",
     "coverage_samples",
@@ -45,8 +46,10 @@
     "freshness",
     "generatedAt",
     "generated_at_utc",
+    "hi",
     "label",
     "module",
+    "n",
     "observed_at_utc",
     "of",
     "offense_plays",
@@ -153,6 +156,7 @@
     "chase_rate",
     "contact_rate",
     "count",
+    "league_response",
     "targets",
     "receptions",
     "receiving_yards",

@@ -81,13 +81,10 @@
     return '<strong>' + esc(Number(v).toFixed(decimals == null ? 1 : decimals)) + '</strong>';
   }
 
-  function rankTone(rank) {
-    if (rank == null) return 'na';
-    if (rank <= 5) return 'elite';
-    if (rank <= 12) return 'strong';
-    if (rank <= 20) return 'mid';
-    if (rank <= 25) return 'weak';
-    return 'poor';
+  // The rank's place in its own denominator, on the site-wide scale.
+  function rankTone(rank, total) {
+    var A = window.MLBMAAssets;
+    return (A && A.rankTier && A.rankTier(rank, total)) || 'na';
   }
 
   function rankLeagueByTeam(pools, statKey, lowerBetter) {
@@ -128,7 +125,7 @@
     var rank = rankPack && rankPack.ranks ? rankPack.ranks[team] : null;
     var total = rankPack ? rankPack.total : null;
     var rankHtml = rank != null
-      ? '<span class="mc-bp-stat-rank mc-bp-stat-rank--' + rankTone(rank) + '" title="League rank #'
+      ? '<span class="mc-bp-stat-rank mc-bp-stat-rank--' + rankTone(rank, total) + '" title="League rank #'
         + rank + (total ? ' of ' + total : '') + '">#' + esc(String(rank)) + '</span>'
       : '';
     return '<td class="mc-os-cell mc-os-cell--stat mc-os-cell--stat-rank">'
