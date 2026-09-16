@@ -89,6 +89,7 @@ def parked_page(sport: str) -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>{label} — Chase Analytics</title>
+  <link rel="stylesheet" href="/dashboard/assets/fonts/chase-fonts.css?v={STAMP}">
   <link rel="stylesheet" href="/design/chase-tokens-v1.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v={STAMP}">
@@ -140,6 +141,7 @@ def page(sport: str, *, kind: str = "index") -> str:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{title}</title>
+  <link rel="stylesheet" href="/dashboard/assets/fonts/chase-fonts.css?v={STAMP}">
   <link rel="stylesheet" href="/design/chase-tokens-v1.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v={STAMP}">
@@ -214,6 +216,7 @@ def matchup_page(sport: str) -> str:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{sport.upper()} Matchup Analysis — Chase Analytics</title>
+  <link rel="stylesheet" href="/dashboard/assets/fonts/chase-fonts.css?v={STAMP}">
   <link rel="stylesheet" href="/design/chase-tokens-v1.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v={STAMP}">
@@ -259,6 +262,7 @@ def models_page() -> str:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Model Center — Chase Analytics</title>
+  <link rel="stylesheet" href="/dashboard/assets/fonts/chase-fonts.css?v={STAMP}">
   <link rel="stylesheet" href="/design/chase-tokens-v1.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v={STAMP}">

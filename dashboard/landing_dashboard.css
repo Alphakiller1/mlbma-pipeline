@@ -147,7 +147,6 @@ body.opening-dashboard .freshness-bar {
   color: transparent;
   letter-spacing: 0;
   font-family: var(--font-display, var(--font, system-ui));
-  font-variation-settings: 'wdth' 125;
   text-transform: uppercase;
   background: var(--ca-metal-text, linear-gradient(180deg, #fff, #A4A8B6));
   -webkit-background-clip: text;
@@ -339,7 +338,6 @@ body.opening-dashboard .freshness-bar {
   font-size: 17px;
   font-weight: 900;
   font-family: var(--font-display, var(--font, system-ui));
-  font-variation-settings: 'wdth' 120;
 }
 
 .ca-action-card span {
@@ -366,7 +364,6 @@ body.opening-dashboard .freshness-bar {
   color: var(--text, #F5F5F7);
   letter-spacing: -0.015em;
   font-family: var(--font-display, var(--font, system-ui));
-  font-variation-settings: 'wdth' 125;
 }
 
 .matchups-section-sub {
@@ -1649,7 +1646,6 @@ body.view-research .ca-page-identity { display: none; }
   letter-spacing: -0.015em;
   color: var(--text, #F5F5F7);
   font-family: var(--font-display, var(--font, system-ui));
-  font-variation-settings: 'wdth' 125;
 }
 
 .platform-subtitle {

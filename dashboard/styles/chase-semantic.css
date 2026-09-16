@@ -19,7 +19,7 @@
   --surface-elevated: var(--ca-ink-800);
   --surface-raised: var(--ca-ink-750);
   --surface-overlay: var(--ca-black-a-60);
-  --surface-header: var(--ca-ink-1000);
+  --surface-header: var(--ca-ink-950);
   --surface-inverse: var(--ca-paper-50);
   --surface-1: var(--ca-ink-850);
   --surface-2: var(--ca-ink-800);
@@ -34,6 +34,15 @@
   --surface-board-raised: var(--ca-ink-850);
   --surface-field: var(--ca-ink-800);
   --canvas-ambient: none;
+
+  /* Black premium surface (2026-09-15). One lifted black per object with a
+     hairline of top light; nothing inside it draws a frame of its own.
+     A well is the recess inside a slab - a panel within a section. */
+  --surface-card: var(--ca-ink-850);
+  --surface-well: var(--ca-ink-900);
+  --border-card: var(--ca-white-a-045);
+  --border-hover: var(--ca-white-a-12);
+  --elevation-card: inset 0 1px 0 var(--ca-white-a-03);
 
   /* —— Text —— */
   --text-primary: var(--ca-paper-50);
@@ -51,7 +60,7 @@
   /* —— Border —— */
   --border-default: var(--ca-line-600);
   --border-strong: var(--ca-line-500);
-  --border-subtle: var(--ca-white-a-06);
+  --border-subtle: var(--ca-white-a-045);
   --border-accent: var(--ca-violet-a-32);
   --border-focus: var(--ca-violet-500);
   --border-inverse: var(--ca-light-line);
@@ -140,7 +149,7 @@
   --control-bg: var(--ca-ink-800);
   --control-bg-hover: var(--ca-ink-750);
   --control-bg-active: var(--ca-violet-a-16);
-  --control-border: var(--ca-line-500);
+  --control-border: var(--ca-line-600);
   --control-text: var(--ca-paper-50);
 
   /* —— Focus —— */

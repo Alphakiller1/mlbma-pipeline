@@ -278,7 +278,6 @@ body::after,
 
 .section-title {
   font-family: var(--display);
-  font-variation-settings: "wdth" 125;
   letter-spacing: -0.015em;
   color: var(--v-heading);
 }
@@ -287,7 +286,6 @@ h1:not(.ca-page-title):not(.ca-profile-hero__title),
 h2, h3, .platform-title, .ca-section-title {
   font-family: var(--display);
   font-weight: 800;
-  font-variation-settings: "wdth" 125;
   letter-spacing: -0.015em;
   color: var(--v-heading);
 }
@@ -620,7 +618,6 @@ h1:not(.ca-page-title):not(.ca-profile-hero__title) {
   letter-spacing: -0.02em;
   line-height: 1.02;
   color: var(--text);
-  font-variation-settings: "wdth" 125;
 }
 .ca-profile-hero__sub {
   margin-top: 8px;
