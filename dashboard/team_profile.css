@@ -555,6 +555,7 @@ body.team-profile-page {
 .tp-team-banner__stats .tp-hero-stat--solid .tp-hero-stat__value { color: var(--gold, #FBBF24); }
 .tp-team-banner__stats .tp-hero-stat--mid .tp-hero-stat__value { color: var(--text-1, #E5E7EB); }
 .tp-team-banner__stats .tp-hero-stat--weak .tp-hero-stat__value { color: var(--red-l, #FCA5A5); }
+.tp-hero-stat--poor .tp-hero-stat__value { color: var(--red, #F87171); }
 .tp-team-banner__stats .tp-hero-stat--neutral .tp-hero-stat__value { color: var(--text-1, #F3F4F6); }
 
 @media (max-width: 767px) {
@@ -1124,9 +1125,10 @@ body.team-profile-page :is(
 }
 
 .tp-unit-chip-rank--elite .tp-unit-chip-rank__num { color: #4ade80; }
-.tp-unit-chip-rank--strong .tp-unit-chip-rank__num { color: #93c5fd; }
+.tp-unit-chip-rank--strong .tp-unit-chip-rank__num { color: #7bdc5a; }
 .tp-unit-chip-rank--mid .tp-unit-chip-rank__num { color: #fbbf24; }
-.tp-unit-chip-rank--weak .tp-unit-chip-rank__num { color: #f87171; }
+.tp-unit-chip-rank--weak .tp-unit-chip-rank__num { color: #fb923c; }
+.tp-unit-chip-rank--poor .tp-unit-chip-rank__num { color: #f87171; }
 
 .tp-sticky-wrap .tp-team-bar {
   margin-bottom: 0;
@@ -2498,6 +2500,7 @@ body.team-profile-page :is(
 .tp-hero-stat--solid .tp-hero-stat__value { color: var(--gold, #FBBF24); }
 .tp-hero-stat--mid .tp-hero-stat__value { color: var(--text-1, #E5E7EB); }
 .tp-hero-stat--weak .tp-hero-stat__value { color: var(--red-l, #FCA5A5); }
+.tp-hero-stat--poor .tp-hero-stat__value { color: var(--red, #F87171); }
 .tp-hero-stat--neutral .tp-hero-stat__value { color: var(--text-1, #F3F4F6); }
 
 /* Content spec §1–§10 */
@@ -2901,9 +2904,10 @@ body.team-profile-page :is(
 }
 
 .tp-offense-metrics--profile .tp-offense-metrics__rank-cell--elite .tp-offense-stat__rank-num { color: #4ade80; }
-.tp-offense-metrics--profile .tp-offense-metrics__rank-cell--strong .tp-offense-stat__rank-num { color: #93c5fd; }
+.tp-offense-metrics--profile .tp-offense-metrics__rank-cell--strong .tp-offense-stat__rank-num { color: #7bdc5a; }
 .tp-offense-metrics--profile .tp-offense-metrics__rank-cell--mid .tp-offense-stat__rank-num { color: #fbbf24; }
-.tp-offense-metrics--profile .tp-offense-metrics__rank-cell--weak .tp-offense-stat__rank-num { color: #f87171; }
+.tp-offense-metrics--profile .tp-offense-metrics__rank-cell--weak .tp-offense-stat__rank-num { color: #fb923c; }
+.tp-offense-metrics--profile .tp-offense-metrics__rank-cell--poor .tp-offense-stat__rank-num { color: #f87171; }
 .tp-offense-metrics--profile .tp-offense-metrics__rank-cell--neutral .tp-offense-stat__rank-num { color: var(--text-2, #AEB4C6); }
 
 .tp-offense-metrics--profile .tp-offense-metrics__band-head {
@@ -3052,9 +3056,10 @@ body.team-profile-page :is(
 }
 
 .tp-offense-stat__rank--elite .tp-offense-stat__rank-num { color: #4ade80; }
-.tp-offense-stat__rank--strong .tp-offense-stat__rank-num { color: #93c5fd; }
+.tp-offense-stat__rank--strong .tp-offense-stat__rank-num { color: #7bdc5a; }
 .tp-offense-stat__rank--mid .tp-offense-stat__rank-num { color: #fbbf24; }
-.tp-offense-stat__rank--weak .tp-offense-stat__rank-num { color: #f87171; }
+.tp-offense-stat__rank--weak .tp-offense-stat__rank-num { color: #fb923c; }
+.tp-offense-stat__rank--poor .tp-offense-stat__rank-num { color: #f87171; }
 .tp-offense-stat__rank--neutral .tp-offense-stat__rank-num { color: var(--text-2, #AEB4C6); }
 
 /* Lineup profile — reset legacy column stat cards when using inline row layout */

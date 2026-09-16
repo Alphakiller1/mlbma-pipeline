@@ -820,7 +820,9 @@ function profileWindowFieldsFromRow(row) {
       + pitcherAvatarHtml(name, 'matchup')
       + '<div class="rl-scorecard-body"><h4>' + esc(name) + '</h4>'
       + '<div class="ca-metric-label">' + esc(label) + '</div>'
-      + '<div class="rl-metric-primary">' + metricChip(val, 'pitching', invert, 1) + '</div></div></div>';
+      // One arm's Pitch Score, graded against the other starters - not against
+      // the thirty staffs, which is a different population on the same scale.
+      + '<div class="rl-metric-primary">' + metricChip(val, 'sp_pitch_score', invert, 1) + '</div></div></div>';
   }
 
   function bpScore(u) {
@@ -908,7 +910,7 @@ function profileWindowFieldsFromRow(row) {
     return '<div class="rl-compare-identity">' + logo
       + '<div><div style="font-weight:700;font-size:16px;">' + esc(team) + ' Bullpen</div>'
       + '<div class="ca-helper">Bullpen Score ' + metricChip(score, 'bp_score', false, 1)
-      + ' � OSI Allowed ' + metricChip(unit && unit.osiAllowed, 'osi', true, 1) + '</div></div></div>';
+      + ' � OSI Allowed ' + metricChip(unit && unit.osiAllowed, 'bp_osi_allowed', null, 1) + '</div></div></div>';
   }
 
   function compareIdentityHtml(data) {
@@ -973,7 +975,11 @@ function profileWindowFieldsFromRow(row) {
     if (v == null || v === '' || isNaN(v)) {
       return '<span class="' + cls + ' rl-compare-metric-val--empty"><span class="rl-compare-na">—</span></span>';
     }
-    return '<span class="' + cls + '">' + metricChip(v, row.ctx || 'osi', invert, d) + '</span>';
+    // Each side names its own league baseline: these rows put a lineup's number
+    // and a pitcher's number beside each other, and one context cannot be right
+    // for both.
+    var ctx = (side === 'a' ? row.ctxA : row.ctxB) || row.ctx || 'osi';
+    return '<span class="' + cls + '">' + metricChip(v, ctx, invert, d) + '</span>';
   }
 
   function compareMetricsHeadHtml(dataA, dataB) {
@@ -1028,11 +1034,11 @@ function profileWindowFieldsFromRow(row) {
       html += '<div class="rl-compare-bar-row">'
         + '<span class="rl-compare-bar-side">' + esc(dataA.label) + '</span>'
         + '<div class="rl-compare-bar-track">'
-        + '<div class="rl-compare-bar-fill rl-compare-bar-fill--a" style="width:' + wa + '%;background:' + mColor(va, bar.invert, bar.ctx) + '"></div>'
+        + '<div class="rl-compare-bar-fill rl-compare-bar-fill--a" style="width:' + wa + '%;background:' + mColor(va, bar.invert, bar.ctxA || bar.ctx) + '"></div>'
         + '</div>'
         + '<span class="rl-compare-bar-metric">' + esc(bar.label) + '</span>'
         + '<div class="rl-compare-bar-track">'
-        + '<div class="rl-compare-bar-fill rl-compare-bar-fill--b" style="width:' + wb + '%;background:' + mColor(vb, bar.invert, bar.ctx) + '"></div>'
+        + '<div class="rl-compare-bar-fill rl-compare-bar-fill--b" style="width:' + wb + '%;background:' + mColor(vb, bar.invert, bar.ctxB || bar.ctx) + '"></div>'
         + '</div>'
         + '<span class="rl-compare-bar-side">' + esc(dataB.label) + '</span>'
         + '</div>';
@@ -1150,7 +1156,9 @@ function profileWindowFieldsFromRow(row) {
             valA: row.valA,
             valB: row.valB,
             invert: row.invertA,
-            ctx: row.ctx
+            ctx: row.ctx,
+            ctxA: row.ctxA,
+            ctxB: row.ctxB
           };
         });
         chartHtml = compareBarChartHtml(dataA, dataB, barMetrics);

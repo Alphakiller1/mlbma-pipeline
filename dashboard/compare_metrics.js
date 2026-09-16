@@ -615,6 +615,11 @@
       invertA: !!opts.invertA,
       invertB: opts.invertB != null ? !!opts.invertB : !!opts.invertA,
       ctx: opts.ctx || 'osi',
+      // Most rows here put two different stats side by side - a lineup's wRC+
+      // against the RCV a pitcher allows, xwOBA against xFIP - and one league
+      // baseline cannot be right for both. Each side may name its own.
+      ctxA: opts.ctxA || opts.ctx || 'osi',
+      ctxB: opts.ctxB || opts.ctx || 'osi',
       decimals: opts.decimals
     };
   }
@@ -629,14 +634,17 @@
     var hrB = teamPitchingHr9(b.row.t);
     return [
       metricRow('Win%', a.row.winPct, b.row.winPct, { ctx: 'pct' }),
-      metricRow('wRC+', a.row.wrc, b.row.wrc, { ctx: 'osi' }),
-      metricRow('wOBA', a.row.woba, b.row.woba, { ctx: 'osi' }),
-      metricRow('xwOBA', a.row.xwoba, b.row.xwoba, { ctx: 'osi' }),
-      metricRow('SLG', a.row.slg, b.row.slg, { ctx: 'osi' }),
+      // Each stat against its own league baseline. These all read 'osi' before,
+      // so a .320 wOBA and a 112 wRC+ were graded on a 0-100 composite's scale -
+      // which put every wOBA, xwOBA and SLG in the league at the bottom of it.
+      metricRow('wRC+', a.row.wrc, b.row.wrc, { ctx: 'wrc' }),
+      metricRow('wOBA', a.row.woba, b.row.woba, { ctx: 'woba', decimals: 3 }),
+      metricRow('xwOBA', a.row.xwoba, b.row.xwoba, { ctx: 'xwoba', decimals: 3 }),
+      metricRow('SLG', a.row.slg, b.row.slg, { ctx: 'slg', decimals: 3 }),
       metricRow('OSI', a.row.osi, b.row.osi, { ctx: 'osi' }),
-      metricRow('ABQ', a.row.abq, b.row.abq, { ctx: 'osi' }),
-      metricRow('RCV', a.row.rcv, b.row.rcv, { ctx: 'osi' }),
-      metricRow('PALS', lineupPals(a.row), lineupPals(b.row), { ctx: 'osi' }),
+      metricRow('ABQ', a.row.abq, b.row.abq, { ctx: 'abq' }),
+      metricRow('RCV', a.row.rcv, b.row.rcv, { ctx: 'rcv' }),
+      metricRow('PALS', lineupPals(a.row), lineupPals(b.row), { ctx: 'pals' }),
       metricRow('Pitch Score Allowed', a.row.pitchScore, b.row.pitchScore, { ctx: 'pitching', invertA: true, invertB: true }),
       metricRow('Staff HR/9', hrA, hrB, { ctx: 'pitching', invertA: true, invertB: true }),
       metricRow('Proj OSI', a.row.projOSI, b.row.projOSI, { ctx: 'osi' })
@@ -767,6 +775,8 @@
   function swapMetricRow(r) {
     return metricRow(r.label, r.valB, r.valA, {
       ctx: r.ctx,
+      ctxA: r.ctxB,
+      ctxB: r.ctxA,
       invertA: r.invertB,
       invertB: r.invertA,
       decimals: r.decimals,
@@ -786,20 +796,24 @@
     var spWin = spWinPctFromLog(pitcher.label);
     var luWin = lineupWinPctForCompare(lineup, lineup.filter);
     var rows = [
-      metricRow('OSI / OSI Allowed', lu.osi, allow, { invertB: true }),
-      metricRow('Win% / SP Win%', luWin, spWin, { ctx: 'pct' }),
-      metricRow('QS% / QS%', lu.qs, ext.qs, { ctx: 'qspct' }),
-      metricRow('wRC+ / RCV Allowed', lu.wrc, mo.rcvAllowed, { invertB: true }),
+      // Left side is the lineup, right side is one starter, so the two sides name
+      // their own league baselines. Everything below used to grade both halves
+      // against whichever single context the row happened to carry - which put
+      // K/9, BB/9, HR/9 and xFIP on Pitch Score's 0-100 index.
+      metricRow('OSI / OSI Allowed', lu.osi, allow, { ctxB: 'sp_osi_allowed', invertB: true }),
+      metricRow('Win% / SP Win%', luWin, spWin, { ctxA: 'winPct', ctxB: 'pitcherWinPct' }),
+      metricRow('QS% / QS%', lu.qs, ext.qs, { ctx: 'qspct', ctxB: 'sp_qs_pct' }),
+      metricRow('wRC+ / RCV Allowed', lu.wrc, mo.rcvAllowed, { ctxA: 'wrc', ctxB: 'rcv', invertB: true }),
       metricRow('wOBA / wOBA Allowed', lu.woba, ext.woba, { ctx: 'woba', invertB: true, decimals: 3 }),
-      metricRow('xwOBA / xFIP', lu.xwoba, ext.xfip, { ctx: 'pitching', invertB: true, decimals: 3 }),
-      metricRow('SLG / OPS Allowed', lu.slg, ext.ops, { ctx: 'ops', invertB: true, decimals: 3 }),
-      metricRow('Pitch Score Against / Pitching Score', lu.pitchScore, spPitchScore, { ctx: 'pitching', invertA: true }),
-      metricRow('K/9', against.k9, spK9, { ctx: 'pitching', invertA: true }),
-      metricRow('BB/9', against.bb9, spBb9, { ctx: 'pitching', invertA: true, invertB: true }),
+      metricRow('xwOBA / xFIP', lu.xwoba, ext.xfip, { ctxA: 'xwoba', ctxB: 'xfip', invertB: true, decimals: 3 }),
+      metricRow('SLG / OPS Allowed', lu.slg, ext.ops, { ctxA: 'slg', ctxB: 'sp_ops_allowed', invertB: true, decimals: 3 }),
+      metricRow('Pitch Score Against / Pitching Score', lu.pitchScore, spPitchScore, { ctx: 'pitching', ctxB: 'sp_pitch_score', invertA: true }),
+      metricRow('K/9', against.k9, spK9, { ctx: 'k9', invertA: true }),
+      metricRow('BB/9', against.bb9, spBb9, { ctx: 'bb9', invertA: true, invertB: true }),
       metricRow('WHIP', against.whip, ext.whip, { ctx: 'whip', invertA: true, invertB: true }),
-      metricRow('ABQ / ABQ Allowed', lu.abq, mo.abqAllowed, { invertB: true }),
-      metricRow('RCV / RCV Allowed', lu.rcv, mo.rcvAllowed, { invertB: true }),
-      metricRow('HR/9 Faced / HR/9', teamPitchingHr9(lu.t), mo.hr9, { ctx: 'pitching', invertA: true, invertB: true })
+      metricRow('ABQ / ABQ Allowed', lu.abq, mo.abqAllowed, { ctxA: 'abq', ctxB: 'sp_abq_allowed', invertB: true }),
+      metricRow('RCV / RCV Allowed', lu.rcv, mo.rcvAllowed, { ctxA: 'rcv', invertB: true }),
+      metricRow('HR/9 Faced / HR/9', teamPitchingHr9(lu.t), mo.hr9, { ctx: 'hr9', invertA: true, invertB: true })
     ];
     if (!lineupFirst) return rows.map(swapMetricRow);
     return rows;
@@ -1051,6 +1065,8 @@
       return rows.map(function(r) {
         return metricRow(r.label, r.valB, r.valA, {
           ctx: r.ctx,
+          ctxA: r.ctxB,
+          ctxB: r.ctxA,
           invertA: r.invertB,
           invertB: r.invertA,
           decimals: r.decimals,

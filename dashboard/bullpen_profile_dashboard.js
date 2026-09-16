@@ -115,24 +115,19 @@
 
   // Tone for headline bullpen stats (all lower-is-better) -> colored value text,
   // matching the team-profile banner style (tp-hero-stat--{tone}).
+  // Graded against the league of bullpen units, not against thresholds typed in
+  // once: a 3.75 unit ERA is not "strong" in every season, and OSI allowed by a
+  // bullpen spreads about 1.4 points, so the old 45/50/56 ladder covered four
+  // standard deviations and reported almost every unit as elite or weak.
   function bpStatTone(label, v) {
     if (v == null || isNaN(v)) return 'neutral';
-    if (label.indexOf('OSI') >= 0) {       // OSI Allowed - lower better
-      if (v <= 45) return 'elite';
-      if (v <= 50) return 'strong';
-      if (v <= 56) return 'mid';
-      return 'weak';
-    }
-    // ERA / Hi Lev ERA - lower better
-    if (v <= 3.00) return 'elite';
-    if (v <= 3.75) return 'strong';
-    if (v <= 4.25) return 'mid';
-    return 'weak';
+    var meta = bannerMetricMeta(label);
+    return (A && A.valueTier && A.valueTier(v, meta.ctx, meta.invert)) || 'neutral';
   }
 
   function bannerMetricMeta(label) {
     var u = String(label || '').toUpperCase();
-    if (u.indexOf('OSI') >= 0) return { ctx: 'osi', invert: true };
+    if (u.indexOf('OSI') >= 0) return { ctx: 'bp_osi_allowed', invert: null };
     if (u.indexOf('ERA') >= 0) return { ctx: 'bp_era', invert: null };
     return { ctx: 'default', invert: null };
   }
@@ -239,7 +234,7 @@
         + '<td class="num">' + valChip(colVal(unit, r.prefix, 'ERA', pickCol), 'bp_era', true, 2) + '</td>'
         + '<td class="num">' + valChip(pctNorm(colVal(unit, r.prefix, 'K_pct', pickCol)), 'bp_kpct', false, 1) + '</td>'
         + '<td class="num">' + valChip(pctNorm(colVal(unit, r.prefix, 'BB_pct', pickCol)), 'bp_bbpct', true, 1) + '</td>'
-        + '<td class="num">' + valChip(colVal(unit, r.prefix, 'OSI_allowed', pickCol), 'osi', true, 1) + '</td>'
+        + '<td class="num">' + valChip(colVal(unit, r.prefix, 'OSI_allowed', pickCol), 'bp_osi_allowed', null, 1) + '</td>'
         + '<td class="num">' + valChip(colVal(unit, r.prefix, 'HR9', pickCol), 'bp_hr9', true, 2) + '</td></tr>';
     }).join('');
     return '<table class="hub-table tp-table bp-leverage-table"><thead><tr>'
@@ -645,8 +640,8 @@
         + '<td class="num">' + valChip(pctNorm(colVal(r, 'overall', 'K_pct', pickCol)), 'rp_kpct', false, 1) + '</td>'
         + '<td class="num">' + valChip(pctNorm(colVal(r, 'overall', 'BB_pct', pickCol)), 'rp_bbpct', true, 1) + '</td>'
         + '<td class="num">' + valChip(colVal(r, 'overall', 'HR9', pickCol), 'rp_hr9', true, 2) + '</td>'
-        + '<td class="num">' + valChip(colVal(r, 'overall', 'OSI_allowed', pickCol), 'osi', true, 1) + '</td>'
-        + '<td class="num">' + valChip(colVal(r, 'overall', 'ABQ_allowed', pickCol), 'abq', true, 1) + '</td>'
+        + '<td class="num">' + valChip(colVal(r, 'overall', 'OSI_allowed', pickCol), 'rp_osi_allowed', null, 1) + '</td>'
+        + '<td class="num">' + valChip(colVal(r, 'overall', 'ABQ_allowed', pickCol), 'rp_abq_allowed', null, 1) + '</td>'
         + '<td class="num">' + valChip(colVal(r, 'high_leverage', 'ERA', pickCol), 'rp_era', true, 2) + '</td></tr>';
       if (exp) html += '<tr class="detail-row"><td colspan="' + colCount + '">' + appearanceDetail(pid, name) + '</td></tr>';
     });

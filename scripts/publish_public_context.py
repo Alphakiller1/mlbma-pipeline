@@ -65,11 +65,32 @@ METRIC_LABELS = {
     "winPct": "Win%", "f5WinPct": "F5 Win%", "pitcherWinPct": "SP Win%",
 }
 
-# Baseline keys a public page may know. Anything modelled or expected is out.
+# Baseline keys a public page may know. Anything modelled or expected is out -
+# `projosi` is the one forecast in the source file and is never named here.
+#
+# A league mean and spread is not a club's number, but the list is still named
+# key by key. It used to carry "k" and "bb", which exist in no baselines file
+# (the keys are kpct / bbpct), and to omit xfip - so the starter splits table
+# graded xFIP, K% and BB% against hand-typed first-paint numbers all season.
 PUBLIC_BASELINES = {
-    "osi", "abq", "rcv", "obr", "woba", "slg", "avg", "obp", "ops", "iso",
-    "wrc", "hr", "barrel", "hardhit", "k", "bb", "era", "whip", "fip",
+    "osi", "abq", "rcv", "obr", "woba", "xwoba", "slg", "avg", "obp", "ops", "iso",
+    "wrc", "hr", "barrel", "hardhit", "pitching",
+    "era", "whip", "fip", "xfip", "hr9", "bb9", "k9", "kpct", "bbpct",
+    "team_era", "team_fip", "team_whip", "team_hr9",
+    "bp_era", "bp_fip", "bp_whip", "bp_hr9", "bp_kpct", "bp_bbpct", "bp_score",
+    "bp_osi_allowed",
+    "rp_era", "rp_fip", "rp_whip", "rp_hr9", "rp_kpct", "rp_bbpct",
+    "rp_osi_allowed", "rp_abq_allowed",
+    "sp_osi_allowed", "sp_abq_allowed", "sp_oor_faced", "sp_qs_pct", "sp_pitch_score",
+    "sp_ops_allowed",
 }
+# Generated population x split families (core.compute_baselines). Every key in
+# them is an observed rate on a published split, so they are admitted by family.
+PUBLIC_BASELINE_FAMILIES = ("sp_vs_lhh_", "sp_vs_rhh_", "sp_home_", "sp_away_", "bat_", "tm_")
+
+
+def is_public_baseline(key: str) -> bool:
+    return key in PUBLIC_BASELINES or key.startswith(PUBLIC_BASELINE_FAMILIES)
 
 # The snapshot keeps Baseball-Reference codes; the schedule keeps the club's
 # own. Seven of thirty disagree, so the join is done here, once, rather than in
@@ -393,11 +414,15 @@ def main(argv: list[str]) -> int:
     if BASELINES.is_file():
         source = json.loads(BASELINES.read_text(encoding="utf-8"))
         kept = {k: v for k, v in (source.get("baselines") or {}).items()
-                if k in PUBLIC_BASELINES}
+                if is_public_baseline(k)}
+        # The oldest context sets the file's age: a run that carried some baselines
+        # forward must not stamp the whole file with today's date.
+        stamps = sorted(str(v.get("as_of")) for v in kept.values()
+                        if isinstance(v, dict) and v.get("as_of"))
         out = {
             "schema": "chase-public-baselines/1",
             "generated_at_utc": now,
-            "data_through_utc": source.get("generated_at") or now,
+            "data_through_utc": (stamps[0] if stamps else source.get("generated_at")) or now,
             "baselines": kept,
         }
         dest = PUBLIC / "league_baselines.json"

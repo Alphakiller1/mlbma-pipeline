@@ -270,9 +270,13 @@
     if (key === 'winPct' || key === 'f5WinPct' || key === 'pitcherWinPct') return A.metricColor(value, key, false);
     // Pitch Score Against: high = pitchers did WELL = lineup was EASY = bad for the
     // lineup, so invert (high -> red), same as QS% Allowed.
-    if (key === 'pitchScore') return A.metricColor(value, 'pitching', true);
+    // Both of these describe the PITCHING A LINEUP FACED, so they grade against
+    // the thirty lineups' own faced-value pools (registered below), not against
+    // the league's staff Pitch Score - a different population on a different
+    // scale, and in QS%'s case a different stat entirely.
+    if (key === 'pitchScore') return A.metricColor(value, 'pitchScore', true);
     if (key === 'pitchInn') return A.metricColor(value, 'pitchinn', false);
-    if (key === 'qs') return A.metricColor(value, 'pitching', true);
+    if (key === 'qs') return A.metricColor(value, 'qs', true);
     if (key === 'xfip') return A.metricColor(value, 'xfipFaced', true);
     if (key === 'ppGap') return A.metricColor(value, 'ppGap', false);
     return A.metricColor(value, key, false);
@@ -295,9 +299,9 @@
     if (safe == null) return (A && A.chipPlaceholderHtml) ? A.chipPlaceholderHtml('—') : '—';
     var ctx = def && def.key ? def.key : 'osi';
     var invert = false;
-    if (ctx === 'pitchScore') { ctx = 'pitching'; invert = true; }  // high = easy lineup = red
+    if (ctx === 'pitchScore') { invert = true; }  // high = easy lineup = red
     if (ctx === 'pitchInn') ctx = 'pitchinn';
-    if (ctx === 'qs') { ctx = 'pitching'; invert = true; }
+    if (ctx === 'qs') { invert = true; }
     if (ctx === 'xfip') { ctx = 'xfipFaced'; invert = true; }
     if (ctx === 'xwoba') ctx = 'woba';
     if (ctx === 'ppGap') ctx = 'ppGap';
@@ -668,7 +672,7 @@
     var metrics = [
       'winPct', 'f5WinPct', 'pitcherWinPct',
       'osi', 'abq', 'rcv', 'obr', 'wrc', 'woba', 'xwoba', 'xfip',
-      'pals', 'projOSI', 'ppGap', 'pitchScore', 'pitchScoreFaced'
+      'pals', 'projOSI', 'ppGap', 'pitchScore', 'pitchScoreFaced', 'qs'
     ];
     var registered = false;
     metrics.forEach(function(k) {

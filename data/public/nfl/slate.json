@@ -641,6 +641,182 @@
               }
             }
           }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
+            }
+          }
         }
       },
       "home_scheme": {
@@ -1001,6 +1177,182 @@
                 "place": 11,
                 "of": 32
               }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
             }
           }
         }
@@ -4349,6 +4701,182 @@
               }
             }
           }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
+            }
+          }
         }
       },
       "home_scheme": {
@@ -4709,6 +5237,182 @@
                 "place": 22,
                 "of": 32
               }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
             }
           }
         }
@@ -8253,6 +8957,182 @@
               }
             }
           }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
+            }
+          }
         }
       },
       "home_scheme": {
@@ -8613,6 +9493,182 @@
                 "place": 1,
                 "of": 32
               }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
             }
           }
         }
@@ -12731,6 +13787,182 @@
               }
             }
           }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
+            }
+          }
         }
       },
       "home_scheme": {
@@ -13091,6 +14323,182 @@
                 "place": 10,
                 "of": 32
               }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
             }
           }
         }
@@ -16919,6 +18327,182 @@
               }
             }
           }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
+            }
+          }
         }
       },
       "home_scheme": {
@@ -17279,6 +18863,182 @@
                 "place": 17,
                 "of": 32
               }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
             }
           }
         }
@@ -20733,6 +22493,182 @@
               }
             }
           }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
+            }
+          }
         }
       },
       "home_scheme": {
@@ -21093,6 +23029,182 @@
                 "place": 21,
                 "of": 32
               }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
             }
           }
         }
@@ -24871,6 +26983,182 @@
               }
             }
           }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
+            }
+          }
         }
       },
       "home_scheme": {
@@ -25231,6 +27519,182 @@
                 "place": 12,
                 "of": 32
               }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
             }
           }
         }
@@ -28547,6 +31011,182 @@
               }
             }
           }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
+            }
+          }
         }
       },
       "home_scheme": {
@@ -28907,6 +31547,182 @@
                 "place": 20,
                 "of": 32
               }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
             }
           }
         }
@@ -32753,6 +35569,182 @@
               }
             }
           }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
+            }
+          }
         }
       },
       "home_scheme": {
@@ -33113,6 +36105,182 @@
                 "place": 18,
                 "of": 32
               }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
             }
           }
         }
@@ -36614,6 +39782,182 @@
               }
             }
           }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
+            }
+          }
         }
       },
       "home_scheme": {
@@ -36974,6 +40318,182 @@
                 "place": 13,
                 "of": 32
               }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
             }
           }
         }
@@ -40288,6 +43808,182 @@
               }
             }
           }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
+            }
+          }
         }
       },
       "home_scheme": {
@@ -40648,6 +44344,182 @@
                 "place": 30,
                 "of": 32
               }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
             }
           }
         }
@@ -44032,6 +47904,182 @@
               }
             }
           }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
+            }
+          }
         }
       },
       "home_scheme": {
@@ -44392,6 +48440,182 @@
                 "place": 16,
                 "of": 32
               }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
             }
           }
         }
@@ -47594,6 +51818,182 @@
               }
             }
           }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
+            }
+          }
         }
       },
       "home_scheme": {
@@ -47954,6 +52354,182 @@
                 "place": 28,
                 "of": 32
               }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
             }
           }
         }
@@ -50950,6 +55526,182 @@
               }
             }
           }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
+            }
+          }
         }
       },
       "home_scheme": {
@@ -51310,6 +56062,182 @@
                 "place": 29,
                 "of": 32
               }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
             }
           }
         }
@@ -54702,6 +59630,182 @@
               }
             }
           }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
+            }
+          }
         }
       },
       "home_scheme": {
@@ -55062,6 +60166,182 @@
                 "place": 27,
                 "of": 32
               }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
             }
           }
         }
@@ -58590,6 +63870,182 @@
               }
             }
           }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
+            }
+          }
         }
       },
       "home_scheme": {
@@ -58950,6 +64406,182 @@
                 "place": 26,
                 "of": 32
               }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.1131,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0227,
+              "std": 0.0601,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4624,
+              "std": 0.0373,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.425,
+              "std": 0.0291,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1307,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1164,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0718,
+              "std": 0.139,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1124,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1091,
+              "std": 0.1277,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1498,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1238,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1223,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0729,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0164,
+              "std": 0.0919,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.095,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0431,
+              "std": 0.0729,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0594,
+              "std": 0.104,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0208,
+              "std": 0.0557,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4623,
+              "std": 0.0318,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4254,
+              "std": 0.0252,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.11,
+              "std": 0.1192,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1005,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0784,
+              "std": 0.1017,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.098,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1112,
+              "std": 0.1108,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1168,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1111,
+              "std": 0.1202,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0002,
+              "std": 0.1289,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0689,
+              "std": 0.1313,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1253,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.107,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0968,
+              "std": 0.0856,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.041,
+              "std": 0.0567,
+              "n": 32
             }
           }
         }

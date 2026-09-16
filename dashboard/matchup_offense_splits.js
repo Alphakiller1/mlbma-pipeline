@@ -724,13 +724,11 @@
     return index;
   }
 
+  // The rank's place in its own denominator, on the site-wide scale. The old
+  // ladder was "top 5 / top 12 / top 20 / top 25" whatever the pool size.
   function rankTone(rank, total) {
-    if (rank == null) return 'na';
-    if (rank <= 5) return 'elite';
-    if (rank <= 12) return 'strong';
-    if (rank <= 20) return 'mid';
-    if (rank <= 25) return 'weak';
-    return 'poor';
+    var A = window.MLBMAAssets;
+    return (A && A.rankTier && A.rankTier(rank, total)) || 'na';
   }
 
   function cellHtml(rank, total) {

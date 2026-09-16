@@ -202,7 +202,40 @@ def team_scheme(board: dict) -> dict[str, dict]:
                     rank_group = (out[team].setdefault("league_frequency_ranks", {})
                                   .setdefault(phase, {}).setdefault(group, {}))
                     rank_group[key] = {"place": ranks[team], "of": len(rows)}
+
+    # League average and spread of every situational response, per phase, across
+    # the clubs charted. The page grades a club's EPA against man, under pressure,
+    # off play action - and its success rates - against THIS. Zero is not average
+    # in any of them: every offence gives EPA back under pressure, and a success
+    # rate is a share near 45%.
+    league = response_baselines(out)
+    if league:
+        for entry in out.values():
+            entry["league_response"] = league
     return out
+
+
+MIN_RESPONSE_CLUBS = 8
+
+
+def response_baselines(schemes: dict[str, dict]) -> dict[str, dict]:
+    league: dict[str, dict] = {}
+    for phase in ("offense", "defense"):
+        for key in SCHEME_GROUPS["response"]:
+            values = [
+                float(entry[phase]["response"][key])
+                for entry in schemes.values()
+                if ((entry.get(phase) or {}).get("response") or {}).get(key) is not None
+            ]
+            if len(values) < MIN_RESPONSE_CLUBS:
+                continue
+            mean = sum(values) / len(values)
+            std = (sum((v - mean) ** 2 for v in values) / len(values)) ** 0.5
+            if std <= 1e-9:
+                continue
+            league.setdefault(phase, {})[key] = {
+                "mean": round(mean, 4), "std": round(std, 4), "n": len(values)}
+    return league
 
 
 # Identity fields only. The rest of a player_projections row is the model's

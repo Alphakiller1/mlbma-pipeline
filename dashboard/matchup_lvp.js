@@ -1156,6 +1156,11 @@
       invertA: !!opts.invertA,
       invertB: opts.invertB != null ? !!opts.invertB : !!opts.invertA,
       ctx: opts.ctx || 'osi',
+      // A row often puts two different stats side by side - a lineup's K/9 faced
+      // against a pitcher's K/9, xFIP against xwOBA - and one context cannot be
+      // right for both. Each side may name its own; ctx stays the fallback.
+      ctxA: opts.ctxA || opts.ctx || 'osi',
+      ctxB: opts.ctxB || opts.ctx || 'osi',
       decimals: opts.decimals == null ? 1 : opts.decimals
     };
   }
@@ -1177,13 +1182,17 @@
     var spPitchScore = pitcherSeasonPitchScore(comp.sp);
 
     return [
-      metricRow('QS% Allowed / QS%', lu.qs, spQs, { ctx: 'qspct', invertA: true, invertB: false }),
-      metricRow('Pitch Score Against / Pitching Score', lu.pitchScore, spPitchScore, { ctx: 'pitching', invertA: true, invertB: false }),
-      metricRow('K/9', against.k9, spK9, { ctx: 'pitching', invertA: true }),
-      metricRow('BB/9', against.bb9, spBb9, { ctx: 'pitching', invertA: true, invertB: true }),
+      // The right-hand side is one starter, so it grades against starters. The
+      // left is the pitching this lineup has faced, on the same scale.
+      metricRow('QS% Allowed / QS%', lu.qs, spQs, { ctx: 'qspct', ctxB: 'sp_qs_pct', invertA: true, invertB: false }),
+      metricRow('Pitch Score Against / Pitching Score', lu.pitchScore, spPitchScore, { ctx: 'pitching', ctxB: 'sp_pitch_score', invertA: true, invertB: false }),
+      // K/9 and BB/9 were graded as Pitch Score - a 0-100 index - so a 9.0 K/9
+      // read as a bottom-of-the-league number on a scale it does not live on.
+      metricRow('K/9', against.k9, spK9, { ctx: 'k9', invertA: true }),
+      metricRow('BB/9', against.bb9, spBb9, { ctx: 'bb9', invertA: true, invertB: true }),
       metricRow('WHIP', against.whip, spWhip, { ctx: 'whip', invertA: true, invertB: true }),
-      metricRow('OPS / OPS Allowed', lu.ops, spOps, { ctx: 'ops', invertB: true, decimals: 3 }),
-      metricRow('xFIP', against.xfip, spXfip, { ctx: 'pitching', invertA: true, invertB: true }),
+      metricRow('OPS / OPS Allowed', lu.ops, spOps, { ctx: 'ops', ctxB: 'sp_ops_allowed', invertB: true, decimals: 3 }),
+      metricRow('xFIP', against.xfip, spXfip, { ctx: 'xfip', invertA: true, invertB: true }),
       metricRow('wOBA / wOBA Allowed', lu.woba, spWoba, { ctx: 'woba', invertB: true, decimals: 3 })
     ];
   }
@@ -1200,10 +1209,10 @@
       }
       return '<div class="mc-lvp-metric-row">'
         + '<span class="mc-lvp-metric-val mc-lvp-metric-val--a' + (winner === 'a' ? ' mc-lvp-metric-val--win' : '') + '">'
-        + metricChip(va, row.ctx || 'osi', row.invertA, d) + '</span>'
+        + metricChip(va, row.ctxA || row.ctx || 'osi', row.invertA, d) + '</span>'
         + '<span class="mc-lvp-metric-label">' + esc(row.label) + '</span>'
         + '<span class="mc-lvp-metric-val mc-lvp-metric-val--b' + (winner === 'b' ? ' mc-lvp-metric-val--win' : '') + '">'
-        + metricChip(vb, row.ctx || 'osi', row.invertB, d) + '</span>'
+        + metricChip(vb, row.ctxB || row.ctx || 'osi', row.invertB, d) + '</span>'
         + '</div>';
     }).join('');
   }

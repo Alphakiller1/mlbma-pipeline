@@ -488,7 +488,7 @@
     if (rank == null) {
       return '<td class="num tp-offense-metrics__rank-cell tp-offense-metrics__rank-cell--neutral">—</td>';
     }
-    var tone = (Sections && Sections.rankTone) ? Sections.rankTone(rank) : 'neutral';
+    var tone = (Sections && Sections.rankTone) ? Sections.rankTone(rank, rankMeta.total) : 'neutral';
     return '<td class="num tp-offense-metrics__rank-cell tp-offense-metrics__rank-cell--' + esc(tone) + '">'
       + '<span class="tp-offense-stat__rank-num">#' + esc(String(rank)) + '</span></td>';
   }

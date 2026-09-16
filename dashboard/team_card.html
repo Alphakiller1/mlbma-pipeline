@@ -90,6 +90,8 @@ body { color: var(--text); font-family: var(--font-body); min-height: 100vh; }
     return;
   }
 
+  // { rank, total }: the hero colours a rank by its place in its own
+  // denominator, so the pool size has to travel with the place.
   function computeOsiRank(team, profiles) {
     var rows = (profiles || []).map(function(r) {
       var t = String(pick(r, ['team', 'Tm', 'Team'])).trim().toUpperCase();
@@ -97,9 +99,9 @@ body { color: var(--text); font-family: var(--font-body); min-height: 100vh; }
       return t && o != null ? { t: t, osi: o } : null;
     }).filter(Boolean).sort(function(a, b) { return b.osi - a.osi; });
     for (var i = 0; i < rows.length; i++) {
-      if (rows[i].t === team) return i + 1;
+      if (rows[i].t === team) return { rank: i + 1, total: rows.length };
     }
-    return null;
+    return { rank: null, total: rows.length || null };
   }
 
   Promise.all([
