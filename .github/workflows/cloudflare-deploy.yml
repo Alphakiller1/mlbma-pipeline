@@ -91,13 +91,18 @@ jobs:
           test -f _site/nfl/matchup.html
 
       - name: Configure Pages for static master production deploys
+        # The upload below excludes wrangler.toml/wrangler.jsonc, so Functions run on the
+        # project's own compat date. It was left at 2024-09-23, where fetch({cache}) throws
+        # and took Model Center down (PR #90). Pin it here so it cannot drift again.
+        env:
+          COMPAT_DATE: "2026-06-27"
         run: |
           RESP=$(curl -sS -X PATCH \
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             -H "Content-Type: application/json" \
             "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PAGES_PROJECT" \
-            -d "{\"production_branch\":\"$PRODUCTION_BRANCH\",\"build_config\":{\"build_command\":\"\",\"destination_dir\":\"/\",\"root_dir\":\"\"},\"source\":{\"config\":{\"deployments_enabled\":false,\"production_deployments_enabled\":false}}}")
-          echo "$RESP" | python3 -c "import sys,json; d=json.load(sys.stdin); r=d.get('result') or {}; print('production_branch:', r.get('production_branch')); bc=r.get('build_config') or {}; print('destination_dir:', bc.get('destination_dir')); sys.exit(0 if d.get('success') else 1)"
+            -d "{\"production_branch\":\"$PRODUCTION_BRANCH\",\"build_config\":{\"build_command\":\"\",\"destination_dir\":\"/\",\"root_dir\":\"\"},\"source\":{\"config\":{\"deployments_enabled\":false,\"production_deployments_enabled\":false}},\"deployment_configs\":{\"production\":{\"compatibility_date\":\"$COMPAT_DATE\"},\"preview\":{\"compatibility_date\":\"$COMPAT_DATE\"}}}")
+          echo "$RESP" | python3 -c "import sys,json; d=json.load(sys.stdin); r=d.get('result') or {}; print('production_branch:', r.get('production_branch')); bc=r.get('build_config') or {}; print('destination_dir:', bc.get('destination_dir')); cd=((r.get('deployment_configs') or {}).get('production') or {}).get('compatibility_date'); print('compatibility_date:', cd); sys.exit(0 if d.get('success') and cd == '$COMPAT_DATE' else 1)"
 
       - name: Upload clean build to master branch alias
         run: |
