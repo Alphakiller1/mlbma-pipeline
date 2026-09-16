@@ -290,7 +290,28 @@ def _game_day(game: dict) -> str:
     return raw or datetime.now(timezone.utc).date().isoformat()
 
 
-def bullpen_load(team_id: int, date_iso: str, cache: dict) -> str | None:
+# A rotation arm who follows an opener is credited with a relief appearance by
+# the box score, but his pitches are a start's worth of work on a starter's
+# schedule, not bullpen load. Counting them is how the White Sox card read as a
+# pen that had thrown hundreds of pitches: Burke 94 and Martin 71 behind
+# openers, Castillo 61, Fedde 81 - four rotation arms, none of them bullpen
+# availability for tonight. The test is the arm's own season line: at least
+# five starts, and starts are at least 40% of his appearances. That keeps a
+# reliever who has opened a handful of games (Taylor, 4 of 57) in the pen and
+# puts a swingman who has started 14 of 31 (Fedde) with the rotation.
+ROTATION_MIN_STARTS = 5
+ROTATION_START_SHARE = 0.4
+
+
+def is_rotation_arm(season: dict) -> bool:
+    starts = int((season or {}).get("gamesStarted") or 0)
+    games = int((season or {}).get("gamesPlayed") or 0)
+    return (starts >= ROTATION_MIN_STARTS and games > 0
+            and starts / games >= ROTATION_START_SHARE)
+
+
+def bullpen_load(team_id: int, date_iso: str, cache: dict,
+                 exclude: int | None = None) -> str | None:
     """How hard this pen has been worked in the three days before the game.
 
     The card carried a `Bullpen` cell that read "Workload Not Published" on
@@ -303,10 +324,14 @@ def bullpen_load(team_id: int, date_iso: str, cache: dict) -> str | None:
 
     Cached per team, because a club appears on the slate once but the cache is
     shared across a doubleheader and across the two sports' publish passes.
+
+    `exclude` is tonight's probable starter: he is not in tonight's bullpen,
+    whatever relief work he did earlier in the week. It is part of the cache key
+    because the two games of a doubleheader have different starters.
     """
     if not team_id:
         return None
-    key = (team_id, date_iso)
+    key = (team_id, date_iso, exclude)
     if key in cache:
         return cache[key]
     start = (datetime.fromisoformat(date_iso) - timedelta(days=3)).date().isoformat()
@@ -340,6 +365,11 @@ def bullpen_load(team_id: int, date_iso: str, cache: dict) -> str | None:
                     player = (team.get("players") or {}).get(f"ID{pid}") or {}
                     stat = ((player.get("stats") or {}).get("pitching")) or {}
                     if not stat or int(stat.get("gamesStarted") or 0) > 0:
+                        continue
+                    if exclude is not None and pid == exclude:
+                        continue
+                    season = ((player.get("seasonStats") or {}).get("pitching")) or {}
+                    if is_rotation_arm(season):
                         continue
                     arms.add(pid)
                     pitches += int(stat.get("numberOfPitches") or 0)
@@ -404,8 +434,10 @@ def mlb_producer_from_statsapi(payload: dict, arms: dict | None = None) -> dict:
                 "home_name": home_team.get("name") or None,
                 "away_team_id": away_team.get("id") or None,
                 "home_team_id": home_team.get("id") or None,
-                "away_bullpen": bullpen_load(away_team.get("id"), _game_day(game), pen_cache),
-                "home_bullpen": bullpen_load(home_team.get("id"), _game_day(game), pen_cache),
+                "away_bullpen": bullpen_load(away_team.get("id"), _game_day(game), pen_cache,
+                                             exclude=away_sp.get("id")),
+                "home_bullpen": bullpen_load(home_team.get("id"), _game_day(game), pen_cache,
+                                             exclude=home_sp.get("id")),
                 "away_record": record(away_node), "home_record": record(home_node),
                 # Scores only once there is a game to describe.
                 "away_score": away_node.get("score") if state in {"live", "final"} else None,
