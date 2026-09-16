@@ -503,10 +503,15 @@ function teamKey(t) {
   return k;
 }
 
-function tierLabel(val, tiers) {
+function tierLabel(val, tiers, context) {
   if (val === null) return { label: EM_DASH, cls: '' };
+  // The league tier picks the label; the table stays as the vocabulary and as
+  // the fallback for the moment before the baselines land.
+  var A = window.MLBMAAssets;
+  var tierName = A && A.tierLabel
+    ? A.tierLabel(val, context || 'pitching', tiers.map(function(t) { return t[1]; })) : null;
   for (var i = 0; i < tiers.length; i++) {
-    if (val >= tiers[i][0]) return { label: tiers[i][1], cls: 'tier-' + tiers[i][1].toLowerCase().replace(/\s/g,'') };
+    if (tierName ? tiers[i][1] === tierName : val >= tiers[i][0]) return { label: tiers[i][1], cls: 'tier-' + tiers[i][1].toLowerCase().replace(/\s/g,'') };
   }
   return { label: EM_DASH, cls: '' };
 }

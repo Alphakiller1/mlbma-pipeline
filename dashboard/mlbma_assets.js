@@ -743,6 +743,26 @@
     return percentileTier(normalCdf(z));
   }
 
+  /**
+   * The label a value earns, from the tier it lands in. Pages keep their own
+   * vocabulary ("Ace / Solid / Average / Volatile", "Elite / High-Level / ...")
+   * and pass it best-first; a table of four folds weak and poor together. This
+   * exists so a label table cannot drift from the colour beside it - the OSI
+   * tables called a league-average lineup "Weak" and put "Elite" three standard
+   * deviations out, where no club ever reached it.
+   */
+  var TIER_ORDER = ['elite', 'strong', 'mid', 'weak', 'poor'];
+
+  function tierLabel(value, context, labels, invert) {
+    var tier = valueTier(value, context, invert);
+    if (!tier) return null;
+    if (!labels) return tier;
+    if (Object.prototype.toString.call(labels) === '[object Array]') {
+      return labels[Math.min(TIER_ORDER.indexOf(tier), labels.length - 1)] || null;
+    }
+    return labels[tier] || null;
+  }
+
   function metricGradeKey(value, context, invert) {
     if (value == null || isNaN(value)) return null;
     if (typeof context === 'boolean') {
@@ -1570,6 +1590,7 @@
     rankTier: rankTier,
     rankChipClass: rankChipClass,
     valueTier: valueTier,
+    tierLabel: tierLabel,
     baselineTier: baselineTier,
     baselineChipClass: baselineChipClass,
     TIER_CHIP: TIER_CHIP,

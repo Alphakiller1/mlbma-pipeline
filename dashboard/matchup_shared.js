@@ -1222,6 +1222,11 @@
 
   function pitchTier(score) {
     if (score == null || isNaN(score)) return { label: '—', cls: 'tier-mid' };
+    // Cut at the league tiers rather than at thresholds typed in once: a 55
+    // Pitch Score is not "solid" in every season, and the league moves.
+    var CLS = { Elite: 'tier-elite', Solid: 'tier-solid', Avg: 'tier-mid', Volatile: 'tier-vol' };
+    var label = A && A.tierLabel ? A.tierLabel(score, 'pitching', ['Elite', 'Solid', 'Avg', 'Volatile']) : null;
+    if (label) return { label: label, cls: CLS[label] };
     if (score >= 70) return { label: 'Elite', cls: 'tier-elite' };
     if (score >= 55) return { label: 'Solid', cls: 'tier-solid' };
     if (score >= 40) return { label: 'Avg', cls: 'tier-mid' };
@@ -1837,6 +1842,12 @@
   function _tier(osi) {
     osi = _num(osi);
     if (osi == null) return { label: '—', cls: 'tier-incon' };
+    var OSI_CLS = { Elite: 'tier-elite', 'High-Level': 'tier-high', Dangerous: 'tier-danger',
+      Inconsistent: 'tier-incon', Weak: 'tier-weak' };
+    var osiLabel = A && A.tierLabel
+      ? A.tierLabel(osi, 'osi', ['Elite', 'High-Level', 'Dangerous', 'Inconsistent', 'Weak'])
+      : null;
+    if (osiLabel) return { label: osiLabel, cls: OSI_CLS[osiLabel] };
     if (osi >= 85) return { label: 'Elite', cls: 'tier-elite' };
     if (osi >= 75) return { label: 'High-Level', cls: 'tier-high' };
     if (osi >= 65) return { label: 'Dangerous', cls: 'tier-danger' };
@@ -2825,11 +2836,8 @@
 
   function osiTierLabel(osi) {
     if (osi == null || isNaN(osi)) return '—';
-    if (osi >= 75) return 'Elite';
-    if (osi >= 65) return 'Strong';
-    if (osi >= 55) return 'Above Avg';
-    if (osi >= 45) return 'Average';
-    return 'Weak';
+    return (A && A.tierLabel
+      && A.tierLabel(osi, 'osi', ['Elite', 'Strong', 'Average', 'Below Avg', 'Weak'])) || 'Average';
   }
 
   function lineupEdgeIndicator(lineupOsi, pitcherAllowed) {

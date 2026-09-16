@@ -136,6 +136,11 @@
 
   function pitchTier(score) {
     if (score == null || isNaN(score)) return { label: '—', cls: 'tier-mid' };
+    // Cut at the league tiers rather than at thresholds typed in once: a 55
+    // Pitch Score is not "solid" in every season, and the league moves.
+    var CLS = { Elite: 'tier-elite', Solid: 'tier-solid', Avg: 'tier-mid', Volatile: 'tier-vol' };
+    var label = A && A.tierLabel ? A.tierLabel(score, 'pitching', ['Elite', 'Solid', 'Avg', 'Volatile']) : null;
+    if (label) return { label: label, cls: CLS[label] };
     if (score >= 70) return { label: 'Elite', cls: 'tier-elite' };
     if (score >= 55) return { label: 'Solid', cls: 'tier-solid' };
     if (score >= 40) return { label: 'Avg', cls: 'tier-mid' };

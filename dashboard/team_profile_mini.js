@@ -24,10 +24,8 @@
 
   function wrcTierLabel(wrc) {
     if (wrc == null || isNaN(wrc)) return '—';
-    if (wrc >= 115) return 'Elite';
-    if (wrc >= 105) return 'Plus';
-    if (wrc >= 95) return 'Average';
-    return 'Below';
+    return (A && A.tierLabel
+      && A.tierLabel(wrc, 'wrc', ['Elite', 'Plus', 'Average', 'Below'])) || 'Average';
   }
 
   function esc(s) {
@@ -67,8 +65,11 @@
 
   function tierLabel(val) {
     if (val == null || isNaN(val)) return { label: '—', cls: 'tier-muted' };
+    // League tiers decide which label applies; the table is the vocabulary.
+    var tierName = A && A.tierLabel
+      ? A.tierLabel(val, 'osi', OSI_TIERS.map(function(t) { return t[1]; })) : null;
     for (var i = 0; i < OSI_TIERS.length; i++) {
-      if (val >= OSI_TIERS[i][0]) {
+      if (tierName ? OSI_TIERS[i][1] === tierName : val >= OSI_TIERS[i][0]) {
         return { label: OSI_TIERS[i][1], cls: 'tier-' + OSI_TIERS[i][1].toLowerCase().replace(/\s/g, '-') };
       }
     }

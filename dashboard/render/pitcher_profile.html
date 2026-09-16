@@ -358,8 +358,12 @@ function pitcherKey(row) {
 
 function pitchingTier(score) {
   if (score === null || isNaN(score)) return { label: '—', cls: 'tier-avg' };
+  // One arm against the other starters, so the label moves with the league.
+  var A = window.MLBMAAssets;
+  var tierName = A && A.tierLabel
+    ? A.tierLabel(score, 'sp_pitch_score', PITCHING_TIERS.map(function(t) { return t[1]; })) : null;
   for (var i = 0; i < PITCHING_TIERS.length; i++) {
-    if (score >= PITCHING_TIERS[i][0]) {
+    if (tierName ? PITCHING_TIERS[i][1] === tierName : score >= PITCHING_TIERS[i][0]) {
       return { label: PITCHING_TIERS[i][1], cls: PITCHING_TIERS[i][2] };
     }
   }
