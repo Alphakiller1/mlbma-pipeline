@@ -24,6 +24,31 @@ _SESSION.mount("https://", _ADAPTER)
 _SESSION.mount("http://", _ADAPTER)
 
 
+# Upstream said "not now", not "no". Savant, FanGraphs and the Stats API all return
+# these under load, and a single one of them used to end the whole daily pipeline:
+# `raise_for_status()` raises an HTTPError whose message matches none of the needles
+# below, so it re-raised on the first attempt with no retry at all. On 2026-09-15 one
+# 502 on one of sixty team-split requests aborted a 70-minute run, and the public MLB
+# slate went two days stale.
+_RETRY_STATUS = frozenset({408, 425, 429, 500, 502, 503, 504})
+_RETRY_AFTER_CAP = 30.0
+
+
+def _retryable_status(exc: BaseException) -> bool:
+    response = getattr(exc, "response", None)
+    return response is not None and response.status_code in _RETRY_STATUS
+
+
+def _retry_after(exc: BaseException) -> float | None:
+    """Honour an explicit Retry-After when the server sends one (seconds form)."""
+    response = getattr(exc, "response", None)
+    raw = (response.headers.get("Retry-After") if response is not None else None)
+    try:
+        return min(float(raw), _RETRY_AFTER_CAP) if raw else None
+    except (TypeError, ValueError):
+        return None
+
+
 def _is_transient(exc: BaseException) -> bool:
     msg = str(exc).lower()
     needles = (
@@ -62,12 +87,13 @@ def get_with_retry(
         except (ConnectionError, Timeout) as exc:
             last_exc = exc
         except RequestException as exc:
-            if _is_transient(exc) and attempt < retries - 1:
+            if (_is_transient(exc) or _retryable_status(exc)) and attempt < retries - 1:
                 last_exc = exc
             else:
                 raise
         if attempt < retries - 1:
-            time.sleep(backoff * (2**attempt))
+            wait = _retry_after(last_exc) if last_exc is not None else None
+            time.sleep(wait if wait is not None else backoff * (2**attempt))
     assert last_exc is not None
     raise last_exc
 

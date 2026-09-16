@@ -866,12 +866,55 @@ def write_nfl_league_context(context: dict, rest: dict) -> None:
     print(f"  wrote {dest} ({len(form)} clubs)")
 
 
+# Evidence that comes from the model board rather than from the schedule. When
+# the board is unreachable `nfl_public_context.build()` fails soft to empty
+# dicts, so a slate can be produced with every fixture listed and no scheme or
+# form behind any of them. Game counts cannot catch that - a new day has a
+# different number of fixtures for honest reasons - so the guard is per-kind and
+# only fires on a total loss. Lineups and probable starters are deliberately NOT
+# guarded: they are published late in the day and their absence in the morning is
+# the truth, not a failure.
+GUARDED_EVIDENCE = ("scheme", "form")
+
+
+def _evidence(payload: dict) -> dict[str, int]:
+    """How many games actually carry each kind of evidence on either side."""
+    games = payload.get("games") or []
+    counts = {kind: sum(1 for g in games
+                        if (g.get(f"away_{kind}") or g.get(f"home_{kind}")))
+              for kind in GUARDED_EVIDENCE}
+    counts["games"] = len(games)
+    return counts
+
+
+def _lost_evidence(fresh: dict, published: Path) -> str | None:
+    if not published.is_file():
+        return None
+    try:
+        previous = json.loads(published.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    old, new = _evidence(previous), _evidence(fresh)
+    if not old["games"]:
+        return None
+    for kind in GUARDED_EVIDENCE:
+        had = old[kind]
+        if had >= max(2, old["games"] // 2) and new[kind] == 0:
+            return (f"the published slate carries {kind} on {had} of {old['games']} "
+                    f"games and this one on none")
+    return None
+
+
 def write_if_better(sport: str, producer: dict, dest: Path) -> bool:
     if not producer.get("games"):
         print(f"  skip {sport}: empty producer; keeping {dest}")
         return False
     out = project_slate(sport, producer)
     assert_clean(out)
+    lost = _lost_evidence(out, dest)
+    if lost:
+        print(f"  skip {sport}: {lost}; keeping the published slate")
+        return False
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
     print(f"  wrote {dest} ({len(out['games'])} games)")

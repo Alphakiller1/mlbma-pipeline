@@ -91,13 +91,20 @@ jobs:
             python -u -m pipeline.main --skip-fangraphs
           fi
 
-      - name: Publish refreshed MLB artifacts to master
+      - name: Publish refreshed public artifacts to master
         env:
           TARGET_BRANCH: master
         run: |
           set -euo pipefail
           public_files=(
             data/public/mlb/slate.json
+            # The NFL artifacts are written by the same publish step and were
+            # never committed, so the NFL slate only ever moved when someone
+            # committed it by hand - it sat on week 2, two games already final,
+            # while the pipeline regenerated it correctly every day and threw
+            # the result away.
+            data/public/nfl/slate.json
+            data/public/nfl/team_context.json
             data/public/batter_context.json
             data/public/league_baselines.json
             data/public/pitch_run_value.json
