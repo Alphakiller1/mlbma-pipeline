@@ -91,7 +91,7 @@ jobs:
             python -u -m pipeline.main --skip-fangraphs
           fi
 
-      - name: Publish refreshed MLB artifacts to master
+      - name: Publish refreshed public artifacts to master
         env:
           TARGET_BRANCH: master
         run: |
