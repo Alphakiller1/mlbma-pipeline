@@ -395,7 +395,21 @@
      is read off the official box score of a completed game: appearances,
      pitches thrown, and the date. Nothing here is projected, and a pitcher who
      started that game is excluded by his own gamesStarted line. */
-  function loadBullpen(teamId, teamCode, dateIso) {
+  /* A rotation arm who follows an opener is credited with a relief appearance,
+     but his pitches are a start's worth of work on a starter's schedule - not
+     bullpen load. Read off his own season line (the box score carries it): at
+     least five starts, and starts at least 40% of his appearances. Same rule as
+     the published card figure (outputs/publish_public_slate.is_rotation_arm). */
+  var ROTATION_MIN_STARTS = 5;
+  var ROTATION_START_SHARE = 0.4;
+
+  function isRotationArm(season) {
+    var starts = Number((season || {}).gamesStarted) || 0;
+    var games = Number((season || {}).gamesPlayed) || 0;
+    return starts >= ROTATION_MIN_STARTS && games > 0 && starts / games >= ROTATION_START_SHARE;
+  }
+
+  function loadBullpen(teamId, teamCode, dateIso, starterId) {
     if (!teamId) return Promise.resolve(null);
     // The seven days before this game, exclusive of game day itself - one
     // column each, so Last 3 and Last 5 both sit inside the window shown.
@@ -412,7 +426,7 @@
         });
       });
       if (!finals.length) {
-        return { used: [], games: 0, window: start + ' to ' + end,
+        return { used: [], bulk: [], starter: null, games: 0, window: start + ' to ' + end,
                  days: dayColumns(start, end) };
       }
       return Promise.all(finals.map(function (game) {
@@ -431,8 +445,14 @@
               if (!stat) return;
               if (Number(stat.gamesStarted) > 0) return;  // relief appearances only
               var rec = byPitcher[pid] || (byPitcher[pid] = {
-                id: pid, name: (player.person || {}).fullName || '', outings: []
+                id: pid, name: (player.person || {}).fullName || '', outings: [],
+                seasonDate: '', rotation: false
               });
+              // The season line as of his latest outing in the window.
+              if (entry.date >= rec.seasonDate) {
+                rec.seasonDate = entry.date;
+                rec.rotation = isRotationArm((player.seasonStats || {}).pitching);
+              }
               rec.outings.push({
                 date: entry.date,
                 pitches: Number(stat.numberOfPitches) || 0,
@@ -441,7 +461,7 @@
             });
           });
         });
-        var used = Object.keys(byPitcher).map(function (id) {
+        var arms = Object.keys(byPitcher).map(function (id) {
           var rec = byPitcher[id];
           rec.outings.sort(function (a, b) { return a.date < b.date ? 1 : -1; });
           rec.pitches = rec.outings.reduce(function (sum, o) { return sum + o.pitches; }, 0);
@@ -449,8 +469,17 @@
           rec.backToBack = consecutiveDays(rec.dates);
           return rec;
         }).sort(function (a, b) { return b.pitches - a.pitches; });
-        return { used: used, games: finals.length, window: start + ' to ' + end,
-                 days: dayColumns(start, end) };
+        // Tonight's starter is not in tonight's bullpen, whatever relief work he
+        // did earlier in the week. Rotation arms who worked behind an opener are
+        // kept, but apart: their innings are real, they are not pen availability.
+        var tonight = starterId == null ? null : String(starterId);
+        return {
+          used: arms.filter(function (r) { return String(r.id) !== tonight && !r.rotation; }),
+          bulk: arms.filter(function (r) { return String(r.id) !== tonight && r.rotation; }),
+          starter: arms.filter(function (r) { return String(r.id) === tonight; })[0] || null,
+          games: finals.length, window: start + ' to ' + end,
+          days: dayColumns(start, end)
+        };
       });
     }).catch(function () { return null; });
   }
@@ -1363,7 +1392,8 @@
     }
     if (!report.used.length) {
       return head + '<p class="ca-lineup-context">Last ' + report.games +
-        ' completed games</p>' + pending('No relief appearances recorded in this window.') + '</section>';
+        ' completed games</p>' + pending('No relief appearances recorded in this window.') +
+        bulkNote(report) + '</section>';
     }
     var days = report.days || [];
     if (!days.length) {
@@ -1410,7 +1440,32 @@
     return head + '<div class="ca-lineup-scroll">' +
       '<table class="ca-lineup-table ca-pc-table"><thead><tr><th>Pitcher</th>' + header +
       '<th class="num">Last 3</th><th class="num">Last 5</th></tr></thead>' +
-      '<tbody>' + rows + '</tbody></table></div></section>';
+      '<tbody>' + rows + '</tbody></table></div>' + bulkNote(report) + '</section>';
+  }
+
+  /* What was left out of the table, said out loud rather than dropped: the
+     starter's own relief work earlier in the week, and rotation arms who threw
+     behind an opener. */
+  function bulkNote(report) {
+    var notes = [];
+    function outing(rec) {
+      return rec.outings.slice().reverse().map(function (o) {
+        return o.pitches + ' ' + dayLabel(o.date);
+      }).join(', ');
+    }
+    if (report.starter) {
+      notes.push(esc(report.starter.name) + ' starts tonight, so his relief work (' +
+        esc(outing(report.starter)) + ') is not counted here.');
+    }
+    if (report.bulk && report.bulk.length) {
+      notes.push('Rotation arms who pitched behind an opener, not counted as bullpen load: ' +
+        report.bulk.map(function (rec) {
+          return esc(rec.name) + ' (' + esc(outing(rec)) + ')';
+        }).join('; ') + '.');
+    }
+    return notes.length
+      ? '<p class="ca-detail-source-note ca-bullpen-note">' + notes.join(' ') + '</p>'
+      : '';
   }
 
   /* Each section's body is its own builder so a stage that resolves late can
@@ -2164,7 +2219,7 @@
     return '<div class="ca-detail-stack-inner">' +
       bullpenPanel(sport, game, 'away', extra.awayBullpen, extra.bullpenQuality) +
       bullpenPanel(sport, game, 'home', extra.homeBullpen, extra.bullpenQuality) + '</div>' +
-      '<p class="ca-detail-source-note">Pitch counts read from the official box score of each completed game. Relief appearances only — a pitcher who started that game is excluded by his own line. A dash is a day that arm did not pitch. The shading runs dim to hot with the size of the day, not good to bad: thirty-five pitches is a heavy outing, which is a fact about availability tonight rather than a judgement about the pitcher.</p>';
+      '<p class="ca-detail-source-note">Pitch counts read from the official box score of each completed game. Relief appearances only — a pitcher who started that game is excluded by his own line, tonight’s starter is left out of his own club’s pen, and rotation arms who pitched behind an opener are listed under the table rather than counted as bullpen load. A dash is a day that arm did not pitch. The shading runs dim to hot with the size of the day, not good to bad: thirty-five pitches is a heavy outing, which is a fact about availability tonight rather than a judgement about the pitcher.</p>';
   }
 
   function mlbSections(sport, game, extra) {
@@ -3238,11 +3293,12 @@
         // are what say which of these men is the closer and which is the long
         // man, and neither is derivable from a pitch count.
         Promise.all([
-          loadBullpen(game.away_team_id, game.away, dateIso),
-          loadBullpen(game.home_team_id, game.home, dateIso)
+          loadBullpen(game.away_team_id, game.away, dateIso, game.away_starter_id),
+          loadBullpen(game.home_team_id, game.home, dateIso, game.home_starter_id)
         ]).then(function (reports) {
-          extra.awayBullpen = reports[0] || { used: [], games: 0, window: 'window not published' };
-          extra.homeBullpen = reports[1] || { used: [], games: 0, window: 'window not published' };
+          var none = { used: [], bulk: [], starter: null, games: 0, window: 'window not published' };
+          extra.awayBullpen = reports[0] || none;
+          extra.homeBullpen = reports[1] || none;
           paintSection(host, 'bullpens', bullpenBody(sport, game, extra));
           var ids = [];
           [extra.awayBullpen, extra.homeBullpen].forEach(function (report) {
