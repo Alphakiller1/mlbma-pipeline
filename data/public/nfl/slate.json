@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-09-16T05:16:29Z",
-  "data_through_utc": "2026-09-16T05:16:29Z",
+  "generated_at_utc": "2026-09-16T16:44:29Z",
+  "data_through_utc": "2026-09-16T16:44:29Z",
   "games": [
     {
       "id": "401872932",
@@ -1426,7 +1426,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:08Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -1572,7 +1572,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:46Z",
+        "observed_at_utc": "2026-09-16T16:40:07Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -1751,7 +1751,7 @@
       "away_starter": "B. Young",
       "home_starter": "C. Rush",
       "away_availability": "2 questionable",
-      "home_availability": "1 out \u00b7 4 questionable",
+      "home_availability": "4 questionable",
       "away_availability_list": [
         {
           "name": "Patrick Jones II",
@@ -1768,16 +1768,10 @@
       ],
       "home_availability_list": [
         {
-          "name": "Da'Shawn Hand",
-          "position": "DT",
-          "status": "Out",
-          "detail": ""
-        },
-        {
           "name": "Tua Tagovailoa",
           "position": "QB",
           "status": "Questionable",
-          "detail": ""
+          "detail": "oblique"
         },
         {
           "name": "Michael Penix Jr.",
@@ -1795,6 +1789,12 @@
           "name": "Chris Lindstrom",
           "position": "G",
           "status": "Questionable",
+          "detail": ""
+        },
+        {
+          "name": "Da'Shawn Hand",
+          "position": "DT",
+          "status": "Injured Reserve",
           "detail": ""
         },
         {
@@ -3166,7 +3166,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:07Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -3312,7 +3312,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:07Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -4894,7 +4894,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -5040,7 +5040,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:07Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -6616,7 +6616,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:10Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -6762,7 +6762,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:10Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -8338,7 +8338,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:10Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -8484,7 +8484,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -10084,7 +10084,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:08Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -10230,7 +10230,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:10Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -11848,7 +11848,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:08Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -11994,7 +11994,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:10Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -13612,7 +13612,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -13758,7 +13758,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:07Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -15322,7 +15322,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:07Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -15468,7 +15468,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:08Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -15645,7 +15645,7 @@
       "venue_city": "Denver, CO",
       "broadcast": "CBS",
       "away_starter": "T. Lawrence",
-      "away_availability": "2 questionable",
+      "away_availability": "1 questionable",
       "home_availability": "2 out",
       "away_availability_list": [
         {
@@ -15657,8 +15657,8 @@
         {
           "name": "B.J. Green II",
           "position": "DE",
-          "status": "Questionable",
-          "detail": "elbow"
+          "status": "Injured Reserve",
+          "detail": ""
         }
       ],
       "home_availability_list": [
@@ -17037,7 +17037,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:08Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -17183,7 +17183,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:08Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -17368,7 +17368,7 @@
           "name": "Brock Bowers",
           "position": "TE",
           "status": "Questionable",
-          "detail": "knee"
+          "detail": ""
         },
         {
           "name": "Darien Porter",
@@ -18747,7 +18747,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -18893,7 +18893,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -20463,7 +20463,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:10Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -20609,7 +20609,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:08Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -20788,7 +20788,7 @@
       "away_starter": "D. Lock",
       "home_starter": "J. Brissett",
       "away_availability": "1 doubtful \u00b7 3 questionable",
-      "home_availability": "1 out \u00b7 4 questionable",
+      "home_availability": "2 out \u00b7 3 questionable",
       "away_availability_list": [
         {
           "name": "Sam Darnold",
@@ -20817,6 +20817,12 @@
       ],
       "home_availability_list": [
         {
+          "name": "Kitan Crawford",
+          "position": "S",
+          "status": "Out",
+          "detail": ""
+        },
+        {
           "name": "Tip Reiman",
           "position": "TE",
           "status": "Out",
@@ -20839,12 +20845,6 @@
           "position": "G",
           "status": "Questionable",
           "detail": ""
-        },
-        {
-          "name": "Kitan Crawford",
-          "position": "S",
-          "status": "Questionable",
-          "detail": "ankle"
         },
         {
           "name": "Kaleb Proctor",
@@ -22215,7 +22215,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:10Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -22361,7 +22361,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:07Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -23925,7 +23925,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:09Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -24071,7 +24071,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:10Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -25664,7 +25664,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:08Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -25810,7 +25810,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:46Z",
+        "observed_at_utc": "2026-09-16T16:40:09Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -27374,7 +27374,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:10Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -27520,7 +27520,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-16T05:12:45Z",
+        "observed_at_utc": "2026-09-16T16:40:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
