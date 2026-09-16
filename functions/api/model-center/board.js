@@ -21,7 +21,10 @@ export async function onRequestGet({ request, env }) {
     const source = SPORTS[sport];
     if (!source) throw new HttpError(400, 'bad_sport', 'sport must be mlb, nfl, wnba, or cfb');
     const boardUrl = (env && env[source[0]]) || source[1];
-    const res = await fetch(boardUrl, { cache: 'no-store' });
+    // No `cache` option here: production runs on a Pages compat date older than
+    // 2024-11-11, where the Workers runtime throws on that field and every sport
+    // returned a 500. cacheTtl 0 keeps the edge from serving a stale board.
+    const res = await fetch(boardUrl, { cf: { cacheTtl: 0 } });
     if (!res.ok) throw new HttpError(502, 'board_fetch_failed', 'Model board was not reachable');
     let board;
     try {
