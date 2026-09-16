@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-pitch-run-value/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-09-16T16:44:31Z",
+  "generated_at_utc": "2026-09-16T18:53:57Z",
   "note": "Run value per 100 pitches, per pitch type, from the pitcher's side: positive is runs the pitch saved. The percentile is against every pitcher throwing that same pitch type this season with at least 100 thrown, so a slider is compared with sliders. A record of pitches already thrown, not a projection.",
   "pitchers": {
     "592332": {
