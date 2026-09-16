@@ -12,10 +12,22 @@ name: Deploy to Cloudflare (chase-analytics.com)
 on:
   push:
     branches: [master]
+  # The daily pipeline commits refreshed public artifacts using GITHUB_TOKEN, and
+  # GitHub deliberately raises no `push` event for those commits - so every data
+  # refresh landed on master and sat there undeployed until a human happened to
+  # push something else. That is why the site served a 2026-09-14 MLB slate and a
+  # week-2 NFL slate while master had both current. Deploy when the pipeline
+  # finishes rather than waiting for an unrelated commit to carry it.
+  workflow_run:
+    workflows: ["Run MLBMA Pipeline"]
+    types: [completed]
+    branches: [master]
   workflow_dispatch:
 
 jobs:
   quality-gate:
+    # A pipeline that failed has nothing new worth shipping.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

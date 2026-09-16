@@ -52,6 +52,23 @@ class PipelineOrderTests(unittest.TestCase):
         self.assertIn('git push origin "HEAD:$TARGET_BRANCH"', yml)
 
 
+class DeployReachesTheSiteTests(unittest.TestCase):
+    def test_a_pipeline_refresh_triggers_the_production_deploy(self) -> None:
+        """Committing data to master is not publishing it.
+
+        The pipeline pushes with GITHUB_TOKEN, and GitHub raises no `push` event
+        for such commits, so the deploy never fired: fresh artifacts sat on master
+        until an unrelated human push carried them. The site served a two-day-old
+        MLB slate and a week-old NFL slate while master had both current.
+        """
+        yml = (ROOT / ".github" / "workflows" / "cloudflare-deploy.yml").read_text(
+            encoding="utf-8")
+        self.assertIn("workflow_run:", yml)
+        self.assertIn('workflows: ["Run MLBMA Pipeline"]', yml)
+        # And a failed pipeline must not ship.
+        self.assertIn("github.event.workflow_run.conclusion == 'success'", yml)
+
+
 class SlatePublishGuardTests(unittest.TestCase):
     """A slate with every fixture listed and no evidence behind it must not
     overwrite one that has it - and a normal day must still publish."""
