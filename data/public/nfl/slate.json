@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-09-18T16:10:32Z",
+  "generated_at_utc": "2026-09-19T15:31:17Z",
   "data_through_utc": "2026-09-18T00:15Z",
   "games": [
     {
@@ -1460,7 +1460,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:00Z",
+        "observed_at_utc": "2026-09-19T15:30:11Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -1477,16 +1477,16 @@
               "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4361662.png&w=160&h=160"
             },
             {
-              "name": "Levi Onwuzurike",
+              "name": "Tyleik Williams",
               "position": "RDT",
               "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4039020.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4431615.png&w=160&h=160"
             },
             {
-              "name": "DJ Wonnum",
+              "name": "Tyler Lacy",
               "position": "RDE",
               "group": "Front",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4038849.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4361861.png&w=160&h=160"
             },
             {
               "name": "Derrick Barnes",
@@ -1501,10 +1501,10 @@
               "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4569465.png&w=160&h=160"
             },
             {
-              "name": "Malcolm Rodriguez",
+              "name": "Devin White",
               "position": "SLB",
               "group": "Linebackers",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4241411.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4035434.png&w=160&h=160"
             },
             {
               "name": "D.J. Reed",
@@ -1560,10 +1560,10 @@
               "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4373825.png&w=160&h=160"
             },
             {
-              "name": "Ben Bartch",
+              "name": "Christian Mahogany",
               "position": "LG",
               "group": "Offensive Line",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4611506.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4427864.png&w=160&h=160"
             },
             {
               "name": "Juice Scruggs",
@@ -1606,7 +1606,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:05:58Z",
+        "observed_at_utc": "2026-09-19T15:30:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -1784,13 +1784,13 @@
       "broadcast": "FOX",
       "away_starter": "B. Young",
       "home_starter": "C. Rush",
-      "away_availability": "3 questionable",
-      "home_availability": "6 questionable",
+      "away_availability": "1 out \u00b7 1 questionable",
+      "home_availability": "2 out \u00b7 1 doubtful \u00b7 2 questionable",
       "away_availability_list": [
         {
           "name": "Bobby Brown III",
           "position": "DT",
-          "status": "Questionable",
+          "status": "Out",
           "detail": "back"
         },
         {
@@ -1798,15 +1798,27 @@
           "position": "LB",
           "status": "Questionable",
           "detail": "back"
-        },
-        {
-          "name": "Jalen Coker",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "ankle"
         }
       ],
       "home_availability_list": [
+        {
+          "name": "Billy Bowman Jr.",
+          "position": "CB",
+          "status": "Out",
+          "detail": "Achilles"
+        },
+        {
+          "name": "Michael Penix Jr.",
+          "position": "QB",
+          "status": "Out",
+          "detail": "knee"
+        },
+        {
+          "name": "Tua Tagovailoa",
+          "position": "QB",
+          "status": "Doubtful",
+          "detail": "oblique"
+        },
         {
           "name": "Chris Lindstrom",
           "position": "G",
@@ -1814,34 +1826,10 @@
           "detail": "concussion"
         },
         {
-          "name": "Billy Bowman Jr.",
+          "name": "A.J. Terrell Jr.",
           "position": "CB",
           "status": "Questionable",
-          "detail": "Achilles"
-        },
-        {
-          "name": "Tua Tagovailoa",
-          "position": "QB",
-          "status": "Questionable",
-          "detail": "oblique"
-        },
-        {
-          "name": "Kendal Daniels",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Jawaan Taylor",
-          "position": "OT",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Michael Penix Jr.",
-          "position": "QB",
-          "status": "Questionable",
-          "detail": "knee"
+          "detail": "shoulder"
         },
         {
           "name": "Da'Shawn Hand",
@@ -3212,7 +3200,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:05:58Z",
+        "observed_at_utc": "2026-09-19T15:30:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -3358,7 +3346,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:05:58Z",
+        "observed_at_utc": "2026-09-19T15:30:10Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -3536,26 +3524,26 @@
       "broadcast": "FOX",
       "away_starter": "C. Wentz",
       "home_starter": "C. Williams",
-      "away_availability": "3 questionable",
-      "home_availability": "7 questionable",
+      "away_availability": "2 out \u00b7 1 questionable",
+      "home_availability": "1 out",
       "away_availability_list": [
+        {
+          "name": "Jauan Jennings",
+          "position": "WR",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Kyler Murray",
+          "position": "QB",
+          "status": "Out",
+          "detail": "concussion"
+        },
         {
           "name": "Brian O'Neill",
           "position": "OT",
           "status": "Questionable",
           "detail": "knee"
-        },
-        {
-          "name": "Kyler Murray",
-          "position": "QB",
-          "status": "Questionable",
-          "detail": "concussion"
-        },
-        {
-          "name": "Andrew Van Ginkel",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": "chest"
         },
         {
           "name": "Jordan Mason",
@@ -3566,45 +3554,9 @@
       ],
       "home_availability_list": [
         {
-          "name": "Kyle Monangai",
-          "position": "RB",
-          "status": "Questionable",
-          "detail": "hamstring"
-        },
-        {
-          "name": "D'Andre Swift",
-          "position": "RB",
-          "status": "Questionable",
-          "detail": "ankle/knee"
-        },
-        {
-          "name": "Malik Muhammad II",
-          "position": "CB",
-          "status": "Questionable",
-          "detail": "ankle"
-        },
-        {
-          "name": "Xavier Woods",
+          "name": "Anthony Johnson Jr.",
           "position": "S",
-          "status": "Questionable",
-          "detail": "groin"
-        },
-        {
-          "name": "Dayo Odeyingbo",
-          "position": "DE",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Darnell Wright",
-          "position": "OT",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Ozzy Trapilo",
-          "position": "OT",
-          "status": "Questionable",
+          "status": "Out",
           "detail": ""
         }
       ],
@@ -4958,7 +4910,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:02Z",
+        "observed_at_utc": "2026-09-19T15:30:13Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -5104,7 +5056,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:05:59Z",
+        "observed_at_utc": "2026-09-19T15:30:11Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -5282,32 +5234,20 @@
       "broadcast": "FOX",
       "away_starter": "J. Hurts",
       "home_starter": "C. Ward",
-      "away_availability": "4 questionable",
-      "home_availability": "2 questionable",
+      "away_availability": "1 out \u00b7 1 questionable",
+      "home_availability": "3 questionable",
       "away_availability_list": [
+        {
+          "name": "Jonathan Greenard",
+          "position": "LB",
+          "status": "Out",
+          "detail": "pectoral"
+        },
         {
           "name": "Andrew Mukuba",
           "position": "S",
           "status": "Questionable",
           "detail": "knee"
-        },
-        {
-          "name": "Jalen Carter",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": "wrist"
-        },
-        {
-          "name": "Jonathan Greenard",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": "pectoral"
-        },
-        {
-          "name": "Cooper DeJean",
-          "position": "CB",
-          "status": "Questionable",
-          "detail": "calf"
         },
         {
           "name": "Landon Dickerson",
@@ -5324,14 +5264,20 @@
       ],
       "home_availability_list": [
         {
+          "name": "James Williams Sr.",
+          "position": "LB",
+          "status": "Questionable",
+          "detail": "elbow"
+        },
+        {
           "name": "Cedric Gray",
           "position": "LB",
           "status": "Questionable",
           "detail": "concussion"
         },
         {
-          "name": "James Williams Sr.",
-          "position": "LB",
+          "name": "Cor'Dale Flott",
+          "position": "CB",
           "status": "Questionable",
           "detail": ""
         },
@@ -5340,12 +5286,6 @@
           "position": "LB",
           "status": "Injured Reserve",
           "detail": ""
-        },
-        {
-          "name": "Kendell Brooks",
-          "position": "S",
-          "status": "Injured Reserve",
-          "detail": "undisclosed"
         }
       ],
       "roof": "Outdoor",
@@ -6698,7 +6638,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:03Z",
+        "observed_at_utc": "2026-09-19T15:30:14Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -6844,7 +6784,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:04Z",
+        "observed_at_utc": "2026-09-19T15:30:14Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -6879,10 +6819,10 @@
               "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4429834.png&w=160&h=160"
             },
             {
-              "name": "Cody Barton",
+              "name": "Anthony Hill Jr.",
               "position": "MLB",
               "group": "Linebackers",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3926229.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4870805.png&w=160&h=160"
             },
             {
               "name": "James Williams Sr.",
@@ -7022,26 +6962,26 @@
       "broadcast": "CBS",
       "away_starter": "A. Rodgers",
       "home_starter": "D. Maye",
-      "away_availability": "3 questionable",
-      "home_availability": "4 questionable",
+      "away_availability": "1 out \u00b7 2 questionable",
+      "home_availability": "1 out \u00b7 3 questionable",
       "away_availability_list": [
-        {
-          "name": "Michael Pittman Jr.",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "foot"
-        },
         {
           "name": "Joey Porter Jr.",
           "position": "CB",
-          "status": "Questionable",
+          "status": "Out",
           "detail": "back"
         },
         {
           "name": "Troy Fautanu",
           "position": "OT",
           "status": "Questionable",
-          "detail": ""
+          "detail": "ankle"
+        },
+        {
+          "name": "Michael Pittman Jr.",
+          "position": "WR",
+          "status": "Questionable",
+          "detail": "foot"
         },
         {
           "name": "DeShon Elliott",
@@ -7052,22 +6992,22 @@
       ],
       "home_availability_list": [
         {
-          "name": "Carlton Davis III",
-          "position": "CB",
-          "status": "Questionable",
-          "detail": "neck"
+          "name": "Dametrious Crownover",
+          "position": "OT",
+          "status": "Out",
+          "detail": "knee"
         },
         {
           "name": "Dre'Mont Jones",
           "position": "DE",
           "status": "Questionable",
-          "detail": ""
+          "detail": "foot"
         },
         {
-          "name": "Dametrious Crownover",
-          "position": "OT",
+          "name": "Carlton Davis III",
+          "position": "CB",
           "status": "Questionable",
-          "detail": ""
+          "detail": "neck"
         },
         {
           "name": "Ben Brown",
@@ -8438,7 +8378,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:03Z",
+        "observed_at_utc": "2026-09-19T15:30:14Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -8584,7 +8524,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:02Z",
+        "observed_at_utc": "2026-09-19T15:30:13Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -8762,9 +8702,21 @@
       "broadcast": "FOX",
       "away_starter": "J. Love",
       "home_starter": "G. Smith",
-      "away_availability": "8 questionable",
+      "away_availability": "1 out \u00b7 1 doubtful \u00b7 4 questionable",
       "home_availability": "4 out \u00b7 1 questionable",
       "away_availability_list": [
+        {
+          "name": "Warren Brinson",
+          "position": "DT",
+          "status": "Out",
+          "detail": "calf"
+        },
+        {
+          "name": "Javon Hargrave",
+          "position": "DT",
+          "status": "Doubtful",
+          "detail": "concussion/knee"
+        },
         {
           "name": "Aaron Banks",
           "position": "G",
@@ -8778,66 +8730,42 @@
           "detail": "knee"
         },
         {
-          "name": "Javon Hargrave",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": "knee/concussion"
-        },
-        {
-          "name": "Devonte Wyatt",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": "ankle"
-        },
-        {
           "name": "Lukas Van Ness",
           "position": "DE",
           "status": "Questionable",
           "detail": "concussion"
         },
         {
-          "name": "Barryn Sorrell",
-          "position": "DE",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Ty'Ron Hopper",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Warren Brinson",
-          "position": "DT",
+          "name": "Benjamin St-Juste",
+          "position": "CB",
           "status": "Questionable",
           "detail": ""
         }
       ],
       "home_availability_list": [
         {
-          "name": "Omar Cooper Jr.",
-          "position": "WR",
+          "name": "Joseph Ossai",
+          "position": "DE",
           "status": "Out",
-          "detail": "ankle"
+          "detail": "foot"
         },
         {
           "name": "Kene Nwangwu",
           "position": "RB",
           "status": "Out",
-          "detail": ""
+          "detail": "back"
         },
         {
           "name": "Minkah Fitzpatrick",
           "position": "S",
           "status": "Out",
-          "detail": ""
+          "detail": "groin"
         },
         {
-          "name": "Joseph Ossai",
-          "position": "DE",
+          "name": "Omar Cooper Jr.",
+          "position": "WR",
           "status": "Out",
-          "detail": "foot"
+          "detail": "ankle"
         },
         {
           "name": "Will McDonald IV",
@@ -10190,7 +10118,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:00Z",
+        "observed_at_utc": "2026-09-19T15:30:12Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -10336,7 +10264,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:03Z",
+        "observed_at_utc": "2026-09-19T15:30:13Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -10514,9 +10442,15 @@
       "broadcast": "CBS",
       "away_starter": "D. Watson",
       "home_starter": "B. Mayfield",
-      "away_availability": "1 out \u00b7 5 questionable",
-      "home_availability": "2 questionable",
+      "away_availability": "2 out \u00b7 1 questionable",
+      "home_availability": "3 questionable",
       "away_availability_list": [
+        {
+          "name": "Teven Jenkins",
+          "position": "G",
+          "status": "Out",
+          "detail": "back"
+        },
         {
           "name": "Jeremiah Owusu-Koramoah",
           "position": "LB",
@@ -10524,34 +10458,10 @@
           "detail": ""
         },
         {
-          "name": "Elgton Jenkins",
-          "position": "C",
-          "status": "Questionable",
-          "detail": "back"
-        },
-        {
-          "name": "Teven Jenkins",
-          "position": "G",
-          "status": "Questionable",
-          "detail": "back"
-        },
-        {
           "name": "Tyson Campbell",
           "position": "CB",
           "status": "Questionable",
           "detail": "ankle"
-        },
-        {
-          "name": "Maliek Collins",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Parker Brailsford",
-          "position": "C",
-          "status": "Questionable",
-          "detail": ""
         },
         {
           "name": "Dylan Sampson",
@@ -10577,13 +10487,19 @@
           "name": "Miles Killebrew",
           "position": "S",
           "status": "Questionable",
-          "detail": ""
+          "detail": "concussion"
         },
         {
           "name": "Jacob Parrish",
           "position": "CB",
           "status": "Questionable",
           "detail": "back"
+        },
+        {
+          "name": "Jalen McMillan",
+          "position": "WR",
+          "status": "Questionable",
+          "detail": "knee"
         },
         {
           "name": "Josh Hayes",
@@ -11954,7 +11870,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:05:59Z",
+        "observed_at_utc": "2026-09-19T15:30:11Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -12100,7 +12016,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:04Z",
+        "observed_at_utc": "2026-09-19T15:30:14Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -12278,14 +12194,20 @@
       "broadcast": "CBS",
       "away_starter": "T. Shough",
       "home_starter": "L. Jackson",
-      "away_availability": "1 out \u00b7 6 questionable",
-      "home_availability": "7 questionable",
+      "away_availability": "1 doubtful \u00b7 3 questionable",
+      "home_availability": "3 out \u00b7 1 doubtful \u00b7 3 questionable",
       "away_availability_list": [
         {
-          "name": "Zach Wood",
-          "position": "LS",
-          "status": "Out",
+          "name": "Isaiah Stalbird",
+          "position": "LB",
+          "status": "Doubtful",
           "detail": ""
+        },
+        {
+          "name": "Christen Miller",
+          "position": "DT",
+          "status": "Questionable",
+          "detail": "toe"
         },
         {
           "name": "Chase Young",
@@ -12294,34 +12216,16 @@
           "detail": "calf"
         },
         {
-          "name": "Cameron Jordan",
-          "position": "DE",
-          "status": "Questionable",
-          "detail": "hamstring"
-        },
-        {
-          "name": "Oscar Delp",
-          "position": "TE",
-          "status": "Questionable",
-          "detail": "hamstring"
-        },
-        {
-          "name": "Juwan Johnson",
-          "position": "TE",
-          "status": "Questionable",
-          "detail": "illness"
-        },
-        {
           "name": "Chris Olave",
           "position": "WR",
           "status": "Questionable",
           "detail": "hamstring"
         },
         {
-          "name": "Isaiah Stalbird",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": ""
+          "name": "Zach Wood",
+          "position": "LS",
+          "status": "Injured Reserve",
+          "detail": "calf"
         },
         {
           "name": "Audric Estime",
@@ -12331,6 +12235,36 @@
         }
       ],
       "home_availability_list": [
+        {
+          "name": "T.J. Tampa",
+          "position": "CB",
+          "status": "Out",
+          "detail": "knee"
+        },
+        {
+          "name": "Teddye Buchanan",
+          "position": "LB",
+          "status": "Out",
+          "detail": "knee"
+        },
+        {
+          "name": "Nnamdi Madubuike",
+          "position": "DT",
+          "status": "Out",
+          "detail": "neck"
+        },
+        {
+          "name": "Zay Flowers",
+          "position": "WR",
+          "status": "Doubtful",
+          "detail": "hamstring"
+        },
+        {
+          "name": "Trey Hendrickson",
+          "position": "LB",
+          "status": "Questionable",
+          "detail": "finger"
+        },
         {
           "name": "John Simpson",
           "position": "G",
@@ -12342,36 +12276,6 @@
           "position": "OT",
           "status": "Questionable",
           "detail": "toe"
-        },
-        {
-          "name": "Trey Hendrickson",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": "finger"
-        },
-        {
-          "name": "Zay Flowers",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "hamstring"
-        },
-        {
-          "name": "Nnamdi Madubuike",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": "neck"
-        },
-        {
-          "name": "Teddye Buchanan",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": "knee"
-        },
-        {
-          "name": "T.J. Tampa",
-          "position": "CB",
-          "status": "Questionable",
-          "detail": ""
         },
         {
           "name": "Ja'Kobi Lane",
@@ -13736,7 +13640,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:02Z",
+        "observed_at_utc": "2026-09-19T15:30:13Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -13882,7 +13786,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:05:58Z",
+        "observed_at_utc": "2026-09-19T15:30:10Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -14061,19 +13965,19 @@
       "away_starter": "J. Burrow",
       "home_starter": "C.J. Stroud",
       "away_availability": "2 questionable",
-      "home_availability": "1 doubtful \u00b7 3 questionable",
+      "home_availability": "4 out",
       "away_availability_list": [
+        {
+          "name": "B.J. Hill",
+          "position": "DT",
+          "status": "Questionable",
+          "detail": ""
+        },
         {
           "name": "Joe Burrow",
           "position": "QB",
           "status": "Questionable",
           "detail": "back"
-        },
-        {
-          "name": "Samaje Perine",
-          "position": "RB",
-          "status": "Questionable",
-          "detail": "knee"
         },
         {
           "name": "Brian Parker II",
@@ -14090,27 +13994,27 @@
       ],
       "home_availability_list": [
         {
-          "name": "Jake Hummel",
-          "position": "LB",
-          "status": "Doubtful",
-          "detail": "groin"
-        },
-        {
           "name": "Ed Ingram",
           "position": "G",
-          "status": "Questionable",
-          "detail": ""
+          "status": "Out",
+          "detail": "groin"
         },
         {
           "name": "Jadeveon Clowney",
           "position": "DE",
-          "status": "Questionable",
+          "status": "Out",
           "detail": "knee"
+        },
+        {
+          "name": "Jake Hummel",
+          "position": "LB",
+          "status": "Out",
+          "detail": "groin"
         },
         {
           "name": "Nico Collins",
           "position": "WR",
-          "status": "Questionable",
+          "status": "Out",
           "detail": "hamstring"
         },
         {
@@ -15470,7 +15374,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:05:59Z",
+        "observed_at_utc": "2026-09-19T15:30:11Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -15616,7 +15520,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:00Z",
+        "observed_at_utc": "2026-09-19T15:30:12Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -15794,39 +15698,9 @@
       "broadcast": "CBS",
       "away_starter": "T. Lawrence",
       "home_starter": "B. Nix",
-      "away_availability": "5 questionable",
-      "home_availability": "2 out \u00b7 2 questionable",
+      "away_availability": "1 designated",
+      "home_availability": "3 out \u00b7 1 questionable",
       "away_availability_list": [
-        {
-          "name": "Cole Van Lanen",
-          "position": "OT",
-          "status": "Questionable",
-          "detail": "knee"
-        },
-        {
-          "name": "Foyesade Oluokun",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": "wrist"
-        },
-        {
-          "name": "Jakobi Meyers",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "thumb"
-        },
-        {
-          "name": "Brian Thomas Jr.",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "shoulder"
-        },
-        {
-          "name": "LeQuint Allen Jr.",
-          "position": "RB",
-          "status": "Questionable",
-          "detail": "hip"
-        },
         {
           "name": "B.J. Green II",
           "position": "DE",
@@ -15835,6 +15709,12 @@
         }
       ],
       "home_availability_list": [
+        {
+          "name": "Marvin Mims Jr.",
+          "position": "WR",
+          "status": "Out",
+          "detail": "foot"
+        },
         {
           "name": "Jonathon Cooper",
           "position": "LB",
@@ -15846,12 +15726,6 @@
           "position": "G",
           "status": "Out",
           "detail": "knee"
-        },
-        {
-          "name": "Marvin Mims Jr.",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "foot"
         },
         {
           "name": "RJ Harvey",
@@ -17222,7 +17096,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:00Z",
+        "observed_at_utc": "2026-09-19T15:30:12Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -17368,7 +17242,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:05:59Z",
+        "observed_at_utc": "2026-09-19T15:30:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -17546,58 +17420,52 @@
       "broadcast": "CBS",
       "away_starter": "K. Cousins",
       "home_starter": "J. Herbert",
-      "away_availability": "2 questionable",
-      "home_availability": "6 questionable",
+      "away_availability": "1 out \u00b7 1 doubtful \u00b7 1 questionable",
+      "home_availability": "2 out \u00b7 2 questionable",
       "away_availability_list": [
-        {
-          "name": "Brock Bowers",
-          "position": "TE",
-          "status": "Questionable",
-          "detail": "knee"
-        },
         {
           "name": "Darien Porter",
           "position": "CB",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Brock Bowers",
+          "position": "TE",
+          "status": "Doubtful",
+          "detail": "knee"
+        },
+        {
+          "name": "Aidan O'Connell",
+          "position": "QB",
           "status": "Questionable",
           "detail": ""
         }
       ],
       "home_availability_list": [
         {
-          "name": "Ladd McConkey",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "ribs"
+          "name": "Trey Pipkins III",
+          "position": "OT",
+          "status": "Out",
+          "detail": "knee"
         },
         {
           "name": "Elijah Molden",
           "position": "CB",
-          "status": "Questionable",
+          "status": "Out",
           "detail": "hamstring"
-        },
-        {
-          "name": "Teair Tart",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Dalvin Tomlinson",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Trey Pipkins III",
-          "position": "OT",
-          "status": "Questionable",
-          "detail": ""
         },
         {
           "name": "Deane Leonard",
           "position": "CB",
           "status": "Questionable",
-          "detail": ""
+          "detail": "abdomen"
+        },
+        {
+          "name": "Ladd McConkey",
+          "position": "WR",
+          "status": "Questionable",
+          "detail": "rib"
         },
         {
           "name": "KeAndre Lambert-Smith",
@@ -18950,7 +18818,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:01Z",
+        "observed_at_utc": "2026-09-19T15:30:12Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -19096,7 +18964,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:01Z",
+        "observed_at_utc": "2026-09-19T15:30:12Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -19274,48 +19142,24 @@
       "broadcast": "FOX",
       "away_starter": "J. Daniels",
       "home_starter": "D. Prescott",
-      "away_availability": "7 questionable",
-      "home_availability": "1 doubtful \u00b7 1 questionable",
+      "away_availability": "2 out \u00b7 1 questionable",
+      "home_availability": "2 out",
       "away_availability_list": [
         {
-          "name": "Jaylin Lane",
-          "position": "WR",
-          "status": "Questionable",
+          "name": "Frankie Luvu",
+          "position": "LB",
+          "status": "Out",
           "detail": "groin"
         },
         {
           "name": "Chig Okonkwo",
           "position": "TE",
-          "status": "Questionable",
+          "status": "Out",
           "detail": "hamstring"
         },
         {
-          "name": "Dorance Armstrong",
-          "position": "DE",
-          "status": "Questionable",
-          "detail": "knee"
-        },
-        {
-          "name": "Odafe Oweh",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": "calf"
-        },
-        {
-          "name": "Frankie Luvu",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": "groin"
-        },
-        {
-          "name": "Charles Omenihu",
-          "position": "DE",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "K'Lavon Chaisson",
-          "position": "LB",
+          "name": "Javon Kinlaw",
+          "position": "DT",
           "status": "Questionable",
           "detail": ""
         },
@@ -19328,16 +19172,16 @@
       ],
       "home_availability_list": [
         {
-          "name": "Malik Hooker",
-          "position": "S",
-          "status": "Doubtful",
-          "detail": "forearm"
-        },
-        {
           "name": "DeMarvion Overshown",
           "position": "LB",
-          "status": "Questionable",
+          "status": "Out",
           "detail": "hamstring"
+        },
+        {
+          "name": "Malik Hooker",
+          "position": "S",
+          "status": "Out",
+          "detail": "forearm"
         },
         {
           "name": "Malik Davis",
@@ -20690,7 +20534,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:04Z",
+        "observed_at_utc": "2026-09-19T15:30:14Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -20836,7 +20680,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:05:59Z",
+        "observed_at_utc": "2026-09-19T15:30:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -21014,9 +20858,21 @@
       "broadcast": "FOX",
       "away_starter": "D. Lock",
       "home_starter": "J. Brissett",
-      "away_availability": "1 out \u00b7 4 questionable",
-      "home_availability": "9 questionable",
+      "away_availability": "3 out \u00b7 2 questionable",
+      "home_availability": "1 out \u00b7 6 questionable",
       "away_availability_list": [
+        {
+          "name": "Ty Okada",
+          "position": "S",
+          "status": "Out",
+          "detail": "hamstring"
+        },
+        {
+          "name": "Zach Charbonnet",
+          "position": "RB",
+          "status": "Out",
+          "detail": "knee"
+        },
         {
           "name": "Sam Darnold",
           "position": "QB",
@@ -21034,26 +20890,14 @@
           "position": "S",
           "status": "Questionable",
           "detail": "ankle"
-        },
-        {
-          "name": "Ty Okada",
-          "position": "S",
-          "status": "Questionable",
-          "detail": "hamstring"
-        },
-        {
-          "name": "Josh Jones",
-          "position": "G",
-          "status": "Questionable",
-          "detail": ""
         }
       ],
       "home_availability_list": [
         {
-          "name": "Isaiah Adams",
-          "position": "G",
-          "status": "Questionable",
-          "detail": "knee"
+          "name": "Garrett Williams",
+          "position": "CB",
+          "status": "Out",
+          "detail": "Achilles"
         },
         {
           "name": "Isaac Seumalo",
@@ -21062,46 +20906,34 @@
           "detail": "shoulder"
         },
         {
+          "name": "Isaiah Adams",
+          "position": "G",
+          "status": "Questionable",
+          "detail": "knee"
+        },
+        {
           "name": "Andrew Billings",
           "position": "DT",
           "status": "Questionable",
-          "detail": ""
+          "detail": "knee"
         },
         {
-          "name": "Garrett Williams",
+          "name": "Roy Lopez",
+          "position": "DT",
+          "status": "Questionable",
+          "detail": "groin"
+        },
+        {
+          "name": "Max Melton",
           "position": "CB",
           "status": "Questionable",
-          "detail": "Achilles"
+          "detail": "ankle"
         },
         {
           "name": "Dadrion Taylor-Demerson",
           "position": "S",
           "status": "Questionable",
           "detail": "ribs"
-        },
-        {
-          "name": "Jack Gibbens",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": "shoulder"
-        },
-        {
-          "name": "Cody Simon",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Roy Lopez",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Max Melton",
-          "position": "CB",
-          "status": "Questionable",
-          "detail": ""
         },
         {
           "name": "Kitan Crawford",
@@ -22466,7 +22298,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:03Z",
+        "observed_at_utc": "2026-09-19T15:30:14Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -22612,7 +22444,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:05:58Z",
+        "observed_at_utc": "2026-09-19T15:30:10Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -22790,32 +22622,26 @@
       "broadcast": "FOX",
       "away_starter": "M. Willis",
       "home_starter": "B. Purdy",
-      "away_availability": "4 questionable",
-      "home_availability": "1 out \u00b7 5 questionable",
+      "away_availability": "2 out \u00b7 1 questionable",
+      "home_availability": "1 out \u00b7 2 questionable",
       "away_availability_list": [
+        {
+          "name": "Ronnie Harrison Jr.",
+          "position": "LB",
+          "status": "Out",
+          "detail": "hamstring"
+        },
         {
           "name": "Chop Robinson",
           "position": "LB",
-          "status": "Questionable",
+          "status": "Out",
           "detail": "concussion"
-        },
-        {
-          "name": "Seydou Traore",
-          "position": "TE",
-          "status": "Questionable",
-          "detail": ""
         },
         {
           "name": "Tucker Addington",
           "position": "LS",
           "status": "Questionable",
           "detail": ""
-        },
-        {
-          "name": "Ronnie Harrison Jr.",
-          "position": "LB",
-          "status": "Questionable",
-          "detail": "hamstring"
         },
         {
           "name": "Kyle Louis",
@@ -22841,25 +22667,7 @@
           "name": "Kaelon Black",
           "position": "RB",
           "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "George Kittle",
-          "position": "TE",
-          "status": "Questionable",
-          "detail": "Achilles"
-        },
-        {
-          "name": "Keion White",
-          "position": "DE",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
-          "name": "Kyle Juszczyk",
-          "position": "FB",
-          "status": "Questionable",
-          "detail": ""
+          "detail": "groin"
         },
         {
           "name": "Jake Tonges",
@@ -24218,7 +24026,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:02Z",
+        "observed_at_utc": "2026-09-19T15:30:13Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -24364,7 +24172,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:04Z",
+        "observed_at_utc": "2026-09-19T15:30:14Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -24542,26 +24350,20 @@
       "broadcast": "NBC",
       "away_starter": "D. Jones",
       "home_starter": "P. Mahomes",
-      "away_availability": "4 questionable",
-      "home_availability": "1 out \u00b7 1 questionable",
+      "away_availability": "1 out \u00b7 2 questionable",
+      "home_availability": "1 out \u00b7 2 questionable",
       "away_availability_list": [
+        {
+          "name": "Ashton Dulin",
+          "position": "WR",
+          "status": "Out",
+          "detail": "ankle"
+        },
         {
           "name": "DJ Giddens",
           "position": "RB",
           "status": "Questionable",
           "detail": "knee"
-        },
-        {
-          "name": "Ashton Dulin",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "ankle"
-        },
-        {
-          "name": "Alec Pierce",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "heel"
         },
         {
           "name": "Sean McKeon",
@@ -24600,6 +24402,12 @@
           "position": "DT",
           "status": "Questionable",
           "detail": "calf"
+        },
+        {
+          "name": "Mansoor Delane",
+          "position": "CB",
+          "status": "Questionable",
+          "detail": "shoulder"
         },
         {
           "name": "Cooper McDonald",
@@ -25964,7 +25772,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:00Z",
+        "observed_at_utc": "2026-09-19T15:30:12Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -26110,7 +25918,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:01Z",
+        "observed_at_utc": "2026-09-19T15:30:12Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -26288,9 +26096,21 @@
       "broadcast": "ESPN",
       "away_starter": "J. Dart",
       "home_starter": "M. Stafford",
-      "away_availability": "7 questionable",
-      "home_availability": "4 questionable",
+      "away_availability": "6 questionable",
+      "home_availability": "6 questionable",
       "away_availability_list": [
+        {
+          "name": "Francis Mauigoa",
+          "position": "OT",
+          "status": "Questionable",
+          "detail": ""
+        },
+        {
+          "name": "Andrew Thomas",
+          "position": "OT",
+          "status": "Questionable",
+          "detail": ""
+        },
         {
           "name": "Greg Newsome II",
           "position": "CB",
@@ -26302,12 +26122,6 @@
           "position": "CB",
           "status": "Questionable",
           "detail": "calf"
-        },
-        {
-          "name": "Andrew Thomas",
-          "position": "OT",
-          "status": "Questionable",
-          "detail": ""
         },
         {
           "name": "Micah McFadden",
@@ -26322,19 +26136,25 @@
           "detail": ""
         },
         {
-          "name": "Francis Mauigoa",
-          "position": "OT",
-          "status": "Questionable",
-          "detail": ""
-        },
-        {
           "name": "Paulson Adebo",
           "position": "CB",
-          "status": "Questionable",
-          "detail": ""
+          "status": "Injured Reserve",
+          "detail": "knee"
         }
       ],
       "home_availability_list": [
+        {
+          "name": "Jordan Whittington",
+          "position": "WR",
+          "status": "Questionable",
+          "detail": "quadriceps"
+        },
+        {
+          "name": "Puka Nacua",
+          "position": "WR",
+          "status": "Questionable",
+          "detail": ""
+        },
         {
           "name": "Omar Speights",
           "position": "LB",
@@ -27716,7 +27536,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:02Z",
+        "observed_at_utc": "2026-09-19T15:30:13Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -27862,7 +27682,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-18T16:06:01Z",
+        "observed_at_utc": "2026-09-19T15:30:13Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -27915,16 +27735,16 @@
               "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4697639.png&w=160&h=160"
             },
             {
-              "name": "Kamren Kinchens",
+              "name": "Kam Curl",
               "position": "SS",
               "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4596363.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4242154.png&w=160&h=160"
             },
             {
-              "name": "Kam Curl",
+              "name": "Kamren Kinchens",
               "position": "FS",
               "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4242154.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4596363.png&w=160&h=160"
             },
             {
               "name": "Trent McDuffie",
