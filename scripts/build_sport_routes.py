@@ -13,8 +13,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 STAMP = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
 NAV = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8").strip()
-PUBLIC_SPORTS = ("mlb", "nfl")
-PARKED_SPORTS = ("wnba", "cfb")
+PUBLIC_SPORTS = ("mlb", "nfl", "cfb")
+PARKED_SPORTS = ("wnba",)
 SPORTS = {
     "mlb": {
         "title": "MLB — Chase Analytics",

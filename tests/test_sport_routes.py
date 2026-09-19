@@ -22,7 +22,7 @@ class SportRouteBuilderTests(unittest.TestCase):
     _GENERATED = tuple(
         ROOT / sport / name
         for sport in ("mlb", "nfl", "wnba", "cfb")
-        for name in (("index.html", "matchups.html", "matchup.html") if sport in ("mlb", "nfl") else ("index.html", "matchups.html"))
+        for name in (("index.html", "matchups.html", "matchup.html") if sport in ("mlb", "nfl", "cfb") else ("index.html", "matchups.html"))
     )
 
     @classmethod
@@ -38,8 +38,8 @@ class SportRouteBuilderTests(unittest.TestCase):
             if original is not None:
                 path.write_bytes(original)
 
-    def test_four_indexes_and_nfl_matchups(self):
-        for sport in ("mlb", "nfl"):
+    def test_public_sport_indexes_and_matchups(self):
+        for sport in ("mlb", "nfl", "cfb"):
             path = ROOT / sport / "index.html"
             self.assertTrue(path.is_file(), path)
             text = path.read_text(encoding="utf-8")
@@ -64,30 +64,27 @@ class SportRouteBuilderTests(unittest.TestCase):
             self.assertNotIn("responsive.css", text)
             self.assertNotIn("sports/chase_board.js", text)
 
-    def test_cfb_and_wnba_are_parked_off_the_public_desk(self):
+    def test_wnba_is_parked_off_the_public_desk(self):
         nav = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8")
         home = (ROOT / "index.html").read_text(encoding="utf-8")
         select = (ROOT / "dashboard" / "chase_sport_select.js").read_text(encoding="utf-8")
-        # The switcher shows all four sports, per the reference chrome. WNBA
-        # and CFB carry data-state="upcoming" so they read as not-yet-live, and
-        # validate_public_fields.py still blocks promoting them inside page
+        # WNBA remains unavailable in the switcher and page content, and
+        # validate_public_fields.py still blocks promoting it inside page
         # CONTENT - appearing in the switcher is not a claim of published data.
-        # Handoff section 10: WNBA and CFB stay in design documentation only.
         self.assertNotIn("/wnba/", nav)
         self.assertNotIn("/cfb/", nav)
         self.assertNotIn("CFB", home)
         self.assertNotIn("WNBA", home)
         self.assertNotIn("id: 'wnba'", select)
         self.assertNotIn("id: 'cfb'", select)
-        for sport in ("wnba", "cfb"):
-            text = (ROOT / sport / "index.html").read_text(encoding="utf-8")
-            self.assertIn("noindex", text)
-            self.assertIn("not on the public desk", text)
-            self.assertNotIn(f"sports/{sport}.js", text)
-            self.assertNotIn("ChaseSportSelect", text)
+        text = (ROOT / "wnba" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("noindex", text)
+        self.assertIn("not on the public desk", text)
+        self.assertNotIn("sports/wnba.js", text)
+        self.assertNotIn("ChaseSportSelect", text)
 
     def test_every_sport_has_matchups(self):
-        for sport in ("mlb", "nfl"):
+        for sport in ("mlb", "nfl", "cfb"):
             matchups = (ROOT / sport / "matchups.html").read_text(encoding="utf-8")
             self.assertIn("ChaseShell", matchups)
             self.assertIn("sport: sport", matchups)
@@ -105,7 +102,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         src = (ROOT / "scripts" / "build_sport_routes.py").read_text(encoding="utf-8")
         self.assertNotIn("results.html", src)
         self.assertNotIn("RESULTS_JS", src)
-        for sport in ("mlb", "nfl"):
+        for sport in ("mlb", "nfl", "cfb"):
             for name in ("index.html", "matchups.html", "matchup.html"):
                 page = (ROOT / sport / name).read_text(encoding="utf-8")
                 self.assertNotIn("results.html", page, f"{sport}/{name} links a results route")
@@ -206,10 +203,16 @@ class SportRouteBuilderTests(unittest.TestCase):
         for path in self._GENERATED:
             text = path.read_text(encoding="utf-8")
             self.assertNotIn("= None;", text, path)
-            if path.parent.name in ("mlb", "nfl"):
+            if path.parent.name in ("mlb", "nfl", "cfb"):
                 self.assertIn("chase_shell.js", text, path)
             else:
                 self.assertIn("noindex", text, path)
+
+    def test_cfb_win_probability_matches_margin_side(self):
+        card = (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8")
+        favored = card.split("function cfbFavored", 1)[1].split("function cfbTone", 1)[0]
+        self.assertIn("side === 'home' ? wpHome : 1 - wpHome", favored)
+        self.assertNotIn("Math.max(wpHome, 1 - wpHome)", favored)
 
     def test_scope_bar_omits_defaults(self):
         js = (ROOT / "dashboard" / "chase_scope.js").read_text(encoding="utf-8")

@@ -492,10 +492,12 @@
   function cfbFavored(game) {
     var m = game.model_margin;
     var wpHome = game.win_probability;
-    var pFav = (typeof wpHome === 'number' && isFinite(wpHome)) ? Math.max(wpHome, 1 - wpHome) : null;
     var side = null;
     if (typeof m === 'number' && isFinite(m) && m !== 0) side = m > 0 ? 'home' : 'away';
     else if (typeof wpHome === 'number' && isFinite(wpHome)) side = wpHome >= 0.5 ? 'home' : 'away';
+    var pFav = (side && typeof wpHome === 'number' && isFinite(wpHome))
+      ? (side === 'home' ? wpHome : 1 - wpHome)
+      : null;
     return {
       side: side,
       abbr: side ? game[side] : null,
