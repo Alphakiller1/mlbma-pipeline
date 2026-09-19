@@ -235,6 +235,25 @@
   }
 
   function teamBlock(sport, game, side) {
+    // CFB crests are published as URLs on the board (college logos are not in
+    // the MLB/NFL asset pipeline), and the club line carries conference rather
+    // than a W-L record, which the model board does not publish.
+    if (sport === 'cfb') {
+      var cfbName = game[side + '_name'] || game[side] || 'Team';
+      var cfbConf = game[side + '_conf'];
+      var cfbColor = game[side + '_color'];
+      var cfbLogo = game[side + '_logo'];
+      var cfbAccent = cfbColor ? ' style="--team-accent:' + esc(cfbColor) + '"' : '';
+      var cfbCrest = cfbLogo
+        ? '<img class="ca-matchup-logo" src="' + esc(cfbLogo) + '" width="44" height="44" alt="' + esc(cfbName) + ' logo" loading="lazy" decoding="async">'
+        : '<span class="ca-team-logo-placeholder" aria-hidden="true"></span>';
+      return '<div class="ca-matchup-card__club ca-matchup-card__club--' + side + '"' + cfbAccent + '>' +
+        cfbCrest +
+        '<div class="ca-matchup-card__club-copy">' +
+        '<span class="ca-matchup-card__name">' + esc(cfbName) + '</span>' +
+        (cfbConf ? '<span class="ca-matchup-card__record">' + esc(cfbConf) + '</span>' : '') +
+        '</div></div>';
+    }
     var abbr = game[side];
     var supplied = game[side + '_name'];
     var name = teamName(sport, abbr, supplied);
@@ -364,6 +383,9 @@
     // No starter blocks here: the collapsed card already shows both faces, and
     // repeating them made the same two headshots appear twice on expand.
     var html = '<div class="ca-matchup-card__expand" id="' + esc(panelId) + '" hidden>';
+    if (sport === 'cfb') {
+      return html + cfbAnalysis(game, awayName, homeName) + '</div>';
+    }
     if (sport === 'nfl') {
       var awayAv = availabilityPanel(game, 'away', awayName);
       var homeAv = availabilityPanel(game, 'home', homeName);
@@ -457,6 +479,100 @@
     return [away || '—', home || '—'].join(' · ');
   }
 
+  /* CFB middle band + facts. The producer publishes a model board, not an ops
+     slate, so the pitcher/QB arms become a per-team projected-points line and
+     the three summary facts carry the model's margin, win probability, and
+     total. Every cell reuses the shared card structure so the CFB card is the
+     same object as the MLB and NFL cards, only fed different facts. */
+  function fmt1(v) { return (typeof v === 'number' && isFinite(v)) ? v.toFixed(1) : null; }
+  function cfbSigned(v) { return (typeof v === 'number' && isFinite(v)) ? (v > 0 ? '+' : '') + v.toFixed(1) : 'Not published'; }
+  function cfbPct(v) { return (typeof v === 'number' && isFinite(v)) ? Math.round(v * 100) + '%' : 'Not published'; }
+  function cfbText(v) { return v ? String(v).replace(/_/g, ' ') : 'Not published'; }
+
+  function cfbFavored(game) {
+    var m = game.model_margin;
+    var wpHome = game.win_probability;
+    var pFav = (typeof wpHome === 'number' && isFinite(wpHome)) ? Math.max(wpHome, 1 - wpHome) : null;
+    var side = null;
+    if (typeof m === 'number' && isFinite(m) && m !== 0) side = m > 0 ? 'home' : 'away';
+    else if (typeof wpHome === 'number' && isFinite(wpHome)) side = wpHome >= 0.5 ? 'home' : 'away';
+    return {
+      side: side,
+      abbr: side ? game[side] : null,
+      margin: (typeof m === 'number' && isFinite(m)) ? Math.abs(m) : null,
+      pFav: pFav
+    };
+  }
+  function cfbTone(pFav) {
+    if (typeof pFav !== 'number') return '';
+    if (pFav >= 0.65) return 'is-ok';
+    if (pFav < 0.57) return 'is-watch';
+    return '';
+  }
+  function cfbArm(game, side) {
+    var name = teamName('cfb', game[side], game[side + '_name']);
+    var proj = side === 'away' ? game.proj_away : game.proj_home;
+    var chip = fmt1(proj) != null
+      ? '<span class="ca-matchup-card__arm-era">' + esc(fmt1(proj)) + '<i>PTS</i></span>'
+      : '';
+    return '<div class="ca-matchup-card__arm">' +
+      '<span class="ca-matchup-card__shot ca-matchup-card__shot--empty" aria-hidden="true"></span>' +
+      '<div class="ca-matchup-card__arm-copy">' +
+      '<span class="ca-matchup-card__arm-name">' + esc(name) + '</span>' +
+      '<span class="ca-matchup-card__arm-meta' + (chip ? '' : ' is-absent') + '">' +
+      (chip ? 'Projected points' : 'Projection Not Published') + '</span></div>' + chip + '</div>';
+  }
+  function armsRow(sport, game) {
+    if (sport === 'cfb') {
+      return '<div class="ca-matchup-card__arms" role="group" aria-label="Model projection">' +
+        cfbArm(game, 'away') + cfbArm(game, 'home') + '</div>';
+    }
+    return '<div class="ca-matchup-card__arms" role="group" aria-label="' +
+      (sport === 'mlb' ? 'Probable Starters' : 'Quarterbacks') + '">' +
+      starterFace(sport, game, 'away') + starterFace(sport, game, 'home') + '</div>';
+  }
+  function summaryRow(sport, game, statusLine) {
+    if (sport === 'cfb') {
+      var fav = cfbFavored(game);
+      var tone = cfbTone(fav.pFav);
+      var marginVal = (fav.abbr && fav.margin != null) ? fav.abbr + ' +' + fav.margin.toFixed(1) : 'Not published';
+      var wpVal = (fav.abbr && fav.pFav != null) ? fav.abbr + ' ' + Math.round(fav.pFav * 100) + '%' : 'Not published';
+      return '<div class="ca-matchup-card__summary">' +
+        miniFact('Model margin', marginVal, tone) +
+        miniFact('Win probability', wpVal, tone) +
+        miniFact('Projected total', fmt1(game.proj_total) || 'Not published', '') +
+        '</div>';
+    }
+    return '<div class="ca-matchup-card__summary">' +
+      miniFact(sport === 'mlb' ? 'Bullpen, L3' : 'Travel',
+        sport === 'mlb' ? bullpenSummary(game) : (game.away_travel || restSummary(game)),
+        '', sport === 'mlb' ? 'users' : 'plane') +
+      miniFact(sport === 'mlb' ? 'Lineup Status' : 'Availability', statusLine,
+        '', sport === 'mlb' ? 'lineup' : 'whistle') +
+      miniFact('Broadcast', game.broadcast || 'Not Published', '', 'tv') +
+      '</div>';
+  }
+  function cfbAnalysis(game, awayName, homeName) {
+    var grid = '<div class="ca-matchup-card__detail-grid">' +
+      miniFact(awayName + ' projected', fmt1(game.proj_away) || 'Not published') +
+      miniFact(homeName + ' projected', fmt1(game.proj_home) || 'Not published') +
+      miniFact('Model regime', cfbText(game.model_regime)) +
+      miniFact('Forecast source', cfbText(game.forecast_source)) +
+      miniFact('Ratings margin', cfbSigned(game.raw_model_margin)) +
+      miniFact('Preseason margin', cfbSigned(game.preseason_margin)) +
+      miniFact('Efficiency margin', cfbSigned(game.efficiency_margin)) +
+      miniFact('Efficiency reliability', cfbPct(game.efficiency_reliability)) +
+      miniFact('Total basis', cfbText(game.total_basis)) +
+      miniFact('Total model weight', cfbPct(game.total_model_weight)) +
+      miniFact('Market margin', cfbSigned(game.market_margin)) +
+      miniFact('Edge points', game.edge_points != null ? cfbSigned(game.edge_points) : (game.edge_withheld_reason || 'Withheld')) +
+      '</div>';
+    var note = '<p class="ca-ctx-note">Projected scoreline is the scoring model; the headline margin is the ' +
+      'opponent-adjusted ratings model — separate views that need not agree.' +
+      (game.evidence ? ' ' + esc(game.evidence) : '') + '</p>';
+    return grid + note;
+  }
+
   function cardHtml(sport, game) {
     var id = 'matchup-' + String(game.id || '').replace(/[^a-z0-9_-]/gi, '-');
     var panelId = id + '-details';
@@ -499,19 +615,10 @@
       '</header>' +
       '<div class="ca-matchup-card__teams">' + teamBlock(sport, game, 'away') +
       '<span class="ca-matchup-card__versus" aria-hidden="true">At</span>' + teamBlock(sport, game, 'home') + '</div>' +
-      '<div class="ca-matchup-card__arms" role="group" aria-label="' +
-      (sport === 'mlb' ? 'Probable Starters' : 'Quarterbacks') + '">' +
-      starterFace(sport, game, 'away') + starterFace(sport, game, 'home') + '</div>' +
-      // Three compact factual cells, one row - the collapsed anatomy the style
-      // lock specifies (design/GPT_IMAGE_PROMPTS_CHASE_DESK.md).
-      '<div class="ca-matchup-card__summary">' +
-      miniFact(sport === 'mlb' ? 'Bullpen, L3' : 'Travel',
-        sport === 'mlb' ? bullpenSummary(game) : (game.away_travel || restSummary(game)),
-        '', sport === 'mlb' ? 'users' : 'plane') +
-      miniFact(sport === 'mlb' ? 'Lineup Status' : 'Availability', statusLine,
-        '', sport === 'mlb' ? 'lineup' : 'whistle') +
-      miniFact('Broadcast', game.broadcast || 'Not Published', '', 'tv') +
-      '</div>' +
+      // The middle band and the three summary facts are sport-specific: MLB/NFL
+      // carry starter faces + ops facts, CFB carries the model projection.
+      armsRow(sport, game) +
+      summaryRow(sport, game, statusLine) +
       expandedHtml(sport, game, panelId) +
       '<footer class="ca-matchup-card__actions">' +
       '<button type="button" class="ca-matchup-card__expand-btn" data-expand-matchup aria-expanded="false" aria-controls="' +
@@ -617,6 +724,10 @@
   }
 
   function loadGames(sport, adapter, dateIso) {
+    // Sports whose producer publishes a model board instead of an ops slate
+    // (CFB) own their fetch + mapping through adapter.load(); it returns the
+    // same desk result shape the SLATE_URL path does.
+    if (adapter && typeof adapter.load === 'function') return adapter.load(dateIso);
     if (!adapter || !adapter.SLATE_URL) return Promise.reject(new Error('Public slate URL missing.'));
     // Chips are graded as cards and game pages paint, so this season's league
     // baselines must be in the registry first. It never rejects: a failed fetch
