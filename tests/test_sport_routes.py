@@ -71,7 +71,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         # WNBA remains unavailable; CFB is now a live public desk.
         self.assertNotIn("/wnba/", nav)
         self.assertIn('data-nav="cfb"', nav)
-        self.assertNotIn("CFB", home)
+        self.assertIn("CFB", home)
         self.assertNotIn("WNBA", home)
         self.assertNotIn("id: 'wnba'", select)
         self.assertNotIn("id: 'cfb'", select)
@@ -475,7 +475,8 @@ class AdapterHoleTests(unittest.TestCase):
         robots = (ROOT / "robots.txt").read_text(encoding="utf-8")
         self.assertIn("Disallow: /dashboard/team_rankings", robots)
         self.assertIn("Disallow: /wnba", robots)
-        self.assertIn("Disallow: /cfb", robots)
+        # CFB is a public desk sport now (owner decision 2026-09-19), crawlable.
+        self.assertNotIn("Disallow: /cfb", robots)
         workflow = (ROOT / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
         self.assertIn("render/team_rankings.html", workflow)
         self.assertIn("public_site_runtime_diag.py", workflow)

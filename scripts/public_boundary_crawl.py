@@ -138,7 +138,7 @@ def main(argv: list[str]) -> int:
                   "; ".join(sorted(set(entitled_calls))[:2]))
             check(f"{name}: no page errors", not console, "; ".join(console[:2]))
             html = page.content().lower()
-            parked = [s for s in ("/wnba/", "/cfb/") if s in html]
+            parked = [s for s in ("/wnba/",) if s in html]
             check(f"{name}: parked sports absent", not parked, ", ".join(parked))
             page.remove_listener("response", on_response)
             page.remove_listener("request", on_request)

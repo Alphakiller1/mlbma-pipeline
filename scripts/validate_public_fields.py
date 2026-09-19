@@ -318,9 +318,10 @@ def main() -> int:
                 violations.append(f"{rel} public content contains {phrase!r}")
         if "model center" in main_copy:
             violations.append(f"{rel} promotes Model Center inside public content")
-        # Handoff section 10: WNBA and CFB stay in design documentation only
-        # and must not appear in navigation or content.
-        for parked in ("/wnba/", "/cfb/"):
+        # WNBA stays in design documentation only and must not appear in nav or
+        # content. CFB is a first-class desk sport now (owner decision
+        # 2026-09-19), so it is allowed like MLB/NFL.
+        for parked in ("/wnba/",):
             if parked in html.lower():
                 violations.append(f"{rel} exposes parked sport {parked}")
 

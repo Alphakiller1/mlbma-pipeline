@@ -29,6 +29,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 SPORTS = [
     ("mlb", "MLB", "/mlb/", "live"),
     ("nfl", "NFL", "/nfl/", "live"),
+    ("cfb", "CFB", "/cfb/", "live"),
 ]
 
 SEARCH_ICON = (

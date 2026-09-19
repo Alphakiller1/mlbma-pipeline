@@ -10,4 +10,3 @@ Disallow: /dashboard/pitcher_profile.html
 Disallow: /dashboard/bullpen_report
 Disallow: /dashboard/bullpen_report.html
 Disallow: /wnba
-Disallow: /cfb

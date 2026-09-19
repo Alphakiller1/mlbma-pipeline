@@ -36,6 +36,7 @@ DEFAULT_PAGES = [
     "index.html",
     "mlb/index.html",
     "nfl/index.html",
+    "cfb/index.html",
     "mlb/matchup.html?game=824226&date=2026-09-09",
     "nfl/matchup.html?game=2026-W01-ne-sea",
     "dashboard/glossary.html",
