@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908h">
   <link rel="stylesheet" href="/dashboard/theme.css?v=20260908h">
   <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908h">
+  <link rel="stylesheet" href="/dashboard/cfb_board.css?v=20260908h">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="evidence" data-sport="cfb">
@@ -92,7 +93,11 @@
     <h1 class="ca-page-title">CFB results</h1>
     <p class="ca-helper">Settled W/L/P from record.json. This is a results ledger, not a skill badge and not an edge.</p>
     <div id="sportSelect"></div>
-    <p class="ca-helper"><a class="hub-pill" href="/cfb/">Board overview</a></p>
+    <nav class="cfb-subnav" aria-label="CFB section">
+      <a class="hub-pill" href="/cfb/matchups.html">Matchups</a>
+      <a class="hub-pill" href="/cfb/">Board overview</a>
+      <a class="hub-pill active" href="/cfb/results.html">Results ledger</a>
+    </nav>
     <div id="modelStatus"></div>
     <div id="dataStatus"></div>
     <div id="slate" class="ca-async">Loading CFB board…</div>
