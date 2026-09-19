@@ -1,0 +1,30 @@
+/*
+ * CFB board — LAYOUT ONLY. Every visual treatment (card chrome, metric chips,
+ * channel tiles, gap axis, pills, typography) comes from the shared Chase design
+ * system (.ca-card, .ca-nfl-channels, .chip, .ca-entity, .ca-gap-axis, .hub-pill,
+ * .ca-pill-bar). This file adds no colours, borders, or type of its own.
+ */
+
+/* Matchup grid — same pattern as the opening dashboard #matchupsHeroGrid. */
+.cfb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Section subnav — pill row (matches .ca-pill-bar spacing). */
+.cfb-subnav { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 18px; }
+
+.cfb-visible-count { margin: 4px 0 12px; }
+.cfb-at, .cfb-vs { color: var(--text-3); }
+
+/* Conference filter hides non-matching cards; keep [hidden] authoritative. */
+.cfb-card[hidden] { display: none; }
+
+/* Scoped correctness fix: the shared .ca-entity-fallback rule overrides [hidden],
+   so the initials mark otherwise paints on top of a loaded logo. Keep it hidden
+   on CFB cards only (no blast radius on other sports). */
+.cfb-card .ca-entity-fallback[hidden] { display: none; }

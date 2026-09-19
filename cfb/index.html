@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v=20260908h">
   <link rel="stylesheet" href="/dashboard/theme.css?v=20260908h">
   <link rel="stylesheet" href="/dashboard/chase_nav.css?v=20260908h">
+  <link rel="stylesheet" href="/dashboard/cfb_board.css?v=20260919a">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="slate" data-sport="cfb">
@@ -89,10 +90,17 @@
   </div>
 </div>
   <main class="container ca-page-shell" style="max-width:1100px;margin:88px auto 48px;padding:0 16px;">
-    <h1 class="ca-page-title">CFB board</h1>
-    <p class="ca-helper">CFB board. Age is computed at view time from producer timestamps. Games sort by kickoff_utc.</p>
+    <header class="ca-page-header">
+      <p class="ca-eyebrow">College Football</p>
+      <h1 class="ca-page-title">CFB Board</h1>
+      <p class="ca-helper ca-page-header__sub">Model authority, data freshness, and the week's slate at a glance. Ages compute at view time from producer timestamps; games sort by kickoff.</p>
+    </header>
     <div id="sportSelect"></div>
-    <p class="ca-helper"><a class="hub-pill" href="/cfb/matchups.html">Open matchups</a> <a class="hub-pill" href="/cfb/results.html">Results ledger</a></p>
+    <nav class="cfb-subnav" aria-label="CFB section">
+      <a class="hub-pill active" href="/cfb/">Board overview</a>
+      <a class="hub-pill" href="/cfb/matchups.html">Matchups</a>
+      <a class="hub-pill" href="/cfb/results.html">Results ledger</a>
+    </nav>
     <div id="modelStatus"></div>
     <div id="dataStatus"></div>
     <div id="slate" class="ca-async">Loading CFB board…</div>
