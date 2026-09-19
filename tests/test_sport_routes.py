@@ -68,11 +68,9 @@ class SportRouteBuilderTests(unittest.TestCase):
         nav = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8")
         home = (ROOT / "index.html").read_text(encoding="utf-8")
         select = (ROOT / "dashboard" / "chase_sport_select.js").read_text(encoding="utf-8")
-        # WNBA remains unavailable in the switcher and page content, and
-        # validate_public_fields.py still blocks promoting it inside page
-        # CONTENT - appearing in the switcher is not a claim of published data.
+        # WNBA remains unavailable; CFB is now a live public desk.
         self.assertNotIn("/wnba/", nav)
-        self.assertNotIn("/cfb/", nav)
+        self.assertIn('data-nav="cfb"', nav)
         self.assertNotIn("CFB", home)
         self.assertNotIn("WNBA", home)
         self.assertNotIn("id: 'wnba'", select)
@@ -89,6 +87,17 @@ class SportRouteBuilderTests(unittest.TestCase):
             self.assertIn("ChaseShell", matchups)
             self.assertIn("sport: sport", matchups)
             self.assertNotIn("sport: 'nfl'", matchups)
+
+    def test_cfb_generation_preserves_public_card_detail(self):
+        slate = (ROOT / "cfb" / "index.html").read_text(encoding="utf-8")
+        detail = (ROOT / "cfb" / "matchup.html").read_text(encoding="utf-8")
+        self.assertIn('window.CHASE_SPORT_PICKS_LABEL = "Public slate"', slate)
+        self.assertIn("Every Game On This Week’s Board", slate)
+        self.assertIn('data-nav="cfb"', slate)
+        self.assertIn("ChaseMatchupCard.cardHtml('cfb', game)", detail)
+        self.assertIn("Full Matchup Analysis", detail)
+        self.assertNotIn("public_game_detail.js", detail)
+        self.assertNotIn("ChasePublicGameDetail", detail)
 
     def test_past_results_are_not_a_public_destination(self):
         """Completed games belong inside a matchup breakdown, nowhere else.

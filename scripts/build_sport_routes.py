@@ -47,9 +47,9 @@ SPORTS = {
         "title": "CFB — Chase Analytics",
         "adapter": "cfb",
         "global": "ChaseSportCFB",
-        "picks_label": "Priced markets",
+        "picks_label": "Public slate",
         "gems_label": None,
-        "lede": "CFB research slate. Games sort by kickoff. Age is computed at view time from producer timestamps.",
+        "lede": "Every Game On This Week’s Board, With The Projected Score, Win Probability And Totals Behind It — Model Projections Only, Ranked Against The Field.",
         "matchups_href": "/cfb/matchups.html",
     },
 }
@@ -131,6 +131,7 @@ def page(sport: str, *, kind: str = "index") -> str:
     extra_scripts = f"""
   <script src="/dashboard/chase_shell.js?v={STAMP}"></script>"""
     body_js = MATCHUPS_JS
+    body_js_prefix = "" if sport == "cfb" else "  "
     mode = "slate"
     more_html = ""
     lede = spec["lede"]
@@ -181,7 +182,7 @@ def page(sport: str, *, kind: str = "index") -> str:
   window.CHASE_SPORT_PICKS_LABEL = {json.dumps(spec["picks_label"])};
   window.CHASE_SPORT_GEMS_LABEL = {json.dumps(spec["gems_label"])};
   window.CHASE_SPORT_IS_MATCHUPS = true;
-  {body_js}
+{body_js_prefix}{body_js}
   </script>
 </body>
 </html>
@@ -209,6 +210,8 @@ MATCHUPS_JS = r"""
 
 
 def matchup_page(sport: str) -> str:
+    if sport == "cfb":
+        return cfb_matchup_page()
     spec = SPORTS[sport]
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -249,6 +252,89 @@ def matchup_page(sport: str) -> str:
     if (window.ChasePublicGameDetail) ChasePublicGameDetail.mount({{
       sport: {json.dumps(sport)}, adapter: window.CHASE_SPORT_PAGE, host: document.getElementById('matchupDetail')
     }});
+  </script>
+</body>
+</html>
+"""
+
+
+def cfb_matchup_page() -> str:
+    spec = SPORTS["cfb"]
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CFB Matchup Analysis — Chase Analytics</title>
+  <link rel="stylesheet" href="/dashboard/assets/fonts/chase-fonts.css?v={STAMP}">
+  <link rel="stylesheet" href="/design/chase-tokens-v1.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-primitives.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-components.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/chase_nav.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-public.css?v={STAMP}">
+  <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
+</head>
+<body data-mode="slate" data-sport="cfb" data-ca-product="research">
+{sport_nav()}
+  <main class="ca-public-page ca-shell-main">
+    <header class="ca-public-page__head">
+      <div class="ca-public-page__copy">
+        <p class="ca-public-page__lede"><a href="/cfb/matchups.html">← CFB Matchups</a></p>
+        <h1 class="ca-public-page__title">Full Matchup Analysis</h1>
+        <p class="ca-public-page__lede">The model’s projected score, win probability, total and reasoning for a single game — projections only. Market and edge publish when the odds feed clears the honesty gates.</p>
+      </div>
+    </header>
+    <div class="ca-public-page__content"><div id="detail" class="ca-async" data-state="loading">Loading matchup…</div></div>
+  </main>
+  <footer class="ca-shell-footer">Chase Analytics</footer>
+  <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
+  <script src="/dashboard/mlbma_assets.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
+  <script src="/dashboard/sports/public_sport_registry.js?v={STAMP}"></script>
+  <script src="/dashboard/sports/chase_public_slate.js?v={STAMP}"></script>
+  <script src="/dashboard/matchup_card.js?v={STAMP}"></script>
+  <script src="/dashboard/sports/{spec['adapter']}.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_asyncstate.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_shell.js?v={STAMP}"></script>
+  <script>
+  window.CHASE_SPORT_PAGE = {spec['global']};
+  window.CHASE_SPORT_ID = "cfb";
+  window.CHASE_SPORT_PICKS_LABEL = {json.dumps(spec['picks_label'])};
+  window.CHASE_SPORT_GEMS_LABEL = {json.dumps(spec['gems_label'])};
+  window.CHASE_SPORT_IS_MATCHUPS = true;
+
+(function () {{
+  var adapter = window.ChaseSportCFB;
+  var host = document.getElementById('detail');
+  var gameId = new URLSearchParams(location.search).get('game');
+  if (window.ChaseShell) ChaseShell.mount({{ sport: 'cfb', mode: 'slate', surface: 'matchup', search: false }});
+  if (!adapter || !adapter.load || !window.ChaseMatchupCard) {{
+    host.setAttribute('data-state', 'error');
+    host.innerHTML = '<div class="ca-error-state"><h2>Matchup unavailable</h2><p>The renderer failed to load.</p></div>';
+    return;
+  }}
+  adapter.load().then(function (res) {{
+    var games = res.games || [];
+    var game = games.filter(function (g) {{ return String(g.id) === String(gameId); }})[0];
+    if (!game) {{
+      host.setAttribute('data-state', 'empty');
+      host.innerHTML = '<div class="ca-empty-state"><h2>Game not found</h2><p>It may have rolled off this week’s board. <a href="/cfb/matchups.html">Back to CFB matchups</a>.</p></div>';
+      return;
+    }}
+    host.setAttribute('data-state', 'ready');
+    host.innerHTML = '<div class="ca-slate-grid">' + ChaseMatchupCard.cardHtml('cfb', game) + '</div>';
+    var btn = host.querySelector('[data-expand-matchup]');
+    if (btn) btn.click();
+  }}).catch(function (e) {{
+    host.setAttribute('data-state', 'error');
+    host.innerHTML = '<div class="ca-error-state"><h2>Matchup unavailable</h2><p>' + String((e && e.message) || 'The board could not be loaded.') + '</p></div>';
+  }});
+}})();
+
   </script>
 </body>
 </html>
