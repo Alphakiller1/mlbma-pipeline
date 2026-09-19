@@ -216,9 +216,10 @@
   function conferences(games) {
     var set = {};
     games.forEach(function (g) {
-      [g.away_team && g.away_team.conference, g.home_team && g.home_team.conference].forEach(function (c) {
-        if (c) set[c] = (set[c] || 0) + 1;
-      });
+      var away = g.away_team && g.away_team.conference;
+      var home = g.home_team && g.home_team.conference;
+      if (away) set[away] = (set[away] || 0) + 1;
+      if (home && home !== away) set[home] = (set[home] || 0) + 1;
     });
     return Object.keys(set).sort().map(function (c) { return { name: c, count: set[c] }; });
   }
@@ -292,8 +293,9 @@
     games.forEach(function (g) { html += cardHtml(g, nb.sport || 'cfb', authority); });
     html += '</div>';
 
-    container.className = (container.className || '').replace(/\bca-async(--\w+)?\b/g, '').trim() + ' cfb-slate';
     container.innerHTML = html;
+    if (global.ChaseAsyncState) ChaseAsyncState.ready(container);
+    container.className = (container.className || '').replace(/\bca-async(--\w+)?\b/g, '').trim() + ' cfb-slate';
     wireFilter(container);
   }
 
