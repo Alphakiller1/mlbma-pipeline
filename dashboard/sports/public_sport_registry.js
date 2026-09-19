@@ -12,8 +12,8 @@
       previewTabs: ['overview', 'availability', 'quarterbacks', 'trenches', 'scheme', 'conditions'] },
     { id: 'wnba', enabled: false, href: '/wnba/', label: 'WNBA', searchEnabled: false,
       previewTabs: ['overview', 'rotation', 'availability', 'form', 'conditions'] },
-    { id: 'cfb', enabled: false, href: '/cfb/', label: 'CFB', searchEnabled: false,
-      previewTabs: ['overview', 'quarterbacks', 'units', 'tendencies', 'availability', 'conditions'] }
+    { id: 'cfb', enabled: true, href: '/cfb/', label: 'CFB', searchEnabled: false,
+      previewTabs: ['overview', 'projection', 'units', 'tendencies', 'availability', 'conditions'] }
   ];
 
   var TEAM_NAMES = {
