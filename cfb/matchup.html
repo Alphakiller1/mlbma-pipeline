@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CFB Matchups — Chase Analytics</title>
+  <title>CFB Matchup Analysis — Chase Analytics</title>
   <link rel="stylesheet" href="/dashboard/assets/fonts/chase-fonts.css?v=20260919c">
   <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260919c">
   <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260919c">
@@ -91,13 +91,12 @@
   <main class="ca-public-page ca-shell-main">
     <header class="ca-public-page__head">
       <div class="ca-public-page__copy">
-        <h1 class="ca-public-page__title">CFB Matchups</h1>
-        <p class="ca-public-page__lede">Every Game On This Week’s Board, With The Projected Score, Win Probability And Totals Behind It — Model Projections Only, Ranked Against The Field.</p>
+        <p class="ca-public-page__lede"><a href="/cfb/matchups.html">← CFB Matchups</a></p>
+        <h1 class="ca-public-page__title">Full Matchup Analysis</h1>
+        <p class="ca-public-page__lede">The model’s projected score, win probability, total and reasoning for a single game — projections only. Market and edge publish when the odds feed clears the honesty gates.</p>
       </div>
-      <div class="ca-public-page__controls" data-desk-toolbar-host></div>
-
     </header>
-    <div class="ca-public-page__content"><div id="slate" class="ca-async" data-state="loading">Loading CFB slate…</div></div>
+    <div class="ca-public-page__content"><div id="detail" class="ca-async" data-state="loading">Loading matchup…</div></div>
   </main>
   <footer class="ca-shell-footer">Chase Analytics</footer>
   <script src="/dashboard/design_layer_version.js?v=20260919c"></script>
@@ -118,10 +117,31 @@
   window.CHASE_SPORT_IS_MATCHUPS = true;
 
 (function () {
-  var adapter = window.CHASE_SPORT_PAGE;
-  var sport = window.CHASE_SPORT_ID;
-  if (window.ChaseShell) ChaseShell.mount({ sport: sport, mode: 'slate', surface: 'matchups', search: false });
-  if (window.ChaseMatchupCard) ChaseMatchupCard.mount({ sport: sport, adapter: adapter, host: document.getElementById('slate') });
+  var adapter = window.ChaseSportCFB;
+  var host = document.getElementById('detail');
+  var gameId = new URLSearchParams(location.search).get('game');
+  if (window.ChaseShell) ChaseShell.mount({ sport: 'cfb', mode: 'slate', surface: 'matchup', search: false });
+  if (!adapter || !adapter.load || !window.ChaseMatchupCard) {
+    host.setAttribute('data-state', 'error');
+    host.innerHTML = '<div class="ca-error-state"><h2>Matchup unavailable</h2><p>The renderer failed to load.</p></div>';
+    return;
+  }
+  adapter.load().then(function (res) {
+    var games = res.games || [];
+    var game = games.filter(function (g) { return String(g.id) === String(gameId); })[0];
+    if (!game) {
+      host.setAttribute('data-state', 'empty');
+      host.innerHTML = '<div class="ca-empty-state"><h2>Game not found</h2><p>It may have rolled off this week’s board. <a href="/cfb/matchups.html">Back to CFB matchups</a>.</p></div>';
+      return;
+    }
+    host.setAttribute('data-state', 'ready');
+    host.innerHTML = '<div class="ca-slate-grid">' + ChaseMatchupCard.cardHtml('cfb', game) + '</div>';
+    var btn = host.querySelector('[data-expand-matchup]');
+    if (btn) btn.click();
+  }).catch(function (e) {
+    host.setAttribute('data-state', 'error');
+    host.innerHTML = '<div class="ca-error-state"><h2>Matchup unavailable</h2><p>' + String((e && e.message) || 'The board could not be loaded.') + '</p></div>';
+  });
 })();
 
   </script>
