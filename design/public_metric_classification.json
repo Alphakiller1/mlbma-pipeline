@@ -67,7 +67,9 @@
     "through",
     "updated_utc",
     "version",
-    "week"
+    "week",
+    "format",
+    "generated_at"
   ],
   "identity": [
     "id",
@@ -107,7 +109,17 @@
     "away_lineup",
     "home_lineup",
     "slot",
-    "venue_country"
+    "venue_country",
+    "away_conference",
+    "home_conference",
+    "away_logo",
+    "home_logo",
+    "away_color",
+    "home_color",
+    "opponent",
+    "abbreviation",
+    "school",
+    "display"
   ],
   "factual_status": [
     "game_state",
@@ -127,7 +139,14 @@
     "roster_status",
     "away_bullpen",
     "home_bullpen",
-    "state"
+    "state",
+    "away_recent",
+    "home_recent",
+    "scored",
+    "allowed",
+    "won",
+    "date",
+    "neutral"
   ],
   "descriptive": [
     "abq",
@@ -231,6 +250,14 @@
     "obp",
     "obr",
     "off_epa",
+    "off_successRate",
+    "off_explosiveness",
+    "off_ppa",
+    "off_stuffRate",
+    "def_successRate",
+    "def_explosiveness",
+    "def_ppa",
+    "def_stuffRate",
     "off_explosive",
     "off_first_down",
     "off_sack",

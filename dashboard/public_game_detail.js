@@ -1804,10 +1804,10 @@
   ];
 
   var CFB_AXIS = {
-    off_successRate: 'Success', off_explosiveness: 'Expl.',
-    off_ppa: 'PPA', off_stuffRate: 'Stuff',
-    def_successRate: 'Success', def_explosiveness: 'Expl.',
-    def_ppa: 'PPA', def_stuffRate: 'Stuff'
+    off_successRate: '3rd Down', off_explosiveness: 'YPA',
+    off_ppa: 'PPG', off_stuffRate: 'YPC',
+    def_successRate: '3rd Down', def_explosiveness: 'YPA',
+    def_ppa: 'PPG', def_stuffRate: 'YPC'
   };
 
   /* Every web is laid out in a box RADAR_W units wide and then scaled to the
@@ -3150,10 +3150,10 @@
   }
 
   var CFB_CLASH = [
-    { off: 'off_ppa', def: 'def_ppa', label: 'PPA per play' },
-    { off: 'off_successRate', def: 'def_successRate', label: 'Success rate' },
-    { off: 'off_explosiveness', def: 'def_explosiveness', label: 'Explosiveness' },
-    { off: 'off_stuffRate', def: 'def_stuffRate', label: 'Stuff rate' }
+    { off: 'off_ppa', def: 'def_ppa', label: 'Points per game' },
+    { off: 'off_successRate', def: 'def_successRate', label: 'Third-down rate' },
+    { off: 'off_explosiveness', def: 'def_explosiveness', label: 'Yards per pass' },
+    { off: 'off_stuffRate', def: 'def_stuffRate', label: 'Yards per rush' }
   ];
 
   function cfbScoreboard(sport, game) {
@@ -3213,9 +3213,10 @@
       if (offPct != null && defPct != null && Math.abs(offPct - defPct) >= 4) {
         lead = offPct > defPct ? ' is-offense' : ' is-defense';
       }
+      var rowLabel = (off && off.label) || (def && def.label) || spec.label;
       return '<div class="ca-cfb-clash__row' + lead + '">' +
         cfbClashSide(off, 'offense') +
-        '<span class="ca-cfb-clash__label">' + esc(spec.label) + '</span>' +
+        '<span class="ca-cfb-clash__label">' + esc(titleCase(rowLabel)) + '</span>' +
         cfbClashSide(def, 'defense') +
         '</div>';
     }).filter(Boolean).join('');
@@ -3256,13 +3257,13 @@
     var a = cfbClashCard(sport, game, 'away', 'home');
     var b = cfbClashCard(sport, game, 'home', 'away');
     if (!a && !b) return pending('Unit rates are not published for this pairing yet.');
+    var espn = ((game.away_form || {}).source === 'espn') || ((game.home_form || {}).source === 'espn');
     return a + b +
-      '<p class="ca-detail-source-note">Each row is one season-to-date unit rate: ' +
-      'this offense’s own production against what that defense has allowed, ranked ' +
-      'against the same FBS pool. The longer bar is the better percentile, including ' +
-      'stuff rate (low stuffed is good for offense; high stuff generated is good for ' +
-      'defense). This describes units that have already played, not a projection for ' +
-      'this kickoff.</p>';
+      '<p class="ca-detail-source-note">' +
+      (espn
+        ? 'Each row is a season-to-date rate from ESPN’s team statistics, ranked against every FBS club that published that rate. Offense is own-team; defense is what opponents have done against this club. This describes the season already played, not a projection for this kickoff.'
+        : 'Each row is one season-to-date unit rate: this offense’s own production against what that defense has allowed, ranked against the same FBS pool. The longer bar is the better percentile. This describes units that have already played, not a projection for this kickoff.') +
+      '</p>';
   }
 
   function cfbSections(sport, game) {
@@ -3281,7 +3282,7 @@
         (nflMirror(sport, game) || '<div class="ca-detail-duo">' +
           nflFormPanel(sport, game, 'away') +
           nflFormPanel(sport, game, 'home') + '</div>') +
-        '<p class="ca-detail-source-note">Each bar is that rate’s percentile against every FBS team that published it this season. Success rate, explosiveness, PPA and stuff rate are opponent-adjusted unit rates from the model’s form table — not a projection for this kickoff. Ranks are recomputed from these rates alone.</p>'),
+        '<p class="ca-detail-source-note">Each bar is that rate’s percentile against every FBS team that published it this season. Labels travel with the numbers. Ranks are recomputed from these rates alone.</p>'),
 
       section('radar', 'Team Profile Radar', 'Both Clubs On One Shape, By Percentile',
         radarBody(sport, game)),

@@ -146,17 +146,20 @@
     return Promise.all([
       loadJson(BOARD_URL),
       loadJson(BUILD_URL).catch(function () { return {}; }),
+      loadJson('/data/public/cfb/slate.json').catch(function () { return { games: [] }; }),
       loadJson(SLATE_URL).catch(function () { return { games: [] }; })
     ]).then(function (parts) {
       var board = parts[0] || {};
       var build = parts[1] || {};
-      var published = indexPublic((parts[2] || {}).games);
+      var local = indexPublic((parts[2] || {}).games);
+      var remote = indexPublic((parts[3] || {}).games);
       var raw = Array.isArray(board.games) ? board.games : [];
       var games = sortGames(raw.map(function (g) {
-        return mergePublic(mapGame(g, board), published[publicKey({
+        var key = publicKey({
           away_name: (g.away && (g.away.school || g.away.name)) || g.away,
           home_name: (g.home && (g.home.school || g.home.name)) || g.home
-        })]);
+        });
+        return mergePublic(mergePublic(mapGame(g, board), remote[key]), local[key]);
       }));
       var auth = board.authority || {};
       return {
