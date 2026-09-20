@@ -5104,7 +5104,7 @@ body[data-ca-product="research"] {
   font-variant-numeric: tabular-nums;
   background: linear-gradient(
     90deg,
-    color-mix(in srgb, var(--ca-brand) 35%, var(--surface-raised)) var(--home, 50%),
+    color-mix(in srgb, var(--accent) 35%, var(--surface-raised)) var(--home, 50%),
     var(--surface-raised) var(--home, 50%)
   );
 }
