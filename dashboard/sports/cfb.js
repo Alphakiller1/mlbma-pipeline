@@ -125,6 +125,8 @@
     mapped.stadium = pub.venue || null;
     mapped.roof = pub.roof || null;
     mapped.surface = pub.surface || null;
+    mapped.away_recent = pub.away_recent || null;
+    mapped.home_recent = pub.home_recent || null;
     if (pub.neutral === true) mapped.neutral = true;
     return mapped;
   }

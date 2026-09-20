@@ -99,6 +99,8 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertNotIn("ChaseMatchupCard.cardHtml('cfb', game)", detail)
         js = (ROOT / "dashboard" / "public_game_detail.js").read_text(encoding="utf-8")
         self.assertIn("function cfbSections", js)
+        self.assertIn("function cfbClashBody", js)
+        self.assertIn("Matchup Breakdown", js)
         adapter = (ROOT / "dashboard" / "sports" / "cfb.js").read_text(encoding="utf-8")
         self.assertIn("slate.json", adapter)
         self.assertIn("mergePublic", adapter)

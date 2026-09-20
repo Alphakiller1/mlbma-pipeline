@@ -90,7 +90,7 @@
     'club-splits': 'users',
     recent: 'calendar', form: 'trend', radar: 'gauge', bullpens: 'users',
     availability: 'whistle', scheme: 'football', 'team-context': 'plane',
-    projection: 'target'
+    projection: 'target', clash: 'football'
   };
 
   function ico(name, cls, px) {
@@ -3149,6 +3149,122 @@
     return v ? String(v).replace(/_/g, ' ') : 'Not published';
   }
 
+  var CFB_CLASH = [
+    { off: 'off_ppa', def: 'def_ppa', label: 'PPA per play' },
+    { off: 'off_successRate', def: 'def_successRate', label: 'Success rate' },
+    { off: 'off_explosiveness', def: 'def_explosiveness', label: 'Explosiveness' },
+    { off: 'off_stuffRate', def: 'def_stuffRate', label: 'Stuff rate' }
+  ];
+
+  function cfbScoreboard(sport, game) {
+    var awayName = fullName(sport, game, 'away');
+    var homeName = fullName(sport, game, 'home');
+    var homeWp = (typeof game.win_probability === 'number' && isFinite(game.win_probability))
+      ? game.win_probability : null;
+    var awayWp = homeWp == null ? null : 1 - homeWp;
+    var wpBar = homeWp == null ? '' :
+      '<div class="ca-cfb-wp" style="--home:' + Math.round(homeWp * 100) + '%">' +
+      '<span>' + esc(game.away) + ' ' + cfbPct(awayWp) + '</span>' +
+      '<span>' + esc(game.home) + ' ' + cfbPct(homeWp) + '</span></div>';
+    return '<div class="ca-cfb-scoreboard">' +
+      '<div class="ca-cfb-scoreboard__club">' +
+      logo(sport, game, 'away', 48, 'ca-cfb-scoreboard__logo') +
+      '<div><span>' + esc(awayName) + '</span><strong>' +
+      (game.proj_away != null ? Number(game.proj_away).toFixed(1) : '—') +
+      '</strong><i>Projected points</i></div></div>' +
+      '<div class="ca-cfb-scoreboard__mid">' + wpBar +
+      '<p>' + esc(cfbSigned(game.model_margin).indexOf('Not') === 0
+        ? 'Margin not published'
+        : ((game.model_margin >= 0 ? homeName : awayName) + ' ' +
+          cfbSigned(Math.abs(game.model_margin)))) +
+      (game.proj_total != null ? ' · Total ' + Number(game.proj_total).toFixed(1) : '') +
+      '</p></div>' +
+      '<div class="ca-cfb-scoreboard__club is-home">' +
+      '<div><span>' + esc(homeName) + '</span><strong>' +
+      (game.proj_home != null ? Number(game.proj_home).toFixed(1) : '—') +
+      '</strong><i>Projected points</i></div>' +
+      logo(sport, game, 'home', 48, 'ca-cfb-scoreboard__logo') +
+      '</div></div>';
+  }
+
+  function cfbClashSide(entry, which) {
+    if (!entry) {
+      return '<div class="ca-cfb-clash__side is-' + which + ' is-absent"><span>Not published</span></div>';
+    }
+    return '<div class="ca-cfb-clash__side is-' + which + '">' +
+      '<strong class="' + rankTone(entry.rank, entry.of) + '">' + esc(formText(entry)) + '</strong>' +
+      percentBar(entry.rank, entry.of) +
+      '<span class="ca-form-rank ' + rankTone(entry.rank, entry.of) + '">' +
+      entry.rank + ordinal(entry.rank) + ' of ' + entry.of + '</span></div>';
+  }
+
+  function cfbClashCard(sport, game, offSide, defSide) {
+    var offRates = ((game[offSide + '_form'] || {}).rates) || {};
+    var defRates = ((game[defSide + '_form'] || {}).rates) || {};
+    var offName = fullName(sport, game, offSide);
+    var defName = fullName(sport, game, defSide);
+    var rows = CFB_CLASH.map(function (spec) {
+      var off = offRates[spec.off];
+      var def = defRates[spec.def];
+      if (!off && !def) return '';
+      var offPct = percentOf(off);
+      var defPct = percentOf(def);
+      var lead = '';
+      if (offPct != null && defPct != null && Math.abs(offPct - defPct) >= 4) {
+        lead = offPct > defPct ? ' is-offense' : ' is-defense';
+      }
+      return '<div class="ca-cfb-clash__row' + lead + '">' +
+        cfbClashSide(off, 'offense') +
+        '<span class="ca-cfb-clash__label">' + esc(spec.label) + '</span>' +
+        cfbClashSide(def, 'defense') +
+        '</div>';
+    }).filter(Boolean).join('');
+    if (!rows) return '';
+    var won = 0, counted = 0;
+    CFB_CLASH.forEach(function (spec) {
+      var offPct = percentOf(offRates[spec.off]);
+      var defPct = percentOf(defRates[spec.def]);
+      if (offPct == null || defPct == null) return;
+      counted += 1;
+      if (offPct > defPct) won += 1;
+    });
+    var take = counted
+      ? (won > counted / 2
+          ? offName + '’s offense grades ahead of ' + defName + '’s defense on ' +
+            won + ' of ' + counted + ' unit rates.'
+          : won < counted / 2
+            ? defName + '’s defense grades ahead of ' + offName + '’s offense on ' +
+              (counted - won) + ' of ' + counted + ' unit rates.'
+            : offName + '’s offense and ' + defName + '’s defense sit on even unit percentiles.')
+      : '';
+    var pace = '';
+    var plays = (game[offSide + '_form'] || {}).plays;
+    if (plays != null) {
+      pace = '<p class="ca-lineup-context">' + Number(plays).toFixed(1) +
+        ' offensive plays per game</p>';
+    }
+    return '<article class="ca-cfb-clash">' +
+      '<header><h3>' + esc(offName) + ' offense vs ' + esc(defName) + ' defense</h3>' +
+      pace + '</header>' +
+      '<div class="ca-cfb-clash__axis"><span>Offense</span><span>Defense</span></div>' +
+      rows +
+      (take ? '<p class="ca-cfb-clash__take">' + esc(take) + '</p>' : '') +
+      '</article>';
+  }
+
+  function cfbClashBody(sport, game) {
+    var a = cfbClashCard(sport, game, 'away', 'home');
+    var b = cfbClashCard(sport, game, 'home', 'away');
+    if (!a && !b) return pending('Unit rates are not published for this pairing yet.');
+    return a + b +
+      '<p class="ca-detail-source-note">Each row is one season-to-date unit rate: ' +
+      'this offense’s own production against what that defense has allowed, ranked ' +
+      'against the same FBS pool. The longer bar is the better percentile, including ' +
+      'stuff rate (low stuffed is good for offense; high stuff generated is good for ' +
+      'defense). This describes units that have already played, not a projection for ' +
+      'this kickoff.</p>';
+  }
+
   function cfbSections(sport, game) {
     var awayName = fullName(sport, game, 'away');
     var homeName = fullName(sport, game, 'home');
@@ -3156,6 +3272,26 @@
       ? cfbSigned(game.edge_points)
       : (game.edge_withheld_reason || 'Withheld');
     return [
+      section('clash', 'Matchup Breakdown',
+        'Each Offense Against The Defense It Meets, On The Same Four Unit Rates',
+        cfbClashBody(sport, game)),
+
+      section('form', 'Stat Comparison',
+        'Season-To-Date Rates, Ranked Against The FBS Pool',
+        (nflMirror(sport, game) || '<div class="ca-detail-duo">' +
+          nflFormPanel(sport, game, 'away') +
+          nflFormPanel(sport, game, 'home') + '</div>') +
+        '<p class="ca-detail-source-note">Each bar is that rate’s percentile against every FBS team that published it this season. Success rate, explosiveness, PPA and stuff rate are opponent-adjusted unit rates from the model’s form table — not a projection for this kickoff. Ranks are recomputed from these rates alone.</p>'),
+
+      section('radar', 'Team Profile Radar', 'Both Clubs On One Shape, By Percentile',
+        radarBody(sport, game)),
+
+      section('recent', 'Recent Results', 'Completed Games, Oldest To Newest',
+        '<div class="ca-recent-stack">' +
+        recentStrip(sport, game, 'away', game.away_recent || []) +
+        recentStrip(sport, game, 'home', game.home_recent || []) + '</div>' +
+        '<p class="ca-detail-source-note">Each square is a completed game with its final score. Hover or focus for the opponent and date. These are results already in the book, not a statement about Saturday.</p>'),
+
       section('projection', 'Model Projection',
         'Scoring model and opponent-adjusted ratings, published as separate views',
         '<div class="ca-detail-facts">' +
@@ -3181,16 +3317,6 @@
         (game.evidence
           ? '<p class="ca-detail-source-note">' + esc(game.evidence) + '</p>'
           : '<p class="ca-detail-source-note">Projected scoreline is the scoring model; the headline margin is the opponent-adjusted ratings model. Market and edge stay unpublished until the odds feed clears the honesty gates.</p>')),
-
-      section('form', 'Units',
-        'Season-To-Date Rates, Ranked Against The FBS Pool',
-        (nflMirror(sport, game) || '<div class="ca-detail-duo">' +
-          nflFormPanel(sport, game, 'away') +
-          nflFormPanel(sport, game, 'home') + '</div>') +
-        '<p class="ca-detail-source-note">Each bar is that rate’s percentile against every FBS team that published it this season. Success rate, explosiveness, PPA and stuff rate are opponent-adjusted unit rates from the model’s form table — not a projection for this kickoff. Ranks are recomputed from these rates alone.</p>'),
-
-      section('radar', 'Team Profile Radar', 'Both Clubs On One Shape, By Percentile',
-        radarBody(sport, game)),
 
       section('team-context', 'Venue And Travel', 'Factual Scheduling Context',
         '<div class="ca-detail-duo">' + teamPanel(sport, game, 'away', [
@@ -3219,8 +3345,9 @@
          ['lineups', 'Lineup Vs Starter'], ['club-splits', 'Club Splits'], ['recent', 'Last Ten'], ['form', 'Offensive Form'],
          ['radar', 'Radar'], ['bullpens', 'Bullpens']]
       : sport === 'cfb'
-      ? [['overview', 'Overview'], ['projection', 'Projection'], ['form', 'Units'],
-         ['radar', 'Radar'], ['team-context', 'Venue And Travel']]
+      ? [['overview', 'Overview'], ['clash', 'Matchup'], ['form', 'Comparison'],
+         ['radar', 'Radar'], ['recent', 'Recent'], ['projection', 'Projection'],
+         ['team-context', 'Venue And Travel']]
       : [['overview', 'Overview'], ['availability', 'Lineups'], ['scheme', 'Scheme'],
          ['form', 'Team Form'], ['radar', 'Radar'], ['team-context', 'Rest And Travel']];
     var html = '<a class="ca-detail-back" href="/' + sport + '/">← Back To ' + sport.toUpperCase() + ' Matchups</a>' +
@@ -3239,7 +3366,9 @@
           fact('Status', gameStatus(game))
         : fact('Venue', venue(game)) +
           wxFact(game) + fact('Broadcast', value(game.broadcast)) +
-          fact('Status', gameStatus(game))) + '</div></article>' +
+          fact('Status', gameStatus(game))) + '</div>' +
+      (sport === 'cfb' ? cfbScoreboard(sport, game) : '') +
+      '</article>' +
       '<nav class="ca-detail-nav" aria-label="Matchup sections">' + nav.map(function (item) {
         var glyph = item[0] === 'overview' ? ico('info', 'ca-detail-nav__ico', 14)
           : (SECTION_ICON[item[0]] ? ico(SECTION_ICON[item[0]], 'ca-detail-nav__ico', 14) : '');
