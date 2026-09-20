@@ -89,7 +89,8 @@
     starters: 'baseball', arsenal: 'target', lineups: 'lineup',
     'club-splits': 'users',
     recent: 'calendar', form: 'trend', radar: 'gauge', bullpens: 'users',
-    availability: 'whistle', scheme: 'football', 'team-context': 'plane'
+    availability: 'whistle', scheme: 'football', 'team-context': 'plane',
+    projection: 'target'
   };
 
   function ico(name, cls, px) {
@@ -1797,6 +1798,18 @@
     def_sack: 'Sacks', def_turnover: 'Takeaways'
   };
 
+  var CFB_RADARS = [
+    { title: 'Offense', keys: ['off_successRate', 'off_explosiveness', 'off_ppa', 'off_stuffRate'] },
+    { title: 'Defense', keys: ['def_successRate', 'def_explosiveness', 'def_ppa', 'def_stuffRate'] }
+  ];
+
+  var CFB_AXIS = {
+    off_successRate: 'Success', off_explosiveness: 'Expl.',
+    off_ppa: 'PPA', off_stuffRate: 'Stuff',
+    def_successRate: 'Success', def_explosiveness: 'Expl.',
+    def_ppa: 'PPA', def_stuffRate: 'Stuff'
+  };
+
   /* Every web is laid out in a box RADAR_W units wide and then scaled to the
      column it lands in. Type set in those units scaled with the box - the axis
      names measured 10.7px at 1440 and 8.7px on a phone - so the layout takes
@@ -2042,13 +2055,14 @@
      one level down under `rates` and carries its own labels. */
   function radarPlan(sport, game) {
     var colour = radarPair(sport, game);
-    if (sport === 'nfl') {
+    if (sport === 'nfl' || sport === 'cfb') {
+      var axis = sport === 'cfb' ? CFB_AXIS : NFL_AXIS;
       return {
         colour: colour,
         away: ((game.away_form || {}).rates) || null,
         home: ((game.home_form || {}).rates) || null,
         label: function (key) {
-          if (NFL_AXIS[key]) return NFL_AXIS[key];
+          if (axis[key]) return axis[key];
           var entry = (((game.away_form || {}).rates) || {})[key] ||
                       (((game.home_form || {}).rates) || {})[key];
           return entry ? titleCase(entry.label) : '';
@@ -2070,6 +2084,12 @@
      clubs met. A club's second colour is tried first now (see
      MLBMAAssets.teamPairColors), and the chart pair is the last resort. */
   function radarPair(sport, game) {
+    if (sport === 'cfb' && (game.away_color || game.home_color)) {
+      return {
+        away: game.away_color || '', home: game.home_color || '',
+        awayAlt: false, homeAlt: false, fellBack: false
+      };
+    }
     var assets = global.MLBMAAssets;
     if (!(assets && assets.teamPairColors)) {
       return { away: '', home: '', awayAlt: false, homeAlt: false, fellBack: false };
@@ -2084,7 +2104,7 @@
     function swatch(colour) {
       return colour ? ' style="background:' + esc(colour) + '"' : '';
     }
-    var specs = sport === 'nfl' ? NFL_RADARS : RADARS;
+    var specs = sport === 'cfb' ? CFB_RADARS : (sport === 'nfl' ? NFL_RADARS : RADARS);
     var geo = radarGeometry(specs, plan, k);
     var webs = specs.map(function (spec) { return radarWeb(sport, game, spec, plan, geo); })
       .filter(Boolean).join('');
@@ -2113,7 +2133,9 @@
       'metric named, against the same league pool the section above uses — the only ' +
       'honest way to put rates with no units in common on one shape. Further from the ' +
       'centre is better on every axis, including the ones ranked low-is-good. ' +
-      (sport === 'nfl'
+      (sport === 'cfb'
+        ? 'Both webs read the eight season-to-date unit rates from the section above, split into offence and defence. '
+        : sport === 'nfl'
         ? 'Both webs read the ten charted rates from the form section above, split into ' +
           'the two phases of the game. '
         : 'The legacy web carried a projOSI axis; that is a forecast, so this one carries ' +
@@ -2830,15 +2852,26 @@
       '</div>';
   }
 
+  function formText(entry) {
+    if (!entry) return '\u2014';
+    var n = Number(entry.value);
+    if (!isFinite(n)) return '\u2014';
+    var label = String(entry.label || '');
+    if (entry.format === 'ppa' || label.indexOf('PPA') >= 0 || label.indexOf('EPA') >= 0) {
+      return (n > 0 ? '+' : '') + n.toFixed(3);
+    }
+    if (entry.format === 'num') return n.toFixed(3);
+    if (entry.format === 'pct' || (Math.abs(n) <= 1 && !entry.format)) {
+      return (n * 100).toFixed(1) + '%';
+    }
+    return n.toFixed(2);
+  }
+
   function formRow(entry) {
     if (!entry) return '';
-    var value = Number(entry.value);
-    var text = Math.abs(value) < 1 && String(entry.label).indexOf('EPA') < 0
-      ? (value * 100).toFixed(1) + '%'
-      : (Math.abs(value) < 1 ? epaText(value) : value.toFixed(2));
     return '<div class="ca-form-cell">' +
       '<span class="ca-form-label">' + esc(titleCase(entry.label)) + '</span>' +
-      '<strong class="ca-form-value">' + esc(text) + '</strong>' +
+      '<strong class="ca-form-value">' + esc(formText(entry)) + '</strong>' +
       percentBar(entry.rank, entry.of) +
       '<span class="ca-form-rank ' + rankTone(entry.rank, entry.of) + '">' +
       entry.rank + ordinal(entry.rank) + ' Of ' + entry.of + '</span>' +
@@ -2852,7 +2885,7 @@
       return '<section class="ca-form-panel"><h3>' + esc(label) + '</h3>' +
         pending('Team form is not published for this club.') + '</section>';
     }
-    var order = ['off_epa', 'off_first_down', 'off_explosive', 'off_sack', 'off_turnover',
+    var order = sport === 'cfb' ? CFB_FORM_ORDER : ['off_epa', 'off_first_down', 'off_explosive', 'off_sack', 'off_turnover',
       'def_epa', 'def_first_down', 'def_explosive', 'def_sack', 'def_turnover'];
     var cells = order.map(function (key) { return formRow(form.rates[key]); })
       .filter(Boolean).join('');
@@ -3028,21 +3061,18 @@
 
   var NFL_FORM_ORDER = ['off_epa', 'off_first_down', 'off_explosive', 'off_sack',
     'off_turnover', 'def_epa', 'def_first_down', 'def_explosive', 'def_sack', 'def_turnover'];
+  var CFB_FORM_ORDER = ['off_successRate', 'off_explosiveness', 'off_ppa', 'off_stuffRate',
+    'def_successRate', 'def_explosiveness', 'def_ppa', 'def_stuffRate'];
 
   function nflMirror(sport, game) {
     var away = ((game.away_form || {}).rates) || {};
     var home = ((game.home_form || {}).rates) || {};
-    var rows = NFL_FORM_ORDER.map(function (key) {
+    var order = sport === 'cfb' ? CFB_FORM_ORDER : NFL_FORM_ORDER;
+    var rows = order.map(function (key) {
       var entry = away[key] || home[key];
       if (!entry) return '';
       return mirrorRow(titleCase(entry.label), away[key], home[key], function (v) {
-        var n = Number(v);
-        if (!isFinite(n)) return '\u2014';
-        // A rate under one is a share; an EPA is a per-play margin. Both are
-        // published as decimals, so the label decides how to read them.
-        return String(entry.label).indexOf('EPA') >= 0
-          ? (n > 0 ? '+' : '') + n.toFixed(3)
-          : (n * 100).toFixed(1) + '%';
+        return formText({ value: v, format: entry.format, label: entry.label });
       });
     }).filter(Boolean).join('');
     if (!rows) return '';
@@ -3103,7 +3133,80 @@
           ['Record', value(game.home_record)],
           ['Rest', game.home_rest_days ? game.home_rest_days + ' days' : 'Not Published'],
           ['Travel', value(game.home_travel)]
-        ]) + '</div>')
+        ]) +         '</div>')
+    ].join('');
+  }
+
+  function cfbSigned(v) {
+    return (typeof v === 'number' && isFinite(v)) ? ((v > 0 ? '+' : '') + v.toFixed(1)) : 'Not published';
+  }
+
+  function cfbPct(v) {
+    return (typeof v === 'number' && isFinite(v)) ? Math.round(v * 100) + '%' : 'Not published';
+  }
+
+  function cfbText(v) {
+    return v ? String(v).replace(/_/g, ' ') : 'Not published';
+  }
+
+  function cfbSections(sport, game) {
+    var awayName = fullName(sport, game, 'away');
+    var homeName = fullName(sport, game, 'home');
+    var edge = game.edge_points != null
+      ? cfbSigned(game.edge_points)
+      : (game.edge_withheld_reason || 'Withheld');
+    return [
+      section('projection', 'Model Projection',
+        'Scoring model and opponent-adjusted ratings, published as separate views',
+        '<div class="ca-detail-facts">' +
+        fact(awayName + ' projected', game.proj_away != null ? Number(game.proj_away).toFixed(1) : null) +
+        fact(homeName + ' projected', game.proj_home != null ? Number(game.proj_home).toFixed(1) : null) +
+        fact('Model margin', cfbSigned(game.model_margin)) +
+        fact('Win probability', game.win_probability != null
+          ? (game.win_probability >= 0.5
+              ? homeName + ' ' + cfbPct(game.win_probability)
+              : awayName + ' ' + cfbPct(1 - game.win_probability))
+          : null) +
+        fact('Projected total', game.proj_total != null ? Number(game.proj_total).toFixed(1) : null) +
+        fact('Model regime', cfbText(game.model_regime)) +
+        fact('Forecast source', cfbText(game.forecast_source)) +
+        fact('Ratings margin', cfbSigned(game.raw_model_margin)) +
+        fact('Preseason margin', cfbSigned(game.preseason_margin)) +
+        fact('Efficiency margin', cfbSigned(game.efficiency_margin)) +
+        fact('Efficiency reliability', cfbPct(game.efficiency_reliability)) +
+        fact('Total basis', cfbText(game.total_basis)) +
+        fact('Market margin', cfbSigned(game.market_margin)) +
+        fact('Edge points', edge) +
+        '</div>' +
+        (game.evidence
+          ? '<p class="ca-detail-source-note">' + esc(game.evidence) + '</p>'
+          : '<p class="ca-detail-source-note">Projected scoreline is the scoring model; the headline margin is the opponent-adjusted ratings model. Market and edge stay unpublished until the odds feed clears the honesty gates.</p>')),
+
+      section('form', 'Units',
+        'Season-To-Date Rates, Ranked Against The FBS Pool',
+        (nflMirror(sport, game) || '<div class="ca-detail-duo">' +
+          nflFormPanel(sport, game, 'away') +
+          nflFormPanel(sport, game, 'home') + '</div>') +
+        '<p class="ca-detail-source-note">Each bar is that rate’s percentile against every FBS team that published it this season. Success rate, explosiveness, PPA and stuff rate are opponent-adjusted unit rates from the model’s form table — not a projection for this kickoff. Ranks are recomputed from these rates alone.</p>'),
+
+      section('radar', 'Team Profile Radar', 'Both Clubs On One Shape, By Percentile',
+        radarBody(sport, game)),
+
+      section('team-context', 'Venue And Travel', 'Factual Scheduling Context',
+        '<div class="ca-detail-duo">' + teamPanel(sport, game, 'away', [
+          ['Record', value(game.away_record)],
+          ['Conference', value(game.away_conference || game.away_conf)],
+          ['Travel', value(game.away_travel)]
+        ]) + teamPanel(sport, game, 'home', [
+          ['Record', value(game.home_record)],
+          ['Conference', value(game.home_conference || game.home_conf)],
+          ['Travel', value(game.home_travel)]
+        ]) + '</div>' +
+        '<p class="ca-detail-source-note">' +
+        (game.neutral ? 'Neutral site. ' : '') +
+        (game.stadium ? esc(String(game.stadium)) +
+          (game.roof ? ' · ' + esc(String(game.roof)) : '') + '. ' : '') +
+        'Travel is the great-circle distance between home venues. A missing number is unpublished, not zero.</p>')
     ].join('');
   }
 
@@ -3115,6 +3218,9 @@
       ? [['overview', 'Overview'], ['starters', 'Starters'], ['arsenal', 'Pitch Mix'],
          ['lineups', 'Lineup Vs Starter'], ['club-splits', 'Club Splits'], ['recent', 'Last Ten'], ['form', 'Offensive Form'],
          ['radar', 'Radar'], ['bullpens', 'Bullpens']]
+      : sport === 'cfb'
+      ? [['overview', 'Overview'], ['projection', 'Projection'], ['form', 'Units'],
+         ['radar', 'Radar'], ['team-context', 'Venue And Travel']]
       : [['overview', 'Overview'], ['availability', 'Lineups'], ['scheme', 'Scheme'],
          ['form', 'Team Form'], ['radar', 'Radar'], ['team-context', 'Rest And Travel']];
     var html = '<a class="ca-detail-back" href="/' + sport + '/">← Back To ' + sport.toUpperCase() + ' Matchups</a>' +
@@ -3126,16 +3232,23 @@
       // Conditions live in the banner now: they are read once, at the top,
       // beside where and when - not as their own section of dimensions and
       // capacities nobody came for.
-      '<div class="ca-detail-facts">' + fact('Venue', venue(game)) +
-      wxFact(game) + fact('Broadcast', value(game.broadcast)) +
-      fact('Status', gameStatus(game)) + '</div></article>' +
+      '<div class="ca-detail-facts">' + (sport === 'cfb'
+        ? fact('Setting', venue(game)) +
+          fact('Stadium', value(game.stadium)) +
+          fact('Projected total', game.proj_total != null ? Number(game.proj_total).toFixed(1) : null) +
+          fact('Status', gameStatus(game))
+        : fact('Venue', venue(game)) +
+          wxFact(game) + fact('Broadcast', value(game.broadcast)) +
+          fact('Status', gameStatus(game))) + '</div></article>' +
       '<nav class="ca-detail-nav" aria-label="Matchup sections">' + nav.map(function (item) {
         var glyph = item[0] === 'overview' ? ico('info', 'ca-detail-nav__ico', 14)
           : (SECTION_ICON[item[0]] ? ico(SECTION_ICON[item[0]], 'ca-detail-nav__ico', 14) : '');
         return '<a href="#' + item[0] + '">' + glyph + item[1] + '</a>';
       }).join('') + '</nav>' + (sport === 'nfl' ? seasonToggle(game) : '') +
       '<div class="ca-detail-stack">' +
-      (sport === 'mlb' ? mlbSections(sport, game, extra) : nflSections(sport, game)) +
+      (sport === 'mlb' ? mlbSections(sport, game, extra)
+        : sport === 'cfb' ? cfbSections(sport, game)
+        : nflSections(sport, game)) +
       '</div>';
     host.innerHTML = html;
     host.setAttribute('data-state', 'ready');
@@ -3173,6 +3286,13 @@
         game = result.games.find(function (candidate) {
           return String(candidate.away || '').toUpperCase() === requestedAway &&
             String(candidate.home || '').toUpperCase() === requestedHome;
+        });
+      }
+      if (!game && requested) {
+        game = result.games.find(function (candidate) {
+          var label = String(candidate.away_name || candidate.away || '') + ' @ ' +
+            String(candidate.home_name || candidate.home || '');
+          return label.toLowerCase() === String(requested).toLowerCase();
         });
       }
       if (!game && result.games.length === 1 && !requested) game = result.games[0];

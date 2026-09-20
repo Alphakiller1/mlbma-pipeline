@@ -13,6 +13,7 @@
 
   var BOARD_URL = 'https://alphakiller1.github.io/cfb-model/board.json';
   var BUILD_URL = 'https://alphakiller1.github.io/cfb-model/build.json';
+  var SLATE_URL = 'https://alphakiller1.github.io/cfb-model/slate.json';
 
   function num(v) {
     if (v == null || v === '') return null;
@@ -98,6 +99,36 @@
     };
   }
 
+  function publicKey(g) {
+    return String(g.away_name || g.away || '').toLowerCase() + '|' +
+      String(g.home_name || g.home || '').toLowerCase();
+  }
+
+  function indexPublic(games) {
+    var idx = {};
+    (games || []).forEach(function (g) {
+      idx[publicKey(g)] = g;
+    });
+    return idx;
+  }
+
+  function mergePublic(mapped, pub) {
+    if (!pub) return mapped;
+    mapped.away_form = pub.away_form || null;
+    mapped.home_form = pub.home_form || null;
+    mapped.away_record = pub.away_record || null;
+    mapped.home_record = pub.home_record || null;
+    mapped.away_conference = pub.away_conference || mapped.away_conf;
+    mapped.home_conference = pub.home_conference || mapped.home_conf;
+    mapped.away_travel = pub.away_travel || null;
+    mapped.home_travel = pub.home_travel || null;
+    mapped.stadium = pub.venue || null;
+    mapped.roof = pub.roof || null;
+    mapped.surface = pub.surface || null;
+    if (pub.neutral === true) mapped.neutral = true;
+    return mapped;
+  }
+
   function sortGames(games) {
     return games.slice().sort(function (a, b) {
       var ka = String(a.kickoff_utc || ''), kb = String(b.kickoff_utc || '');
@@ -112,12 +143,19 @@
   function load() {
     return Promise.all([
       loadJson(BOARD_URL),
-      loadJson(BUILD_URL).catch(function () { return {}; })
+      loadJson(BUILD_URL).catch(function () { return {}; }),
+      loadJson(SLATE_URL).catch(function () { return { games: [] }; })
     ]).then(function (parts) {
       var board = parts[0] || {};
       var build = parts[1] || {};
+      var published = indexPublic((parts[2] || {}).games);
       var raw = Array.isArray(board.games) ? board.games : [];
-      var games = sortGames(raw.map(function (g) { return mapGame(g, board); }));
+      var games = sortGames(raw.map(function (g) {
+        return mergePublic(mapGame(g, board), published[publicKey({
+          away_name: (g.away && (g.away.school || g.away.name)) || g.away,
+          home_name: (g.home && (g.home.school || g.home.name)) || g.home
+        })]);
+      }));
       var auth = board.authority || {};
       return {
         games: games,
@@ -144,6 +182,7 @@
   global.ChaseSportCFB = {
     BOARD_URL: BOARD_URL,
     BUILD_URL: BUILD_URL,
+    SLATE_URL: SLATE_URL,
     load: load,
     mapGame: mapGame
   };

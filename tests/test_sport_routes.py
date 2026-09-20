@@ -94,10 +94,14 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn('window.CHASE_SPORT_PICKS_LABEL = "Public slate"', slate)
         self.assertIn("Every Game On This Week’s Board", slate)
         self.assertIn('data-nav="cfb"', slate)
-        self.assertIn("ChaseMatchupCard.cardHtml('cfb', game)", detail)
-        self.assertIn("Full Matchup Analysis", detail)
-        self.assertNotIn("public_game_detail.js", detail)
-        self.assertNotIn("ChasePublicGameDetail", detail)
+        self.assertIn("ChasePublicGameDetail.mount", detail)
+        self.assertIn("public_game_detail.js", detail)
+        self.assertNotIn("ChaseMatchupCard.cardHtml('cfb', game)", detail)
+        js = (ROOT / "dashboard" / "public_game_detail.js").read_text(encoding="utf-8")
+        self.assertIn("function cfbSections", js)
+        adapter = (ROOT / "dashboard" / "sports" / "cfb.js").read_text(encoding="utf-8")
+        self.assertIn("slate.json", adapter)
+        self.assertIn("mergePublic", adapter)
 
     def test_past_results_are_not_a_public_destination(self):
         """Completed games belong inside a matchup breakdown, nowhere else.
@@ -387,7 +391,7 @@ class AdapterHoleTests(unittest.TestCase):
 
     def test_public_game_detail_script_is_design_stamped(self):
         stamp = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
-        for sport in ("mlb", "nfl"):
+        for sport in ("mlb", "nfl", "cfb"):
             html = (ROOT / sport / "matchup.html").read_text(encoding="utf-8")
             self.assertIn("public_game_detail.js?v=" + stamp, html)
             self.assertNotIn("matchup_compare.js", html)
