@@ -5179,15 +5179,154 @@ body[data-ca-product="research"] {
 /* --- Phone: the kickoff line wraps instead of running into the weather ---
  * At 390px "Tuesday · 6:40 PM ET" overflowed its nowrap box and printed
  * straight into "91° · Clear" ("ET91°"). */
+.ca-cfb-snapshot {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 0;
+}
+
+.ca-cfb-snapshot__club {
+  padding: var(--space-3);
+  background: var(--surface-inset);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.ca-cfb-snapshot__club header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.ca-cfb-snapshot__club h3 {
+  margin: 0;
+  font-size: var(--type-h3, 1.05rem);
+}
+
+.ca-cfb-snapshot__club p {
+  margin: 2px 0 0;
+  color: var(--text-meta);
+  font-size: var(--type-meta);
+}
+
+.ca-cfb-snapshot__logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.ca-cfb-chips {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.ca-cfb-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--space-2);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.ca-cfb-chip i,
+.ca-cfb-chip em {
+  font-style: normal;
+  color: var(--text-meta);
+  font-size: var(--type-meta);
+}
+
+.ca-cfb-chip strong {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--type-18);
+}
+
+.ca-cfb-style {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 var(--space-3);
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: var(--text-primary);
+  font-size: var(--type-meta);
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 40%, var(--surface-raised)) var(--pass, 50%),
+    var(--surface-raised) var(--pass, 50%)
+  );
+}
+
+.ca-cfb-edges {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-3);
+  background: var(--surface-inset);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.ca-cfb-edges h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--type-h3, 1.05rem);
+}
+
+.ca-cfb-edges ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.ca-cfb-edges li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.ca-cfb-edges span {
+  color: var(--text-meta);
+  font-size: var(--type-meta);
+}
+
+.ca-cfb-clash__group {
+  margin-top: var(--space-3);
+}
+
+.ca-cfb-clash__group h4 {
+  margin: 0 0 var(--space-1);
+  color: var(--text-secondary);
+  font-size: var(--type-meta);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ca-cfb-compare-tabs {
+  margin-bottom: var(--space-3);
+}
+
 @media (max-width: 720px) {
   .ca-matchup-card__head {
     flex-wrap: wrap;
     row-gap: 2px;
     white-space: normal;
   }
-  .ca-cfb-scoreboard {
+  .ca-cfb-scoreboard,
+  .ca-cfb-snapshot,
+  .ca-cfb-edges ul,
+  .ca-cfb-chips {
     grid-template-columns: 1fr;
-    text-align: center;
+    text-align: left;
   }
   .ca-cfb-scoreboard__club,
   .ca-cfb-scoreboard__club.is-home {

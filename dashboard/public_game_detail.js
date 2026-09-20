@@ -194,6 +194,39 @@
     });
   }
 
+  function activateCfbCompare(btn) {
+    var group = btn.closest('.ca-cfb-compare-tabs');
+    if (!group) return;
+    var scope = btn.getAttribute('data-cfb-compare');
+    var host = group.parentNode;
+    Array.prototype.forEach.call(group.querySelectorAll('[data-cfb-compare]'), function (tab) {
+      var on = tab === btn;
+      tab.classList.toggle('is-on', on);
+      tab.setAttribute('aria-selected', String(on));
+      tab.setAttribute('tabindex', on ? '0' : '-1');
+    });
+    Array.prototype.forEach.call(host.querySelectorAll('[data-cfb-compare-panel]'), function (panel) {
+      panel.hidden = panel.getAttribute('data-cfb-compare-panel') !== scope;
+    });
+  }
+
+  function wireCfbCompare(host) {
+    host.addEventListener('click', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-cfb-compare]');
+      if (btn && host.contains(btn)) activateCfbCompare(btn);
+    });
+    host.addEventListener('keydown', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-cfb-compare]');
+      if (!btn || !host.contains(btn) || ['ArrowLeft', 'ArrowRight'].indexOf(event.key) < 0) return;
+      var tabs = Array.prototype.slice.call(
+        btn.closest('.ca-cfb-compare-tabs').querySelectorAll('[data-cfb-compare]'));
+      var next = tabs[(tabs.indexOf(btn) + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+      event.preventDefault();
+      activateCfbCompare(next);
+      next.focus();
+    });
+  }
+
   function wireSchemeTabs(host) {
     host.addEventListener('click', function (event) {
       var btn = event.target.closest && event.target.closest('[data-scheme-direction]');
@@ -1799,15 +1832,17 @@
   };
 
   var CFB_RADARS = [
-    { title: 'Offense', keys: ['off_successRate', 'off_explosiveness', 'off_ppa', 'off_stuffRate'] },
-    { title: 'Defense', keys: ['def_successRate', 'def_explosiveness', 'def_ppa', 'def_stuffRate'] }
+    { title: 'Offense', keys: ['off_ppa', 'off_ypg', 'off_successRate',
+                               'off_explosiveness', 'off_stuffRate', 'off_comp'] },
+    { title: 'Defense', keys: ['def_ppa', 'def_ypg', 'def_successRate',
+                               'def_explosiveness', 'def_stuffRate', 'def_comp'] }
   ];
 
   var CFB_AXIS = {
-    off_successRate: '3rd Down', off_explosiveness: 'YPA',
-    off_ppa: 'PPG', off_stuffRate: 'YPC',
-    def_successRate: '3rd Down', def_explosiveness: 'YPA',
-    def_ppa: 'PPG', def_stuffRate: 'YPC'
+    off_ppa: 'PPG', off_ypg: 'YPG', off_successRate: '3rd Down',
+    off_explosiveness: 'YPA', off_stuffRate: 'YPC', off_comp: 'Comp%',
+    def_ppa: 'PPG', def_ypg: 'YPG', def_successRate: '3rd Down',
+    def_explosiveness: 'YPA', def_stuffRate: 'YPC', def_comp: 'Comp%'
   };
 
   /* Every web is laid out in a box RADAR_W units wide and then scaled to the
@@ -2860,7 +2895,11 @@
     if (entry.format === 'ppa' || label.indexOf('PPA') >= 0 || label.indexOf('EPA') >= 0) {
       return (n > 0 ? '+' : '') + n.toFixed(3);
     }
-    if (entry.format === 'num') return n.toFixed(3);
+    if (entry.format === 'num') {
+      if (Math.abs(n) >= 10) return n.toFixed(1);
+      if (Math.abs(n) >= 1) return n.toFixed(2);
+      return n.toFixed(3);
+    }
     if (entry.format === 'pct' || (Math.abs(n) <= 1 && !entry.format)) {
       return (n * 100).toFixed(1) + '%';
     }
@@ -2890,7 +2929,9 @@
     var cells = order.map(function (key) { return formRow(form.rates[key]); })
       .filter(Boolean).join('');
     var plays = form.plays != null
-      ? '<p class="ca-lineup-context">' + Number(form.plays).toFixed(1) + ' plays per game</p>'
+      ? '<p class="ca-lineup-context">' + (sport === 'cfb'
+          ? Math.round(Number(form.plays)) + ' games in the ESPN sample'
+          : Number(form.plays).toFixed(1) + ' plays per game') + '</p>'
       : '';
     return '<section class="ca-form-panel"><h3>' + esc(label) + '</h3>' + plays +
       '<div class="ca-form-grid">' + cells + '</div></section>';
@@ -3061,8 +3102,17 @@
 
   var NFL_FORM_ORDER = ['off_epa', 'off_first_down', 'off_explosive', 'off_sack',
     'off_turnover', 'def_epa', 'def_first_down', 'def_explosive', 'def_sack', 'def_turnover'];
-  var CFB_FORM_ORDER = ['off_successRate', 'off_explosiveness', 'off_ppa', 'off_stuffRate',
-    'def_successRate', 'def_explosiveness', 'def_ppa', 'def_stuffRate'];
+  var CFB_FORM_ORDER = [
+    'off_ppa', 'def_ppa', 'off_ypg', 'def_ypg',
+    'off_successRate', 'def_successRate', 'off_fourth', 'def_fourth',
+    'off_first_downs', 'def_first_downs',
+    'off_explosiveness', 'def_explosiveness', 'off_pass_ypg', 'def_pass_ypg',
+    'off_comp', 'def_comp', 'off_qbr', 'def_qbr', 'off_pass_td', 'def_pass_td',
+    'off_int', 'def_int', 'off_sacks', 'def_sacks',
+    'off_stuffRate', 'def_stuffRate', 'off_rush_ypg', 'def_rush_ypg',
+    'off_rush_td', 'def_rush_td',
+    'off_fg', 'off_punt', 'off_kr', 'off_pr', 'off_pen'
+  ];
 
   function nflMirror(sport, game) {
     var away = ((game.away_form || {}).rates) || {};
@@ -3137,54 +3187,103 @@
     ].join('');
   }
 
-  function cfbSigned(v) {
-    return (typeof v === 'number' && isFinite(v)) ? ((v > 0 ? '+' : '') + v.toFixed(1)) : 'Not published';
-  }
-
-  function cfbPct(v) {
-    return (typeof v === 'number' && isFinite(v)) ? Math.round(v * 100) + '%' : 'Not published';
-  }
-
-  function cfbText(v) {
-    return v ? String(v).replace(/_/g, ' ') : 'Not published';
-  }
-
-  var CFB_CLASH = [
-    { off: 'off_ppa', def: 'def_ppa', label: 'Points per game' },
-    { off: 'off_successRate', def: 'def_successRate', label: 'Third-down rate' },
-    { off: 'off_explosiveness', def: 'def_explosiveness', label: 'Yards per pass' },
-    { off: 'off_stuffRate', def: 'def_stuffRate', label: 'Yards per rush' }
+  var CFB_CLASH_GROUPS = [
+    { title: 'Scoring', rows: [
+      { off: 'off_ppa', def: 'def_ppa' },
+      { off: 'off_pass_td', def: 'def_pass_td' },
+      { off: 'off_rush_td', def: 'def_rush_td' }
+    ]},
+    { title: 'Yardage', rows: [
+      { off: 'off_ypg', def: 'def_ypg' },
+      { off: 'off_pass_ypg', def: 'def_pass_ypg' },
+      { off: 'off_rush_ypg', def: 'def_rush_ypg' }
+    ]},
+    { title: 'Passing', rows: [
+      { off: 'off_explosiveness', def: 'def_explosiveness' },
+      { off: 'off_comp', def: 'def_comp' },
+      { off: 'off_qbr', def: 'def_qbr' }
+    ]},
+    { title: 'Rushing', rows: [
+      { off: 'off_stuffRate', def: 'def_stuffRate' }
+    ]},
+    { title: 'Downs', rows: [
+      { off: 'off_successRate', def: 'def_successRate' },
+      { off: 'off_first_downs', def: 'def_first_downs' },
+      { off: 'off_fourth', def: 'def_fourth' }
+    ]},
+    { title: 'Pressure And Ball Security', rows: [
+      { off: 'off_sacks', def: 'def_sacks' },
+      { off: 'off_int', def: 'def_int' }
+    ]}
   ];
 
+  var CFB_COMPARE_TABS = [
+    { id: 'all', label: 'All' },
+    { id: 'scoring', label: 'Scoring', keys: ['off_ppa', 'def_ppa', 'off_pass_td', 'def_pass_td', 'off_rush_td', 'def_rush_td'] },
+    { id: 'passing', label: 'Passing', keys: ['off_explosiveness', 'def_explosiveness', 'off_pass_ypg', 'def_pass_ypg', 'off_comp', 'def_comp', 'off_qbr', 'def_qbr', 'off_int', 'def_int', 'off_sacks', 'def_sacks'] },
+    { id: 'rushing', label: 'Rushing', keys: ['off_stuffRate', 'def_stuffRate', 'off_rush_ypg', 'def_rush_ypg', 'off_rush_td', 'def_rush_td'] },
+    { id: 'downs', label: 'Downs', keys: ['off_successRate', 'def_successRate', 'off_fourth', 'def_fourth', 'off_first_downs', 'def_first_downs'] },
+    { id: 'special', label: 'Special Teams', keys: ['off_fg', 'off_punt', 'off_kr', 'off_pr', 'off_pen'] }
+  ];
+
+  function cfbRates(game, side) {
+    return ((game[side + '_form'] || {}).rates) || {};
+  }
+
+  function cfbClashSpecs() {
+    var out = [];
+    CFB_CLASH_GROUPS.forEach(function (group) {
+      group.rows.forEach(function (row) { out.push(row); });
+    });
+    return out;
+  }
+
+  function cfbChip(entry, fallback) {
+    if (!entry) {
+      return '<span class="ca-cfb-chip is-absent"><i>' + esc(fallback) + '</i><strong>—</strong></span>';
+    }
+    return '<span class="ca-cfb-chip">' +
+      '<i>' + esc(titleCase(entry.label)) + '</i>' +
+      '<strong class="' + rankTone(entry.rank, entry.of) + '">' + esc(formText(entry)) + '</strong>' +
+      '<em class="' + rankTone(entry.rank, entry.of) + '">' +
+      entry.rank + ordinal(entry.rank) + ' of ' + entry.of + '</em></span>';
+  }
+
+  function cfbStyleMeter(form) {
+    var rates = (form && form.rates) || {};
+    var pass = rates.off_pass_ypg && Number(rates.off_pass_ypg.value);
+    var rush = rates.off_rush_ypg && Number(rates.off_rush_ypg.value);
+    if (!(pass >= 0) || !(rush >= 0) || (pass + rush) <= 0) return '';
+    var pct = Math.round((pass / (pass + rush)) * 100);
+    return '<div class="ca-cfb-style" style="--pass:' + pct + '%">' +
+      '<span>Pass ' + pct + '%</span><span>Rush ' + (100 - pct) + '%</span></div>';
+  }
+
+  function cfbSnapshotClub(sport, game, side) {
+    var rates = cfbRates(game, side);
+    var form = game[side + '_form'] || {};
+    var qb = game[side + '_starter'] ? '<p>QB ' + esc(game[side + '_starter']) + '</p>' : '';
+    return '<article class="ca-cfb-snapshot__club">' +
+      '<header>' + logo(sport, game, side, 40, 'ca-cfb-snapshot__logo') +
+      '<div><h3>' + esc(fullName(sport, game, side)) + '</h3>' +
+      '<p>' + esc(value(game[side + '_record'], 'Record not published')) +
+      (game[side + '_conference'] || game[side + '_conf']
+        ? ' · ' + esc(game[side + '_conference'] || game[side + '_conf']) : '') +
+      '</p>' + qb + '</div></header>' +
+      cfbStyleMeter(form) +
+      '<div class="ca-cfb-chips">' +
+      cfbChip(rates.off_ppa, 'Points per game') +
+      cfbChip(rates.def_ppa, 'Points allowed') +
+      cfbChip(rates.off_ypg, 'Yards per game') +
+      cfbChip(rates.off_successRate, 'Third-down rate') +
+      '</div></article>';
+  }
+
   function cfbScoreboard(sport, game) {
-    var awayName = fullName(sport, game, 'away');
-    var homeName = fullName(sport, game, 'home');
-    var homeWp = (typeof game.win_probability === 'number' && isFinite(game.win_probability))
-      ? game.win_probability : null;
-    var awayWp = homeWp == null ? null : 1 - homeWp;
-    var wpBar = homeWp == null ? '' :
-      '<div class="ca-cfb-wp" style="--home:' + Math.round(homeWp * 100) + '%">' +
-      '<span>' + esc(game.away) + ' ' + cfbPct(awayWp) + '</span>' +
-      '<span>' + esc(game.home) + ' ' + cfbPct(homeWp) + '</span></div>';
-    return '<div class="ca-cfb-scoreboard">' +
-      '<div class="ca-cfb-scoreboard__club">' +
-      logo(sport, game, 'away', 48, 'ca-cfb-scoreboard__logo') +
-      '<div><span>' + esc(awayName) + '</span><strong>' +
-      (game.proj_away != null ? Number(game.proj_away).toFixed(1) : '—') +
-      '</strong><i>Projected points</i></div></div>' +
-      '<div class="ca-cfb-scoreboard__mid">' + wpBar +
-      '<p>' + esc(cfbSigned(game.model_margin).indexOf('Not') === 0
-        ? 'Margin not published'
-        : ((game.model_margin >= 0 ? homeName : awayName) + ' ' +
-          cfbSigned(Math.abs(game.model_margin)))) +
-      (game.proj_total != null ? ' · Total ' + Number(game.proj_total).toFixed(1) : '') +
-      '</p></div>' +
-      '<div class="ca-cfb-scoreboard__club is-home">' +
-      '<div><span>' + esc(homeName) + '</span><strong>' +
-      (game.proj_home != null ? Number(game.proj_home).toFixed(1) : '—') +
-      '</strong><i>Projected points</i></div>' +
-      logo(sport, game, 'home', 48, 'ca-cfb-scoreboard__logo') +
-      '</div></div>';
+    return '<div class="ca-cfb-snapshot">' +
+      cfbSnapshotClub(sport, game, 'away') +
+      cfbSnapshotClub(sport, game, 'home') +
+      '</div>';
   }
 
   function cfbClashSide(entry, which) {
@@ -3198,59 +3297,103 @@
       entry.rank + ordinal(entry.rank) + ' of ' + entry.of + '</span></div>';
   }
 
-  function cfbClashCard(sport, game, offSide, defSide) {
-    var offRates = ((game[offSide + '_form'] || {}).rates) || {};
-    var defRates = ((game[defSide + '_form'] || {}).rates) || {};
-    var offName = fullName(sport, game, offSide);
-    var defName = fullName(sport, game, defSide);
-    var rows = CFB_CLASH.map(function (spec) {
-      var off = offRates[spec.off];
-      var def = defRates[spec.def];
-      if (!off && !def) return '';
-      var offPct = percentOf(off);
-      var defPct = percentOf(def);
-      var lead = '';
-      if (offPct != null && defPct != null && Math.abs(offPct - defPct) >= 4) {
-        lead = offPct > defPct ? ' is-offense' : ' is-defense';
-      }
-      var rowLabel = (off && off.label) || (def && def.label) || spec.label;
-      return '<div class="ca-cfb-clash__row' + lead + '">' +
-        cfbClashSide(off, 'offense') +
-        '<span class="ca-cfb-clash__label">' + esc(titleCase(rowLabel)) + '</span>' +
-        cfbClashSide(def, 'defense') +
-        '</div>';
-    }).filter(Boolean).join('');
-    if (!rows) return '';
+  function cfbClashRow(spec, offRates, defRates) {
+    var off = offRates[spec.off];
+    var def = defRates[spec.def];
+    if (!off && !def) return '';
+    var offPct = percentOf(off);
+    var defPct = percentOf(def);
+    var lead = '';
+    if (offPct != null && defPct != null && Math.abs(offPct - defPct) >= 4) {
+      lead = offPct > defPct ? ' is-offense' : ' is-defense';
+    }
+    var rowLabel = (off && off.label) || (def && def.label) || spec.off;
+    return '<div class="ca-cfb-clash__row' + lead + '">' +
+      cfbClashSide(off, 'offense') +
+      '<span class="ca-cfb-clash__label">' + esc(titleCase(rowLabel.replace(/^Offense /, ''))) + '</span>' +
+      cfbClashSide(def, 'defense') +
+      '</div>';
+  }
+
+  function cfbClashTally(offRates, defRates) {
     var won = 0, counted = 0;
-    CFB_CLASH.forEach(function (spec) {
+    cfbClashSpecs().forEach(function (spec) {
       var offPct = percentOf(offRates[spec.off]);
       var defPct = percentOf(defRates[spec.def]);
       if (offPct == null || defPct == null) return;
       counted += 1;
       if (offPct > defPct) won += 1;
     });
-    var take = counted
-      ? (won > counted / 2
+    return { won: won, counted: counted };
+  }
+
+  function cfbClashCard(sport, game, offSide, defSide) {
+    var offRates = cfbRates(game, offSide);
+    var defRates = cfbRates(game, defSide);
+    var offName = fullName(sport, game, offSide);
+    var defName = fullName(sport, game, defSide);
+    var groups = CFB_CLASH_GROUPS.map(function (group) {
+      var rows = group.rows.map(function (spec) {
+        return cfbClashRow(spec, offRates, defRates);
+      }).filter(Boolean).join('');
+      if (!rows) return '';
+      return '<section class="ca-cfb-clash__group"><h4>' + esc(group.title) + '</h4>' + rows + '</section>';
+    }).filter(Boolean).join('');
+    if (!groups) return '';
+    var tally = cfbClashTally(offRates, defRates);
+    var take = tally.counted
+      ? (tally.won > tally.counted / 2
           ? offName + '’s offense grades ahead of ' + defName + '’s defense on ' +
-            won + ' of ' + counted + ' unit rates.'
-          : won < counted / 2
+            tally.won + ' of ' + tally.counted + ' rates.'
+          : tally.won < tally.counted / 2
             ? defName + '’s defense grades ahead of ' + offName + '’s offense on ' +
-              (counted - won) + ' of ' + counted + ' unit rates.'
+              (tally.counted - tally.won) + ' of ' + tally.counted + ' rates.'
             : offName + '’s offense and ' + defName + '’s defense sit on even unit percentiles.')
       : '';
-    var pace = '';
-    var plays = (game[offSide + '_form'] || {}).plays;
-    if (plays != null) {
-      pace = '<p class="ca-lineup-context">' + Number(plays).toFixed(1) +
-        ' offensive plays per game</p>';
-    }
+    var games = (game[offSide + '_form'] || {}).plays;
+    var sample = games != null
+      ? '<p class="ca-lineup-context">' + Math.round(Number(games)) + ' games in the ESPN sample</p>'
+      : '';
     return '<article class="ca-cfb-clash">' +
       '<header><h3>' + esc(offName) + ' offense vs ' + esc(defName) + ' defense</h3>' +
-      pace + '</header>' +
-      '<div class="ca-cfb-clash__axis"><span>Offense</span><span>Defense</span></div>' +
-      rows +
+      sample + '</header>' +
+      '<div class="ca-cfb-clash__axis"><span>This offense</span><span>That defense</span></div>' +
+      groups +
       (take ? '<p class="ca-cfb-clash__take">' + esc(take) + '</p>' : '') +
       '</article>';
+  }
+
+  function cfbEdges(sport, game) {
+    var items = [];
+    [['away', 'home'], ['home', 'away']].forEach(function (pair) {
+      var offSide = pair[0], defSide = pair[1];
+      var offRates = cfbRates(game, offSide);
+      var defRates = cfbRates(game, defSide);
+      var offName = fullName(sport, game, offSide);
+      var defName = fullName(sport, game, defSide);
+      cfbClashSpecs().forEach(function (spec) {
+        var off = offRates[spec.off];
+        var def = defRates[spec.def];
+        var gap = (percentOf(off) == null || percentOf(def) == null)
+          ? null : percentOf(off) - percentOf(def);
+        if (gap == null || Math.abs(gap) < 8) return;
+        var offWins = gap > 0;
+        items.push({
+          abs: Math.abs(gap),
+          html: '<li><strong>' + esc(offWins ? offName : defName) + '</strong> ' +
+            (offWins ? 'offense' : 'defense') + ' · ' +
+            esc(titleCase(((off && off.label) || (def && def.label) || spec.off)
+              .replace(/^Offense /, ''))) +
+            '<span>' + Math.round(Math.abs(gap)) + ' percentile gap vs ' +
+            esc(offWins ? defName + ' defense' : offName + ' offense') + '</span></li>'
+        });
+      });
+    });
+    items.sort(function (a, b) { return b.abs - a.abs; });
+    items = items.slice(0, 8);
+    if (!items.length) return '';
+    return '<aside class="ca-cfb-edges"><h3>Clearest unit gaps</h3><ul>' +
+      items.map(function (item) { return item.html; }).join('') + '</ul></aside>';
   }
 
   function cfbClashBody(sport, game) {
@@ -3258,31 +3401,61 @@
     var b = cfbClashCard(sport, game, 'home', 'away');
     if (!a && !b) return pending('Unit rates are not published for this pairing yet.');
     var espn = ((game.away_form || {}).source === 'espn') || ((game.home_form || {}).source === 'espn');
-    return a + b +
+    return cfbEdges(sport, game) + a + b +
       '<p class="ca-detail-source-note">' +
       (espn
-        ? 'Each row is a season-to-date rate from ESPN’s team statistics, ranked against every FBS club that published that rate. Offense is own-team; defense is what opponents have done against this club. This describes the season already played, not a projection for this kickoff.'
-        : 'Each row is one season-to-date unit rate: this offense’s own production against what that defense has allowed, ranked against the same FBS pool. The longer bar is the better percentile. This describes units that have already played, not a projection for this kickoff.') +
+        ? 'Each row is a season-to-date ESPN team rate, ranked against every FBS club that published it. Left is this offense’s own production; right is what that defense has allowed. A highlighted side is the better percentile, not a pick. This describes games already played.'
+        : 'Each row is one season-to-date unit rate: this offense’s production against what that defense has allowed, ranked against the same FBS pool. The longer bar is the better percentile.') +
       '</p>';
   }
 
+  function cfbCompareMirror(sport, game, keys) {
+    var away = cfbRates(game, 'away');
+    var home = cfbRates(game, 'home');
+    var order = keys || CFB_FORM_ORDER;
+    var rows = order.map(function (key) {
+      var entry = away[key] || home[key];
+      if (!entry) return '';
+      return mirrorRow(titleCase(entry.label), away[key], home[key], function (v) {
+        return formText({ value: v, format: entry.format, label: entry.label });
+      });
+    }).filter(Boolean).join('');
+    if (!rows) return pending('These rates are not published for this pairing.');
+    return '<div class="ca-mirror">' +
+      '<div class="ca-mirror__head">' +
+      '<span class="ca-mirror__team">' + logo(sport, game, 'away', 28, 'ca-mirror__crest') +
+      esc(fullName(sport, game, 'away')) + '</span>' +
+      '<span class="ca-mirror__axis">Percentile Of The FBS Pool</span>' +
+      '<span class="ca-mirror__team ca-mirror__team--home">' +
+      esc(fullName(sport, game, 'home')) +
+      logo(sport, game, 'home', 28, 'ca-mirror__crest') + '</span>' +
+      '</div>' + rows + '</div>';
+  }
+
+  function cfbCompareBody(sport, game) {
+    var tabs = CFB_COMPARE_TABS.map(function (tab, i) {
+      return '<button type="button" class="ca-lineup-tab' + (i === 0 ? ' is-on' : '') +
+        '" data-cfb-compare="' + tab.id + '" aria-selected="' + (i === 0 ? 'true' : 'false') +
+        '" tabindex="' + (i === 0 ? '0' : '-1') + '">' + esc(tab.label) + '</button>';
+    }).join('');
+    var panels = CFB_COMPARE_TABS.map(function (tab, i) {
+      return '<div data-cfb-compare-panel="' + tab.id + '"' + (i === 0 ? '' : ' hidden') + '>' +
+        cfbCompareMirror(sport, game, tab.keys) + '</div>';
+    }).join('');
+    return '<div class="ca-lineup-tabs ca-cfb-compare-tabs" role="tablist" aria-label="Stat families">' +
+      tabs + '</div>' + panels +
+      '<p class="ca-detail-source-note">Each bar is that rate’s percentile against every FBS team that published it this season. Use the family tabs to scan scoring, passing, rushing, downs, or special teams without leaving the pairing.</p>';
+  }
+
   function cfbSections(sport, game) {
-    var awayName = fullName(sport, game, 'away');
-    var homeName = fullName(sport, game, 'home');
-    var edge = game.edge_points != null
-      ? cfbSigned(game.edge_points)
-      : (game.edge_withheld_reason || 'Withheld');
     return [
       section('clash', 'Matchup Breakdown',
-        'Each Offense Against The Defense It Meets, On The Same Four Unit Rates',
+        'Each Offense Against The Defense It Meets, Rate By Rate',
         cfbClashBody(sport, game)),
 
       section('form', 'Stat Comparison',
-        'Season-To-Date Rates, Ranked Against The FBS Pool',
-        (nflMirror(sport, game) || '<div class="ca-detail-duo">' +
-          nflFormPanel(sport, game, 'away') +
-          nflFormPanel(sport, game, 'home') + '</div>') +
-        '<p class="ca-detail-source-note">Each bar is that rate’s percentile against every FBS team that published it this season. Labels travel with the numbers. Ranks are recomputed from these rates alone.</p>'),
+        'Same Rates, Side By Side, Ranked Against The FBS Pool',
+        cfbCompareBody(sport, game)),
 
       section('radar', 'Team Profile Radar', 'Both Clubs On One Shape, By Percentile',
         radarBody(sport, game)),
@@ -3293,50 +3466,26 @@
         recentStrip(sport, game, 'home', game.home_recent || []) + '</div>' +
         '<p class="ca-detail-source-note">Each square is a completed game with its final score. Hover or focus for the opponent and date. These are results already in the book, not a statement about Saturday.</p>'),
 
-      section('projection', 'Model Projection',
-        'Scoring model and opponent-adjusted ratings, published as separate views',
-        '<div class="ca-detail-facts">' +
-        fact(awayName + ' projected', game.proj_away != null ? Number(game.proj_away).toFixed(1) : null) +
-        fact(homeName + ' projected', game.proj_home != null ? Number(game.proj_home).toFixed(1) : null) +
-        fact('Model margin', cfbSigned(game.model_margin)) +
-        fact('Win probability', game.win_probability != null
-          ? (game.win_probability >= 0.5
-              ? homeName + ' ' + cfbPct(game.win_probability)
-              : awayName + ' ' + cfbPct(1 - game.win_probability))
-          : null) +
-        fact('Projected total', game.proj_total != null ? Number(game.proj_total).toFixed(1) : null) +
-        fact('Model regime', cfbText(game.model_regime)) +
-        fact('Forecast source', cfbText(game.forecast_source)) +
-        fact('Ratings margin', cfbSigned(game.raw_model_margin)) +
-        fact('Preseason margin', cfbSigned(game.preseason_margin)) +
-        fact('Efficiency margin', cfbSigned(game.efficiency_margin)) +
-        fact('Efficiency reliability', cfbPct(game.efficiency_reliability)) +
-        fact('Total basis', cfbText(game.total_basis)) +
-        fact('Market margin', cfbSigned(game.market_margin)) +
-        fact('Edge points', edge) +
-        '</div>' +
-        (game.evidence
-          ? '<p class="ca-detail-source-note">' + esc(game.evidence) + '</p>'
-          : '<p class="ca-detail-source-note">Projected scoreline is the scoring model; the headline margin is the opponent-adjusted ratings model. Market and edge stay unpublished until the odds feed clears the honesty gates.</p>')),
-
       section('team-context', 'Venue And Travel', 'Factual Scheduling Context',
         '<div class="ca-detail-duo">' + teamPanel(sport, game, 'away', [
           ['Record', value(game.away_record)],
           ['Conference', value(game.away_conference || game.away_conf)],
+          ['Quarterback', value(game.away_starter)],
           ['Travel', value(game.away_travel)]
         ]) + teamPanel(sport, game, 'home', [
           ['Record', value(game.home_record)],
           ['Conference', value(game.home_conference || game.home_conf)],
+          ['Quarterback', value(game.home_starter)],
           ['Travel', value(game.home_travel)]
         ]) + '</div>' +
         '<p class="ca-detail-source-note">' +
         (game.neutral ? 'Neutral site. ' : '') +
         (game.stadium ? esc(String(game.stadium)) +
           (game.roof ? ' · ' + esc(String(game.roof)) : '') + '. ' : '') +
-        'Travel is the great-circle distance between home venues. A missing number is unpublished, not zero.</p>')
+        (game.broadcast ? esc(String(game.broadcast)) + '. ' : '') +
+        'Travel is the published home/away or distance note. A missing number is unpublished, not zero.</p>')
     ].join('');
   }
-
   function render(host, sport, game, extra, result) {
     var awayName = fullName(sport, game, 'away');
     var homeName = fullName(sport, game, 'home');
@@ -3347,7 +3496,7 @@
          ['radar', 'Radar'], ['bullpens', 'Bullpens']]
       : sport === 'cfb'
       ? [['overview', 'Overview'], ['clash', 'Matchup'], ['form', 'Comparison'],
-         ['radar', 'Radar'], ['recent', 'Recent'], ['projection', 'Projection'],
+         ['radar', 'Radar'], ['recent', 'Recent'],
          ['team-context', 'Venue And Travel']]
       : [['overview', 'Overview'], ['availability', 'Lineups'], ['scheme', 'Scheme'],
          ['form', 'Team Form'], ['radar', 'Radar'], ['team-context', 'Rest And Travel']];
@@ -3363,7 +3512,7 @@
       '<div class="ca-detail-facts">' + (sport === 'cfb'
         ? fact('Setting', venue(game)) +
           fact('Stadium', value(game.stadium)) +
-          fact('Projected total', game.proj_total != null ? Number(game.proj_total).toFixed(1) : null) +
+          fact('Broadcast', value(game.broadcast)) +
           fact('Status', gameStatus(game))
         : fact('Venue', venue(game)) +
           wxFact(game) + fact('Broadcast', value(game.broadcast)) +
@@ -3389,6 +3538,7 @@
       wireSeasonToggle(host);
       wireLineupTabs(host);
       wireSchemeTabs(host);
+      wireCfbCompare(host);
       wireRadarReadout(host);
       if (global.ResizeObserver) {
         new global.ResizeObserver(function () { fitRadar(host); }).observe(host);

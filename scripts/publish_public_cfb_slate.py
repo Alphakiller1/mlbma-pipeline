@@ -31,22 +31,76 @@ HEADERS = {
 }
 
 FORM_SPEC = (
-    ("off_successRate", "own", "miscellaneous", "thirdDownConvPct",
-     "Offense third-down rate", "high", "pct"),
-    ("off_explosiveness", "own", "passing", "yardsPerPassAttempt",
-     "Yards per pass attempt", "high", "num"),
     ("off_ppa", "own", "passing", "totalPointsPerGame",
      "Points per game", "high", "num"),
-    ("off_stuffRate", "own", "rushing", "yardsPerRushAttempt",
-     "Yards per rush attempt", "high", "num"),
-    ("def_successRate", "opp", "miscellaneous", "thirdDownConvPct",
-     "Third-down rate allowed", "low", "pct"),
-    ("def_explosiveness", "opp", "passing", "yardsPerPassAttempt",
-     "Yards per pass allowed", "low", "num"),
     ("def_ppa", "opp", "passing", "totalPointsPerGame",
      "Points allowed per game", "low", "num"),
+    ("off_ypg", "own", "passing", "yardsPerGame",
+     "Yards per game", "high", "num"),
+    ("def_ypg", "opp", "passing", "yardsPerGame",
+     "Yards allowed per game", "low", "num"),
+    ("off_successRate", "own", "miscellaneous", "thirdDownConvPct",
+     "Offense third-down rate", "high", "pct"),
+    ("def_successRate", "opp", "miscellaneous", "thirdDownConvPct",
+     "Third-down rate allowed", "low", "pct"),
+    ("off_fourth", "own", "miscellaneous", "fourthDownConvPct",
+     "Fourth-down rate", "high", "pct"),
+    ("def_fourth", "opp", "miscellaneous", "fourthDownConvPct",
+     "Fourth-down rate allowed", "low", "pct"),
+    ("off_first_downs", "own", "miscellaneous", "firstDowns",
+     "First downs per game", "high", "pg"),
+    ("def_first_downs", "opp", "miscellaneous", "firstDowns",
+     "First downs allowed per game", "low", "pg"),
+    ("off_explosiveness", "own", "passing", "yardsPerPassAttempt",
+     "Yards per pass attempt", "high", "num"),
+    ("def_explosiveness", "opp", "passing", "yardsPerPassAttempt",
+     "Yards per pass allowed", "low", "num"),
+    ("off_pass_ypg", "own", "passing", "passingYardsPerGame",
+     "Passing yards per game", "high", "num"),
+    ("def_pass_ypg", "opp", "passing", "passingYardsPerGame",
+     "Passing yards allowed per game", "low", "num"),
+    ("off_comp", "own", "passing", "completionPct",
+     "Completion rate", "high", "pct"),
+    ("def_comp", "opp", "passing", "completionPct",
+     "Completion rate allowed", "low", "pct"),
+    ("off_qbr", "own", "passing", "QBRating",
+     "Passer rating", "high", "num"),
+    ("def_qbr", "opp", "passing", "QBRating",
+     "Passer rating allowed", "low", "num"),
+    ("off_pass_td", "own", "passing", "passingTouchdowns",
+     "Passing TDs per game", "high", "pg"),
+    ("def_pass_td", "opp", "passing", "passingTouchdowns",
+     "Passing TDs allowed per game", "low", "pg"),
+    ("off_int", "own", "passing", "interceptions",
+     "INTs thrown per game", "low", "pg"),
+    ("def_int", "opp", "passing", "interceptions",
+     "INTs forced per game", "high", "pg"),
+    ("off_sacks", "own", "passing", "sacks",
+     "Sacks taken per game", "low", "pg"),
+    ("def_sacks", "opp", "passing", "sacks",
+     "Sacks per game", "high", "pg"),
+    ("off_stuffRate", "own", "rushing", "yardsPerRushAttempt",
+     "Yards per rush attempt", "high", "num"),
     ("def_stuffRate", "opp", "rushing", "yardsPerRushAttempt",
      "Yards per rush allowed", "low", "num"),
+    ("off_rush_ypg", "own", "rushing", "rushingYardsPerGame",
+     "Rushing yards per game", "high", "num"),
+    ("def_rush_ypg", "opp", "rushing", "rushingYardsPerGame",
+     "Rushing yards allowed per game", "low", "num"),
+    ("off_rush_td", "own", "rushing", "rushingTouchdowns",
+     "Rushing TDs per game", "high", "pg"),
+    ("def_rush_td", "opp", "rushing", "rushingTouchdowns",
+     "Rushing TDs allowed per game", "low", "pg"),
+    ("off_fg", "own", "kicking", "fieldGoalPct",
+     "Field-goal rate", "high", "pct"),
+    ("off_punt", "own", "punting", "netAvgPuntYards",
+     "Net punt average", "high", "num"),
+    ("off_kr", "own", "returning", "yardsPerKickReturn",
+     "Kick-return average", "high", "num"),
+    ("off_pr", "own", "returning", "yardsPerPuntReturn",
+     "Punt-return average", "high", "num"),
+    ("off_pen", "own", "miscellaneous", "totalPenaltyYards",
+     "Penalty yards per game", "low", "pg"),
 )
 
 
@@ -59,12 +113,16 @@ def fetch_json(url: str) -> dict:
     return json.loads(raw)
 
 
-def as_rate(value, fmt: str):
+def as_rate(value, fmt: str, games: float | None = None):
     if value is None:
         return None
     number = float(value)
     if fmt == "pct" and number > 1.5:
         number = number / 100.0
+    if fmt == "pg":
+        if not games or games <= 0:
+            return None
+        number = number / games
     return number
 
 
@@ -197,10 +255,11 @@ def lookup_team(stats: dict[str, dict], abbr: str, school: str) -> dict | None:
 def form_for(team: dict | None, pools: dict[str, list[float]]) -> dict | None:
     if not team:
         return None
+    games = team.get("plays")
     rates = {}
     for key, split, cat, field, label, better, fmt in FORM_SPEC:
         bucket = team[split].get(cat) or {}
-        value = as_rate(bucket.get(field), fmt)
+        value = as_rate(bucket.get(field), fmt, games)
         pool = pools.get(key) or []
         if value is None or not pool:
             continue
@@ -210,11 +269,14 @@ def form_for(team: dict | None, pools: dict[str, list[float]]) -> dict | None:
             "better": better,
             "rank": rank(pool, value, better),
             "of": len(pool),
-            "format": fmt,
+            "format": "num" if fmt == "pg" else fmt,
         }
     if not rates:
         return None
-    return {"rates": rates, "source": "espn"}
+    out = {"rates": rates, "source": "espn"}
+    if games:
+        out["plays"] = games
+    return out
 
 
 def load_board_games() -> tuple[list[dict], dict]:
@@ -279,7 +341,7 @@ def main() -> int:
     pools: dict[str, list[float]] = {spec[0]: [] for spec in FORM_SPEC}
     for team in unique:
         for key, split, cat, field, _label, _better, fmt in FORM_SPEC:
-            value = as_rate((team[split].get(cat) or {}).get(field), fmt)
+            value = as_rate((team[split].get(cat) or {}).get(field), fmt, team.get("plays"))
             if value is not None:
                 pools[key].append(value)
     events = event_index(load_espn_events())

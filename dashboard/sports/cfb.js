@@ -112,21 +112,28 @@
     return idx;
   }
 
+  function keep(next, prev) {
+    return next == null || next === '' ? prev : next;
+  }
+
   function mergePublic(mapped, pub) {
     if (!pub) return mapped;
-    mapped.away_form = pub.away_form || null;
-    mapped.home_form = pub.home_form || null;
-    mapped.away_record = pub.away_record || null;
-    mapped.home_record = pub.home_record || null;
-    mapped.away_conference = pub.away_conference || mapped.away_conf;
-    mapped.home_conference = pub.home_conference || mapped.home_conf;
-    mapped.away_travel = pub.away_travel || null;
-    mapped.home_travel = pub.home_travel || null;
-    mapped.stadium = pub.venue || null;
-    mapped.roof = pub.roof || null;
-    mapped.surface = pub.surface || null;
-    mapped.away_recent = pub.away_recent || null;
-    mapped.home_recent = pub.home_recent || null;
+    mapped.away_form = keep(pub.away_form, mapped.away_form);
+    mapped.home_form = keep(pub.home_form, mapped.home_form);
+    mapped.away_record = keep(pub.away_record, mapped.away_record);
+    mapped.home_record = keep(pub.home_record, mapped.home_record);
+    mapped.away_conference = keep(pub.away_conference, mapped.away_conf);
+    mapped.home_conference = keep(pub.home_conference, mapped.home_conf);
+    mapped.away_travel = keep(pub.away_travel, mapped.away_travel);
+    mapped.home_travel = keep(pub.home_travel, mapped.home_travel);
+    mapped.stadium = keep(pub.venue, mapped.stadium);
+    mapped.roof = keep(pub.roof, mapped.roof);
+    mapped.surface = keep(pub.surface, mapped.surface);
+    mapped.away_recent = keep(pub.away_recent, mapped.away_recent);
+    mapped.home_recent = keep(pub.home_recent, mapped.home_recent);
+    mapped.away_starter = keep(pub.away_starter, mapped.away_starter);
+    mapped.home_starter = keep(pub.home_starter, mapped.home_starter);
+    mapped.broadcast = keep(pub.broadcast, mapped.broadcast);
     if (pub.neutral === true) mapped.neutral = true;
     return mapped;
   }
