@@ -42,3 +42,8 @@ node_modules/
 tmp_*
 pipeline_run_*.log
 outputs/reading_list/
+
+# Live-site style mirror / booth certs (regenerated)
+dashboard/_site/
+dashboard/_site.staging/
+dashboard/_site.old/

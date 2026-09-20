@@ -5,6 +5,7 @@ REM   content deep --games PHI@MIA --artifacts banner,radar,offense
 REM   content breakdown --games PHI@MIA
 REM   content full-card
 REM   content rankings --type team --family winning --window L30
+REM   content booth --sport nfl --games IND@KC --show "Sunday Night Football"
 setlocal
 set "REPO=%~dp0"
 set "PY=%REPO%crawl_env\Scripts\python.exe"
