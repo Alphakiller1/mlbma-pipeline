@@ -1,44 +1,34 @@
-import {
-  AbsoluteFill,
-  CanvasImage,
-  Easing,
-  Interactive,
-  interpolate,
-  staticFile,
-  useCurrentFrame,
-  useVideoConfig,
-} from "remotion";
+import { AbsoluteFill, Img, Interactive, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { EASE_DRAW, exitAt, pop, progress, rise } from "../ds/motion";
 import "../fonts";
-import "../theme.css";
-
 
 export type StingProps = {
   /** Optional line under the mark - a tagline on the intro, a CTA on the outro. */
   tagline?: string;
+  /** Paint the site's page ground instead of leaving the frame transparent. */
+  ground?: boolean;
 };
 
-const EASE = Easing.bezier(0.16, 1, 0.3, 1);
-
 /**
- * Branded open/close. Renders transparent so it can sit over the first or last
- * seconds of your footage rather than forcing a hard cut to a black card.
+ * Branded open/close, ~2.5 s. Transparent by default so it sits over the first or
+ * last seconds of footage rather than forcing a hard cut to a card.
  *
- * Brand lockup is the icon plus a typeset wordmark, NOT a logo file.
- * chase-logo-horizontal-light.png is RGB with no alpha channel at all, so it
- * renders as a black box over footage; both stacked variants are byte-identical
- * dark art (mean RGB 65,60,80) that dies on a dark ground. chase-icon-outline
- * is the only brand asset that is both transparent and legible here.
+ * The lockup is the site header's: brand icon + typeset CHASE / ANALYTICS in the
+ * display face. The site dropped its violet ambient glow in the 2026-09 black
+ * pass, so the motion carries the energy instead: the brand edge draws across,
+ * the icon pops, the wordmark wipes on behind it, the tagline settles.
  */
-export const Sting: React.FC<StingProps> = ({ tagline }) => {
+export const Sting: React.FC<StingProps> = ({ tagline, ground }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames, width } = useVideoConfig();
-
-  const outStart = durationInFrames - 0.6 * fps;
-  const exit = interpolate(frame, [outStart, durationInFrames - 2], [1, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: EASE,
-  });
+  const { fps, durationInFrames, width, height } = useVideoConfig();
+  const unit = Math.min(width, height);
+  // The lockup is ~8.6 word-heights wide (icon + CHASE ANALYTICS in the condensed
+  // italic); size it to 76% of the frame width so it never runs off a vertical frame.
+  const wordSize = Math.min(unit * 0.1, (width * 0.76) / 8.6);
+  const iconSize = wordSize * 1.4;
+  const exit = exitAt(frame, fps, durationInFrames, 0.5);
+  const wipe = progress(frame, fps, 0.3, 0.7, EASE_DRAW);
+  const iconPop = pop(frame, fps, 0.12);
 
   return (
     <AbsoluteFill
@@ -46,103 +36,70 @@ export const Sting: React.FC<StingProps> = ({ tagline }) => {
       style={{
         justifyContent: "center",
         alignItems: "center",
+        background: ground ? "var(--surface-page)" : "transparent",
         opacity: exit,
+        translate: `0px ${(1 - exit) * -24}px`,
       }}
     >
-      {/* Violet bloom that blows out behind the mark, then settles. */}
-      <AbsoluteFill
-        name="Bloom"
+      <Interactive.Div
+        name="Edge"
         style={{
-          background:
-            "radial-gradient(circle at 50% 50%, var(--ca-brand-glow) 0%, transparent 55%)",
-          opacity: interpolate(
-            frame,
-            [0, 0.4 * fps, 1.4 * fps],
-            [0, 1, 0.35],
-            { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE },
-          ),
-          scale: interpolate(frame, [0, 1.2 * fps], [0.6, 1.25], {
-            extrapolateLeft: "clamp",
-            extrapolateRight: "clamp",
-            easing: EASE,
-            output: "perceptual-scale",
-          }),
+          position: "absolute",
+          top: height / 2 + iconSize * 0.72,
+          left: width / 2,
+          height: 4,
+          borderRadius: 2,
+          background: "var(--edge-brand)",
+          width: width * 0.5 * progress(frame, fps, 0, 0.8, EASE_DRAW),
+          translate: "-50% 0px",
         }}
       />
 
       <Interactive.Div
-        name="Logo"
-        style={{
-          opacity: interpolate(frame, [0.15 * fps, 0.7 * fps], [0, 1], {
-            extrapolateLeft: "clamp",
-            extrapolateRight: "clamp",
-            easing: EASE,
-          }),
-          scale: interpolate(frame, [0.15 * fps, 1.1 * fps], [0.82, 1], {
-            extrapolateLeft: "clamp",
-            extrapolateRight: "clamp",
-            easing: Easing.spring({ damping: 14 }),
-            output: "perceptual-scale",
-          }),
-        }}
+        name="Lockup"
+        style={{ display: "flex", alignItems: "center", gap: unit * 0.035 }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 26 }}>
-          <CanvasImage
-            src={staticFile("chase-icon-outline.png")}
-            style={{
-              width: width * 0.125,
-              height: width * 0.125,
-              filter: "drop-shadow(0 0 30px var(--ca-brand-glow))",
-            }}
-          />
-          <div
-            style={{
-              fontFamily: "var(--font-display)",
-              fontSize: width * 0.082,
-              fontWeight: 700,
-              letterSpacing: 2,
-              lineHeight: 1,
-              color: "var(--text)",
-              textShadow: "0 0 34px var(--ca-brand-glow)",
-            }}
-          >
-            CHASE
-            <span style={{ color: "var(--ca-purple-light)" }}>ANALYTICS</span>
-          </div>
+        <Img
+          src={staticFile("brand/chase-icon.png")}
+          style={{
+            width: iconSize,
+            height: iconSize,
+            objectFit: "contain",
+            scale: String(0.6 + 0.4 * iconPop),
+            opacity: Math.min(1, iconPop * 1.4),
+          }}
+        />
+        <div
+          style={{
+            fontFamily: "var(--font-display)",
+            fontStyle: "italic",
+            fontWeight: 700,
+            fontSize: wordSize,
+            lineHeight: 1,
+            textTransform: "uppercase",
+            whiteSpace: "nowrap",
+            clipPath: `inset(-10% ${(1 - wipe) * 100}% -10% 0%)`,
+            translate: `${(1 - wipe) * -30}px 0px`,
+          }}
+        >
+          <span style={{ color: "var(--text-primary)" }}>Chase</span>{" "}
+          <span style={{ color: "var(--text-secondary)" }}>Analytics</span>
         </div>
       </Interactive.Div>
-
-      {/* Violet rule that wipes out from the centre under the mark. */}
-      <Interactive.Div
-        name="Rule"
-        style={{
-          height: 4,
-          marginTop: 34,
-          borderRadius: 2,
-          background: "var(--v-grad)",
-          width: interpolate(frame, [0.6 * fps, 1.5 * fps], [0, width * 0.42], {
-            extrapolateLeft: "clamp",
-            extrapolateRight: "clamp",
-            easing: EASE,
-          }),
-        }}
-      />
 
       {tagline ? (
         <Interactive.Div
           name="Tagline"
           style={{
-            marginTop: 32,
-            fontFamily: "var(--font-display)",
-            fontSize: 40,
-            letterSpacing: 8,
+            position: "absolute",
+            top: height / 2 + iconSize * 0.72 + 40,
+            fontFamily: "var(--font-body)",
+            fontWeight: 700,
+            fontSize: unit * 0.036,
+            letterSpacing: "var(--vid-caps-track)",
             textTransform: "uppercase",
-            color: "var(--text-2)",
-            opacity: interpolate(frame, [1 * fps, 1.6 * fps], [0, 1], {
-              extrapolateLeft: "clamp",
-              extrapolateRight: "clamp",
-              easing: EASE,
-            }),
+            color: "var(--text-accent)",
+            ...rise(frame, fps, 0.85, 18),
           }}
         >
           {tagline}

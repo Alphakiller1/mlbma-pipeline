@@ -1,22 +1,66 @@
 # Chase Analytics Content Engine — Layout, Brand & Text Spec
 
 Status: implemented in `outputs/content_engine.py` + `dashboard/card_compose.html`.
-Last verified 2026-07-30 against the live dashboard and the hosted mlb-model deck.
+Last verified 2026-09-16 against chase-analytics.com (stamp 20260916a).
 
 ---
 
 ## 1. The one principle
 
-**Artifacts are captured pixels of the real product, never a re-implementation.**
+**The live chase-analytics.com is the design contract. Nothing in the engine may
+out-rank it.**
 
-Every chart, table and card in a post is a screenshot of the live dashboard (or the
-mlb-model deck), taken through the site's own stylesheets. Post chrome — brand mark,
-type, spacing — is a card route (`card_compose.html`) that links `theme.css` and
-`mlbma_design_system.css` directly.
+- **Artifacts** are screenshots of the site's current public routes
+  (`/mlb/`, `/nfl/`, `/{mlb,nfl}/matchup.html?game=<id>`), keyed by the site's own game
+  id from `/data/public/{sport}/slate.json`. They are the `mlb_*` / `nfl_*` keys marked
+  `(site)` in `keys`, and every matchup command uses them by default.
+- **Post chrome** (`card_compose.html`) loads exactly one stylesheet,
+  `dashboard/_site/site.css`. `sync_site_style()` rebuilds it on every run by mirroring
+  the stylesheet stack, fonts and header icon that production serves (read from the
+  `<head>` of `/nfl/`, stamp e.g. `20260916a`). The chrome may only name the site's
+  semantic tokens (`--surface-*`, `--text-*`, `--accent*`, `--border-*`, `--font-*`,
+  `--radius-*`, `--edge-brand`, `--text-display-metal`). No hex values and no legacy
+  tokens (`--bg`, `--v-*`, `--gold`, `--sans`).
+- If the mirror cannot be refreshed, the last mirror is used with a warning. With no
+  mirror at all the run fails.
+- **Legacy**: artifacts captured from this branch's own `dashboard/*.html` show pages
+  production no longer serves. They carry a `legacy_` prefix (`legacy_card`,
+  `legacy_banner`, `legacy_pitcher_rev`, `legacy_team_rankings` ...), and every capture
+  prints a warning. The old bare keys with a live equivalent now reach the live
+  artifact (see 8.1). `rankings` has no live equivalent yet, so it still uses the legacy
+  pages.
 
-Consequence: a post cannot drift from the site's design, because there is no second
-copy of the design. This is the reason the engine screenshots instead of rebuilding,
-and it is the rule to protect when extending anything below.
+**Matchup posts are one piece, headed by the site's banner (owner direction
+2026-09-17).** When every matchup artifact in a `deep`, `breakdown` or `compose` post
+is a section of the site's matchup page, the engine makes ONE capture of that page
+(`Capturer.grab_matchup`):
+
+- **What stays:** the matchup banner (`#overview`, "MLB · MATCHUP ANALYSIS" with both
+  clubs and the time) as the heading, then the chosen sections, each under its own
+  section heading. Everything else on the page is removed.
+- **Spacing and captions:** the site's own spacing and surfaces sit between banner and
+  sections. No slot captions and no frames.
+- **Heading:** the post's typed title block stays empty unless `--headline`,
+  `--eyebrow`, `--sub` or `--take` is given. `breakdown` keeps its aspect eyebrow so
+  carousel slides stay labelled.
+- **Banner facts:** the banner's venue/conditions/broadcast/status tiles are hidden
+  (about half its height); `--banner-facts` keeps them.
+- **Capture width:** the widest section's width. The banner never forces a width.
+- **Old layout:** `--segmented` restores separate framed blocks under a typed title.
+- **Not allowed together:** two units of one NFL club (offense and defense share one
+  board and one tab bar) must be two posts.
+
+**NFL injury designations are drawn as the formation.** `nfl_{offense,defense}_{away,
+home}` show the club's first-string formation (headshot plus status pill per starter).
+Below it, the board's own injury report is cut to injured players at that unit's
+positions who are NOT starting: name, position, injury and designation, with no photo.
+The report is retitled "Also On The Injury Report", its count matches the rows shown,
+and it is dropped when empty. Specialists (K/P/LS) go with offense, and an unmapped
+position is listed on both graphics.
+
+As a result, a site restyle reaches the next post without an engine change. Never
+re-implement a site component, and never link `theme.css` / `mlbma_design_system.css`
+from the compose route.
 
 ---
 
@@ -128,12 +172,39 @@ practical maximum on 4:5; five needs 9:16 and reads as a reference graphic, not 
 
 ## 5. Brand layer
 
-**Header carries the mark alone** — `assets/chase-icon-outline.png`, the violet arch,
-1024px source. The wordmark is deliberately dropped to buy vertical room for artifacts;
-the footer's `chase-analytics.com` carries the name.
+Re-based on the live site 2026-09-16 (black premium surface + Archivo, site PR #85).
 
-| Canvas | Mark height |
+**Header lockup = the site header's own**: the icon production links in `.chase-logo`
+(mirrored to `_site/brand-icon.png`, currently `chase-icon-filled.png`) plus a typeset
+`.chase-wordmark` ("CHASE" primary + "ANALYTICS" secondary, display face, italic,
+uppercase). It sits on one line, so it costs no more height than the icon alone. No glow.
+
+| Canvas | Icon | Wordmark |
+|---|---|---|
+| 1080x1350 | 42px | 27px |
+| 1080x1080 | 36px | 24px |
+| 1080x1920 | 50px | 32px |
+| 1600x900 | 36px | 24px |
+
+**Page head mirrors the site's `.ca-public-page__*` roles:**
+
+| Slot | Role |
 |---|---|
+| eyebrow | `--text-accent`, 700, uppercase, tracking 0.06em |
+| title | `--font-display` (Chase Display, Archivo at 72% width), 800, **Title Case (not uppercase)**, tracking -0.015em, `--text-display-metal` silver clipped to text |
+| deck | `--text-secondary`, 400 |
+| take | `--text-primary` 600 italic with a `--edge-brand` rule |
+| canvas | `--surface-page` (#050506) plus `--canvas-ambient` (none) |
+| frames | `--surface-card`, `--border-card`, `--elevation-card`, `--radius-md` |
+| footer | `--border-default` rule, `--accent-text` site line, `--text-muted` disclaimer |
+
+- Footer copy is fixed: the site line, an optional CTA, and
+  `Model-generated research. Not betting advice. 21+.`
+- Never use `chase-logo-horizontal*.png` (black text or no alpha).
+- A self-titled site section (`#starters`, `#radar` ...) gets no slot caption, because
+  it prints its own heading.
+
+---|---|
 | 1080x1350 | 46px |
 | 1080x1080 | 40px |
 | 1080x1920 | 54px |
@@ -295,6 +366,27 @@ hard-coded into the layout.** Two ways to reach new content:
 
 ### 8.1 Registry entry
 
+**Live-site entries** are built with `_site_artifact(sport, label, route, selector, ...)`,
+which sets the defaults every chase-analytics.com capture needs: `site` (the route),
+`{game_id}` in the selector filled from the site's own slate, `framed: False`, the
+shared hides (`.ca-detail-source-note`, card actions, back link, section nav), stacked
+`.ca-detail-duo`, `require_data: ["table"]` and `viewport_w` 1032. Keyword arguments
+override or extend them (`hide` and `style` are appended, not replaced).
+
+```python
+"mlb_example": _site_artifact(
+    "mlb", "Human name", "/mlb/matchup.html", "#section-id",
+    width=780,                      # only after measuring that nothing clips (§8.3)
+    stack=False,                    # keep a two-team duo side by side
+    label_fmt="{away} starter",     # slot caption; whole sections get none
+    ready="…JS…", ready_required=True,   # select a tab, and refuse to shoot otherwise
+    open_details=True,              # expand a collapsed <details>
+    game_param=None,                # route is not keyed by ?game= (slate pages)
+)
+```
+
+Generic fields (legacy and hosted entries use them directly):
+
 ```python
 "my_artifact": {
     "label": "Human name",          # or label_fmt with {away}/{home}
@@ -318,8 +410,34 @@ hard-coded into the layout.** Two ways to reach new content:
     "style": ".wrap{border-radius:0!important}",   # one-off CSS for this capture
     "viewport_w": 1032,             # capture width; see §3.2 before choosing one
     "sport": "NFL",                 # names the footer line; default is MLB
+    "site": "/nfl/matchup.html",    # chase-analytics.com route (live-site entries)
+    "game_param": "game",           # query key for the site's game id; None = none
+    "require_data": ["table"],      # FAIL if any matched block is all placeholders
+    "ready": "…JS…",                # polled predicate before capture
+    "ready_required": True,         # ... and fail (not warn) if it never passes
+    "self_titled": True,            # section prints its own heading: no slot caption
 }
 ```
+
+**Retired pages are `legacy_*`.** Every entry that captures this branch's own
+`dashboard/*.html` gets a `legacy_` prefix at import time (`LEGACY_TO_SITE` in the
+engine). Where the live site has the same content, the old bare key became a phrase for
+the live artifact (`card` → `mlb_card`, `banner` → `mlb_hero`, `radar` → `mlb_radar`,
+`offense` → `mlb_splits`, `pitcher` → `mlb_starters`, `bullpen` → `mlb_bullpens`).
+Otherwise the bare key still reaches its legacy entry, with a warning on every capture.
+
+**Live-site games and dates.** Live-site artifacts resolve `--games` against
+`/data/public/<sport>/slate.json` and are keyed by the site's game id. Rules:
+
+- MLB routes need `?date=` or the page loads the browser's Eastern date. After
+  midnight both `/mlb/` and the detail page otherwise report last night's game as "not
+  in the published slate". The engine always passes the game's Eastern date.
+- An MLB post must be dated for the slate the site is showing. The error names the
+  `--date` to pass.
+- An NFL post may be dated from today through the week's last kickoff.
+- `read_site_slate` warns when the snapshot predates games that have started since.
+  The site then shows "Scheduled" or a mid-game score beside current stats, and the
+  capture shows the same.
 
 **Splitting a long board across slides.** `default_rows` cuts from the bottom and
 `rows_from` cuts from the top, so a board too deep for one post ships as a pair of
@@ -349,6 +467,24 @@ themselves ("QB projections · 32 players", "32 team matchups"). Cut to 16 rows,
 label is a claim the image itself disproves, so those entries hide the count in `style`
 along with the `<details>` disclosure marker. Check for a self-describing count
 whenever you add `default_rows` to a new source.
+
+**Placeholders are refused, not posted.** `require_data` judges every `td` after a
+row's first cell, which is its label or batting order (1–9 has digits even when every
+stat is a dash). A block with such cells and no digit fails the run and names the
+block. This caught two lineup boards that were entirely dashes on the site, one of them
+for a game whose slate row said the lineups were confirmed (2026-09-16).
+
+**Measured capture widths (2026-09-17).** 780 for width-limited sections that keep
+their layout there: `mlb_splits`, `mlb_recent`, `mlb_form`, `mlb_starter_*`,
+`nfl_form`, `nfl_context`. At that width they render about 1.3–1.5×
+larger. 1032 for the rest: `mlb_lineups` is limited by height (no gain),
+`mlb_bullpens` and `mlb_arsenal` clip at 780, and the radars stack at 780. `*_hero`
+stays at 1032 because it is stacked with other sections, where height is the limit.
+`full-card` uses the slate cards in a two-column grid, six per 4:5 post, at about full
+size. Three stacked overview panels rendered at 0.64× with unreadable fact text. Slate cards are a
+fixed 400px, so width changes nothing. Their venue/travel/availability fields
+truncate on the site itself and stay truncated even at 560px, so that fix belongs in
+the site's card, not here.
 
 ### 8.2 Ad-hoc, no code change
 
@@ -476,7 +612,29 @@ the platform's safe areas are taken out. The engine reports the scale each direc
 will get and warns when a board is too wide to render at native size — cut columns
 (`--drop-cols`) or rows (`--rows`) rather than shipping type smaller than the site's
 own. Platform safe areas live in exactly one place, `SAFE` in
-`video/src/graphics/ShowTemplate.tsx`, and are deliberately not restated in Python.
+`video/src/ds/safe.ts`, and are deliberately not restated in Python.
+
+**The video package follows the same design contract (2026-09-17).**
+
+- **Style export:** `export_video_style()` runs after every style mirror and on
+  `content_engine sync-style`. It writes the site's faces plus its token and semantic
+  sheets to `video/src/site/`, which `video/src/theme.css` imports.
+- **Font gate:** `video/src/fonts.ts` holds every render until both brand faces load,
+  and fails the render otherwise.
+- **Anchors:** every capture records anchors (rows, headings, player cards, injury rows)
+  in native pixels, and `--video` writes an **Annotate** props file beside the
+  BoardMotion one.
+- **Marks:** `--mark "type:target[=caption][@sec][!tone]"` adds illustration steps. They
+  are checked against the capture's anchors before anything renders.
+- **Game pack:** `python -m outputs.video_pack --league nfl --game AWAY@HOME [--captures]`
+  builds every composition's props for one game from the live site slate and the hosted
+  nfl-model board.
+- **Recording booth:** `content booth --sport nfl --games AWAY@HOME` is a first-class
+  engine command. It mirrors site style, builds (or reuses) that game pack, and serves
+  the live studio (`video/scripts/booth.mjs`): keyboard rundown, desktop camera, optional
+  phone mic on HTTPS :8791, one webm take plus cue sheet. `booth.bat` is the same path
+  without a pack rebuild. Phone audio muxes into the same recording as the camera.
+- **More:** the catalog, stills and filmstrips are in `video/README.md`.
 
 ---
 
@@ -484,14 +642,19 @@ own. Platform safe areas live in exactly one place, `SAFE` in
 
 ```
 compose     any registered/ad-hoc artifacts        --artifacts / --capture [--layout row]
-preview     N matchup cards side by side           --games CLE@CIN,TEX@TBR,CHC@STL
-deep        1-3 games, chosen artifacts, 1 image   --games PHI@MIA --artifacts banner,radar
+preview     N site slate cards side by side        --games CLE@CIN,TEX@TBR,CHC@STL [--sport nfl]
+deep        1-3 games, chosen artifacts, 1 image   --games PHI@MIA --artifacts mlb_hero,mlb_radar
 breakdown   1 game, up to 3 graphics               --games PHI@MIA --aspects pitching,offense,bullpen
-full-card   whole slate as banners + starters      --per-post 6
-rankings    unit rankings                          --type starters | --type team --family winning --window L30
+full-card   whole slate as site slate cards    [--sport nfl] [--per-post 6]
+rankings    unit rankings (legacy pages)           --type starters | --type team --family winning --window L30
+keys        every artifact, its source, its phrases
+booth       recording studio (pack + live graphics + camera)
+            --sport nfl --games IND@KC [--show "..."] [--tag SNF] [--pack props/pack/...]
 ```
 
 ```
+--sport mlb|nfl              which live slate preview/deep/breakdown/full-card use
+--date YYYY-MM-DD            MLB: must be the date of the slate the site is showing
 --rows N / --rows-from N     row window; splits a long board across two slides
 --video                      also write the BoardMotion props + captures (§10.1)
 --video-platform NAME        reels | reels-ads | tiktok | shorts | youtube

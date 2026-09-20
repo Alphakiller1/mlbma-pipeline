@@ -10,6 +10,7 @@ import {
 } from "remotion";
 import { teamAccent, teamLogoPath } from "../teams";
 import "../fonts";
+import { BrandLockup } from "../ds/kit";
 import "../theme.css";
 
 
@@ -67,11 +68,12 @@ const StatBar: React.FC<{
     >
       <div
         style={{
-          fontFamily: "var(--font-display)",
+          fontFamily: "var(--font-body)",
+          fontWeight: 700,
           fontSize: "var(--vid-label)",
-          letterSpacing: 2,
+          letterSpacing: "var(--vid-caps-track)",
           textTransform: "uppercase",
-          color: "var(--text-3)",
+          color: "var(--text-muted)",
           marginBottom: 16,
         }}
       >
@@ -99,7 +101,7 @@ const StatBar: React.FC<{
               flex: 1,
               display: "flex",
               justifyContent: "flex-end",
-              background: "var(--bg-4)",
+              background: "var(--surface-raised)",
               borderRadius: 6,
               overflow: "hidden",
             }}
@@ -127,7 +129,7 @@ const StatBar: React.FC<{
           <div
             style={{
               flex: 1,
-              background: "var(--bg-4)",
+              background: "var(--surface-raised)",
               borderRadius: 6,
               overflow: "hidden",
             }}
@@ -207,7 +209,7 @@ export const MatchupCutaway: React.FC<Matchup> = ({
     <AbsoluteFill
       name="Matchup Reveal"
       style={{
-        backgroundColor: "var(--page-bg)",
+        backgroundColor: "var(--surface-page)",
         fontFamily: "var(--font-body)",
         padding: "120px 72px",
         flexDirection: "column",
@@ -219,7 +221,7 @@ export const MatchupCutaway: React.FC<Matchup> = ({
         name="Backdrop Glow"
         style={{
           background:
-            "radial-gradient(ellipse 70% 45% at 50% 28%, var(--ca-brand-glow) 0%, transparent 70%)",
+            "transparent",
           scale: interpolate(frame, [0, 10 * fps], [1, 1.18], {
             extrapolateRight: "clamp",
             easing: Easing.linear,
@@ -235,7 +237,7 @@ export const MatchupCutaway: React.FC<Matchup> = ({
           fontSize: "var(--vid-label)",
           letterSpacing: 6,
           textTransform: "uppercase",
-          color: "var(--ca-purple-light)",
+          color: "var(--text-accent)",
           opacity: interpolate(frame, [0, 0.6 * fps], [0, 1], {
             extrapolateRight: "clamp",
             easing: EASE,
@@ -257,7 +259,7 @@ export const MatchupCutaway: React.FC<Matchup> = ({
           fontFamily: "var(--font-display)",
           fontSize: "var(--vid-headline)",
           fontWeight: 700,
-          color: "var(--text)",
+          color: "var(--text-primary)",
           lineHeight: 1.05,
           marginTop: 18,
           opacity: interpolate(frame, [0.3 * fps, 1 * fps], [0, 1], {
@@ -274,7 +276,7 @@ export const MatchupCutaway: React.FC<Matchup> = ({
         }}
       >
         <span style={{ color: awayInk }}>{away}</span>{" "}
-        <span style={{ color: "var(--text-3)" }}>@</span>{" "}
+        <span style={{ color: "var(--text-muted)" }}>@</span>{" "}
         <span style={{ color: homeInk }}>{home}</span>
       </Interactive.Div>
 
@@ -286,9 +288,9 @@ export const MatchupCutaway: React.FC<Matchup> = ({
             name={"Pitcher: " + p.team}
             style={{
               flex: 1,
-              background: "var(--card)",
-              border: "1px solid var(--border)",
-              borderRadius: "var(--ca-card-radius)",
+              background: "var(--surface-card)",
+              border: "1px solid var(--border-default)",
+              borderRadius: "var(--radius-md)",
               padding: "32px 28px",
               opacity: interpolate(
                 frame,
@@ -339,14 +341,14 @@ export const MatchupCutaway: React.FC<Matchup> = ({
             <div
               style={{
                 fontSize: "var(--vid-body)",
-                color: "var(--text)",
+                color: "var(--text-primary)",
                 fontWeight: 600,
                 lineHeight: 1.2,
               }}
             >
               {p.sp}
             </div>
-            <div style={{ fontSize: 30, color: "var(--text-3)", marginTop: 8 }}>
+            <div style={{ fontSize: 30, color: "var(--text-muted)", marginTop: 8 }}>
               {p.hand}HP
             </div>
           </Interactive.Div>
@@ -376,10 +378,10 @@ export const MatchupCutaway: React.FC<Matchup> = ({
         style={{
           marginTop: 40,
           paddingLeft: 32,
-          borderLeft: "6px solid var(--ca-purple)",
+          borderLeft: "6px solid var(--accent)",
           fontSize: "var(--vid-take)",
           fontStyle: "italic",
-          color: "var(--text)",
+          color: "var(--text-primary)",
           lineHeight: 1.35,
           opacity: interpolate(frame, [5.2 * fps, 6 * fps], [0, 1], {
             extrapolateLeft: "clamp",
@@ -404,10 +406,10 @@ export const MatchupCutaway: React.FC<Matchup> = ({
         style={{
           marginTop: 56,
           padding: "44px 48px",
-          borderRadius: "var(--ca-card-radius)",
-          background: "var(--v-bg)",
-          border: "1px solid var(--border-violet)",
-          boxShadow: "0 0 60px var(--ca-brand-glow)",
+          borderRadius: "var(--radius-md)",
+          background: "var(--surface-page)",
+          border: "1px solid var(--border-accent)",
+          boxShadow: "0 0 60px var(--accent-glow)",
           opacity: interpolate(frame, [6.6 * fps, 7.2 * fps], [0, 1], {
             extrapolateLeft: "clamp",
             extrapolateRight: "clamp",
@@ -423,11 +425,12 @@ export const MatchupCutaway: React.FC<Matchup> = ({
       >
         <div
           style={{
-            fontFamily: "var(--font-display)",
+            fontFamily: "var(--font-body)",
+            fontWeight: 700,
             fontSize: "var(--vid-label)",
-            letterSpacing: 6,
+            letterSpacing: "var(--vid-caps-track)",
             textTransform: "uppercase",
-            color: "var(--ca-purple-light)",
+            color: "var(--text-accent)",
             marginBottom: 12,
           }}
         >
@@ -450,7 +453,7 @@ export const MatchupCutaway: React.FC<Matchup> = ({
               fontFamily: "var(--font-display)",
               fontSize: 76,
               fontWeight: 700,
-              color: "var(--ca-green)",
+              color: "var(--mark-positive)",
             }}
           >
             +{spMargin}
@@ -474,14 +477,7 @@ export const MatchupCutaway: React.FC<Matchup> = ({
           }),
         }}
       >
-        <CanvasImage
-          src={staticFile("chase-icon-outline.png")}
-          style={{
-            width: 64,
-            height: 64,
-            filter: "drop-shadow(0 0 18px var(--ca-brand-glow))",
-          }}
-        />
+        <BrandLockup size={34} muted />
       </Interactive.Div>
     </AbsoluteFill>
   );

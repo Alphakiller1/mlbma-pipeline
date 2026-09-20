@@ -36,3 +36,8 @@ outputs/reading_list/
 
 # generated daily social cards (rendered from dashboard card routes)
 outputs/social_cards/
+
+# Live-site style mirror for the content engine (regenerated every run)
+dashboard/_site/
+dashboard/_site.staging/
+dashboard/_site.old/

@@ -4,14 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1080">
 <title>Chase Analytics — Composed Post</title>
-<link rel="stylesheet" href="mlbma_design_system.css">
-<link rel="stylesheet" href="theme.css">
+<!-- The live chase-analytics.com stylesheet stack, mirrored by
+     content_engine.sync_site_style() on every run. This page loads NOTHING else: the
+     site's current look is the design contract, and the chrome below only names its
+     semantic tokens. Never link the legacy theme.css / mlbma_design_system.css here. -->
+<link rel="stylesheet" href="_site/site.css">
 <style>
-  /* Composition route: brand chrome + a grid of captured dashboard artifacts.
-     Every colour/font here is a site token from theme.css / mlbma_design_system.css.
-     The artifacts are pixels captured from the real dashboard, so a post cannot drift
-     from the site by construction. Geometry is solved in JS (solveLayout) so every
-     artifact in one image shares ONE zoom -> identical type size, centred alignment. */
+  /* Composition route: brand chrome + a grid of captured site artifacts.
+     Colours, faces and radii are the site's semantic tokens (chase-semantic.css):
+     --surface-*, --text-*, --accent*, --border-*, --font-*. The artifacts are pixels
+     captured from the live routes, so neither half of a post can drift from the site.
+     Geometry is solved in JS (solveLayout) so every artifact in one image shares ONE
+     zoom -> identical type size, centred alignment. */
   html, body { margin: 0; overflow: hidden; }
   body.card-page {
     /* Chrome heading scale. Every lede size below is declared against it, so the
@@ -19,51 +23,53 @@
        size instead of the size variants below silently overriding a scaled title. */
     --cc-head: 1;
     width: 1080px; height: 1350px;
-    background:
-      radial-gradient(ellipse 90% 60% at 78% -8%, rgba(124, 77, 255, 0.14), transparent 58%),
-      radial-gradient(ellipse 70% 50% at 6% 102%, rgba(91, 43, 224, 0.08), transparent 60%),
-      var(--bg);
-    font-family: var(--sans);
-    color: var(--text);
+    /* The site's canvas: flat black, and whatever ambient layer the site declares
+       (none since the 2026-09-15 black surface pass). */
+    background: var(--canvas-ambient, none), var(--surface-page);
+    background-color: var(--surface-page);
+    font-family: var(--font-ui);
+    color: var(--text-primary);
     display: flex; flex-direction: column;
     padding: 44px 48px 36px;
     box-sizing: border-box;
   }
 
-  /* ── brand: mark only ─────────────────────────────────────────────────────
-     The wordmark is dropped from the header to buy vertical room; the footer URL
-     carries the name. Clear space around the mark is >= 25% of its height. */
+  /* ── brand: the site header's own lockup ─────────────────────────────────
+     Icon + typeset wordmark, using the header's .chase-wordmark rule so the post
+     carries exactly the lockup a reader sees on the site. One line, so it costs no
+     more height than the mark alone did. */
   .cc-header { display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto; }
-  .cc-mark { height: 46px; width: auto; display: block;
-    filter: drop-shadow(0 0 12px rgba(124, 77, 255, 0.45)); }
-  .cc-meta { text-align: right; color: var(--text-3); font-size: 14px; font-weight: 600;
-    letter-spacing: 0.14em; text-transform: uppercase; }
+  .cc-brand { display: flex; align-items: center; gap: 12px; }
+  .cc-mark { height: 42px; width: 42px; object-fit: contain; display: block; }
+  .cc-brand .chase-wordmark { font-size: 27px; }
+  .cc-meta { text-align: right; color: var(--text-secondary); font-size: 14px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase; }
 
-  /* ── text layer ──────────────────────────────────────────────────────────── */
-  .cc-lede { flex: 0 0 auto; margin-top: 20px; }
-  .cc-eyebrow { font-size: calc(15px * var(--cc-head)); font-weight: 700; letter-spacing: 0.16em;
-    text-transform: uppercase; color: var(--gold);
-    text-shadow: 0 0 14px rgba(240, 194, 74, 0.17); }
-  /* The silver comes from the site's own heading component: the element carries
-     .ca-page-title, whose rule in mlbma_design_system.css applies the metallic
-     gradient with !important. Do not re-declare the gradient here -- theme.css has
-     `h1:not(.ca-page-title) { -webkit-text-fill-color: var(--v-heading) !important }`,
-     which is what was forcing these titles to flat violet. Only geometry below. */
+  /* ── text layer ──────────────────────────────────────────────────────────────
+     Mirrors the site's page head: accent eyebrow (.ca-public-page__eyebrow), metal
+     condensed display title in Title Case (.ca-public-page__title), plain secondary
+     deck (.ca-public-page__lede). Sizes are the post's own; the roles are the site's. */
+  .cc-lede { flex: 0 0 auto; margin-top: 24px; }
+  .cc-eyebrow { font-size: calc(15px * var(--cc-head)); font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-accent); }
   .cc-title {
-    font-family: var(--display); font-weight: 800;
-    font-size: calc(58px * var(--cc-head)); line-height: 1.04;
-    text-transform: uppercase; letter-spacing: 0.01em; margin: 8px 0 0;
+    font-family: var(--font-display); font-weight: 800;
+    font-size: calc(64px * var(--cc-head)); line-height: 1.02;
+    letter-spacing: -0.015em; margin: 8px 0 0;
+    background: var(--text-display-metal);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
   }
-  .cc-sub { color: var(--text-2); font-size: calc(19px * var(--cc-head)); font-weight: 600; line-height: 1.4;
-    margin-top: 10px; max-width: 92%; }
+  .cc-sub { color: var(--text-secondary); font-size: calc(19px * var(--cc-head)); font-weight: 400;
+    line-height: 1.45; margin-top: 10px; max-width: 92%; }
   /* The take: the author's stance, deliberately styled apart from neutral captions so
      a reader can tell opinion from measurement. */
   .cc-take { margin-top: 14px; padding: 12px 0 12px 18px; position: relative;
-    font-size: 20px; line-height: 1.38; font-weight: 600; color: var(--text);
+    font-size: 20px; line-height: 1.4; font-weight: 600; color: var(--text-primary);
     font-style: italic; max-width: 94%; }
   .cc-take::before { content: ""; position: absolute; left: 0; top: 4px; bottom: 4px;
-    width: 3px; border-radius: 2px; background: var(--v-grad, var(--v-light)); }
-  .cc-lede.is-tight .cc-title { font-size: calc(44px * var(--cc-head)); }
+    width: 3px; border-radius: 2px; background: var(--edge-brand); }
+  .cc-lede.is-tight .cc-title { font-size: calc(50px * var(--cc-head)); }
   .cc-lede.is-tight .cc-sub { font-size: calc(17px * var(--cc-head)); }
   .cc-lede.is-tight .cc-take { font-size: 17.5px; margin-top: 10px; }
 
@@ -85,49 +91,53 @@
   .cc-slot { display: flex; flex-direction: column; min-height: 0; min-width: 0;
     justify-content: center; align-items: center; }
   .cc-slot img { display: block; height: auto; object-fit: contain;
-    border-radius: var(--r-lg, 14px); }
+    border-radius: var(--radius-md); }
   /* Artifacts already carry the site's own card chrome; the frame only separates
      them from the post background when they sit edge to edge. */
-  .cc-slot.is-framed img { border: 1px solid var(--border-2); background: var(--card); }
-  .cc-slot-cap { margin-top: 9px; font-size: 13.5px; font-weight: 700; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--text-3); text-align: center; }
+  .cc-slot.is-framed img { border: 1px solid var(--border-card); background: var(--surface-card);
+    box-shadow: var(--elevation-card); }
+  .cc-slot-cap { margin-top: 9px; font-size: 13.5px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-secondary); text-align: center; }
   /* Per-artifact label (e.g. the starters under a full-card banner). Post-level prose
      lives in .cc-notes and stays left-aligned. */
-  .cc-slot-note { margin-top: 7px; font-size: 15.5px; font-weight: 600; color: var(--text-2);
+  .cc-slot-note { margin-top: 7px; font-size: 15.5px; font-weight: 500; color: var(--text-secondary);
     line-height: 1.42; text-align: center; }
 
   .cc-notes { flex: 0 0 auto; margin-top: 14px; display: flex; flex-direction: column; gap: 7px; }
-  .cc-note { font-size: 16.5px; font-weight: 500; color: var(--text-2); line-height: 1.45;
+  .cc-note { font-size: 16.5px; font-weight: 400; color: var(--text-secondary); line-height: 1.45;
     padding-left: 15px; position: relative; }
   .cc-note::before { content: ""; position: absolute; left: 0; top: 8px;
-    width: 5px; height: 5px; border-radius: 50%; background: var(--v-light); }
+    width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
 
   .cc-footer { flex: 0 0 auto; margin-top: 16px; padding-top: 14px;
-    border-top: 1px solid var(--border-2);
+    border-top: 1px solid var(--border-default);
     display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
   .cc-footer-l { display: flex; flex-direction: column; gap: 3px; }
   /* The offer line is the point of the post: every render ends on it. */
-  .cc-site { color: var(--v-light); font-weight: 700; font-size: 18.5px;
+  .cc-site { color: var(--accent-text); font-weight: 700; font-size: 18.5px;
     letter-spacing: 0.01em; }
-  .cc-cta { color: var(--text-2); font-size: 14.5px; font-weight: 600; }
-  .cc-disclaimer { color: var(--text-4); font-size: 12.5px; font-weight: 500; text-align: right; }
+  .cc-cta { color: var(--text-secondary); font-size: 14.5px; font-weight: 500; }
+  .cc-disclaimer { color: var(--text-muted); font-size: 12.5px; font-weight: 500; text-align: right; }
 
   /* ===== Size variants (runner injects CARD_SIZE; JS stamps the class) ===== */
   body.size-1080x1080 { height: 1080px; padding: 38px 44px 32px; }
-  body.size-1080x1080 .cc-mark { height: 40px; }
-  body.size-1080x1080 .cc-title { font-size: calc(46px * var(--cc-head)); }
+  body.size-1080x1080 .cc-mark { height: 36px; width: 36px; }
+  body.size-1080x1080 .cc-brand .chase-wordmark { font-size: 24px; }
+  body.size-1080x1080 .cc-title { font-size: calc(50px * var(--cc-head)); }
   body.size-1080x1080 .cc-lede { margin-top: 14px; }
   body.size-1080x1080 .cc-body { margin-top: 16px; gap: 14px; }
   body.size-1080x1080 .cc-sub { font-size: calc(17px * var(--cc-head)); }
 
   body.size-1080x1920 { height: 1920px; padding: 84px 48px 72px; }
-  body.size-1080x1920 .cc-mark { height: 54px; }
-  body.size-1080x1920 .cc-title { font-size: calc(66px * var(--cc-head)); }
+  body.size-1080x1920 .cc-mark { height: 50px; width: 50px; }
+  body.size-1080x1920 .cc-brand .chase-wordmark { font-size: 32px; }
+  body.size-1080x1920 .cc-title { font-size: calc(72px * var(--cc-head)); }
   body.size-1080x1920 .cc-body { gap: 26px; }
 
   body.size-1600x900 { width: 1600px; height: 900px; padding: 36px 52px 32px; }
-  body.size-1600x900 .cc-mark { height: 40px; }
-  body.size-1600x900 .cc-title { font-size: calc(44px * var(--cc-head)); }
+  body.size-1600x900 .cc-mark { height: 36px; width: 36px; }
+  body.size-1600x900 .cc-brand .chase-wordmark { font-size: 24px; }
+  body.size-1600x900 .cc-title { font-size: calc(48px * var(--cc-head)); }
   body.size-1600x900 .cc-site { font-size: 17px; }
   body.size-1600x900 .cc-lede { margin-top: 12px; }
   body.size-1600x900 .cc-body { margin-top: 16px; }
@@ -135,13 +145,16 @@
 </head>
 <body class="card-page">
   <div class="cc-header">
-    <img class="cc-mark" id="ccMark" src="assets/chase-icon-outline.png" alt="Chase Analytics">
+    <span class="cc-brand">
+      <img class="cc-mark" id="ccMark" src="_site/brand-icon.png" alt="">
+      <span class="chase-wordmark"><span>Chase</span><span class="chase-wordmark__accent">Analytics</span></span>
+    </span>
     <div class="cc-meta" id="ccMeta"></div>
   </div>
 
   <div class="cc-lede" id="ccLede">
     <div class="cc-eyebrow" id="ccEyebrow"></div>
-    <h1 class="cc-title ca-page-title" id="ccTitle"></h1>
+    <h1 class="cc-title" id="ccTitle"></h1>
     <p class="cc-sub" id="ccSub"></p>
     <p class="cc-take" id="ccTake"></p>
   </div>
@@ -161,7 +174,7 @@
 (function () {
   var D = window.CARD_DATA;
   if (!D) {
-    document.body.innerHTML = '<p style="color:#F5F6FA;padding:40px">No CARD_DATA injected.</p>';
+    document.body.innerHTML = '<p style="color:var(--text-primary);padding:40px">No CARD_DATA injected.</p>';
     return;
   }
   if (window.CARD_SIZE) document.body.classList.add('size-' + window.CARD_SIZE);
@@ -377,11 +390,32 @@
   // Signal readiness only once every artifact bitmap has decoded and geometry is
   // solved, so the runner never screenshots a half-painted or unsolved post.
   var imgs = [].slice.call(document.images);
-  Promise.all(imgs.map(function (i) {
+  // The site stack arrives through @import, and fonts.ready resolves at once for a
+  // face nobody has asked for yet - a run composed before the sheets landed shipped
+  // with NO brand face loaded (caught by the runner's font gate, 2026-09-17). So:
+  // wait for the window load event (all sheets, @imports included), then ask for both
+  // brand faces by the names the site's own tokens give them.
+  var pageLoaded = document.readyState === 'complete' ? Promise.resolve() :
+    new Promise(function (res) { window.addEventListener('load', res); });
+  function firstFamily(token) {
+    var v = getComputedStyle(document.body).getPropertyValue(token).trim();
+    return v ? v.split(',')[0].trim() : '';
+  }
+  var facesLoaded = pageLoaded.then(function () {
+    if (!document.fonts) return;
+    var display = firstFamily('--font-display');
+    var ui = firstFamily('--font-ui');
+    return Promise.all([
+      display ? document.fonts.load('800 64px ' + display) : null,
+      ui ? document.fonts.load('400 16px ' + ui) : null,
+      ui ? document.fonts.load('700 16px ' + ui) : null,
+    ]).catch(function () {});
+  });
+  Promise.all([facesLoaded].concat(imgs.map(function (i) {
     return i.complete ? Promise.resolve() : new Promise(function (res) {
       i.addEventListener('load', res); i.addEventListener('error', res);
     });
-  })).then(function () {
+  }))).then(function () {
     // Solve once, so a build where the webfonts never arrive still lays out.
     solveLayout();
     return (document.fonts && document.fonts.ready) || Promise.resolve();

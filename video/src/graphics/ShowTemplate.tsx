@@ -19,38 +19,11 @@ export type StatCell = {
   team?: string;
 };
 
-/**
- * Where each platform paints its own UI over your video, in 1080x1920 pixels.
- *
- * RESEARCHED 2026-09-02, and the honest summary is that published numbers do not
- * agree and none of them is authoritative:
- *   - Instagram/Reels: guides cite 108-110 top, 320-400 bottom, 120-180 right.
- *     A widely-repeated "14% top / 35% bottom / 6% sides" rule (269/672/65 here)
- *     traces to marketing blogs with NO official Meta citation, and describes
- *     Ads Manager rejection thresholds, not the organic player. Kept as the
- *     separate `reels-ads` preset rather than imposed on organic posts.
- *   - TikTok: 324, 400 and 484 bottom all appear in 2026 guides; right rail
- *     120-180. TikTok itself says the zone changes with caption length.
- *   - Shorts: 120-380 top and 300-400 bottom depending on source. The bottom
- *     grows to ~400 when a viewer expands the description, so design for the
- *     expanded state.
- *
- * The values below are the conservative end of the converged range. They are a
- * STARTING POINT, not truth: render the `SafeZoneCalibration` composition, post
- * it once to each platform, screenshot it, and read the real numbers off the
- * ruler. Platform UI also shifts with app releases and device notch.
- */
-export type Platform = "reels" | "reels-ads" | "tiktok" | "shorts" | "youtube";
-
-export const SAFE: Record<Platform, { top: number; right: number; bottom: number }> = {
-  reels: { top: 150, right: 150, bottom: 440 },
-  // Meta Ads Manager thresholds - much stricter, use only for paid placements.
-  "reels-ads": { top: 269, right: 65, bottom: 672 },
-  tiktok: { top: 150, right: 180, bottom: 420 },
-  shorts: { top: 140, right: 130, bottom: 400 },
-  // 16:9 long-form: YouTube draws no chrome over the frame while playing.
-  youtube: { top: 0, right: 0, bottom: 0 },
-};
+// Safe areas live in ONE place (ds/safe.ts); re-exported for older imports.
+import { Platform, SAFE, useSafe } from "../ds/safe";
+import { BrandLockup } from "../ds/kit";
+export { SAFE };
+export type { Platform };
 
 export type ShowTemplateProps = {
   platform: Platform;
@@ -123,7 +96,7 @@ export const ShowTemplate: React.FC<ShowTemplateProps> = ({
   /* Band geometry, scaled to the frame and lifted clear of platform UI. The
      16:9 cut gets shallower bands: 1080px of height cannot spare 330 up top. */
   const wide = platform === "youtube";
-  const safe = SAFE[platform];
+  const safe = useSafe(platform);
   const TOP_H = wide ? 190 : 330;
   const BOTTOM_H = wide ? 210 : 396;
 
@@ -175,7 +148,7 @@ export const ShowTemplate: React.FC<ShowTemplateProps> = ({
           style={{
             position: "absolute",
             inset: 0,
-            background: `linear-gradient(100deg, ${awayCol.primary} 0%, #0a0b10 185%)`,
+            background: `linear-gradient(100deg, ${awayCol.primary} 0%, var(--surface-page) 185%)`,
             clipPath: "polygon(0 0, 34% 0, 40% 100%, 0 100%)",
           }}
         />
@@ -183,7 +156,7 @@ export const ShowTemplate: React.FC<ShowTemplateProps> = ({
           style={{
             position: "absolute",
             inset: 0,
-            background: `linear-gradient(260deg, ${homeCol.primary} 0%, #0a0b10 185%)`,
+            background: `linear-gradient(260deg, ${homeCol.primary} 0%, var(--surface-page) 185%)`,
             clipPath: "polygon(66% 0, 100% 0, 100% 100%, 60% 100%)",
           }}
         />
@@ -193,7 +166,7 @@ export const ShowTemplate: React.FC<ShowTemplateProps> = ({
             inset: 0,
             /* Lifted off pure black: as #070810 this read as a hole punched
                in the bar rather than a centre panel. */
-            background: "linear-gradient(180deg, #1A1E2E 0%, #0E1018 100%)",
+            background: "var(--ca-grad-panel)",
             clipPath: "polygon(34% 0, 66% 0, 60% 100%, 40% 100%)",
           }}
         />
@@ -220,7 +193,7 @@ export const ShowTemplate: React.FC<ShowTemplateProps> = ({
                 fontSize: wide ? 64 : 82,
                 fontWeight: 700,
                 color: awayOnField,
-                textShadow: "0 2px 12px rgba(0,0,0,0.65)",
+                textShadow: "0 2px 12px var(--shadow-deep)",
               }}
             >
               {away}
@@ -232,12 +205,14 @@ export const ShowTemplate: React.FC<ShowTemplateProps> = ({
             {eyebrow ? (
               <div
                 style={{
-                  fontFamily: "var(--font-display)",
+                  fontFamily: "var(--font-body)",
+                  fontWeight: 700,
                   fontSize: 24,
-                  letterSpacing: 5,
+                  letterSpacing: "var(--vid-caps-track)",
                   textTransform: "uppercase",
-                  color: "var(--ca-purple-light)",
+                  color: "var(--text-accent)",
                   marginBottom: 6,
+                  whiteSpace: "nowrap",
                 }}
               >
                 {eyebrow}
@@ -252,7 +227,7 @@ export const ShowTemplate: React.FC<ShowTemplateProps> = ({
                   fontWeight: 800,
                   letterSpacing: -0.5,
                   lineHeight: 1.05,
-                  textTransform: "uppercase",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {title}
@@ -267,7 +242,7 @@ export const ShowTemplate: React.FC<ShowTemplateProps> = ({
                 fontSize: wide ? 64 : 82,
                 fontWeight: 700,
                 color: homeOnField,
-                textShadow: "0 2px 12px rgba(0,0,0,0.65)",
+                textShadow: "0 2px 12px var(--shadow-deep)",
               }}
             >
               {home}
@@ -287,7 +262,7 @@ export const ShowTemplate: React.FC<ShowTemplateProps> = ({
             bottom: 0,
             width: "100%",
             height: 5,
-            background: "var(--v-grad)",
+            background: "var(--edge-brand)",
             opacity: fade(0.7 * fps),
           }}
         />
@@ -314,7 +289,7 @@ export const ShowTemplate: React.FC<ShowTemplateProps> = ({
             width: 7,
             height: windowBottom - windowTop,
             background:
-              "linear-gradient(180deg, var(--ca-purple) 0%, rgba(124,77,255,0.55) 45%, rgba(124,77,255,0.06) 100%)",
+              "linear-gradient(180deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 55%, transparent) 45%, color-mix(in srgb, var(--accent) 6%, transparent) 100%)",
             opacity: fade(0.9 * fps),
           }}
         />
@@ -330,9 +305,9 @@ export const ShowTemplate: React.FC<ShowTemplateProps> = ({
           width: "100%",
           height: BOTTOM_H,
           translate: "0px " + bandIn(0.2 * fps, BOTTOM_H + bottomOffset),
-          background: "linear-gradient(180deg, #0B0D15 0%, #05060B 100%)",
+          background: "var(--ca-grad-panel)",
           borderTop: "5px solid transparent",
-          borderImage: "var(--v-grad) 1",
+          borderImage: "var(--edge-brand) 1",
           display: "flex",
           flexDirection: "column",
         }}
@@ -362,7 +337,7 @@ export const ShowTemplate: React.FC<ShowTemplateProps> = ({
                    furniture; the numbers should read as a broadcast strip. A
                    hairline divider does the separating instead. */
                 textAlign: "center",
-                borderLeft: i === 0 ? "none" : "1px solid var(--border)",
+                borderLeft: i === 0 ? "none" : "1px solid var(--border-default)",
                 padding: "4px 12px",
                 opacity: interpolate(
                   frame,
@@ -378,11 +353,12 @@ export const ShowTemplate: React.FC<ShowTemplateProps> = ({
             >
               <div
                 style={{
-                  fontFamily: "var(--font-display)",
+                  fontFamily: "var(--font-body)",
+                  fontWeight: 700,
                   fontSize: 24,
-                  letterSpacing: 4,
+                  letterSpacing: "var(--vid-caps-track)",
                   textTransform: "uppercase",
-                  color: "var(--text-3)",
+                  color: "var(--text-muted)",
                   marginBottom: 10,
                 }}
               >
@@ -413,38 +389,32 @@ export const ShowTemplate: React.FC<ShowTemplateProps> = ({
           ))}
         </div>
 
-        {/* Brand strip */}
+        {/* Brand strip: the site header's lockup, and the footer line if one is set. */}
         <div
           style={{
             height: wide ? 68 : 96,
-            borderTop: "1px solid var(--border)",
+            borderTop: "1px solid var(--border-default)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             paddingRight: safe.right,
-            gap: 16,
+            gap: 28,
             opacity: fade(1.1 * fps),
           }}
         >
-          <CanvasImage
-            src={staticFile("chase-icon-outline.png")}
-            style={{
-              width: 50,
-              height: 50,
-              filter: "drop-shadow(0 0 14px var(--ca-brand-glow))",
-            }}
-          />
-          <span
-            className="chrome"
-            style={{
-              fontFamily: "var(--font-display)",
-              fontSize: 40,
-              fontWeight: 700,
-              letterSpacing: 3,
-            }}
-          >
-            {footer ?? "CHASE ANALYTICS"}
-          </span>
+          <BrandLockup size={wide ? 30 : 36} />
+          {footer ? (
+            <span
+              style={{
+                fontFamily: "var(--font-body)",
+                fontWeight: 600,
+                fontSize: wide ? 22 : 26,
+                color: "var(--text-secondary)",
+              }}
+            >
+              {footer}
+            </span>
+          ) : null}
         </div>
       </Interactive.Div>
     </AbsoluteFill>

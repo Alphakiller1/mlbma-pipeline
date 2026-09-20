@@ -14,3 +14,24 @@ props/
 # screenshots the still post is built from, saved where staticFile() can reach them.
 # public/ itself stays tracked - the team logos live there.
 public/captures/
+
+# Site style exported by `python -m outputs.content_engine sync-style` (regenerated)
+src/site/
+src/site.staging/
+public/brand/
+
+# Local speech-to-text binary + model (scripts/lib/whisper.mjs)
+.whisper/
+
+# Auto-edit working files (proxies, transcripts) - regenerated from footage/
+public/edit/
+footage/
+
+# Recording booth build output (scripts/booth.mjs)
+booth/dist/
+
+# Local HTTPS cert for the phone-mic page (getUserMedia on LAN)
+.cache/
+
+# Player headshots downloaded by outputs/video_studio.py
+public/players/

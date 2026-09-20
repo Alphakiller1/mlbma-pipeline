@@ -10,7 +10,7 @@ command for each. video.bat renders every file it finds.
 MLB reuses read_slate/resolve_games from content_engine, inheriting the
 fail-closed stale-slate check and the AWAY@HOME#2 doubleheader disambiguation.
 
-NFL reads nfl-model/docs/board.json. That board self-reports
+NFL reads the hosted nfl-model board.json (local docs/board.json only as an offline fallback). That board self-reports
 authority=RESEARCH_ONLY with may_bet=false, and withholds per-game edges
 (edge_points is null) because the model does not beat the closing line. Those
 flags are carried into the props so the graphic can state the model's read
@@ -27,7 +27,7 @@ import json
 from datetime import date
 from pathlib import Path
 
-from outputs.content_engine import PIPELINE, fail, read_slate, resolve_games
+from outputs.content_engine import NFL_BOARD_URL, PIPELINE, _fetch, fail, read_slate, resolve_games
 
 PROPS_ROOT = PIPELINE / "video" / "props"
 NFL_BOARD = PIPELINE.parent / "nfl-model" / "docs" / "board.json"
@@ -71,12 +71,29 @@ def run_mlb(a: argparse.Namespace) -> list[tuple[str, dict]]:
 
 
 # ── NFL ──────────────────────────────────────────────────────────────────────
+def r1(value: float) -> float:
+    """Round half up to one decimal (1.45 -> 1.5), matching outputs.video_pack."""
+    from decimal import ROUND_HALF_UP, Decimal
+    return float(Decimal(str(value)).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP))
+
+
+def load_nfl_board() -> dict:
+    """The HOSTED board first - it is what readers see and it is ahead of the local
+    clone (the local docs/board.json was still week 1 when the site was on week 2).
+    The local file is only a fallback for working offline."""
+    try:
+        return json.loads(_fetch(NFL_BOARD_URL.rstrip("/") + "/board.json"))
+    except Exception as exc:
+        if not NFL_BOARD.exists():
+            fail(f"cannot reach the hosted nfl-model board ({exc}) and {NFL_BOARD} is missing")
+        print(f"NOTE hosted nfl-model board unreachable ({exc}); using {NFL_BOARD}")
+        # utf-8 explicitly: the board carries a mid-dot in `kickoff` that mojibakes
+        # under the Windows cp1252 default.
+        return json.loads(NFL_BOARD.read_text(encoding="utf-8"))
+
+
 def run_nfl(a: argparse.Namespace) -> list[tuple[str, dict]]:
-    if not NFL_BOARD.exists():
-        fail(f"{NFL_BOARD} missing - run the nfl-model pipeline first")
-    # utf-8 explicitly: the board carries a mid-dot in `kickoff` that mojibakes
-    # under the Windows cp1252 default.
-    board = json.loads(NFL_BOARD.read_text(encoding="utf-8"))
+    board = load_nfl_board()
 
     ratings = {t["team"].upper(): t for t in board.get("teams", [])}
     index: dict[str, dict] = {}
@@ -106,9 +123,11 @@ def run_nfl(a: argparse.Namespace) -> list[tuple[str, dict]]:
             "home": home,
             "awayRating": round(float(ratings.get(away, {}).get("rating", 0.0)), 1),
             "homeRating": round(float(ratings.get(home, {}).get("rating", 0.0)), 1),
-            "modelMargin": round(float(g["model_margin"]), 1),
-            "marketMargin": round(float(g["published_margin"]), 1),
-            "winProbability": round(float(g["win_probability"]), 4),
+            "modelMargin": r1(float(g["model_margin"])),
+            "marketMargin": r1(float(g["published_margin"])),
+            # The model's own probability: the cutaway presents it as the model's read.
+            # `win_probability` on the board is anchored to the market.
+            "winProbability": round(float(g.get("model_win_probability", g["win_probability"])), 4),
             "projectedTotal": round(float(g["projected_total"]), 1),
             "projectedAwayScore": round(float(g["projected_away_score"]), 1),
             "projectedHomeScore": round(float(g["projected_home_score"]), 1),

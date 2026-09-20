@@ -86,7 +86,7 @@ export const MatchupBar: React.FC<MatchupBarProps> = ({
           style={{
             position: "absolute",
             inset: 0,
-            background: `linear-gradient(100deg, ${awayCol.primary} 0%, #0a0b10 180%)`,
+            background: `linear-gradient(100deg, ${awayCol.primary} 0%, var(--surface-page) 180%)`,
             clipPath: "polygon(0 0, 39% 0, 29% 100%, 0 100%)",
             translate: half("away"),
           }}
@@ -97,7 +97,7 @@ export const MatchupBar: React.FC<MatchupBarProps> = ({
           style={{
             position: "absolute",
             inset: 0,
-            background: `linear-gradient(260deg, ${homeCol.primary} 0%, #0a0b10 180%)`,
+            background: `linear-gradient(260deg, ${homeCol.primary} 0%, var(--surface-page) 180%)`,
             clipPath: "polygon(61% 0, 100% 0, 100% 100%, 51% 100%)",
             translate: half("home"),
           }}
@@ -109,7 +109,7 @@ export const MatchupBar: React.FC<MatchupBarProps> = ({
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(180deg, #101320 0%, #070810 100%)",
+            background: "var(--ca-grad-panel)",
             clipPath: "polygon(39% 0, 61% 0, 51% 100%, 29% 100%)",
           }}
         />
@@ -126,7 +126,7 @@ export const MatchupBar: React.FC<MatchupBarProps> = ({
             style={{
               position: "absolute",
               inset: 0,
-              background: "var(--v-grad)",
+              background: "var(--edge-brand)",
               clipPath: clip,
               opacity: interpolate(frame, [0.7 * fps, 1.1 * fps], [0, 1], {
                 extrapolateLeft: "clamp",
@@ -167,7 +167,7 @@ export const MatchupBar: React.FC<MatchupBarProps> = ({
                   fontWeight: 700,
                   lineHeight: 1,
                   color: awayInk,
-                  textShadow: "0 2px 10px rgba(0,0,0,0.6)",
+                  textShadow: "0 2px 10px var(--shadow-deep)",
                 }}
               >
                 {away}
@@ -175,9 +175,10 @@ export const MatchupBar: React.FC<MatchupBarProps> = ({
               {awayNote ? (
                 <div
                   style={{
-                    fontFamily: "var(--font-display)",
+                    fontFamily: "var(--font-body)",
+                    fontWeight: 700,
                     fontSize: 26,
-                    letterSpacing: 2,
+                    letterSpacing: "var(--vid-caps-track)",
                     textTransform: "uppercase",
                     color: "rgba(255,255,255,0.72)",
                     marginTop: 4,
@@ -195,9 +196,10 @@ export const MatchupBar: React.FC<MatchupBarProps> = ({
               {centerLabel ? (
                 <div
                   style={{
-                    fontFamily: "var(--font-display)",
+                    fontFamily: "var(--font-body)",
+                    fontWeight: 700,
                     fontSize: 24,
-                    letterSpacing: 4,
+                    letterSpacing: "var(--vid-caps-track)",
                     textTransform: "uppercase",
                     color: "rgba(255,255,255,0.7)",
                   }}
@@ -212,7 +214,7 @@ export const MatchupBar: React.FC<MatchupBarProps> = ({
                   fontWeight: 700,
                   lineHeight: 1.05,
                   color: "#fff",
-                  textShadow: "0 2px 14px rgba(0,0,0,0.7)",
+                  textShadow: "0 2px 14px var(--shadow-deep)",
                 }}
               >
                 {centerValue}
@@ -230,7 +232,7 @@ export const MatchupBar: React.FC<MatchupBarProps> = ({
                   fontWeight: 700,
                   lineHeight: 1,
                   color: homeInk,
-                  textShadow: "0 2px 10px rgba(0,0,0,0.6)",
+                  textShadow: "0 2px 10px var(--shadow-deep)",
                 }}
               >
                 {home}
@@ -238,9 +240,10 @@ export const MatchupBar: React.FC<MatchupBarProps> = ({
               {homeNote ? (
                 <div
                   style={{
-                    fontFamily: "var(--font-display)",
+                    fontFamily: "var(--font-body)",
+                    fontWeight: 700,
                     fontSize: 26,
-                    letterSpacing: 2,
+                    letterSpacing: "var(--vid-caps-track)",
                     textTransform: "uppercase",
                     color: "rgba(255,255,255,0.72)",
                     marginTop: 4,

@@ -88,8 +88,7 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
           style={{
             width: 10,
             borderRadius: 5,
-            background: ink ?? "var(--v-grad)",
-            boxShadow: "0 0 24px var(--ca-brand-glow)",
+            background: ink ?? "var(--edge-brand)",
             scale: "1 " + interpolate(frame, [0, 0.6 * fps], [0, 1], {
               extrapolateLeft: "clamp",
               extrapolateRight: "clamp",
@@ -100,8 +99,8 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
 
         <div
           style={{
-            background: "rgba(18, 20, 29, 0.92)",
-            border: "1px solid var(--border)",
+            background: "var(--vid-glass)",
+            border: "1px solid var(--border-default)",
             borderLeft: "none",
             borderRadius: "0 16px 16px 0",
             padding: "28px 40px 28px 32px",
@@ -123,7 +122,7 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
                 fontFamily: "var(--font-display)",
                 fontSize: 66,
                 fontWeight: 700,
-                color: "var(--text)",
+                color: "var(--text-primary)",
                 lineHeight: 1.1,
                 letterSpacing: 1,
               }}
@@ -135,7 +134,7 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
                 style={{
                   fontFamily: "var(--font-body)",
                   fontSize: 34,
-                  color: "var(--text-2)",
+                  color: "var(--text-secondary)",
                   marginTop: 8,
                 }}
               >
@@ -147,7 +146,7 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
           {stat ? (
             <div
               style={{
-                borderLeft: "1px solid var(--border-2)",
+                borderLeft: "1px solid var(--border-strong)",
                 paddingLeft: 40,
                 textAlign: "right",
               }}
@@ -157,7 +156,7 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
                   fontFamily: "var(--font-display)",
                   fontSize: 72,
                   fontWeight: 700,
-                  color: "var(--ca-green)",
+                  color: "var(--text-primary)",
                   lineHeight: 1,
                 }}
               >
@@ -166,11 +165,12 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
               {statLabel ? (
                 <div
                   style={{
-                    fontFamily: "var(--font-display)",
+                    fontFamily: "var(--font-body)",
+                    fontWeight: 700,
                     fontSize: 24,
-                    letterSpacing: 3,
+                    letterSpacing: "var(--vid-caps-track)",
                     textTransform: "uppercase",
-                    color: "var(--text-3)",
+                    color: "var(--text-muted)",
                     marginTop: 8,
                   }}
                 >

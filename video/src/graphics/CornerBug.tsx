@@ -69,10 +69,10 @@ export const CornerBug: React.FC<CornerBugProps> = ({
           gap: 22,
           padding: "20px 28px",
           borderRadius: 14,
-          background: "rgba(18, 20, 29, 0.88)",
-          border: "1px solid var(--border-violet)",
+          background: "var(--vid-glass)",
+          border: "1px solid var(--border-accent)",
           backdropFilter: "blur(12px)",
-          boxShadow: "0 0 36px rgba(0,0,0,0.45)",
+          boxShadow: "var(--elevation-card)",
           opacity: enter * exit,
           translate:
             interpolate(frame, [0, 0.7 * fps], [-40, 0], {
@@ -98,7 +98,7 @@ export const CornerBug: React.FC<CornerBugProps> = ({
             style={{ width: 46, height: 46 }}
           />
           <span style={{ color: awayInk }}>{away}</span>
-          <span style={{ color: "var(--text-3)" }}>@</span>
+          <span style={{ color: "var(--text-muted)" }}>@</span>
           <span style={{ color: homeInk }}>{home}</span>
           <CanvasImage
             src={staticFile(teamLogoPath(home, league))}
@@ -112,7 +112,7 @@ export const CornerBug: React.FC<CornerBugProps> = ({
               style={{
                 width: 1,
                 alignSelf: "stretch",
-                background: "var(--border-2)",
+                background: "var(--border-strong)",
               }}
             />
             <div style={{ textAlign: "right" }}>
@@ -121,7 +121,7 @@ export const CornerBug: React.FC<CornerBugProps> = ({
                   fontFamily: "var(--font-display)",
                   fontSize: 40,
                   fontWeight: 700,
-                  color: "var(--ca-green)",
+                  color: "var(--text-primary)",
                   lineHeight: 1,
                 }}
               >
@@ -130,11 +130,12 @@ export const CornerBug: React.FC<CornerBugProps> = ({
               {statLabel ? (
                 <div
                   style={{
-                    fontFamily: "var(--font-display)",
+                    fontFamily: "var(--font-body)",
+                    fontWeight: 700,
                     fontSize: 18,
-                    letterSpacing: 2,
+                    letterSpacing: "var(--vid-caps-track)",
                     textTransform: "uppercase",
-                    color: "var(--text-3)",
+                    color: "var(--text-muted)",
                     marginTop: 6,
                   }}
                 >

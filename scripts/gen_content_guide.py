@@ -22,7 +22,10 @@ from outputs.content_engine import (  # noqa: E402
     ARTIFACT_ALIASES,
     ARTIFACT_DESC,
     ARTIFACTS,
+    ASPECT_ALIAS,
     ASPECTS,
+    DEFAULT_ASPECTS,
+    artifact_source,
     LEGIBILITY_FLOOR,
     SIZES,
     SLACK_FRACTION,
@@ -32,11 +35,13 @@ from outputs.content_engine import (  # noqa: E402
 OUT = REPO / "docs" / "CONTENT_ENGINE_GUIDE.md"
 
 SLOT_ROLE = {
-    "eyebrow": ("Small label above the title", "Gold, uppercase, tracked"),
-    "headline": ("The claim - your hook", "Silver metallic display, uppercase"),
-    "sub": ("Neutral one-sentence setup", "Muted body text"),
-    "take": ("**Your angle** - the only slot styled as opinion", "Italic, violet rule"),
-    "note": ("Evidence bullet, repeatable up to 3", "Violet bullets"),
+    "eyebrow": ("Small label above the title", "Site accent (lavender), uppercase"),
+    "headline": ("The claim - your hook",
+                 "Site display face, silver, Title Case (type it that way)"),
+    "sub": ("Neutral one-sentence setup", "Secondary grey body text"),
+    "take": ("**Your angle** - the only slot styled as opinion",
+             "Italic, brand-gradient rule"),
+    "note": ("Evidence bullet, repeatable up to 3", "Accent bullets"),
     "cta": ("Where to go next", "Under the site URL"),
 }
 
@@ -44,6 +49,10 @@ HEADER = """# Chase Analytics Content Engine — Command Guide & Key
 
 Everything you need to drive the engine from a terminal: the commands, the components,
 and the phrases that summon them.
+
+**The live chase-analytics.com is the design contract.** Matchup components are captured
+off the site's current routes, and every post is styled with the site's own stylesheets,
+mirrored fresh on each run. A site restyle shows up in the next post with no engine change.
 
 *Generated from the code by `scripts/gen_content_guide.py` — re-run it after adding an
 artifact or alias. Design rules and the reasoning behind the layout live in
@@ -57,8 +66,15 @@ artifact or alias. Design rules and the reasoning behind the layout live in
 cd C:\\Users\\chase\\mlbma_pipeline
 
 .\\content.bat keys                                    # print the key, no browser needed
-.\\content.bat preview --games TEX@TBR,CHC@STL         # a post
+.\\content.bat preview --games TEX@TBR,CHC@STL         # an MLB post
+.\\content.bat preview --sport nfl --games DET@BUF      # an NFL post
 ```
+
+Matchup games come from the site's own published slate
+(`/data/public/<sport>/slate.json`), so `--games` must name a game the site is showing.
+An MLB post must be dated for the slate the site is showing. After midnight, until the
+morning pipeline publishes the new day, pass `--date` for last night's slate. An NFL post
+can be dated any day from today through the week's last kickoff.
 
 Every command writes PNGs plus an appended `captions.txt` to:
 
@@ -81,8 +97,8 @@ No browser, no data needed. The fastest way to remember what you can assemble.
 ```
 
 ### `preview` — a few matchups, side by side
-The concise post: one card per game, placed in a row. Best at 2–3 games; 4 gets tight and
-the engine will tell you so.
+The concise post: the site's slate card for each game (`mlb_card` / `nfl_card`), in a
+wrapping grid. Best at 2–3 games; more are split across images.
 
 ```powershell
 .\\content.bat preview --games TEX@TBR,CHC@STL,PIT@CIN `
@@ -90,35 +106,52 @@ the engine will tell you so.
   --take "Two of these have a starter the market still prices on last month's form."
 ```
 
-Picks the square canvas for 3+ games, the 4:5 feed post for 1–2.
+Starts on the 4:5 feed post and steps down to square when the cards leave dead space.
 
 ### `deep` — one matchup, your choice of components
 Assembles the components you name into a single image. Omit `--artifacts` in a terminal
 and it prompts you with a numbered list.
 
 ```powershell
-.\\content.bat deep --games PIT@CIN --artifacts "matchup analysis,team profile,lineup form"
+.\\content.bat deep --games PIT@CIN --artifacts "matchup overview,team profile,last ten"
+.\\content.bat deep --games DET@BUF --artifacts nfl_hero,nfl_context
 ```
 
-Takes 1–3 games; each game gets its own image.
+Takes 1–3 games; each game gets its own image. The post is one continuous capture of
+the site's matchup page: the site's matchup banner as the heading, then the sections you
+named, with the site's own spacing. No typed title unless you give one.
+`--banner-facts` keeps the banner's venue/conditions tiles; `--segmented` goes back to
+separate framed blocks under a typed title. The sport comes from the components; with
+no `--artifacts` and no terminal it uses the overview plus last ten (MLB) or the overview
+plus rest/travel (NFL) for `--sport`.
 
 ### `breakdown` — one matchup, up to three graphics
 Splits a full matchup into aspect graphics — a carousel, essentially.
 
 ```powershell
 .\\content.bat breakdown --games PIT@CIN --aspects pitching,offense,bullpen
+.\\content.bat breakdown --sport nfl --games DET@BUF --aspects offense,defense,scheme
 ```
 
+At most three aspects per run. Each graphic uses the same banner-headed layout as `deep`.
+NFL `offense` / `defense` (and `_home`) are the injury-designation graphics: the
+first-string formation with each starter's status, then injured backups listed by name.
+
 ### `full-card` — the whole slate
-Every game as a banner, with the starters named underneath. `--per-post` controls how many
-banners per image.
+Every game as the site's slate card, in a two-column grid. Six per image by default;
+`--per-post` changes it.
 
 ```powershell
-.\\content.bat full-card --per-post 6
+.\\content.bat full-card
+.\\content.bat full-card --sport nfl --per-post 2
 ```
 
 ### `rankings` — unit rankings
 Either today's starters, or all 30 clubs in one category and window.
+
+> **Legacy.** The site no longer has these boards, so `rankings` still captures this
+> branch's retired dashboard pages and warns on every run. Don't publish it as the
+> current site.
 
 ```powershell
 .\\content.bat rankings --type starters --rows 12
@@ -127,6 +160,21 @@ Either today's starters, or all 30 clubs in one category and window.
 
 `--family`: `scoring` · `winning` · `difficulty` · `projection`
 `--window`: `YTD` · `L30` · `L14` · `L7`
+
+### `booth` — record with the graphics live
+Permanent recording studio: tonight's boards on the stage, your camera in the frame,
+one take. With `--games` it builds a game pack first; without it, it opens the newest
+pack already on disk. Desktop camera stays on the booth page; the phone can be the
+microphone (`https://<LAN>:8791/mic`). Audio and video land in the same `.webm`.
+
+```powershell
+.\\content.bat booth --sport nfl --games IND@KC --show "Week 3 Sunday Night Football" --tag SNF
+.\\content.bat booth --sport nfl
+.\\content.bat booth --pack props/pack/2026-09-20-IND-KC
+```
+
+Same studio as `booth.bat`. Keep the terminal open while you record. Keys, rundown and
+phone-mic notes live in `video/README.md`.
 
 ### `compose` — anything, from anywhere
 The adaptive path. Use it for slate-wide components, the mlb-model deck, or any page on the
@@ -139,7 +187,8 @@ site with no code change at all.
 ```
 
 `--capture` fields: `label` `url` **or** `page` `selector` (required), plus optional
-`contains` `hash` `eval` `force_show` `hide` `unclip` `unstick` `wait` `framed` `name`.
+`contains` `hash` `eval` `force_show` `hide` `unclip` `unstick` `wait` `framed` `name`
+`width` (capture viewport) `sport` (footer line) `style` (CSS injected before capture).
 Repeat the flag for more than one. `--layout row` puts them side by side; `--layout grid`
 wraps them and picks its own column count.
 
@@ -203,8 +252,14 @@ The engine fails closed: it would rather write nothing than ship a wrong graphic
 
 | Message | What it means |
 |---|---|
-| `slate date(s) [...] != requested` | `data/today_matchups.csv` is for another day. The slate rolls forward once every game has started — pass `--date` for a past slate. |
-| `no .hero-matchup-card matched this game` | Card components come from the **live** dashboard, so the local slate has to match what the site is serving. Slate-wide components (rankings, model deck) are never affected. |
+| `is not on the <date> slate` | The site isn't showing that game. The error lists the games it is showing. |
+| `the live MLB slate is for ...` | The post date doesn't match the slate the site is showing. The error gives the `--date` to pass. |
+| `the live NFL slate runs through ...` | NFL posts can be dated from today through the week's last kickoff. |
+| `cannot mirror the site style` | The site was unreachable and no earlier style copy exists. With an earlier copy, the run warns and uses it. |
+| `design tokens did not load` / `brand face(s) ... did not load` | The post would have rendered in fallback styling, so nothing was written. |
+| `WARNING legacy_...` | That component captures a page the site no longer serves. |
+| `cannot mix matchup artifacts from different sources` | Live-site, nfl-model board and legacy components identify games differently. Use one source per post. |
+| `slate date(s) [...] != requested` | Legacy components only: `data/today_matchups.csv` is for another day. |
 | `is a doubleheader on this slate` | Two games share that pairing — say `CLE@CIN#1` or `#2`. |
 | `does not name an artifact` | Run `keys`; the error lists the closest matches. |
 | `artifacts squeezed to NN%` | Too much in one image. Fewer components, or let it use the story canvas. |
@@ -228,34 +283,46 @@ def phrase_cell(name: str) -> str:
 def build() -> str:
     out = [HEADER]
 
-    for heading, scope, note in (
-        ("Matchup components", "game",
-         "Need `--games`. Used by `preview`, `deep` and `breakdown`."),
-        ("Slate components", "slate",
-         "No `--games` needed. Used by `rankings` and `compose`."),
-    ):
+    groups = (
+        ("Live site — matchup components",
+         "chase-analytics.com as served today. Need `--games`. The defaults for "
+         "`preview`, `deep`, `breakdown` and `full-card`.",
+         lambda n, sp: artifact_source(n) == "site"),
+        ("Hosted boards",
+         "The nfl-model and mlb-model dashboards. Game-scoped ones need `--games` "
+         "from that board.",
+         lambda n, sp: artifact_source(n) == "hosted"),
+        ("Legacy — retired pages",
+         "Captured from this branch's own `dashboard/` pages, which the site no longer "
+         "serves. They still run and warn every time.",
+         lambda n, sp: artifact_source(n) == "legacy"),
+    )
+    for heading, note, keep in groups:
         out.append(f"## {heading}\n\n{note}\n")
-        out.append("| Key | What it shows | Say any of |")
-        out.append("|---|---|---|")
+        out.append("| Key | Scope | What it shows | Say any of |")
+        out.append("|---|---|---|---|")
         for name, spec in ARTIFACTS.items():
-            if spec["scope"] != scope:
+            if not keep(name, spec):
                 continue
             desc = ARTIFACT_DESC.get(name, spec["label"]).replace("|", "\\|")
-            out.append(f"| **`{name}`** | {desc} | {phrase_cell(name)} |")
+            scope = "game" if spec["scope"] == "game" else "slate"
+            out.append(f"| **`{name}`** | {scope} | {desc} | {phrase_cell(name)} |")
         out.append("")
 
     out.append("---\n")
     out.append("## Aspect sets\n")
     out.append("`breakdown --aspects` takes these. Each builds one graphic.\n")
-    out.append("| Aspect | Components | Also accepts |")
-    out.append("|---|---|---|")
-    extra = {"pitching": "`pitchers` · `starters` · `arms`",
-             "offense": "`bats` · `hitting`",
-             "bullpen": "`relief` · `pen`"}
-    for aspect, spec in ASPECTS.items():
-        comps = ", ".join(f"`{c}`" for c in spec["artifacts"])
-        out.append(f"| **`{aspect}`** | {comps} | {extra.get(aspect, '')} |")
+    out.append("| Sport | Aspect | Components | Also accepts |")
+    out.append("|---|---|---|---|")
+    for sport, sets in ASPECTS.items():
+        for aspect, spec in sets.items():
+            comps = ", ".join(f"`{c}`" for c in spec["artifacts"])
+            also = " · ".join(f"`{k}`" for k, v in ASPECT_ALIAS[sport].items()
+                              if v == aspect)
+            out.append(f"| {sport.upper()} | **`{aspect}`** | {comps} | {also} |")
     out.append("")
+    out.append("Defaults: " + "; ".join(
+        f"{sport.upper()} `{v}`" for sport, v in DEFAULT_ASPECTS.items()) + ".\n")
 
     out.append("---\n")
     out.append("## Text slots\n")

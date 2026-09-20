@@ -159,7 +159,7 @@ const lighten = (hex: string, amount: number): string => {
 };
 
 /**
- * A team color guaranteed to read on the near-black page ground.
+ * A team color guaranteed to read on the site's black ground (#050506 page, #0D0D10 card).
  *
  * Many official primaries are unusable as an accent on #08090F - the Raiders are
  * literally black, the White Sox near-black, the Padres brown, and a third of
@@ -190,4 +190,4 @@ export const teamAccent = (abbr: string, league: League): string => {
  * black by that field's luminance, the way a broadcast lower third does.
  */
 export const onTeamInk = (abbr: string, league: League): string =>
-  luminance(teamColors(abbr, league).primary) > 0.42 ? "#0A0B10" : "#FFFFFF";
+  luminance(teamColors(abbr, league).primary) > 0.42 ? "#050506" : "#FFFFFF";

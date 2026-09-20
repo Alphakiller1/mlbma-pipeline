@@ -9,8 +9,9 @@ import {
   useVideoConfig,
 } from "remotion";
 import { League } from "../teams";
-import { Platform, SAFE } from "./ShowTemplate";
+import { Platform, useSafe } from "../ds/safe";
 import "../fonts";
+import { BrandLockup, Take } from "../ds/kit";
 import "../theme.css";
 
 /** One captured board, as written by content_engine's --video directive. */
@@ -96,7 +97,7 @@ export const BoardMotion: React.FC<BoardMotionProps> = ({
   const { fps, width, height } = useVideoConfig();
 
   const wide = platform === "youtube";
-  const safe = SAFE[platform];
+  const safe = useSafe(platform);
 
   /* Bands are sized by what is actually in them and by nothing else - never by
      measuring the rendered text. Two slides of one carousel must agree on the
@@ -153,7 +154,7 @@ export const BoardMotion: React.FC<BoardMotionProps> = ({
     <AbsoluteFill
       name="Board Motion"
       style={{
-        backgroundColor: transparent ? "transparent" : "var(--page-bg)",
+        backgroundColor: transparent ? "transparent" : "var(--surface-page)",
         fontFamily: "var(--font-body)",
         flexDirection: "column",
         paddingTop: safe.top,
@@ -172,12 +173,12 @@ export const BoardMotion: React.FC<BoardMotionProps> = ({
         {eyebrow ? (
           <div
             style={{
-              fontFamily: "var(--font-display)",
+              fontFamily: "var(--font-body)",
               fontSize: 30,
               fontWeight: 700,
               letterSpacing: "0.18em",
               textTransform: "uppercase",
-              color: "var(--ca-gold, #E4B84B)",
+              color: "var(--text-accent)",
               marginBottom: 14,
               ...rise(0, 18),
             }}
@@ -193,7 +194,6 @@ export const BoardMotion: React.FC<BoardMotionProps> = ({
               fontSize: titleSize(title, wide),
               fontWeight: 700,
               lineHeight: 0.98,
-              textTransform: "uppercase",
               ...rise(0.15),
             }}
           >
@@ -205,7 +205,7 @@ export const BoardMotion: React.FC<BoardMotionProps> = ({
             style={{
               fontSize: 32,
               lineHeight: 1.35,
-              color: "var(--text-2, #A7ADBE)",
+              color: "var(--text-secondary)",
               marginTop: 18,
               ...rise(0.35, 22),
             }}
@@ -292,26 +292,7 @@ export const BoardMotion: React.FC<BoardMotionProps> = ({
             ...rise(1.4),
           }}
         >
-          <div
-            style={{
-              width: 6,
-              alignSelf: "stretch",
-              marginTop: 18,
-              marginBottom: 18,
-              borderRadius: 3,
-              backgroundColor: "var(--ca-purple, #7C5CFF)",
-            }}
-          />
-          <div
-            style={{
-              fontSize: 36,
-              lineHeight: 1.34,
-              fontStyle: "italic",
-              color: "var(--text-1, #E8EAF2)",
-            }}
-          >
-            {take}
-          </div>
+          <Take size={36}>{take}</Take>
         </Interactive.Div>
       ) : null}
 
@@ -324,25 +305,27 @@ export const BoardMotion: React.FC<BoardMotionProps> = ({
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            borderTop: "1px solid var(--border-2, #23283A)",
+            borderTop: "1px solid var(--border-strong)",
             marginLeft: PAD,
             marginRight: PAD,
             ...rise(1.7, 14),
           }}
         >
-          <div
-            style={{
-              fontFamily: "var(--font-display)",
-              fontSize: 28,
-              fontWeight: 700,
-              letterSpacing: "0.06em",
-              color: "var(--ca-purple-light, #A98BFF)",
-            }}
-          >
-            {footer}
+          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+            <BrandLockup size={30} />
+            <div
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 24,
+                fontWeight: 600,
+                color: "var(--text-accent)",
+              }}
+            >
+              {footer}
+            </div>
           </div>
           {notes && notes.length ? (
-            <div style={{ fontSize: 22, color: "var(--text-3, #6C7488)" }}>
+            <div style={{ fontSize: 22, color: "var(--text-muted)" }}>
               {notes[0]}
             </div>
           ) : null}

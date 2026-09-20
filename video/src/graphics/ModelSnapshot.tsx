@@ -84,7 +84,7 @@ export const ModelSnapshot: React.FC<ModelSnapshotProps> = ({
     <AbsoluteFill
       name="Model Snapshot"
       style={{
-        backgroundColor: "var(--page-bg)",
+        backgroundColor: "var(--surface-page)",
         fontFamily: "var(--font-body)",
         flexDirection: "column",
         padding: "0 0 96px",
@@ -96,7 +96,7 @@ export const ModelSnapshot: React.FC<ModelSnapshotProps> = ({
           style={{
             position: "absolute",
             inset: 0,
-            background: `linear-gradient(100deg, ${awayCol.primary} 0%, #0a0b10 185%)`,
+            background: `linear-gradient(100deg, ${awayCol.primary} 0%, var(--surface-page) 185%)`,
             clipPath: "polygon(0 0, 34% 0, 40% 100%, 0 100%)",
           }}
         />
@@ -104,7 +104,7 @@ export const ModelSnapshot: React.FC<ModelSnapshotProps> = ({
           style={{
             position: "absolute",
             inset: 0,
-            background: `linear-gradient(260deg, ${homeCol.primary} 0%, #0a0b10 185%)`,
+            background: `linear-gradient(260deg, ${homeCol.primary} 0%, var(--surface-page) 185%)`,
             clipPath: "polygon(66% 0, 100% 0, 100% 100%, 60% 100%)",
           }}
         />
@@ -112,7 +112,7 @@ export const ModelSnapshot: React.FC<ModelSnapshotProps> = ({
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(180deg, #1A1E2E 0%, #0E1018 100%)",
+            background: "var(--ca-grad-panel)",
             clipPath: "polygon(34% 0, 66% 0, 60% 100%, 40% 100%)",
           }}
         />
@@ -162,7 +162,6 @@ export const ModelSnapshot: React.FC<ModelSnapshotProps> = ({
               fontFamily: "var(--font-display)",
               fontSize: 46,
               fontWeight: 800,
-              textTransform: "uppercase",
               letterSpacing: 1,
             }}
           >
@@ -185,24 +184,25 @@ export const ModelSnapshot: React.FC<ModelSnapshotProps> = ({
         <Interactive.Div name="Spread" style={{ ...rise(0.8 * fps) }}>
           <div style={{ display: "flex", gap: 26 }}>
             {[
-              { label: "Model", fav: model, tone: "var(--ca-purple-light)" },
-              { label: "Market", fav: market, tone: "var(--text-2)" },
+              { label: "Model", fav: model, tone: "var(--text-accent)" },
+              { label: "Market", fav: market, tone: "var(--text-secondary)" },
             ].map((m) => (
               <div
                 key={m.label}
                 style={{
                   flex: 1,
-                  background: "var(--bg-3)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "var(--ca-card-radius)",
+                  background: "var(--surface-panel)",
+                  border: "1px solid var(--border-default)",
+                  borderRadius: "var(--radius-md)",
                   padding: "28px 30px",
                 }}
               >
                 <div
                   style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: 28,
-                    letterSpacing: 4,
+                    fontFamily: "var(--font-body)",
+                    fontWeight: 700,
+                    fontSize: 30,
+                    letterSpacing: "var(--vid-caps-track)",
                     textTransform: "uppercase",
                     color: m.tone,
                     marginBottom: 10,
@@ -215,7 +215,7 @@ export const ModelSnapshot: React.FC<ModelSnapshotProps> = ({
                     fontFamily: "var(--font-display)",
                     fontSize: 70,
                     fontWeight: 700,
-                    color: "var(--text)",
+                    color: "var(--text-primary)",
                     lineHeight: 1,
                   }}
                 >
@@ -227,11 +227,12 @@ export const ModelSnapshot: React.FC<ModelSnapshotProps> = ({
           <div
             style={{
               marginTop: 18,
-              fontFamily: "var(--font-display)",
+              fontFamily: "var(--font-body)",
+              fontWeight: 700,
               fontSize: 32,
-              letterSpacing: 2,
+              letterSpacing: "var(--vid-caps-track)",
               textTransform: "uppercase",
-              color: "var(--text-3)",
+              color: "var(--text-muted)",
             }}
           >
             Gap {gap} pts
@@ -242,11 +243,12 @@ export const ModelSnapshot: React.FC<ModelSnapshotProps> = ({
           <Interactive.Div name="Total" style={{ ...rise(1.3 * fps) }}>
             <div
               style={{
-                fontFamily: "var(--font-display)",
-                fontSize: 28,
-                letterSpacing: 4,
+                fontFamily: "var(--font-body)",
+                fontWeight: 700,
+                fontSize: 30,
+                letterSpacing: "var(--vid-caps-track)",
                 textTransform: "uppercase",
-                color: "var(--text-3)",
+                color: "var(--text-muted)",
                 marginBottom: 12,
               }}
             >
@@ -257,12 +259,12 @@ export const ModelSnapshot: React.FC<ModelSnapshotProps> = ({
                 fontFamily: "var(--font-display)",
                 fontSize: 76,
                 fontWeight: 700,
-                color: "var(--text)",
+                color: "var(--text-primary)",
               }}
             >
               {modelTotal.toFixed(1)}
-              <span style={{ color: "var(--text-4)", margin: "0 18px" }}>/</span>
-              <span style={{ color: "var(--text-2)" }}>
+              <span style={{ color: "var(--text-disabled)", margin: "0 18px" }}>/</span>
+              <span style={{ color: "var(--text-secondary)" }}>
                 {marketTotal.toFixed(1)}
               </span>
             </div>
@@ -273,11 +275,12 @@ export const ModelSnapshot: React.FC<ModelSnapshotProps> = ({
           <Interactive.Div name="Win Probability" style={{ ...rise(1.7 * fps) }}>
             <div
               style={{
-                fontFamily: "var(--font-display)",
-                fontSize: 28,
-                letterSpacing: 4,
+                fontFamily: "var(--font-body)",
+                fontWeight: 700,
+                fontSize: 30,
+                letterSpacing: "var(--vid-caps-track)",
                 textTransform: "uppercase",
-                color: "var(--text-3)",
+                color: "var(--text-muted)",
                 marginBottom: 14,
               }}
             >
@@ -287,7 +290,7 @@ export const ModelSnapshot: React.FC<ModelSnapshotProps> = ({
               style={{
                 height: 24,
                 borderRadius: 6,
-                background: "var(--bg-4)",
+                background: "var(--surface-raised)",
                 overflow: "hidden",
               }}
             >
@@ -315,7 +318,7 @@ export const ModelSnapshot: React.FC<ModelSnapshotProps> = ({
                 fontFamily: "var(--font-display)",
                 fontSize: 60,
                 fontWeight: 700,
-                color: "var(--text)",
+                color: "var(--text-primary)",
                 marginTop: 14,
               }}
             >
@@ -333,8 +336,8 @@ export const ModelSnapshot: React.FC<ModelSnapshotProps> = ({
             margin: "0 72px",
             padding: "22px 30px",
             borderRadius: 12,
-            background: "rgba(232, 194, 74, 0.10)",
-            border: "1px solid rgba(232, 194, 74, 0.38)",
+            background: "color-mix(in srgb, var(--mark-caution) 10%, transparent)",
+            border: "1px solid color-mix(in srgb, var(--mark-caution) 38%, transparent)",
             display: "flex",
             alignItems: "center",
             gap: 18,
@@ -342,17 +345,17 @@ export const ModelSnapshot: React.FC<ModelSnapshotProps> = ({
         >
           <span
             style={{
-              fontFamily: "var(--font-display)",
+              fontFamily: "var(--font-body)",
               fontSize: 30,
               fontWeight: 700,
-              letterSpacing: 3,
+              letterSpacing: "var(--vid-caps-track)",
               textTransform: "uppercase",
-              color: "var(--ca-amber)",
+              color: "var(--mark-caution)",
             }}
           >
             {action ?? "Monitor"}
           </span>
-          <span style={{ fontSize: 28, color: "var(--text-2)", lineHeight: 1.3 }}>
+          <span style={{ fontSize: 30, color: "var(--text-secondary)", lineHeight: 1.3 }}>
             Research only — model does not beat the closing line
           </span>
         </Interactive.Div>

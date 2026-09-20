@@ -98,7 +98,7 @@ export const NflCutaway: React.FC<NflMatchup> = ({
     <AbsoluteFill
       name="NFL Cutaway"
       style={{
-        backgroundColor: "var(--page-bg)",
+        backgroundColor: "var(--surface-page)",
         fontFamily: "var(--font-body)",
         flexDirection: "column",
         padding: "0 0 90px",
@@ -110,7 +110,7 @@ export const NflCutaway: React.FC<NflMatchup> = ({
           style={{
             position: "absolute",
             inset: 0,
-            background: `linear-gradient(100deg, ${awayCol.primary} 0%, #0a0b10 180%)`,
+            background: `linear-gradient(100deg, ${awayCol.primary} 0%, var(--surface-page) 180%)`,
             clipPath: "polygon(0 0, 39% 0, 29% 100%, 0 100%)",
           }}
         />
@@ -118,7 +118,7 @@ export const NflCutaway: React.FC<NflMatchup> = ({
           style={{
             position: "absolute",
             inset: 0,
-            background: `linear-gradient(260deg, ${homeCol.primary} 0%, #0a0b10 180%)`,
+            background: `linear-gradient(260deg, ${homeCol.primary} 0%, var(--surface-page) 180%)`,
             clipPath: "polygon(61% 0, 100% 0, 100% 100%, 51% 100%)",
           }}
         />
@@ -126,7 +126,7 @@ export const NflCutaway: React.FC<NflMatchup> = ({
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(180deg, #101320 0%, #070810 100%)",
+            background: "var(--ca-grad-panel)",
             clipPath: "polygon(39% 0, 61% 0, 51% 100%, 29% 100%)",
           }}
         />
@@ -165,9 +165,10 @@ export const NflCutaway: React.FC<NflMatchup> = ({
           <div style={{ textAlign: "center" }}>
             <div
               style={{
-                fontFamily: "var(--font-display)",
+                fontFamily: "var(--font-body)",
+                fontWeight: 700,
                 fontSize: 26,
-                letterSpacing: 4,
+                letterSpacing: "var(--vid-caps-track)",
                 textTransform: "uppercase",
                 color: "rgba(255,255,255,0.6)",
               }}
@@ -179,7 +180,7 @@ export const NflCutaway: React.FC<NflMatchup> = ({
                 style={{
                   fontFamily: "var(--font-display)",
                   fontSize: 30,
-                  color: "var(--text-2)",
+                  color: "var(--text-secondary)",
                   marginTop: 10,
                   maxWidth: 240,
                   lineHeight: 1.2,
@@ -227,11 +228,12 @@ export const NflCutaway: React.FC<NflMatchup> = ({
         <Interactive.Div name="Ratings" style={{ ...rise(0.9 * fps) }}>
           <div
             style={{
-              fontFamily: "var(--font-display)",
+              fontFamily: "var(--font-body)",
+              fontWeight: 700,
               fontSize: 30,
-              letterSpacing: 3,
+              letterSpacing: "var(--vid-caps-track)",
               textTransform: "uppercase",
-              color: "var(--text-3)",
+              color: "var(--text-muted)",
               marginBottom: 18,
             }}
           >
@@ -246,9 +248,9 @@ export const NflCutaway: React.FC<NflMatchup> = ({
                 key={t.team}
                 style={{
                   flex: 1,
-                  background: "var(--card)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "var(--ca-card-radius)",
+                  background: "var(--surface-card)",
+                  border: "1px solid var(--border-default)",
+                  borderRadius: "var(--radius-md)",
                   padding: "26px 30px",
                   display: "flex",
                   alignItems: "baseline",
@@ -270,7 +272,7 @@ export const NflCutaway: React.FC<NflMatchup> = ({
                     fontFamily: "var(--font-display)",
                     fontSize: 68,
                     fontWeight: 700,
-                    color: "var(--text)",
+                    color: "var(--text-primary)",
                   }}
                 >
                   {t.rating > 0 ? "+" : ""}
@@ -285,24 +287,25 @@ export const NflCutaway: React.FC<NflMatchup> = ({
         <Interactive.Div name="Margins" style={{ ...rise(1.6 * fps) }}>
           <div style={{ display: "flex", gap: 28 }}>
             {[
-              { label: "Model", fav: model, tone: "var(--ca-purple-light)" },
-              { label: "Market", fav: market, tone: "var(--text-2)" },
+              { label: "Model", fav: model, tone: "var(--text-accent)" },
+              { label: "Market", fav: market, tone: "var(--text-secondary)" },
             ].map((m) => (
               <div
                 key={m.label}
                 style={{
                   flex: 1,
-                  background: "var(--bg-3)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "var(--ca-card-radius)",
+                  background: "var(--surface-panel)",
+                  border: "1px solid var(--border-default)",
+                  borderRadius: "var(--radius-md)",
                   padding: "28px 32px",
                 }}
               >
                 <div
                   style={{
-                    fontFamily: "var(--font-display)",
+                    fontFamily: "var(--font-body)",
+                    fontWeight: 700,
                     fontSize: 28,
-                    letterSpacing: 4,
+                    letterSpacing: "var(--vid-caps-track)",
                     textTransform: "uppercase",
                     color: m.tone,
                     marginBottom: 10,
@@ -315,7 +318,7 @@ export const NflCutaway: React.FC<NflMatchup> = ({
                     fontFamily: "var(--font-display)",
                     fontSize: 72,
                     fontWeight: 700,
-                    color: "var(--text)",
+                    color: "var(--text-primary)",
                     lineHeight: 1,
                   }}
                 >
@@ -332,11 +335,12 @@ export const NflCutaway: React.FC<NflMatchup> = ({
           <Interactive.Div name="Projected Score" style={{ ...rise(1.9 * fps) }}>
             <div
               style={{
-                fontFamily: "var(--font-display)",
+                fontFamily: "var(--font-body)",
+                fontWeight: 700,
                 fontSize: 30,
-                letterSpacing: 3,
+                letterSpacing: "var(--vid-caps-track)",
                 textTransform: "uppercase",
-                color: "var(--text-3)",
+                color: "var(--text-muted)",
                 marginBottom: 18,
               }}
             >
@@ -348,9 +352,9 @@ export const NflCutaway: React.FC<NflMatchup> = ({
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 40,
-                background: "var(--card)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--ca-card-radius)",
+                background: "var(--surface-card)",
+                border: "1px solid var(--border-default)",
+                borderRadius: "var(--radius-md)",
                 padding: "30px 36px",
               }}
             >
@@ -369,12 +373,12 @@ export const NflCutaway: React.FC<NflMatchup> = ({
                   fontFamily: "var(--font-display)",
                   fontSize: 92,
                   fontWeight: 700,
-                  color: "var(--text)",
+                  color: "var(--text-primary)",
                   lineHeight: 1,
                 }}
               >
                 {projectedAwayScore.toFixed(1)}
-                <span style={{ color: "var(--text-4)", margin: "0 20px" }}>-</span>
+                <span style={{ color: "var(--text-disabled)", margin: "0 20px" }}>-</span>
                 {projectedHomeScore.toFixed(1)}
               </span>
               <span
@@ -397,11 +401,12 @@ export const NflCutaway: React.FC<NflMatchup> = ({
             <div style={{ flex: 1 }}>
               <div
                 style={{
-                  fontFamily: "var(--font-display)",
+                  fontFamily: "var(--font-body)",
+                  fontWeight: 700,
                   fontSize: 26,
-                  letterSpacing: 3,
+                  letterSpacing: "var(--vid-caps-track)",
                   textTransform: "uppercase",
-                  color: "var(--text-3)",
+                  color: "var(--text-muted)",
                   marginBottom: 14,
                 }}
               >
@@ -411,7 +416,7 @@ export const NflCutaway: React.FC<NflMatchup> = ({
                 style={{
                   height: 22,
                   borderRadius: 6,
-                  background: "var(--bg-4)",
+                  background: "var(--surface-raised)",
                   overflow: "hidden",
                 }}
               >
@@ -439,7 +444,7 @@ export const NflCutaway: React.FC<NflMatchup> = ({
                   fontFamily: "var(--font-display)",
                   fontSize: 56,
                   fontWeight: 700,
-                  color: "var(--text)",
+                  color: "var(--text-primary)",
                   marginTop: 12,
                 }}
               >
@@ -450,11 +455,12 @@ export const NflCutaway: React.FC<NflMatchup> = ({
             <div style={{ flex: 1 }}>
               <div
                 style={{
-                  fontFamily: "var(--font-display)",
+                  fontFamily: "var(--font-body)",
+                  fontWeight: 700,
                   fontSize: 26,
-                  letterSpacing: 3,
+                  letterSpacing: "var(--vid-caps-track)",
                   textTransform: "uppercase",
-                  color: "var(--text-3)",
+                  color: "var(--text-muted)",
                   marginBottom: 14,
                 }}
               >
@@ -465,12 +471,12 @@ export const NflCutaway: React.FC<NflMatchup> = ({
                   fontFamily: "var(--font-display)",
                   fontSize: 56,
                   fontWeight: 700,
-                  color: "var(--text)",
+                  color: "var(--text-primary)",
                   marginTop: 26,
                 }}
               >
                 {projectedTotal.toFixed(1)}
-                <span style={{ color: "var(--text-3)", fontSize: 40 }}>
+                <span style={{ color: "var(--text-muted)", fontSize: 40 }}>
                   {"  /  "}
                   {marketTotal.toFixed(1)}
                 </span>
@@ -485,10 +491,10 @@ export const NflCutaway: React.FC<NflMatchup> = ({
             style={{
               ...rise(2.8 * fps),
               paddingLeft: 30,
-              borderLeft: "6px solid var(--ca-purple)",
+              borderLeft: "6px solid var(--accent)",
               fontSize: 42,
               fontStyle: "italic",
-              color: "var(--text)",
+              color: "var(--text-primary)",
               lineHeight: 1.35,
             }}
           >
@@ -511,8 +517,8 @@ export const NflCutaway: React.FC<NflMatchup> = ({
             margin: "0 72px",
             padding: "22px 30px",
             borderRadius: 12,
-            background: "rgba(232, 194, 74, 0.10)",
-            border: "1px solid rgba(232, 194, 74, 0.38)",
+            background: "color-mix(in srgb, var(--mark-caution) 10%, transparent)",
+            border: "1px solid color-mix(in srgb, var(--mark-caution) 38%, transparent)",
             display: "flex",
             alignItems: "center",
             gap: 18,
@@ -520,17 +526,17 @@ export const NflCutaway: React.FC<NflMatchup> = ({
         >
           <span
             style={{
-              fontFamily: "var(--font-display)",
+              fontFamily: "var(--font-body)",
               fontSize: 30,
               fontWeight: 700,
-              letterSpacing: 3,
+              letterSpacing: "var(--vid-caps-track)",
               textTransform: "uppercase",
-              color: "var(--ca-amber)",
+              color: "var(--mark-caution)",
             }}
           >
             {action ?? "Monitor"}
           </span>
-          <span style={{ fontSize: 28, color: "var(--text-2)", lineHeight: 1.3 }}>
+          <span style={{ fontSize: 28, color: "var(--text-secondary)", lineHeight: 1.3 }}>
             Research only — model does not beat the closing line
           </span>
         </Interactive.Div>

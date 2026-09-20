@@ -1,5 +1,11 @@
 @echo off
 REM Chase Analytics video graphics engine - props from the model, then render.
+REM
+REM For a whole game (every graphic: template, bars, lower thirds, duels, market-vs-model,
+REM ranks, open, chapters, agenda, split frames, end screen, thumbnails, injury
+REM illustrations) use the game pack instead - see video\README.md:
+REM   python -m outputs.video_pack --league nfl --game DET@BUF --show "Thursday Night Football" --tag TNF --captures
+REM   video\props\pack\<date>-DET-BUF\render.bat
 REM Args pass straight through to outputs.video_props (same convention as content.bat):
 REM   video --games NYM@TBR
 REM   video --league nfl --games NE@SEA

@@ -43,7 +43,7 @@ export const SafeZoneCalibration: React.FC = () => {
   return (
     <AbsoluteFill
       name="Safe Zone Calibration"
-      style={{ backgroundColor: "#12141D" }}
+      style={{ backgroundColor: "var(--surface-card)" }}
     >
       {/* Horizontal bands, alternating so edges stay readable under chrome. */}
       {Array.from({ length: rows + 1 }).map((_, i) => (
@@ -55,7 +55,7 @@ export const SafeZoneCalibration: React.FC = () => {
             left: 0,
             width: "100%",
             height: STEP,
-            background: i % 2 ? "#171A26" : "#101320",
+            background: i % 2 ? "var(--surface-raised)" : "var(--surface-card)",
             borderTop: "1px solid rgba(154,107,255,0.45)",
           }}
         />
@@ -158,7 +158,7 @@ export const SafeZoneCalibration: React.FC = () => {
           style={{
             fontFamily: "var(--font-body)",
             fontSize: 34,
-            color: "var(--text-2)",
+            color: "var(--text-secondary)",
             marginTop: 26,
             lineHeight: 1.4,
           }}
