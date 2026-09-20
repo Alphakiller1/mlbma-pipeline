@@ -103,6 +103,8 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("function cfbCompareBody", js)
         self.assertIn("Matchup Breakdown", js)
         self.assertIn("Clearest unit gaps", js)
+        self.assertIn("cfbMirrorHead", js)
+        self.assertIn("side + '_logo'", js)
         self.assertIn("ca-arsenal-table", js)
         self.assertIn("usageSquares", js)
         adapter = (ROOT / "dashboard" / "sports" / "cfb.js").read_text(encoding="utf-8")

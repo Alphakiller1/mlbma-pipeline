@@ -308,6 +308,8 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict) -> dict:
         "home_conference": home_meta.get("conference"),
         "away_logo": away_meta.get("logo"),
         "home_logo": home_meta.get("logo"),
+        "away_color": away_meta.get("color"),
+        "home_color": home_meta.get("color"),
         "away_record": away_side.get("record"),
         "home_record": home_side.get("record"),
         "away_score": away_side.get("score"),

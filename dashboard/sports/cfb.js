@@ -133,7 +133,10 @@
     mapped.home_recent = keep(pub.home_recent, mapped.home_recent);
     mapped.away_starter = keep(pub.away_starter, mapped.away_starter);
     mapped.home_starter = keep(pub.home_starter, mapped.home_starter);
-    mapped.broadcast = keep(pub.broadcast, mapped.broadcast);
+    mapped.away_logo = keep(pub.away_logo, mapped.away_logo);
+    mapped.home_logo = keep(pub.home_logo, mapped.home_logo);
+    mapped.away_color = keep(pub.away_color, mapped.away_color);
+    mapped.home_color = keep(pub.home_color, mapped.home_color);
     if (pub.neutral === true) mapped.neutral = true;
     return mapped;
   }

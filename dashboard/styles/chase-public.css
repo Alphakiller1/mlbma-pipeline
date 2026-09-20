@@ -2236,12 +2236,17 @@ body[data-ca-product="research"] {
 }
 
 .ca-arsenal-panel > h3 {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-2);
   margin: 0 0 var(--space-1);
   font-family: var(--font-display);
   font-size: var(--type-18);
   font-weight: 800;
   color: var(--text-primary);
 }
+.ca-arsenal-panel > h3 .ca-mirror__crest { margin-inline: 0; }
 
 .ca-arsenal-list {
   display: grid;
@@ -3212,7 +3217,30 @@ body[data-ca-product="research"] {
 
 .ca-mirror__team--home { justify-content: flex-end; text-align: right; }
 
+.ca-mirror__team i {
+  display: block;
+  font-style: normal;
+  font-family: var(--font-display);
+  font-size: var(--type-caps);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
 .ca-mirror__crest { width: 28px; height: 28px; object-fit: contain; flex: 0 0 auto; }
+
+.ca-mirror__group {
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface-field);
+  border-bottom: 1px solid var(--border-subtle);
+  font-family: var(--font-display);
+  font-size: var(--type-caps);
+  font-weight: 800;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
 
 .ca-mirror__axis {
   text-align: center;
@@ -3231,6 +3259,9 @@ body[data-ca-product="research"] {
 .ca-mirror__row:last-child { border-bottom: 0; }
 
 .ca-mirror__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   font-family: var(--font-display);
   font-size: var(--type-caps);

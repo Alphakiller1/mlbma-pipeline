@@ -38,6 +38,14 @@
   }
 
   function logo(sport, game, side, size, cls) {
+    var name = fullName(sport, game, side);
+    var src = game[side + '_logo'];
+    size = size || 48;
+    cls = cls || 'ca-matchup-logo';
+    if (src) {
+      return '<img class="' + esc(cls) + '" src="' + esc(src) + '" width="' + size +
+        '" height="' + size + '" alt="' + esc(name) + ' logo" loading="lazy" decoding="async">';
+    }
     return global.ChaseMatchupCard.logoHtml(sport, game[side], game[side + '_name'], size, cls);
   }
 
@@ -808,9 +816,15 @@
      side is this" - which is the question a two-sided chart otherwise makes
      the reader answer by counting columns. */
   function clubColour(sport, game, side) {
+    var published = game[side + '_color'];
+    if (published) {
+      var hex = String(published).trim();
+      if (hex.charAt(0) !== '#') hex = '#' + hex;
+      if (/^#[0-9A-Fa-f]{3,8}$/.test(hex)) return hex;
+    }
     if (!(global.MLBMAAssets && MLBMAAssets.teamBarColor)) return null;
-    // The bar variant, not the raw brand hex: half the league is navy, and a
-    // navy bar on a near-black panel is an invisible bar.
+    // The bar variant, not the raw brand hex: half the MLB league is navy, and
+    // a navy bar on a near-black panel is an invisible bar.
     return MLBMAAssets.teamBarColor(game[side], sport) || null;
   }
 
@@ -871,13 +885,16 @@
     return '<div class="ca-mirror__row' + lead + '"' +
       (styles.rowStyle || '') + '>' +
       side(away, awayPct, 'away') +
-      '<span class="ca-mirror__label">' + esc(label) + '</span>' +
+      '<span class="ca-mirror__label">' +
+      (styles.labelHtml != null ? styles.labelHtml : esc(label)) + '</span>' +
       side(home, homePct, 'home') + '</div>';
   }
 
-  function clubPair(sport, game) {
-    var a = clubColour(sport, game, 'away');
-    var h = clubColour(sport, game, 'home');
+  function clubPair(sport, game, left, right) {
+    left = left || 'away';
+    right = right || 'home';
+    var a = clubColour(sport, game, left);
+    var h = clubColour(sport, game, right);
     return {
       away: a || '', home: h || '',
       rowStyle: (a || h)
@@ -2121,7 +2138,8 @@
   function radarPair(sport, game) {
     if (sport === 'cfb' && (game.away_color || game.home_color)) {
       return {
-        away: game.away_color || '', home: game.home_color || '',
+        away: clubColour(sport, game, 'away') || '',
+        home: clubColour(sport, game, 'home') || '',
         awayAlt: false, homeAlt: false, fellBack: false
       };
     }
@@ -2160,9 +2178,11 @@
     return '<div class="ca-radar-duo">' + webs + '</div>' +
       '<p class="ca-radar-key">' +
       '<span class="ca-radar-key__item"><span class="ca-radar-key__swatch is-away"' +
-      swatch(pair.away) + '></span>' + esc(fullName(sport, game, 'away')) + '</span>' +
+      swatch(pair.away) + '></span>' + logo(sport, game, 'away', 22, 'ca-mirror__crest') +
+      esc(fullName(sport, game, 'away')) + '</span>' +
       '<span class="ca-radar-key__item"><span class="ca-radar-key__swatch is-home"' +
-      swatch(pair.home) + '></span>' + esc(fullName(sport, game, 'home')) + '</span>' +
+      swatch(pair.home) + '></span>' + logo(sport, game, 'home', 22, 'ca-mirror__crest') +
+      esc(fullName(sport, game, 'home')) + '</span>' +
       '</p>' +
       '<p class="ca-detail-source-note">Every axis is that club’s percentile on the ' +
       'metric named, against the same league pool the section above uses — the only ' +
@@ -2897,6 +2917,8 @@
     }
     if (entry.format === 'num') {
       if (Math.abs(n) >= 10) return n.toFixed(1);
+      var tenth = Math.round(n * 10) / 10;
+      if (Math.abs(n - tenth) < 0.03) return tenth.toFixed(1);
       if (Math.abs(n) >= 1) return n.toFixed(2);
       return n.toFixed(3);
     }
@@ -3243,19 +3265,6 @@
       .replace(/^Offense /, ''));
   }
 
-  function cfbNumCell(entry) {
-    if (!entry) return '<td class="num">&mdash;</td>';
-    return '<td class="num ' + rankTone(entry.rank, entry.of) + '">' +
-      esc(formText(entry)) + rankBadge(entry) + '</td>';
-  }
-
-  function cfbUsageCell(entry) {
-    var pct = percentOf(entry);
-    if (pct == null) return '<td class="num">&mdash;</td>';
-    return '<td class="num"><span class="ca-usage ' + usageTone(pct) + '">' +
-      usageSquares(pct) + '<b>' + Math.round(pct) + '%</b></span></td>';
-  }
-
   function cfbMixRow(name, pct) {
     return '<div class="ca-arsenal-row">' +
       '<span class="ca-arsenal-name">' + esc(name) + '</span>' +
@@ -3301,14 +3310,26 @@
       '</div>';
   }
 
-  function cfbClashRow(spec, offRates, defRates) {
-    var off = offRates[spec.off];
-    var def = defRates[spec.def];
-    if (!off && !def) return '';
-    return '<tr>' +
-      '<td class="ca-lineup-name">' + esc(cfbShortLabel(off || def, spec.off)) + '</td>' +
-      cfbNumCell(off) + cfbUsageCell(off) +
-      cfbNumCell(def) + cfbUsageCell(def) + '</tr>';
+  function cfbFmt(entry) {
+    return function (v) {
+      return formText({
+        value: v,
+        format: entry && entry.format,
+        label: entry && entry.label
+      });
+    };
+  }
+
+  function cfbMirrorHead(sport, game, left, right, axis, leftRole, rightRole) {
+    return '<div class="ca-mirror__head">' +
+      '<span class="ca-mirror__team">' + logo(sport, game, left, 32, 'ca-mirror__crest') +
+      '<span>' + esc(fullName(sport, game, left)) +
+      (leftRole ? '<i>' + esc(leftRole) + '</i>' : '') + '</span></span>' +
+      '<span class="ca-mirror__axis">' + esc(axis) + '</span>' +
+      '<span class="ca-mirror__team ca-mirror__team--home"><span>' +
+      esc(fullName(sport, game, right)) +
+      (rightRole ? '<i>' + esc(rightRole) + '</i>' : '') + '</span>' +
+      logo(sport, game, right, 32, 'ca-mirror__crest') + '</span></div>';
   }
 
   function cfbClashTally(offRates, defRates) {
@@ -3328,17 +3349,23 @@
     var defRates = cfbRates(game, defSide);
     var offName = fullName(sport, game, offSide);
     var defName = fullName(sport, game, defSide);
+    var styles = clubPair(sport, game, offSide, defSide);
     var groups = CFB_CLASH_GROUPS.map(function (group) {
-      var rows = group.rows.map(function (spec) {
-        return cfbClashRow(spec, offRates, defRates);
+      var specs = group.rows.slice().sort(function (a, b) {
+        var gapA = percentOf(offRates[a.off]) - percentOf(defRates[a.def]);
+        var gapB = percentOf(offRates[b.off]) - percentOf(defRates[b.def]);
+        var absA = isFinite(gapA) ? Math.abs(gapA) : -1;
+        var absB = isFinite(gapB) ? Math.abs(gapB) : -1;
+        return absB - absA;
+      });
+      var rows = specs.map(function (spec) {
+        var off = offRates[spec.off];
+        var def = defRates[spec.def];
+        if (!off && !def) return '';
+        return mirrorRow(cfbShortLabel(off || def, spec.off), off, def, cfbFmt(off || def), styles);
       }).filter(Boolean).join('');
       if (!rows) return '';
-      return '<div class="ca-split-block"><h4>' + esc(group.title) + '</h4>' +
-        '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-arsenal-table">' +
-        '<thead><tr><th>Rate</th>' +
-        '<th class="num">' + esc(offName) + ' Off</th><th class="num">%ile</th>' +
-        '<th class="num">' + esc(defName) + ' Def</th><th class="num">%ile</th>' +
-        '</tr></thead><tbody>' + rows + '</tbody></table></div></div>';
+      return '<div class="ca-mirror__group">' + esc(group.title) + '</div>' + rows;
     }).filter(Boolean).join('');
     if (!groups) return '';
     var tally = cfbClashTally(offRates, defRates);
@@ -3353,53 +3380,54 @@
       : '';
     var games = (game[offSide + '_form'] || {}).plays;
     var sample = games != null
-      ? '<p class="ca-lineup-context">' + Math.round(Number(games)) + ' games in the ESPN sample</p>'
+      ? '<p class="ca-lineup-context">' + Math.round(Number(games)) + ' games in the ESPN sample. Rank sits under each rate; the longer bar is the better FBS percentile.</p>'
       : '';
     return '<section class="ca-arsenal-panel">' +
-      '<h3>' + esc(offName) + ' offense vs ' + esc(defName) + ' defense</h3>' +
-      sample + groups +
+      '<h3>' + logo(sport, game, offSide, 28, 'ca-mirror__crest') +
+      esc(offName) + ' offense vs ' + esc(defName) + ' defense' +
+      logo(sport, game, defSide, 28, 'ca-mirror__crest') + '</h3>' +
+      sample +
+      '<div class="ca-mirror">' +
+      cfbMirrorHead(sport, game, offSide, defSide,
+        'Offense vs Defense · FBS Percentile', 'Offense', 'Defense') +
+      groups + '</div>' +
       (take ? '<p class="ca-lineup-context">' + esc(take) + '</p>' : '') +
       '</section>';
   }
 
-  function cfbEdges(sport, game) {
-    var items = [];
-    [['away', 'home'], ['home', 'away']].forEach(function (pair) {
-      var offSide = pair[0], defSide = pair[1];
-      var offRates = cfbRates(game, offSide);
-      var defRates = cfbRates(game, defSide);
-      var offName = fullName(sport, game, offSide);
-      var defName = fullName(sport, game, defSide);
-      cfbClashSpecs().forEach(function (spec) {
-        var off = offRates[spec.off];
-        var def = defRates[spec.def];
-        var gap = (percentOf(off) == null || percentOf(def) == null)
-          ? null : percentOf(off) - percentOf(def);
-        if (gap == null || Math.abs(gap) < 8) return;
-        var offWins = gap > 0;
-        var abs = Math.abs(gap);
-        items.push({
-          abs: abs,
-          html: '<tr>' +
-            '<td class="ca-lineup-name">' + esc(cfbShortLabel(off || def, spec.off)) + '</td>' +
-            '<td>' + esc(offWins ? offName + ' offense' : defName + ' defense') + '</td>' +
-            cfbNumCell(off) + cfbNumCell(def) +
-            '<td class="num"><span class="ca-usage ' + usageTone(abs) + '">' +
-            usageSquares(abs) + '<b>' + Math.round(abs) + '</b></span></td></tr>'
-        });
-      });
-    });
+  function cfbEdgesBoard(sport, game, offSide, defSide) {
+    var offRates = cfbRates(game, offSide);
+    var defRates = cfbRates(game, defSide);
+    var styles = clubPair(sport, game, offSide, defSide);
+    var items = cfbClashSpecs().map(function (spec) {
+      var off = offRates[spec.off];
+      var def = defRates[spec.def];
+      var gap = (percentOf(off) == null || percentOf(def) == null)
+        ? null : percentOf(off) - percentOf(def);
+      if (gap == null || Math.abs(gap) < 8) return null;
+      return { abs: Math.abs(gap), off: off, def: def, spec: spec };
+    }).filter(Boolean);
     items.sort(function (a, b) { return b.abs - a.abs; });
-    items = items.slice(0, 8);
+    items = items.slice(0, 6);
     if (!items.length) return '';
+    var rows = items.map(function (item) {
+      return mirrorRow(
+        cfbShortLabel(item.off || item.def, item.spec.off),
+        item.off, item.def, cfbFmt(item.off || item.def), styles);
+    }).join('');
+    return '<div class="ca-mirror">' +
+      cfbMirrorHead(sport, game, offSide, defSide,
+        'Largest Percentile Gaps', 'Offense', 'Defense') +
+      rows + '</div>';
+  }
+
+  function cfbEdges(sport, game) {
+    var a = cfbEdgesBoard(sport, game, 'away', 'home');
+    var b = cfbEdgesBoard(sport, game, 'home', 'away');
+    if (!a && !b) return '';
     return '<section class="ca-arsenal-panel"><h3>Clearest unit gaps</h3>' +
-      '<p class="ca-lineup-context">Largest percentile gaps between this offense and that defense. Ten squares, one per ten points of gap, the same meter as pitch-mix usage.</p>' +
-      '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-arsenal-table">' +
-      '<thead><tr><th>Unit</th><th>Advantage</th>' +
-      '<th class="num">Offense</th><th class="num">Defense</th>' +
-      '<th class="num">Gap</th></tr></thead><tbody>' +
-      items.map(function (item) { return item.html; }).join('') +
-      '</tbody></table></div></section>';
+      '<p class="ca-lineup-context">The biggest percentile separations between this offense and the defense it meets. Each row is the same two-club mirror as the MLB matchup board: value, rank, and a bar that grows from the centre.</p>' +
+      a + b + '</section>';
   }
 
   function cfbClashBody(sport, game) {
@@ -3410,7 +3438,7 @@
     return '<div class="ca-detail-stack-inner">' + cfbEdges(sport, game) + a + b +
       '<p class="ca-detail-source-note">' +
       (espn
-        ? 'Each row is a season-to-date ESPN team rate, ranked against every FBS club that published it. Offense is this club’s production; defense is what the other club has allowed. Squares are league percentile, ten boxes per hundred points — the same meter as pitch-mix usage. This describes games already played.'
+        ? 'Each row is a season-to-date ESPN team rate, ranked against every FBS club that published it. The left club is this offense’s production; the right club is what that defense has allowed. Rank sits under the number; bar length is the same percentile. This describes games already played.'
         : 'Each row is one season-to-date unit rate: this offense’s production against what that defense has allowed, ranked against the same FBS pool. The longer bar is the better percentile.') +
       '</p></div>';
   }
@@ -3428,14 +3456,8 @@
     }).filter(Boolean).join('');
     if (!rows) return pending('These rates are not published for this pairing.');
     return '<div class="ca-mirror">' +
-      '<div class="ca-mirror__head">' +
-      '<span class="ca-mirror__team">' + logo(sport, game, 'away', 28, 'ca-mirror__crest') +
-      esc(fullName(sport, game, 'away')) + '</span>' +
-      '<span class="ca-mirror__axis">Percentile Of The FBS Pool</span>' +
-      '<span class="ca-mirror__team ca-mirror__team--home">' +
-      esc(fullName(sport, game, 'home')) +
-      logo(sport, game, 'home', 28, 'ca-mirror__crest') + '</span>' +
-      '</div>' + rows + '</div>';
+      cfbMirrorHead(sport, game, 'away', 'home', 'Percentile Of The FBS Pool') +
+      rows + '</div>';
   }
 
   function cfbCompareBody(sport, game) {
