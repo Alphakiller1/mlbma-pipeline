@@ -423,6 +423,7 @@ class AdapterHoleTests(unittest.TestCase):
             "Quarterbacks", "Running Backs", "Wide Receivers", "league_ranks",
             "schemeSwitcher", "data-scheme-direction", "data-scheme-direction-panel",
             "wireSchemeTabs", "ca-scheme-grid", "ca-rate-block--personnel",
+            "personnelDuel", "nflEpaCell", "Offensive form", "Defensive form",
         ):
             self.assertIn(text, detail)
         self.assertIn("away_lineups", adapter)

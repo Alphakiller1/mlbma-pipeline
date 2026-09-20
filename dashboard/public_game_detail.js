@@ -2389,12 +2389,6 @@
     return isFinite(v) ? (v * 100).toFixed(1) + '%' : '\u2014';
   }
 
-  function epaText(value) {
-    var v = Number(value);
-    if (!isFinite(v)) return '\u2014';
-    return (v > 0 ? '+' : '') + v.toFixed(3);
-  }
-
   function schemeValue(value, kind) {
     if (kind === 'epa') return epaText(value);
     if (kind === 'num') return isFinite(Number(value)) ? Number(value).toFixed(2) : '\u2014';
@@ -2408,6 +2402,45 @@
      the number alone rather than being given a bar that would imply one. */
   function frequencyRank(scheme, phase, group, key) {
     return (((((scheme || {}).league_frequency_ranks || {})[phase] || {})[group] || {})[key]) || null;
+  }
+
+  function schemeNorm(z) {
+    var x = Math.abs(z) / Math.SQRT2;
+    var t = 1 / (1 + 0.3275911 * x);
+    var erf = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t
+      - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+    return z >= 0 ? 0.5 * (1 + erf) : 0.5 * (1 - erf);
+  }
+
+  function responseEntry(scheme, phase, key, value) {
+    if (value == null || value === '') return null;
+    var n = Number(value);
+    if (!isFinite(n)) return null;
+    var base = ((((scheme || {}).league_response || {})[phase] || {})[key]) || {};
+    var of = Number(base.n) || 32;
+    var mean = Number(base.mean);
+    var std = Number(base.std);
+    var entry = { value: n, of: of };
+    if (isFinite(mean) && isFinite(std) && std > 0) {
+      var z = (n - mean) / std;
+      if (phase === 'defense') z = -z;
+      var pct = schemeNorm(z);
+      entry.rank = Math.max(1, Math.min(of, Math.round((1 - pct) * (of - 1) + 1)));
+    }
+    return entry;
+  }
+
+  function freqEntry(scheme, phase, group, key, value) {
+    var rank = frequencyRank(scheme, phase, group, key);
+    if (value == null && !rank) return null;
+    var n = Number(value);
+    var entry = { value: isFinite(n) ? n : null };
+    if (rank) {
+      entry.rank = rank.place;
+      entry.of = rank.of;
+    }
+    if (entry.value == null && entry.rank == null) return null;
+    return entry;
   }
 
   function rateTable(caption, rows, source, scheme, phase, group, modifier) {
@@ -2433,27 +2466,67 @@
   }
 
   function pressureMatchups(sport, game, offSide, defSide) {
-    var offResponse = (((game[offSide + '_scheme'] || {}).offense || {}).response) || {};
+    var offScheme = game[offSide + '_scheme'] || {};
     var defScheme = game[defSide + '_scheme'] || {};
+    var offResponse = ((offScheme.offense || {}).response) || {};
+    var defResponse = ((defScheme.defense || {}).response) || {};
     var pressure = ((defScheme.defense || {}).pressure) || {};
     var rows = PRESSURE_ROWS.map(function (spec) {
-      var frequency = pressure[spec[0]], response = offResponse[spec[1]];
-      if (frequency == null && response == null) return '';
+      var frequency = pressure[spec[0]];
+      var offVal = offResponse[spec[1]];
+      var defVal = defResponse[spec[1]];
+      if (frequency == null && offVal == null && defVal == null) return '';
       var rank = frequencyRank(defScheme, 'defense', 'pressure', spec[0]);
       var meter = rank ? segmentedMeter(percentOf(rank), rankTone(rank.place, rank.of),
         spec[2] + ': ' + rank.place + ordinal(rank.place) + ' of ' + rank.of +
-        ' by league frequency') : '';
-      return '<div class="ca-pressure-row"><div><strong>' + esc(spec[2]) + '</strong><span>' +
-        esc(pctText(frequency)) + (rank ? ' · ' + rank.place + ordinal(rank.place) +
-        ' of ' + rank.of : '') + '</span>' + meter + '</div><div class="' +
-        responseTone(game[offSide + '_scheme'], 'offense', spec[1], response) + '"><span>' +
-        esc(fullName(sport, game, offSide)) +
-        '</span><strong>' + esc(epaText(response, false)) + '</strong><small>' +
-        esc(spec[3]) + '</small></div></div>';
+        ' by how often this defence creates the look') : '';
+      return '<div class="ca-pressure-row' + nflRowLead(offScheme, defScheme, spec[1], offVal, defVal) + '">' +
+        '<div class="ca-pressure-freq"><strong>' + esc(spec[2]) + '</strong>' +
+        '<span>' + esc(pctText(frequency)) +
+        (rank ? ' · ' + rank.place + ordinal(rank.place) + ' of ' + rank.of : '') +
+        '</span>' + meter + '<small>' + esc(spec[3]) + '</small></div>' +
+        nflEpaCell(offScheme, 'offense', spec[1], offVal, false) +
+        nflEpaCell(defScheme, 'defense', spec[1], defVal, false) + '</div>';
     }).filter(Boolean).join('');
     if (!rows) return '';
-    return '<div class="ca-rate-block ca-rate-block--pressure ca-pressure-matchup"><h4>Pressure Matchups</h4>' +
+    return '<div class="ca-rate-block ca-rate-block--pressure ca-pressure-matchup">' +
+      '<h4>Pressure Matchups</h4>' +
+      nflPairHead(sport, game, offSide, defSide, 'How Often · Then The EPA',
+        'Offence in the look', 'Defence creating it') +
       rows + '</div>';
+  }
+
+  function personnelDuel(sport, game, offSide, defSide) {
+    var offScheme = game[offSide + '_scheme'] || {};
+    var defScheme = game[defSide + '_scheme'] || {};
+    var offP = ((offScheme.offense || {}).personnel) || {};
+    var defP = ((defScheme.defense || {}).personnel) || {};
+    var rows = PERSONNEL_ROWS.map(function (row) {
+      var off = freqEntry(offScheme, 'offense', 'personnel', row[0], offP[row[0]]);
+      var def = freqEntry(defScheme, 'defense', 'personnel', row[0], defP[row[0]]);
+      if (!off && !def) return '';
+      function side(entry, which) {
+        if (!entry || entry.value == null) {
+          return '<div class="ca-snap-side ca-snap-side--' + which + ' is-absent">&mdash;</div>';
+        }
+        var pct = Number(entry.value) * 100;
+        return '<div class="ca-snap-side ca-snap-side--' + which + ' ' +
+          rankTone(entry.rank, entry.of) + '">' +
+          '<span class="ca-usage ' + usageTone(pct) + '">' + usageSquares(pct) +
+          '<b>' + esc(pctText(entry.value)) + '</b></span>' +
+          (entry.rank ? '<i>' + entry.rank + ordinal(entry.rank) + ' of ' + entry.of + '</i>' : '') +
+          '</div>';
+      }
+      return '<div class="ca-snap-row">' + side(off, 'off') +
+        '<span class="ca-snap-label">' + esc(row[1]) + '</span>' +
+        side(def, 'def') + '</div>';
+    }).filter(Boolean).join('');
+    if (!rows) return '';
+    return '<div class="ca-rate-block ca-rate-block--personnel">' +
+      '<h4>Personnel And Formation</h4>' +
+      nflPairHead(sport, game, offSide, defSide, 'Share Of Charted Snaps',
+        'This offence runs', 'What that defence has faced') +
+      '<div class="ca-snap-board">' + rows + '</div></div>';
   }
 
   /* One direction of the confrontation: this offence against that defence. */
@@ -2565,31 +2638,63 @@
     return isRate ? (v * 100).toFixed(1) + '%' : (v > 0 ? '+' : '') + v.toFixed(3);
   }
 
+  function nflPairHead(sport, game, offSide, defSide, axis, offRole, defRole) {
+    return '<header class="ca-nfl-pair">' +
+      '<div>' + logo(sport, game, offSide, 32, 'ca-coverage-crest') +
+      '<span><b>' + esc(fullName(sport, game, offSide)) + '</b><small>' + esc(offRole) + '</small></span></div>' +
+      '<strong>' + esc(axis) + '</strong>' +
+      '<div><span><b>' + esc(fullName(sport, game, defSide)) + '</b><small>' + esc(defRole) + '</small></span>' +
+      logo(sport, game, defSide, 32, 'ca-coverage-crest') + '</div></header>';
+  }
+
+  function nflEpaCell(scheme, phase, key, value, isRate) {
+    var tone = responseTone(scheme, phase, key, value);
+    var entry = responseEntry(scheme, phase, key, value);
+    var shown = value == null || value === '' ? '\u2014' : epaText(value, isRate);
+    var rank = entry && entry.rank
+      ? '<i>' + entry.rank + ordinal(entry.rank) + ' of ' + entry.of + '</i>' : '';
+    var caption = isRate
+      ? (phase === 'offense' ? 'Off success' : 'Success allowed')
+      : (phase === 'offense' ? 'Off EPA / play' : 'EPA allowed / play');
+    return '<div class="ca-nfl-epa ca-nfl-epa--' + phase + ' ' + tone + '">' +
+      '<strong>' + esc(shown) + '</strong>' + rank +
+      '<span>' + caption + '</span></div>';
+  }
+
+  function nflRowLead(offScheme, defScheme, key, offVal, defVal) {
+    var a = percentOf(responseEntry(offScheme, 'offense', key, offVal));
+    var b = percentOf(responseEntry(defScheme, 'defense', key, defVal));
+    if (a == null || b == null || a === b) return '';
+    return a > b ? ' is-off' : ' is-def';
+  }
+
   function confrontation(sport, game, offSide, defSide) {
-    var off = ((game[offSide + '_scheme'] || {}).offense || {}).response || {};
-    var def = ((game[defSide + '_scheme'] || {}).defense || {}).response || {};
+    var offScheme = game[offSide + '_scheme'] || {};
+    var defScheme = game[defSide + '_scheme'] || {};
+    var off = ((offScheme.offense || {}).response) || {};
+    var def = ((defScheme.defense || {}).response) || {};
     var rows = SITUATIONS.map(function (spec) {
       var a = off[spec[0]], b = def[spec[0]];
       if (a == null && b == null) return '';
       var isRate = spec[0].indexOf('success') >= 0;
-      return '<tr><td><span class="ca-sit">' + esc(spec[1]) + '</span>' +
-        '<span class="ca-sit__means">' + esc(spec[2]) + '</span></td>' +
-        '<td class="num ' + responseTone(game[offSide + '_scheme'], 'offense', spec[0], a) + '">' +
-        esc(epaText(a, isRate)) + '</td>' +
-        '<td class="num ' + responseTone(game[defSide + '_scheme'], 'defense', spec[0], b) + '">' +
-        esc(epaText(b, isRate)) + '</td></tr>';
+      return '<div class="ca-coverage-row' + nflRowLead(offScheme, defScheme, spec[0], a, b) + '">' +
+        nflEpaCell(offScheme, 'offense', spec[0], a, isRate) +
+        '<div class="ca-coverage-look ca-sit-look"><span>' + esc(spec[1]) + '</span>' +
+        '<small>' + esc(spec[2]) + '</small></div>' +
+        nflEpaCell(defScheme, 'defense', spec[0], b, isRate) + '</div>';
     }).filter(Boolean).join('');
     if (!rows) return '';
-    return '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-sit-table">' +
-      '<thead><tr><th>Situation</th>' +
-      '<th class="num">' + esc(fullName(sport, game, offSide)) + ' Offence</th>' +
-      '<th class="num">' + esc(fullName(sport, game, defSide)) + ' Defence</th>' +
-      '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+    return '<div class="ca-coverage-matrix ca-sit-board">' +
+      nflPairHead(sport, game, offSide, defSide, 'Situation',
+        'This offence’s EPA', 'What that defence has allowed') +
+      rows + '</div>';
   }
 
   function coverageMatrix(sport, game, offSide, defSide) {
-    var off = ((game[offSide + '_scheme'] || {}).offense || {}).response || {};
-    var defScheme = (game[defSide + '_scheme'] || {}).defense || {};
+    var offScheme = game[offSide + '_scheme'] || {};
+    var defFull = game[defSide + '_scheme'] || {};
+    var off = ((offScheme.offense || {}).response) || {};
+    var defScheme = defFull.defense || {};
     var def = defScheme.response || {};
     var tendencies = defScheme.coverage || {};
     var rows = [
@@ -2600,29 +2705,23 @@
       var offValue = off[spec[1]];
       var defValue = def[spec[1]];
       if (tendency == null && offValue == null && defValue == null) return '';
-      var rank = frequencyRank(game[defSide + '_scheme'], 'defense', 'coverage', spec[0]);
+      var rank = frequencyRank(defFull, 'defense', 'coverage', spec[0]);
       var meter = rank ? segmentedMeter(percentOf(rank), rankTone(rank.place, rank.of),
         spec[2] + ': ' + rank.place + ordinal(rank.place) + ' of ' + rank.of +
-        ' by league frequency') : '';
-      return '<div class="ca-coverage-row">' +
-        '<div class="ca-coverage-result ' +
-        responseTone(game[offSide + '_scheme'], 'offense', spec[1], offValue) + '"><strong>' +
-        esc(epaText(offValue, false)) + '</strong><span>Off EPA / play</span></div>' +
+        ' by how often this defence plays it') : '';
+      return '<div class="ca-coverage-row' +
+        nflRowLead(offScheme, defFull, spec[1], offValue, defValue) + '">' +
+        nflEpaCell(offScheme, 'offense', spec[1], offValue, false) +
         '<div class="ca-coverage-look"><span>' + esc(spec[2]) + '</span>' +
         meter + '<strong>' + esc(pctText(tendency)) +
         (rank ? ' · ' + rank.place + ordinal(rank.place) : '') + '</strong></div>' +
-        '<div class="ca-coverage-result ca-coverage-result--def ' +
-        responseTone(game[defSide + '_scheme'], 'defense', spec[1], defValue) + '">' +
-        '<strong>' + esc(epaText(defValue, false)) + '</strong><span>EPA allowed / play</span></div>' +
-        '</div>';
+        nflEpaCell(defFull, 'defense', spec[1], defValue, false) + '</div>';
     }).filter(Boolean).join('');
     if (!rows) return '';
-    return '<div class="ca-coverage-matrix"><header><div>' +
-      logo(sport, game, offSide, 32, 'ca-coverage-crest') + '<span><b>' +
-      esc(fullName(sport, game, offSide)) + '</b><small>Offensive response</small></span></div>' +
-      '<strong>Coverage</strong><div><span><b>' + esc(fullName(sport, game, defSide)) +
-      '</b><small>Defensive tendency + allowance</small></span>' +
-      logo(sport, game, defSide, 32, 'ca-coverage-crest') + '</div></header>' + rows + '</div>';
+    return '<div class="ca-coverage-matrix">' +
+      nflPairHead(sport, game, offSide, defSide, 'Coverage',
+        'Offensive response', 'Defensive tendency + allowance') +
+      rows + '</div>';
   }
 
   function playerCoveragePanels(sport, game, offSide) {
@@ -2847,59 +2946,57 @@
       .filter(function (year, index, all) { return all.indexOf(year) === index; })
       .join(',');
     var head = '<section class="ca-scheme-panel" data-scheme-seasons="' +
-      esc(panelSeasons) + '"><h3>' + esc(offName) +
-      ' Offence Versus ' + esc(defName) + ' Defence</h3>';
+      esc(panelSeasons) + '"><h3>' +
+      logo(sport, game, offSide, 28, 'ca-coverage-crest') +
+      esc(offName) + ' offence versus ' + esc(defName) + ' defence' +
+      logo(sport, game, defSide, 28, 'ca-coverage-crest') + '</h3>';
     if (!offScheme || !defScheme) {
       return head + pending('Charted scheme profiles are not published for this pairing.') +
         '</section>';
     }
     var defCov = (defScheme.defense || {}).coverage || {};
-    var offPersonnel = (offScheme.offense || {}).personnel || {};
-    var offResponse = (offScheme.offense || {}).response || {};
-    var offTargets = (offScheme.offense || {}).target_share || {};
+    var offTargets = ((offScheme.offense || {}).target_share) || {};
     var versus = confrontation(sport, game, offSide, defSide);
     var coverage = coverageMatrix(sport, game, offSide, defSide);
     var coverageNote = defCov.zone_rate == null ? '' :
-      '<p class="ca-detail-source-note">' + esc(defName) + ' played zone on ' +
+      '<p class="ca-lineup-context">' + esc(defName) + ' played zone on ' +
       pctText(defCov.zone_rate) + ' of its charted coverage snaps.</p>';
-
-    var personnelBlock = rateTable('Personnel And Formation', PERSONNEL_ROWS, offPersonnel,
-      offScheme, 'offense', 'personnel', 'ca-rate-block--personnel');
-    var responseBlock = rateTable('Response By Look', RESPONSE_ROWS, offResponse,
-      offScheme, 'offense', 'response', 'ca-rate-block--response');
     var targetBlock = rateTable('Target Share', TARGET_ROWS, offTargets,
       offScheme, 'offense', 'target_share', 'ca-rate-block--targets');
 
-    /* Two columns, split the way the confrontation is: what that defence did,
-       and what this offence did. A masonry of six unequal blocks read as a
-       pile; naming the two halves makes the pairing the point. */
-    return head + coverage + coverageNote +
-      // The direct confrontation first: what this offence has done in each
-      // situation, beside what the defence it meets has given up in the same
-       // one. The frequency meters below say how a look ranks across the league; this
-      // says what happens when it does, which is the question a reader has.
+    return head + coverageNote + coverage +
       (versus ? '<div class="ca-sit-block"><h4>Situation By Situation</h4>' + versus +
-        '<p class="ca-detail-source-note">Both columns are EPA per play from the ' +
-        'offence’s point of view, so they sit on one scale: positive is good for the ' +
-        'offence and bad for the defence, which is why the two grade in opposite ' +
-        'directions. Success rates are shares of plays that stayed on schedule.</p></div>' : '') +
+        '<p class="ca-detail-source-note">Both EPA columns are from the offence’s point of view, ' +
+        'so they sit on one scale: positive is good for the offence and bad for the defence. ' +
+        'The coverage board above is the same pairing by shell — man, zone, Cover 0 through 6 — ' +
+        'with this defence’s share of snaps in the middle. Success rates are shares of plays ' +
+        'that stayed on schedule.</p></div>' : '') +
       '<div class="ca-scheme-grid" aria-label="' + esc(offName) +
       ' offence and ' + esc(defName) + ' defence scheme details">' +
-      pressureMatchups(sport, game, offSide, defSide) + personnelBlock +
-      responseBlock + targetBlock + '</div>' +
+      pressureMatchups(sport, game, offSide, defSide) +
+      personnelDuel(sport, game, offSide, defSide) +
+      targetBlock + '</div>' +
       playerSchemePanels(sport, game, offSide) +
       playerCoveragePanels(sport, game, offSide) + '</section>';
   }
 
   function schemeSwitcher(sport, game) {
+    function tab(side, opp, selected) {
+      var off = side === 'away' ? 'away' : 'home';
+      var def = side === 'away' ? 'home' : 'away';
+      return '<button type="button" id="caScheme' + (side === 'away' ? 'Away' : 'Home') +
+        'Tab" class="ca-scheme-switch__tab' + (selected ? ' is-on' : '') + '" role="tab" ' +
+        'aria-selected="' + (selected ? 'true' : 'false') + '" aria-controls="caScheme' +
+        (side === 'away' ? 'Away' : 'Home') + 'Panel"' +
+        (selected ? '' : ' tabindex="-1"') + ' data-scheme-direction="' + side + '">' +
+        '<strong>' + logo(sport, game, off, 22, 'ca-scheme-tab-crest') +
+        esc(fullName(sport, game, off)) + ' offence</strong>' +
+        '<span>' + logo(sport, game, def, 18, 'ca-scheme-tab-crest') +
+        'vs ' + esc(fullName(sport, game, def)) + ' defence</span></button>';
+    }
     return '<div class="ca-scheme-switch"><div class="ca-scheme-switch__tabs" role="tablist" ' +
       'aria-label="Choose scheme confrontation">' +
-      '<button type="button" id="caSchemeAwayTab" class="ca-scheme-switch__tab is-on" role="tab" ' +
-      'aria-selected="true" aria-controls="caSchemeAwayPanel" data-scheme-direction="away">' +
-      '<strong>' + esc(game.away) + ' Offence</strong><span>vs ' + esc(game.home) + ' Defence</span></button>' +
-      '<button type="button" id="caSchemeHomeTab" class="ca-scheme-switch__tab" role="tab" ' +
-      'aria-selected="false" aria-controls="caSchemeHomePanel" tabindex="-1" data-scheme-direction="home">' +
-      '<strong>' + esc(game.home) + ' Offence</strong><span>vs ' + esc(game.away) + ' Defence</span></button>' +
+      tab('away', 'home', true) + tab('home', 'away', false) +
       '</div><div id="caSchemeAwayPanel" role="tabpanel" aria-labelledby="caSchemeAwayTab" ' +
       'data-scheme-direction-panel="away">' + schemePanel(sport, game, 'away', 'home') + '</div>' +
       '<div id="caSchemeHomePanel" role="tabpanel" aria-labelledby="caSchemeHomeTab" ' +
@@ -3122,8 +3219,9 @@
       injuryReport(entries) + '</article>';
   }
 
-  var NFL_FORM_ORDER = ['off_epa', 'off_first_down', 'off_explosive', 'off_sack',
-    'off_turnover', 'def_epa', 'def_first_down', 'def_explosive', 'def_sack', 'def_turnover'];
+  var NFL_FORM_OFF = ['off_epa', 'off_first_down', 'off_explosive', 'off_sack', 'off_turnover'];
+  var NFL_FORM_DEF = ['def_epa', 'def_first_down', 'def_explosive', 'def_sack', 'def_turnover'];
+  var NFL_FORM_ORDER = NFL_FORM_OFF.concat(NFL_FORM_DEF);
   var CFB_FORM_ORDER = [
     'off_ppa', 'def_ppa', 'off_ypg', 'def_ypg',
     'off_successRate', 'def_successRate', 'off_fourth', 'def_fourth',
@@ -3136,11 +3234,10 @@
     'off_fg', 'off_punt', 'off_kr', 'off_pr', 'off_pen'
   ];
 
-  function nflMirror(sport, game) {
+  function nflFormFamily(sport, game, keys, title, role) {
     var away = ((game.away_form || {}).rates) || {};
     var home = ((game.home_form || {}).rates) || {};
-    var order = sport === 'cfb' ? CFB_FORM_ORDER : NFL_FORM_ORDER;
-    var rows = order.map(function (key) {
+    var rows = keys.map(function (key) {
       var entry = away[key] || home[key];
       if (!entry) return '';
       return mirrorRow(titleCase(entry.label), away[key], home[key], function (v) {
@@ -3148,15 +3245,17 @@
       }, clubPair(sport, game));
     }).filter(Boolean).join('');
     if (!rows) return '';
-    return '<div class="ca-mirror">' +
-      '<div class="ca-mirror__head">' +
-      '<span class="ca-mirror__team">' + logo(sport, game, 'away', 28, 'ca-mirror__crest') +
-      esc(fullName(sport, game, 'away')) + '</span>' +
-      '<span class="ca-mirror__axis">Percentile Of The League Pool</span>' +
-      '<span class="ca-mirror__team ca-mirror__team--home">' +
-      esc(fullName(sport, game, 'home')) +
-      logo(sport, game, 'home', 28, 'ca-mirror__crest') + '</span>' +
-      '</div>' + rows + '</div>';
+    return '<div class="ca-form-family"><h4>' + esc(title) + '</h4>' +
+      '<div class="ca-mirror">' +
+      cfbMirrorHead(sport, game, 'away', 'home', 'Percentile Of The 32-Team Pool', role, role) +
+      rows + '</div></div>';
+  }
+
+  function nflMirror(sport, game) {
+    var off = nflFormFamily(sport, game, NFL_FORM_OFF, 'Offensive form', 'Offense');
+    var def = nflFormFamily(sport, game, NFL_FORM_DEF, 'Defensive form', 'Defense');
+    if (!off && !def) return '';
+    return off + def;
   }
 
   function nflSections(sport, game) {
