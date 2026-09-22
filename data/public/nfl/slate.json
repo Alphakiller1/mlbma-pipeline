@@ -1,49 +1,1779 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-09-20T15:48:47Z",
-  "data_through_utc": "2026-09-18T00:15Z",
+  "generated_at_utc": "2026-09-22T16:46:09Z",
+  "data_through_utc": "2026-09-22T00:15Z",
   "games": [
+    {
+      "id": "401872932",
+      "sport": "nfl",
+      "game_state": "final",
+      "kickoff_utc": "2026-09-18T00:15Z",
+      "away": "DET",
+      "home": "BUF",
+      "away_name": "Detroit Lions",
+      "home_name": "Buffalo Bills",
+      "away_record": "1-1",
+      "home_record": "2-0",
+      "away_score": "31",
+      "home_score": "41",
+      "venue": "Highmark Stadium",
+      "venue_city": "Orchard Park, NY",
+      "broadcast": "Prime Video",
+      "away_availability": "3 out",
+      "home_availability": "3 out \u00b7 1 questionable",
+      "away_availability_list": [
+        {
+          "name": "Avonte Maddox",
+          "position": "CB",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Christian Mahogany",
+          "position": "G",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Blake Miller",
+          "position": "OT",
+          "status": "Out",
+          "detail": ""
+        }
+      ],
+      "home_availability_list": [
+        {
+          "name": "T.J. Sanders",
+          "position": "DT",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Ed Oliver",
+          "position": "DT",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Ty Johnson",
+          "position": "RB",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "DJ Moore",
+          "position": "WR",
+          "status": "Questionable",
+          "detail": ""
+        }
+      ],
+      "roof": "Outdoor",
+      "away_form": {
+        "rates": {
+          "off_epa": {
+            "label": "Offensive EPA Per Play",
+            "value": 0.0768,
+            "better": "high",
+            "rank": 5,
+            "of": 32
+          },
+          "off_first_down": {
+            "label": "Offensive First-Down Rate",
+            "value": 0.3097,
+            "better": "high",
+            "rank": 4,
+            "of": 32
+          },
+          "off_explosive": {
+            "label": "Offensive Explosive-Play Rate",
+            "value": 0.0709,
+            "better": "high",
+            "rank": 2,
+            "of": 32
+          },
+          "off_sack": {
+            "label": "Sack Rate Taken",
+            "value": 0.0606,
+            "better": "low",
+            "rank": 9,
+            "of": 32
+          },
+          "off_turnover": {
+            "label": "Giveaway Rate",
+            "value": 0.0149,
+            "better": "low",
+            "rank": 3,
+            "of": 32
+          },
+          "def_epa": {
+            "label": "EPA Allowed Per Play",
+            "value": -0.0155,
+            "better": "low",
+            "rank": 12,
+            "of": 32
+          },
+          "def_first_down": {
+            "label": "First-Down Rate Allowed",
+            "value": 0.278,
+            "better": "low",
+            "rank": 11,
+            "of": 32
+          },
+          "def_explosive": {
+            "label": "Explosive Rate Allowed",
+            "value": 0.0623,
+            "better": "low",
+            "rank": 27,
+            "of": 32
+          },
+          "def_sack": {
+            "label": "Sack Rate Generated",
+            "value": 0.077,
+            "better": "high",
+            "rank": 7,
+            "of": 32
+          },
+          "def_turnover": {
+            "label": "Takeaway Rate",
+            "value": 0.0195,
+            "better": "high",
+            "rank": 18,
+            "of": 32
+          }
+        },
+        "plays": 64.95,
+        "pool": 32
+      },
+      "home_form": {
+        "rates": {
+          "off_epa": {
+            "label": "Offensive EPA Per Play",
+            "value": 0.1108,
+            "better": "high",
+            "rank": 1,
+            "of": 32
+          },
+          "off_first_down": {
+            "label": "Offensive First-Down Rate",
+            "value": 0.3118,
+            "better": "high",
+            "rank": 3,
+            "of": 32
+          },
+          "off_explosive": {
+            "label": "Offensive Explosive-Play Rate",
+            "value": 0.0649,
+            "better": "high",
+            "rank": 5,
+            "of": 32
+          },
+          "off_sack": {
+            "label": "Sack Rate Taken",
+            "value": 0.0649,
+            "better": "low",
+            "rank": 16,
+            "of": 32
+          },
+          "off_turnover": {
+            "label": "Giveaway Rate",
+            "value": 0.0191,
+            "better": "low",
+            "rank": 14,
+            "of": 32
+          },
+          "def_epa": {
+            "label": "EPA Allowed Per Play",
+            "value": 0.0052,
+            "better": "low",
+            "rank": 15,
+            "of": 32
+          },
+          "def_first_down": {
+            "label": "First-Down Rate Allowed",
+            "value": 0.2957,
+            "better": "low",
+            "rank": 23,
+            "of": 32
+          },
+          "def_explosive": {
+            "label": "Explosive Rate Allowed",
+            "value": 0.0552,
+            "better": "low",
+            "rank": 14,
+            "of": 32
+          },
+          "def_sack": {
+            "label": "Sack Rate Generated",
+            "value": 0.0662,
+            "better": "high",
+            "rank": 19,
+            "of": 32
+          },
+          "def_turnover": {
+            "label": "Takeaway Rate",
+            "value": 0.0234,
+            "better": "high",
+            "rank": 7,
+            "of": 32
+          }
+        },
+        "plays": 61.57,
+        "pool": 32
+      },
+      "away_scheme": {
+        "source_seasons": [
+          2025,
+          2026
+        ],
+        "participation_source_seasons": [
+          2025
+        ],
+        "charting_samples": 1165,
+        "coverage_samples": 649,
+        "offense_plays": 1165,
+        "defense_plays": 1176,
+        "offense": {
+          "coverage": {
+            "man_rate": 0.3042,
+            "zone_rate": 0.6958,
+            "cover_0_rate": 0.0547,
+            "cover_1_rate": 0.2264,
+            "cover_2_rate": 0.237,
+            "cover_3_rate": 0.3013,
+            "cover_4_rate": 0.0849,
+            "cover_6_rate": 0.0644,
+            "cover_2_man_rate": 0.0312
+          },
+          "pressure": {
+            "blitz_rate": 0.3042,
+            "pressure_rate": 0.3004,
+            "stacked_box_rate": 0.0497,
+            "avg_box": 6.2714
+          },
+          "personnel": {
+            "personnel_11_rate": 0.6334,
+            "personnel_12_rate": 0.236,
+            "personnel_21_rate": 0.0371,
+            "formation_shotgun_rate": 0.5347,
+            "formation_under_center_rate": 0.4564,
+            "motion_rate": 0.5908,
+            "play_action_rate": 0.2573,
+            "rpo_rate": 0.0339,
+            "screen_rate": 0.0958,
+            "no_huddle_rate": 0.0601,
+            "neutral_pass_rate": 0.5188
+          },
+          "response": {
+            "pass_epa": 0.1339,
+            "rush_epa": -0.0733,
+            "pass_success_rate": 0.4699,
+            "rush_success_rate": 0.4141,
+            "pass_epa_man": 0.1913,
+            "pass_epa_zone": 0.1196,
+            "pass_epa_blitz": 0.1705,
+            "pass_epa_pressure": -0.4199,
+            "pass_epa_play_action": 0.1297,
+            "pass_epa_cover_0": 0.1272,
+            "pass_epa_cover_1": 0.1496,
+            "pass_epa_cover_2": 0.1378,
+            "pass_epa_cover_3": -0.0203,
+            "pass_epa_cover_4": 0.2049,
+            "pass_epa_cover_6": 0.1582,
+            "pass_epa_cover_2_man": 0.2422,
+            "rush_epa_stacked_box": 0.0804
+          },
+          "target_share": {
+            "target_share_rb_all": 0.2126,
+            "target_share_wr_all": 0.6189,
+            "target_share_te_all": 0.1685
+          }
+        },
+        "defense": {
+          "coverage": {
+            "man_rate": 0.4037,
+            "zone_rate": 0.5963,
+            "cover_0_rate": 0.0293,
+            "cover_1_rate": 0.2752,
+            "cover_2_rate": 0.183,
+            "cover_3_rate": 0.2822,
+            "cover_4_rate": 0.0791,
+            "cover_6_rate": 0.0421,
+            "cover_2_man_rate": 0.1091
+          },
+          "pressure": {
+            "blitz_rate": 0.3228,
+            "pressure_rate": 0.312,
+            "stacked_box_rate": 0.1084,
+            "avg_box": 6.4736
+          },
+          "personnel": {
+            "personnel_11_rate": 0.4615,
+            "personnel_12_rate": 0.3376,
+            "personnel_21_rate": 0.041,
+            "formation_shotgun_rate": 0.5887,
+            "formation_under_center_rate": 0.3619,
+            "motion_rate": 0.5219,
+            "play_action_rate": 0.2386,
+            "rpo_rate": 0.0563,
+            "screen_rate": 0.0505,
+            "no_huddle_rate": 0.1183,
+            "neutral_pass_rate": 0.5719
+          },
+          "response": {
+            "pass_epa": 0.0407,
+            "rush_epa": -0.0033,
+            "pass_success_rate": 0.4449,
+            "rush_success_rate": 0.4132,
+            "pass_epa_man": 0.112,
+            "pass_epa_zone": -0.0099,
+            "pass_epa_blitz": -0.0741,
+            "pass_epa_pressure": -0.4231,
+            "pass_epa_play_action": 0.0335,
+            "pass_epa_cover_0": 0.17,
+            "pass_epa_cover_1": 0.0844,
+            "pass_epa_cover_2": -0.1699,
+            "pass_epa_cover_3": 0.0818,
+            "pass_epa_cover_4": 0.051,
+            "pass_epa_cover_6": 0.0636,
+            "pass_epa_cover_2_man": 0.121,
+            "rush_epa_stacked_box": -0.1207
+          },
+          "target_share": {
+            "target_share_rb_all": 0.1535,
+            "target_share_wr_all": 0.5864,
+            "target_share_te_all": 0.2601
+          }
+        },
+        "league_frequency_ranks": {
+          "offense": {
+            "coverage": {
+              "man_rate": {
+                "place": 21,
+                "of": 32
+              },
+              "zone_rate": {
+                "place": 12,
+                "of": 32
+              },
+              "cover_0_rate": {
+                "place": 4,
+                "of": 32
+              },
+              "cover_1_rate": {
+                "place": 22,
+                "of": 32
+              },
+              "cover_2_rate": {
+                "place": 15,
+                "of": 32
+              },
+              "cover_3_rate": {
+                "place": 7,
+                "of": 32
+              },
+              "cover_4_rate": {
+                "place": 27,
+                "of": 32
+              },
+              "cover_6_rate": {
+                "place": 6,
+                "of": 32
+              },
+              "cover_2_man_rate": {
+                "place": 28,
+                "of": 32
+              }
+            },
+            "pressure": {
+              "blitz_rate": {
+                "place": 13,
+                "of": 32
+              },
+              "pressure_rate": {
+                "place": 18,
+                "of": 32
+              },
+              "stacked_box_rate": {
+                "place": 20,
+                "of": 32
+              },
+              "avg_box": {
+                "place": 9,
+                "of": 32
+              }
+            },
+            "personnel": {
+              "personnel_11_rate": {
+                "place": 9,
+                "of": 32
+              },
+              "personnel_12_rate": {
+                "place": 17,
+                "of": 32
+              },
+              "personnel_21_rate": {
+                "place": 17,
+                "of": 32
+              },
+              "formation_shotgun_rate": {
+                "place": 25,
+                "of": 32
+              },
+              "formation_under_center_rate": {
+                "place": 5,
+                "of": 32
+              },
+              "motion_rate": {
+                "place": 8,
+                "of": 32
+              },
+              "play_action_rate": {
+                "place": 8,
+                "of": 32
+              },
+              "rpo_rate": {
+                "place": 25,
+                "of": 32
+              },
+              "screen_rate": {
+                "place": 6,
+                "of": 32
+              },
+              "no_huddle_rate": {
+                "place": 23,
+                "of": 32
+              },
+              "neutral_pass_rate": {
+                "place": 22,
+                "of": 32
+              }
+            },
+            "target_share": {
+              "target_share_rb_all": {
+                "place": 6,
+                "of": 32
+              },
+              "target_share_wr_all": {
+                "place": 9,
+                "of": 32
+              },
+              "target_share_te_all": {
+                "place": 32,
+                "of": 32
+              }
+            }
+          },
+          "defense": {
+            "coverage": {
+              "man_rate": {
+                "place": 4,
+                "of": 32
+              },
+              "zone_rate": {
+                "place": 29,
+                "of": 32
+              },
+              "cover_0_rate": {
+                "place": 27,
+                "of": 32
+              },
+              "cover_1_rate": {
+                "place": 8,
+                "of": 32
+              },
+              "cover_2_rate": {
+                "place": 27,
+                "of": 32
+              },
+              "cover_3_rate": {
+                "place": 14,
+                "of": 32
+              },
+              "cover_4_rate": {
+                "place": 26,
+                "of": 32
+              },
+              "cover_6_rate": {
+                "place": 23,
+                "of": 32
+              },
+              "cover_2_man_rate": {
+                "place": 1,
+                "of": 32
+              }
+            },
+            "pressure": {
+              "blitz_rate": {
+                "place": 6,
+                "of": 32
+              },
+              "pressure_rate": {
+                "place": 12,
+                "of": 32
+              },
+              "stacked_box_rate": {
+                "place": 2,
+                "of": 32
+              },
+              "avg_box": {
+                "place": 1,
+                "of": 32
+              }
+            },
+            "personnel": {
+              "personnel_11_rate": {
+                "place": 31,
+                "of": 32
+              },
+              "personnel_12_rate": {
+                "place": 2,
+                "of": 32
+              },
+              "personnel_21_rate": {
+                "place": 30,
+                "of": 32
+              },
+              "formation_shotgun_rate": {
+                "place": 24,
+                "of": 32
+              },
+              "formation_under_center_rate": {
+                "place": 11,
+                "of": 32
+              },
+              "motion_rate": {
+                "place": 26,
+                "of": 32
+              },
+              "play_action_rate": {
+                "place": 13,
+                "of": 32
+              },
+              "rpo_rate": {
+                "place": 18,
+                "of": 32
+              },
+              "screen_rate": {
+                "place": 32,
+                "of": 32
+              },
+              "no_huddle_rate": {
+                "place": 6,
+                "of": 32
+              },
+              "neutral_pass_rate": {
+                "place": 5,
+                "of": 32
+              }
+            },
+            "target_share": {
+              "target_share_rb_all": {
+                "place": 27,
+                "of": 32
+              },
+              "target_share_wr_all": {
+                "place": 14,
+                "of": 32
+              },
+              "target_share_te_all": {
+                "place": 7,
+                "of": 32
+              }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0602,
+              "std": 0.1108,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0212,
+              "std": 0.0589,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4631,
+              "std": 0.0355,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4252,
+              "std": 0.0271,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1293,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1157,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0589,
+              "std": 0.1367,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1112,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1055,
+              "std": 0.1292,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1173,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1478,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.073,
+              "std": 0.1195,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0163,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.0923,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0129,
+              "std": 0.0835,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0611,
+              "std": 0.0953,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0193,
+              "std": 0.0542,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4634,
+              "std": 0.0302,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4256,
+              "std": 0.0234,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1099,
+              "std": 0.118,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0665,
+              "std": 0.0923,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.097,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1081,
+              "std": 0.0969,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1167,
+              "std": 0.0867,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.111,
+              "std": 0.1186,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0001,
+              "std": 0.1272,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.069,
+              "std": 0.1299,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1227,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.1041,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0966,
+              "std": 0.0832,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0115,
+              "std": 0.0716,
+              "n": 32
+            }
+          }
+        }
+      },
+      "home_scheme": {
+        "source_seasons": [
+          2025,
+          2026
+        ],
+        "participation_source_seasons": [
+          2025
+        ],
+        "charting_samples": 1056,
+        "coverage_samples": 558,
+        "offense_plays": 1162,
+        "defense_plays": 1056,
+        "offense": {
+          "coverage": {
+            "man_rate": 0.4192,
+            "zone_rate": 0.5808,
+            "cover_0_rate": 0.0615,
+            "cover_1_rate": 0.3368,
+            "cover_2_rate": 0.2139,
+            "cover_3_rate": 0.2609,
+            "cover_4_rate": 0.0635,
+            "cover_6_rate": 0.0334,
+            "cover_2_man_rate": 0.0299
+          },
+          "pressure": {
+            "blitz_rate": 0.2896,
+            "pressure_rate": 0.2698,
+            "stacked_box_rate": 0.1017,
+            "avg_box": 6.3953
+          },
+          "personnel": {
+            "personnel_11_rate": 0.6242,
+            "personnel_12_rate": 0.1325,
+            "personnel_21_rate": 0.0872,
+            "formation_shotgun_rate": 0.4983,
+            "formation_under_center_rate": 0.4839,
+            "motion_rate": 0.5818,
+            "play_action_rate": 0.2575,
+            "rpo_rate": 0.0668,
+            "screen_rate": 0.0878,
+            "no_huddle_rate": 0.061,
+            "neutral_pass_rate": 0.5124
+          },
+          "response": {
+            "pass_epa": 0.2317,
+            "rush_epa": 0.0616,
+            "pass_success_rate": 0.4917,
+            "rush_success_rate": 0.4709,
+            "pass_epa_man": 0.1386,
+            "pass_epa_zone": 0.2258,
+            "pass_epa_blitz": 0.2445,
+            "pass_epa_pressure": -0.3147,
+            "pass_epa_play_action": 0.3074,
+            "pass_epa_cover_0": 0.0522,
+            "pass_epa_cover_1": 0.1266,
+            "pass_epa_cover_2": 0.125,
+            "pass_epa_cover_3": 0.1917,
+            "pass_epa_cover_4": 0.2068,
+            "pass_epa_cover_6": 0.1358,
+            "pass_epa_cover_2_man": 0.2375,
+            "rush_epa_stacked_box": -0.0245
+          },
+          "target_share": {
+            "target_share_rb_all": 0.1875,
+            "target_share_wr_all": 0.5601,
+            "target_share_te_all": 0.2524
+          }
+        },
+        "defense": {
+          "coverage": {
+            "man_rate": 0.316,
+            "zone_rate": 0.684,
+            "cover_0_rate": 0.0342,
+            "cover_1_rate": 0.1923,
+            "cover_2_rate": 0.26,
+            "cover_3_rate": 0.2368,
+            "cover_4_rate": 0.1091,
+            "cover_6_rate": 0.0667,
+            "cover_2_man_rate": 0.101
+          },
+          "pressure": {
+            "blitz_rate": 0.3118,
+            "pressure_rate": 0.3379,
+            "stacked_box_rate": 0.0636,
+            "avg_box": 6.2773
+          },
+          "personnel": {
+            "personnel_11_rate": 0.5591,
+            "personnel_12_rate": 0.252,
+            "personnel_21_rate": 0.0937,
+            "formation_shotgun_rate": 0.6106,
+            "formation_under_center_rate": 0.2854,
+            "motion_rate": 0.5272,
+            "play_action_rate": 0.2213,
+            "rpo_rate": 0.0673,
+            "screen_rate": 0.0795,
+            "no_huddle_rate": 0.0811,
+            "neutral_pass_rate": 0.512
+          },
+          "response": {
+            "pass_epa": -0.0316,
+            "rush_epa": 0.08,
+            "pass_success_rate": 0.4417,
+            "rush_success_rate": 0.4512,
+            "pass_epa_man": 0.094,
+            "pass_epa_zone": -0.1094,
+            "pass_epa_blitz": 0.0883,
+            "pass_epa_pressure": -0.4119,
+            "pass_epa_play_action": 0.0699,
+            "pass_epa_cover_0": 0.051,
+            "pass_epa_cover_1": 0.1358,
+            "pass_epa_cover_2": -0.2004,
+            "pass_epa_cover_3": 0.0483,
+            "pass_epa_cover_4": -0.0229,
+            "pass_epa_cover_6": -0.0727,
+            "pass_epa_cover_2_man": 0.0783,
+            "rush_epa_stacked_box": 0.1258
+          },
+          "target_share": {
+            "target_share_rb_all": 0.1914,
+            "target_share_wr_all": 0.6033,
+            "target_share_te_all": 0.2053
+          }
+        },
+        "league_frequency_ranks": {
+          "offense": {
+            "coverage": {
+              "man_rate": {
+                "place": 1,
+                "of": 32
+              },
+              "zone_rate": {
+                "place": 32,
+                "of": 32
+              },
+              "cover_0_rate": {
+                "place": 3,
+                "of": 32
+              },
+              "cover_1_rate": {
+                "place": 1,
+                "of": 32
+              },
+              "cover_2_rate": {
+                "place": 25,
+                "of": 32
+              },
+              "cover_3_rate": {
+                "place": 29,
+                "of": 32
+              },
+              "cover_4_rate": {
+                "place": 32,
+                "of": 32
+              },
+              "cover_6_rate": {
+                "place": 32,
+                "of": 32
+              },
+              "cover_2_man_rate": {
+                "place": 29,
+                "of": 32
+              }
+            },
+            "pressure": {
+              "blitz_rate": {
+                "place": 19,
+                "of": 32
+              },
+              "pressure_rate": {
+                "place": 29,
+                "of": 32
+              },
+              "stacked_box_rate": {
+                "place": 3,
+                "of": 32
+              },
+              "avg_box": {
+                "place": 3,
+                "of": 32
+              }
+            },
+            "personnel": {
+              "personnel_11_rate": {
+                "place": 11,
+                "of": 32
+              },
+              "personnel_12_rate": {
+                "place": 28,
+                "of": 32
+              },
+              "personnel_21_rate": {
+                "place": 10,
+                "of": 32
+              },
+              "formation_shotgun_rate": {
+                "place": 29,
+                "of": 32
+              },
+              "formation_under_center_rate": {
+                "place": 3,
+                "of": 32
+              },
+              "motion_rate": {
+                "place": 11,
+                "of": 32
+              },
+              "play_action_rate": {
+                "place": 6,
+                "of": 32
+              },
+              "rpo_rate": {
+                "place": 13,
+                "of": 32
+              },
+              "screen_rate": {
+                "place": 10,
+                "of": 32
+              },
+              "no_huddle_rate": {
+                "place": 22,
+                "of": 32
+              },
+              "neutral_pass_rate": {
+                "place": 26,
+                "of": 32
+              }
+            },
+            "target_share": {
+              "target_share_rb_all": {
+                "place": 13,
+                "of": 32
+              },
+              "target_share_wr_all": {
+                "place": 22,
+                "of": 32
+              },
+              "target_share_te_all": {
+                "place": 12,
+                "of": 32
+              }
+            }
+          },
+          "defense": {
+            "coverage": {
+              "man_rate": {
+                "place": 15,
+                "of": 32
+              },
+              "zone_rate": {
+                "place": 18,
+                "of": 32
+              },
+              "cover_0_rate": {
+                "place": 20,
+                "of": 32
+              },
+              "cover_1_rate": {
+                "place": 24,
+                "of": 32
+              },
+              "cover_2_rate": {
+                "place": 8,
+                "of": 32
+              },
+              "cover_3_rate": {
+                "place": 31,
+                "of": 32
+              },
+              "cover_4_rate": {
+                "place": 14,
+                "of": 32
+              },
+              "cover_6_rate": {
+                "place": 7,
+                "of": 32
+              },
+              "cover_2_man_rate": {
+                "place": 2,
+                "of": 32
+              }
+            },
+            "pressure": {
+              "blitz_rate": {
+                "place": 11,
+                "of": 32
+              },
+              "pressure_rate": {
+                "place": 2,
+                "of": 32
+              },
+              "stacked_box_rate": {
+                "place": 13,
+                "of": 32
+              },
+              "avg_box": {
+                "place": 13,
+                "of": 32
+              }
+            },
+            "personnel": {
+              "personnel_11_rate": {
+                "place": 23,
+                "of": 32
+              },
+              "personnel_12_rate": {
+                "place": 11,
+                "of": 32
+              },
+              "personnel_21_rate": {
+                "place": 5,
+                "of": 32
+              },
+              "formation_shotgun_rate": {
+                "place": 18,
+                "of": 32
+              },
+              "formation_under_center_rate": {
+                "place": 31,
+                "of": 32
+              },
+              "motion_rate": {
+                "place": 25,
+                "of": 32
+              },
+              "play_action_rate": {
+                "place": 22,
+                "of": 32
+              },
+              "rpo_rate": {
+                "place": 7,
+                "of": 32
+              },
+              "screen_rate": {
+                "place": 13,
+                "of": 32
+              },
+              "no_huddle_rate": {
+                "place": 22,
+                "of": 32
+              },
+              "neutral_pass_rate": {
+                "place": 25,
+                "of": 32
+              }
+            },
+            "target_share": {
+              "target_share_rb_all": {
+                "place": 9,
+                "of": 32
+              },
+              "target_share_wr_all": {
+                "place": 9,
+                "of": 32
+              },
+              "target_share_te_all": {
+                "place": 30,
+                "of": 32
+              }
+            }
+          }
+        },
+        "league_response": {
+          "offense": {
+            "pass_epa": {
+              "mean": 0.0602,
+              "std": 0.1108,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0212,
+              "std": 0.0589,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4631,
+              "std": 0.0355,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4252,
+              "std": 0.0271,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1051,
+              "std": 0.1293,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0392,
+              "std": 0.1157,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0589,
+              "std": 0.1367,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4083,
+              "std": 0.1112,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1055,
+              "std": 0.1292,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1144,
+              "std": 0.1173,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.1077,
+              "std": 0.1478,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": -0.0001,
+              "std": 0.1222,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.0713,
+              "std": 0.1209,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.073,
+              "std": 0.1195,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0163,
+              "std": 0.0894,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0938,
+              "std": 0.0923,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0129,
+              "std": 0.0835,
+              "n": 32
+            }
+          },
+          "defense": {
+            "pass_epa": {
+              "mean": 0.0611,
+              "std": 0.0953,
+              "n": 32
+            },
+            "rush_epa": {
+              "mean": -0.0193,
+              "std": 0.0542,
+              "n": 32
+            },
+            "pass_success_rate": {
+              "mean": 0.4634,
+              "std": 0.0302,
+              "n": 32
+            },
+            "rush_success_rate": {
+              "mean": 0.4256,
+              "std": 0.0234,
+              "n": 32
+            },
+            "pass_epa_man": {
+              "mean": 0.1099,
+              "std": 0.118,
+              "n": 32
+            },
+            "pass_epa_zone": {
+              "mean": 0.0372,
+              "std": 0.1,
+              "n": 32
+            },
+            "pass_epa_blitz": {
+              "mean": 0.0665,
+              "std": 0.0923,
+              "n": 32
+            },
+            "pass_epa_pressure": {
+              "mean": -0.4051,
+              "std": 0.097,
+              "n": 32
+            },
+            "pass_epa_play_action": {
+              "mean": 0.1081,
+              "std": 0.0969,
+              "n": 32
+            },
+            "pass_epa_cover_0": {
+              "mean": 0.1167,
+              "std": 0.0867,
+              "n": 32
+            },
+            "pass_epa_cover_1": {
+              "mean": 0.111,
+              "std": 0.1186,
+              "n": 32
+            },
+            "pass_epa_cover_2": {
+              "mean": 0.0001,
+              "std": 0.1272,
+              "n": 32
+            },
+            "pass_epa_cover_3": {
+              "mean": 0.069,
+              "std": 0.1299,
+              "n": 32
+            },
+            "pass_epa_cover_4": {
+              "mean": 0.0737,
+              "std": 0.1227,
+              "n": 32
+            },
+            "pass_epa_cover_6": {
+              "mean": -0.0144,
+              "std": 0.1041,
+              "n": 32
+            },
+            "pass_epa_cover_2_man": {
+              "mean": 0.0966,
+              "std": 0.0832,
+              "n": 32
+            },
+            "rush_epa_stacked_box": {
+              "mean": -0.0115,
+              "std": 0.0716,
+              "n": 32
+            }
+          }
+        }
+      },
+      "scheme_source": {
+        "season": 2026,
+        "week": 2,
+        "observed_at_utc": "2026-09-20T18:43:47+00:00"
+      },
+      "away_players": [
+        {
+          "name": "Jared Goff",
+          "position": "QB",
+          "depth_rank": 1,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/kaicbot8qhzrvddilbtp"
+        },
+        {
+          "name": "Joshua Dobbs",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": null
+        },
+        {
+          "name": "Jahmyr Gibbs",
+          "position": "RB",
+          "depth_rank": 1,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cursejnmmp1i9hnxihkj"
+        },
+        {
+          "name": "Sione Vaki",
+          "position": "RB",
+          "depth_rank": 2,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/abqcluf2gbejhiyjjtoz"
+        },
+        {
+          "name": "Amon-Ra St. Brown",
+          "position": "WR",
+          "depth_rank": 1,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/fd8nwhm6pvxfyzphzl6i"
+        },
+        {
+          "name": "Jameson Williams",
+          "position": "WR",
+          "depth_rank": 2,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/byiptqggtglvy5qrw5wp"
+        },
+        {
+          "name": "Isaac TeSlaa",
+          "position": "WR",
+          "depth_rank": 3,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ducfhbiy2a8loytcjymn"
+        },
+        {
+          "name": "Sam LaPorta",
+          "position": "TE",
+          "depth_rank": 1,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/wxlk7ysg2nfq6h6ntdcu"
+        }
+      ],
+      "home_players": [
+        {
+          "name": "Josh Allen",
+          "position": "QB",
+          "depth_rank": 1,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/mjwbioajzldkq1vzoz2d"
+        },
+        {
+          "name": "Kyle Allen",
+          "position": "QB",
+          "depth_rank": 2,
+          "headshot_url": null
+        },
+        {
+          "name": "James Cook",
+          "position": "RB",
+          "depth_rank": 1,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/anjbznqb9i21wzcgrtbs"
+        },
+        {
+          "name": "Ray Davis",
+          "position": "RB",
+          "depth_rank": 2,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/xibwzhrl6q5xkgh3utug"
+        },
+        {
+          "name": "DJ Moore",
+          "position": "WR",
+          "depth_rank": 1,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/lsavpxtqoqu25emwcnvy"
+        },
+        {
+          "name": "Khalil Shakir",
+          "position": "WR",
+          "depth_rank": 2,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/syvp3hficobwcsim3i9v"
+        },
+        {
+          "name": "Keon Coleman",
+          "position": "WR",
+          "depth_rank": 3,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cm7g87waetksjouyjgvg"
+        },
+        {
+          "name": "Dalton Kincaid",
+          "position": "TE",
+          "depth_rank": 1,
+          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/z7k857flehljboaixj8m"
+        }
+      ],
+      "away_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
+        "defense": {
+          "package": "Base 4-3 D",
+          "players": [
+            {
+              "name": "Aidan Hutchinson",
+              "position": "LDE",
+              "group": "Front",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4372099.png&w=160&h=160"
+            },
+            {
+              "name": "Alim McNeill",
+              "position": "LDT",
+              "group": "Secondary",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4361662.png&w=160&h=160"
+            },
+            {
+              "name": "Tyleik Williams",
+              "position": "RDT",
+              "group": "Secondary",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4431615.png&w=160&h=160"
+            },
+            {
+              "name": "Tyler Lacy",
+              "position": "RDE",
+              "group": "Front",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4361861.png&w=160&h=160"
+            },
+            {
+              "name": "Derrick Barnes",
+              "position": "WLB",
+              "group": "Linebackers",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4260409.png&w=160&h=160"
+            },
+            {
+              "name": "Jack Campbell",
+              "position": "MLB",
+              "group": "Linebackers",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4569465.png&w=160&h=160"
+            },
+            {
+              "name": "Devin White",
+              "position": "SLB",
+              "group": "Linebackers",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4035434.png&w=160&h=160"
+            },
+            {
+              "name": "D.J. Reed",
+              "position": "LCB",
+              "group": "Secondary",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3139387.png&w=160&h=160"
+            },
+            {
+              "name": "Thomas Harper",
+              "position": "SS",
+              "group": "Secondary",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4569323.png&w=160&h=160"
+            },
+            {
+              "name": "Chuck Clark",
+              "position": "FS",
+              "group": "Secondary",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3045463.png&w=160&h=160"
+            },
+            {
+              "name": "Rock Ya-Sin",
+              "position": "RCB",
+              "group": "Secondary",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3910229.png&w=160&h=160"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "Amon-Ra St. Brown",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/fd8nwhm6pvxfyzphzl6i"
+            },
+            {
+              "name": "Jameson Williams",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/byiptqggtglvy5qrw5wp"
+            },
+            {
+              "name": "Isaac TeSlaa",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ducfhbiy2a8loytcjymn"
+            },
+            {
+              "name": "Penei Sewell",
+              "position": "LT",
+              "group": "Offensive Line",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4373825.png&w=160&h=160"
+            },
+            {
+              "name": "Christian Mahogany",
+              "position": "LG",
+              "group": "Offensive Line",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4427864.png&w=160&h=160"
+            },
+            {
+              "name": "Juice Scruggs",
+              "position": "C",
+              "group": "Offensive Line",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4361425.png&w=160&h=160"
+            },
+            {
+              "name": "Tate Ratledge",
+              "position": "RG",
+              "group": "Offensive Line",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4429035.png&w=160&h=160"
+            },
+            {
+              "name": "Larry Borom",
+              "position": "RT",
+              "group": "Offensive Line",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4241217.png&w=160&h=160"
+            },
+            {
+              "name": "Jared Goff",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/kaicbot8qhzrvddilbtp"
+            },
+            {
+              "name": "Sam LaPorta",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/wxlk7ysg2nfq6h6ntdcu"
+            },
+            {
+              "name": "Jahmyr Gibbs",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cursejnmmp1i9hnxihkj"
+            }
+          ]
+        }
+      },
+      "home_lineups": {
+        "source": "ESPN depth chart",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
+        "defense": {
+          "package": "Base 3-4 D",
+          "players": [
+            {
+              "name": "T.J. Sanders",
+              "position": "LDE",
+              "group": "Front",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4684527.png&w=160&h=160"
+            },
+            {
+              "name": "Deone Walker",
+              "position": "NT",
+              "group": "Front",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4831989.png&w=160&h=160"
+            },
+            {
+              "name": "Ed Oliver",
+              "position": "RDE",
+              "group": "Front",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4039303.png&w=160&h=160"
+            },
+            {
+              "name": "Greg Rousseau",
+              "position": "WLB",
+              "group": "Linebackers",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4362506.png&w=160&h=160"
+            },
+            {
+              "name": "Dorian Williams",
+              "position": "LILB",
+              "group": "Linebackers",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4568624.png&w=160&h=160"
+            },
+            {
+              "name": "Terrel Bernard",
+              "position": "RILB",
+              "group": "Linebackers",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4259166.png&w=160&h=160"
+            },
+            {
+              "name": "Bradley Chubb",
+              "position": "SLB",
+              "group": "Linebackers",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3116733.png&w=160&h=160"
+            },
+            {
+              "name": "Christian Benford",
+              "position": "LCB",
+              "group": "Secondary",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4379778.png&w=160&h=160"
+            },
+            {
+              "name": "Cole Bishop",
+              "position": "SS",
+              "group": "Secondary",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4676004.png&w=160&h=160"
+            },
+            {
+              "name": "C.J. Gardner-Johnson",
+              "position": "FS",
+              "group": "Secondary",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4034953.png&w=160&h=160"
+            },
+            {
+              "name": "Maxwell Hairston",
+              "position": "RCB",
+              "group": "Secondary",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4688931.png&w=160&h=160"
+            }
+          ]
+        },
+        "offense": {
+          "package": "3WR 1TE",
+          "players": [
+            {
+              "name": "DJ Moore",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/lsavpxtqoqu25emwcnvy"
+            },
+            {
+              "name": "Khalil Shakir",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/syvp3hficobwcsim3i9v"
+            },
+            {
+              "name": "Keon Coleman",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cm7g87waetksjouyjgvg"
+            },
+            {
+              "name": "Dion Dawkins",
+              "position": "LT",
+              "group": "Offensive Line",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3051324.png&w=160&h=160"
+            },
+            {
+              "name": "Alec Anderson",
+              "position": "LG",
+              "group": "Offensive Line",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4367203.png&w=160&h=160"
+            },
+            {
+              "name": "Connor McGovern",
+              "position": "C",
+              "group": "Offensive Line",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4033748.png&w=160&h=160"
+            },
+            {
+              "name": "O'Cyrus Torrence",
+              "position": "RG",
+              "group": "Offensive Line",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4428696.png&w=160&h=160"
+            },
+            {
+              "name": "Spencer Brown",
+              "position": "RT",
+              "group": "Offensive Line",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4030899.png&w=160&h=160"
+            },
+            {
+              "name": "Josh Allen",
+              "position": "QB",
+              "group": "Backfield",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/mjwbioajzldkq1vzoz2d"
+            },
+            {
+              "name": "Dalton Kincaid",
+              "position": "TE",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/z7k857flehljboaixj8m"
+            },
+            {
+              "name": "James Cook III",
+              "position": "RB",
+              "group": "Backfield",
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4379399.png&w=160&h=160"
+            }
+          ]
+        }
+      },
+      "away_player_coverage": [],
+      "home_player_coverage": [],
+      "away_player_scheme": [],
+      "home_player_scheme": [],
+      "away_rest_days": 4,
+      "home_rest_days": 4,
+      "away_travel": "219 miles from Detroit, MI",
+      "home_travel": "1,290 miles from Houston, TX, 1h ahead",
+      "away_short_week": true,
+      "home_short_week": true,
+      "away_travel_km": 352,
+      "home_travel_km": 2076,
+      "away_tz_shift": 0.0,
+      "home_tz_shift": 1.0,
+      "venue_country": "USA"
+    },
     {
       "id": "401872933",
       "sport": "nfl",
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-09-20T17:00Z",
       "away": "CAR",
       "home": "ATL",
       "away_name": "Carolina Panthers",
       "home_name": "Atlanta Falcons",
-      "away_record": "0-1",
-      "home_record": "0-1",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "1-1",
+      "home_record": "0-2",
+      "away_score": "34",
+      "home_score": "3",
       "venue": "Mercedes-Benz Stadium",
       "venue_city": "Atlanta, GA",
       "broadcast": "FOX",
-      "away_starter": "B. Young",
-      "home_starter": "C. Rush",
-      "away_availability": "1 out \u00b7 1 questionable",
-      "home_availability": "5 out \u00b7 1 questionable",
+      "away_availability": "2 out \u00b7 1 doubtful \u00b7 3 questionable",
+      "home_availability": "2 out \u00b7 6 questionable",
       "away_availability_list": [
+        {
+          "name": "Patrick Jones II",
+          "position": "LB",
+          "status": "Out",
+          "detail": ""
+        },
         {
           "name": "Bobby Brown III",
           "position": "DT",
           "status": "Out",
-          "detail": "back"
+          "detail": ""
         },
         {
-          "name": "Patrick Jones II",
+          "name": "Jonathon Brooks",
+          "position": "RB",
+          "status": "Doubtful",
+          "detail": ""
+        },
+        {
+          "name": "Trevis Gipson",
           "position": "LB",
           "status": "Questionable",
-          "detail": "back"
+          "detail": ""
+        },
+        {
+          "name": "Claudin Cherelus",
+          "position": "LB",
+          "status": "Questionable",
+          "detail": "shoulder"
+        },
+        {
+          "name": "Nick Scott",
+          "position": "S",
+          "status": "Questionable",
+          "detail": ""
         }
       ],
       "home_availability_list": [
         {
-          "name": "Ethan Onianwa",
-          "position": "OT",
+          "name": "Tua Tagovailoa",
+          "position": "QB",
           "status": "Out",
-          "detail": ""
+          "detail": "ankle"
         },
         {
           "name": "Billy Bowman Jr.",
@@ -52,40 +1782,46 @@
           "detail": ""
         },
         {
-          "name": "Malcolm DeWalt IV",
-          "position": "CB",
-          "status": "Out",
-          "detail": ""
+          "name": "Jawaan Taylor",
+          "position": "OT",
+          "status": "Questionable",
+          "detail": "ribs"
         },
         {
-          "name": "Tua Tagovailoa",
-          "position": "QB",
-          "status": "Out",
-          "detail": "oblique"
+          "name": "Nick Muse",
+          "position": "TE",
+          "status": "Questionable",
+          "detail": "shoulder"
         },
         {
-          "name": "Michael Penix Jr.",
-          "position": "QB",
-          "status": "Out",
-          "detail": "knee"
+          "name": "Brandon Dorlus",
+          "position": "DT",
+          "status": "Questionable",
+          "detail": "thumb"
         },
         {
-          "name": "Divine Deablo",
-          "position": "LB",
+          "name": "Brian Robinson Jr.",
+          "position": "RB",
           "status": "Questionable",
           "detail": ""
+        },
+        {
+          "name": "A.J. Terrell Jr.",
+          "position": "CB",
+          "status": "Questionable",
+          "detail": "groin"
+        },
+        {
+          "name": "Samson Ebukam",
+          "position": "DE",
+          "status": "Questionable",
+          "detail": "hamstring"
         },
         {
           "name": "Da'Shawn Hand",
           "position": "DT",
           "status": "Injured Reserve",
           "detail": "quadriceps"
-        },
-        {
-          "name": "Cameron Williams",
-          "position": "OL",
-          "status": "Injured Reserve",
-          "detail": "ankle"
         }
       ],
       "roof": "Indoor",
@@ -1322,7 +3058,7 @@
       "scheme_source": {
         "season": 2026,
         "week": 2,
-        "observed_at_utc": "2026-09-17T19:42:28+00:00"
+        "observed_at_utc": "2026-09-20T18:43:47+00:00"
       },
       "away_players": [
         {
@@ -1385,7 +3121,7 @@
           "name": "Michael Penix Jr.",
           "position": "QB",
           "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/mip4kogkqxwkkya6mvmh"
+          "headshot_url": null
         },
         {
           "name": "Tua Tagovailoa",
@@ -1444,7 +3180,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -1509,10 +3245,10 @@
               "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3116179.png&w=160&h=160"
             },
             {
-              "name": "Jaycee Horn",
+              "name": "Will Lee III",
               "position": "RCB",
               "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4362847.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/5151083.png&w=160&h=160"
             }
           ]
         },
@@ -1590,7 +3326,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -1717,7 +3453,7 @@
               "name": "Michael Penix Jr.",
               "position": "QB",
               "group": "Backfield",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/mip4kogkqxwkkya6mvmh"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4360423.png&w=160&h=160"
             },
             {
               "name": "Kyle Pitts Sr.",
@@ -1753,54 +3489,22 @@
     {
       "id": "401872937",
       "sport": "nfl",
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-09-20T17:00Z",
       "away": "MIN",
       "home": "CHI",
       "away_name": "Minnesota Vikings",
       "home_name": "Chicago Bears",
-      "away_record": "1-0",
-      "home_record": "1-0",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "2-0",
+      "home_record": "1-1",
+      "away_score": "9",
+      "home_score": "3",
       "venue": "Soldier Field",
       "venue_city": "Chicago, IL",
       "broadcast": "FOX",
-      "away_starter": "C. Wentz",
-      "home_starter": "C. Williams",
-      "away_availability": "7 out",
-      "home_availability": "6 out",
+      "away_availability": "1 out \u00b7 1 questionable",
+      "home_availability": "1 doubtful \u00b7 1 questionable",
       "away_availability_list": [
-        {
-          "name": "Elijah Williams",
-          "position": "DE",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Nick Samac",
-          "position": "C",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Jakobe Thomas",
-          "position": "S",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Caleb Tiernan",
-          "position": "OT",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Zemaiah Vaughn",
-          "position": "CB",
-          "status": "Out",
-          "detail": ""
-        },
         {
           "name": "Jauan Jennings",
           "position": "WR",
@@ -1808,9 +3512,9 @@
           "detail": ""
         },
         {
-          "name": "Kyler Murray",
-          "position": "QB",
-          "status": "Out",
+          "name": "Tyrion Ingram-Dawkins",
+          "position": "DE",
+          "status": "Questionable",
           "detail": ""
         },
         {
@@ -1822,39 +3526,21 @@
       ],
       "home_availability_list": [
         {
+          "name": "Caleb Williams",
+          "position": "QB",
+          "status": "Doubtful",
+          "detail": "hamstring"
+        },
+        {
+          "name": "Tyrique Stevenson Sr.",
+          "position": "CB",
+          "status": "Questionable",
+          "detail": ""
+        },
+        {
           "name": "Anthony Johnson Jr.",
           "position": "S",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Case Keenum",
-          "position": "QB",
-          "status": "Out",
-          "detail": "coach's decision"
-        },
-        {
-          "name": "Ozzy Trapilo",
-          "position": "OT",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Jamree Kromah",
-          "position": "DE",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Jayden Loving",
-          "position": "DT",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Jordan McFadden",
-          "position": "G",
-          "status": "Out",
+          "status": "Injured Reserve",
           "detail": ""
         }
       ],
@@ -3092,14 +4778,14 @@
       "scheme_source": {
         "season": 2026,
         "week": 2,
-        "observed_at_utc": "2026-09-17T19:42:28+00:00"
+        "observed_at_utc": "2026-09-20T18:43:47+00:00"
       },
       "away_players": [
         {
           "name": "Kyler Murray",
           "position": "QB",
           "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/btfruyf33adgnjzpcuen"
+          "headshot_url": null
         },
         {
           "name": "Carson Wentz",
@@ -3136,12 +4822,6 @@
           "position": "WR",
           "depth_rank": 2,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/mi4lzk9gvjrvo6rwdf1e"
-        },
-        {
-          "name": "Jauan Jennings",
-          "position": "WR",
-          "depth_rank": 3,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ben8kbygzzlid6ltmdum"
         },
         {
           "name": "T.J. Hockenson",
@@ -3208,7 +4888,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -3299,7 +4979,7 @@
               "name": "Jauan Jennings",
               "position": "WR",
               "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ben8kbygzzlid6ltmdum"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3886598.png&w=160&h=160"
             },
             {
               "name": "Christian Darrisaw",
@@ -3335,7 +5015,7 @@
               "name": "Kyler Murray",
               "position": "QB",
               "group": "Backfield",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/btfruyf33adgnjzpcuen"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3917315.png&w=160&h=160"
             },
             {
               "name": "T.J. Hockenson",
@@ -3354,7 +5034,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -3377,10 +5057,10 @@
               "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3116726.png&w=160&h=160"
             },
             {
-              "name": "Dayo Odeyingbo",
+              "name": "James Lynch",
               "position": "RDE",
               "group": "Front",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4242659.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4259181.png&w=160&h=160"
             },
             {
               "name": "Devin Bush",
@@ -3517,53 +5197,39 @@
     {
       "id": "401872939",
       "sport": "nfl",
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-09-20T17:00Z",
       "away": "PHI",
       "home": "TEN",
       "away_name": "Philadelphia Eagles",
       "home_name": "Tennessee Titans",
-      "away_record": "1-0",
-      "home_record": "0-1",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "2-0",
+      "home_record": "0-2",
+      "away_score": "24",
+      "home_score": "20",
       "venue": "Nissan Stadium",
       "venue_city": "Nashville, TN",
       "broadcast": "FOX",
-      "away_starter": "J. Hurts",
-      "home_starter": "C. Ward",
-      "away_availability": "5 out",
-      "home_availability": "6 out",
+      "away_availability": "1 out \u00b7 1 doubtful \u00b7 1 questionable",
+      "home_availability": "2 out \u00b7 1 questionable",
       "away_availability_list": [
-        {
-          "name": "Tanner McKee",
-          "position": "QB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Elijah Moore",
-          "position": "WR",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Micah Morris",
-          "position": "G",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Cole Payton",
-          "position": "QB",
-          "status": "Out",
-          "detail": ""
-        },
         {
           "name": "Jonathan Greenard",
           "position": "LB",
           "status": "Out",
           "detail": ""
+        },
+        {
+          "name": "Dallas Goedert",
+          "position": "TE",
+          "status": "Doubtful",
+          "detail": "knee"
+        },
+        {
+          "name": "Saquon Barkley",
+          "position": "RB",
+          "status": "Questionable",
+          "detail": "neck/shoulder"
         },
         {
           "name": "Landon Dickerson",
@@ -3586,33 +5252,15 @@
           "detail": ""
         },
         {
-          "name": "Atonio Mafi",
-          "position": "G",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Jackie Marshall",
-          "position": "DT",
-          "status": "Out",
-          "detail": ""
-        },
-        {
           "name": "Cor'Dale Flott",
           "position": "CB",
           "status": "Out",
           "detail": ""
         },
         {
-          "name": "Kylen Granson",
-          "position": "TE",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Brandon Crenshaw-Dickson",
-          "position": "OT",
-          "status": "Out",
+          "name": "Fernando Carmona",
+          "position": "G",
+          "status": "Questionable",
           "detail": ""
         }
       ],
@@ -4850,7 +6498,7 @@
       "scheme_source": {
         "season": 2026,
         "week": 2,
-        "observed_at_utc": "2026-09-17T19:42:28+00:00"
+        "observed_at_utc": "2026-09-20T18:43:47+00:00"
       },
       "away_players": [
         {
@@ -4966,7 +6614,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -5112,7 +6760,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -5275,68 +6923,42 @@
     {
       "id": "401872946",
       "sport": "nfl",
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-09-20T17:00Z",
       "away": "PIT",
       "home": "NE",
       "away_name": "Pittsburgh Steelers",
       "home_name": "New England Patriots",
-      "away_record": "1-0",
-      "home_record": "0-1",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "1-1",
+      "home_record": "1-1",
+      "away_score": "3",
+      "home_score": "20",
       "venue": "Gillette Stadium",
       "venue_city": "Foxborough, MA",
       "broadcast": "CBS",
-      "away_starter": "A. Rodgers",
-      "home_starter": "D. Maye",
       "away_availability": "2 out \u00b7 1 questionable",
-      "home_availability": "6 out",
+      "home_availability": "3 out \u00b7 4 questionable",
       "away_availability_list": [
         {
           "name": "Joey Porter Jr.",
           "position": "CB",
           "status": "Out",
-          "detail": "back"
+          "detail": ""
         },
         {
           "name": "Michael Pittman Jr.",
           "position": "WR",
           "status": "Out",
-          "detail": "foot"
+          "detail": ""
         },
         {
-          "name": "Troy Fautanu",
-          "position": "OT",
+          "name": "Rico Dowdle",
+          "position": "RB",
           "status": "Questionable",
-          "detail": "ankle"
+          "detail": ""
         }
       ],
       "home_availability_list": [
-        {
-          "name": "Walter Rouse",
-          "position": "OL",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Leonard Taylor III",
-          "position": "DT",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Behren Morton",
-          "position": "QB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Tanner Arkin",
-          "position": "TE",
-          "status": "Out",
-          "detail": ""
-        },
         {
           "name": "Dametrious Crownover",
           "position": "OT",
@@ -5347,13 +6969,37 @@
           "name": "Carlton Davis III",
           "position": "CB",
           "status": "Out",
-          "detail": "neck"
+          "detail": ""
         },
         {
-          "name": "A.J. Brown",
-          "position": "WR",
-          "status": "Injured Reserve",
+          "name": "Mike Onwenu",
+          "position": "G",
+          "status": "Out",
           "detail": ""
+        },
+        {
+          "name": "Dell Pettus",
+          "position": "S",
+          "status": "Questionable",
+          "detail": "ankle"
+        },
+        {
+          "name": "Eli Raridon",
+          "position": "TE",
+          "status": "Questionable",
+          "detail": "thigh"
+        },
+        {
+          "name": "Craig Woodson",
+          "position": "S",
+          "status": "Questionable",
+          "detail": "shoulder"
+        },
+        {
+          "name": "Dre'Mont Jones",
+          "position": "DE",
+          "status": "Questionable",
+          "detail": "shoulder"
         }
       ],
       "roof": "Outdoor",
@@ -6590,7 +8236,7 @@
       "scheme_source": {
         "season": 2026,
         "week": 2,
-        "observed_at_utc": "2026-09-17T19:42:28+00:00"
+        "observed_at_utc": "2026-09-20T18:43:47+00:00"
       },
       "away_players": [
         {
@@ -6712,7 +8358,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -6842,10 +8488,10 @@
               "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/dypvakakxhccxs67tb0y"
             },
             {
-              "name": "Darnell Washington",
+              "name": "Pat Freiermuth",
               "position": "TE",
               "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/inwx7uipfktapaump5pj"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4361411.png&w=160&h=160"
             },
             {
               "name": "Jaylen Warren",
@@ -6858,7 +8504,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -7021,42 +8667,22 @@
     {
       "id": "401872936",
       "sport": "nfl",
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-09-20T17:00Z",
       "away": "GB",
       "home": "NYJ",
       "away_name": "Green Bay Packers",
       "home_name": "New York Jets",
-      "away_record": "0-1",
-      "home_record": "1-0",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "1-1",
+      "home_record": "1-1",
+      "away_score": "20",
+      "home_score": "17",
       "venue": "MetLife Stadium",
       "venue_city": "East Rutherford, NJ",
       "broadcast": "FOX",
-      "away_starter": "J. Love",
-      "home_starter": "G. Smith",
-      "away_availability": "5 out",
-      "home_availability": "6 out",
+      "away_availability": "2 out \u00b7 7 questionable",
+      "home_availability": "3 out \u00b7 5 questionable",
       "away_availability_list": [
-        {
-          "name": "John Williams",
-          "position": "G",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Benjamin St-Juste",
-          "position": "CB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Travis Glover",
-          "position": "OT",
-          "status": "Out",
-          "detail": ""
-        },
         {
           "name": "Javon Hargrave",
           "position": "DT",
@@ -7068,21 +8694,51 @@
           "position": "DT",
           "status": "Out",
           "detail": ""
+        },
+        {
+          "name": "Anthony Campbell",
+          "position": "DT",
+          "status": "Questionable",
+          "detail": "ankle"
+        },
+        {
+          "name": "Donovan Jennings",
+          "position": "G",
+          "status": "Questionable",
+          "detail": "hand"
+        },
+        {
+          "name": "Edgerrin Cooper",
+          "position": "LB",
+          "status": "Questionable",
+          "detail": "shoulder"
+        },
+        {
+          "name": "Jayden Reed",
+          "position": "WR",
+          "status": "Questionable",
+          "detail": "back"
+        },
+        {
+          "name": "Brandon Cisse",
+          "position": "CB",
+          "status": "Questionable",
+          "detail": ""
+        },
+        {
+          "name": "Zach Bako-Bewele",
+          "position": "OT",
+          "status": "Questionable",
+          "detail": "knee"
+        },
+        {
+          "name": "Aaron Banks",
+          "position": "G",
+          "status": "Questionable",
+          "detail": "toe"
         }
       ],
       "home_availability_list": [
-        {
-          "name": "D'Angelo Ponds",
-          "position": "CB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Trevin Wallace",
-          "position": "LB",
-          "status": "Out",
-          "detail": ""
-        },
         {
           "name": "Kene Nwangwu",
           "position": "RB",
@@ -7102,22 +8758,40 @@
           "detail": ""
         },
         {
-          "name": "Blake Grupe",
-          "position": "PK",
-          "status": "Out",
+          "name": "Arian Smith",
+          "position": "WR",
+          "status": "Questionable",
           "detail": ""
+        },
+        {
+          "name": "Mason Taylor",
+          "position": "TE",
+          "status": "Questionable",
+          "detail": "thumb"
+        },
+        {
+          "name": "Kiko Mauigoa",
+          "position": "LB",
+          "status": "Questionable",
+          "detail": "quadriceps"
+        },
+        {
+          "name": "Marcelino McCrary-Ball",
+          "position": "LB",
+          "status": "Questionable",
+          "detail": "ankle"
+        },
+        {
+          "name": "David Onyemata",
+          "position": "DT",
+          "status": "Questionable",
+          "detail": "groin"
         },
         {
           "name": "Omar Cooper Jr.",
           "position": "WR",
           "status": "Injured Reserve",
           "detail": "ankle"
-        },
-        {
-          "name": "Tim Patrick",
-          "position": "WR",
-          "status": "Injured Reserve",
-          "detail": "groin"
         }
       ],
       "roof": "Outdoor",
@@ -8354,7 +10028,7 @@
       "scheme_source": {
         "season": 2026,
         "week": 2,
-        "observed_at_utc": "2026-09-17T19:42:28+00:00"
+        "observed_at_utc": "2026-09-20T18:43:47+00:00"
       },
       "away_players": [
         {
@@ -8444,12 +10118,6 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/hwwacoa3pqapd7pgahfx"
         },
         {
-          "name": "Omar Cooper Jr.",
-          "position": "WR",
-          "depth_rank": 3,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/lmua2lbg0m77ibvydvaq"
-        },
-        {
           "name": "Mason Taylor",
           "position": "TE",
           "depth_rank": 1,
@@ -8458,7 +10126,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -8604,7 +10272,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -8621,10 +10289,10 @@
               "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4428617.png&w=160&h=160"
             },
             {
-              "name": "Harrison Phillips",
+              "name": "David Onyemata",
               "position": "RDT",
               "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3117255.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4002046.png&w=160&h=160"
             },
             {
               "name": "Will McDonald IV",
@@ -8767,57 +10435,25 @@
     {
       "id": "401872935",
       "sport": "nfl",
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-09-20T17:00Z",
       "away": "CLE",
       "home": "TB",
       "away_name": "Cleveland Browns",
       "home_name": "Tampa Bay Buccaneers",
-      "away_record": "0-1",
-      "home_record": "0-1",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "1-1",
+      "home_record": "0-2",
+      "away_score": "23",
+      "home_score": "19",
       "venue": "Raymond James Stadium",
       "venue_city": "Tampa, FL",
       "broadcast": "CBS",
-      "away_starter": "D. Watson",
-      "home_starter": "B. Mayfield",
-      "away_availability": "7 out",
-      "home_availability": "6 out",
+      "away_availability": "2 out",
+      "home_availability": "1 out",
       "away_availability_list": [
-        {
-          "name": "Toriano Pride Jr.",
-          "position": "CB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Daniel Thomas",
-          "position": "S",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Taylen Green",
-          "position": "QB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Justin Jefferson",
-          "position": "LB",
-          "status": "Out",
-          "detail": ""
-        },
         {
           "name": "Teven Jenkins",
           "position": "G",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Parker Brailsford",
-          "position": "C",
           "status": "Out",
           "detail": ""
         },
@@ -8842,38 +10478,8 @@
       ],
       "home_availability_list": [
         {
-          "name": "Billy Schrauth",
-          "position": "G",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Elijah Simmons",
-          "position": "DT",
-          "status": "Out",
-          "detail": ""
-        },
-        {
           "name": "Jacob Parrish",
           "position": "CB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Ayden Garnes",
-          "position": "CB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Luke Haggard",
-          "position": "G",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "DeMonte Capehart",
-          "position": "DT",
           "status": "Out",
           "detail": ""
         },
@@ -10130,7 +11736,7 @@
       "scheme_source": {
         "season": 2026,
         "week": 2,
-        "observed_at_utc": "2026-09-17T19:42:28+00:00"
+        "observed_at_utc": "2026-09-20T18:43:47+00:00"
       },
       "away_players": [
         {
@@ -10246,7 +11852,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -10322,10 +11928,10 @@
           "package": "3WR 1TE",
           "players": [
             {
-              "name": "Jerry Jeudy",
+              "name": "Denzel Boston",
               "position": "WR",
               "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/szca1v9butuqkjs7ekpm"
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ybkny6eh5eegq3bqmony"
             },
             {
               "name": "KC Concepcion",
@@ -10334,10 +11940,10 @@
               "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ztdyzyngqr1pexyghlt3"
             },
             {
-              "name": "Denzel Boston",
+              "name": "Jerry Jeudy",
               "position": "WR",
               "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ybkny6eh5eegq3bqmony"
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/szca1v9butuqkjs7ekpm"
             },
             {
               "name": "Spencer Fano",
@@ -10392,7 +11998,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -10555,39 +12161,25 @@
     {
       "id": "401872938",
       "sport": "nfl",
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-09-20T17:00Z",
       "away": "NO",
       "home": "BAL",
       "away_name": "New Orleans Saints",
       "home_name": "Baltimore Ravens",
-      "away_record": "0-1",
-      "home_record": "1-0",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "1-1",
+      "home_record": "1-1",
+      "away_score": "24",
+      "home_score": "17",
       "venue": "M&T Bank Stadium",
       "venue_city": "Baltimore, MD",
       "broadcast": "CBS",
-      "away_starter": "T. Shough",
-      "home_starter": "L. Jackson",
-      "away_availability": "7 out",
-      "home_availability": "6 out",
+      "away_availability": "3 out \u00b7 1 questionable",
+      "home_availability": "3 out \u00b7 1 questionable",
       "away_availability_list": [
         {
-          "name": "Zach Wilson",
-          "position": "QB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Decamerion Richardson",
-          "position": "CB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "John Ridgeway III",
-          "position": "DT",
+          "name": "Kelvin Banks Jr.",
+          "position": "OT",
           "status": "Out",
           "detail": ""
         },
@@ -10604,15 +12196,9 @@
           "detail": ""
         },
         {
-          "name": "Kendre Miller",
-          "position": "RB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Mason Murphy",
-          "position": "OT",
-          "status": "Out",
+          "name": "Martin Emerson Jr.",
+          "position": "CB",
+          "status": "Questionable",
           "detail": ""
         },
         {
@@ -10624,26 +12210,14 @@
       ],
       "home_availability_list": [
         {
-          "name": "Andrew Vorhees",
-          "position": "G",
+          "name": "Zay Flowers",
+          "position": "WR",
           "status": "Out",
-          "detail": ""
+          "detail": "hamstring"
         },
         {
           "name": "Nnamdi Madubuike",
           "position": "DT",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Joe Fagnano",
-          "position": "QB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Zay Flowers",
-          "position": "WR",
           "status": "Out",
           "detail": ""
         },
@@ -10654,10 +12228,10 @@
           "detail": ""
         },
         {
-          "name": "Gerad Lichtenhan",
+          "name": "Ronnie Stanley",
           "position": "OT",
-          "status": "Out",
-          "detail": ""
+          "status": "Questionable",
+          "detail": "toe"
         },
         {
           "name": "T.J. Tampa",
@@ -11906,7 +13480,7 @@
       "scheme_source": {
         "season": 2026,
         "week": 2,
-        "observed_at_utc": "2026-09-17T19:42:28+00:00"
+        "observed_at_utc": "2026-09-20T18:43:47+00:00"
       },
       "away_players": [
         {
@@ -12028,7 +13602,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -12039,16 +13613,16 @@
               "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/13971.png&w=160&h=160"
             },
             {
-              "name": "Davon Godchaux",
+              "name": "Nathan Shepherd",
               "position": "NT",
               "group": "Front",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3115383.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4076951.png&w=160&h=160"
             },
             {
-              "name": "Colby Wooden",
+              "name": "Vernon Broughton",
               "position": "RDE",
               "group": "Front",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4567224.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4429040.png&w=160&h=160"
             },
             {
               "name": "Carl Granderson",
@@ -12122,10 +13696,10 @@
               "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/zakfmezzed4qotdrmbpc"
             },
             {
-              "name": "Kelvin Banks Jr.",
+              "name": "Asim Richards",
               "position": "LT",
               "group": "Offensive Line",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4685260.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4430379.png&w=160&h=160"
             },
             {
               "name": "David Edwards",
@@ -12174,7 +13748,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -12337,63 +13911,25 @@
     {
       "id": "401872934",
       "sport": "nfl",
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-09-20T17:00Z",
       "away": "CIN",
       "home": "HOU",
       "away_name": "Cincinnati Bengals",
       "home_name": "Houston Texans",
-      "away_record": "1-0",
-      "home_record": "0-1",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "2-0",
+      "home_record": "0-2",
+      "away_score": "20",
+      "home_score": "6",
       "venue": "Reliant Stadium",
       "venue_city": "Houston, TX",
       "broadcast": "CBS",
-      "away_starter": "J. Burrow",
-      "home_starter": "C.J. Stroud",
-      "away_availability": "7 out",
+      "away_availability": "1 out",
       "home_availability": "4 out",
       "away_availability_list": [
         {
           "name": "B.J. Hill",
           "position": "DT",
-          "status": "Out",
-          "detail": "Achilles"
-        },
-        {
-          "name": "Ke'Shawn Williams",
-          "position": "WR",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Landon Robinson",
-          "position": "DT",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Josh Johnson",
-          "position": "QB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Connor Lew",
-          "position": "C",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Josh Newton",
-          "position": "CB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Myles Hinton",
-          "position": "OT",
           "status": "Out",
           "detail": ""
         },
@@ -12412,14 +13948,14 @@
       ],
       "home_availability_list": [
         {
-          "name": "Ed Ingram",
-          "position": "G",
+          "name": "Jake Hummel",
+          "position": "LB",
           "status": "Out",
-          "detail": "groin"
+          "detail": ""
         },
         {
-          "name": "Nico Collins",
-          "position": "WR",
+          "name": "Ed Ingram",
+          "position": "G",
           "status": "Out",
           "detail": ""
         },
@@ -12427,13 +13963,13 @@
           "name": "Jadeveon Clowney",
           "position": "DE",
           "status": "Out",
-          "detail": "knee"
+          "detail": ""
         },
         {
-          "name": "Jake Hummel",
-          "position": "LB",
+          "name": "Nico Collins",
+          "position": "WR",
           "status": "Out",
-          "detail": "groin"
+          "detail": ""
         },
         {
           "name": "Henry To'oTo'o",
@@ -13682,7 +15218,7 @@
       "scheme_source": {
         "season": 2026,
         "week": 2,
-        "observed_at_utc": "2026-09-17T19:42:28+00:00"
+        "observed_at_utc": "2026-09-20T18:43:47+00:00"
       },
       "away_players": [
         {
@@ -13695,12 +15231,6 @@
           "name": "Joe Flacco",
           "position": "QB",
           "depth_rank": 2,
-          "headshot_url": null
-        },
-        {
-          "name": "Josh Johnson",
-          "position": "QB",
-          "depth_rank": 3,
           "headshot_url": null
         },
         {
@@ -13772,12 +15302,6 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/y5ntpcenhhhv98uz2fys"
         },
         {
-          "name": "Nico Collins",
-          "position": "WR",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/fguybjrn1kwflxm5szwq"
-        },
-        {
           "name": "Xavier Hutchinson",
           "position": "WR",
           "depth_rank": 2,
@@ -13798,7 +15322,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -13944,7 +15468,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -14023,7 +15547,7 @@
               "name": "Nico Collins",
               "position": "WR",
               "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/fguybjrn1kwflxm5szwq"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4258173.png&w=160&h=160"
             },
             {
               "name": "Xavier Hutchinson",
@@ -14107,24 +15631,28 @@
     {
       "id": "401872940",
       "sport": "nfl",
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-09-20T20:05Z",
       "away": "JAX",
       "home": "DEN",
       "away_name": "Jacksonville Jaguars",
       "home_name": "Denver Broncos",
-      "away_record": "1-0",
-      "home_record": "0-1",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "1-1",
+      "home_record": "1-1",
+      "away_score": "13",
+      "home_score": "20",
       "venue": "Empower Field at Mile High",
       "venue_city": "Denver, CO",
       "broadcast": "CBS",
-      "away_starter": "T. Lawrence",
-      "home_starter": "B. Nix",
-      "away_availability": "1 designated",
-      "home_availability": "3 out \u00b7 1 questionable",
+      "away_availability": "1 questionable",
+      "home_availability": "4 out \u00b7 1 questionable",
       "away_availability_list": [
+        {
+          "name": "DaVon Hamilton",
+          "position": "DT",
+          "status": "Questionable",
+          "detail": "back"
+        },
         {
           "name": "B.J. Green II",
           "position": "DE",
@@ -14137,7 +15665,13 @@
           "name": "Marvin Mims Jr.",
           "position": "WR",
           "status": "Out",
-          "detail": "foot"
+          "detail": ""
+        },
+        {
+          "name": "RJ Harvey",
+          "position": "RB",
+          "status": "Out",
+          "detail": ""
         },
         {
           "name": "Jonathon Cooper",
@@ -14152,10 +15686,10 @@
           "detail": "knee"
         },
         {
-          "name": "RJ Harvey",
+          "name": "J.K. Dobbins",
           "position": "RB",
           "status": "Questionable",
-          "detail": "hamstring"
+          "detail": ""
         },
         {
           "name": "Frank Crum",
@@ -14168,12 +15702,6 @@
           "position": "TE",
           "status": "Injured Reserve",
           "detail": "lower body"
-        },
-        {
-          "name": "Levelle Bailey",
-          "position": "LB",
-          "status": "Injured Reserve",
-          "detail": "leg"
         }
       ],
       "roof": "Outdoor",
@@ -15410,7 +16938,7 @@
       "scheme_source": {
         "season": 2026,
         "week": 2,
-        "observed_at_utc": "2026-09-17T19:42:28+00:00"
+        "observed_at_utc": "2026-09-20T18:43:47+00:00"
       },
       "away_players": [
         {
@@ -15420,15 +16948,9 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/k9uzdernqkx7oquy7dkg"
         },
         {
-          "name": "Nick Mullens",
-          "position": "QB",
-          "depth_rank": 2,
-          "headshot_url": null
-        },
-        {
           "name": "Quinn Ewers",
           "position": "QB",
-          "depth_rank": 3,
+          "depth_rank": 2,
           "headshot_url": null
         },
         {
@@ -15512,12 +17034,6 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/kqwmqcrlrwmqcvfuguhs"
         },
         {
-          "name": "Marvin Mims Jr.",
-          "position": "WR",
-          "depth_rank": 3,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/zbdjtph5xplbf4yocz0l"
-        },
-        {
           "name": "Evan Engram",
           "position": "TE",
           "depth_rank": 1,
@@ -15526,7 +17042,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -15602,16 +17118,16 @@
           "package": "3WR 1TE",
           "players": [
             {
-              "name": "Brian Thomas Jr.",
-              "position": "WR",
-              "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/plnekkriys4cm11rnxwl"
-            },
-            {
               "name": "Parker Washington",
               "position": "WR",
               "group": "Receivers",
               "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/yn0hc5xrz5nqeccg8two"
+            },
+            {
+              "name": "Brian Thomas Jr.",
+              "position": "WR",
+              "group": "Receivers",
+              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/plnekkriys4cm11rnxwl"
             },
             {
               "name": "Jakobi Meyers",
@@ -15672,7 +17188,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -15763,7 +17279,7 @@
               "name": "Marvin Mims Jr.",
               "position": "WR",
               "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/zbdjtph5xplbf4yocz0l"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4686472.png&w=160&h=160"
             },
             {
               "name": "Garett Bolles",
@@ -15835,67 +17351,101 @@
     {
       "id": "401872941",
       "sport": "nfl",
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-09-20T20:05Z",
       "away": "LV",
       "home": "LAC",
       "away_name": "Las Vegas Raiders",
       "home_name": "Los Angeles Chargers",
-      "away_record": "1-0",
-      "home_record": "0-1",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "2-0",
+      "home_record": "0-2",
+      "away_score": "26",
+      "home_score": "14",
       "venue": "SoFi Stadium",
       "venue_city": "Inglewood, CA",
       "broadcast": "CBS",
-      "away_starter": "K. Cousins",
-      "home_starter": "J. Herbert",
-      "away_availability": "2 out \u00b7 1 doubtful",
-      "home_availability": "2 out \u00b7 2 questionable",
+      "away_availability": "3 out \u00b7 2 questionable",
+      "home_availability": "5 out \u00b7 3 questionable",
       "away_availability_list": [
+        {
+          "name": "Brock Bowers",
+          "position": "TE",
+          "status": "Out",
+          "detail": "knee"
+        },
         {
           "name": "Aidan O'Connell",
           "position": "QB",
           "status": "Out",
-          "detail": "personal"
+          "detail": ""
         },
         {
           "name": "Darien Porter",
           "position": "CB",
           "status": "Out",
-          "detail": ""
+          "detail": "foot"
         },
         {
-          "name": "Brock Bowers",
-          "position": "TE",
-          "status": "Doubtful",
-          "detail": "knee"
+          "name": "Dareke Young",
+          "position": "WR",
+          "status": "Questionable",
+          "detail": "hamstring"
+        },
+        {
+          "name": "Treydan Stukes",
+          "position": "S",
+          "status": "Questionable",
+          "detail": "head"
         }
       ],
       "home_availability_list": [
         {
-          "name": "Trey Pipkins III",
-          "position": "OT",
+          "name": "Charlie Kolar",
+          "position": "TE",
           "status": "Out",
-          "detail": "knee"
+          "detail": ""
+        },
+        {
+          "name": "David Njoku",
+          "position": "TE",
+          "status": "Out",
+          "detail": "fibula"
+        },
+        {
+          "name": "Deane Leonard",
+          "position": "CB",
+          "status": "Out",
+          "detail": ""
         },
         {
           "name": "Elijah Molden",
           "position": "CB",
           "status": "Out",
-          "detail": "hamstring"
+          "detail": ""
         },
         {
-          "name": "Ladd McConkey",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "ribs"
+          "name": "Trey Pipkins III",
+          "position": "OT",
+          "status": "Out",
+          "detail": ""
         },
         {
-          "name": "Deane Leonard",
-          "position": "CB",
+          "name": "Dalvin Tomlinson",
+          "position": "DT",
           "status": "Questionable",
-          "detail": "abdomen"
+          "detail": ""
+        },
+        {
+          "name": "Kayode Awosika",
+          "position": "G",
+          "status": "Questionable",
+          "detail": ""
+        },
+        {
+          "name": "Derwin James Jr.",
+          "position": "S",
+          "status": "Questionable",
+          "detail": "hand"
         },
         {
           "name": "KeAndre Lambert-Smith",
@@ -17138,7 +18688,7 @@
       "scheme_source": {
         "season": 2026,
         "week": 2,
-        "observed_at_utc": "2026-09-17T19:42:28+00:00"
+        "observed_at_utc": "2026-09-20T18:43:47+00:00"
       },
       "away_players": [
         {
@@ -17248,7 +18798,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -17394,7 +18944,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -17524,10 +19074,10 @@
               "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/jnkspnntgebegzp4ghve"
             },
             {
-              "name": "Charlie Kolar",
+              "name": "Oronde Gadsden",
               "position": "TE",
               "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/g75ws8vkqz9cqwifhcy7"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4595342.png&w=160&h=160"
             },
             {
               "name": "Omarion Hampton",
@@ -17557,67 +19107,89 @@
     {
       "id": "401872944",
       "sport": "nfl",
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-09-20T20:25Z",
       "away": "WSH",
       "home": "DAL",
       "away_name": "Washington Commanders",
       "home_name": "Dallas Cowboys",
-      "away_record": "0-1",
-      "home_record": "0-1",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "0-2",
+      "home_record": "1-1",
+      "away_score": "20",
+      "home_score": "37",
       "venue": "AT&T Stadium",
       "venue_city": "Arlington, TX",
       "broadcast": "FOX",
-      "away_starter": "J. Daniels",
-      "home_starter": "D. Prescott",
-      "away_availability": "2 out \u00b7 1 questionable",
-      "home_availability": "2 out",
+      "away_availability": "2 out \u00b7 1 doubtful \u00b7 4 questionable",
+      "home_availability": "4 out",
       "away_availability_list": [
         {
           "name": "Frankie Luvu",
           "position": "LB",
           "status": "Out",
-          "detail": "groin"
+          "detail": ""
         },
         {
           "name": "Chig Okonkwo",
           "position": "TE",
           "status": "Out",
-          "detail": "hamstring"
+          "detail": ""
+        },
+        {
+          "name": "Jayden Daniels",
+          "position": "QB",
+          "status": "Doubtful",
+          "detail": "elbow"
+        },
+        {
+          "name": "Brandon Coleman",
+          "position": "G",
+          "status": "Questionable",
+          "detail": "finger"
+        },
+        {
+          "name": "Sam Cosmi",
+          "position": "G",
+          "status": "Questionable",
+          "detail": ""
+        },
+        {
+          "name": "Nick Cross",
+          "position": "S",
+          "status": "Questionable",
+          "detail": "undisclosed"
         },
         {
           "name": "Javon Kinlaw",
           "position": "DT",
           "status": "Questionable",
           "detail": ""
-        },
-        {
-          "name": "Jordan Magee",
-          "position": "LB",
-          "status": "Injured Reserve",
-          "detail": "hamstring"
         }
       ],
       "home_availability_list": [
         {
+          "name": "Cobie Durant",
+          "position": "CB",
+          "status": "Out",
+          "detail": "hamstring"
+        },
+        {
+          "name": "P.J. Locke",
+          "position": "S",
+          "status": "Out",
+          "detail": "foot"
+        },
+        {
           "name": "DeMarvion Overshown",
           "position": "LB",
           "status": "Out",
-          "detail": "hamstring"
+          "detail": ""
         },
         {
           "name": "Malik Hooker",
           "position": "S",
           "status": "Out",
-          "detail": "forearm"
-        },
-        {
-          "name": "Malik Davis",
-          "position": "RB",
-          "status": "Injured Reserve",
-          "detail": "hip"
+          "detail": ""
         }
       ],
       "roof": "Indoor",
@@ -18854,7 +20426,7 @@
       "scheme_source": {
         "season": 2026,
         "week": 2,
-        "observed_at_utc": "2026-09-17T19:42:28+00:00"
+        "observed_at_utc": "2026-09-20T18:43:47+00:00"
       },
       "away_players": [
         {
@@ -18904,12 +20476,6 @@
           "position": "WR",
           "depth_rank": 3,
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/noywrsgaqoqlv64c12yw"
-        },
-        {
-          "name": "Chig Okonkwo",
-          "position": "TE",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/pzcez6pi9tpdqkmjjnzk"
         }
       ],
       "home_players": [
@@ -18964,7 +20530,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -19097,7 +20663,7 @@
               "name": "Chig Okonkwo",
               "position": "TE",
               "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/pzcez6pi9tpdqkmjjnzk"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4360635.png&w=160&h=160"
             },
             {
               "name": "Jacory Croskey-Merritt",
@@ -19110,7 +20676,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -19273,41 +20839,39 @@
     {
       "id": "401872943",
       "sport": "nfl",
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-09-20T20:25Z",
       "away": "SEA",
       "home": "ARI",
       "away_name": "Seattle Seahawks",
       "home_name": "Arizona Cardinals",
-      "away_record": "1-0",
-      "home_record": "1-0",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "2-0",
+      "home_record": "1-1",
+      "away_score": "31",
+      "home_score": "7",
       "venue": "State Farm Stadium",
       "venue_city": "Glendale, AZ",
       "broadcast": "FOX",
-      "away_starter": "D. Lock",
-      "home_starter": "J. Brissett",
-      "away_availability": "4 out \u00b7 1 questionable",
-      "home_availability": "1 out \u00b7 6 questionable",
+      "away_availability": "4 out \u00b7 2 questionable",
+      "home_availability": "3 out \u00b7 1 questionable",
       "away_availability_list": [
         {
-          "name": "Sam Darnold",
-          "position": "QB",
+          "name": "Ty Okada",
+          "position": "S",
           "status": "Out",
-          "detail": "glute"
+          "detail": ""
         },
         {
           "name": "Anthony Bradford",
           "position": "G",
           "status": "Out",
-          "detail": "knee"
+          "detail": ""
         },
         {
-          "name": "Ty Okada",
-          "position": "S",
+          "name": "Sam Darnold",
+          "position": "QB",
           "status": "Out",
-          "detail": "hamstring"
+          "detail": "glute"
         },
         {
           "name": "Zach Charbonnet",
@@ -19316,66 +20880,48 @@
           "detail": "knee"
         },
         {
-          "name": "Nick Emmanwori",
-          "position": "S",
+          "name": "Jadarian Price",
+          "position": "RB",
           "status": "Questionable",
-          "detail": "ankle"
+          "detail": ""
+        },
+        {
+          "name": "Brandon Pili",
+          "position": "DT",
+          "status": "Questionable",
+          "detail": "concussion"
         }
       ],
       "home_availability_list": [
         {
+          "name": "Will Johnson",
+          "position": "CB",
+          "status": "Out",
+          "detail": "neck"
+        },
+        {
           "name": "Garrett Williams",
           "position": "CB",
           "status": "Out",
-          "detail": "Achilles"
-        },
-        {
-          "name": "Isaac Seumalo",
-          "position": "G",
-          "status": "Questionable",
-          "detail": "shoulder"
-        },
-        {
-          "name": "Isaiah Adams",
-          "position": "G",
-          "status": "Questionable",
-          "detail": "knee"
+          "detail": ""
         },
         {
           "name": "Andrew Billings",
           "position": "DT",
-          "status": "Questionable",
+          "status": "Out",
           "detail": "knee"
-        },
-        {
-          "name": "Roy Lopez",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": "groin"
         },
         {
           "name": "Max Melton",
           "position": "CB",
           "status": "Questionable",
-          "detail": "ankle"
-        },
-        {
-          "name": "Dadrion Taylor-Demerson",
-          "position": "S",
-          "status": "Questionable",
-          "detail": "ribs"
+          "detail": "toe"
         },
         {
           "name": "Kitan Crawford",
           "position": "S",
           "status": "Injured Reserve",
           "detail": "ankle"
-        },
-        {
-          "name": "Kaleb Proctor",
-          "position": "DT",
-          "status": "Injured Reserve",
-          "detail": ""
         }
       ],
       "roof": "Indoor",
@@ -20612,14 +22158,14 @@
       "scheme_source": {
         "season": 2026,
         "week": 2,
-        "observed_at_utc": "2026-09-17T19:42:28+00:00"
+        "observed_at_utc": "2026-09-20T18:43:47+00:00"
       },
       "away_players": [
         {
           "name": "Sam Darnold",
           "position": "QB",
           "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/fyay8vruj0cqmhopufzk"
+          "headshot_url": null
         },
         {
           "name": "Drew Lock",
@@ -20728,7 +22274,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -20855,7 +22401,7 @@
               "name": "Sam Darnold",
               "position": "QB",
               "group": "Backfield",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/fyay8vruj0cqmhopufzk"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3912547.png&w=160&h=160"
             },
             {
               "name": "AJ Barner",
@@ -20874,7 +22420,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -20921,10 +22467,10 @@
               "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4244606.png&w=160&h=160"
             },
             {
-              "name": "Will Johnson",
+              "name": "Garrett Williams",
               "position": "LCB",
               "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4685408.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4568506.png&w=160&h=160"
             },
             {
               "name": "Budda Baker",
@@ -21037,35 +22583,45 @@
     {
       "id": "401872942",
       "sport": "nfl",
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-09-20T20:25Z",
       "away": "MIA",
       "home": "SF",
       "away_name": "Miami Dolphins",
       "home_name": "San Francisco 49ers",
-      "away_record": "0-1",
-      "home_record": "1-0",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "0-2",
+      "home_record": "2-0",
+      "away_score": "13",
+      "home_score": "35",
       "venue": "Levi's Stadium",
       "venue_city": "Santa Clara, CA",
       "broadcast": "FOX",
-      "away_starter": "M. Willis",
-      "home_starter": "B. Purdy",
-      "away_availability": "1 out \u00b7 1 questionable",
-      "home_availability": "2 questionable",
+      "away_availability": "1 out \u00b7 3 questionable",
+      "home_availability": "2 out \u00b7 1 doubtful \u00b7 3 questionable",
       "away_availability_list": [
         {
           "name": "Chop Robinson",
           "position": "LB",
           "status": "Out",
-          "detail": "concussion"
+          "detail": ""
         },
         {
-          "name": "Tucker Addington",
-          "position": "LS",
+          "name": "Jaylen Wright",
+          "position": "RB",
+          "status": "Questionable",
+          "detail": "neck"
+        },
+        {
+          "name": "Caleb Douglas",
+          "position": "WR",
           "status": "Questionable",
           "detail": ""
+        },
+        {
+          "name": "Robert Beal Jr.",
+          "position": "DE",
+          "status": "Questionable",
+          "detail": "hamstring"
         },
         {
           "name": "Ronnie Harrison Jr.",
@@ -21082,16 +22638,40 @@
       ],
       "home_availability_list": [
         {
-          "name": "Kaelon Black",
-          "position": "RB",
-          "status": "Questionable",
-          "detail": "groin"
+          "name": "Demarcus Robinson",
+          "position": "WR",
+          "status": "Out",
+          "detail": ""
         },
         {
-          "name": "Eddy Pineiro",
-          "position": "PK",
+          "name": "Brandon Aiyuk",
+          "position": "WR",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "James Thompson Jr.",
+          "position": "DT",
+          "status": "Doubtful",
+          "detail": ""
+        },
+        {
+          "name": "Romello Height",
+          "position": "DE",
           "status": "Questionable",
-          "detail": "illness"
+          "detail": ""
+        },
+        {
+          "name": "Mike Evans",
+          "position": "WR",
+          "status": "Questionable",
+          "detail": "hip"
+        },
+        {
+          "name": "Jack Jones",
+          "position": "CB",
+          "status": "Questionable",
+          "detail": "foot"
         },
         {
           "name": "De'Zhaun Stribling",
@@ -22340,7 +23920,7 @@
       "scheme_source": {
         "season": 2026,
         "week": 2,
-        "observed_at_utc": "2026-09-17T19:42:28+00:00"
+        "observed_at_utc": "2026-09-20T18:43:47+00:00"
       },
       "away_players": [
         {
@@ -22456,7 +24036,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -22602,7 +24182,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -22655,10 +24235,10 @@
               "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4427325.png&w=160&h=160"
             },
             {
-              "name": "Malik Mustapha",
+              "name": "Marques Sigle",
               "position": "SS",
               "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4696211.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4693337.png&w=160&h=160"
             },
             {
               "name": "Ji'Ayir Brown",
@@ -22765,35 +24345,51 @@
     {
       "id": "401872945",
       "sport": "nfl",
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-09-21T00:20Z",
       "away": "IND",
       "home": "KC",
       "away_name": "Indianapolis Colts",
       "home_name": "Kansas City Chiefs",
-      "away_record": "0-1",
-      "home_record": "1-0",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "0-2",
+      "home_record": "2-0",
+      "away_score": "30",
+      "home_score": "33",
       "venue": "Arrowhead Stadium",
       "venue_city": "Kansas City, MO",
       "broadcast": "NBC",
-      "away_starter": "D. Jones",
-      "home_starter": "P. Mahomes",
-      "away_availability": "1 out \u00b7 2 questionable",
-      "home_availability": "1 out \u00b7 2 questionable",
+      "away_availability": "2 out \u00b7 1 doubtful \u00b7 3 questionable",
+      "home_availability": "1 out",
       "away_availability_list": [
+        {
+          "name": "DJ Giddens",
+          "position": "RB",
+          "status": "Out",
+          "detail": ""
+        },
         {
           "name": "Ashton Dulin",
           "position": "WR",
           "status": "Out",
-          "detail": "ankle"
+          "detail": ""
         },
         {
-          "name": "DJ Giddens",
-          "position": "RB",
+          "name": "Alec Pierce",
+          "position": "WR",
+          "status": "Doubtful",
+          "detail": ""
+        },
+        {
+          "name": "Charvarius Ward",
+          "position": "CB",
           "status": "Questionable",
-          "detail": "knee"
+          "detail": ""
+        },
+        {
+          "name": "Micheal Clemons",
+          "position": "DE",
+          "status": "Questionable",
+          "detail": "toe"
         },
         {
           "name": "Sean McKeon",
@@ -22820,18 +24416,6 @@
           "position": "DT",
           "status": "Out",
           "detail": "knee"
-        },
-        {
-          "name": "Chris Jones",
-          "position": "DT",
-          "status": "Questionable",
-          "detail": "calf"
-        },
-        {
-          "name": "Mansoor Delane",
-          "position": "CB",
-          "status": "Questionable",
-          "detail": "shoulder"
         },
         {
           "name": "Cooper McDonald",
@@ -24080,7 +25664,7 @@
       "scheme_source": {
         "season": 2026,
         "week": 2,
-        "observed_at_utc": "2026-09-17T19:42:28+00:00"
+        "observed_at_utc": "2026-09-20T18:43:47+00:00"
       },
       "away_players": [
         {
@@ -24196,7 +25780,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -24342,7 +25926,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -24503,1797 +26087,87 @@
       "venue_country": "USA"
     },
     {
-      "id": "401872932",
-      "sport": "nfl",
-      "game_state": "final",
-      "kickoff_utc": "2026-09-18T00:15Z",
-      "away": "DET",
-      "home": "BUF",
-      "away_name": "Detroit Lions",
-      "home_name": "Buffalo Bills",
-      "away_record": "1-1",
-      "home_record": "2-0",
-      "away_score": "31",
-      "home_score": "41",
-      "venue": "Highmark Stadium",
-      "venue_city": "Orchard Park, NY",
-      "broadcast": "Prime Video",
-      "away_availability": "7 out \u00b7 1 questionable",
-      "home_availability": "7 out \u00b7 1 questionable",
-      "away_availability_list": [
-        {
-          "name": "Mekhi Wingo",
-          "position": "DT",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Ennis Rakestraw Jr.",
-          "position": "CB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Jimmy Rolder",
-          "position": "LB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Ahmed Hassanein",
-          "position": "DE",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Keith Abney II",
-          "position": "CB",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Blake Miller",
-          "position": "OT",
-          "status": "Out",
-          "detail": "knee"
-        },
-        {
-          "name": "Christian Mahogany",
-          "position": "G",
-          "status": "Out",
-          "detail": "hip"
-        },
-        {
-          "name": "Avonte Maddox",
-          "position": "CB",
-          "status": "Questionable",
-          "detail": ""
-        }
-      ],
-      "home_availability_list": [
-        {
-          "name": "Ed Oliver",
-          "position": "DT",
-          "status": "Out",
-          "detail": "hip"
-        },
-        {
-          "name": "Skyler Bell",
-          "position": "WR",
-          "status": "Out",
-          "detail": "coach's decision"
-        },
-        {
-          "name": "T.J. Sanders",
-          "position": "DT",
-          "status": "Out",
-          "detail": "knee/illness"
-        },
-        {
-          "name": "Ty Johnson",
-          "position": "RB",
-          "status": "Out",
-          "detail": "hamstring"
-        },
-        {
-          "name": "Ar'maj Reed-Adams",
-          "position": "G",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Jalon Kilgore",
-          "position": "S",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "Jude Bowry",
-          "position": "OT",
-          "status": "Out",
-          "detail": ""
-        },
-        {
-          "name": "DJ Moore",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": ""
-        }
-      ],
-      "roof": "Outdoor",
-      "away_form": {
-        "rates": {
-          "off_epa": {
-            "label": "Offensive EPA Per Play",
-            "value": 0.0768,
-            "better": "high",
-            "rank": 5,
-            "of": 32
-          },
-          "off_first_down": {
-            "label": "Offensive First-Down Rate",
-            "value": 0.3097,
-            "better": "high",
-            "rank": 4,
-            "of": 32
-          },
-          "off_explosive": {
-            "label": "Offensive Explosive-Play Rate",
-            "value": 0.0709,
-            "better": "high",
-            "rank": 2,
-            "of": 32
-          },
-          "off_sack": {
-            "label": "Sack Rate Taken",
-            "value": 0.0606,
-            "better": "low",
-            "rank": 9,
-            "of": 32
-          },
-          "off_turnover": {
-            "label": "Giveaway Rate",
-            "value": 0.0149,
-            "better": "low",
-            "rank": 3,
-            "of": 32
-          },
-          "def_epa": {
-            "label": "EPA Allowed Per Play",
-            "value": -0.0155,
-            "better": "low",
-            "rank": 12,
-            "of": 32
-          },
-          "def_first_down": {
-            "label": "First-Down Rate Allowed",
-            "value": 0.278,
-            "better": "low",
-            "rank": 11,
-            "of": 32
-          },
-          "def_explosive": {
-            "label": "Explosive Rate Allowed",
-            "value": 0.0623,
-            "better": "low",
-            "rank": 27,
-            "of": 32
-          },
-          "def_sack": {
-            "label": "Sack Rate Generated",
-            "value": 0.077,
-            "better": "high",
-            "rank": 7,
-            "of": 32
-          },
-          "def_turnover": {
-            "label": "Takeaway Rate",
-            "value": 0.0195,
-            "better": "high",
-            "rank": 18,
-            "of": 32
-          }
-        },
-        "plays": 64.95,
-        "pool": 32
-      },
-      "home_form": {
-        "rates": {
-          "off_epa": {
-            "label": "Offensive EPA Per Play",
-            "value": 0.1108,
-            "better": "high",
-            "rank": 1,
-            "of": 32
-          },
-          "off_first_down": {
-            "label": "Offensive First-Down Rate",
-            "value": 0.3118,
-            "better": "high",
-            "rank": 3,
-            "of": 32
-          },
-          "off_explosive": {
-            "label": "Offensive Explosive-Play Rate",
-            "value": 0.0649,
-            "better": "high",
-            "rank": 5,
-            "of": 32
-          },
-          "off_sack": {
-            "label": "Sack Rate Taken",
-            "value": 0.0649,
-            "better": "low",
-            "rank": 16,
-            "of": 32
-          },
-          "off_turnover": {
-            "label": "Giveaway Rate",
-            "value": 0.0191,
-            "better": "low",
-            "rank": 14,
-            "of": 32
-          },
-          "def_epa": {
-            "label": "EPA Allowed Per Play",
-            "value": 0.0052,
-            "better": "low",
-            "rank": 15,
-            "of": 32
-          },
-          "def_first_down": {
-            "label": "First-Down Rate Allowed",
-            "value": 0.2957,
-            "better": "low",
-            "rank": 23,
-            "of": 32
-          },
-          "def_explosive": {
-            "label": "Explosive Rate Allowed",
-            "value": 0.0552,
-            "better": "low",
-            "rank": 14,
-            "of": 32
-          },
-          "def_sack": {
-            "label": "Sack Rate Generated",
-            "value": 0.0662,
-            "better": "high",
-            "rank": 19,
-            "of": 32
-          },
-          "def_turnover": {
-            "label": "Takeaway Rate",
-            "value": 0.0234,
-            "better": "high",
-            "rank": 7,
-            "of": 32
-          }
-        },
-        "plays": 61.57,
-        "pool": 32
-      },
-      "away_scheme": {
-        "source_seasons": [
-          2025,
-          2026
-        ],
-        "participation_source_seasons": [
-          2025
-        ],
-        "charting_samples": 1165,
-        "coverage_samples": 649,
-        "offense_plays": 1165,
-        "defense_plays": 1176,
-        "offense": {
-          "coverage": {
-            "man_rate": 0.3042,
-            "zone_rate": 0.6958,
-            "cover_0_rate": 0.0547,
-            "cover_1_rate": 0.2264,
-            "cover_2_rate": 0.237,
-            "cover_3_rate": 0.3013,
-            "cover_4_rate": 0.0849,
-            "cover_6_rate": 0.0644,
-            "cover_2_man_rate": 0.0312
-          },
-          "pressure": {
-            "blitz_rate": 0.3042,
-            "pressure_rate": 0.3004,
-            "stacked_box_rate": 0.0497,
-            "avg_box": 6.2714
-          },
-          "personnel": {
-            "personnel_11_rate": 0.6334,
-            "personnel_12_rate": 0.236,
-            "personnel_21_rate": 0.0371,
-            "formation_shotgun_rate": 0.5347,
-            "formation_under_center_rate": 0.4564,
-            "motion_rate": 0.5908,
-            "play_action_rate": 0.2573,
-            "rpo_rate": 0.0339,
-            "screen_rate": 0.0958,
-            "no_huddle_rate": 0.0601,
-            "neutral_pass_rate": 0.5188
-          },
-          "response": {
-            "pass_epa": 0.1339,
-            "rush_epa": -0.0733,
-            "pass_success_rate": 0.4699,
-            "rush_success_rate": 0.4141,
-            "pass_epa_man": 0.1913,
-            "pass_epa_zone": 0.1196,
-            "pass_epa_blitz": 0.1705,
-            "pass_epa_pressure": -0.4199,
-            "pass_epa_play_action": 0.1297,
-            "pass_epa_cover_0": 0.1272,
-            "pass_epa_cover_1": 0.1496,
-            "pass_epa_cover_2": 0.1378,
-            "pass_epa_cover_3": -0.0203,
-            "pass_epa_cover_4": 0.2049,
-            "pass_epa_cover_6": 0.1582,
-            "pass_epa_cover_2_man": 0.2422,
-            "rush_epa_stacked_box": 0.0804
-          },
-          "target_share": {
-            "target_share_rb_all": 0.2126,
-            "target_share_wr_all": 0.6189,
-            "target_share_te_all": 0.1685
-          }
-        },
-        "defense": {
-          "coverage": {
-            "man_rate": 0.4037,
-            "zone_rate": 0.5963,
-            "cover_0_rate": 0.0293,
-            "cover_1_rate": 0.2752,
-            "cover_2_rate": 0.183,
-            "cover_3_rate": 0.2822,
-            "cover_4_rate": 0.0791,
-            "cover_6_rate": 0.0421,
-            "cover_2_man_rate": 0.1091
-          },
-          "pressure": {
-            "blitz_rate": 0.3228,
-            "pressure_rate": 0.312,
-            "stacked_box_rate": 0.1084,
-            "avg_box": 6.4736
-          },
-          "personnel": {
-            "personnel_11_rate": 0.4615,
-            "personnel_12_rate": 0.3376,
-            "personnel_21_rate": 0.041,
-            "formation_shotgun_rate": 0.5887,
-            "formation_under_center_rate": 0.3619,
-            "motion_rate": 0.5219,
-            "play_action_rate": 0.2386,
-            "rpo_rate": 0.0563,
-            "screen_rate": 0.0505,
-            "no_huddle_rate": 0.1183,
-            "neutral_pass_rate": 0.5719
-          },
-          "response": {
-            "pass_epa": 0.0407,
-            "rush_epa": -0.0033,
-            "pass_success_rate": 0.4449,
-            "rush_success_rate": 0.4132,
-            "pass_epa_man": 0.112,
-            "pass_epa_zone": -0.0099,
-            "pass_epa_blitz": -0.0741,
-            "pass_epa_pressure": -0.4231,
-            "pass_epa_play_action": 0.0335,
-            "pass_epa_cover_0": 0.17,
-            "pass_epa_cover_1": 0.0844,
-            "pass_epa_cover_2": -0.1699,
-            "pass_epa_cover_3": 0.0818,
-            "pass_epa_cover_4": 0.051,
-            "pass_epa_cover_6": 0.0636,
-            "pass_epa_cover_2_man": 0.121,
-            "rush_epa_stacked_box": -0.1207
-          },
-          "target_share": {
-            "target_share_rb_all": 0.1535,
-            "target_share_wr_all": 0.5864,
-            "target_share_te_all": 0.2601
-          }
-        },
-        "league_frequency_ranks": {
-          "offense": {
-            "coverage": {
-              "man_rate": {
-                "place": 21,
-                "of": 32
-              },
-              "zone_rate": {
-                "place": 12,
-                "of": 32
-              },
-              "cover_0_rate": {
-                "place": 4,
-                "of": 32
-              },
-              "cover_1_rate": {
-                "place": 22,
-                "of": 32
-              },
-              "cover_2_rate": {
-                "place": 15,
-                "of": 32
-              },
-              "cover_3_rate": {
-                "place": 7,
-                "of": 32
-              },
-              "cover_4_rate": {
-                "place": 27,
-                "of": 32
-              },
-              "cover_6_rate": {
-                "place": 6,
-                "of": 32
-              },
-              "cover_2_man_rate": {
-                "place": 28,
-                "of": 32
-              }
-            },
-            "pressure": {
-              "blitz_rate": {
-                "place": 13,
-                "of": 32
-              },
-              "pressure_rate": {
-                "place": 18,
-                "of": 32
-              },
-              "stacked_box_rate": {
-                "place": 20,
-                "of": 32
-              },
-              "avg_box": {
-                "place": 9,
-                "of": 32
-              }
-            },
-            "personnel": {
-              "personnel_11_rate": {
-                "place": 9,
-                "of": 32
-              },
-              "personnel_12_rate": {
-                "place": 17,
-                "of": 32
-              },
-              "personnel_21_rate": {
-                "place": 17,
-                "of": 32
-              },
-              "formation_shotgun_rate": {
-                "place": 25,
-                "of": 32
-              },
-              "formation_under_center_rate": {
-                "place": 5,
-                "of": 32
-              },
-              "motion_rate": {
-                "place": 8,
-                "of": 32
-              },
-              "play_action_rate": {
-                "place": 8,
-                "of": 32
-              },
-              "rpo_rate": {
-                "place": 25,
-                "of": 32
-              },
-              "screen_rate": {
-                "place": 6,
-                "of": 32
-              },
-              "no_huddle_rate": {
-                "place": 23,
-                "of": 32
-              },
-              "neutral_pass_rate": {
-                "place": 22,
-                "of": 32
-              }
-            },
-            "target_share": {
-              "target_share_rb_all": {
-                "place": 6,
-                "of": 32
-              },
-              "target_share_wr_all": {
-                "place": 9,
-                "of": 32
-              },
-              "target_share_te_all": {
-                "place": 32,
-                "of": 32
-              }
-            }
-          },
-          "defense": {
-            "coverage": {
-              "man_rate": {
-                "place": 4,
-                "of": 32
-              },
-              "zone_rate": {
-                "place": 29,
-                "of": 32
-              },
-              "cover_0_rate": {
-                "place": 27,
-                "of": 32
-              },
-              "cover_1_rate": {
-                "place": 8,
-                "of": 32
-              },
-              "cover_2_rate": {
-                "place": 27,
-                "of": 32
-              },
-              "cover_3_rate": {
-                "place": 14,
-                "of": 32
-              },
-              "cover_4_rate": {
-                "place": 26,
-                "of": 32
-              },
-              "cover_6_rate": {
-                "place": 23,
-                "of": 32
-              },
-              "cover_2_man_rate": {
-                "place": 1,
-                "of": 32
-              }
-            },
-            "pressure": {
-              "blitz_rate": {
-                "place": 6,
-                "of": 32
-              },
-              "pressure_rate": {
-                "place": 12,
-                "of": 32
-              },
-              "stacked_box_rate": {
-                "place": 2,
-                "of": 32
-              },
-              "avg_box": {
-                "place": 1,
-                "of": 32
-              }
-            },
-            "personnel": {
-              "personnel_11_rate": {
-                "place": 31,
-                "of": 32
-              },
-              "personnel_12_rate": {
-                "place": 2,
-                "of": 32
-              },
-              "personnel_21_rate": {
-                "place": 30,
-                "of": 32
-              },
-              "formation_shotgun_rate": {
-                "place": 24,
-                "of": 32
-              },
-              "formation_under_center_rate": {
-                "place": 11,
-                "of": 32
-              },
-              "motion_rate": {
-                "place": 26,
-                "of": 32
-              },
-              "play_action_rate": {
-                "place": 13,
-                "of": 32
-              },
-              "rpo_rate": {
-                "place": 18,
-                "of": 32
-              },
-              "screen_rate": {
-                "place": 32,
-                "of": 32
-              },
-              "no_huddle_rate": {
-                "place": 6,
-                "of": 32
-              },
-              "neutral_pass_rate": {
-                "place": 5,
-                "of": 32
-              }
-            },
-            "target_share": {
-              "target_share_rb_all": {
-                "place": 27,
-                "of": 32
-              },
-              "target_share_wr_all": {
-                "place": 14,
-                "of": 32
-              },
-              "target_share_te_all": {
-                "place": 7,
-                "of": 32
-              }
-            }
-          }
-        },
-        "league_response": {
-          "offense": {
-            "pass_epa": {
-              "mean": 0.0602,
-              "std": 0.1108,
-              "n": 32
-            },
-            "rush_epa": {
-              "mean": -0.0212,
-              "std": 0.0589,
-              "n": 32
-            },
-            "pass_success_rate": {
-              "mean": 0.4631,
-              "std": 0.0355,
-              "n": 32
-            },
-            "rush_success_rate": {
-              "mean": 0.4252,
-              "std": 0.0271,
-              "n": 32
-            },
-            "pass_epa_man": {
-              "mean": 0.1051,
-              "std": 0.1293,
-              "n": 32
-            },
-            "pass_epa_zone": {
-              "mean": 0.0392,
-              "std": 0.1157,
-              "n": 32
-            },
-            "pass_epa_blitz": {
-              "mean": 0.0589,
-              "std": 0.1367,
-              "n": 32
-            },
-            "pass_epa_pressure": {
-              "mean": -0.4083,
-              "std": 0.1112,
-              "n": 32
-            },
-            "pass_epa_play_action": {
-              "mean": 0.1055,
-              "std": 0.1292,
-              "n": 32
-            },
-            "pass_epa_cover_0": {
-              "mean": 0.1144,
-              "std": 0.1173,
-              "n": 32
-            },
-            "pass_epa_cover_1": {
-              "mean": 0.1077,
-              "std": 0.1478,
-              "n": 32
-            },
-            "pass_epa_cover_2": {
-              "mean": -0.0001,
-              "std": 0.1222,
-              "n": 32
-            },
-            "pass_epa_cover_3": {
-              "mean": 0.0713,
-              "std": 0.1209,
-              "n": 32
-            },
-            "pass_epa_cover_4": {
-              "mean": 0.073,
-              "std": 0.1195,
-              "n": 32
-            },
-            "pass_epa_cover_6": {
-              "mean": -0.0163,
-              "std": 0.0894,
-              "n": 32
-            },
-            "pass_epa_cover_2_man": {
-              "mean": 0.0938,
-              "std": 0.0923,
-              "n": 32
-            },
-            "rush_epa_stacked_box": {
-              "mean": -0.0129,
-              "std": 0.0835,
-              "n": 32
-            }
-          },
-          "defense": {
-            "pass_epa": {
-              "mean": 0.0611,
-              "std": 0.0953,
-              "n": 32
-            },
-            "rush_epa": {
-              "mean": -0.0193,
-              "std": 0.0542,
-              "n": 32
-            },
-            "pass_success_rate": {
-              "mean": 0.4634,
-              "std": 0.0302,
-              "n": 32
-            },
-            "rush_success_rate": {
-              "mean": 0.4256,
-              "std": 0.0234,
-              "n": 32
-            },
-            "pass_epa_man": {
-              "mean": 0.1099,
-              "std": 0.118,
-              "n": 32
-            },
-            "pass_epa_zone": {
-              "mean": 0.0372,
-              "std": 0.1,
-              "n": 32
-            },
-            "pass_epa_blitz": {
-              "mean": 0.0665,
-              "std": 0.0923,
-              "n": 32
-            },
-            "pass_epa_pressure": {
-              "mean": -0.4051,
-              "std": 0.097,
-              "n": 32
-            },
-            "pass_epa_play_action": {
-              "mean": 0.1081,
-              "std": 0.0969,
-              "n": 32
-            },
-            "pass_epa_cover_0": {
-              "mean": 0.1167,
-              "std": 0.0867,
-              "n": 32
-            },
-            "pass_epa_cover_1": {
-              "mean": 0.111,
-              "std": 0.1186,
-              "n": 32
-            },
-            "pass_epa_cover_2": {
-              "mean": 0.0001,
-              "std": 0.1272,
-              "n": 32
-            },
-            "pass_epa_cover_3": {
-              "mean": 0.069,
-              "std": 0.1299,
-              "n": 32
-            },
-            "pass_epa_cover_4": {
-              "mean": 0.0737,
-              "std": 0.1227,
-              "n": 32
-            },
-            "pass_epa_cover_6": {
-              "mean": -0.0144,
-              "std": 0.1041,
-              "n": 32
-            },
-            "pass_epa_cover_2_man": {
-              "mean": 0.0966,
-              "std": 0.0832,
-              "n": 32
-            },
-            "rush_epa_stacked_box": {
-              "mean": -0.0115,
-              "std": 0.0716,
-              "n": 32
-            }
-          }
-        }
-      },
-      "home_scheme": {
-        "source_seasons": [
-          2025,
-          2026
-        ],
-        "participation_source_seasons": [
-          2025
-        ],
-        "charting_samples": 1056,
-        "coverage_samples": 558,
-        "offense_plays": 1162,
-        "defense_plays": 1056,
-        "offense": {
-          "coverage": {
-            "man_rate": 0.4192,
-            "zone_rate": 0.5808,
-            "cover_0_rate": 0.0615,
-            "cover_1_rate": 0.3368,
-            "cover_2_rate": 0.2139,
-            "cover_3_rate": 0.2609,
-            "cover_4_rate": 0.0635,
-            "cover_6_rate": 0.0334,
-            "cover_2_man_rate": 0.0299
-          },
-          "pressure": {
-            "blitz_rate": 0.2896,
-            "pressure_rate": 0.2698,
-            "stacked_box_rate": 0.1017,
-            "avg_box": 6.3953
-          },
-          "personnel": {
-            "personnel_11_rate": 0.6242,
-            "personnel_12_rate": 0.1325,
-            "personnel_21_rate": 0.0872,
-            "formation_shotgun_rate": 0.4983,
-            "formation_under_center_rate": 0.4839,
-            "motion_rate": 0.5818,
-            "play_action_rate": 0.2575,
-            "rpo_rate": 0.0668,
-            "screen_rate": 0.0878,
-            "no_huddle_rate": 0.061,
-            "neutral_pass_rate": 0.5124
-          },
-          "response": {
-            "pass_epa": 0.2317,
-            "rush_epa": 0.0616,
-            "pass_success_rate": 0.4917,
-            "rush_success_rate": 0.4709,
-            "pass_epa_man": 0.1386,
-            "pass_epa_zone": 0.2258,
-            "pass_epa_blitz": 0.2445,
-            "pass_epa_pressure": -0.3147,
-            "pass_epa_play_action": 0.3074,
-            "pass_epa_cover_0": 0.0522,
-            "pass_epa_cover_1": 0.1266,
-            "pass_epa_cover_2": 0.125,
-            "pass_epa_cover_3": 0.1917,
-            "pass_epa_cover_4": 0.2068,
-            "pass_epa_cover_6": 0.1358,
-            "pass_epa_cover_2_man": 0.2375,
-            "rush_epa_stacked_box": -0.0245
-          },
-          "target_share": {
-            "target_share_rb_all": 0.1875,
-            "target_share_wr_all": 0.5601,
-            "target_share_te_all": 0.2524
-          }
-        },
-        "defense": {
-          "coverage": {
-            "man_rate": 0.316,
-            "zone_rate": 0.684,
-            "cover_0_rate": 0.0342,
-            "cover_1_rate": 0.1923,
-            "cover_2_rate": 0.26,
-            "cover_3_rate": 0.2368,
-            "cover_4_rate": 0.1091,
-            "cover_6_rate": 0.0667,
-            "cover_2_man_rate": 0.101
-          },
-          "pressure": {
-            "blitz_rate": 0.3118,
-            "pressure_rate": 0.3379,
-            "stacked_box_rate": 0.0636,
-            "avg_box": 6.2773
-          },
-          "personnel": {
-            "personnel_11_rate": 0.5591,
-            "personnel_12_rate": 0.252,
-            "personnel_21_rate": 0.0937,
-            "formation_shotgun_rate": 0.6106,
-            "formation_under_center_rate": 0.2854,
-            "motion_rate": 0.5272,
-            "play_action_rate": 0.2213,
-            "rpo_rate": 0.0673,
-            "screen_rate": 0.0795,
-            "no_huddle_rate": 0.0811,
-            "neutral_pass_rate": 0.512
-          },
-          "response": {
-            "pass_epa": -0.0316,
-            "rush_epa": 0.08,
-            "pass_success_rate": 0.4417,
-            "rush_success_rate": 0.4512,
-            "pass_epa_man": 0.094,
-            "pass_epa_zone": -0.1094,
-            "pass_epa_blitz": 0.0883,
-            "pass_epa_pressure": -0.4119,
-            "pass_epa_play_action": 0.0699,
-            "pass_epa_cover_0": 0.051,
-            "pass_epa_cover_1": 0.1358,
-            "pass_epa_cover_2": -0.2004,
-            "pass_epa_cover_3": 0.0483,
-            "pass_epa_cover_4": -0.0229,
-            "pass_epa_cover_6": -0.0727,
-            "pass_epa_cover_2_man": 0.0783,
-            "rush_epa_stacked_box": 0.1258
-          },
-          "target_share": {
-            "target_share_rb_all": 0.1914,
-            "target_share_wr_all": 0.6033,
-            "target_share_te_all": 0.2053
-          }
-        },
-        "league_frequency_ranks": {
-          "offense": {
-            "coverage": {
-              "man_rate": {
-                "place": 1,
-                "of": 32
-              },
-              "zone_rate": {
-                "place": 32,
-                "of": 32
-              },
-              "cover_0_rate": {
-                "place": 3,
-                "of": 32
-              },
-              "cover_1_rate": {
-                "place": 1,
-                "of": 32
-              },
-              "cover_2_rate": {
-                "place": 25,
-                "of": 32
-              },
-              "cover_3_rate": {
-                "place": 29,
-                "of": 32
-              },
-              "cover_4_rate": {
-                "place": 32,
-                "of": 32
-              },
-              "cover_6_rate": {
-                "place": 32,
-                "of": 32
-              },
-              "cover_2_man_rate": {
-                "place": 29,
-                "of": 32
-              }
-            },
-            "pressure": {
-              "blitz_rate": {
-                "place": 19,
-                "of": 32
-              },
-              "pressure_rate": {
-                "place": 29,
-                "of": 32
-              },
-              "stacked_box_rate": {
-                "place": 3,
-                "of": 32
-              },
-              "avg_box": {
-                "place": 3,
-                "of": 32
-              }
-            },
-            "personnel": {
-              "personnel_11_rate": {
-                "place": 11,
-                "of": 32
-              },
-              "personnel_12_rate": {
-                "place": 28,
-                "of": 32
-              },
-              "personnel_21_rate": {
-                "place": 10,
-                "of": 32
-              },
-              "formation_shotgun_rate": {
-                "place": 29,
-                "of": 32
-              },
-              "formation_under_center_rate": {
-                "place": 3,
-                "of": 32
-              },
-              "motion_rate": {
-                "place": 11,
-                "of": 32
-              },
-              "play_action_rate": {
-                "place": 6,
-                "of": 32
-              },
-              "rpo_rate": {
-                "place": 13,
-                "of": 32
-              },
-              "screen_rate": {
-                "place": 10,
-                "of": 32
-              },
-              "no_huddle_rate": {
-                "place": 22,
-                "of": 32
-              },
-              "neutral_pass_rate": {
-                "place": 26,
-                "of": 32
-              }
-            },
-            "target_share": {
-              "target_share_rb_all": {
-                "place": 13,
-                "of": 32
-              },
-              "target_share_wr_all": {
-                "place": 22,
-                "of": 32
-              },
-              "target_share_te_all": {
-                "place": 12,
-                "of": 32
-              }
-            }
-          },
-          "defense": {
-            "coverage": {
-              "man_rate": {
-                "place": 15,
-                "of": 32
-              },
-              "zone_rate": {
-                "place": 18,
-                "of": 32
-              },
-              "cover_0_rate": {
-                "place": 20,
-                "of": 32
-              },
-              "cover_1_rate": {
-                "place": 24,
-                "of": 32
-              },
-              "cover_2_rate": {
-                "place": 8,
-                "of": 32
-              },
-              "cover_3_rate": {
-                "place": 31,
-                "of": 32
-              },
-              "cover_4_rate": {
-                "place": 14,
-                "of": 32
-              },
-              "cover_6_rate": {
-                "place": 7,
-                "of": 32
-              },
-              "cover_2_man_rate": {
-                "place": 2,
-                "of": 32
-              }
-            },
-            "pressure": {
-              "blitz_rate": {
-                "place": 11,
-                "of": 32
-              },
-              "pressure_rate": {
-                "place": 2,
-                "of": 32
-              },
-              "stacked_box_rate": {
-                "place": 13,
-                "of": 32
-              },
-              "avg_box": {
-                "place": 13,
-                "of": 32
-              }
-            },
-            "personnel": {
-              "personnel_11_rate": {
-                "place": 23,
-                "of": 32
-              },
-              "personnel_12_rate": {
-                "place": 11,
-                "of": 32
-              },
-              "personnel_21_rate": {
-                "place": 5,
-                "of": 32
-              },
-              "formation_shotgun_rate": {
-                "place": 18,
-                "of": 32
-              },
-              "formation_under_center_rate": {
-                "place": 31,
-                "of": 32
-              },
-              "motion_rate": {
-                "place": 25,
-                "of": 32
-              },
-              "play_action_rate": {
-                "place": 22,
-                "of": 32
-              },
-              "rpo_rate": {
-                "place": 7,
-                "of": 32
-              },
-              "screen_rate": {
-                "place": 13,
-                "of": 32
-              },
-              "no_huddle_rate": {
-                "place": 22,
-                "of": 32
-              },
-              "neutral_pass_rate": {
-                "place": 25,
-                "of": 32
-              }
-            },
-            "target_share": {
-              "target_share_rb_all": {
-                "place": 9,
-                "of": 32
-              },
-              "target_share_wr_all": {
-                "place": 9,
-                "of": 32
-              },
-              "target_share_te_all": {
-                "place": 30,
-                "of": 32
-              }
-            }
-          }
-        },
-        "league_response": {
-          "offense": {
-            "pass_epa": {
-              "mean": 0.0602,
-              "std": 0.1108,
-              "n": 32
-            },
-            "rush_epa": {
-              "mean": -0.0212,
-              "std": 0.0589,
-              "n": 32
-            },
-            "pass_success_rate": {
-              "mean": 0.4631,
-              "std": 0.0355,
-              "n": 32
-            },
-            "rush_success_rate": {
-              "mean": 0.4252,
-              "std": 0.0271,
-              "n": 32
-            },
-            "pass_epa_man": {
-              "mean": 0.1051,
-              "std": 0.1293,
-              "n": 32
-            },
-            "pass_epa_zone": {
-              "mean": 0.0392,
-              "std": 0.1157,
-              "n": 32
-            },
-            "pass_epa_blitz": {
-              "mean": 0.0589,
-              "std": 0.1367,
-              "n": 32
-            },
-            "pass_epa_pressure": {
-              "mean": -0.4083,
-              "std": 0.1112,
-              "n": 32
-            },
-            "pass_epa_play_action": {
-              "mean": 0.1055,
-              "std": 0.1292,
-              "n": 32
-            },
-            "pass_epa_cover_0": {
-              "mean": 0.1144,
-              "std": 0.1173,
-              "n": 32
-            },
-            "pass_epa_cover_1": {
-              "mean": 0.1077,
-              "std": 0.1478,
-              "n": 32
-            },
-            "pass_epa_cover_2": {
-              "mean": -0.0001,
-              "std": 0.1222,
-              "n": 32
-            },
-            "pass_epa_cover_3": {
-              "mean": 0.0713,
-              "std": 0.1209,
-              "n": 32
-            },
-            "pass_epa_cover_4": {
-              "mean": 0.073,
-              "std": 0.1195,
-              "n": 32
-            },
-            "pass_epa_cover_6": {
-              "mean": -0.0163,
-              "std": 0.0894,
-              "n": 32
-            },
-            "pass_epa_cover_2_man": {
-              "mean": 0.0938,
-              "std": 0.0923,
-              "n": 32
-            },
-            "rush_epa_stacked_box": {
-              "mean": -0.0129,
-              "std": 0.0835,
-              "n": 32
-            }
-          },
-          "defense": {
-            "pass_epa": {
-              "mean": 0.0611,
-              "std": 0.0953,
-              "n": 32
-            },
-            "rush_epa": {
-              "mean": -0.0193,
-              "std": 0.0542,
-              "n": 32
-            },
-            "pass_success_rate": {
-              "mean": 0.4634,
-              "std": 0.0302,
-              "n": 32
-            },
-            "rush_success_rate": {
-              "mean": 0.4256,
-              "std": 0.0234,
-              "n": 32
-            },
-            "pass_epa_man": {
-              "mean": 0.1099,
-              "std": 0.118,
-              "n": 32
-            },
-            "pass_epa_zone": {
-              "mean": 0.0372,
-              "std": 0.1,
-              "n": 32
-            },
-            "pass_epa_blitz": {
-              "mean": 0.0665,
-              "std": 0.0923,
-              "n": 32
-            },
-            "pass_epa_pressure": {
-              "mean": -0.4051,
-              "std": 0.097,
-              "n": 32
-            },
-            "pass_epa_play_action": {
-              "mean": 0.1081,
-              "std": 0.0969,
-              "n": 32
-            },
-            "pass_epa_cover_0": {
-              "mean": 0.1167,
-              "std": 0.0867,
-              "n": 32
-            },
-            "pass_epa_cover_1": {
-              "mean": 0.111,
-              "std": 0.1186,
-              "n": 32
-            },
-            "pass_epa_cover_2": {
-              "mean": 0.0001,
-              "std": 0.1272,
-              "n": 32
-            },
-            "pass_epa_cover_3": {
-              "mean": 0.069,
-              "std": 0.1299,
-              "n": 32
-            },
-            "pass_epa_cover_4": {
-              "mean": 0.0737,
-              "std": 0.1227,
-              "n": 32
-            },
-            "pass_epa_cover_6": {
-              "mean": -0.0144,
-              "std": 0.1041,
-              "n": 32
-            },
-            "pass_epa_cover_2_man": {
-              "mean": 0.0966,
-              "std": 0.0832,
-              "n": 32
-            },
-            "rush_epa_stacked_box": {
-              "mean": -0.0115,
-              "std": 0.0716,
-              "n": 32
-            }
-          }
-        }
-      },
-      "scheme_source": {
-        "season": 2026,
-        "week": 2,
-        "observed_at_utc": "2026-09-17T19:42:28+00:00"
-      },
-      "away_players": [
-        {
-          "name": "Jared Goff",
-          "position": "QB",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/kaicbot8qhzrvddilbtp"
-        },
-        {
-          "name": "Joshua Dobbs",
-          "position": "QB",
-          "depth_rank": 2,
-          "headshot_url": null
-        },
-        {
-          "name": "Jahmyr Gibbs",
-          "position": "RB",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cursejnmmp1i9hnxihkj"
-        },
-        {
-          "name": "Sione Vaki",
-          "position": "RB",
-          "depth_rank": 2,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/abqcluf2gbejhiyjjtoz"
-        },
-        {
-          "name": "Amon-Ra St. Brown",
-          "position": "WR",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/fd8nwhm6pvxfyzphzl6i"
-        },
-        {
-          "name": "Jameson Williams",
-          "position": "WR",
-          "depth_rank": 2,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/byiptqggtglvy5qrw5wp"
-        },
-        {
-          "name": "Isaac TeSlaa",
-          "position": "WR",
-          "depth_rank": 3,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ducfhbiy2a8loytcjymn"
-        },
-        {
-          "name": "Sam LaPorta",
-          "position": "TE",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/wxlk7ysg2nfq6h6ntdcu"
-        }
-      ],
-      "home_players": [
-        {
-          "name": "Josh Allen",
-          "position": "QB",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/mjwbioajzldkq1vzoz2d"
-        },
-        {
-          "name": "Kyle Allen",
-          "position": "QB",
-          "depth_rank": 2,
-          "headshot_url": null
-        },
-        {
-          "name": "James Cook",
-          "position": "RB",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/anjbznqb9i21wzcgrtbs"
-        },
-        {
-          "name": "Ray Davis",
-          "position": "RB",
-          "depth_rank": 2,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/xibwzhrl6q5xkgh3utug"
-        },
-        {
-          "name": "DJ Moore",
-          "position": "WR",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/lsavpxtqoqu25emwcnvy"
-        },
-        {
-          "name": "Khalil Shakir",
-          "position": "WR",
-          "depth_rank": 2,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/syvp3hficobwcsim3i9v"
-        },
-        {
-          "name": "Keon Coleman",
-          "position": "WR",
-          "depth_rank": 3,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cm7g87waetksjouyjgvg"
-        },
-        {
-          "name": "Dalton Kincaid",
-          "position": "TE",
-          "depth_rank": 1,
-          "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/z7k857flehljboaixj8m"
-        }
-      ],
-      "away_lineups": {
-        "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
-        "defense": {
-          "package": "Base 4-3 D",
-          "players": [
-            {
-              "name": "Aidan Hutchinson",
-              "position": "LDE",
-              "group": "Front",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4372099.png&w=160&h=160"
-            },
-            {
-              "name": "Alim McNeill",
-              "position": "LDT",
-              "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4361662.png&w=160&h=160"
-            },
-            {
-              "name": "Tyleik Williams",
-              "position": "RDT",
-              "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4431615.png&w=160&h=160"
-            },
-            {
-              "name": "Tyler Lacy",
-              "position": "RDE",
-              "group": "Front",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4361861.png&w=160&h=160"
-            },
-            {
-              "name": "Derrick Barnes",
-              "position": "WLB",
-              "group": "Linebackers",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4260409.png&w=160&h=160"
-            },
-            {
-              "name": "Jack Campbell",
-              "position": "MLB",
-              "group": "Linebackers",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4569465.png&w=160&h=160"
-            },
-            {
-              "name": "Devin White",
-              "position": "SLB",
-              "group": "Linebackers",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4035434.png&w=160&h=160"
-            },
-            {
-              "name": "D.J. Reed",
-              "position": "LCB",
-              "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3139387.png&w=160&h=160"
-            },
-            {
-              "name": "Avonte Maddox",
-              "position": "SS",
-              "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3123938.png&w=160&h=160"
-            },
-            {
-              "name": "Chuck Clark",
-              "position": "FS",
-              "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3045463.png&w=160&h=160"
-            },
-            {
-              "name": "Rock Ya-Sin",
-              "position": "RCB",
-              "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3910229.png&w=160&h=160"
-            }
-          ]
-        },
-        "offense": {
-          "package": "3WR 1TE",
-          "players": [
-            {
-              "name": "Amon-Ra St. Brown",
-              "position": "WR",
-              "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/fd8nwhm6pvxfyzphzl6i"
-            },
-            {
-              "name": "Jameson Williams",
-              "position": "WR",
-              "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/byiptqggtglvy5qrw5wp"
-            },
-            {
-              "name": "Isaac TeSlaa",
-              "position": "WR",
-              "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ducfhbiy2a8loytcjymn"
-            },
-            {
-              "name": "Penei Sewell",
-              "position": "LT",
-              "group": "Offensive Line",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4373825.png&w=160&h=160"
-            },
-            {
-              "name": "Christian Mahogany",
-              "position": "LG",
-              "group": "Offensive Line",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4427864.png&w=160&h=160"
-            },
-            {
-              "name": "Juice Scruggs",
-              "position": "C",
-              "group": "Offensive Line",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4361425.png&w=160&h=160"
-            },
-            {
-              "name": "Tate Ratledge",
-              "position": "RG",
-              "group": "Offensive Line",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4429035.png&w=160&h=160"
-            },
-            {
-              "name": "Larry Borom",
-              "position": "RT",
-              "group": "Offensive Line",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4241217.png&w=160&h=160"
-            },
-            {
-              "name": "Jared Goff",
-              "position": "QB",
-              "group": "Backfield",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/kaicbot8qhzrvddilbtp"
-            },
-            {
-              "name": "Sam LaPorta",
-              "position": "TE",
-              "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/wxlk7ysg2nfq6h6ntdcu"
-            },
-            {
-              "name": "Jahmyr Gibbs",
-              "position": "RB",
-              "group": "Backfield",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cursejnmmp1i9hnxihkj"
-            }
-          ]
-        }
-      },
-      "home_lineups": {
-        "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
-        "defense": {
-          "package": "Base 3-4 D",
-          "players": [
-            {
-              "name": "T.J. Sanders",
-              "position": "LDE",
-              "group": "Front",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4684527.png&w=160&h=160"
-            },
-            {
-              "name": "Deone Walker",
-              "position": "NT",
-              "group": "Front",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4831989.png&w=160&h=160"
-            },
-            {
-              "name": "Ed Oliver",
-              "position": "RDE",
-              "group": "Front",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4039303.png&w=160&h=160"
-            },
-            {
-              "name": "Greg Rousseau",
-              "position": "WLB",
-              "group": "Linebackers",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4362506.png&w=160&h=160"
-            },
-            {
-              "name": "Dorian Williams",
-              "position": "LILB",
-              "group": "Linebackers",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4568624.png&w=160&h=160"
-            },
-            {
-              "name": "Terrel Bernard",
-              "position": "RILB",
-              "group": "Linebackers",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4259166.png&w=160&h=160"
-            },
-            {
-              "name": "Bradley Chubb",
-              "position": "SLB",
-              "group": "Linebackers",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3116733.png&w=160&h=160"
-            },
-            {
-              "name": "Christian Benford",
-              "position": "LCB",
-              "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4379778.png&w=160&h=160"
-            },
-            {
-              "name": "Cole Bishop",
-              "position": "SS",
-              "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4676004.png&w=160&h=160"
-            },
-            {
-              "name": "C.J. Gardner-Johnson",
-              "position": "FS",
-              "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4034953.png&w=160&h=160"
-            },
-            {
-              "name": "Maxwell Hairston",
-              "position": "RCB",
-              "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4688931.png&w=160&h=160"
-            }
-          ]
-        },
-        "offense": {
-          "package": "3WR 1TE",
-          "players": [
-            {
-              "name": "DJ Moore",
-              "position": "WR",
-              "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/lsavpxtqoqu25emwcnvy"
-            },
-            {
-              "name": "Khalil Shakir",
-              "position": "WR",
-              "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/syvp3hficobwcsim3i9v"
-            },
-            {
-              "name": "Keon Coleman",
-              "position": "WR",
-              "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cm7g87waetksjouyjgvg"
-            },
-            {
-              "name": "Dion Dawkins",
-              "position": "LT",
-              "group": "Offensive Line",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3051324.png&w=160&h=160"
-            },
-            {
-              "name": "Alec Anderson",
-              "position": "LG",
-              "group": "Offensive Line",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4367203.png&w=160&h=160"
-            },
-            {
-              "name": "Connor McGovern",
-              "position": "C",
-              "group": "Offensive Line",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4033748.png&w=160&h=160"
-            },
-            {
-              "name": "O'Cyrus Torrence",
-              "position": "RG",
-              "group": "Offensive Line",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4428696.png&w=160&h=160"
-            },
-            {
-              "name": "Spencer Brown",
-              "position": "RT",
-              "group": "Offensive Line",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4030899.png&w=160&h=160"
-            },
-            {
-              "name": "Josh Allen",
-              "position": "QB",
-              "group": "Backfield",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/mjwbioajzldkq1vzoz2d"
-            },
-            {
-              "name": "Dalton Kincaid",
-              "position": "TE",
-              "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/z7k857flehljboaixj8m"
-            },
-            {
-              "name": "James Cook III",
-              "position": "RB",
-              "group": "Backfield",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4379399.png&w=160&h=160"
-            }
-          ]
-        }
-      },
-      "away_player_coverage": [],
-      "home_player_coverage": [],
-      "away_player_scheme": [],
-      "home_player_scheme": [],
-      "away_rest_days": 4,
-      "home_rest_days": 4,
-      "away_travel": "219 miles from Detroit, MI",
-      "home_travel": "1,290 miles from Houston, TX, 1h ahead",
-      "away_short_week": true,
-      "home_short_week": true,
-      "away_travel_km": 352,
-      "home_travel_km": 2076,
-      "away_tz_shift": 0.0,
-      "home_tz_shift": 1.0,
-      "venue_country": "USA"
-    },
-    {
       "id": "401872947",
       "sport": "nfl",
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-09-22T00:15Z",
       "away": "NYG",
       "home": "LAR",
       "away_name": "New York Giants",
       "home_name": "Los Angeles Rams",
-      "away_record": "1-0",
-      "home_record": "0-1",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "1-1",
+      "home_record": "1-1",
+      "away_score": "6",
+      "home_score": "28",
       "venue": "SoFi Stadium",
       "venue_city": "Inglewood, CA",
       "broadcast": "ESPN",
-      "away_starter": "J. Dart",
-      "home_starter": "M. Stafford",
-      "away_availability": "2 questionable",
-      "home_availability": "1 out \u00b7 1 doubtful \u00b7 1 questionable",
+      "away_availability": "7 out \u00b7 1 doubtful \u00b7 3 questionable",
+      "home_availability": "6 out \u00b7 1 questionable",
       "away_availability_list": [
-        {
-          "name": "Deonte Banks",
-          "position": "CB",
-          "status": "Questionable",
-          "detail": "calf"
-        },
         {
           "name": "Micah McFadden",
           "position": "LB",
+          "status": "Out",
+          "detail": "neck"
+        },
+        {
+          "name": "Deonte Banks",
+          "position": "CB",
+          "status": "Out",
+          "detail": "calf"
+        },
+        {
+          "name": "Jason Pinnock",
+          "position": "S",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Bobby Jamison-Travis",
+          "position": "DT",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Darius Alexander",
+          "position": "DT",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "J.C. Davis",
+          "position": "OT",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Thomas Fidone II",
+          "position": "TE",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Jaxson Dart",
+          "position": "QB",
+          "status": "Doubtful",
+          "detail": ""
+        },
+        {
+          "name": "Brian Burns",
+          "position": "LB",
+          "status": "Questionable",
+          "detail": ""
+        },
+        {
+          "name": "Andrew Thomas",
+          "position": "OT",
+          "status": "Questionable",
+          "detail": "groin"
+        },
+        {
+          "name": "Malik Nabers",
+          "position": "WR",
           "status": "Questionable",
           "detail": ""
         },
@@ -26306,22 +26180,46 @@
       ],
       "home_availability_list": [
         {
-          "name": "Kamren Kinchens",
-          "position": "S",
+          "name": "Puka Nacua",
+          "position": "WR",
           "status": "Out",
-          "detail": "hamstring"
+          "detail": "groin"
+        },
+        {
+          "name": "Ty Simpson",
+          "position": "QB",
+          "status": "Out",
+          "detail": "coach's decision"
         },
         {
           "name": "Jordan Whittington",
           "position": "WR",
-          "status": "Doubtful",
+          "status": "Out",
           "detail": "quadriceps"
         },
         {
-          "name": "Puka Nacua",
+          "name": "Bill Murray",
+          "position": "G",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Kamren Kinchens",
+          "position": "S",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "CJ Daniels",
           "position": "WR",
+          "status": "Out",
+          "detail": ""
+        },
+        {
+          "name": "Ronnie Rivers",
+          "position": "RB",
           "status": "Questionable",
-          "detail": "hip"
+          "detail": ""
         },
         {
           "name": "Myles Garrett",
@@ -27564,7 +27462,7 @@
       "scheme_source": {
         "season": 2026,
         "week": 2,
-        "observed_at_utc": "2026-09-17T19:42:28+00:00"
+        "observed_at_utc": "2026-09-20T18:43:47+00:00"
       },
       "away_players": [
         {
@@ -27680,7 +27578,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -27826,7 +27724,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-20T15:42:51Z",
+        "observed_at_utc": "2026-09-22T16:43:11Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [

@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-09-20T15:48:47Z",
-  "data_through_utc": "2026-09-17T19:42:28+00:00",
+  "generated_at_utc": "2026-09-22T16:46:09Z",
+  "data_through_utc": "2026-09-20T18:43:47+00:00",
   "season": 2026,
   "week": 2,
   "note": "Ten observed rates per club with ranks recomputed from each rate against the 32-team pool. No power rating, projected win total or playoff probability is present.",
@@ -2442,132 +2442,132 @@
   },
   "recent": {
     "ARI": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "ATL": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "BAL": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "BUF": {
       "games": 2,
       "through": "2026-09-18"
     },
     "CAR": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "CHI": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "CIN": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "CLE": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "DAL": {
-      "games": 1,
-      "through": "2026-09-14"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "DEN": {
-      "games": 1,
-      "through": "2026-09-15"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "DET": {
       "games": 2,
       "through": "2026-09-18"
     },
     "GB": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "HOU": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "IND": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-21"
     },
     "JAX": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "KC": {
-      "games": 1,
-      "through": "2026-09-15"
+      "games": 2,
+      "through": "2026-09-21"
     },
     "LAC": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "LAR": {
-      "games": 1,
-      "through": "2026-09-11"
+      "games": 2,
+      "through": "2026-09-22"
     },
     "LV": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "MIA": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "MIN": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "NE": {
-      "games": 1,
-      "through": "2026-09-10"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "NO": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "NYG": {
-      "games": 1,
-      "through": "2026-09-14"
+      "games": 2,
+      "through": "2026-09-22"
     },
     "NYJ": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "PHI": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "PIT": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "SEA": {
-      "games": 1,
-      "through": "2026-09-10"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "SF": {
-      "games": 1,
-      "through": "2026-09-11"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "TB": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "TEN": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     },
     "WSH": {
-      "games": 1,
-      "through": "2026-09-13"
+      "games": 2,
+      "through": "2026-09-20"
     }
   }
 }
