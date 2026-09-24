@@ -967,6 +967,31 @@ def _lost_evidence(fresh: dict, published: Path) -> str | None:
     return None
 
 
+# Fields that move every run without the slate itself changing. The slate job
+# runs every half hour; rewriting the file for a new timestamp or an inning's
+# score would put a data commit and a full site deploy on master each time.
+VOLATILE_KEYS = {"generated_at_utc", "data_through_utc"}
+VOLATILE_GAME_KEYS = {"away_score", "home_score", "game_state"}
+
+
+def _steady(payload: dict) -> dict:
+    return {
+        **{k: v for k, v in payload.items() if k not in VOLATILE_KEYS and k != "games"},
+        "games": [{k: v for k, v in g.items() if k not in VOLATILE_GAME_KEYS}
+                  for g in payload.get("games") or []],
+    }
+
+
+def _unchanged(out: dict, dest: Path) -> bool:
+    if not dest.is_file():
+        return False
+    try:
+        previous = json.loads(dest.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return _steady(previous) == _steady(out)
+
+
 def write_if_better(sport: str, producer: dict, dest: Path) -> bool:
     if not producer.get("games"):
         print(f"  skip {sport}: empty producer; keeping {dest}")
@@ -977,36 +1002,103 @@ def write_if_better(sport: str, producer: dict, dest: Path) -> bool:
     if lost:
         print(f"  skip {sport}: {lost}; keeping the published slate")
         return False
+    if _unchanged(out, dest):
+        print(f"  {sport}: {dest.name} unchanged beyond timestamps and scores")
+        return True
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
     print(f"  wrote {dest} ({len(out['games'])} games)")
     return True
 
 
-def run(data_dir: Path | None = None) -> int:
+def active_mlb_date(now: datetime | None = None, fetch=None) -> str:
+    """The MLB day the site should open on.
+
+    It turns over when last night's final game ends, not at midnight: a West
+    Coast game still going at 12:40 ET keeps the previous day current, and the
+    first run after it goes final publishes the new day. Postponed and
+    suspended games do not hold it. Mirrors activeMlbDate() in matchup_card.js.
+    """
+    now = (now or datetime.now(timezone.utc)).astimezone(ET)
+    today = now.date().isoformat()
+    if now.hour >= 9:
+        return today
+    yesterday = (now.date() - timedelta(days=1)).isoformat()
+    schedule = (fetch or fetch_mlb_schedule)(yesterday)
+    live = any(_mlb_state(game) == "live"
+               for block in (schedule or {}).get("dates") or []
+               for game in block.get("games") or [])
+    return yesterday if live else today
+
+
+def build_mlb_day(slate_date: str, curated: dict) -> dict | None:
+    """The published slate for one MLB day, or None if the schedule is unreachable."""
+    schedule = fetch_mlb_schedule(slate_date)
+    if not schedule:
+        return None
+    starter_ids = [
+        ((node.get("probablePitcher") or {}).get("id"))
+        for block in (schedule.get("dates") or [])
+        for game in (block.get("games") or [])
+        for node in ((game.get("teams") or {}).get("away"),
+                     (game.get("teams") or {}).get("home"))
+        if node
+    ]
+    official = mlb_producer_from_statsapi(
+        schedule, fetch_mlb_arms(starter_ids, int(slate_date[:4])))
+    # The pipeline CSVs describe one day. Merged into any other day they put
+    # last night's bullpen onto tonight's series game, so they only apply to
+    # the day they were written for.
+    same_day = {**curated, "games": [g for g in curated.get("games") or []
+                                     if str(g.get("id") or "").startswith(slate_date)]}
+    print(f"  mlb {slate_date}: {len(official['games'])} on the official schedule, "
+          f"{len(same_day['games'])} curated rows merged in")
+    return merge_producers(official, same_day)
+
+
+# Days kept in data/public/mlb/slates/ behind the active one. The toolbar's
+# previous-day arrow reads the live schedule for anything older.
+KEEP_PAST_DAYS = 3
+
+
+def publish_mlb(curated: dict, active: str) -> bool:
+    """Publish the active day and the day after it, each to its own file.
+
+    slate.json stays the active day for every reader that knows one file; the
+    dated files are what the desk reads per toolbar day, so tomorrow is built
+    before anyone asks for it. Returns False only when the active day's
+    schedule could not be read at all.
+    """
+    days_dir = PUBLIC_DIR / "mlb" / "slates"
+    tomorrow = (datetime.fromisoformat(active) + timedelta(days=1)).date().isoformat()
+    reached = False
+    for day in (active, tomorrow):
+        built = build_mlb_day(day, curated)
+        if built is None:
+            print(f"  mlb {day}: schedule unreachable; keeping the published file")
+            continue
+        write_if_better("mlb", built, days_dir / f"{day}.json")
+        if day == active:
+            reached = True
+            write_if_better("mlb", built, PUBLIC_DIR / "mlb" / "slate.json")
+    oldest = (datetime.fromisoformat(active) - timedelta(days=KEEP_PAST_DAYS)).date().isoformat()
+    for path in sorted(days_dir.glob("*.json")) if days_dir.is_dir() else []:
+        if path.stem < oldest:
+            path.unlink()
+            print(f"  pruned {path.relative_to(ROOT)}")
+    return reached
+
+
+def run(data_dir: Path | None = None, sports: tuple[str, ...] = ("mlb", "nfl")) -> int:
     data_dir = Path(data_dir or DATA_DIR)
     ok = False
-    slate_date = datetime.now(ET).strftime("%Y-%m-%d")
-    curated = mlb_producer(data_dir)
-    schedule = fetch_mlb_schedule(slate_date)
-    if schedule:
-        starter_ids = [
-            ((node.get("probablePitcher") or {}).get("id"))
-            for block in (schedule.get("dates") or [])
-            for game in (block.get("games") or [])
-            for node in ((game.get("teams") or {}).get("away"),
-                         (game.get("teams") or {}).get("home"))
-            if node
-        ]
-        official = mlb_producer_from_statsapi(
-            schedule, fetch_mlb_arms(starter_ids, int(slate_date[:4])))
-        mlb = merge_producers(official, curated)
-        print(f"  mlb: {len(official['games'])} on the official schedule for {slate_date}, "
-              f"{len(curated['games'])} curated rows merged in")
-    else:
-        mlb = curated
-        print("  mlb: schedule unreachable; falling back to the curated rows only")
-    ok = write_if_better("mlb", mlb, PUBLIC_DIR / "mlb" / "slate.json") or ok
+    if "mlb" in sports:
+        curated = mlb_producer(data_dir)
+        if not publish_mlb(curated, active_mlb_date()):
+            print("  mlb: schedule unreachable; falling back to the curated rows only")
+            write_if_better("mlb", curated, PUBLIC_DIR / "mlb" / "slate.json")
+    if "nfl" not in sports:
+        return 0 if (PUBLIC_DIR / "mlb" / "slate.json").is_file() else 1
     espn = fetch_nfl_scoreboard()
     if espn:
         codes = {
@@ -1029,4 +1121,6 @@ def run(data_dir: Path | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(run())
+    # `--mlb-only` is the half-hourly slate job: the day turns over and
+    # tomorrow is built without waiting on the full pipeline.
+    raise SystemExit(run(sports=("mlb",) if "--mlb-only" in sys.argv[1:] else ("mlb", "nfl")))

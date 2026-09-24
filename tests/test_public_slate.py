@@ -274,3 +274,78 @@ class MlbScheduleParityTests(unittest.TestCase):
         merged = merge_producers(official, curated)
         self.assertEqual(len(merged["games"]), 1)
         self.assertEqual(merged["games"][0]["away_bullpen"], "Two arms unavailable")
+
+
+class MlbDayTurnoverTests(unittest.TestCase):
+    """The desk opens on the MLB day that is actually being played: last night
+    until its final game ends, then the new day - and tomorrow is built ahead."""
+
+    @staticmethod
+    def _schedule(*states):
+        return {"dates": [{"games": [
+            {"status": {"abstractGameState": state, "detailedState": detail}}
+            for state, detail in states]}]}
+
+    def test_day_holds_while_last_night_is_still_playing(self):
+        from datetime import datetime
+        from outputs.publish_public_slate import ET, active_mlb_date
+
+        at = datetime(2026, 9, 25, 0, 40, tzinfo=ET)
+        live = lambda day: self._schedule(("Final", "Final"), ("Live", "In Progress"))
+        self.assertEqual(active_mlb_date(at, live), "2026-09-24")
+
+    def test_day_turns_over_once_every_game_is_final(self):
+        from datetime import datetime
+        from outputs.publish_public_slate import ET, active_mlb_date
+
+        at = datetime(2026, 9, 25, 1, 5, tzinfo=ET)
+        done = lambda day: self._schedule(("Final", "Final"), ("Preview", "Postponed"))
+        self.assertEqual(active_mlb_date(at, done), "2026-09-25")
+
+    def test_daytime_never_asks_about_last_night(self):
+        from datetime import datetime
+        from outputs.publish_public_slate import ET, active_mlb_date
+
+        def boom(day):
+            raise AssertionError("no schedule read after the morning")
+        self.assertEqual(active_mlb_date(datetime(2026, 9, 25, 13, tzinfo=ET), boom), "2026-09-25")
+
+    def test_curated_rows_only_merge_into_their_own_day(self):
+        from unittest import mock
+        from outputs import publish_public_slate as pps
+
+        schedule = {"dates": [{"games": [{
+            "gamePk": 2, "officialDate": "2026-09-25", "gameDate": "2026-09-25T23:05:00Z",
+            "status": {"abstractGameState": "Preview", "detailedState": "Scheduled"},
+            "teams": {"away": {"team": {"abbreviation": "TB"}},
+                      "home": {"team": {"abbreviation": "NYY"}}}}]}]}
+        # Last night's CSV row for the same series.
+        curated = {"games": [{"id": "2026-09-24-tb-nyy", "away": "TB", "home": "NYY",
+                              "away_bullpen": "last night"}]}
+        with mock.patch.object(pps, "fetch_mlb_schedule", return_value=schedule), \
+             mock.patch.object(pps, "fetch_mlb_arms", return_value={}), \
+             mock.patch.object(pps, "bullpen_load", return_value=None):
+            built = pps.build_mlb_day("2026-09-25", curated)
+        self.assertIsNone(built["games"][0].get("away_bullpen"))
+
+    def test_timestamp_and_score_only_changes_do_not_rewrite(self):
+        import tempfile
+        from outputs.publish_public_slate import write_if_better
+
+        tmp = Path(tempfile.mkdtemp()) / "2026-09-25.json"
+        game = {"id": "1", "game_pk": 1, "away": "TB", "home": "NYY",
+                "kickoff_utc": "2026-09-25T23:05:00Z", "game_state": "scheduled"}
+        self.assertTrue(write_if_better("mlb", {"generated_at_utc": "2026-09-25T10:00:00Z",
+                                                "games": [game]}, tmp))
+        before = tmp.read_text(encoding="utf-8")
+        later = dict(game, game_state="live", away_score=1, home_score=0)
+        self.assertTrue(write_if_better("mlb", {"generated_at_utc": "2026-09-25T23:30:00Z",
+                                                "games": [later]}, tmp))
+        self.assertEqual(tmp.read_text(encoding="utf-8"), before)
+
+    def test_desk_reads_a_file_per_day_and_matches_games_by_id(self):
+        js = (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8")
+        self.assertIn("slates/", js)
+        self.assertIn("function activeMlbDate", js)
+        # The club-pair fallback must not fire when both sides carry a game id.
+        self.assertIn("if (left.game_pk && right.game_pk) return", js)

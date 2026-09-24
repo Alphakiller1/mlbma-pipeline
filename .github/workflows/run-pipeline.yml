@@ -98,6 +98,9 @@ jobs:
           set -euo pipefail
           public_files=(
             data/public/mlb/slate.json
+            # One file per MLB day (today and tomorrow); add -A below also
+            # stages the days the publisher prunes.
+            data/public/mlb/slates
             # The NFL artifacts are written by the same publish step and were
             # never committed, so the NFL slate only ever moved when someone
             # committed it by hand - it sat on week 2, two games already final,
@@ -116,7 +119,7 @@ jobs:
           # Validate the exact public tree before creating a commit. This is
           # the same boundary guard the production deployment runs later.
           python scripts/validate_public_fields.py
-          git add -- "${public_files[@]}"
+          git add -A -- "${public_files[@]}"
           if git diff --cached --quiet; then
             echo "Public MLB artifacts are already current; no commit needed."
             exit 0
@@ -130,5 +133,7 @@ jobs:
           # newer master commits and replay only this generated-data commit.
           # Non-public working files stay runner-local and are never pushed.
           git stash push -m "runner-only pipeline outputs" || true
-          git pull --rebase origin "$TARGET_BRANCH"
+          # The half-hourly slate job commits the same MLB files; this run's
+          # generated copy is replayed on top and wins any conflict.
+          git pull --rebase -X theirs origin "$TARGET_BRANCH"
           git push origin "HEAD:$TARGET_BRANCH"

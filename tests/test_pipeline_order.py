@@ -41,14 +41,17 @@ class PipelineOrderTests(unittest.TestCase):
         self.assertIn("Publish refreshed public artifacts to master", yml)
         self.assertIn("python scripts/validate_public_fields.py", yml)
         published = yml.split("public_files=(", 1)[1].split("\n          )", 1)[0]
-        for artifact in ("data/public/mlb/slate.json", "data/public/nfl/slate.json",
+        for artifact in ("data/public/mlb/slate.json", "data/public/mlb/slates",
+                         "data/public/nfl/slate.json",
                          "data/public/nfl/team_context.json",
                          "data/public/league_baselines.json"):
             self.assertIn(artifact, published, f"{artifact} is regenerated but never published")
         publisher = (ROOT / "outputs" / "publish_public_slate.py").read_text(encoding="utf-8")
         self.assertIn("GUARDED_EVIDENCE", publisher)
         self.assertIn("_lost_evidence", publisher)
-        self.assertIn('git pull --rebase origin "$TARGET_BRANCH"', yml)
+        # The half-hourly slate job commits the same MLB files, so the replayed
+        # generated commit has to win a conflict rather than fail the publish.
+        self.assertIn('git pull --rebase -X theirs origin "$TARGET_BRANCH"', yml)
         self.assertIn('git push origin "HEAD:$TARGET_BRANCH"', yml)
 
 
