@@ -1,0 +1,69 @@
+name: Publish MLB Slate
+
+# The MLB desk turns over to the new day as soon as last night's final game
+# ends, and tomorrow's slate is built ahead so the toolbar's next-day tab opens
+# on published context. The full pipeline runs once, late in the morning, and
+# took ~80 minutes to publish anything - so the site sat on the previous day's
+# slate until around 12:45 ET. This job only reads the official schedule
+# (stdlib + python-dotenv, well under a minute) and commits only when the slate
+# actually changed: new day, probable starters, lineups, weather. Timestamp- and
+# score-only runs leave master untouched and deploy nothing.
+
+on:
+  schedule:
+    # Off the top of the hour, where GitHub delays scheduled runs the most.
+    - cron: "11,41 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  # Pushes made with GITHUB_TOKEN raise no push event, so the deploy is
+  # dispatched explicitly - and only when a slate was actually published.
+  actions: write
+
+concurrency:
+  group: publish-slate
+  cancel-in-progress: false
+
+jobs:
+  publish-slate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install python-dotenv
+
+      - name: Build today's and tomorrow's MLB slates
+        run: python -m outputs.publish_public_slate --mlb-only
+
+      - name: Publish changed slates to master
+        id: publish
+        run: |
+          set -euo pipefail
+          python scripts/validate_public_fields.py
+          git add -A -- data/public/mlb/slate.json data/public/mlb/slates
+          if git diff --cached --quiet; then
+            echo "MLB slate unchanged; nothing to publish."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "data: refresh MLB slate"
+          # A newer master commit (a site release or the daily pipeline) may
+          # have landed meanwhile. The slate just built is the newest reading
+          # of the schedule, so it wins any conflict on these files.
+          git pull --rebase -X theirs origin master
+          git push origin HEAD:master
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy chase-analytics.com
+        if: steps.publish.outputs.pushed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run cloudflare-deploy.yml --ref master

@@ -342,7 +342,7 @@ def main() -> int:
             assert_clean(payload)
             # The per-game allow-list applies to the slates specifically: they
             # are the artifact the matchup cards read field by field.
-            if path in PUBLIC_SLATES:
+            if path in PUBLIC_SLATES or path.parent.name == "slates":
                 for game in payload.get("games", []):
                     extra = set(game) - allowed
                     if extra:

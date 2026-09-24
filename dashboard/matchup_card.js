@@ -703,11 +703,67 @@
     };
   }
 
+  function kickoffDay(game) {
+    var kickoff = game && game.kickoff_utc && new Date(game.kickoff_utc);
+    return kickoff && !isNaN(kickoff.getTime()) ? easternDateIso(kickoff) : '';
+  }
+
+  /* A game is the same game only by its id. The club-pair fallback used to fire
+     whenever the ids differed - which is every game of a series - so the
+     previous day's published starters, lineups and weather were painted over
+     today's fixtures until the next publish landed. Two clubs only match
+     without ids when the published row is on the same calendar day. */
   function sameGame(left, right) {
     if (!left || !right) return false;
-    if (left.game_pk && right.game_pk && String(left.game_pk) === String(right.game_pk)) return true;
+    if (left.game_pk && right.game_pk) return String(left.game_pk) === String(right.game_pk);
+    var leftDay = kickoffDay(left), rightDay = kickoffDay(right);
+    if (!leftDay || leftDay !== rightDay) return false;
     return String(left.away || '').toUpperCase() === String(right.away || '').toUpperCase() &&
       String(left.home || '').toUpperCase() === String(right.home || '').toUpperCase();
+  }
+
+  /* The MLB day on the board. It turns over when yesterday's last game is
+     final, not at midnight: a West Coast game still in the ninth at 12:40 ET
+     keeps its night on screen, and the moment it ends the desk opens on the
+     new day. Postponed and suspended games do not hold the board. */
+  var MLB_SCHEDULE = 'https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=';
+  var activeDayRequest = null, activeDayAt = 0;
+  function activeMlbDate() {
+    // Re-asked after five minutes so a tab left open overnight still turns over.
+    if (activeDayRequest && Date.now() - activeDayAt < 300000) return activeDayRequest;
+    activeDayAt = Date.now();
+    var today = easternDateIso();
+    var hour = Number(new Date().toLocaleString('en-US', { timeZone: 'America/New_York', hour: 'numeric', hourCycle: 'h23' }));
+    // Nothing from the night before is still playing by mid-morning.
+    if (!(hour < 9)) return (activeDayRequest = Promise.resolve(today));
+    var yesterday = shiftIso(today, -1);
+    activeDayRequest = loadJson(MLB_SCHEDULE + yesterday).then(function (payload) {
+      var unfinished = (payload.dates || []).some(function (block) {
+        return (block.games || []).some(function (game) { return mlbState(game) === 'live'; });
+      });
+      return unfinished ? yesterday : today;
+    }).catch(function () { return today; });
+    return activeDayRequest;
+  }
+
+  /* One published file per MLB day, so the day in the toolbar is the day the
+     context was built for - including tomorrow, which the pipeline builds
+     ahead. slate.json is only used when it holds the requested day. */
+  function datedSlateUrl(adapter, dateIso) {
+    return String(adapter.SLATE_URL).replace(/slate\.json(\?.*)?$/, 'slates/' + dateIso + '.json');
+  }
+
+  function loadPublishedMlbDay(adapter, dateIso) {
+    function onDay(slate) {
+      var games = (slate && slate.games || []).filter(function (game) {
+        var day = kickoffDay(game);
+        return !day || day === dateIso;
+      });
+      return Object.assign({}, slate, { games: games });
+    }
+    return loadJson(datedSlateUrl(adapter, dateIso)).catch(function () {
+      return loadJson(adapter.SLATE_URL);
+    }).then(onDay);
   }
 
   function mergeGames(official, curated) {
@@ -735,22 +791,31 @@
     // baselines must be in the registry first. It never rejects: a failed fetch
     // leaves cells ungraded rather than holding the slate back.
     var baselines = (global.MLBMAAssets && global.MLBMAAssets.baselinesReady) || Promise.resolve(null);
+    if (sport === 'mlb') {
+      var requested = dateIso || query().get('date');
+      return (requested ? Promise.resolve(requested) : activeMlbDate()).then(function (day) {
+        return loadMlbGames(adapter, day, baselines);
+      });
+    }
     var publicRequest = loadJson(adapter.SLATE_URL).then(function (slate) {
       var normalized = global.ChasePublicSlate.normalize(sport, slate);
       return { normalized: normalized, error: null };
     }).catch(function (error) { return { normalized: { games: [] }, error: error }; });
-    if (sport !== 'mlb') {
-      return Promise.all([publicRequest, baselines]).then(function (parts) {
-        var result = parts[0];
-        if (result.error && !result.normalized.games.length) throw result.error;
-        return {
-          games: result.normalized.games, generatedAt: result.normalized.generated_at,
-          dataThrough: result.normalized.data_through, source: 'Published slate'
-        };
-      });
-    }
-    var date = dateIso || query().get('date') || easternDateIso();
-    var officialUrl = 'https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=' + encodeURIComponent(date) +
+    return Promise.all([publicRequest, baselines]).then(function (parts) {
+      var result = parts[0];
+      if (result.error && !result.normalized.games.length) throw result.error;
+      return {
+        games: result.normalized.games, generatedAt: result.normalized.generated_at,
+        dataThrough: result.normalized.data_through, source: 'Published slate'
+      };
+    });
+  }
+
+  function loadMlbGames(adapter, date, baselines) {
+    var publicRequest = loadPublishedMlbDay(adapter, date).then(function (slate) {
+      return { normalized: global.ChasePublicSlate.normalize('mlb', slate), error: null };
+    }).catch(function (error) { return { normalized: { games: [] }, error: error }; });
+    var officialUrl = MLB_SCHEDULE + encodeURIComponent(date) +
       // NOTE: probablePitcher cannot be hydrated with stats on this endpoint -
       // probablePitcher(stats(...)) returns identity only (verified 2026-09-10),
       // so away_era/home_era stay empty and the card says so. Sourcing a season
@@ -1077,7 +1142,10 @@
     host.__desk.adapter = opts.adapter;
     host.__desk.embedded = !!opts.embedded;
     host.__desk.results = !!opts.results;
-    host.__desk.dateIso = opts.dateIso || query().get('date') || easternDateIso();
+    // MLB leaves the day unset so loadGames can hold the board on last night
+    // until its final game ends; every other sport reads today's window.
+    host.__desk.dateIso = opts.dateIso || query().get('date') ||
+      (opts.sport === 'mlb' ? null : easternDateIso());
     host.setAttribute('data-state', 'loading');
     host.innerHTML = '<div class="ca-loading-state" role="status">Loading ' + esc(opts.sport.toUpperCase()) + ' matchups…</div>';
     return loadGames(opts.sport, opts.adapter, host.__desk.dateIso).then(function (result) {
@@ -1133,7 +1201,7 @@
       if (shift || today) {
         var dateHost = deskHostFor(shift || today);
         if (!dateHost || !dateHost.__desk) return;
-        var nextDate = today ? easternDateIso() : shiftIso(dateHost.__desk.dateIso, Number(shift.getAttribute('data-date-shift')));
+        var nextDate = today ? null : shiftIso(dateHost.__desk.dateIso, Number(shift.getAttribute('data-date-shift')));
         mount({ sport: dateHost.__desk.sport, adapter: dateHost.__desk.adapter, host: dateHost,
           dateIso: nextDate, results: dateHost.__desk.results });
         return;
