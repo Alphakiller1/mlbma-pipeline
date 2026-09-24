@@ -125,7 +125,12 @@ def main(argv: list[str]) -> int:
             page.on("response", on_response)
             page.on("request", on_request)
             page.on("pageerror", lambda e: console.append(str(e)[:160]))
-            page.goto(url, wait_until="networkidle", timeout=60000)
+            # Public pages may keep a third-party status or model request open.
+            # Waiting for global network idleness makes the boundary gate depend
+            # on those unrelated hosts and has produced false CI timeouts. The
+            # route-specific wait below gives the page time to resolve its
+            # evidence while keeping the gate deterministic.
+            page.goto(url, wait_until="domcontentloaded", timeout=60000)
             page.wait_for_timeout(9000 if "matchup.html" in url else 4000)
 
             text = page.locator("main").inner_text() if page.locator("main").count() else ""
@@ -153,7 +158,7 @@ def main(argv: list[str]) -> int:
         mc_calls: list[str] = []
         page.on("request", lambda r: mc_calls.append(r.url.split("?")[0])
                 if ("/api/me" in r.url or "/api/model-center/" in r.url) else None)
-        page.goto(f"{base}/model-center/", wait_until="networkidle", timeout=60000)
+        page.goto(f"{base}/model-center/", wait_until="domcontentloaded", timeout=60000)
         page.wait_for_timeout(4000)
         check("model center: skips sign-in",
               not any(url.endswith("/api/me") for url in mc_calls),
