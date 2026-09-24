@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import subprocess
 import re
 import unittest
@@ -102,7 +103,12 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("function cfbClashBody", js)
         self.assertIn("function cfbCompareBody", js)
         self.assertIn("Matchup Breakdown", js)
-        self.assertIn("Clearest unit gaps", js)
+        self.assertIn("Largest unit gaps", js)
+        self.assertIn("function cfbDecisionPaths", js)
+        self.assertIn("function cfbReadingKey", js)
+        self.assertIn("function cfbScriptLens", js)
+        self.assertIn("How The Matchup Can Change Possessions And Play Mix", js)
+        self.assertIn("How To Read The CFB Metrics", js)
         self.assertIn("cfbMirrorHead", js)
         self.assertIn("side + '_logo'", js)
         self.assertIn("ca-arsenal-table", js)
@@ -110,6 +116,22 @@ class SportRouteBuilderTests(unittest.TestCase):
         adapter = (ROOT / "dashboard" / "sports" / "cfb.js").read_text(encoding="utf-8")
         self.assertIn("slate.json", adapter)
         self.assertIn("mergePublic", adapter)
+
+    def test_cfb_public_slate_carries_unit_profiles(self):
+        payload = json.loads(
+            (ROOT / "data" / "public" / "cfb" / "slate.json").read_text(encoding="utf-8")
+        )
+        games = payload.get("games") or []
+        self.assertGreater(len(games), 0)
+        profiled = [g for g in games if g.get("away_form") and g.get("home_form")]
+        self.assertGreaterEqual(len(profiled) / len(games), 0.95)
+        for game in profiled:
+            for side in ("away", "home"):
+                rates = game[side + "_form"].get("rates") or {}
+                self.assertIn("off_ppa", rates)
+                self.assertIn("def_ppa", rates)
+                self.assertIn("off_successRate", rates)
+                self.assertIn("def_successRate", rates)
 
     def test_past_results_are_not_a_public_destination(self):
         """Completed games belong inside a matchup breakdown, nowhere else.

@@ -3660,8 +3660,106 @@
     { id: 'special', label: 'Special Teams', keys: ['off_fg', 'off_punt', 'off_kr', 'off_pr', 'off_pen'] }
   ];
 
+  var CFB_SCRIPT_LENSES = [
+    {
+      title: 'Scoring Pressure', metric: 'Points Per Game', off: 'off_ppa', def: 'def_ppa',
+      impact: 'Scoring and points allowed summarize how often each unit has finished drives. A sustained scoring gap can force the opponent away from its preferred pace and play mix.'
+    },
+    {
+      title: 'Drive Sustainability', metric: 'Third-Down Rate', off: 'off_successRate', def: 'def_successRate',
+      impact: 'Third-down conversion extends possessions and adds snaps. Stops reduce play volume; conversions create more carries, routes and red-zone chances.'
+    },
+    {
+      title: 'Explosive Passing', metric: 'Yards Per Pass Attempt', off: 'off_explosiveness', def: 'def_explosiveness',
+      impact: 'Yards per attempt shows how much passing production has come with each throw. Higher output can flip field position quickly, but it is not a count of explosive plays.'
+    },
+    {
+      title: 'Run-Game Control', metric: 'Yards Per Rush Attempt', off: 'off_stuffRate', def: 'def_stuffRate',
+      impact: 'Efficient rushing keeps the full playbook available and shortens later downs. Strong resistance can create obvious passing situations and change possession length.'
+    },
+    {
+      title: 'Passing Friction', metric: 'Sacks Per Game', off: 'off_sacks', def: 'def_sacks',
+      impact: 'Sacks create lost-yardage downs and can end drives. Protection preserves route depth and dropback volume; pressure can compress both.'
+    },
+    {
+      title: 'Possession Volatility', metric: 'Interceptions Per Game', off: 'off_int', def: 'def_int',
+      impact: 'Interceptions remove an offensive possession and may create a short field. This comparison describes ball-security and takeaway history; it does not predict a turnover.'
+    }
+  ];
+
   function cfbRates(game, side) {
     return ((game[side + '_form'] || {}).rates) || {};
+  }
+
+  function cfbDecisionPaths() {
+    return '<nav class="ca-research-paths" aria-label="Choose a college football research path">' +
+      '<a href="#clash"><strong>Game Script</strong><span>Each offense against the defense it will face</span></a>' +
+      '<a href="#form"><strong>Team Identity</strong><span>Scoring, passing, rushing, downs and special teams</span></a>' +
+      '<a href="#recent"><strong>Form &amp; Context</strong><span>Recent results, venue, travel and schedule setting</span></a>' +
+      '</nav>';
+  }
+
+  function cfbReadingKey() {
+    return '<aside class="ca-cfb-reading-key" aria-label="How to read the college football matchup board">' +
+      '<div><span>Reading Order</span><strong>Producing Offense</strong><i aria-hidden="true">→</i>' +
+      '<strong>Game-Script Lever</strong><i aria-hidden="true">→</i><strong>Opposing Defense</strong></div>' +
+      '<p>Values are season-to-date results. Ranks use the same FBS pool and are normalized so 1st is strongest. ' +
+      'The brighter side owns the stronger observed indicator; it is matchup evidence, not a forecast or recommendation.</p></aside>';
+  }
+
+  function cfbScriptReading(sport, game, offSide, defSide, lens) {
+    var offense = cfbRates(game, offSide)[lens.off];
+    var defense = cfbRates(game, defSide)[lens.def];
+    if (!offense && !defense) return '';
+    var offPct = percentOf(offense);
+    var defPct = percentOf(defense);
+    var verdict = 'One side of this comparison is not yet published.';
+    if (offPct != null && defPct != null) {
+      var gap = offPct - defPct;
+      verdict = Math.abs(gap) < 8 ? 'The FBS-relative indicators are closely matched.' :
+        (gap > 0 ? 'The offense carries the stronger observed indicator.' :
+          'The defense carries the stronger observed resistance.');
+    }
+    function rank(entry, role) {
+      return entry && entry.rank && entry.of
+        ? role + ' ' + entry.rank + ordinal(entry.rank) + ' of ' + entry.of
+        : role + ' rank unavailable';
+    }
+    return '<li><strong>' + esc(fullName(sport, game, offSide)) + ' offense</strong>' +
+      '<span>vs ' + esc(fullName(sport, game, defSide)) + ' defense</span>' +
+      '<small>' + esc(rank(offense, 'Offense')) + ' · ' + esc(rank(defense, 'Defense')) +
+      '</small><p>' + esc(verdict) + '</p></li>';
+  }
+
+  function cfbScriptLens(sport, game) {
+    var cards = CFB_SCRIPT_LENSES.map(function (lens) {
+      var directions = cfbScriptReading(sport, game, 'away', 'home', lens) +
+        cfbScriptReading(sport, game, 'home', 'away', lens);
+      if (!directions) return '';
+      return '<article class="ca-script-lens"><header><span>' + esc(lens.metric) + '</span>' +
+        '<h4>' + esc(lens.title) + '</h4></header><p>' + esc(lens.impact) + '</p>' +
+        '<ul>' + directions + '</ul></article>';
+    }).filter(Boolean).join('');
+    if (!cards) return '';
+    return '<section class="ca-script-dynamics ca-cfb-script-dynamics" aria-labelledby="caCfbScriptDynamicsTitle">' +
+      '<header><div><span>Competitive Dynamics</span>' +
+      '<h3 id="caCfbScriptDynamicsTitle">How The Matchup Can Change Possessions And Play Mix</h3></div>' +
+      '<p>Connect observed team rates to pace, field position and opportunity without treating descriptive evidence as a prediction.</p></header>' +
+      '<div class="ca-script-lens-grid">' + cards + '</div></section>';
+  }
+
+  function cfbMetricGuide() {
+    return '<details class="ca-metric-guide"><summary>How To Read The CFB Metrics</summary>' +
+      '<dl><div><dt>FBS Percentile</dt><dd>League-relative placement among teams that published the rate. ' +
+      'Direction is normalized, so a 1st-place defense is always the strongest result.</dd></div>' +
+      '<div><dt>Points And Yards Per Game</dt><dd>Descriptive production shaped by pace, field position and opponents. ' +
+      'Use it with rate metrics rather than as a standalone efficiency measure.</dd></div>' +
+      '<div><dt>Third/Fourth Down</dt><dd>Conversion history on possession-leverage downs. ' +
+      'It helps explain drive survival, not the quality of every snap.</dd></div>' +
+      '<div><dt>Yards Per Attempt</dt><dd>Production per pass or rush attempt. Passing YPA is a useful field-position lens, ' +
+      'but it is not an explosive-play rate.</dd></div>' +
+      '<div><dt>Sacks And Interceptions</dt><dd>Per-game outcomes that show disruption and possession volatility. ' +
+      'Small samples can move these rates quickly.</dd></div></dl></details>';
   }
 
   function cfbClashSpecs() {
@@ -3837,8 +3935,8 @@
     var a = cfbEdgesBoard(sport, game, 'away', 'home');
     var b = cfbEdgesBoard(sport, game, 'home', 'away');
     if (!a && !b) return '';
-    return '<section class="ca-arsenal-panel"><h3>Clearest unit gaps</h3>' +
-      '<p class="ca-lineup-context">The biggest percentile separations between this offense and the defense it meets. Each row is the same two-club mirror as the MLB matchup board: value, rank, and a bar that grows from the centre.</p>' +
+    return '<section class="ca-arsenal-panel"><h3>Largest unit gaps</h3>' +
+      '<p class="ca-lineup-context">The widest FBS-percentile separations between each offense and the defense it meets. These show where the matchup is most different—not which team will win.</p>' +
       a + b + '</section>';
   }
 
@@ -3847,7 +3945,12 @@
     var b = cfbClashCard(sport, game, 'home', 'away');
     if (!a && !b) return pending('Unit rates are not published for this pairing yet.');
     var espn = ((game.away_form || {}).source === 'espn') || ((game.home_form || {}).source === 'espn');
-    return '<div class="ca-detail-stack-inner">' + cfbEdges(sport, game) + a + b +
+    var edges = cfbEdges(sport, game);
+    return '<div class="ca-detail-stack-inner"><div class="ca-cfb-matchup-stack">' + a + b + '</div>' +
+      cfbScriptLens(sport, game) +
+      (edges ? '<details class="ca-ranking-detail ca-cfb-gap-detail"><summary>Open Largest Unit Gaps</summary>' +
+        '<div class="ca-ranking-detail__body">' + edges + '</div></details>' : '') +
+      cfbMetricGuide() +
       '<p class="ca-detail-source-note">' +
       (espn
         ? 'Each row is a season-to-date ESPN team rate, ranked against every FBS club that published it. The left club is this offense’s production; the right club is what that defense has allowed. Rank sits under the number; bar length is the same percentile. This describes games already played.'
@@ -3891,7 +3994,7 @@
     return [
       section('clash', 'Matchup Breakdown',
         'Each Offense Against The Defense It Meets, Rate By Rate',
-        cfbClashBody(sport, game)),
+        cfbDecisionPaths() + cfbReadingKey() + cfbClashBody(sport, game)),
 
       section('form', 'Stat Comparison',
         'Same Rates, Side By Side, Ranked Against The FBS Pool',

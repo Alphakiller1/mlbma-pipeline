@@ -239,7 +239,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("Legacy matchup URL preserves a working game", "Minnesota Twins" in page.locator("main").inner_text())
         # Past results are not a public destination; the only place a completed
         # game is reachable is inside a matchup breakdown.
-        for sport in ("mlb", "nfl"):
+        for sport in ("mlb", "nfl", "cfb"):
             response = page.request.get(f"{base_url.rstrip('/')}/{sport}/results.html")
             check(f"{sport.upper()} has no public results route", response.status == 404,
                   f"status={response.status}")
@@ -291,6 +291,45 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         match = PROHIBITED.search(detail_text)
         check("NFL detail public copy boundary", match is None, match.group(0) if match else "")
         check("NFL detail no horizontal overflow", page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
+
+        page.goto(base_url.rstrip("/") + "/cfb/", wait_until="domcontentloaded", timeout=timeout_ms)
+        page.wait_for_selector(".ca-matchup-card", timeout=timeout_ms)
+        cfb_detail_link = page.locator(".ca-matchup-card__detail-link").first
+        cfb_detail_url = cfb_detail_link.get_attribute("href") or ""
+        check("CFB full-detail link exists",
+              cfb_detail_url.startswith("/cfb/matchup.html?game="), cfb_detail_url)
+        page.goto(base_url.rstrip("/") + cfb_detail_url,
+                  wait_until="domcontentloaded", timeout=timeout_ms)
+        page.wait_for_selector(".ca-cfb-reading-key", timeout=timeout_ms)
+        check("CFB current matchup has both directional unit boards",
+              page.locator(".ca-cfb-matchup-stack > .ca-arsenal-panel").count() == 2)
+        check("CFB matchup exposes the reading order",
+              page.locator(".ca-cfb-reading-key").count() == 1)
+        check("CFB matchup explains six competitive dynamics",
+              page.locator(".ca-cfb-script-dynamics .ca-script-lens").count() == 6)
+        check("CFB matchup keeps largest gaps progressive",
+              page.locator(".ca-cfb-gap-detail:not([open])").count() == 1)
+        page.locator("[data-cfb-compare='passing']").click()
+        check("CFB stat-family tabs select one visible panel",
+              page.locator("[data-cfb-compare='passing'][aria-selected='true']").count() == 1
+              and page.locator("[data-cfb-compare-panel='passing']:not([hidden])").count() == 1)
+        page.locator(".ca-metric-guide summary").click()
+        check("CFB metric guide expands",
+              page.locator(".ca-metric-guide[open]").count() == 1)
+        cfb_text = page.locator("main").inner_text()
+        match = PROHIBITED.search(cfb_text)
+        check("CFB detail public copy boundary", match is None, match.group(0) if match else "")
+        check("CFB detail no horizontal overflow",
+              page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
+        page.set_viewport_size({"width": 390, "height": 844})
+        check("CFB phone layout has no horizontal overflow",
+              page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
+        check("CFB phone dynamics stack to one column",
+              page.locator(".ca-script-lens-grid").evaluate(
+                  "el => getComputedStyle(el).gridTemplateColumns.split(' ').length") == 1)
+        check("CFB phone section navigation hides its scrollbar",
+              page.locator(".ca-detail-nav").evaluate(
+                  "el => getComputedStyle(el).scrollbarWidth") == "none")
         context.close()
         browser.close()
     return results
