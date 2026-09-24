@@ -19,6 +19,8 @@ Two rules the board makes easy to break:
 """
 from __future__ import annotations
 
+import csv
+import io
 import json
 import re
 import urllib.request
@@ -243,7 +245,9 @@ def response_baselines(schemes: dict[str, dict]) -> dict[str, dict]:
 # line, an edge and an action - and none of it is carried across. The row is
 # rebuilt key by key rather than copied and pruned, so a new model field cannot
 # arrive here by default.
-PLAYER_FIELDS = ("player_name", "position", "depth_rank", "headshot_url")
+PLAYER_FIELDS = (
+    "player_id", "player_name", "position", "depth_rank", "headshot_url",
+)
 
 # The league serves these headshots as full-body cutouts - 4.8 MB of mostly
 # transparent margin each, which is 40 MB of PNG for one matchup page and a
@@ -287,6 +291,7 @@ def key_players(board: dict) -> dict[str, list[dict]]:
         if rank is None or int(rank) > DEPTH_LIMITS[position]:
             continue
         by_team.setdefault(team, []).append({
+            "player_id": str(row.get("player_id") or ""),
             "name": row.get("player_name") or "",
             "position": position,
             "depth_rank": int(rank),
@@ -383,8 +388,15 @@ PLAYER_SCHEME_SPLITS = {
     "gap_guard", "gap_tackle", "gap_end",
 }
 PLAYER_SCHEME_FIELDS = {
-    "QB": ("dropbacks", "completion_rate", "yards_per_attempt", "epa_per_dropback"),
-    "RB": ("carries", "yards_per_carry", "epa_per_carry", "success_rate"),
+    "QB": (
+        "dropbacks", "attempts", "completions", "passing_yards", "passing_tds",
+        "interceptions", "completion_rate", "yards_per_attempt", "epa_per_dropback",
+        "success_rate",
+    ),
+    "RB": (
+        "carries", "rushing_yards", "rushing_tds", "yards_per_carry",
+        "epa_per_carry", "success_rate",
+    ),
 }
 
 
@@ -450,6 +462,108 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
                             split.setdefault("league_ranks", {})[metric] = {
                                 "place": ranks[identity], "of": len(pool)}
     return out
+
+
+NFLVERSE_RELEASE = (
+    "https://github.com/nflverse/nflverse-data/releases/download/{tag}/{name}"
+)
+
+# Plain observed season totals. These are deliberately separate from the
+# producer's player projections: the public matchup page may show what a player
+# has done, never what the private model expects him to do next.
+TEAM_STAT_FIELDS = (
+    "games", "completions", "attempts", "passing_yards", "passing_tds",
+    "passing_first_downs", "sacks_suffered", "carries", "rushing_yards", "rushing_tds",
+    "rushing_first_downs", "receptions", "targets", "receiving_yards",
+    "receiving_tds", "def_sacks", "def_interceptions", "def_fumbles_forced",
+)
+PLAYER_STAT_FIELDS = (
+    "games", "completions", "attempts", "passing_yards", "passing_tds",
+    "passing_interceptions", "carries", "rushing_yards", "rushing_tds",
+    "receptions", "targets", "receiving_yards", "receiving_tds",
+    "target_share", "fantasy_points", "fantasy_points_ppr",
+)
+
+
+def _number(value: object) -> int | float | None:
+    """CSV number without turning a missing observation into zero."""
+    text = str(value or "").strip()
+    if not text:
+        return None
+    try:
+        number = float(text)
+    except (TypeError, ValueError):
+        return None
+    return int(number) if number.is_integer() else round(number, 4)
+
+
+def _nflverse_rows(tag: str, name: str) -> list[dict]:
+    url = NFLVERSE_RELEASE.format(tag=tag, name=name)
+    try:
+        request = urllib.request.Request(url, headers={
+            "User-Agent": "ChaseAnalytics-public-stats/1.0",
+        })
+        with urllib.request.urlopen(request, timeout=30) as response:
+            text = response.read().decode("utf-8-sig")
+    except Exception:
+        return []
+    return list(csv.DictReader(io.StringIO(text)))
+
+
+def nflverse_season_stats(season: int) -> dict:
+    """Observed current-season team and player volume from nflverse.
+
+    Both release files are league-wide, so this costs two requests per publish,
+    not one request per player. The output is field-allowlisted and rejects a
+    wrong-season or unexpectedly sparse response instead of publishing it.
+    """
+    teams: dict[str, dict] = {}
+    players: dict[str, list[dict]] = {}
+    team_name = f"stats_team_reg_{season}.csv"
+    player_name = f"stats_player_reg_{season}.csv"
+
+    for row in _nflverse_rows("stats_team", team_name):
+        if _number(row.get("season")) != season or row.get("season_type") != "REG":
+            continue
+        team = canon(row.get("team"))
+        if not team:
+            continue
+        entry = {key: _number(row.get(key)) for key in TEAM_STAT_FIELDS}
+        teams[team] = {
+            "team": team, "season": season, "source": "nflverse/nflfastR",
+            **{key: val for key, val in entry.items() if val is not None},
+        }
+
+    for row in _nflverse_rows("stats_player", player_name):
+        if _number(row.get("season")) != season or row.get("season_type") != "REG":
+            continue
+        team = canon(row.get("recent_team"))
+        position = str(row.get("position") or "").upper()
+        name = str(row.get("player_display_name") or row.get("player_name") or "").strip()
+        if not team or position not in {"QB", "RB", "WR", "TE"} or not name:
+            continue
+        entry = {key: _number(row.get(key)) for key in PLAYER_STAT_FIELDS}
+        players.setdefault(team, []).append({
+            "player_id": str(row.get("player_id") or ""),
+            "player_name": name,
+            "position": position,
+            "season": season,
+            "source": "nflverse/nflfastR",
+            **{key: val for key, val in entry.items() if val is not None},
+        })
+
+    # A valid regular-season team file covers the league. Fail closed if the
+    # release is truncated or points at the wrong asset; player data may be
+    # thinner early in Week 1, but it may not exist without the team backbone.
+    if len(teams) < 30:
+        return {"teams": {}, "players": {}}
+    for rows in players.values():
+        rows.sort(key=lambda row: (
+            ("QB", "RB", "WR", "TE").index(row["position"]),
+            -float(row.get("targets") or row.get("carries") or row.get("attempts") or 0),
+            row["player_name"],
+        ))
+    return {"teams": teams, "players": players}
 
 
 ESPN_DEPTH_CHART = (
@@ -652,23 +766,31 @@ def merge_quarterbacks(players: dict[str, list[dict]],
 
 
 def build(board: dict | None = None, rooms: dict | None = None,
-          lineups: dict | None = None) -> dict:
+          lineups: dict | None = None, season_stats: dict | None = None) -> dict:
     """Public NFL context, or empty dicts when the board is unreachable.
 
     Failing soft is deliberate: a missing board must leave the affected
     sections explicitly unavailable, never silently absent and never filled in
     with a stand-in number.
     """
-    board = board if board is not None else load_board()
+    supplied_board = board is not None
+    board = board if supplied_board else load_board()
     if not board:
         return {"form": {}, "scheme": {}, "players": {}, "lineups": {},
-                "player_coverage": {}, "player_scheme": {}, "source": None}
+                "player_coverage": {}, "player_scheme": {}, "team_stats": {},
+                "player_stats": {}, "source": None}
     if rooms is None and lineups is None:
         lineups, rooms = fetch_depth_chart_context()
     elif lineups is None:
         lineups, _ = fetch_depth_chart_context()
     elif rooms is None:
         rooms = {}
+    if season_stats is None:
+        # Unit tests and callers that hand us a board are deterministic and
+        # offline by default. The production no-argument build owns the two
+        # league-wide downloads.
+        season_stats = ({} if supplied_board else
+                        nflverse_season_stats(int(board.get("season") or 0)))
     players = merge_quarterbacks(key_players(board), rooms)
     return {
         "form": team_form(board),
@@ -677,6 +799,8 @@ def build(board: dict | None = None, rooms: dict | None = None,
         "lineups": attach_known_headshots(lineups, players),
         "player_coverage": player_coverage(board),
         "player_scheme": player_scheme(board),
+        "team_stats": season_stats.get("teams") or {},
+        "player_stats": season_stats.get("players") or {},
         "source": {
             "season": board.get("season"),
             "week": board.get("week"),

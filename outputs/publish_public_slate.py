@@ -690,7 +690,13 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
     lineups = context.get("lineups") or {}
     player_coverage = context.get("player_coverage") or {}
     player_scheme = context.get("player_scheme") or {}
+    team_stats = context.get("team_stats") or {}
+    player_stats = context.get("player_stats") or {}
     rest = rest_history if rest_history is not None else {}
+
+    def player_key(value: object) -> str:
+        return re.sub(r"(?:jr|sr|ii|iii|iv)$", "",
+                      re.sub(r"[^a-z0-9]", "", str(value or "").lower()))
 
     def starter_coverage(team: str) -> list[dict]:
         """Keep coverage history for the published RB/WR/TE starters only."""
@@ -708,10 +714,6 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
 
     def starter_scheme(team: str) -> list[dict]:
         """Keep observed QB/RB scheme history for the published starters only."""
-        def player_key(value: object) -> str:
-            return re.sub(r"(?:jr|sr|ii|iii|iv)$", "",
-                          re.sub(r"[^a-z0-9]", "", str(value or "").lower()))
-
         lineup = lineups.get(team) or {}
         names = {
             player_key(player.get("name"))
@@ -722,6 +724,30 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
         return [
             profile for profile in all_profiles
             if player_key(profile.get("player_name")) in names
+        ]
+
+    def starter_stats(team: str) -> list[dict]:
+        """Observed season lines for the skill players named on this board."""
+        lineup = lineups.get(team) or {}
+        named = {
+            player_key(player.get("name"))
+            for player in ((lineup.get("offense") or {}).get("players") or [])
+            if str(player.get("position") or "").upper() in {"QB", "RB", "WR", "TE"}
+        }
+        if not named:
+            named.update(
+                player_key(player.get("name")) for player in players.get(team, [])
+                if str(player.get("position") or "").upper() in {"QB", "RB", "WR", "TE"}
+                and int(player.get("depth_rank") or 99) == 1
+            )
+        ids = {
+            str(player.get("player_id")) for player in players.get(team, [])
+            if player.get("player_id") and player_key(player.get("name")) in named
+        }
+        return [
+            row for row in player_stats.get(team, [])
+            if str(row.get("player_id") or "") in ids or
+            player_key(row.get("player_name")) in named
         ]
     games = []
     for event in payload.get("events") or []:
@@ -818,6 +844,10 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             "home_player_coverage": starter_coverage(home_abbr),
             "away_player_scheme": starter_scheme(away_abbr),
             "home_player_scheme": starter_scheme(home_abbr),
+            "away_team_stats": team_stats.get(away_abbr),
+            "home_team_stats": team_stats.get(home_abbr),
+            "away_player_stats": starter_stats(away_abbr),
+            "home_player_stats": starter_stats(home_abbr),
             "away_rest_days": away_ctx["rest_days"],
             "home_rest_days": home_ctx["rest_days"],
             "away_travel": away_ctx["travel"],

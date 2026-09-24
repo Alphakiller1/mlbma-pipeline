@@ -11,6 +11,7 @@ import json
 import copy
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from outputs import nfl_public_context as ctx
 
@@ -254,6 +255,9 @@ class NflPublicContextTests(unittest.TestCase):
         self.assertEqual(set(aaa), {"player_id", "player_name", "position", "source_season",
                                     "play_family", "splits"})
         self.assertEqual([split["look"] for split in aaa["splits"]], ["zone"])
+        self.assertEqual(aaa["splits"][0]["passing_yards"], 940)
+        self.assertEqual(aaa["splits"][0]["passing_tds"], 7)
+        self.assertEqual(aaa["splits"][0]["interceptions"], 2)
         rank = aaa["splits"][0]["league_ranks"]["epa_per_dropback"]
         self.assertEqual((rank["place"], rank["of"]), (2, 2))
 
@@ -266,7 +270,9 @@ class NflPublicContextTests(unittest.TestCase):
     def test_players_are_identity_only_and_depth_limited(self):
         players = self.ctx["players"]["AAA"]
         self.assertEqual([p["name"] for p in players], ["A Passer"])
-        self.assertEqual(set(players[0]), {"name", "position", "depth_rank", "headshot_url"})
+        self.assertEqual(set(players[0]), {
+            "player_id", "name", "position", "depth_rank", "headshot_url",
+        })
 
     def test_headshots_are_requested_at_display_size(self):
         url = self.ctx["players"]["AAA"][0]["headshot_url"]
@@ -327,6 +333,31 @@ class NflPublicContextTests(unittest.TestCase):
         """The board writes LA; the schedule writes LAR."""
         self.assertIn("LAR", self.ctx["form"])
         self.assertNotIn("LA", self.ctx["form"])
+
+    def test_nflverse_season_stats_are_allowlisted_and_fail_closed(self):
+        team_row = {
+            "season": "2026", "season_type": "REG", "team": "AAA",
+            "games": "2", "passing_yards": "510", "passing_tds": "4",
+            "rushing_yards": "211", "rushing_tds": "2", "private": "no",
+        }
+        player_row = {
+            "season": "2026", "season_type": "REG", "recent_team": "AAA",
+            "player_id": "qb-1", "player_display_name": "A Passer", "position": "QB",
+            "games": "2", "attempts": "61", "completions": "42",
+            "passing_yards": "510", "passing_tds": "4", "passing_interceptions": "1",
+            "fantasy_points_ppr": "38.4", "private": "no",
+        }
+        teams = [{**team_row, "team": f"T{i:02d}"} for i in range(30)]
+        teams[0]["team"] = "AAA"
+        with mock.patch.object(ctx, "_nflverse_rows", side_effect=[teams, [player_row]]):
+            stats = ctx.nflverse_season_stats(2026)
+        self.assertEqual(stats["teams"]["AAA"]["passing_yards"], 510)
+        self.assertEqual(stats["players"]["AAA"][0]["fantasy_points_ppr"], 38.4)
+        self.assertNotIn("private", json.dumps(stats))
+
+        with mock.patch.object(ctx, "_nflverse_rows", side_effect=[[team_row], [player_row]]):
+            sparse = ctx.nflverse_season_stats(2026)
+        self.assertEqual(sparse, {"teams": {}, "players": {}})
 
     def test_no_model_key_survives_anywhere_in_the_projection(self):
         blob = json.dumps(self.ctx)

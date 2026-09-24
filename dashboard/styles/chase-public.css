@@ -5206,3 +5206,443 @@ body[data-ca-product="research"] {
   }
 }
 
+/* ===========================================================================
+ * NFL MATCHUP WORKBENCH - 2026-09-23
+ * Directional team matchup first, observed player volume second, then the
+ * existing scheme and availability evidence. Scoped to NFL so MLB/CFB keep
+ * their established information rhythm.
+ * ======================================================================== */
+body[data-sport="nfl"] .ca-detail-nav {
+  grid-template-columns: repeat(7, minmax(max-content, 1fr));
+}
+
+.ca-research-paths {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.ca-research-paths a {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-height: var(--touch-min);
+  padding: var(--space-3);
+  background: var(--surface-field);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+}
+
+.ca-research-paths a:hover,
+.ca-research-paths a:focus-visible {
+  background: var(--control-bg-hover);
+  color: var(--text-primary);
+}
+
+.ca-research-paths a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.ca-research-paths strong {
+  color: var(--text-accent);
+  font-family: var(--font-display);
+  font-size: var(--type-16);
+}
+
+.ca-research-paths span {
+  font-size: var(--type-meta);
+  line-height: 1.4;
+}
+
+.ca-nfl-reading-key {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(260px, .85fr);
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface-field));
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+}
+
+.ca-nfl-reading-key > div {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.ca-nfl-reading-key span {
+  color: var(--text-accent);
+  font-size: var(--type-caps);
+  font-weight: 800;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+.ca-nfl-reading-key strong { color: var(--text-primary); font-size: var(--type-meta); }
+.ca-nfl-reading-key i { color: var(--text-accent); font-style: normal; }
+.ca-nfl-reading-key p { margin: 0; color: var(--text-secondary); font-size: var(--type-meta); line-height: 1.45; }
+
+.ca-nfl-matchup-duo,
+.ca-production-duo,
+.ca-player-volume-duo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.ca-nfl-matchup-board,
+.ca-production-team,
+.ca-player-volume-team {
+  min-width: 0;
+  overflow: hidden;
+  background: var(--surface-well);
+  border-radius: var(--radius-sm);
+}
+
+.ca-nfl-matchup-board > .ca-nfl-pair {
+  border-bottom: 1px solid var(--border-card);
+}
+
+.ca-nfl-matchup-row {
+  display: grid;
+  grid-template-columns: minmax(78px, .72fr) minmax(150px, 1.35fr) minmax(78px, .72fr);
+  align-items: stretch;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ca-nfl-matchup-row:last-child { border-bottom: 0; }
+
+.ca-nfl-matchup-cell,
+.ca-nfl-matchup-axis {
+  display: grid;
+  align-content: center;
+  min-width: 0;
+  padding: var(--space-3);
+}
+
+.ca-nfl-matchup-cell { justify-items: start; }
+.ca-nfl-matchup-cell:last-child { justify-items: end; text-align: right; }
+
+.ca-nfl-matchup-cell strong {
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: var(--type-20);
+  font-variant-numeric: tabular-nums;
+}
+
+.ca-nfl-matchup-cell i,
+.ca-nfl-matchup-cell span {
+  color: inherit;
+  font-size: var(--type-meta);
+  font-style: normal;
+}
+
+.ca-nfl-matchup-cell span { color: var(--text-muted); }
+.ca-nfl-matchup-cell.is-absent { color: var(--text-muted); }
+
+.ca-nfl-matchup-axis {
+  justify-items: center;
+  gap: 3px;
+  background: var(--surface-field);
+  text-align: center;
+}
+
+.ca-nfl-matchup-axis strong { color: var(--text-primary); }
+.ca-nfl-matchup-axis span {
+  color: var(--text-secondary);
+  font-size: var(--type-meta);
+  line-height: 1.3;
+}
+
+.ca-nfl-matchup-axis small {
+  color: var(--text-accent);
+  font-size: var(--type-meta);
+  font-weight: 700;
+}
+
+.ca-nfl-matchup-axis em {
+  color: var(--text-muted);
+  font-size: var(--type-caps);
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+.ca-nfl-matchup-row.is-off .ca-nfl-matchup-cell:first-child,
+.ca-nfl-matchup-row.is-def .ca-nfl-matchup-cell:last-child {
+  background: color-mix(in srgb, var(--metric-good) 10%, transparent);
+  color: var(--metric-good);
+}
+
+.ca-nfl-matchup-row.is-off .ca-nfl-matchup-axis em,
+.ca-nfl-matchup-row.is-def .ca-nfl-matchup-axis em { color: var(--metric-good); }
+
+.ca-script-dynamics {
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  background: var(--surface-well);
+  border-radius: var(--radius-sm);
+}
+
+.ca-script-dynamics > header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.ca-script-dynamics > header span,
+.ca-script-lens header span {
+  color: var(--text-accent);
+  font-size: var(--type-caps);
+  font-weight: 800;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+.ca-script-dynamics > header h3,
+.ca-script-dynamics > header p,
+.ca-script-lens h4,
+.ca-script-lens > p,
+.ca-script-lens li p { margin: 0; }
+.ca-script-dynamics > header p { max-width: 52ch; color: var(--text-secondary); font-size: var(--type-meta); line-height: 1.45; }
+
+.ca-script-lens-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.ca-script-lens {
+  min-width: 0;
+  overflow: hidden;
+  background: var(--surface-field);
+  border-radius: var(--radius-xs);
+}
+
+.ca-script-lens > header,
+.ca-script-lens > p { padding: var(--space-3); }
+.ca-script-lens > header { padding-bottom: 0; }
+.ca-script-lens h4 { color: var(--text-primary); font-family: var(--font-display); font-size: var(--type-16); }
+.ca-script-lens > p { color: var(--text-secondary); font-size: var(--type-meta); line-height: 1.45; }
+.ca-script-lens ul { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--border-subtle); }
+.ca-script-lens li { display: grid; gap: 2px; padding: var(--space-3); border-bottom: 1px solid var(--border-subtle); }
+.ca-script-lens li:last-child { border-bottom: 0; }
+.ca-script-lens li strong { color: var(--text-primary); font-size: var(--type-meta); }
+.ca-script-lens li span,
+.ca-script-lens li small,
+.ca-script-lens li p { color: var(--text-muted); font-size: var(--type-meta); line-height: 1.35; }
+.ca-script-lens li small { color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.ca-script-lens li p { margin-top: 3px; }
+
+.ca-production-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: var(--space-5) 0 var(--space-2);
+}
+
+.ca-production-head span,
+.ca-player-volume-team > header p,
+.ca-production-team > header p {
+  color: var(--text-muted);
+  font-size: var(--type-meta);
+}
+
+.ca-production-head span {
+  font-weight: 800;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+.ca-production-head h3,
+.ca-production-head p,
+.ca-production-team h4,
+.ca-production-team p,
+.ca-player-volume-team h4,
+.ca-player-volume-team p,
+.ca-player-volume-card h5,
+.ca-player-volume-card p { margin: 0; }
+
+.ca-production-head p { color: var(--text-secondary); font-size: var(--type-meta); }
+
+.ca-production-team > header,
+.ca-player-volume-team > header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--border-card);
+}
+
+.ca-production-team__logo { width: 38px; height: 38px; object-fit: contain; }
+
+.ca-production-grid,
+.ca-player-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ca-production-stat,
+.ca-player-stat {
+  display: grid;
+  align-content: start;
+  gap: 3px;
+  min-width: 0;
+  padding: var(--space-3);
+  border-right: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ca-production-stat:nth-child(3n),
+.ca-player-stat:nth-child(3n) { border-right: 0; }
+.ca-production-stat:nth-last-child(-n+3),
+.ca-player-stat:nth-last-child(-n+3) { border-bottom: 0; }
+
+.ca-production-stat span,
+.ca-player-stat span {
+  color: var(--text-muted);
+  font-size: var(--type-caps);
+  font-weight: 800;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+.ca-production-stat strong,
+.ca-player-stat strong {
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: var(--type-20);
+  font-variant-numeric: tabular-nums;
+}
+
+.ca-production-stat small,
+.ca-player-stat small { color: var(--text-secondary); font-size: var(--type-meta); }
+
+.ca-ranking-detail,
+.ca-metric-guide,
+.ca-player-deep-dive {
+  margin-top: var(--space-3);
+  background: var(--surface-field);
+  border-radius: var(--radius-sm);
+}
+
+.ca-ranking-detail > summary,
+.ca-metric-guide > summary,
+.ca-player-deep-dive > summary {
+  min-height: var(--touch-min);
+  padding: var(--space-3);
+  cursor: pointer;
+  color: var(--text-primary);
+  font-weight: 800;
+}
+
+.ca-ranking-detail > summary:focus-visible,
+.ca-metric-guide > summary:focus-visible,
+.ca-player-deep-dive > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.ca-ranking-detail__body,
+.ca-metric-guide dl,
+.ca-player-deep-dive > section {
+  margin: 0;
+  padding: 0 var(--space-3) var(--space-3);
+}
+
+.ca-ranking-detail__body { display: grid; gap: var(--space-3); }
+.ca-metric-guide dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+.ca-metric-guide dl > div { padding: var(--space-3); background: var(--surface-well); }
+.ca-metric-guide dt { color: var(--text-accent); font-weight: 800; }
+.ca-metric-guide dd { margin: 4px 0 0; color: var(--text-secondary); font-size: var(--type-meta); line-height: 1.45; }
+
+.ca-player-volume-team { align-content: start; }
+.ca-player-volume-grid { display: grid; gap: var(--space-2); padding: var(--space-2); }
+.ca-player-volume-card { min-width: 0; overflow: hidden; background: var(--surface-field); border-radius: var(--radius-xs); }
+.ca-player-volume-card > header { display: flex; align-items: center; gap: var(--space-2); min-height: 72px; padding: var(--space-2) var(--space-3); }
+.ca-player-volume-card__shot,
+.ca-player-volume-card__initials {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  border-radius: 50%;
+}
+.ca-player-volume-card__shot { object-fit: cover; }
+.ca-player-volume-card__initials { display: grid; place-items: center; background: var(--surface-raised); color: var(--text-primary); font-weight: 800; }
+.ca-player-volume-card > header span { color: var(--text-accent); font-size: var(--type-caps); font-weight: 800; }
+.ca-player-volume-card > header p { color: var(--text-muted); font-size: var(--type-meta); }
+.ca-player-deep-stack { display: grid; gap: var(--space-2); }
+
+@media (max-width: 980px) {
+  .ca-nfl-matchup-duo,
+  .ca-production-duo,
+  .ca-player-volume-duo { grid-template-columns: 1fr; }
+  .ca-nfl-reading-key { grid-template-columns: 1fr; gap: var(--space-2); }
+  .ca-script-lens-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 680px) {
+  body[data-sport="nfl"] .ca-detail-hero__teams {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3) var(--space-2);
+    padding: var(--space-3) 0;
+  }
+  body[data-sport="nfl"] .ca-detail-center {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  body[data-sport="nfl"] .ca-detail-team--away {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  body[data-sport="nfl"] .ca-detail-team--home {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  body[data-sport="nfl"] .ca-detail-team h1 { overflow-wrap: normal; word-break: normal; }
+  .ca-research-paths { grid-template-columns: 1fr; }
+  .ca-nfl-reading-key { padding: var(--space-3); }
+  .ca-nfl-reading-key > div { display: grid; grid-template-columns: 1fr; gap: 3px; }
+  .ca-nfl-reading-key i { display: none; }
+  .ca-script-dynamics { padding: var(--space-3); }
+  .ca-script-dynamics > header { align-items: start; flex-direction: column; gap: var(--space-2); }
+  .ca-script-lens-grid { grid-template-columns: 1fr; }
+  .ca-production-head { align-items: start; flex-direction: column; }
+  .ca-nfl-matchup-row { grid-template-columns: minmax(72px, .7fr) minmax(126px, 1.25fr) minmax(72px, .7fr); }
+  .ca-nfl-matchup-cell,
+  .ca-nfl-matchup-axis { padding: var(--space-2); }
+  .ca-nfl-matchup-cell strong { font-size: var(--type-16); }
+  .ca-nfl-matchup-axis span,
+  .ca-nfl-matchup-axis small { display: none; }
+  .ca-production-grid,
+  .ca-player-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ca-production-stat:nth-child(3n),
+  .ca-player-stat:nth-child(3n) { border-right: 1px solid var(--border-subtle); }
+  .ca-production-stat:nth-child(2n),
+  .ca-player-stat:nth-child(2n) { border-right: 0; }
+  .ca-production-stat:nth-last-child(-n+3),
+  .ca-player-stat:nth-last-child(-n+3) { border-bottom: 1px solid var(--border-subtle); }
+  .ca-production-stat:nth-last-child(-n+2),
+  .ca-player-stat:nth-last-child(-n+2) { border-bottom: 0; }
+  .ca-metric-guide dl { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 390px) {
+  .ca-nfl-matchup-row { grid-template-columns: 68px minmax(0, 1fr) 68px; }
+  .ca-nfl-matchup-axis em { font-size: var(--type-meta); letter-spacing: 0; text-transform: none; }
+  .ca-detail-facts { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ca-research-paths a { transition: none; }
+}
+

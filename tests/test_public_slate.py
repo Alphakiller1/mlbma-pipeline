@@ -92,6 +92,27 @@ class PublicSlateProjectionTests(unittest.TestCase):
         out = project_slate("nfl", payload)
         self.assertEqual(out["games"][0]["away_player_scheme"][0]["splits"][0]["dropbacks"], 50)
 
+    def test_nfl_observed_volume_stats_survive_the_public_allowlist(self):
+        import sys
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from project_public_slate import project_slate
+
+        team = {"team": "AAA", "season": 2026, "source": "nflverse/nflfastR",
+                "games": 2, "passing_yards": 510, "rushing_yards": 211,
+                "passing_tds": 4, "rushing_tds": 2}
+        players = [{"player_id": "wr-1", "player_name": "Wide One", "position": "WR",
+                    "season": 2026, "source": "nflverse/nflfastR", "games": 2,
+                    "targets": 17, "receptions": 12, "receiving_yards": 188,
+                    "receiving_tds": 2, "fantasy_points_ppr": 42.8}]
+        out = project_slate("nfl", {"games": [{
+            "id": "nfl-x", "away": "AAA", "home": "BBB",
+            "away_team_stats": team, "home_team_stats": team,
+            "away_player_stats": players, "home_player_stats": players,
+        }]})
+        game = out["games"][0]
+        self.assertEqual(game["away_team_stats"]["passing_yards"], 510)
+        self.assertEqual(game["away_player_stats"][0]["receptions"], 12)
+
     def test_public_slates_are_tracked_not_gitignored(self):
         import subprocess
 
