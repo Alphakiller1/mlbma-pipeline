@@ -287,10 +287,26 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL form compares both clubs on one axis", rows == 10, f"rows={rows}")
         check("NFL form annotates every rate with a rank", ranks == rows * 2,
               f"{ranks} ranks across {rows} rows")
+        check("NFL opens with four concise matchup signals",
+              page.locator("#form .ca-nfl-signal").count() == 4)
+        check("NFL removes the duplicate narrative lens cards",
+              page.locator("#form .ca-script-lens").count() == 0)
+        check("NFL keeps deep scheme tables progressive",
+              page.locator(
+                  "#scheme [data-scheme-direction-panel]:not([hidden]) "
+                  ".ca-scheme-detail:not([open])"
+              ).count() == 2)
         detail_text = page.locator("main").inner_text()
         match = PROHIBITED.search(detail_text)
         check("NFL detail public copy boundary", match is None, match.group(0) if match else "")
         check("NFL detail no horizontal overflow", page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
+        page.set_viewport_size({"width": 390, "height": 844})
+        check("NFL phone layout has no horizontal overflow",
+              page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
+        check("NFL phone quick read uses a two-column scan",
+              page.locator(".ca-nfl-signal-grid").evaluate(
+                  "el => getComputedStyle(el).gridTemplateColumns.split(' ').length") == 2)
+        page.set_viewport_size({"width": 1280, "height": 900})
 
         page.goto(base_url.rstrip("/") + "/cfb/", wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector(".ca-matchup-card", timeout=timeout_ms)
