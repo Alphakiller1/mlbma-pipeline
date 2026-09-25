@@ -252,6 +252,70 @@
     });
   }
 
+  function activatePlayerTab(btn) {
+    var switcher = btn.closest('.ca-player-switch');
+    if (!switcher) return;
+    var side = btn.getAttribute('data-player-side');
+    Array.prototype.forEach.call(switcher.querySelectorAll('[data-player-side]'), function (tab) {
+      var on = tab === btn;
+      tab.classList.toggle('is-on', on);
+      tab.setAttribute('aria-selected', String(on));
+      tab.setAttribute('tabindex', on ? '0' : '-1');
+    });
+    Array.prototype.forEach.call(switcher.querySelectorAll('[data-player-panel]'), function (panel) {
+      panel.hidden = panel.getAttribute('data-player-panel') !== side;
+    });
+  }
+
+  function wirePlayerTabs(host) {
+    host.addEventListener('click', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-player-side]');
+      if (btn && host.contains(btn)) activatePlayerTab(btn);
+    });
+    host.addEventListener('keydown', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-player-side]');
+      if (!btn || !host.contains(btn) || ['ArrowLeft', 'ArrowRight'].indexOf(event.key) < 0) return;
+      var tabs = Array.prototype.slice.call(btn.closest('.ca-player-switch__tabs')
+        .querySelectorAll('[data-player-side]'));
+      var next = tabs[(tabs.indexOf(btn) + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+      event.preventDefault();
+      activatePlayerTab(next);
+      next.focus();
+    });
+  }
+
+  function activateMatchupTab(btn) {
+    var switcher = btn.closest('.ca-nfl-matchup-switch');
+    if (!switcher) return;
+    var side = btn.getAttribute('data-matchup-side');
+    Array.prototype.forEach.call(switcher.querySelectorAll('[data-matchup-side]'), function (tab) {
+      var on = tab === btn;
+      tab.classList.toggle('is-on', on);
+      tab.setAttribute('aria-selected', String(on));
+      tab.setAttribute('tabindex', on ? '0' : '-1');
+    });
+    Array.prototype.forEach.call(switcher.querySelectorAll('[data-matchup-panel]'), function (panel) {
+      panel.hidden = panel.getAttribute('data-matchup-panel') !== side;
+    });
+  }
+
+  function wireMatchupTabs(host) {
+    host.addEventListener('click', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-matchup-side]');
+      if (btn && host.contains(btn)) activateMatchupTab(btn);
+    });
+    host.addEventListener('keydown', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-matchup-side]');
+      if (!btn || !host.contains(btn) || ['ArrowLeft', 'ArrowRight'].indexOf(event.key) < 0) return;
+      var tabs = Array.prototype.slice.call(btn.closest('.ca-scheme-switch__tabs')
+        .querySelectorAll('[data-matchup-side]'));
+      var next = tabs[(tabs.indexOf(btn) + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+      event.preventDefault();
+      activateMatchupTab(next);
+      next.focus();
+    });
+  }
+
   function paintSection(host, id, body) {
     var node = host.querySelector('[data-body="' + id + '"]');
     if (node) node.innerHTML = body;
@@ -3356,42 +3420,67 @@
     return seen ? total : null;
   }
 
-  function productionStat(label, primary, secondary) {
-    return '<div class="ca-production-stat"><span>' + esc(label) + '</span>' +
-      '<strong>' + esc(primary == null ? '—' : primary) + '</strong>' +
-      (secondary ? '<small>' + esc(secondary) + '</small>' : '') + '</div>';
-  }
-
-  function teamProductionPanel(sport, game, side) {
-    var stats = game[side + '_team_stats'];
-    var name = fullName(sport, game, side);
-    var head = '<header>' + logo(sport, game, side, 38, 'ca-production-team__logo') +
-      '<div><h4>' + esc(name) + '</h4>';
-    if (!stats) {
-      return '<article class="ca-production-team">' + head +
-        '<p>Standard Production</p></div></header>' +
-        pending('Observed season totals are not published for this club.') + '</article>';
-    }
+  function teamProductionValues(stats) {
+    if (!stats) return [];
     var games = Number(stats.games);
     var yards = safeTotal(stats.passing_yards, stats.rushing_yards);
     var tds = safeTotal(stats.passing_tds, stats.rushing_tds);
     var firsts = safeTotal(stats.passing_first_downs, stats.rushing_first_downs);
-    return '<article class="ca-production-team">' + head + '<p>' +
-      esc(stats.season + ' · ' + games + ' game' + (games === 1 ? '' : 's')) +
-      '</p></div></header><div class="ca-production-grid">' +
-      productionStat('Total Yards / G', ratePerGame(yards, games, 1),
-        yards == null ? '' : Math.round(yards) + ' total') +
-      productionStat('Pass Yards / G', ratePerGame(stats.passing_yards, games, 1),
-        stats.passing_tds == null ? '' : stats.passing_tds + ' pass TD') +
-      productionStat('Rush Yards / G', ratePerGame(stats.rushing_yards, games, 1),
-        stats.rushing_tds == null ? '' : stats.rushing_tds + ' rush TD') +
-      productionStat('Offensive TD', tds == null ? '—' : tds,
-        games ? ratePerGame(tds, games, 2) + ' / game' : '') +
-      productionStat('First Downs / G', ratePerGame(firsts, games, 1),
-        firsts == null ? '' : Math.round(firsts) + ' total') +
-      productionStat('Sacks Allowed', stats.attempts == null ? '—' :
-        value(stats.sacks_suffered, '—'), stats.attempts == null ? '' : stats.attempts + ' attempts') +
-      '</div></article>';
+    return [
+      { label: 'Total Yards', unit: 'per game', value: Number(ratePerGame(yards, games, 1)), total: yards },
+      { label: 'Pass Yards', unit: 'per game', value: Number(ratePerGame(stats.passing_yards, games, 1)), total: stats.passing_yards },
+      { label: 'Rush Yards', unit: 'per game', value: Number(ratePerGame(stats.rushing_yards, games, 1)), total: stats.rushing_yards },
+      { label: 'Offensive TD', unit: 'per game', value: Number(ratePerGame(tds, games, 2)), total: tds },
+      { label: 'First Downs', unit: 'per game', value: Number(ratePerGame(firsts, games, 1)), total: firsts },
+      { label: 'Sacks Allowed', unit: 'per game', value: Number(ratePerGame(stats.sacks_suffered, games, 1)), total: stats.sacks_suffered, low: true }
+    ];
+  }
+
+  function productionCompareCell(entry, leading) {
+    var valid = entry && isFinite(entry.value);
+    return '<div class="ca-production-compare__value' + (leading ? ' is-leading' : '') + '">' +
+      '<strong>' + esc(valid ? entry.value.toFixed(entry.label === 'Offensive TD' ? 2 : 1) : '—') + '</strong>' +
+      '<span>' + esc(valid && entry.total != null ? Math.round(Number(entry.total)) + ' total' : 'Not published') + '</span></div>';
+  }
+
+  function teamProductionComparison(sport, game) {
+    var away = teamProductionValues(game.away_team_stats);
+    var home = teamProductionValues(game.home_team_stats);
+    var rows = [0, 1, 2, 3, 4, 5].map(function (index) {
+      var left = away[index];
+      var right = home[index];
+      var low = (left || right || {}).low;
+      var leftLeads = left && right && isFinite(left.value) && isFinite(right.value)
+        ? (low ? left.value < right.value : left.value > right.value) : !!left;
+      var rightLeads = left && right && isFinite(left.value) && isFinite(right.value)
+        ? (low ? right.value < left.value : right.value > left.value) : !!right;
+      var axis = left || right || { label: 'Not Published', unit: '' };
+      return '<div class="ca-production-compare__row">' + productionCompareCell(left, leftLeads) +
+        '<div class="ca-production-compare__axis"><strong>' + esc(axis.label) + '</strong><span>' +
+        esc(axis.unit) + '</span></div>' + productionCompareCell(right, rightLeads) + '</div>';
+    }).join('');
+    return '<div class="ca-production-compare"><div class="ca-production-compare__teams"><span>' +
+      logo(sport, game, 'away', 22, 'ca-scheme-tab-crest') + esc(fullName(sport, game, 'away')) +
+      '</span><span>' + logo(sport, game, 'home', 22, 'ca-scheme-tab-crest') +
+      esc(fullName(sport, game, 'home')) + '</span></div>' + rows + '</div>';
+  }
+
+  function nflMatchupSwitcher(sport, game) {
+    function tab(side, defSide, selected) {
+      var cap = side === 'away' ? 'Away' : 'Home';
+      return '<button type="button" id="caMatchup' + cap + 'Tab" class="ca-scheme-switch__tab' +
+        (selected ? ' is-on' : '') + '" role="tab" aria-selected="' + (selected ? 'true' : 'false') +
+        '" aria-controls="caMatchup' + cap + 'Panel"' + (selected ? '' : ' tabindex="-1"') +
+        ' data-matchup-side="' + side + '"><strong>' + logo(sport, game, side, 22, 'ca-scheme-tab-crest') +
+        esc(fullName(sport, game, side)) + ' offense</strong><span>' + logo(sport, game, defSide, 18, 'ca-scheme-tab-crest') +
+        'vs ' + esc(fullName(sport, game, defSide)) + ' defense</span></button>';
+    }
+    return '<div class="ca-nfl-matchup-switch"><div class="ca-scheme-switch__tabs" role="tablist" ' +
+      'aria-label="Choose unit matchup">' + tab('away', 'home', true) + tab('home', 'away', false) +
+      '</div><div id="caMatchupAwayPanel" role="tabpanel" aria-labelledby="caMatchupAwayTab" ' +
+      'data-matchup-panel="away">' + nflMatchupDirection(sport, game, 'away', 'home') + '</div>' +
+      '<div id="caMatchupHomePanel" role="tabpanel" aria-labelledby="caMatchupHomeTab" ' +
+      'data-matchup-panel="home" hidden>' + nflMatchupDirection(sport, game, 'home', 'away') + '</div></div>';
   }
 
   function nflMetricGuide() {
@@ -3403,13 +3492,6 @@
       'It is not in the current licensed feed, so this page does not imitate it with a private power rating.</dd></div>' +
       '<div><dt>League Rank</dt><dd>Recomputed from the displayed observed rate against the 32-team pool; ' +
       '1st is always best after metric direction is applied.</dd></div></dl></details>';
-  }
-
-  function nflDecisionPaths() {
-    return '<nav class="ca-nfl-desk-nav" aria-label="Choose a research path">' +
-      '<a href="#form">Game Matchup</a><a href="#scheme">Scheme</a>' +
-      '<a href="#players">Props &amp; Fantasy</a><a href="#availability">Availability</a>' +
-      '</nav>';
   }
 
   function playerStat(label, primary, secondary) {
@@ -3481,6 +3563,63 @@
       '</section>';
   }
 
+  function playerRate(player, keys) {
+    var games = Number(player && player.games);
+    if (!(games > 0)) return null;
+    var seen = false;
+    var total = (keys || []).reduce(function (sum, key) {
+      var n = Number(player[key]);
+      if (player[key] != null && player[key] !== '' && isFinite(n)) {
+        seen = true;
+        return sum + n;
+      }
+      return sum;
+    }, 0);
+    return seen ? total / games : null;
+  }
+
+  function playerLeader(stats, positions, keys) {
+    var allowed = positions.split(',');
+    return (stats || []).reduce(function (best, player) {
+      if (allowed.indexOf(String(player.position || '').toUpperCase()) < 0) return best;
+      var rate = playerRate(player, keys);
+      if (rate == null || (best && rate <= best.rate)) return best;
+      return { name: player.player_name, rate: rate };
+    }, null);
+  }
+
+  function playerComparisonCell(entry, better) {
+    return '<div class="ca-player-compare__value' + (better ? ' is-leading' : '') + '">' +
+      '<strong>' + esc(entry ? entry.name : 'Not published') + '</strong>' +
+      '<span>' + esc(entry ? entry.rate.toFixed(1) : '—') + '</span></div>';
+  }
+
+  function playerComparison(sport, game) {
+    var away = game.away_player_stats || [];
+    var home = game.home_player_stats || [];
+    var rows = [
+      ['Passing', 'yards / game', 'QB', ['passing_yards']],
+      ['Backfield', 'touches / game', 'RB', ['carries', 'targets']],
+      ['Receiving', 'targets / game', 'WR,TE', ['targets']],
+      ['Fantasy', 'PPR points / game', 'QB,RB,WR,TE', ['fantasy_points_ppr']]
+    ].map(function (spec) {
+      var left = playerLeader(away, spec[2], spec[3]);
+      var right = playerLeader(home, spec[2], spec[3]);
+      var leftLeads = left && right ? left.rate > right.rate : !!left;
+      var rightLeads = left && right ? right.rate > left.rate : !!right;
+      return '<div class="ca-player-compare__row">' + playerComparisonCell(left, leftLeads) +
+        '<div class="ca-player-compare__axis"><strong>' + esc(spec[0]) + '</strong><span>' +
+        esc(spec[1]) + '</span></div>' + playerComparisonCell(right, rightLeads) + '</div>';
+    }).join('');
+    return '<section class="ca-player-compare" aria-labelledby="caPlayerCompareTitle"><header>' +
+      '<div><span>Volume Leaders</span><h3 id="caPlayerCompareTitle">Team-To-Team Prop Baselines</h3></div>' +
+      '<p>Completed games · rate per game</p></header>' +
+      '<div class="ca-player-compare__teams"><span>' + logo(sport, game, 'away', 22, 'ca-scheme-tab-crest') +
+      esc(fullName(sport, game, 'away')) + '</span><span>' + logo(sport, game, 'home', 22, 'ca-scheme-tab-crest') +
+      esc(fullName(sport, game, 'home')) + '</span></div><div class="ca-player-compare__rows">' + rows +
+      '</div></section>';
+  }
+
   function playerDeepDive(sport, game, side) {
     var hasScheme = (game[side + '_player_scheme'] || []).length;
     var hasCoverage = (game[side + '_player_coverage'] || []).length;
@@ -3492,8 +3631,21 @@
   }
 
   function nflPlayerHub(sport, game) {
-    return '<div class="ca-player-volume-duo">' + playerStatsTeam(sport, game, 'away') +
-      playerStatsTeam(sport, game, 'home') + '</div>' +
+    function tab(side, selected) {
+      var cap = side === 'away' ? 'Away' : 'Home';
+      return '<button type="button" id="caPlayer' + cap + 'Tab" class="ca-player-switch__tab' +
+        (selected ? ' is-on' : '') + '" role="tab" aria-selected="' + (selected ? 'true' : 'false') +
+        '" aria-controls="caPlayer' + cap + 'Panel"' + (selected ? '' : ' tabindex="-1"') +
+        ' data-player-side="' + side + '">' + logo(sport, game, side, 24, 'ca-scheme-tab-crest') +
+        '<span><strong>' + esc(fullName(sport, game, side)) + '</strong><small>Full player board</small></span></button>';
+    }
+    return playerComparison(sport, game) +
+      '<div class="ca-player-switch"><div class="ca-player-switch__tabs" role="tablist" ' +
+      'aria-label="Choose team player board">' + tab('away', true) + tab('home', false) + '</div>' +
+      '<div id="caPlayerAwayPanel" role="tabpanel" aria-labelledby="caPlayerAwayTab" ' +
+      'data-player-panel="away">' + playerStatsTeam(sport, game, 'away') + '</div>' +
+      '<div id="caPlayerHomePanel" role="tabpanel" aria-labelledby="caPlayerHomeTab" ' +
+      'data-player-panel="home" hidden>' + playerStatsTeam(sport, game, 'home') + '</div></div>' +
       '<div class="ca-player-deep-stack">' + playerDeepDive(sport, game, 'away') +
       playerDeepDive(sport, game, 'home') + '</div>' +
       '<p class="ca-detail-source-note">Volume, yards, touchdowns, receptions and fantasy points are completed-game ' +
@@ -3542,26 +3694,19 @@
 
   function nflSections(sport, game) {
     var source = game.scheme_source || {};
-    var directional = nflMatchupDirection(sport, game, 'away', 'home') +
-      nflMatchupDirection(sport, game, 'home', 'away');
     var leagueView = nflMirror(sport, game);
     return [
       section('form', 'NFL Matchup Desk',
         'Unit Edges, Game Script And Production',
-        nflDecisionPaths() +
         nflReadingKey() +
         nflScriptSnapshot(sport, game) +
         '<div class="ca-nfl-board-head"><div><span>Unit Matchups</span>' +
         '<h3>Offense Versus The Defense It Faces</h3></div>' +
         '<p>Hover a metric for its definition</p></div>' +
-        '<div class="ca-nfl-matchup-duo">' +
-        (directional || '<div class="ca-detail-duo">' +
-          nflFormPanel(sport, game, 'away') + nflFormPanel(sport, game, 'home') + '</div>') +
-        '</div>' +
+        nflMatchupSwitcher(sport, game) +
         '<div class="ca-production-head"><div><span>Standard Production</span>' +
         '<h3>Volume Check</h3></div><p>Yards, touchdowns and first downs</p></div>' +
-        '<div class="ca-production-duo">' + teamProductionPanel(sport, game, 'away') +
-        teamProductionPanel(sport, game, 'home') + '</div>' +
+        teamProductionComparison(sport, game) +
         (leagueView ? '<details class="ca-ranking-detail"><summary>Open Full 32-Team Ranking View</summary>' +
           '<div class="ca-ranking-detail__body">' + leagueView + '</div></details>' : '') +
         nflMetricGuide() +
@@ -4067,6 +4212,8 @@
       wireSeasonToggle(host);
       wireLineupTabs(host);
       wireSchemeTabs(host);
+      wirePlayerTabs(host);
+      wireMatchupTabs(host);
       wireCfbCompare(host);
       wireRadarReadout(host);
       if (global.ResizeObserver) {

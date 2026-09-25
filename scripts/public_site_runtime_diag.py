@@ -289,6 +289,14 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               f"{ranks} ranks across {rows} rows")
         check("NFL opens with four concise matchup signals",
               page.locator("#form .ca-nfl-signal").count() == 4)
+        check("NFL shows one directional unit board at a time",
+              page.locator("#form [data-matchup-panel]:not([hidden])").count() == 1)
+        check("NFL standard production is one mirrored comparison",
+              page.locator("#form .ca-production-compare__row").count() == 6)
+        page.locator("#form [data-matchup-side='home']").click()
+        check("NFL unit switch exposes the selected offense-defense pairing",
+              page.locator("#form [data-matchup-side='home'][aria-selected='true']").count() == 1
+              and page.locator("#form [data-matchup-panel='home']:not([hidden])").count() == 1)
         check("NFL removes the duplicate narrative lens cards",
               page.locator("#form .ca-script-lens").count() == 0)
         check("NFL keeps deep scheme tables progressive",
@@ -296,6 +304,14 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                   "#scheme [data-scheme-direction-panel]:not([hidden]) "
                   ".ca-scheme-detail:not([open])"
               ).count() == 2)
+        check("NFL player research opens with four comparable volume baselines",
+              page.locator("#players .ca-player-compare__row").count() == 4)
+        check("NFL player research shows one team board at a time",
+              page.locator("#players [data-player-panel]:not([hidden])").count() == 1)
+        page.locator("#players [data-player-side='home']").click()
+        check("NFL player team switch exposes the selected club",
+              page.locator("#players [data-player-side='home'][aria-selected='true']").count() == 1
+              and page.locator("#players [data-player-panel='home']:not([hidden])").count() == 1)
         detail_text = page.locator("main").inner_text()
         match = PROHIBITED.search(detail_text)
         check("NFL detail public copy boundary", match is None, match.group(0) if match else "")
