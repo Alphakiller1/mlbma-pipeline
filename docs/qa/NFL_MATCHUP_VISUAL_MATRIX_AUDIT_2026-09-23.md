@@ -10,7 +10,7 @@ The former page had valuable EPA, pressure, coverage, personnel, and success-rat
 
 The revised page starts with a decision-oriented matchup board, then progressively discloses scheme detail, player research, availability, team shape, and context. Every directional matchup cell compares the relevant offense with the opposing defense and labels the result as a matchup indicator, not as a betting recommendation.
 
-A second structural pass added an explicit reading key and a five-lens competitive-dynamics layer. It translates the matchup evidence into the parts of game script it can influence—scoring efficiency, drive length, explosive volatility, passing friction, and possession swings—while preserving a clear boundary between observed evidence and prediction.
+A third structural pass replaces the stacked mini-reports with two filterable workspaces. Team evidence now switches between Overview, Passing, Rushing, and DVOA; player evidence filters by team, position, and stat family. Only one evidence family is expanded at a time, so standard production and advanced splits share one visual grammar without becoming one long table.
 
 ## Visual and audience matrix
 
@@ -18,11 +18,11 @@ A second structural pass added an explicit reading key and a five-lens competiti
 | --- | --- | --- | --- |
 | Information hierarchy | Lineups and deep scheme data preceded the matchup read | Matchup Breakdown is first; scheme, players, availability, team shape, and context follow | First viewport provides game identity and a clear route to the three research modes |
 | Professional bettor workflow | EPA data existed but required scanning multiple dense tables | Directional offense-vs-defense board covers EPA/play, first-down rate, explosive rate, sack rate, and turnover rate with league ranks | Both teams are evaluated against the correct opposing unit; no model edge or recommendation is implied |
-| Game-script interpretation | Readers had to infer how a rate affects possessions and opportunity | Each row names its game-script lever and a dedicated dynamics layer explains how both directional matchups affect efficiency, drives, volatility, pressure, and possession count | Interpretive copy is conditional and descriptive; it never becomes a pick, forecast, or projected player outcome |
-| Player-prop workflow | Player scheme panels were nested deep inside team scheme sections | Dedicated Props & Fantasy section combines observed workload/production with optional coverage and pressure splits | Targets, receptions, receiving/rushing/passing volume, TDs, efficiency, and PPR production appear when observed data exists |
-| Fantasy workflow | No fast player-volume comparison | Position-aware cards use per-game and season totals for QB, RB, WR, and TE | Cards are readable without betting terminology and do not introduce projections |
-| Fan readability | Advanced labels lacked a strong reading order | Standard production panels sit beside the advanced matchup board; metric guide explains EPA, success rate, DVOA, and ranks | A non-specialist can distinguish observed production from rate-based context |
-| Advanced metric integrity | EPA was available; DVOA was absent | EPA and success-rate evidence remain; DVOA is explicitly marked unavailable unless a licensed feed is supplied | No synthetic, renamed, or model-derived DVOA value is shown |
+| Game-script interpretation | Readers had to infer how a rate affects possessions and opportunity | Overview labels the competitive lever; Passing and Rushing pair each offense directly with the defense it faces | Interpretive copy is descriptive; it never becomes a pick, forecast, or projected player outcome |
+| Player-prop workflow | Player scheme panels were nested deep inside team scheme sections | Player Stat Lab combines a team switch with QB/RB/WR/TE and passing/rushing/receiving/fantasy/split filters | One filter combination produces one focused workload board |
+| Fantasy workflow | No fast player-volume comparison | Position-aware cards use per-game and season totals; the family filter removes irrelevant fields | Cards are readable without betting terminology and do not introduce projections |
+| Fan readability | Advanced labels lacked a strong reading order | Shared pill controls keep one stat family visible; standard production and advanced duels reuse the same team-versus-team axis | A non-specialist can distinguish observed production from rate-based context |
+| Advanced metric integrity | EPA was available; DVOA was absent | Pass/rush EPA, success rate, pressure, blitz and stacked-box response are first-class views; DVOA has a dedicated licensed-feed state | No synthetic, renamed, or model-derived DVOA value is shown |
 | Data provenance | Standard volume statistics were not part of the public game contract | Current-season observed team and starter statistics are ingested from nflverse and pass through the public allowlist | Only observed statistics are published; projections and private model fields remain blocked |
 | Empty states | Missing player splits created large low-value regions | Deep split panels render only when evidence exists; standard observed stats remain useful independently | Missing feeds are disclosed without blank charts or fabricated fallbacks |
 | Mobile layout | Kickoff and team identities could overlap; right-side content could clip | Kickoff becomes a full-width first row and teams sit in a two-column row; facts collapse to one column | No document-level horizontal overflow at 360, 375, or 390 CSS pixels |
@@ -50,11 +50,11 @@ A second structural pass added an explicit reading key and a five-lens competiti
 ## Release gate
 
 - JavaScript syntax checks: passed for the shared game-detail renderer and public-slate loader.
-- Python tests: 188 passed.
+- Focused sport-route tests: 38 passed.
 - Public-field projection and restricted-field scan: passed across 10 published artifacts and 7 public routes.
-- Design token and cache-stamp checks: passed at `20260923a`.
-- Responsive audit: passed at 1440, 1024, 768, 390, 375, and 360 pixels with zero document overflow, undersized visible controls, or page errors.
-- Interaction audit: scheme-direction and lineup-unit tabs changed their selected panels correctly.
+- Design token and cache-stamp checks: passed at `20260926b`.
+- Runtime browser audit: 164 checks passed at desktop, tablet, and phone widths with zero document overflow or page errors.
+- Interaction audit: team-stat, scheme-direction, player-position, player-family, player-team, and lineup-unit controls changed the correct panels.
 - Browser console: zero warnings or errors during the local matchup flow.
 - Standard statistics and advanced statistics retain their provenance and interpretation labels.
-- No production deployment is part of this audit branch.
+- Production deployment is permitted only after this gate remains green on the release revision.

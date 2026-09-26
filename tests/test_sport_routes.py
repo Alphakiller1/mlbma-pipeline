@@ -102,7 +102,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("function cfbSections", js)
         self.assertIn("function cfbClashBody", js)
         self.assertIn("function cfbCompareBody", js)
-        self.assertIn("NFL Matchup Desk", js)
+        self.assertIn("Matchup Analysis", js)
         self.assertIn("function nflScriptSnapshot", js)
         self.assertNotIn("function nflScriptLens", js)
         self.assertIn("function playerComparison", js)
@@ -458,6 +458,10 @@ class AdapterHoleTests(unittest.TestCase):
             "schemeSwitcher", "data-scheme-direction", "data-scheme-direction-panel",
             "wireSchemeTabs", "ca-scheme-grid", "ca-rate-block--personnel",
             "personnelDuel", "nflEpaCell", "Offensive form", "Defensive form",
+            "data-team-stat-view", "data-team-stat-panel", "Team Stat Splits",
+            "Passing", "Rushing", "DVOA", "nflTeamFamilyPanel",
+            "Rush EPA / Play", "EPA Vs Stacked Box", "data-player-position",
+            "data-player-family", "Advanced Splits", "wirePlayerFilters",
         ):
             self.assertIn(text, detail)
         self.assertIn("away_lineups", adapter)
@@ -477,6 +481,10 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn(".ca-season-toggle", css)
         self.assertIn(".ca-scheme-switch__tabs", css)
         self.assertIn(".ca-scheme-grid", css)
+        self.assertIn(".ca-filter-pill", css)
+        self.assertIn(".ca-nfl-family-grid", css)
+        self.assertIn(".ca-nfl-split-duel__row", css)
+        self.assertIn(".ca-player-filter-dock", css)
         self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr))", css)
         self.assertIn("min-height: 354px", css)
         self.assertIn("border-radius: 0", css)

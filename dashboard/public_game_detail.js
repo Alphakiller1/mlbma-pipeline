@@ -316,6 +316,85 @@
     });
   }
 
+  function activateTeamStatView(btn) {
+    var lab = btn.closest('.ca-nfl-lab');
+    if (!lab) return;
+    var view = btn.getAttribute('data-team-stat-view');
+    Array.prototype.forEach.call(lab.querySelectorAll('[data-team-stat-view]'), function (tab) {
+      var on = tab === btn;
+      tab.classList.toggle('is-on', on);
+      tab.setAttribute('aria-selected', String(on));
+      tab.setAttribute('tabindex', on ? '0' : '-1');
+    });
+    Array.prototype.forEach.call(lab.querySelectorAll('[data-team-stat-panel]'), function (panel) {
+      panel.hidden = panel.getAttribute('data-team-stat-panel') !== view;
+    });
+  }
+
+  function wireTeamStatViews(host) {
+    host.addEventListener('click', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-team-stat-view]');
+      if (btn && host.contains(btn)) activateTeamStatView(btn);
+    });
+    host.addEventListener('keydown', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-team-stat-view]');
+      if (!btn || !host.contains(btn) || ['ArrowLeft', 'ArrowRight'].indexOf(event.key) < 0) return;
+      var tabs = Array.prototype.slice.call(btn.closest('[role="tablist"]')
+        .querySelectorAll('[data-team-stat-view]'));
+      var next = tabs[(tabs.indexOf(btn) + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+      event.preventDefault();
+      activateTeamStatView(next);
+      next.focus();
+    });
+  }
+
+  function refreshPlayerFilters(control) {
+    var hub = control.closest('.ca-player-research');
+    if (!hub) return;
+    var position = (hub.querySelector('[data-player-position].is-on') || {}).dataset;
+    var family = (hub.querySelector('[data-player-family].is-on') || {}).dataset;
+    position = position ? position.playerPosition : 'all';
+    family = family ? family.playerFamily : 'overview';
+    var visible = 0;
+    Array.prototype.forEach.call(hub.querySelectorAll('.ca-player-volume-card'), function (card) {
+      var positions = String(card.getAttribute('data-player-position-value') || '').split(',');
+      var families = String(card.getAttribute('data-player-families') || '').split(',');
+      var show = (position === 'all' || positions.indexOf(position) >= 0) &&
+        (family === 'overview' || families.indexOf(family) >= 0);
+      card.hidden = !show;
+      if (show) visible += 1;
+      Array.prototype.forEach.call(card.querySelectorAll('[data-player-stat-family]'), function (stat) {
+        var statFamilies = String(stat.getAttribute('data-player-stat-family') || '').split(',');
+        stat.hidden = family !== 'overview' && statFamilies.indexOf(family) < 0;
+      });
+    });
+    var splitPanels = hub.querySelector('[data-player-split-panels]');
+    if (splitPanels) splitPanels.hidden = family !== 'splits';
+    var boards = hub.querySelector('.ca-player-switch');
+    if (boards) boards.hidden = family === 'splits';
+    var empty = hub.querySelector('[data-player-filter-empty]');
+    if (empty) empty.hidden = family === 'splits' || visible > 0;
+  }
+
+  function activatePlayerFilter(btn) {
+    var group = btn.closest('[data-player-filter-group]');
+    if (!group) return;
+    var attr = btn.hasAttribute('data-player-position') ? 'data-player-position' : 'data-player-family';
+    Array.prototype.forEach.call(group.querySelectorAll('[' + attr + ']'), function (tab) {
+      var on = tab === btn;
+      tab.classList.toggle('is-on', on);
+      tab.setAttribute('aria-pressed', String(on));
+    });
+    refreshPlayerFilters(btn);
+  }
+
+  function wirePlayerFilters(host) {
+    host.addEventListener('click', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-player-position], [data-player-family]');
+      if (btn && host.contains(btn)) activatePlayerFilter(btn);
+    });
+  }
+
   function paintSection(host, id, body) {
     var node = host.querySelector('[data-body="' + id + '"]');
     if (node) node.innerHTML = body;
@@ -3619,6 +3698,157 @@
       esc(fullName(sport, game, 'home')) + '</span></div>' + rows + '</div>';
   }
 
+  function nflSplitValue(raw, kind) {
+    var n = Number(raw);
+    if (!isFinite(n)) return '—';
+    if (kind === 'pct') return (n * 100).toFixed(1) + '%';
+    if (kind === 'epa') return epaText(n);
+    return n.toFixed(kind === 'two' ? 2 : 1);
+  }
+
+  function nflSplitStat(label, raw, kind, detail) {
+    return '<div class="ca-nfl-split-stat"><span>' + esc(label) + '</span><strong>' +
+      esc(nflSplitValue(raw, kind)) + '</strong><small>' + esc(detail || '') + '</small></div>';
+  }
+
+  function nflSplitDuelCell(scheme, phase, key, raw, caption, kind) {
+    var entry = responseEntry(scheme, phase, key, raw);
+    return '<div class="ca-nfl-split-duel__value ' +
+      (entry ? rankTone(entry.rank, entry.of) : '') + '"><strong>' +
+      esc(nflSplitValue(raw, kind)) + '</strong><span>' + esc(caption) + '</span>' +
+      (entry && entry.rank ? '<small>' + entry.rank + ordinal(entry.rank) + ' of ' + entry.of + '</small>' : '') +
+      '</div>';
+  }
+
+  function nflSplitDuelRow(offScheme, defScheme, spec) {
+    var off = (((offScheme.offense || {}).response) || {})[spec[0]];
+    var def = (((defScheme.defense || {}).response) || {})[spec[0]];
+    if (off == null && def == null) return '';
+    return '<div class="ca-nfl-split-duel__row">' +
+      nflSplitDuelCell(offScheme, 'offense', spec[0], off, 'Offense', spec[2]) +
+      '<div class="ca-nfl-split-duel__axis"><strong>' + esc(spec[1]) + '</strong><span>' +
+      esc(spec[3]) + '</span></div>' +
+      nflSplitDuelCell(defScheme, 'defense', spec[0], def, 'Defense allowed', spec[2]) + '</div>';
+  }
+
+  function nflTeamSplitCard(sport, game, offSide, defSide, family) {
+    var stats = game[offSide + '_team_stats'] || {};
+    var games = Number(stats.games);
+    var offScheme = game[offSide + '_scheme'] || {};
+    var defScheme = game[defSide + '_scheme'] || {};
+    var offPressure = ((offScheme.offense || {}).pressure) || {};
+    var defPressure = ((defScheme.defense || {}).pressure) || {};
+    var volume;
+    var duels;
+    if (family === 'rushing') {
+      var ypc = Number(stats.carries) > 0 ? Number(stats.rushing_yards) / Number(stats.carries) : null;
+      volume = nflSplitStat('Rush Yds / G', ratePerGame(stats.rushing_yards, games, 1), 'num', 'ground volume') +
+        nflSplitStat('Carries / G', ratePerGame(stats.carries, games, 1), 'num', 'team attempts') +
+        nflSplitStat('Yards / Carry', ypc, 'num', 'efficiency') +
+        nflSplitStat('Rush TD / G', ratePerGame(stats.rushing_tds, games, 2), 'two', 'scoring') +
+        nflSplitStat('Rush 1D / G', ratePerGame(stats.rushing_first_downs, games, 1), 'num', 'drive extension') +
+        nflSplitStat('Stacked Box', offPressure.stacked_box_rate, 'pct', 'offense faced');
+      duels = [
+        ['rush_epa', 'Rush EPA / Play', 'epa', 'down-and-distance value'],
+        ['rush_success_rate', 'Rush Success', 'pct', 'staying on schedule'],
+        ['rush_epa_stacked_box', 'EPA Vs Stacked Box', 'epa', 'heavy-box response']
+      ];
+    } else {
+      var comp = Number(stats.attempts) > 0 ? Number(stats.completions) / Number(stats.attempts) : null;
+      var ypa = Number(stats.attempts) > 0 ? Number(stats.passing_yards) / Number(stats.attempts) : null;
+      volume = nflSplitStat('Pass Yds / G', ratePerGame(stats.passing_yards, games, 1), 'num', 'air volume') +
+        nflSplitStat('Attempts / G', ratePerGame(stats.attempts, games, 1), 'num', 'dropback volume') +
+        nflSplitStat('Completion', comp, 'pct', 'accuracy') +
+        nflSplitStat('Yards / Att', ypa, 'num', 'efficiency') +
+        nflSplitStat('Pass TD / G', ratePerGame(stats.passing_tds, games, 2), 'two', 'scoring') +
+        nflSplitStat('Sacks / G', ratePerGame(stats.sacks_suffered, games, 1), 'num', 'allowed');
+      duels = [
+        ['pass_epa', 'Pass EPA / Play', 'epa', 'dropback value'],
+        ['pass_success_rate', 'Pass Success', 'pct', 'staying on schedule'],
+        ['pass_epa_pressure', 'EPA Under Pressure', 'epa', pctText(defPressure.pressure_rate) + ' defensive pressure'],
+        ['pass_epa_blitz', 'EPA Vs Blitz', 'epa', pctText(defPressure.blitz_rate) + ' defensive blitz']
+      ];
+    }
+    var rows = duels.map(function (spec) { return nflSplitDuelRow(offScheme, defScheme, spec); })
+      .filter(Boolean).join('');
+    return '<article class="ca-nfl-split-card"><header>' +
+      '<div>' + logo(sport, game, offSide, 34, 'ca-production-team__logo') + '<span><strong>' +
+      esc(fullName(sport, game, offSide)) + ' offense</strong><small>' + esc(family) + ' profile</small></span></div>' +
+      '<b aria-hidden="true">vs</b><div>' + logo(sport, game, defSide, 34, 'ca-production-team__logo') +
+      '<span><strong>' + esc(fullName(sport, game, defSide)) + ' defense</strong><small>opponent response</small></span></div>' +
+      '</header><div class="ca-nfl-split-stat-grid">' + volume + '</div>' +
+      '<div class="ca-nfl-split-duel">' + rows + '</div></article>';
+  }
+
+  function nflTeamFamilyPanel(sport, game, family) {
+    return '<div class="ca-nfl-family-grid">' +
+      nflTeamSplitCard(sport, game, 'away', 'home', family) +
+      nflTeamSplitCard(sport, game, 'home', 'away', family) + '</div>' +
+      '<p class="ca-detail-source-note">Standard rates use completed 2026 games. EPA and success-rate splits use the evidence window selected above and are ranked against the 32-team pool.</p>';
+  }
+
+  function dvoaField(record, key) {
+    if (!record) return null;
+    if (record[key] != null) return record[key];
+    var parts = key.split('_');
+    var node = record;
+    for (var i = 0; i < parts.length; i++) node = node && node[parts[i]];
+    return node == null ? null : node;
+  }
+
+  function nflDvoaPanel(sport, game) {
+    var away = game.away_dvoa || null;
+    var home = game.home_dvoa || null;
+    if (!away && !home) {
+      return '<div class="ca-dvoa-status"><span>DVOA Feed Status</span><strong>Licensed values are not connected</strong>' +
+        '<p>DVOA is FTN’s opponent-adjusted efficiency. This view will show total, pass and rush DVOA as soon as a licensed field is published; EPA is kept separate and is never relabeled.</p>' +
+        '<a href="https://ftnfantasy.com/stats/nfl/team-total-dvoa" target="_blank" rel="noopener">Open official FTN DVOA ↗</a></div>';
+    }
+    var specs = [
+      ['total', 'Total DVOA'], ['offense_total', 'Offense DVOA'],
+      ['offense_pass', 'Pass Offense'], ['offense_rush', 'Rush Offense'],
+      ['defense_total', 'Defense DVOA'], ['defense_pass', 'Pass Defense'],
+      ['defense_rush', 'Rush Defense']
+    ];
+    var rows = specs.map(function (spec) {
+      var left = dvoaField(away, spec[0]);
+      var right = dvoaField(home, spec[0]);
+      if (left == null && right == null) return '';
+      return '<div class="ca-production-compare__row"><div class="ca-production-compare__value"><strong>' +
+        esc(left == null ? '—' : nflSplitValue(left, 'pct')) + '</strong><span>FTN DVOA</span></div>' +
+        '<div class="ca-production-compare__axis"><strong>' + esc(spec[1]) + '</strong><span>opponent adjusted</span></div>' +
+        '<div class="ca-production-compare__value"><strong>' + esc(right == null ? '—' : nflSplitValue(right, 'pct')) +
+        '</strong><span>FTN DVOA</span></div></div>';
+    }).filter(Boolean).join('');
+    return '<div class="ca-production-compare"><div class="ca-production-compare__teams"><span>' +
+      logo(sport, game, 'away', 22, 'ca-scheme-tab-crest') + esc(fullName(sport, game, 'away')) + '</span><span>' +
+      logo(sport, game, 'home', 22, 'ca-scheme-tab-crest') + esc(fullName(sport, game, 'home')) +
+      '</span></div>' + rows + '</div><p class="ca-detail-source-note">DVOA © FTN. Positive is better on offense; negative is better on defense.</p>';
+  }
+
+  function nflTeamLab(sport, game, leagueView) {
+    var views = [
+      ['overview', 'Overview'], ['passing', 'Passing'], ['rushing', 'Rushing'], ['dvoa', 'DVOA']
+    ];
+    var tabs = views.map(function (view, index) {
+      return '<button type="button" role="tab" class="ca-filter-pill' + (index ? '' : ' is-on') +
+        '" data-team-stat-view="' + view[0] + '" aria-selected="' + (index ? 'false' : 'true') +
+        '" tabindex="' + (index ? '-1' : '0') + '">' + esc(view[1]) + '</button>';
+    }).join('');
+    var overview = nflScriptSnapshot(sport, game) + nflMatchupSwitcher(sport, game) +
+      teamProductionComparison(sport, game) +
+      (leagueView ? '<details class="ca-ranking-detail"><summary>Full 32-Team Ranking View</summary>' +
+        '<div class="ca-ranking-detail__body">' + leagueView + '</div></details>' : '');
+    return '<div class="ca-nfl-lab"><div class="ca-filter-dock"><div><span>Team Stat Splits</span>' +
+      '<strong>Choose one view</strong></div><div class="ca-filter-pills" role="tablist" aria-label="Team stat splits">' +
+      tabs + '</div></div>' +
+      '<div data-team-stat-panel="overview">' + overview + '</div>' +
+      '<div data-team-stat-panel="passing" hidden>' + nflTeamFamilyPanel(sport, game, 'passing') + '</div>' +
+      '<div data-team-stat-panel="rushing" hidden>' + nflTeamFamilyPanel(sport, game, 'rushing') + '</div>' +
+      '<div data-team-stat-panel="dvoa" hidden>' + nflDvoaPanel(sport, game) + '</div>' +
+      nflMetricGuide() + '</div>';
+  }
+
   function nflMatchupSwitcher(sport, game) {
     function tab(side, defSide, selected) {
       var cap = side === 'away' ? 'Away' : 'Home';
@@ -3648,8 +3878,8 @@
       '1st is always best after metric direction is applied.</dd></div></dl></details>';
   }
 
-  function playerStat(label, primary, secondary) {
-    return '<div class="ca-player-stat"><span>' + esc(label) + '</span><strong>' +
+  function playerStat(label, primary, secondary, family) {
+    return '<div class="ca-player-stat" data-player-stat-family="' + esc(family || 'overview') + '"><span>' + esc(label) + '</span><strong>' +
       esc(primary == null ? '—' : primary) + '</strong>' +
       (secondary ? '<small>' + esc(secondary) + '</small>' : '') + '</div>';
   }
@@ -3672,34 +3902,38 @@
       var ypa = Number(player.attempts) > 0
         ? (Number(player.passing_yards) / Number(player.attempts)).toFixed(1) : '—';
       stats = playerStat('Pass Yds / G', ratePerGame(player.passing_yards, games, 1),
-        value(player.passing_yards, '—') + ' total') +
-        playerStat('Comp / Att', value(player.completions, '—') + ' / ' + value(player.attempts, '—'), completion) +
-        playerStat('Yards / Att', ypa, 'Passing efficiency') +
+        value(player.passing_yards, '—') + ' total', 'passing') +
+        playerStat('Comp / Att', value(player.completions, '—') + ' / ' + value(player.attempts, '—'), completion, 'passing') +
+        playerStat('Yards / Att', ypa, 'Passing efficiency', 'passing') +
         playerStat('Pass TD–INT', value(player.passing_tds, '—') + '–' +
-          value(player.passing_interceptions, '—'), 'Season totals') +
+          value(player.passing_interceptions, '—'), 'Season totals', 'passing') +
         playerStat('Rush Yds / G', ratePerGame(player.rushing_yards, games, 1),
-          value(player.rushing_tds, '—') + ' rush TD') +
-        playerStat('PPR / G', ratePerGame(player.fantasy_points_ppr, games, 1), 'Observed fantasy points');
+          value(player.rushing_tds, '—') + ' rush TD', 'rushing') +
+        playerStat('PPR / G', ratePerGame(player.fantasy_points_ppr, games, 1), 'Observed fantasy points', 'fantasy');
     } else if (position === 'RB') {
       var ypc = Number(player.carries) > 0
         ? (Number(player.rushing_yards) / Number(player.carries)).toFixed(1) : '—';
-      stats = playerStat('Carries / G', ratePerGame(player.carries, games, 1), value(player.carries, '—') + ' total') +
-        playerStat('Rush Yds / G', ratePerGame(player.rushing_yards, games, 1), value(player.rushing_yards, '—') + ' total') +
-        playerStat('Yards / Carry', ypc, value(player.rushing_tds, '—') + ' rush TD') +
-        playerStat('Targets / G', ratePerGame(player.targets, games, 1), value(player.receptions, '—') + ' receptions') +
-        playerStat('Rec Yds / G', ratePerGame(player.receiving_yards, games, 1), value(player.receiving_tds, '—') + ' rec TD') +
-        playerStat('PPR / G', ratePerGame(player.fantasy_points_ppr, games, 1), 'Observed fantasy points');
+      stats = playerStat('Carries / G', ratePerGame(player.carries, games, 1), value(player.carries, '—') + ' total', 'rushing') +
+        playerStat('Rush Yds / G', ratePerGame(player.rushing_yards, games, 1), value(player.rushing_yards, '—') + ' total', 'rushing') +
+        playerStat('Yards / Carry', ypc, value(player.rushing_tds, '—') + ' rush TD', 'rushing') +
+        playerStat('Targets / G', ratePerGame(player.targets, games, 1), value(player.receptions, '—') + ' receptions', 'receiving') +
+        playerStat('Rec Yds / G', ratePerGame(player.receiving_yards, games, 1), value(player.receiving_tds, '—') + ' rec TD', 'receiving') +
+        playerStat('PPR / G', ratePerGame(player.fantasy_points_ppr, games, 1), 'Observed fantasy points', 'fantasy');
     } else {
       var ypt = Number(player.targets) > 0
         ? (Number(player.receiving_yards) / Number(player.targets)).toFixed(1) : '—';
-      stats = playerStat('Targets / G', ratePerGame(player.targets, games, 1), value(player.targets, '—') + ' total') +
-        playerStat('Receptions / G', ratePerGame(player.receptions, games, 1), value(player.receptions, '—') + ' total') +
-        playerStat('Rec Yds / G', ratePerGame(player.receiving_yards, games, 1), value(player.receiving_yards, '—') + ' total') +
-        playerStat('Yards / Target', ypt, value(player.receiving_tds, '—') + ' rec TD') +
-        playerStat('Target Share', pctText(player.target_share), 'Share of team targets') +
-        playerStat('PPR / G', ratePerGame(player.fantasy_points_ppr, games, 1), 'Observed fantasy points');
+      stats = playerStat('Targets / G', ratePerGame(player.targets, games, 1), value(player.targets, '—') + ' total', 'receiving') +
+        playerStat('Receptions / G', ratePerGame(player.receptions, games, 1), value(player.receptions, '—') + ' total', 'receiving') +
+        playerStat('Rec Yds / G', ratePerGame(player.receiving_yards, games, 1), value(player.receiving_yards, '—') + ' total', 'receiving') +
+        playerStat('Yards / Target', ypt, value(player.receiving_tds, '—') + ' rec TD', 'receiving') +
+        playerStat('Target Share', pctText(player.target_share), 'Share of team targets', 'receiving') +
+        playerStat('PPR / G', ratePerGame(player.fantasy_points_ppr, games, 1), 'Observed fantasy points', 'fantasy');
     }
-    return '<article class="ca-player-volume-card"><header>' + portrait + '<div><span>' +
+    var positionFilter = position === 'TE' ? 'te' : position.toLowerCase();
+    var families = position === 'QB' ? 'passing,rushing,fantasy' :
+      (position === 'RB' ? 'rushing,receiving,fantasy' : 'receiving,fantasy');
+    return '<article class="ca-player-volume-card" data-player-position-value="' + esc(positionFilter) +
+      '" data-player-families="' + families + '"><header>' + portrait + '<div><span>' +
       esc(position) + '</span><h5>' + esc(player.player_name) + '</h5><p>' +
       esc(player.season + ' · ' + games + ' game' + (games === 1 ? '' : 's')) +
       '</p></div></header><div class="ca-player-stat-grid">' + stats + '</div></article>';
@@ -3793,18 +4027,35 @@
         ' data-player-side="' + side + '">' + logo(sport, game, side, 24, 'ca-scheme-tab-crest') +
         '<span><strong>' + esc(fullName(sport, game, side)) + '</strong><small>Full player board</small></span></button>';
     }
-    return playerComparison(sport, game) +
+    var positions = [['all', 'All'], ['qb', 'QB'], ['rb', 'RB'], ['wr', 'WR'], ['te', 'TE']];
+    var families = [['overview', 'Overview'], ['passing', 'Passing'], ['rushing', 'Rushing'],
+      ['receiving', 'Receiving'], ['fantasy', 'Fantasy'], ['splits', 'Advanced Splits']];
+    function filterButtons(items, attr) {
+      return items.map(function (item, index) {
+        return '<button type="button" class="ca-filter-pill' + (index ? '' : ' is-on') + '" ' + attr +
+          '="' + item[0] + '" aria-pressed="' + (index ? 'false' : 'true') + '">' + esc(item[1]) + '</button>';
+      }).join('');
+    }
+    var hasDeep = (game.away_player_scheme || []).length || (game.away_player_coverage || []).length ||
+      (game.home_player_scheme || []).length || (game.home_player_coverage || []).length;
+    var deep = hasDeep ? playerDeepDive(sport, game, 'away') + playerDeepDive(sport, game, 'home') :
+      pending('No qualifying advanced player split sample is published for this matchup.');
+    return '<div class="ca-player-research">' + playerComparison(sport, game) +
+      '<div class="ca-player-filter-dock"><div data-player-filter-group><span>Position</span><div class="ca-filter-pills">' +
+      filterButtons(positions, 'data-player-position') + '</div></div>' +
+      '<div data-player-filter-group><span>Stat View</span><div class="ca-filter-pills">' +
+      filterButtons(families, 'data-player-family') + '</div></div></div>' +
       '<div class="ca-player-switch"><div class="ca-player-switch__tabs" role="tablist" ' +
       'aria-label="Choose team player board">' + tab('away', true) + tab('home', false) + '</div>' +
       '<div id="caPlayerAwayPanel" role="tabpanel" aria-labelledby="caPlayerAwayTab" ' +
       'data-player-panel="away">' + playerStatsTeam(sport, game, 'away') + '</div>' +
       '<div id="caPlayerHomePanel" role="tabpanel" aria-labelledby="caPlayerHomeTab" ' +
       'data-player-panel="home" hidden>' + playerStatsTeam(sport, game, 'home') + '</div></div>' +
-      '<div class="ca-player-deep-stack">' + playerDeepDive(sport, game, 'away') +
-      playerDeepDive(sport, game, 'home') + '</div>' +
+      '<p class="ca-detail-source-note" data-player-filter-empty hidden>No players match both selected filters.</p>' +
+      '<div class="ca-player-deep-stack" data-player-split-panels hidden>' + deep + '</div>' +
       '<p class="ca-detail-source-note">Volume, yards, touchdowns, receptions and fantasy points are completed-game ' +
       'regular-season totals from nflverse/nflfastR. Per-game figures divide those totals by games played; ' +
-      'they are not prop projections. Advanced player splits appear only when a qualifying observed sample is published.</p>';
+      'they are not prop projections. Advanced player splits appear only when a qualifying observed sample is published.</p></div>';
   }
 
   var NFL_FORM_OFF = ['off_epa', 'off_first_down', 'off_explosive', 'off_sack', 'off_turnover'];
@@ -3850,33 +4101,22 @@
     var source = game.scheme_source || {};
     var leagueView = nflMirror(sport, game);
     return [
-      section('form', 'NFL Matchup Desk',
-        'Unit Edges, Game Script And Production',
-        nflReadingKey() +
-        nflScriptSnapshot(sport, game) +
-        '<div class="ca-nfl-board-head"><div><span>Unit Matchups</span>' +
-        '<h3>Offense Versus The Defense It Faces</h3></div>' +
-        '<p>Hover a metric for its definition</p></div>' +
-        nflMatchupSwitcher(sport, game) +
-        '<div class="ca-production-head"><div><span>Standard Production</span>' +
-        '<h3>Volume Check</h3></div><p>Yards, touchdowns and first downs</p></div>' +
-        teamProductionComparison(sport, game) +
-        (leagueView ? '<details class="ca-ranking-detail"><summary>Open Full 32-Team Ranking View</summary>' +
-          '<div class="ca-ranking-detail__body">' + leagueView + '</div></details>' : '') +
-        nflMetricGuide() +
+      section('form', 'Matchup Analysis',
+        'Team Splits, Advanced Efficiency And Production In One Workspace',
+        nflTeamLab(sport, game, leagueView) +
         '<p class="ca-detail-source-note">Observed results only · 1st is strongest after metric direction is normalized. ' +
         (source.season ? 'Team form: ' + esc(source.season) +
           (source.week ? ', through week ' + esc(source.week) : '') + '. ' : '') +
         'Production: nflverse/nflfastR.</p>'),
 
-      section('scheme', 'Scheme Confrontation',
-        'Charted Tendencies, Each Offence Against The Other Defence',
+      section('scheme', 'Scheme Splits',
+        'Coverage, Pressure And Personnel By Matchup Direction',
         schemeSwitcher(sport, game) +
         '<p class="ca-detail-source-note" data-season-prior-only>Observed charting only · season shown in the evidence control ' +
         '· frequency ranks use the 32-team pool.</p>'),
 
-      section('players', 'Player Props And Fantasy Research',
-        'Observed Workload, Production And Matchup Splits',
+      section('players', 'Player Stat Lab',
+        'Filter By Team, Position Or Stat Family',
         nflPlayerHub(sport, game)),
 
       section('availability', 'Starting Lineups And Availability',
@@ -4368,6 +4608,8 @@
       wireSchemeTabs(host);
       wirePlayerTabs(host);
       wireMatchupTabs(host);
+      wireTeamStatViews(host);
+      wirePlayerFilters(host);
       wireCfbCompare(host);
       wireRadarReadout(host);
       if (global.ResizeObserver) {

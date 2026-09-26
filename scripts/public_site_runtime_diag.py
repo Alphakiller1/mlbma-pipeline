@@ -310,6 +310,20 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL form compares both clubs on one axis", rows == 10, f"rows={rows}")
         check("NFL form annotates every rate with a rank", ranks == rows * 2,
               f"{ranks} ranks across {rows} rows")
+        check("NFL matchup lab exposes four focused team stat views",
+              page.locator("#form [data-team-stat-view]").count() == 4)
+        check("NFL matchup lab opens one team stat view at a time",
+              page.locator("#form [data-team-stat-panel]:not([hidden])").count() == 1)
+        page.locator("#form [data-team-stat-view='rushing']").click()
+        check("NFL rushing view shows both offense-defense pairings",
+              page.locator("#form [data-team-stat-panel='rushing'] .ca-nfl-split-card").count() == 2)
+        check("NFL rushing view includes EPA, success and stacked-box splits",
+              page.locator("#form [data-team-stat-panel='rushing'] .ca-nfl-split-duel__row").count() == 6)
+        page.locator("#form [data-team-stat-view='dvoa']").click()
+        check("NFL DVOA view preserves licensed-source integrity",
+              page.locator("#form [data-team-stat-panel='dvoa'] a[href*='ftnfantasy.com']").count() == 1
+              and "never relabeled" in page.locator("#form [data-team-stat-panel='dvoa']").inner_text().lower())
+        page.locator("#form [data-team-stat-view='overview']").click()
         check("NFL opens with four concise matchup signals",
               page.locator("#form .ca-nfl-signal").count() == 4)
         check("NFL shows one directional unit board at a time",
@@ -329,6 +343,22 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               ).count() == 2)
         check("NFL player research opens with four comparable volume baselines",
               page.locator("#players .ca-player-compare__row").count() == 4)
+        check("NFL player research exposes position and stat-family filters",
+              page.locator("#players [data-player-position]").count() == 5
+              and page.locator("#players [data-player-family]").count() == 6)
+        page.locator("#players [data-player-position='rb']").click()
+        page.locator("#players [data-player-family='rushing']").click()
+        check("NFL player filters isolate the selected rushing workload",
+              page.locator(
+                  "#players [data-player-panel]:not([hidden]) "
+                  ".ca-player-volume-card:not([hidden])"
+              ).count() == 1
+              and page.locator(
+                  "#players [data-player-panel]:not([hidden]) "
+                  ".ca-player-volume-card:not([hidden]) .ca-player-stat:not([hidden])"
+              ).count() == 3)
+        page.locator("#players [data-player-position='all']").click()
+        page.locator("#players [data-player-family='overview']").click()
         check("NFL player research shows one team board at a time",
               page.locator("#players [data-player-panel]:not([hidden])").count() == 1)
         page.locator("#players [data-player-side='home']").click()
