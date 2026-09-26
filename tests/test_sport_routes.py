@@ -462,6 +462,7 @@ class AdapterHoleTests(unittest.TestCase):
             "Passing", "Rushing", "DVOA", "nflTeamFamilyPanel",
             "Rush EPA / Play", "EPA Vs Stacked Box", "data-player-position",
             "data-player-family", "Advanced Splits", "wirePlayerFilters",
+            "League rank color", "League Avg", "nflGradeLegend",
         ):
             self.assertIn(text, detail)
         self.assertIn("away_lineups", adapter)
@@ -485,6 +486,11 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn(".ca-nfl-family-grid", css)
         self.assertIn(".ca-nfl-split-duel__row", css)
         self.assertIn(".ca-player-filter-dock", css)
+        self.assertIn(".ca-nfl-matchup-cell.c-elite strong", css)
+        self.assertIn(".ca-nfl-matchup-cell.c-poor strong", css)
+        self.assertIn(".ca-nfl-split-duel__value.c-elite", css)
+        self.assertIn(".ca-nfl-split-duel__value.c-poor", css)
+        self.assertIn(".ca-grade-legend", css)
         self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr))", css)
         self.assertIn("min-height: 354px", css)
         self.assertIn("border-radius: 0", css)

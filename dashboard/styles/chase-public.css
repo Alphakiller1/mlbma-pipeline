@@ -5585,14 +5585,33 @@ body[data-sport="nfl"] .ca-detail-nav {
   text-transform: uppercase;
 }
 
-.ca-nfl-matchup-row.is-off .ca-nfl-matchup-cell:first-child,
+.ca-nfl-matchup-row.is-off .ca-nfl-matchup-cell:first-child {
+  box-shadow: inset 3px 0 0 var(--metric-good);
+}
 .ca-nfl-matchup-row.is-def .ca-nfl-matchup-cell:last-child {
-  background: color-mix(in srgb, var(--metric-good) 10%, transparent);
-  color: var(--metric-good);
+  box-shadow: inset -3px 0 0 var(--metric-good);
 }
 
 .ca-nfl-matchup-row.is-off .ca-nfl-matchup-axis em,
 .ca-nfl-matchup-row.is-def .ca-nfl-matchup-axis em { color: var(--metric-good); }
+
+.ca-nfl-matchup-cell.c-elite,
+.ca-nfl-matchup-cell.c-good,
+.ca-nfl-matchup-cell.c-mid,
+.ca-nfl-matchup-cell.c-weak,
+.ca-nfl-matchup-cell.c-poor {
+  background: color-mix(in srgb, var(--grade) 9%, transparent);
+}
+.ca-nfl-matchup-cell.c-elite strong,
+.ca-nfl-matchup-cell.c-good strong,
+.ca-nfl-matchup-cell.c-mid strong,
+.ca-nfl-matchup-cell.c-weak strong,
+.ca-nfl-matchup-cell.c-poor strong,
+.ca-nfl-matchup-cell.c-elite i,
+.ca-nfl-matchup-cell.c-good i,
+.ca-nfl-matchup-cell.c-mid i,
+.ca-nfl-matchup-cell.c-weak i,
+.ca-nfl-matchup-cell.c-poor i { color: var(--grade); }
 
 .ca-script-dynamics {
   margin-top: var(--space-5);
@@ -6208,8 +6227,41 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-nfl-split-duel__axis { justify-items: center; background: var(--surface-field); text-align: center; }
 .ca-nfl-split-duel__axis strong { color: var(--text-primary); }
 .ca-nfl-split-duel__axis span { color: var(--text-muted); font-size: var(--type-meta); }
-.ca-nfl-split-duel__value.is-good { background: color-mix(in srgb, var(--metric-good) 8%, transparent); }
-.ca-nfl-split-duel__value.is-good strong { color: var(--metric-good); }
+.ca-nfl-split-duel__value.c-elite,
+.ca-nfl-split-duel__value.c-good,
+.ca-nfl-split-duel__value.c-mid,
+.ca-nfl-split-duel__value.c-weak,
+.ca-nfl-split-duel__value.c-poor {
+  background: color-mix(in srgb, var(--grade) 9%, transparent);
+}
+.ca-nfl-split-duel__value.c-elite strong,
+.ca-nfl-split-duel__value.c-good strong,
+.ca-nfl-split-duel__value.c-mid strong,
+.ca-nfl-split-duel__value.c-weak strong,
+.ca-nfl-split-duel__value.c-poor strong,
+.ca-nfl-split-duel__value.c-elite small,
+.ca-nfl-split-duel__value.c-good small,
+.ca-nfl-split-duel__value.c-mid small,
+.ca-nfl-split-duel__value.c-weak small,
+.ca-nfl-split-duel__value.c-poor small { color: var(--grade); }
+
+.ca-grade-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  padding: 0 var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--type-meta);
+}
+.ca-grade-legend > strong { color: var(--text-secondary); }
+.ca-grade-legend > span { display: inline-flex; align-items: center; gap: 5px; }
+.ca-grade-legend i {
+  width: 8px;
+  height: 8px;
+  background: var(--grade);
+  border-radius: 50%;
+}
 
 .ca-dvoa-status {
   display: grid;

@@ -310,6 +310,18 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL form compares both clubs on one axis", rows == 10, f"rows={rows}")
         check("NFL form annotates every rate with a rank", ranks == rows * 2,
               f"{ranks} ranks across {rows} rows")
+        legend = page.locator("#form .ca-grade-legend > span")
+        legend_colors = legend.evaluate_all(
+            "nodes => [...new Set(nodes.map(n => getComputedStyle(n).color))].length")
+        check("NFL rank legend exposes all five named grade bands",
+              legend.count() == 5 and legend_colors == 5,
+              f"bands={legend.count()} colors={legend_colors}")
+        overview_values = page.locator(
+            "#form [data-matchup-panel]:not([hidden]) .ca-nfl-matchup-cell strong")
+        overview_colors = overview_values.evaluate_all(
+            "nodes => [...new Set(nodes.map(n => getComputedStyle(n).color))].length")
+        check("NFL overview values inherit their direction-aware rank colors",
+              overview_colors >= 4, f"distinct colors={overview_colors}")
         check("NFL matchup lab exposes four focused team stat views",
               page.locator("#form [data-team-stat-view]").count() == 4)
         check("NFL matchup lab opens one team stat view at a time",
@@ -319,6 +331,12 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("#form [data-team-stat-panel='rushing'] .ca-nfl-split-card").count() == 2)
         check("NFL rushing view includes EPA, success and stacked-box splits",
               page.locator("#form [data-team-stat-panel='rushing'] .ca-nfl-split-duel__row").count() == 6)
+        split_values = page.locator(
+            "#form [data-team-stat-panel='rushing'] .ca-nfl-split-duel__value strong")
+        split_colors = split_values.evaluate_all(
+            "nodes => [...new Set(nodes.map(n => getComputedStyle(n).color))].length")
+        check("NFL rushing splits use the same five-band grade ramp",
+              split_colors == 5, f"distinct colors={split_colors}")
         page.locator("#form [data-team-stat-view='dvoa']").click()
         check("NFL DVOA view preserves licensed-source integrity",
               page.locator("#form [data-team-stat-panel='dvoa'] a[href*='ftnfantasy.com']").count() == 1

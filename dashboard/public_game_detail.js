@@ -3826,6 +3826,16 @@
       '</span></div>' + rows + '</div><p class="ca-detail-source-note">DVOA © FTN. Positive is better on offense; negative is better on defense.</p>';
   }
 
+  function nflGradeLegend() {
+    return '<div class="ca-grade-legend" aria-label="League rank color scale">' +
+      '<strong>League rank color</strong>' +
+      '<span class="c-elite"><i aria-hidden="true"></i>Elite</span>' +
+      '<span class="c-good"><i aria-hidden="true"></i>Strong</span>' +
+      '<span class="c-mid"><i aria-hidden="true"></i>League Avg</span>' +
+      '<span class="c-weak"><i aria-hidden="true"></i>Weak</span>' +
+      '<span class="c-poor"><i aria-hidden="true"></i>Poor</span></div>';
+  }
+
   function nflTeamLab(sport, game, leagueView) {
     var views = [
       ['overview', 'Overview'], ['passing', 'Passing'], ['rushing', 'Rushing'], ['dvoa', 'DVOA']
@@ -3841,7 +3851,7 @@
         '<div class="ca-ranking-detail__body">' + leagueView + '</div></details>' : '');
     return '<div class="ca-nfl-lab"><div class="ca-filter-dock"><div><span>Team Stat Splits</span>' +
       '<strong>Choose one view</strong></div><div class="ca-filter-pills" role="tablist" aria-label="Team stat splits">' +
-      tabs + '</div></div>' +
+      tabs + '</div></div>' + nflGradeLegend() +
       '<div data-team-stat-panel="overview">' + overview + '</div>' +
       '<div data-team-stat-panel="passing" hidden>' + nflTeamFamilyPanel(sport, game, 'passing') + '</div>' +
       '<div data-team-stat-panel="rushing" hidden>' + nflTeamFamilyPanel(sport, game, 'rushing') + '</div>' +
