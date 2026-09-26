@@ -3145,6 +3145,10 @@
 
   function playerSchemePanels(sport, game, offSide) {
     var profiles = game[offSide + '_player_scheme'] || [];
+    var seasonStats = {};
+    (game[offSide + '_player_stats'] || []).forEach(function (player) {
+      seasonStats[playerNameKey(player.player_name)] = player;
+    });
     var offense = unitData(game, offSide, 'offense');
     var starters = {};
     ((offense || {}).players || []).forEach(function (player) {
@@ -3170,6 +3174,7 @@
     }
     function card(profile) {
       var starter = starters[playerNameKey(profile.player_name)] || {};
+      var standard = seasonStats[playerNameKey(profile.player_name)] || {};
       var position = String(profile.position || '').toUpperCase();
       var volume = position === 'QB' ? 'dropbacks' : 'carries';
       var minimum = position === 'QB' ? 10 : 5;
@@ -3201,22 +3206,30 @@
         var ranks = split.league_ranks || {};
         if (position === 'QB') {
           return '<tr><td>' + esc(titleCase(label)) + '</td><td class="num">' +
-            esc(split.dropbacks) + '</td>' + ranked(split.completion_rate, ranks.completion_rate, pctText) +
+            esc(split.dropbacks) + '</td><td class="num">' +
+            esc(split.dropbacks_per_game == null ? '—' : Number(split.dropbacks_per_game).toFixed(1)) +
+            '</td><td class="num">' +
+            esc(split.passing_yards_per_game == null ? '—' : Number(split.passing_yards_per_game).toFixed(1)) +
+            '</td>' + ranked(split.completion_rate, ranks.completion_rate, pctText) +
             ranked(split.yards_per_attempt, ranks.yards_per_attempt, function (v) { return Number(v).toFixed(1); }) +
             ranked(split.epa_per_dropback, ranks.epa_per_dropback, function (v) { return epaText(v, false); }) +
             '</tr>';
         }
         return '<tr><td>' + esc(titleCase(label)) + '</td><td class="num">' + esc(split.carries) +
+          '</td><td class="num">' +
+          esc(split.carries_per_game == null ? '—' : Number(split.carries_per_game).toFixed(1)) +
+          '</td><td class="num">' +
+          esc(split.rushing_yards_per_game == null ? '—' : Number(split.rushing_yards_per_game).toFixed(1)) +
           '</td>' + ranked(split.yards_per_carry, ranks.yards_per_carry, function (v) { return Number(v).toFixed(1); }) +
           ranked(split.epa_per_carry, ranks.epa_per_carry, function (v) { return epaText(v, false); }) +
           ranked(split.success_rate, ranks.success_rate, pctText) + '</tr>';
       }).join('');
       var headings = position === 'QB'
-        ? '<th>Defensive Look</th><th class="num">DB</th><th class="num">Cmp</th><th class="num">Y/A</th><th class="num">EPA/DB</th>'
-        : '<th>Run Look</th><th class="num">Att</th><th class="num">YPC</th><th class="num">EPA/Att</th><th class="num">Success</th>';
+        ? '<th>Defensive Look</th><th class="num">DB</th><th class="num">DB/G</th><th class="num">Yds/G</th><th class="num">Cmp</th><th class="num">Y/A</th><th class="num">EPA/DB</th>'
+        : '<th>Run Look</th><th class="num">Att</th><th class="num">Att/G</th><th class="num">Yds/G</th><th class="num">YPC</th><th class="num">EPA/Att</th><th class="num">Success</th>';
       var tracking = profile.tracking || {};
       function trackingStat(label, raw, format, note) {
-        if (raw == null || raw === '') return '';
+        if (raw == null || raw === '' || !isFinite(Number(raw))) return '';
         var shown = format === 'pct' ? pctText(raw) :
           (format === 'seconds' ? Number(raw).toFixed(2) + 's' :
             (Number(raw) > 0 && format === 'signed' ? '+' : '') + Number(raw).toFixed(2));
@@ -3230,7 +3243,12 @@
           trackingStat('Expected YPC', tracking.expected_yards_per_carry, 'num', 'NGS expectation') +
           trackingStat('RYOE / Carry', tracking.ryoe_per_carry, 'signed', 'above/below expectation') +
           trackingStat('Runs Over Expected', tracking.rush_pct_over_expected, 'pct', 'share beating expectation') +
-          '</div>' : '';
+          '</div>' : (position === 'QB' && Object.keys(tracking).length
+            ? '<div class="ca-rb-tracking ca-qb-tracking" aria-label="NFL Next Gen passing profile">' +
+              trackingStat('Time To Throw', tracking.avg_time_to_throw, 'seconds', 'average snap-to-throw time') +
+              trackingStat('Pass Att / G', ratePerGame(standard.attempts, standard.games, 1), 'num', 'completed-game volume') +
+              trackingStat('Pass Yds / G', ratePerGame(standard.passing_yards, standard.games, 1), 'num', 'completed-game production') +
+              '</div>' : '');
       return '<article class="ca-player-coverage-card ca-player-scheme-card" role="listitem"><header>' + portrait +
         '<div class="ca-player-coverage-card__identity"><span class="ca-lineup-player__position">' +
         esc(position) + '</span><strong>' + esc(profile.player_name) + '</strong><small>' +
@@ -3694,21 +3712,26 @@
       { label: 'Rush Yards', unit: 'per game', value: Number(ratePerGame(stats.rushing_yards, games, 1)), total: stats.rushing_yards },
       { label: 'Offensive TD', unit: 'per game', value: Number(ratePerGame(tds, games, 2)), total: tds },
       { label: 'First Downs', unit: 'per game', value: Number(ratePerGame(firsts, games, 1)), total: firsts },
-      { label: 'Sacks Allowed', unit: 'per game', value: Number(ratePerGame(stats.sacks_suffered, games, 1)), total: stats.sacks_suffered, low: true }
+      { label: 'Sacks Allowed', unit: 'per game', value: Number(ratePerGame(stats.sacks_suffered, games, 1)), total: stats.sacks_suffered, low: true },
+      { label: 'Offensive Pace', unit: 'plays per game', value: Number(stats.offensive_plays_per_game),
+        rank: stats.offensive_pace_rank, of: stats.offensive_pace_of }
     ];
   }
 
   function productionCompareCell(entry, leading) {
     var valid = entry && isFinite(entry.value);
+    var context = valid && entry.rank
+      ? entry.rank + ordinal(entry.rank) + ' of ' + entry.of
+      : (valid && entry.total != null ? Math.round(Number(entry.total)) + ' total' : 'Not published');
     return '<div class="ca-production-compare__value' + (leading ? ' is-leading' : '') + '">' +
       '<strong>' + esc(valid ? entry.value.toFixed(entry.label === 'Offensive TD' ? 2 : 1) : '—') + '</strong>' +
-      '<span>' + esc(valid && entry.total != null ? Math.round(Number(entry.total)) + ' total' : 'Not published') + '</span></div>';
+      '<span>' + esc(context) + '</span></div>';
   }
 
   function teamProductionComparison(sport, game) {
     var away = teamProductionValues(game.away_team_stats);
     var home = teamProductionValues(game.home_team_stats);
-    var rows = [0, 1, 2, 3, 4, 5].map(function (index) {
+    var rows = [0, 1, 2, 3, 4, 5, 6].map(function (index) {
       var left = away[index];
       var right = home[index];
       var low = (left || right || {}).low;
@@ -3735,8 +3758,9 @@
     return n.toFixed(kind === 'two' ? 2 : 1);
   }
 
-  function nflSplitStat(label, raw, kind, detail) {
-    return '<div class="ca-nfl-split-stat"><span>' + esc(label) + '</span><strong>' +
+  function nflSplitStat(label, raw, kind, detail, rank) {
+    return '<div class="ca-nfl-split-stat ' +
+      (rank && rank.place ? rankTone(rank.place, rank.of) : '') + '"><span>' + esc(label) + '</span><strong>' +
       esc(nflSplitValue(raw, kind)) + '</strong><small>' + esc(detail || '') + '</small></div>';
   }
 
@@ -3769,6 +3793,11 @@
     var defPressure = ((defScheme.defense || {}).pressure) || {};
     var volume;
     var duels;
+    var pace = nflSplitStat('Pace · Plays / G', stats.offensive_plays_per_game, 'num',
+      stats.offensive_pace_rank
+        ? stats.offensive_pace_rank + ordinal(stats.offensive_pace_rank) + ' of ' + stats.offensive_pace_of
+        : 'league rank unavailable',
+      { place: stats.offensive_pace_rank, of: stats.offensive_pace_of });
     if (family === 'rushing') {
       var ypc = Number(stats.carries) > 0 ? Number(stats.rushing_yards) / Number(stats.carries) : null;
       volume = nflSplitStat('Rush Yds / G', ratePerGame(stats.rushing_yards, games, 1), 'num', 'ground volume') +
@@ -3776,7 +3805,7 @@
         nflSplitStat('Yards / Carry', ypc, 'num', 'efficiency') +
         nflSplitStat('Rush TD / G', ratePerGame(stats.rushing_tds, games, 2), 'two', 'scoring') +
         nflSplitStat('Rush 1D / G', ratePerGame(stats.rushing_first_downs, games, 1), 'num', 'drive extension') +
-        nflSplitStat('Stacked Box', offPressure.stacked_box_rate, 'pct', 'offense faced');
+        nflSplitStat('Stacked Box', offPressure.stacked_box_rate, 'pct', 'offense faced') + pace;
       duels = [
         ['rush_epa', 'Rush EPA / Play', 'epa', 'down-and-distance value'],
         ['rush_success_rate', 'Rush Success', 'pct', 'staying on schedule'],
@@ -3790,7 +3819,7 @@
         nflSplitStat('Completion', comp, 'pct', 'accuracy') +
         nflSplitStat('Yards / Att', ypa, 'num', 'efficiency') +
         nflSplitStat('Pass TD / G', ratePerGame(stats.passing_tds, games, 2), 'two', 'scoring') +
-        nflSplitStat('Sacks / G', ratePerGame(stats.sacks_suffered, games, 1), 'num', 'allowed');
+        nflSplitStat('Sacks / G', ratePerGame(stats.sacks_suffered, games, 1), 'num', 'allowed') + pace;
       duels = [
         ['pass_epa', 'Pass EPA / Play', 'epa', 'dropback value'],
         ['pass_success_rate', 'Pass Success', 'pct', 'staying on schedule'],
@@ -3992,6 +4021,10 @@
       '<dl><div><dt>EPA / Play</dt><dd>Expected points gained or lost per snap. ' +
       'It captures down, distance and field position; it is not raw yardage.</dd></div>' +
       '<div><dt>Success Rate</dt><dd>The share of plays that gained enough to keep the drive on schedule.</dd></div>' +
+      '<div><dt>Offensive Pace</dt><dd>Completed-game offensive snaps per game. More plays create more team and player volume; ' +
+      'this is not a seconds-per-snap or neutral-situation tempo estimate.</dd></div>' +
+      '<div><dt>Time To Throw</dt><dd>NFL Next Gen’s average time from snap to pass. It describes how quickly the ball leaves ' +
+      'the quarterback’s hand, not whether the decision or result was good.</dd></div>' +
       '<div><dt>Adjusted Line Yards</dt><dd>A rush-outcome proxy for line push. It weights early yards more heavily ' +
       'and caps long runs so breakaway speed does not masquerade as blocking.</dd></div>' +
       '<div><dt>Havoc Rate</dt><dd>The share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.</dd></div>' +
@@ -4010,6 +4043,12 @@
   function playerStatsCard(game, side, player) {
     var games = Number(player.games);
     var position = String(player.position || '').toUpperCase();
+    var schemeProfile = (game[side + '_player_scheme'] || []).find(function (profile) {
+      return String(profile.position || '').toUpperCase() === position &&
+        Number(profile.source_season) === Number(player.season) &&
+        playerNameKey(profile.player_name) === playerNameKey(player.player_name);
+    }) || {};
+    var tracking = schemeProfile.tracking || {};
     var starter = (((unitData(game, side, 'offense') || {}).players) || []).find(function (candidate) {
       return playerNameKey(candidate.name) === playerNameKey(player.player_name);
     }) || {};
@@ -4028,6 +4067,8 @@
         value(player.passing_yards, '—') + ' total', 'passing') +
         playerStat('Comp / Att', value(player.completions, '—') + ' / ' + value(player.attempts, '—'), completion, 'passing') +
         playerStat('Yards / Att', ypa, 'Passing efficiency', 'passing') +
+        playerStat('Time To Throw', tracking.avg_time_to_throw == null ? '—' :
+          Number(tracking.avg_time_to_throw).toFixed(2) + 's', 'NFL Next Gen season average', 'passing') +
         playerStat('Pass TD–INT', value(player.passing_tds, '—') + '–' +
           value(player.passing_interceptions, '—'), 'Season totals', 'passing') +
         playerStat('Rush Yds / G', ratePerGame(player.rushing_yards, games, 1),

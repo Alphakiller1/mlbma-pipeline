@@ -6213,6 +6213,16 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-nfl-split-stat span { color: var(--text-muted); font-size: var(--type-caps); font-weight: 800; text-transform: uppercase; }
 .ca-nfl-split-stat strong { color: var(--text-primary); font-family: var(--font-display); font-size: var(--type-20); font-variant-numeric: tabular-nums; }
 .ca-nfl-split-stat small { color: var(--text-secondary); font-size: var(--type-meta); }
+.ca-nfl-split-stat.c-elite,
+.ca-nfl-split-stat.c-good,
+.ca-nfl-split-stat.c-mid,
+.ca-nfl-split-stat.c-weak,
+.ca-nfl-split-stat.c-poor { background: color-mix(in srgb, var(--grade) 9%, transparent); }
+.ca-nfl-split-stat.c-elite strong,
+.ca-nfl-split-stat.c-good strong,
+.ca-nfl-split-stat.c-mid strong,
+.ca-nfl-split-stat.c-weak strong,
+.ca-nfl-split-stat.c-poor strong { color: var(--grade); }
 
 .ca-nfl-split-duel__row {
   display: grid;
@@ -6298,6 +6308,7 @@ body[data-sport="nfl"] .ca-detail-nav {
   grid-template-columns: repeat(5, minmax(0, 1fr));
   border-bottom: 1px solid var(--border-card);
 }
+.ca-qb-tracking { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .ca-rb-tracking__stat {
   display: grid;
   align-content: center;

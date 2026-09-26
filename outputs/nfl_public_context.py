@@ -408,16 +408,18 @@ PLAYER_SCHEME_FIELDS = {
     "QB": (
         "dropbacks", "attempts", "completions", "passing_yards", "passing_tds",
         "interceptions", "completion_rate", "yards_per_attempt", "epa_per_dropback",
-        "success_rate",
+        "success_rate", "games", "dropbacks_per_game", "passing_yards_per_game",
     ),
     "RB": (
         "carries", "rushing_yards", "rushing_tds", "yards_per_carry",
-        "epa_per_carry", "success_rate",
+        "epa_per_carry", "success_rate", "games", "carries_per_game",
+        "rushing_yards_per_game",
     ),
 }
 PLAYER_TRACKING_FIELDS = (
     "season", "week", "attempts", "eight_plus_box_rate", "avg_time_to_los",
-    "expected_yards_per_carry", "ryoe_per_carry", "rush_pct_over_expected", "source",
+    "avg_time_to_throw", "expected_yards_per_carry", "ryoe_per_carry",
+    "rush_pct_over_expected", "source",
 )
 
 
@@ -450,7 +452,7 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
                 "position": position, "source_season": int(season),
                 "play_family": family, "splits": splits,
             }
-            if position == "RB" and isinstance(row.get("tracking"), dict):
+            if isinstance(row.get("tracking"), dict):
                 tracking = {key: row["tracking"][key] for key in PLAYER_TRACKING_FIELDS
                             if row["tracking"].get(key) is not None}
                 if tracking:
@@ -584,6 +586,19 @@ def nflverse_season_stats(season: int) -> dict:
     # thinner early in Week 1, but it may not exist without the team backbone.
     if len(teams) < 30:
         return {"teams": {}, "players": {}}
+    pace_rows = []
+    for team, entry in teams.items():
+        games = float(entry.get("games") or 0)
+        snaps = sum(float(entry.get(key) or 0)
+                    for key in ("attempts", "carries", "sacks_suffered"))
+        if games > 0 and snaps > 0:
+            entry["offensive_plays"] = int(snaps)
+            entry["offensive_plays_per_game"] = round(snaps / games, 2)
+            pace_rows.append((team, entry["offensive_plays_per_game"]))
+    pace_ranks = _ranked(pace_rows, "high")
+    for team, _value in pace_rows:
+        teams[team]["offensive_pace_rank"] = pace_ranks[team]
+        teams[team]["offensive_pace_of"] = len(pace_rows)
     for rows in players.values():
         rows.sort(key=lambda row: (
             ("QB", "RB", "WR", "TE").index(row["position"]),

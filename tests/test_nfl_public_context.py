@@ -301,6 +301,23 @@ class NflPublicContextTests(unittest.TestCase):
         self.assertEqual(profile["tracking"]["eight_plus_box_rate"], .3226)
         self.assertNotIn("private", profile["tracking"])
 
+    def test_qb_time_to_throw_tracking_is_allowlisted(self):
+        board = {"player_scheme_profiles": [{
+            "player_id": "qb-1", "player_name": "Passer One", "team": "AAA",
+            "position": "QB", "source_season": 2026, "play_family": "passing",
+            "splits": {"zone": {"dropbacks": 18, "games": 2,
+                "dropbacks_per_game": 9.0, "passing_yards_per_game": 121.5,
+                "completion_rate": .68, "yards_per_attempt": 8.1,
+                "epa_per_dropback": .12}},
+            "tracking": {"season": 2026, "week": 3, "attempts": 61,
+                "avg_time_to_throw": 2.643, "source": "NFL Next Gen Stats via nflverse",
+                "private": 99},
+        }]}
+        profile = ctx.player_scheme(board)["AAA"][0]
+        self.assertEqual(profile["tracking"]["avg_time_to_throw"], 2.643)
+        self.assertEqual(profile["splits"][0]["dropbacks_per_game"], 9.0)
+        self.assertNotIn("private", profile["tracking"])
+
     def test_coverage_shells_sum_to_one(self):
         cov = self.ctx["scheme"]["AAA"]["defense"]["coverage"]
         shells = sum(v for k, v in cov.items() if k.startswith("cover_"))
@@ -378,6 +395,7 @@ class NflPublicContextTests(unittest.TestCase):
         team_row = {
             "season": "2026", "season_type": "REG", "team": "AAA",
             "games": "2", "passing_yards": "510", "passing_tds": "4",
+            "attempts": "61", "carries": "48", "sacks_suffered": "5",
             "rushing_yards": "211", "rushing_tds": "2", "private": "no",
         }
         player_row = {
@@ -392,6 +410,8 @@ class NflPublicContextTests(unittest.TestCase):
         with mock.patch.object(ctx, "_nflverse_rows", side_effect=[teams, [player_row]]):
             stats = ctx.nflverse_season_stats(2026)
         self.assertEqual(stats["teams"]["AAA"]["passing_yards"], 510)
+        self.assertEqual(stats["teams"]["AAA"]["offensive_plays_per_game"], 57.0)
+        self.assertEqual(stats["teams"]["AAA"]["offensive_pace_of"], 30)
         self.assertEqual(stats["players"]["AAA"][0]["fantasy_points_ppr"], 38.4)
         self.assertNotIn("private", json.dumps(stats))
 

@@ -358,8 +358,10 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("#form .ca-nfl-signal").count() == 4)
         check("NFL shows one directional unit board at a time",
               page.locator("#form [data-matchup-panel]:not([hidden])").count() == 1)
-        check("NFL standard production is one mirrored comparison",
-              page.locator("#form .ca-production-compare__row").count() == 6)
+        check("NFL standard production includes ranked per-game offensive pace",
+              page.locator("#form .ca-production-compare__row").count() == 7 and
+              "Offensive Pace" in page.locator("#form .ca-production-compare").inner_text() and
+              "plays per game" in page.locator("#form .ca-production-compare").inner_text())
         page.locator("#form [data-matchup-side='home']").click()
         check("NFL unit switch exposes the selected offense-defense pairing",
               page.locator("#form [data-matchup-side='home'][aria-selected='true']").count() == 1
@@ -378,6 +380,9 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               all(label in scheme_text for label in (
                   "Single High / MFC", "Two High / MFO", "Middle Field Closed",
                   "Middle Field Open", "Cover 3", "Cover 4", "Man", "Zone", "Blitz", "Pressure")))
+        check("NFL quarterback splits show time to throw and per-game volume",
+              all(label in scheme_text.lower() for label in
+                  ("time to throw", "pass att / g", "db/g", "yds/g")))
         check("NFL running-back splits include box, personnel and NGS context",
               all(label in scheme_text.lower() for label in
                   ("stacked box", "light box", "nickel", "8+ box faced", "ryoe / carry")))

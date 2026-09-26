@@ -27,6 +27,10 @@ NGS_RUSHING_URL = (
     "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/"
     "ngs_rushing.parquet"
 )
+NGS_PASSING_URL = (
+    "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/"
+    "ngs_passing.parquet"
+)
 PFR_RUSHING_URL = (
     "https://github.com/nflverse/nflverse-data/releases/download/pfr_advstats/"
     "advstats_week_rush_{season}.parquet"
@@ -137,6 +141,34 @@ def _ngs_rushing(season: int) -> dict[str, dict[str, Any]]:
     return out
 
 
+def _ngs_passing(season: int) -> dict[str, dict[str, Any]]:
+    """Latest cumulative regular-season NGS passing row per quarterback."""
+    frame = _frame(NGS_PASSING_URL, (
+        "season", "season_type", "week", "player_display_name", "player_position",
+        "team_abbr", "avg_time_to_throw", "attempts", "player_gsis_id",
+    ))
+    if frame is None:
+        return {}
+    frame = frame[(frame["season"].eq(season)) & frame["season_type"].eq("REG") &
+                  frame["player_position"].eq("QB")].copy()
+    frame = frame.sort_values("week").drop_duplicates("player_gsis_id", keep="last")
+    out: dict[str, dict[str, Any]] = {}
+    for row in frame.to_dict("records"):
+        attempts = _finite(row.get("attempts")) or 0
+        player_id = str(row.get("player_gsis_id") or "")
+        time_to_throw = _finite(row.get("avg_time_to_throw"))
+        if not player_id or attempts <= 0 or time_to_throw is None:
+            continue
+        out[player_id] = {
+            "season": season,
+            "week": int(row.get("week") or 0),
+            "attempts": int(attempts),
+            "avg_time_to_throw": round(time_to_throw, 3),
+            "source": "NFL Next Gen Stats via nflverse",
+        }
+    return out
+
+
 def _pfr_rushing(season: int, rb_names: set[str]):
     frame = _frame(PFR_RUSHING_URL.format(season=season), (
         "season", "week", "game_type", "team", "opponent", "pfr_player_name",
@@ -154,6 +186,7 @@ def _pfr_rushing(season: int, rb_names: set[str]):
 
 
 def _player_stats(rows, position: str) -> dict[str, Any] | None:
+    games = int(rows["game_id"].nunique()) if "game_id" in rows else 0
     if position == "QB":
         dropbacks = int(rows["qb_dropback"].fillna(0).sum())
         attempts = int(rows["pass_attempt"].fillna(0).sum())
@@ -167,6 +200,9 @@ def _player_stats(rows, position: str) -> dict[str, Any] | None:
             "passing_yards": int(rows["passing_yards"].fillna(0).sum()),
             "passing_tds": int(rows["pass_touchdown"].fillna(0).sum()),
             "interceptions": int(rows["interception"].fillna(0).sum()),
+            "games": games,
+            "dropbacks_per_game": _safe_ratio(dropbacks, games),
+            "passing_yards_per_game": _safe_ratio(rows["passing_yards"].fillna(0).sum(), games),
             "completion_rate": _safe_ratio(completions, attempts),
             "yards_per_attempt": _safe_ratio(rows["passing_yards"].fillna(0).sum(), attempts),
             "epa_per_dropback": round(float(rows["epa"].fillna(0).sum()) / dropbacks, 4),
@@ -180,6 +216,9 @@ def _player_stats(rows, position: str) -> dict[str, Any] | None:
         "carries": carries,
         "rushing_yards": int(yards),
         "rushing_tds": int(rows["touchdown"].fillna(0).sum()),
+        "games": games,
+        "carries_per_game": _safe_ratio(carries, games),
+        "rushing_yards_per_game": _safe_ratio(yards, games),
         "yards_per_carry": round(yards / carries, 4),
         "epa_per_carry": round(float(rows["epa"].fillna(0).sum()) / carries, 4),
         "success_rate": round(float(rows["success"].fillna(0).mean()), 4),
@@ -242,7 +281,8 @@ def _split_masks(rows, position: str) -> dict[str, Any]:
 
 def _player_profiles(frame, season: int, names: dict[str, str],
                      positions: dict[str, str],
-                     ngs_rushing: dict[str, dict[str, Any]] | None = None) -> list[dict]:
+                     ngs_rushing: dict[str, dict[str, Any]] | None = None,
+                     ngs_passing: dict[str, dict[str, Any]] | None = None) -> list[dict]:
     profiles = []
     for position, id_col, name_col, family, flag in (
         ("QB", "passer_player_id", "passer_player_name", "passing", "qb_dropback"),
@@ -271,6 +311,8 @@ def _player_profiles(frame, season: int, names: dict[str, str],
             }
             if position == "RB" and ngs_rushing and str(player_id) in ngs_rushing:
                 profile["tracking"] = ngs_rushing[str(player_id)]
+            if position == "QB" and ngs_passing and str(player_id) in ngs_passing:
+                profile["tracking"] = ngs_passing[str(player_id)]
             profiles.append(profile)
     return profiles
 
@@ -420,12 +462,14 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
         if str(row.get("position") or "").upper() == "RB" and row.get("player_name")
     }
     ngs_rushing = _ngs_rushing(season)
+    ngs_passing = _ngs_passing(season)
     pfr_rushing = _pfr_rushing(season, rb_names)
     current = _joined(season, participation=False)
     prior = _joined(season - 1, participation=True)
     profiles = []
     if current is not None:
-        profiles.extend(_player_profiles(current, season, names, positions, ngs_rushing))
+        profiles.extend(_player_profiles(
+            current, season, names, positions, ngs_rushing, ngs_passing))
     if prior is not None:
         profiles.extend(_player_profiles(prior, season - 1, names, positions))
     return {

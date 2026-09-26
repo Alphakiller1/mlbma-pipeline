@@ -58,6 +58,31 @@ class NflAdvancedContextTests(unittest.TestCase):
         self.assertEqual(result["eight_plus_box_rate"], .35)
         self.assertEqual(result["expected_yards_per_carry"], 4.0)
 
+    def test_ngs_passing_uses_latest_cumulative_time_to_throw(self):
+        frame = pd.DataFrame({
+            "season": [2026, 2026], "season_type": ["REG", "REG"], "week": [1, 3],
+            "player_display_name": ["Passer", "Passer"], "player_position": ["QB", "QB"],
+            "team_abbr": ["AAA", "AAA"], "avg_time_to_throw": [2.8, 2.631],
+            "attempts": [22, 71], "player_gsis_id": ["p1", "p1"],
+        })
+        with patch.object(ctx, "_frame", return_value=frame):
+            result = ctx._ngs_passing(2026)["p1"]
+        self.assertEqual(result["week"], 3)
+        self.assertEqual(result["attempts"], 71)
+        self.assertEqual(result["avg_time_to_throw"], 2.631)
+
+    def test_scheme_splits_include_per_game_volume(self):
+        rows = pd.DataFrame({
+            "game_id": ["g1", "g1", "g2"], "qb_dropback": [1, 1, 1],
+            "pass_attempt": [1, 1, 1], "complete_pass": [1, 0, 1],
+            "passing_yards": [10, 0, 20], "pass_touchdown": [0, 0, 1],
+            "interception": [0, 0, 0], "epa": [.2, -.1, .3], "success": [1, 0, 1],
+        })
+        result = ctx._player_stats(rows, "QB")
+        self.assertEqual(result["games"], 2)
+        self.assertEqual(result["dropbacks_per_game"], 1.5)
+        self.assertEqual(result["passing_yards_per_game"], 15.0)
+
     def test_run_front_is_point_of_attack_not_blocking_scheme(self):
         rows = pd.DataFrame({
             "run_gap": ["guard", "guard", "end"],
