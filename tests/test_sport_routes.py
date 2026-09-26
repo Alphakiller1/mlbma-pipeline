@@ -4,6 +4,7 @@ import json
 import subprocess
 import re
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -119,6 +120,9 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("function cfbDecisionPaths", js)
         self.assertIn("function cfbReadingKey", js)
         self.assertIn("function cfbScriptLens", js)
+        self.assertIn("Values are ' + esc(season) + ' season-to-date results only", js)
+        self.assertIn("No prior-season stats are used", js)
+        self.assertIn("Number(form.season) !== season", js)
         self.assertIn("How The Matchup Can Change Possessions And Play Mix", js)
         self.assertIn("How To Read The CFB Metrics", js)
         self.assertIn("cfbMirrorHead", js)
@@ -126,6 +130,9 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("ca-arsenal-table", js)
         self.assertIn("usageSquares", js)
         adapter = (ROOT / "dashboard" / "sports" / "cfb.js").read_text(encoding="utf-8")
+        self.assertIn("function seasonGames(payload, season)", adapter)
+        self.assertIn("boardSeason === currentYear", adapter)
+        self.assertIn("Number(game && game.season) === Number(season)", adapter)
         self.assertIn("slate.json", adapter)
         self.assertIn("mergePublic", adapter)
 
@@ -134,12 +141,17 @@ class SportRouteBuilderTests(unittest.TestCase):
             (ROOT / "data" / "public" / "cfb" / "slate.json").read_text(encoding="utf-8")
         )
         games = payload.get("games") or []
+        season = datetime.now(timezone.utc).year
+        self.assertEqual(payload.get("season"), season)
         self.assertGreater(len(games), 0)
         profiled = [g for g in games if g.get("away_form") and g.get("home_form")]
         self.assertGreaterEqual(len(profiled) / len(games), 0.95)
         for game in profiled:
+            self.assertEqual(game.get("season"), season)
             for side in ("away", "home"):
-                rates = game[side + "_form"].get("rates") or {}
+                form = game[side + "_form"]
+                self.assertEqual(form.get("season"), season)
+                rates = form.get("rates") or {}
                 self.assertIn("off_ppa", rates)
                 self.assertIn("def_ppa", rates)
                 self.assertIn("off_successRate", rates)
@@ -460,6 +472,9 @@ class AdapterHoleTests(unittest.TestCase):
             "personnelDuel", "nflEpaCell", "Offensive form", "Defensive form",
             "data-team-stat-view", "data-team-stat-panel", "Team Stat Splits",
             "Passing", "Rushing", "DVOA", "nflTeamFamilyPanel",
+            "Trenches", "nflTrenchesPanel", "Adjusted Line Yards", "Havoc Rate",
+            "Single High / MFC", "Two High / MFO", "nickel", "dime",
+            "zone-versus-gap blocking", "POA = point of attack",
             "Rush EPA / Play", "EPA Vs Stacked Box", "data-player-position",
             "data-player-family", "Advanced Splits", "wirePlayerFilters",
             "League rank color", "League Avg", "nflGradeLegend",
@@ -468,6 +483,7 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("away_lineups", adapter)
         self.assertIn("away_player_coverage", adapter)
         self.assertIn("away_player_scheme", adapter)
+        self.assertIn("away_line_stats", adapter)
         self.assertIn("playerSchemePanels", detail)
         self.assertIn("kickoffTime(game.kickoff_utc)", detail)
         self.assertIn("home_lineups", adapter)

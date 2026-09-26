@@ -26,6 +26,11 @@ import re
 import urllib.request
 from pathlib import Path
 
+try:
+    from outputs import nfl_advanced_context
+except ImportError:  # Direct script execution from the outputs directory.
+    import nfl_advanced_context
+
 # Where the board is read from. Both candidates are consulted and the newer
 # one wins: the local checkout can sit several weeks behind the published
 # board, and a stale copy silently drops whole sections (a schema/2 file
@@ -75,6 +80,7 @@ SCHEME_GROUPS = {
     "coverage": (
         "man_rate", "zone_rate", "cover_0_rate", "cover_1_rate", "cover_2_rate",
         "cover_3_rate", "cover_4_rate", "cover_6_rate", "cover_2_man_rate",
+        "single_high_rate", "two_high_rate",
     ),
     "pressure": ("blitz_rate", "pressure_rate", "stacked_box_rate", "avg_box"),
     "personnel": (
@@ -179,6 +185,16 @@ def team_scheme(board: dict) -> dict[str, dict]:
         }
         for phase in ("offense", "defense"):
             source = row.get(phase) or {}
+            source = dict(source)
+            if source.get("single_high_rate") is None:
+                values = [source.get(key) for key in ("cover_1_rate", "cover_3_rate")]
+                if all(value is not None for value in values):
+                    source["single_high_rate"] = sum(float(value) for value in values)
+            if source.get("two_high_rate") is None:
+                values = [source.get(key) for key in (
+                    "cover_2_rate", "cover_4_rate", "cover_6_rate", "cover_2_man_rate")]
+                if all(value is not None for value in values):
+                    source["two_high_rate"] = sum(float(value) for value in values)
             grouped: dict[str, dict] = {}
             for group, keys in SCHEME_GROUPS.items():
                 values = {k: source[k] for k in keys if source.get(k) is not None}
@@ -385,7 +401,8 @@ PLAYER_SCHEME_SPLITS = {
     "all", "man", "zone", "cover_0", "cover_1", "cover_2", "cover_3",
     "cover_4", "cover_6", "cover_2_man", "blitz", "no_blitz", "pressure",
     "clean", "stacked_box", "light_box", "left", "middle", "right",
-    "gap_guard", "gap_tackle", "gap_end",
+    "gap_guard", "gap_tackle", "gap_end", "single_high", "two_high",
+    "middle_field_closed", "middle_field_open", "base", "nickel", "dime",
 }
 PLAYER_SCHEME_FIELDS = {
     "QB": (
@@ -766,7 +783,8 @@ def merge_quarterbacks(players: dict[str, list[dict]],
 
 
 def build(board: dict | None = None, rooms: dict | None = None,
-          lineups: dict | None = None, season_stats: dict | None = None) -> dict:
+          lineups: dict | None = None, season_stats: dict | None = None,
+          advanced_context: dict | None = None) -> dict:
     """Public NFL context, or empty dicts when the board is unreachable.
 
     Failing soft is deliberate: a missing board must leave the affected
@@ -778,7 +796,7 @@ def build(board: dict | None = None, rooms: dict | None = None,
     if not board:
         return {"form": {}, "scheme": {}, "players": {}, "lineups": {},
                 "player_coverage": {}, "player_scheme": {}, "team_stats": {},
-                "player_stats": {}, "source": None}
+                "player_stats": {}, "team_line": {}, "source": None}
     if rooms is None and lineups is None:
         lineups, rooms = fetch_depth_chart_context()
     elif lineups is None:
@@ -791,6 +809,17 @@ def build(board: dict | None = None, rooms: dict | None = None,
         # league-wide downloads.
         season_stats = ({} if supplied_board else
                         nflverse_season_stats(int(board.get("season") or 0)))
+    if advanced_context is None:
+        # Only the production no-argument build owns the large play-by-play
+        # downloads. Tests and callers supplying a board remain offline unless
+        # they explicitly inject an advanced context fixture.
+        advanced_context = ({} if supplied_board else nfl_advanced_context.build(
+            int(board.get("season") or 0), season_stats.get("players") or {}))
+    scheme_board = dict(board)
+    scheme_board["player_scheme_profiles"] = [
+        *(board.get("player_scheme_profiles") or []),
+        *(advanced_context.get("player_scheme_profiles") or []),
+    ]
     players = merge_quarterbacks(key_players(board), rooms)
     return {
         "form": team_form(board),
@@ -798,9 +827,10 @@ def build(board: dict | None = None, rooms: dict | None = None,
         "players": players,
         "lineups": attach_known_headshots(lineups, players),
         "player_coverage": player_coverage(board),
-        "player_scheme": player_scheme(board),
+        "player_scheme": player_scheme(scheme_board),
         "team_stats": season_stats.get("teams") or {},
         "player_stats": season_stats.get("players") or {},
+        "team_line": advanced_context.get("team_line") or {},
         "source": {
             "season": board.get("season"),
             "week": board.get("week"),

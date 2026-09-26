@@ -2648,6 +2648,11 @@
     ['cover_6_rate', 'pass_epa_cover_6', 'Cover 6']
   ];
 
+  var COVERAGE_FAMILIES = [
+    ['single_high_rate', null, 'Single High / MFC'],
+    ['two_high_rate', null, 'Two High / MFO']
+  ];
+
   var PRESSURE_ROWS = [
     ['blitz_rate', 'pass_epa_blitz', 'Blitz', 'Pass EPA / play when blitzed'],
     ['pressure_rate', 'pass_epa_pressure', 'Pressure', 'Pass EPA / play under pressure'],
@@ -2994,20 +2999,20 @@
     var defScheme = defFull.defense || {};
     var def = defScheme.response || {};
     var tendencies = defScheme.coverage || {};
-    var rows = [
+    var rows = COVERAGE_FAMILIES.concat([
       ['man_rate', 'pass_epa_man', 'Man'],
       ['zone_rate', 'pass_epa_zone', 'Zone']
-    ].concat(COVERAGE_SHELLS).map(function (spec) {
+    ]).concat(COVERAGE_SHELLS).map(function (spec) {
       var tendency = tendencies[spec[0]];
-      var offValue = off[spec[1]];
-      var defValue = def[spec[1]];
+      var offValue = spec[1] ? off[spec[1]] : null;
+      var defValue = spec[1] ? def[spec[1]] : null;
       if (tendency == null && offValue == null && defValue == null) return '';
       var rank = frequencyRank(defFull, 'defense', 'coverage', spec[0]);
       var meter = rank ? segmentedMeter(percentOf(rank), rankTone(rank.place, rank.of),
         spec[2] + ': ' + rank.place + ordinal(rank.place) + ' of ' + rank.of +
         ' by how often this defence plays it') : '';
       return '<div class="ca-coverage-row' +
-        nflRowLead(offScheme, defFull, spec[1], offValue, defValue) + '">' +
+        (spec[1] ? nflRowLead(offScheme, defFull, spec[1], offValue, defValue) : '') + '">' +
         nflEpaCell(offScheme, 'offense', spec[1], offValue, false) +
         '<div class="ca-coverage-look"><span>' + esc(spec[2]) + '</span>' +
         meter + '<strong>' + esc(pctText(tendency)) +
@@ -3169,15 +3174,16 @@
       var volume = position === 'QB' ? 'dropbacks' : 'carries';
       var minimum = position === 'QB' ? 10 : 5;
       var order = position === 'QB'
-        ? ['man', 'zone', 'blitz', 'no_blitz', 'pressure', 'clean', 'cover_0', 'cover_1',
+        ? ['single_high', 'two_high', 'man', 'zone', 'blitz', 'no_blitz', 'pressure', 'clean', 'cover_0', 'cover_1',
            'cover_2', 'cover_3', 'cover_4', 'cover_6', 'cover_2_man']
-        : ['stacked_box', 'light_box', 'left', 'middle', 'right', 'gap_guard', 'gap_tackle', 'gap_end'];
+        : ['stacked_box', 'light_box', 'base', 'nickel', 'dime', 'left', 'middle', 'right',
+           'gap_guard', 'gap_tackle', 'gap_end'];
       var splits = (profile.splits || []).filter(function (split) {
         return split.look !== 'all' && Number(split[volume]) >= minimum;
       }).sort(function (a, b) {
         var ai = order.indexOf(a.look); var bi = order.indexOf(b.look);
         return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
-      }).slice(0, 8);
+      });
       if (!splits.length) return '';
       var portrait = starter.headshot_url
         ? '<img class="ca-player-coverage-card__shot" src="' + esc(starter.headshot_url) +
@@ -3185,7 +3191,12 @@
         : '<span class="ca-player-coverage-card__initials" aria-hidden="true">' +
           esc(initials(profile.player_name)) + '</span>';
       var rows = splits.map(function (split) {
-        var label = String(split.look || '').replace(/^cover_/, 'Cover ').replace(/^gap_/, '')
+        var splitLabels = {
+          single_high: 'Single High / MFC', two_high: 'Two High / MFO',
+          no_blitz: 'No Blitz', stacked_box: 'Stacked Box', light_box: 'Light Box',
+          gap_guard: 'Guard POA', gap_tackle: 'Tackle POA', gap_end: 'End POA'
+        };
+        var label = splitLabels[split.look] || String(split.look || '').replace(/^cover_/, 'Cover ')
           .replace(/_/g, ' ');
         var ranks = split.league_ranks || {};
         if (position === 'QB') {
@@ -3226,7 +3237,7 @@
       return groups ? '<section class="ca-player-scheme" data-scheme-seasons="' + esc(season) + '">' +
         '<div class="ca-player-coverage__head"><div><h4>Quarterbacks And Running Backs By Scheme</h4><p>' +
         esc(fullName(sport, game, offSide)) + ' · ' + season + ' observed player splits</p></div>' +
-        '<span>Green to red by same-position league rank · QB 10+ dropbacks; RB 5+ carries</span></div>' +
+        '<span>Same-position rank · QB 10+ dropbacks; RB 5+ carries · POA = point of attack</span></div>' +
         '<div class="ca-player-coverage-groups">' + groups + '</div></section>' : '';
     }).join('');
   }
@@ -3826,6 +3837,58 @@
       '</span></div>' + rows + '</div><p class="ca-detail-source-note">DVOA © FTN. Positive is better on offense; negative is better on defense.</p>';
   }
 
+  function nflLineValue(entry) {
+    if (!entry || entry.value == null) return '—';
+    return entry.format === 'pct' ? pctText(entry.value) : Number(entry.value).toFixed(2);
+  }
+
+  function nflLineCell(entry, role) {
+    if (!entry) return '<div class="ca-nfl-split-duel__value"><strong>—</strong><span>' +
+      esc(role) + '</span><small>Not published</small></div>';
+    return '<div class="ca-nfl-split-duel__value ' + rankTone(entry.rank, entry.of) + '"><strong>' +
+      esc(nflLineValue(entry)) + '</strong><span>' + esc(role) + '</span><small>' +
+      esc(entry.rank ? entry.rank + ordinal(entry.rank) + ' of ' + entry.of : 'Rank unavailable') +
+      '</small></div>';
+  }
+
+  function nflTrenchCard(sport, game, offSide, defSide) {
+    var offense = ((game[offSide + '_line_stats'] || {}).offense) || {};
+    var defense = ((game[defSide + '_line_stats'] || {}).defense) || {};
+    var specs = [
+      ['line_yards', 'Adjusted Line Yards', 'rush-outcome push proxy'],
+      ['stuff_rate', 'Stuff Rate', 'runs stopped at or behind the line'],
+      ['short_success', 'Short Yardage', 'third/fourth down, two yards or fewer'],
+      ['sack_rate', 'Sack Rate', 'dropbacks ending in a sack'],
+      ['qb_hit_rate', 'QB Hit Rate', 'defensive disruption'],
+      ['havoc_rate', 'Havoc Rate', 'sack, TFL, forced fumble or interception']
+    ];
+    var rows = specs.map(function (spec) {
+      var left = offense[spec[0]], right = defense[spec[0]];
+      if (!left && !right) return '';
+      return '<div class="ca-nfl-split-duel__row">' + nflLineCell(left, 'Offense') +
+        '<div class="ca-nfl-split-duel__axis"><strong>' + esc(spec[1]) + '</strong><span>' +
+        esc(spec[2]) + '</span></div>' + nflLineCell(right, 'Opponent defense') + '</div>';
+    }).filter(Boolean).join('');
+    return '<article class="ca-nfl-split-card ca-trench-card"><header><div>' +
+      logo(sport, game, offSide, 34, 'ca-production-team__logo') + '<span><strong>' +
+      esc(fullName(sport, game, offSide)) + ' offense</strong><small>line performance</small></span></div>' +
+      '<b aria-hidden="true">vs</b><div>' + logo(sport, game, defSide, 34, 'ca-production-team__logo') +
+      '<span><strong>' + esc(fullName(sport, game, defSide)) + ' defense</strong><small>front disruption</small></span>' +
+      '</div></header><div class="ca-nfl-split-duel">' + rows + '</div></article>';
+  }
+
+  function nflTrenchesPanel(sport, game) {
+    if (!game.away_line_stats && !game.home_line_stats) {
+      return pending('Current-season line-of-scrimmage outcomes are not published for this matchup.');
+    }
+    return '<div class="ca-nfl-family-grid">' + nflTrenchCard(sport, game, 'away', 'home') +
+      nflTrenchCard(sport, game, 'home', 'away') + '</div>' +
+      '<aside class="ca-trench-note"><strong>What this can — and cannot — tell you</strong><p>' +
+      'Adjusted Line Yards estimates line push from the rushing result; it is not player-tracking contact yardage. ' +
+      'Havoc measures disruptive outcomes. The licensed public feed does not publish reliable zone-versus-gap blocking ' +
+      'charting, so those defensive splits remain unavailable instead of being estimated.</p></aside>';
+  }
+
   function nflGradeLegend() {
     return '<div class="ca-grade-legend" aria-label="League rank color scale">' +
       '<strong>League rank color</strong>' +
@@ -3838,7 +3901,8 @@
 
   function nflTeamLab(sport, game, leagueView) {
     var views = [
-      ['overview', 'Overview'], ['passing', 'Passing'], ['rushing', 'Rushing'], ['dvoa', 'DVOA']
+      ['overview', 'Overview'], ['passing', 'Passing'], ['rushing', 'Rushing'],
+      ['trenches', 'Trenches'], ['dvoa', 'DVOA']
     ];
     var tabs = views.map(function (view, index) {
       return '<button type="button" role="tab" class="ca-filter-pill' + (index ? '' : ' is-on') +
@@ -3855,6 +3919,7 @@
       '<div data-team-stat-panel="overview">' + overview + '</div>' +
       '<div data-team-stat-panel="passing" hidden>' + nflTeamFamilyPanel(sport, game, 'passing') + '</div>' +
       '<div data-team-stat-panel="rushing" hidden>' + nflTeamFamilyPanel(sport, game, 'rushing') + '</div>' +
+      '<div data-team-stat-panel="trenches" hidden>' + nflTrenchesPanel(sport, game) + '</div>' +
       '<div data-team-stat-panel="dvoa" hidden>' + nflDvoaPanel(sport, game) + '</div>' +
       nflMetricGuide() + '</div>';
   }
@@ -3882,6 +3947,9 @@
       '<dl><div><dt>EPA / Play</dt><dd>Expected points gained or lost per snap. ' +
       'It captures down, distance and field position; it is not raw yardage.</dd></div>' +
       '<div><dt>Success Rate</dt><dd>The share of plays that gained enough to keep the drive on schedule.</dd></div>' +
+      '<div><dt>Adjusted Line Yards</dt><dd>A rush-outcome proxy for line push. It weights early yards more heavily ' +
+      'and caps long runs so breakaway speed does not masquerade as blocking.</dd></div>' +
+      '<div><dt>Havoc Rate</dt><dd>The share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.</dd></div>' +
       '<div><dt>DVOA</dt><dd>Opponent-adjusted efficiency owned and published by FTN. ' +
       'It is not in the current licensed feed, so this page does not imitate it with a private power rating.</dd></div>' +
       '<div><dt>League Rank</dt><dd>Recomputed from the displayed observed rate against the 32-team pool; ' +
@@ -4222,7 +4290,11 @@
   ];
 
   function cfbRates(game, side) {
-    return ((game[side + '_form'] || {}).rates) || {};
+    var currentYear = new Date().getUTCFullYear();
+    var season = Number(game.season);
+    var form = game[side + '_form'] || {};
+    if (season !== currentYear || Number(form.season) !== season) return {};
+    return form.rates || {};
   }
 
   function cfbDecisionPaths() {
@@ -4233,11 +4305,13 @@
       '</nav>';
   }
 
-  function cfbReadingKey() {
+  function cfbReadingKey(game) {
+    var season = Number(game.season) || new Date().getUTCFullYear();
     return '<aside class="ca-cfb-reading-key" aria-label="How to read the college football matchup board">' +
       '<div><span>Reading Order</span><strong>Producing Offense</strong><i aria-hidden="true">→</i>' +
       '<strong>Game-Script Lever</strong><i aria-hidden="true">→</i><strong>Opposing Defense</strong></div>' +
-      '<p>Values are season-to-date results. Ranks use the same FBS pool and are normalized so 1st is strongest. ' +
+      '<p>Values are ' + esc(season) + ' season-to-date results only. Ranks use the same ' + esc(season) +
+      ' FBS pool and are normalized so 1st is strongest. ' +
       'The brighter side owns the stronger observed indicator; it is matchup evidence, not a forecast or recommendation.</p></aside>';
   }
 
@@ -4487,8 +4561,8 @@
       cfbMetricGuide() +
       '<p class="ca-detail-source-note">' +
       (espn
-        ? 'Each row is a season-to-date ESPN team rate, ranked against every FBS club that published it. The left club is this offense’s production; the right club is what that defense has allowed. Rank sits under the number; bar length is the same percentile. This describes games already played.'
-        : 'Each row is one season-to-date unit rate: this offense’s production against what that defense has allowed, ranked against the same FBS pool. The longer bar is the better percentile.') +
+        ? 'Each row is a current-season ESPN team rate, ranked against every FBS club that published it this year. The left club is this offense’s production; the right club is what that defense has allowed. Rank sits under the number; bar length is the same percentile. No prior-season stats are used.'
+        : 'Each row is one current-season unit rate: this offense’s production against what that defense has allowed, ranked against the same FBS pool. No prior-season stats are used.') +
       '</p></div>';
   }
 
@@ -4521,14 +4595,14 @@
     }).join('');
     return '<div class="ca-lineup-tabs ca-cfb-compare-tabs" role="tablist" aria-label="Stat families">' +
       tabs + '</div>' + panels +
-      '<p class="ca-detail-source-note">Each bar is that rate’s percentile against every FBS team that published it this season. Use the family tabs to scan scoring, passing, rushing, downs, or special teams without leaving the pairing.</p>';
+      '<p class="ca-detail-source-note">Each bar is that rate’s percentile against every FBS team that published it this year. No prior-season stats are used. Use the family tabs to scan scoring, passing, rushing, downs, or special teams without leaving the pairing.</p>';
   }
 
   function cfbSections(sport, game) {
     return [
       section('clash', 'Matchup Breakdown',
         'Each Offense Against The Defense It Meets, Rate By Rate',
-        cfbDecisionPaths() + cfbReadingKey() + cfbClashBody(sport, game)),
+        cfbDecisionPaths() + cfbReadingKey(game) + cfbClashBody(sport, game)),
 
       section('form', 'Stat Comparison',
         'Same Rates, Side By Side, Ranked Against The FBS Pool',

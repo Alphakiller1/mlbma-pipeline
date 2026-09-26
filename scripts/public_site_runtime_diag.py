@@ -322,8 +322,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             "nodes => [...new Set(nodes.map(n => getComputedStyle(n).color))].length")
         check("NFL overview values inherit their direction-aware rank colors",
               overview_colors >= 4, f"distinct colors={overview_colors}")
-        check("NFL matchup lab exposes four focused team stat views",
-              page.locator("#form [data-team-stat-view]").count() == 4)
+        check("NFL matchup lab exposes five focused team stat views",
+              page.locator("#form [data-team-stat-view]").count() == 5)
         check("NFL matchup lab opens one team stat view at a time",
               page.locator("#form [data-team-stat-panel]:not([hidden])").count() == 1)
         page.locator("#form [data-team-stat-view='rushing']").click()
@@ -337,6 +337,14 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             "nodes => [...new Set(nodes.map(n => getComputedStyle(n).color))].length")
         check("NFL rushing splits use the same five-band grade ramp",
               split_colors == 5, f"distinct colors={split_colors}")
+        page.locator("#form [data-team-stat-view='trenches']").click()
+        trench = page.locator("#form [data-team-stat-panel='trenches']")
+        check("NFL trenches view shows both line confrontations",
+              trench.locator(".ca-trench-card").count() == 2)
+        check("NFL trenches view publishes line yards and havoc",
+              "Adjusted Line Yards" in trench.inner_text() and "Havoc Rate" in trench.inner_text())
+        check("NFL trenches view states the blocking-charting limit",
+              "zone-versus-gap blocking" in trench.inner_text().lower())
         page.locator("#form [data-team-stat-view='dvoa']").click()
         check("NFL DVOA view preserves licensed-source integrity",
               page.locator("#form [data-team-stat-panel='dvoa'] a[href*='ftnfantasy.com']").count() == 1
@@ -364,6 +372,16 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL player research exposes position and stat-family filters",
               page.locator("#players [data-player-position]").count() == 5
               and page.locator("#players [data-player-family]").count() == 6)
+        page.locator("#players [data-player-family='splits']").click()
+        page.locator("#players .ca-player-deep-dive summary").first.click()
+        advanced_text = page.locator(
+            "#players .ca-player-deep-dive[open]").first.inner_text()
+        check("NFL quarterback splits include shell, coverage and pressure looks",
+              all(label in advanced_text for label in (
+                  "Single High / MFC", "Two High / MFO", "Man", "Zone", "Blitz", "Pressure")))
+        check("NFL running-back splits include box and personnel looks",
+              all(label in advanced_text for label in ("Stacked Box", "Light Box", "Nickel")))
+        page.locator("#players [data-player-family='overview']").click()
         page.locator("#players [data-player-position='rb']").click()
         page.locator("#players [data-player-family='rushing']").click()
         check("NFL player filters isolate the selected rushing workload",

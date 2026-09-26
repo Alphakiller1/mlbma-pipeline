@@ -692,6 +692,7 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
     player_scheme = context.get("player_scheme") or {}
     team_stats = context.get("team_stats") or {}
     player_stats = context.get("player_stats") or {}
+    team_line = context.get("team_line") or {}
     rest = rest_history if rest_history is not None else {}
 
     def player_key(value: object) -> str:
@@ -720,10 +721,14 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             for player in ((lineup.get("offense") or {}).get("players") or [])
             if str(player.get("position") or "").upper() in {"QB", "RB"}
         }
-        all_profiles = [profile for profiles in player_scheme.values() for profile in profiles]
+        ids = {
+            str(player.get("player_id")) for player in players.get(team, [])
+            if player.get("player_id") and player_key(player.get("name")) in names
+        }
         return [
-            profile for profile in all_profiles
-            if player_key(profile.get("player_name")) in names
+            profile for profile in player_scheme.get(team, [])
+            if (player_key(profile.get("player_name")) in names or
+                str(profile.get("player_id") or "") in ids)
         ]
 
     def starter_stats(team: str) -> list[dict]:
@@ -846,6 +851,8 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             "home_player_scheme": starter_scheme(home_abbr),
             "away_team_stats": team_stats.get(away_abbr),
             "home_team_stats": team_stats.get(home_abbr),
+            "away_line_stats": team_line.get(away_abbr),
+            "home_line_stats": team_line.get(home_abbr),
             "away_player_stats": starter_stats(away_abbr),
             "home_player_stats": starter_stats(home_abbr),
             "away_rest_days": away_ctx["rest_days"],

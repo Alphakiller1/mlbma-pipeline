@@ -145,8 +145,16 @@ def category_map(block: dict, names: list[str]) -> dict[str, float]:
     return out
 
 
-def load_espn_stats() -> dict[str, dict]:
-    payload = fetch_json(STATS_URL)
+def load_espn_stats(season: int) -> dict[str, dict]:
+    """Load one explicitly requested regular season and fail closed on drift."""
+    payload = fetch_json(f"{STATS_URL}&season={season}&seasontype=2")
+    requested = payload.get("requestedSeason") or {}
+    requested_type = requested.get("type") or {}
+    if int(requested.get("year") or 0) != season or int(requested_type.get("type") or 0) != 2:
+        raise RuntimeError(
+            "ESPN CFB statistics season mismatch: "
+            f"requested {season} regular season, received {requested!r}"
+        )
     names_by_cat = {
         cat["name"]: list(cat.get("names") or [])
         for cat in payload.get("categories") or []
@@ -164,6 +172,7 @@ def load_espn_stats() -> dict[str, dict]:
         games = ((own.get("general") or {}).get("gamesPlayed"))
         entry = {
             "id": str(meta.get("id") or ""),
+            "season": season,
             "abbreviation": str(meta.get("abbreviation") or "").upper(),
             "school": meta.get("nickname") or meta.get("shortDisplayName") or meta.get("displayName"),
             "display": meta.get("displayName") or "",
@@ -252,8 +261,8 @@ def lookup_team(stats: dict[str, dict], abbr: str, school: str) -> dict | None:
     )
 
 
-def form_for(team: dict | None, pools: dict[str, list[float]]) -> dict | None:
-    if not team:
+def form_for(team: dict | None, pools: dict[str, list[float]], season: int) -> dict | None:
+    if not team or int(team.get("season") or 0) != season:
         return None
     games = team.get("plays")
     rates = {}
@@ -273,7 +282,7 @@ def form_for(team: dict | None, pools: dict[str, list[float]]) -> dict | None:
         }
     if not rates:
         return None
-    out = {"rates": rates, "source": "espn"}
+    out = {"rates": rates, "source": "espn", "season": season}
     if games:
         out["plays"] = games
     return out
@@ -284,7 +293,7 @@ def load_board_games() -> tuple[list[dict], dict]:
     return board.get("games") or [], board
 
 
-def public_game(raw: dict, stats: dict, events: dict, pools: dict) -> dict:
+def public_game(raw: dict, stats: dict, events: dict, pools: dict, season: int) -> dict:
     away_meta, home_meta = raw.get("away") or {}, raw.get("home") or {}
     away_abbr = away_meta.get("abbreviation") or away_meta.get("school")
     home_abbr = home_meta.get("abbreviation") or home_meta.get("school")
@@ -298,6 +307,7 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict) -> dict:
     row = {
         "id": f"{away_abbr}@{home_abbr}",
         "sport": "cfb",
+        "season": season,
         "game_state": event.get("game_state") or "scheduled",
         "kickoff_utc": event.get("kickoff_utc") or raw.get("kickoff"),
         "away": away_abbr,
@@ -322,8 +332,8 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict) -> dict:
         "neutral": event.get("neutral") or (True if raw.get("neutral") else None),
         "away_starter": (event.get("qbs") or {}).get(str(away_abbr).upper()),
         "home_starter": (event.get("qbs") or {}).get(str(home_abbr).upper()),
-        "away_form": form_for(lookup_team(stats, away_abbr, away_school), pools),
-        "home_form": form_for(lookup_team(stats, home_abbr, home_school), pools),
+        "away_form": form_for(lookup_team(stats, away_abbr, away_school), pools, season),
+        "home_form": form_for(lookup_team(stats, home_abbr, home_school), pools, season),
         "home_travel": None if (event.get("neutral") or raw.get("neutral")) else "Home",
     }
     return {key: value for key, value in row.items() if value not in (None, "")}
@@ -331,7 +341,14 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict) -> dict:
 
 def main() -> int:
     games_in, board = load_board_games()
-    stats = load_espn_stats()
+    season = int(board.get("season") or 0)
+    current_year = datetime.now(timezone.utc).year
+    if season != current_year:
+        raise RuntimeError(
+            f"CFB board season {season or 'missing'} is not the current year {current_year}; "
+            "refusing to publish a mixed-season matchup slate"
+        )
+    stats = load_espn_stats(season)
     unique = []
     seen = set()
     for entry in stats.values():
@@ -347,13 +364,13 @@ def main() -> int:
             if value is not None:
                 pools[key].append(value)
     events = event_index(load_espn_events())
-    games = [public_game(raw, stats, events, pools) for raw in games_in]
+    games = [public_game(raw, stats, events, pools, season) for raw in games_in]
     games.sort(key=lambda row: (row.get("kickoff_utc") or "9999", row.get("id") or ""))
     stamp = datetime.now(timezone.utc).replace(microsecond=0)
     payload = {
         "schema": "chase-public-slate/1",
         "sport": "cfb",
-        "season": board.get("season"),
+        "season": season,
         "week": board.get("week"),
         "generated_at_utc": stamp.isoformat().replace("+00:00", "Z"),
         "data_through_utc": board.get("generated_at"),

@@ -6095,6 +6095,7 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-nfl-lab,
 .ca-player-research {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
 }
 
@@ -6137,7 +6138,7 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-filter-pills::-webkit-scrollbar { display: none; }
 
 .ca-filter-pill {
-  min-height: 38px;
+  min-height: var(--touch-min);
   padding: 0 var(--space-3);
   background: var(--surface-well);
   border: 1px solid var(--border-card);
@@ -6157,12 +6158,13 @@ body[data-sport="nfl"] .ca-detail-nav {
 }
 .ca-filter-pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-.ca-nfl-lab [data-team-stat-panel] { display: grid; gap: var(--space-3); }
+.ca-nfl-lab [data-team-stat-panel] { display: grid; min-width: 0; gap: var(--space-3); }
 .ca-nfl-lab .ca-nfl-snapshot { margin-bottom: 0; }
 .ca-nfl-matchup-switch { display: grid; gap: var(--space-2); }
 
 .ca-nfl-family-grid {
   display: grid;
+  min-width: 0;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
 }
@@ -6278,6 +6280,19 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-dvoa-status p { max-width: 68ch; margin: 0; color: var(--text-secondary); line-height: 1.5; }
 .ca-dvoa-status a { width: fit-content; color: var(--text-accent); font-weight: 800; }
 
+.ca-trench-card .ca-nfl-split-duel__axis strong { font-size: var(--type-14); }
+.ca-trench-note {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface-field));
+  border: 1px solid var(--border-card);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+}
+.ca-trench-note strong { color: var(--text-primary); }
+.ca-trench-note p { max-width: 94ch; margin: 0; color: var(--text-secondary); line-height: 1.5; }
+
 .ca-player-filter-dock { align-items: flex-end; }
 .ca-player-filter-dock > div { gap: var(--space-2); }
 .ca-player-filter-dock > div:last-child { justify-items: end; }
@@ -6290,7 +6305,7 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-player-stat[hidden] { display: none !important; }
 
 @media (max-width: 980px) {
-  .ca-nfl-family-grid { grid-template-columns: 1fr; }
+  .ca-nfl-family-grid { grid-template-columns: minmax(0, 1fr); }
   .ca-filter-dock,
   .ca-player-filter-dock { align-items: stretch; flex-direction: column; }
   .ca-player-filter-dock > div:last-child { justify-items: start; }

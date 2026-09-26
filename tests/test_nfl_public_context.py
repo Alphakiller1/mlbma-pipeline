@@ -232,6 +232,11 @@ class NflPublicContextTests(unittest.TestCase):
         self.assertEqual((aaa["place"], aaa["of"]), (2, 2))
         self.assertEqual((bbb["place"], bbb["of"]), (1, 2))
 
+    def test_coverage_families_are_derived_from_observed_shells(self):
+        coverage = self.ctx["scheme"]["AAA"]["defense"]["coverage"]
+        self.assertAlmostEqual(coverage["single_high_rate"], 0.44)
+        self.assertAlmostEqual(coverage["two_high_rate"], 0.53)
+
     def test_player_coverage_grades_against_same_position_and_coverage(self):
         board = copy.deepcopy(BOARD)
         second = copy.deepcopy(board["player_coverage_profiles"][0])
@@ -260,6 +265,25 @@ class NflPublicContextTests(unittest.TestCase):
         self.assertEqual(aaa["splits"][0]["interceptions"], 2)
         rank = aaa["splits"][0]["league_ranks"]["epa_per_dropback"]
         self.assertEqual((rank["place"], rank["of"]), (2, 2))
+
+    def test_advanced_context_is_allowlisted_and_carries_line_stats(self):
+        advanced = {
+            "player_scheme_profiles": [{
+                "player_id": "qb-1", "player_name": "A Passer", "team": "AAA",
+                "position": "QB", "source_season": 2026, "play_family": "passing",
+                "splits": {"single_high": {"dropbacks": 12, "attempts": 10,
+                    "completions": 7, "epa_per_dropback": 0.12, "private": 99}},
+            }],
+            "team_line": {"AAA": {"season": 2026, "offense": {
+                "line_yards": {"label": "Adjusted Line Yards / Carry", "value": 3.4,
+                               "rank": 8, "of": 32, "format": "num", "better": "high"}}}},
+        }
+        result = ctx.build(BOARD, rooms={}, lineups={}, advanced_context=advanced)
+        looks = [split["look"] for profile in result["player_scheme"]["AAA"]
+                 for split in profile["splits"]]
+        self.assertIn("single_high", looks)
+        self.assertNotIn("private", json.dumps(result))
+        self.assertEqual(result["team_line"]["AAA"]["season"], 2026)
 
     def test_coverage_shells_sum_to_one(self):
         cov = self.ctx["scheme"]["AAA"]["defense"]["coverage"]
