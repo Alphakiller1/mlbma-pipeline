@@ -322,13 +322,17 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             "nodes => [...new Set(nodes.map(n => getComputedStyle(n).color))].length")
         check("NFL overview values inherit their direction-aware rank colors",
               overview_colors >= 4, f"distinct colors={overview_colors}")
-        check("NFL matchup lab exposes five focused team stat views",
-              page.locator("#form [data-team-stat-view]").count() == 5)
+        check("NFL matchup lab exposes four connected team stat views",
+              page.locator("#form [data-team-stat-view]").count() == 4)
         check("NFL matchup lab opens one team stat view at a time",
               page.locator("#form [data-team-stat-panel]:not([hidden])").count() == 1)
         page.locator("#form [data-team-stat-view='rushing']").click()
         check("NFL rushing view shows both offense-defense pairings",
               page.locator("#form [data-team-stat-panel='rushing'] .ca-nfl-split-card").count() == 2)
+        check("NFL team cards separate volume from matchup efficiency",
+              page.locator("#form [data-team-stat-panel='rushing'] .ca-nfl-split-section__head").count() == 4 and
+              all(label in page.locator("#form [data-team-stat-panel='rushing']").inner_text()
+                  for label in ("Per-Game Volume", "Matchup Efficiency")))
         check("NFL rushing view includes EPA, success and stacked-box splits",
               page.locator("#form [data-team-stat-panel='rushing'] .ca-nfl-split-duel__row").count() == 6)
         split_values = page.locator(
@@ -349,10 +353,9 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               all(label in trench.inner_text() for label in ("Guard", "Tackle", "End")))
         check("NFL trenches view states the blocking-charting limit",
               "zone-versus-gap blocking" in trench.inner_text().lower())
-        page.locator("#form [data-team-stat-view='dvoa']").click()
-        check("NFL DVOA view preserves licensed-source integrity",
-              page.locator("#form [data-team-stat-panel='dvoa'] a[href*='ftnfantasy.com']").count() == 1
-              and "never relabeled" in page.locator("#form [data-team-stat-panel='dvoa']").inner_text().lower())
+        check("NFL hides the unconnected DVOA view instead of opening a dead panel",
+              page.locator("#form [data-team-stat-view='dvoa']").count() == 0 and
+              page.locator("#form [data-team-stat-panel='dvoa']").count() == 0)
         page.locator("#form [data-team-stat-view='overview']").click()
         check("NFL opens with four concise matchup signals",
               page.locator("#form .ca-nfl-signal").count() == 4)
@@ -383,6 +386,10 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL quarterback splits show time to throw and per-game volume",
               all(label in scheme_text.lower() for label in
                   ("time to throw", "pass att / g", "db/g", "yds/g")))
+        check("NFL scheme tables group sample, per-game and efficiency columns",
+              page.locator("#scheme .ca-scheme-table__groups").count() >= 2 and
+              all(label in scheme_text.lower() for label in
+                  ("per game", "efficiency", "next gen timing & volume")))
         check("NFL running-back splits include box, personnel and NGS context",
               all(label in scheme_text.lower() for label in
                   ("stacked box", "light box", "nickel", "8+ box faced", "ryoe / carry")))

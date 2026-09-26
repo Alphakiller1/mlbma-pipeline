@@ -3225,8 +3225,12 @@
           ranked(split.success_rate, ranks.success_rate, pctText) + '</tr>';
       }).join('');
       var headings = position === 'QB'
-        ? '<th>Defensive Look</th><th class="num">DB</th><th class="num">DB/G</th><th class="num">Yds/G</th><th class="num">Cmp</th><th class="num">Y/A</th><th class="num">EPA/DB</th>'
-        : '<th>Run Look</th><th class="num">Att</th><th class="num">Att/G</th><th class="num">Yds/G</th><th class="num">YPC</th><th class="num">EPA/Att</th><th class="num">Success</th>';
+        ? '<tr class="ca-scheme-table__groups"><th rowspan="2">Defensive Look</th><th rowspan="2" class="num">DB</th>' +
+          '<th colspan="2" class="num">Per Game</th><th colspan="3" class="num">Efficiency</th></tr>' +
+          '<tr><th class="num">DB/G</th><th class="num">Yds/G</th><th class="num">Cmp</th><th class="num">Y/A</th><th class="num">EPA/DB</th></tr>'
+        : '<tr class="ca-scheme-table__groups"><th rowspan="2">Run Look</th><th rowspan="2" class="num">Att</th>' +
+          '<th colspan="2" class="num">Per Game</th><th colspan="3" class="num">Efficiency</th></tr>' +
+          '<tr><th class="num">Att/G</th><th class="num">Yds/G</th><th class="num">YPC</th><th class="num">EPA/Att</th><th class="num">Success</th></tr>';
       var tracking = profile.tracking || {};
       function trackingStat(label, raw, format, note) {
         if (raw == null || raw === '' || !isFinite(Number(raw))) return '';
@@ -3238,6 +3242,7 @@
       }
       var trackingStrip = position === 'RB' && Object.keys(tracking).length
         ? '<div class="ca-rb-tracking" aria-label="NFL Next Gen rushing profile">' +
+          '<div class="ca-player-tracking__head"><strong>Next Gen Rushing Context</strong><span>Season-to-date tracking</span></div>' +
           trackingStat('8+ Box Faced', tracking.eight_plus_box_rate, 'pct', 'stacked-box exposure') +
           trackingStat('Time To LOS', tracking.avg_time_to_los, 'seconds', 'average behind line') +
           trackingStat('Expected YPC', tracking.expected_yards_per_carry, 'num', 'NGS expectation') +
@@ -3245,6 +3250,7 @@
           trackingStat('Runs Over Expected', tracking.rush_pct_over_expected, 'pct', 'share beating expectation') +
           '</div>' : (position === 'QB' && Object.keys(tracking).length
             ? '<div class="ca-rb-tracking ca-qb-tracking" aria-label="NFL Next Gen passing profile">' +
+              '<div class="ca-player-tracking__head"><strong>Next Gen Timing &amp; Volume</strong><span>Season-to-date tracking</span></div>' +
               trackingStat('Time To Throw', tracking.avg_time_to_throw, 'seconds', 'average snap-to-throw time') +
               trackingStat('Pass Att / G', ratePerGame(standard.attempts, standard.games, 1), 'num', 'completed-game volume') +
               trackingStat('Pass Yds / G', ratePerGame(standard.passing_yards, standard.games, 1), 'num', 'completed-game production') +
@@ -3253,7 +3259,8 @@
         '<div class="ca-player-coverage-card__identity"><span class="ca-lineup-player__position">' +
         esc(position) + '</span><strong>' + esc(profile.player_name) + '</strong><small>' +
         esc(position === 'QB' ? 'Passing Response' : 'Rushing Response') + '</small></div></header>' + trackingStrip +
-        '<div class="ca-lineup-scroll"><table><thead><tr>' + headings + '</tr></thead><tbody>' + rows +
+        '<p class="ca-scheme-table-hint">Swipe to compare volume and efficiency →</p>' +
+        '<div class="ca-lineup-scroll ca-scheme-table-scroll" tabindex="0" aria-label="Scrollable player scheme statistics"><table class="ca-scheme-table"><thead>' + headings + '</thead><tbody>' + rows +
         '</tbody></table></div></article>';
     }
     var seasons = {};
@@ -3740,7 +3747,9 @@
       var rightLeads = left && right && isFinite(left.value) && isFinite(right.value)
         ? (low ? right.value < left.value : right.value > left.value) : !!right;
       var axis = left || right || { label: 'Not Published', unit: '' };
-      return '<div class="ca-production-compare__row">' + productionCompareCell(left, leftLeads) +
+      return '<div class="ca-production-compare__row' +
+        (axis.label === 'Offensive Pace' ? ' ca-production-compare__row--pace' : '') + '">' +
+        productionCompareCell(left, leftLeads) +
         '<div class="ca-production-compare__axis"><strong>' + esc(axis.label) + '</strong><span>' +
         esc(axis.unit) + '</span></div>' + productionCompareCell(right, rightLeads) + '</div>';
     }).join('');
@@ -3834,8 +3843,10 @@
       esc(fullName(sport, game, offSide)) + ' offense</strong><small>' + esc(family) + ' profile</small></span></div>' +
       '<b aria-hidden="true">vs</b><div>' + logo(sport, game, defSide, 34, 'ca-production-team__logo') +
       '<span><strong>' + esc(fullName(sport, game, defSide)) + ' defense</strong><small>opponent response</small></span></div>' +
-      '</header><div class="ca-nfl-split-stat-grid">' + volume + '</div>' +
-      '<div class="ca-nfl-split-duel">' + rows + '</div></article>';
+      '</header><section class="ca-nfl-split-section"><div class="ca-nfl-split-section__head"><strong>Per-Game Volume</strong>' +
+      '<span>Completed ' + esc(stats.games || 0) + '-game sample</span></div><div class="ca-nfl-split-stat-grid">' + volume +
+      '</div></section><section class="ca-nfl-split-section"><div class="ca-nfl-split-section__head"><strong>Matchup Efficiency</strong>' +
+      '<span>Offense versus opposing defense</span></div><div class="ca-nfl-split-duel">' + rows + '</div></section></article>';
   }
 
   function nflTeamFamilyPanel(sport, game, family) {
@@ -3974,10 +3985,12 @@
   }
 
   function nflTeamLab(sport, game, leagueView) {
+    var hasDvoa = !!(game.away_dvoa || game.home_dvoa);
     var views = [
       ['overview', 'Overview'], ['passing', 'Passing'], ['rushing', 'Rushing'],
-      ['trenches', 'Trenches'], ['dvoa', 'DVOA']
+      ['trenches', 'Trenches']
     ];
+    if (hasDvoa) views.push(['dvoa', 'DVOA']);
     var tabs = views.map(function (view, index) {
       return '<button type="button" role="tab" class="ca-filter-pill' + (index ? '' : ' is-on') +
         '" data-team-stat-view="' + view[0] + '" aria-selected="' + (index ? 'false' : 'true') +
@@ -3994,7 +4007,7 @@
       '<div data-team-stat-panel="passing" hidden>' + nflTeamFamilyPanel(sport, game, 'passing') + '</div>' +
       '<div data-team-stat-panel="rushing" hidden>' + nflTeamFamilyPanel(sport, game, 'rushing') + '</div>' +
       '<div data-team-stat-panel="trenches" hidden>' + nflTrenchesPanel(sport, game) + '</div>' +
-      '<div data-team-stat-panel="dvoa" hidden>' + nflDvoaPanel(sport, game) + '</div>' +
+      (hasDvoa ? '<div data-team-stat-panel="dvoa" hidden>' + nflDvoaPanel(sport, game) + '</div>' : '') +
       nflMetricGuide() + '</div>';
   }
 
