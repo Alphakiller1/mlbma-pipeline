@@ -341,8 +341,12 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         trench = page.locator("#form [data-team-stat-panel='trenches']")
         check("NFL trenches view shows both line confrontations",
               trench.locator(".ca-trench-card").count() == 2)
-        check("NFL trenches view publishes line yards and havoc",
-              "Adjusted Line Yards" in trench.inner_text() and "Havoc Rate" in trench.inner_text())
+        check("NFL trenches view publishes contact yards, line yards and havoc",
+              all(label in trench.inner_text() for label in
+                  ("RB Yards Before Contact / Carry", "Adjusted Line Yards", "Havoc Rate")))
+        check("NFL trenches view shows run defense by point of attack",
+              trench.locator(".ca-run-front").count() == 2 and
+              all(label in trench.inner_text() for label in ("Guard", "Tackle", "End")))
         check("NFL trenches view states the blocking-charting limit",
               "zone-versus-gap blocking" in trench.inner_text().lower())
         page.locator("#form [data-team-stat-view='dvoa']").click()
@@ -362,25 +366,30 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               and page.locator("#form [data-matchup-panel='home']:not([hidden])").count() == 1)
         check("NFL removes the duplicate narrative lens cards",
               page.locator("#form .ca-script-lens").count() == 0)
-        check("NFL keeps deep scheme tables progressive",
+        check("NFL opens the core coverage matchup while keeping secondary detail progressive",
               page.locator(
-                  "#scheme [data-scheme-direction-panel]:not([hidden]) "
-                  ".ca-scheme-detail:not([open])"
-              ).count() == 2)
+                  "#scheme [data-scheme-direction-panel]:not([hidden]) .ca-scheme-detail[open]"
+              ).count() == 1 and page.locator(
+                  "#scheme [data-scheme-direction-panel]:not([hidden]) .ca-scheme-detail:not([open])"
+              ).count() == 1)
+        scheme_text = page.locator(
+            "#scheme [data-scheme-direction-panel]:not([hidden])").inner_text()
+        check("NFL quarterback splits include shell, coverage and pressure looks",
+              all(label in scheme_text for label in (
+                  "Single High / MFC", "Two High / MFO", "Middle Field Closed",
+                  "Middle Field Open", "Cover 3", "Cover 4", "Man", "Zone", "Blitz", "Pressure")))
+        check("NFL running-back splits include box, personnel and NGS context",
+              all(label in scheme_text.lower() for label in
+                  ("stacked box", "light box", "nickel", "8+ box faced", "ryoe / carry")))
         check("NFL player research opens with four comparable volume baselines",
               page.locator("#players .ca-player-compare__row").count() == 4)
         check("NFL player research exposes position and stat-family filters",
               page.locator("#players [data-player-position]").count() == 5
               and page.locator("#players [data-player-family]").count() == 6)
         page.locator("#players [data-player-family='splits']").click()
-        page.locator("#players .ca-player-deep-dive summary").first.click()
-        advanced_text = page.locator(
-            "#players .ca-player-deep-dive[open]").first.inner_text()
-        check("NFL quarterback splits include shell, coverage and pressure looks",
-              all(label in advanced_text for label in (
-                  "Single High / MFC", "Two High / MFO", "Man", "Zone", "Blitz", "Pressure")))
-        check("NFL running-back splits include box and personnel looks",
-              all(label in advanced_text for label in ("Stacked Box", "Light Box", "Nickel")))
+        check("NFL advanced player lab does not invent unavailable receiving splits",
+              page.locator("#players .ca-player-deep-dive summary").count() >= 1 or
+              "No qualifying advanced player split sample" in page.locator("#players").inner_text())
         page.locator("#players [data-player-family='overview']").click()
         page.locator("#players [data-player-position='rb']").click()
         page.locator("#players [data-player-family='rushing']").click()

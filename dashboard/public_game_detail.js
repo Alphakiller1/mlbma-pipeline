@@ -3214,10 +3214,27 @@
       var headings = position === 'QB'
         ? '<th>Defensive Look</th><th class="num">DB</th><th class="num">Cmp</th><th class="num">Y/A</th><th class="num">EPA/DB</th>'
         : '<th>Run Look</th><th class="num">Att</th><th class="num">YPC</th><th class="num">EPA/Att</th><th class="num">Success</th>';
+      var tracking = profile.tracking || {};
+      function trackingStat(label, raw, format, note) {
+        if (raw == null || raw === '') return '';
+        var shown = format === 'pct' ? pctText(raw) :
+          (format === 'seconds' ? Number(raw).toFixed(2) + 's' :
+            (Number(raw) > 0 && format === 'signed' ? '+' : '') + Number(raw).toFixed(2));
+        return '<div class="ca-rb-tracking__stat"><span>' + esc(label) + '</span><strong>' +
+          esc(shown) + '</strong><small>' + esc(note) + '</small></div>';
+      }
+      var trackingStrip = position === 'RB' && Object.keys(tracking).length
+        ? '<div class="ca-rb-tracking" aria-label="NFL Next Gen rushing profile">' +
+          trackingStat('8+ Box Faced', tracking.eight_plus_box_rate, 'pct', 'stacked-box exposure') +
+          trackingStat('Time To LOS', tracking.avg_time_to_los, 'seconds', 'average behind line') +
+          trackingStat('Expected YPC', tracking.expected_yards_per_carry, 'num', 'NGS expectation') +
+          trackingStat('RYOE / Carry', tracking.ryoe_per_carry, 'signed', 'above/below expectation') +
+          trackingStat('Runs Over Expected', tracking.rush_pct_over_expected, 'pct', 'share beating expectation') +
+          '</div>' : '';
       return '<article class="ca-player-coverage-card ca-player-scheme-card" role="listitem"><header>' + portrait +
         '<div class="ca-player-coverage-card__identity"><span class="ca-lineup-player__position">' +
         esc(position) + '</span><strong>' + esc(profile.player_name) + '</strong><small>' +
-        esc(position === 'QB' ? 'Passing Response' : 'Rushing Response') + '</small></div></header>' +
+        esc(position === 'QB' ? 'Passing Response' : 'Rushing Response') + '</small></div></header>' + trackingStrip +
         '<div class="ca-lineup-scroll"><table><thead><tr>' + headings + '</tr></thead><tbody>' + rows +
         '</tbody></table></div></article>';
     }
@@ -3292,11 +3309,12 @@
       '</div>';
 
     return head + coverageNote + snapshot +
-      '<details class="ca-scheme-detail"><summary>Coverage + situational EPA</summary>' +
+      '<details class="ca-scheme-detail" open><summary>QB Coverage Response + Defensive Tendencies</summary>' +
       '<div class="ca-scheme-detail__body">' + coverage +
       (versus ? '<div class="ca-sit-block"><h4>Situation By Situation</h4>' + versus + '</div>' : '') +
+      playerSchemePanels(sport, game, offSide) +
       '</div></details>' +
-      '<details class="ca-scheme-detail"><summary>Pressure, personnel + target distribution</summary>' +
+      '<details class="ca-scheme-detail"><summary>Pressure, Personnel + Target Distribution</summary>' +
       '<div class="ca-scheme-detail__body"><div class="ca-scheme-grid" aria-label="' + esc(offName) +
       ' offence and ' + esc(defName) + ' defence scheme details">' +
       pressureMatchups(sport, game, offSide, defSide) +
@@ -3855,6 +3873,7 @@
     var offense = ((game[offSide + '_line_stats'] || {}).offense) || {};
     var defense = ((game[defSide + '_line_stats'] || {}).defense) || {};
     var specs = [
+      ['yards_before_contact', 'RB Yards Before Contact / Carry', 'actual push before first contact'],
       ['line_yards', 'Adjusted Line Yards', 'rush-outcome push proxy'],
       ['stuff_rate', 'Stuff Rate', 'runs stopped at or behind the line'],
       ['short_success', 'Short Yardage', 'third/fourth down, two yards or fewer'],
@@ -3877,16 +3896,42 @@
       '</div></header><div class="ca-nfl-split-duel">' + rows + '</div></article>';
   }
 
+  function nflRunFrontCard(sport, game, defSide) {
+    var front = ((game[defSide + '_line_stats'] || {}).defense_run_front) || {};
+    var specs = [
+      ['gap_guard', 'Guard'], ['gap_tackle', 'Tackle'], ['gap_end', 'End'],
+      ['lane_left', 'Left'], ['lane_middle', 'Middle'], ['lane_right', 'Right']
+    ];
+    var tiles = specs.map(function (spec) {
+      var row = front[spec[0]];
+      if (!row) return '';
+      return '<div class="ca-run-front__tile"><header><strong>' + esc(spec[1]) + '</strong><span>' +
+        esc(row.carries) + ' carries</span></header><dl><div><dt>YPC Allowed</dt><dd>' +
+        esc(Number(row.yards_per_carry_allowed).toFixed(1)) + '</dd></div><div><dt>EPA / Carry</dt><dd>' +
+        esc(epaText(row.epa_per_carry_allowed, false)) + '</dd></div><div><dt>Success Allowed</dt><dd>' +
+        esc(pctText(row.success_rate_allowed)) + '</dd></div><div><dt>Stuff Rate</dt><dd>' +
+        esc(pctText(row.stuff_rate)) + '</dd></div></dl></div>';
+    }).filter(Boolean).join('');
+    if (!tiles) return '';
+    return '<article class="ca-run-front"><header>' + logo(sport, game, defSide, 34, 'ca-production-team__logo') +
+      '<div><strong>' + esc(fullName(sport, game, defSide)) + ' Run Defense</strong>' +
+      '<span>Observed results by point of attack</span></div></header><div class="ca-run-front__grid">' +
+      tiles + '</div></article>';
+  }
+
   function nflTrenchesPanel(sport, game) {
     if (!game.away_line_stats && !game.home_line_stats) {
       return pending('Current-season line-of-scrimmage outcomes are not published for this matchup.');
     }
     return '<div class="ca-nfl-family-grid">' + nflTrenchCard(sport, game, 'away', 'home') +
       nflTrenchCard(sport, game, 'home', 'away') + '</div>' +
+      '<div class="ca-run-front-grid">' + nflRunFrontCard(sport, game, 'away') +
+      nflRunFrontCard(sport, game, 'home') + '</div>' +
       '<aside class="ca-trench-note"><strong>What this can — and cannot — tell you</strong><p>' +
-      'Adjusted Line Yards estimates line push from the rushing result; it is not player-tracking contact yardage. ' +
-      'Havoc measures disruptive outcomes. The licensed public feed does not publish reliable zone-versus-gap blocking ' +
-      'charting, so those defensive splits remain unavailable instead of being estimated.</p></aside>';
+      'RB yards before contact is the actual PFR contact-yard measure; Adjusted Line Yards is the rush-outcome proxy. ' +
+      'Havoc measures disruptive outcomes. Guard/tackle/end describes point of attack—not the blocking call. The public ' +
+      'licensed feeds do not publish reliable zone-versus-gap blocking or man-blocking charting, so that split is marked unavailable ' +
+      'instead of being inferred.</p></aside>';
   }
 
   function nflGradeLegend() {
@@ -4087,13 +4132,11 @@
   }
 
   function playerDeepDive(sport, game, side) {
-    var hasScheme = (game[side + '_player_scheme'] || []).length;
     var hasCoverage = (game[side + '_player_coverage'] || []).length;
-    if (!hasScheme && !hasCoverage) return '';
+    if (!hasCoverage) return '';
     return '<details class="ca-player-deep-dive"><summary>' +
-      esc(fullName(sport, game, side)) + ' Advanced Player Splits</summary>' +
-      (hasScheme ? playerSchemePanels(sport, game, side) : '') +
-      (hasCoverage ? playerCoveragePanels(sport, game, side) : '') + '</details>';
+      esc(fullName(sport, game, side)) + ' Receiving Coverage Splits</summary>' +
+      playerCoveragePanels(sport, game, side) + '</details>';
   }
 
   function nflPlayerHub(sport, game) {
@@ -4114,8 +4157,7 @@
           '="' + item[0] + '" aria-pressed="' + (index ? 'false' : 'true') + '">' + esc(item[1]) + '</button>';
       }).join('');
     }
-    var hasDeep = (game.away_player_scheme || []).length || (game.away_player_coverage || []).length ||
-      (game.home_player_scheme || []).length || (game.home_player_coverage || []).length;
+    var hasDeep = (game.away_player_coverage || []).length || (game.home_player_coverage || []).length;
     var deep = hasDeep ? playerDeepDive(sport, game, 'away') + playerDeepDive(sport, game, 'home') :
       pending('No qualifying advanced player split sample is published for this matchup.');
     return '<div class="ca-player-research">' + playerComparison(sport, game) +
@@ -4190,7 +4232,7 @@
       section('scheme', 'Scheme Splits',
         'Coverage, Pressure And Personnel By Matchup Direction',
         schemeSwitcher(sport, game) +
-        '<p class="ca-detail-source-note" data-season-prior-only>Observed charting only · season shown in the evidence control ' +
+        '<p class="ca-detail-source-note" data-season-prior-only>Observed charting and tracking only · season shown in the evidence control ' +
         '· frequency ranks use the 32-team pool.</p>'),
 
       section('players', 'Player Stat Lab',

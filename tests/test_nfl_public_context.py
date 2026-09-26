@@ -285,6 +285,22 @@ class NflPublicContextTests(unittest.TestCase):
         self.assertNotIn("private", json.dumps(result))
         self.assertEqual(result["team_line"]["AAA"]["season"], 2026)
 
+    def test_rb_next_gen_tracking_is_allowlisted(self):
+        board = {"player_scheme_profiles": [{
+            "player_id": "rb-1", "player_name": "Runner One", "team": "AAA",
+            "position": "RB", "source_season": 2026, "play_family": "rushing",
+            "splits": {"stacked_box": {"carries": 8, "rushing_yards": 30,
+                "yards_per_carry": 3.75, "epa_per_carry": -.04, "success_rate": .375}},
+            "tracking": {"season": 2026, "week": 3, "attempts": 31,
+                "eight_plus_box_rate": .3226, "avg_time_to_los": 2.74,
+                "expected_yards_per_carry": 4.1, "ryoe_per_carry": .42,
+                "rush_pct_over_expected": .51, "source": "NFL Next Gen Stats via nflverse",
+                "private": 99},
+        }]}
+        profile = ctx.player_scheme(board)["AAA"][0]
+        self.assertEqual(profile["tracking"]["eight_plus_box_rate"], .3226)
+        self.assertNotIn("private", profile["tracking"])
+
     def test_coverage_shells_sum_to_one(self):
         cov = self.ctx["scheme"]["AAA"]["defense"]["coverage"]
         shells = sum(v for k, v in cov.items() if k.startswith("cover_"))

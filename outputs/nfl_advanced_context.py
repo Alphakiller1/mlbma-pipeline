@@ -7,6 +7,7 @@ carry that season on every profile. Missing charting stays missing.
 """
 from __future__ import annotations
 
+import math
 import re
 from typing import Any
 
@@ -21,6 +22,14 @@ FTN_URL = (
 PARTICIPATION_URL = (
     "https://github.com/nflverse/nflverse-data/releases/download/pbp_participation/"
     "pbp_participation_{season}.parquet"
+)
+NGS_RUSHING_URL = (
+    "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/"
+    "ngs_rushing.parquet"
+)
+PFR_RUSHING_URL = (
+    "https://github.com/nflverse/nflverse-data/releases/download/pfr_advstats/"
+    "advstats_week_rush_{season}.parquet"
 )
 
 PBP_COLUMNS = (
@@ -71,6 +80,77 @@ def _joined(season: int, participation: bool):
 
 def _safe_ratio(numerator: float, denominator: float) -> float | None:
     return round(float(numerator) / float(denominator), 4) if denominator else None
+
+
+def _finite(value: object) -> float | None:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    return number if math.isfinite(number) else None
+
+
+def _name_key(value: object) -> str:
+    return re.sub(r"[^a-z0-9]", "", str(value or "").lower())
+
+
+def _team(value: object) -> str:
+    return {"LA": "LAR", "JAC": "JAX", "OAK": "LV", "SD": "LAC",
+            "STL": "LAR"}.get(str(value or "").upper(), str(value or "").upper())
+
+
+def _ngs_rushing(season: int) -> dict[str, dict[str, Any]]:
+    """Latest cumulative regular-season NGS rushing row per player."""
+    frame = _frame(NGS_RUSHING_URL, (
+        "season", "season_type", "week", "player_display_name", "player_position",
+        "team_abbr", "efficiency", "percent_attempts_gte_eight_defenders",
+        "avg_time_to_los", "rush_attempts", "expected_rush_yards",
+        "rush_yards_over_expected", "rush_yards_over_expected_per_att",
+        "rush_pct_over_expected", "player_gsis_id",
+    ))
+    if frame is None:
+        return {}
+    frame = frame[(frame["season"].eq(season)) & frame["season_type"].eq("REG") &
+                  frame["player_position"].eq("RB")].copy()
+    frame = frame.sort_values("week").drop_duplicates("player_gsis_id", keep="last")
+    out: dict[str, dict[str, Any]] = {}
+    for row in frame.to_dict("records"):
+        attempts = _finite(row.get("rush_attempts")) or 0
+        player_id = str(row.get("player_gsis_id") or "")
+        if not player_id or attempts <= 0:
+            continue
+        out[player_id] = {
+            "season": season,
+            "week": int(row.get("week") or 0),
+            "attempts": int(attempts),
+            "eight_plus_box_rate": (round(_finite(row.get("percent_attempts_gte_eight_defenders")) / 100, 4)
+                                    if _finite(row.get("percent_attempts_gte_eight_defenders")) is not None else None),
+            "avg_time_to_los": (round(_finite(row.get("avg_time_to_los")), 3)
+                                if _finite(row.get("avg_time_to_los")) is not None else None),
+            "expected_yards_per_carry": _safe_ratio(_finite(row.get("expected_rush_yards")) or 0, attempts),
+            "ryoe_per_carry": (round(_finite(row.get("rush_yards_over_expected_per_att")), 4)
+                               if _finite(row.get("rush_yards_over_expected_per_att")) is not None else None),
+            "rush_pct_over_expected": (round(_finite(row.get("rush_pct_over_expected")), 4)
+                                       if _finite(row.get("rush_pct_over_expected")) is not None else None),
+            "source": "NFL Next Gen Stats via nflverse",
+        }
+    return out
+
+
+def _pfr_rushing(season: int, rb_names: set[str]):
+    frame = _frame(PFR_RUSHING_URL.format(season=season), (
+        "season", "week", "game_type", "team", "opponent", "pfr_player_name",
+        "carries", "rushing_yards_before_contact", "rushing_yards_after_contact",
+    ))
+    if frame is None:
+        return None
+    frame = frame[(frame["season"].eq(season)) & frame["game_type"].eq("REG")].copy()
+    # Quarterbacks and receivers also appear in PFR's rushing file. Restrict
+    # line-push aggregation to players whose official season position is RB.
+    frame = frame[frame["pfr_player_name"].map(_name_key).isin(rb_names)].copy()
+    frame["team"] = frame["team"].map(_team)
+    frame["opponent"] = frame["opponent"].map(_team)
+    return frame
 
 
 def _player_stats(rows, position: str) -> dict[str, Any] | None:
@@ -161,7 +241,8 @@ def _split_masks(rows, position: str) -> dict[str, Any]:
 
 
 def _player_profiles(frame, season: int, names: dict[str, str],
-                     positions: dict[str, str]) -> list[dict]:
+                     positions: dict[str, str],
+                     ngs_rushing: dict[str, dict[str, Any]] | None = None) -> list[dict]:
     profiles = []
     for position, id_col, name_col, family, flag in (
         ("QB", "passer_player_id", "passer_player_name", "passing", "qb_dropback"),
@@ -183,11 +264,14 @@ def _player_profiles(frame, season: int, names: dict[str, str],
             if not splits:
                 continue
             fallback = str(rows[name_col].dropna().iloc[0]) if rows[name_col].notna().any() else str(player_id)
-            profiles.append({
+            profile = {
                 "player_id": str(player_id), "player_name": names.get(str(player_id), fallback),
                 "team": str(team), "position": position, "source_season": season,
                 "play_family": family, "splits": splits,
-            })
+            }
+            if position == "RB" and ngs_rushing and str(player_id) in ngs_rushing:
+                profile["tracking"] = ngs_rushing[str(player_id)]
+            profiles.append(profile)
     return profiles
 
 
@@ -207,7 +291,38 @@ def _entry(label: str, value: float | None, better: str, fmt: str) -> dict | Non
     return {"label": label, "value": round(float(value), 4), "better": better, "format": fmt}
 
 
-def _team_line(frame, season: int) -> dict[str, dict]:
+def _run_front(rows) -> dict[str, dict[str, float | int]]:
+    """Observed run defense by point of attack, never by inferred blocking call."""
+    result: dict[str, dict[str, float | int]] = {}
+    for column, prefix, values in (
+        ("run_gap", "gap", ("guard", "tackle", "end")),
+        ("run_location", "lane", ("left", "middle", "right")),
+    ):
+        if column not in rows:
+            continue
+        normalized = rows[column].fillna("").astype(str).str.lower()
+        for value in values:
+            sample = rows[normalized.eq(value)]
+            carries = len(sample)
+            if not carries:
+                continue
+            result[f"{prefix}_{value}"] = {
+                "carries": carries,
+                "yards_per_carry_allowed": round(float(sample["yards_gained"].fillna(0).mean()), 4),
+                "epa_per_carry_allowed": round(float(sample["epa"].fillna(0).mean()), 4),
+                "success_rate_allowed": round(float(sample["success"].fillna(0).mean()), 4),
+                "stuff_rate": round(float(sample["yards_gained"].le(0).mean()), 4),
+            }
+    return result
+
+
+def _pfr_contact_entry(rows, field: str, label: str, better: str) -> dict | None:
+    carries = float(rows["carries"].fillna(0).sum()) if len(rows) else 0
+    value = _safe_ratio(rows[field].fillna(0).sum(), carries) if carries else None
+    return _entry(label, value, better, "num")
+
+
+def _team_line(frame, season: int, pfr_rushing=None) -> dict[str, dict]:
     frame = frame.copy()
     runs = frame[frame["rush_attempt"].fillna(0).eq(1) &
                  ~frame["qb_kneel"].fillna(0).eq(1) &
@@ -250,14 +365,28 @@ def _team_line(frame, season: int) -> dict[str, dict]:
             "qb_hit_rate": _entry("QB Hit Rate", def_db["qb_hit"].fillna(0).mean() if len(def_db) else None, "high", "pct"),
             "havoc_rate": _entry("Defensive Havoc Rate", def_plays["havoc"].mean() if len(def_plays) else None, "high", "pct"),
         }
+        if pfr_rushing is not None:
+            off_ybc = _pfr_contact_entry(
+                pfr_rushing[pfr_rushing["team"].eq(team)],
+                "rushing_yards_before_contact", "RB Yards Before Contact / Carry", "high")
+            def_ybc = _pfr_contact_entry(
+                pfr_rushing[pfr_rushing["opponent"].eq(team)],
+                "rushing_yards_before_contact", "RB Yards Before Contact Allowed / Carry", "low")
+            if off_ybc:
+                off["yards_before_contact"] = off_ybc
+            if def_ybc:
+                defense["yards_before_contact"] = def_ybc
         out[str(team)] = {
-            "season": season, "source": "nflverse/nflfastR; FTN Data via nflverse",
+            "season": season,
+            "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
             "offense": {k: v for k, v in off.items() if v},
             "defense": {k: v for k, v in defense.items() if v},
+            "defense_run_front": _run_front(def_runs),
             "definitions": {
                 "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+                "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
                 "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-                "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed.",
+                "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme.",
             },
         }
     for phase in ("offense", "defense"):
@@ -285,14 +414,21 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
         for rows in player_stats.values() for row in rows
         if row.get("player_id") and row.get("position")
     }
+    rb_names = {
+        _name_key(row.get("player_name"))
+        for rows in player_stats.values() for row in rows
+        if str(row.get("position") or "").upper() == "RB" and row.get("player_name")
+    }
+    ngs_rushing = _ngs_rushing(season)
+    pfr_rushing = _pfr_rushing(season, rb_names)
     current = _joined(season, participation=False)
     prior = _joined(season - 1, participation=True)
     profiles = []
     if current is not None:
-        profiles.extend(_player_profiles(current, season, names, positions))
+        profiles.extend(_player_profiles(current, season, names, positions, ngs_rushing))
     if prior is not None:
         profiles.extend(_player_profiles(prior, season - 1, names, positions))
     return {
         "player_scheme_profiles": profiles,
-        "team_line": _team_line(current, season) if current is not None else {},
+        "team_line": _team_line(current, season, pfr_rushing) if current is not None else {},
     }

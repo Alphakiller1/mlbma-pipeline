@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-09-26T16:30:53Z",
+  "generated_at_utc": "2026-09-26T17:23:35Z",
   "data_through_utc": "2026-09-25T00:15Z",
   "games": [
     {
@@ -1507,7 +1507,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:08Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -1653,7 +1653,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:09Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -2137,7 +2137,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 3,
+            "attempts": 29,
+            "eight_plus_box_rate": 0.3103,
+            "avg_time_to_los": 2.828,
+            "expected_yards_per_carry": 4.0166,
+            "ryoe_per_carry": 2.6731,
+            "rush_pct_over_expected": 0.4828,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0039917",
@@ -4260,7 +4271,7 @@
       },
       "away_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -4301,6 +4312,14 @@
             "format": "pct",
             "rank": 26,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 2.1351,
+            "better": "high",
+            "format": "num",
+            "rank": 13,
+            "of": 31
           }
         },
         "defense": {
@@ -4351,17 +4370,70 @@
             "format": "pct",
             "rank": 27,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 2.0,
+            "better": "low",
+            "format": "num",
+            "rank": 14,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 10,
+            "yards_per_carry_allowed": 3.1,
+            "epa_per_carry_allowed": -0.1181,
+            "success_rate_allowed": 0.4,
+            "stuff_rate": 0.1
+          },
+          "gap_tackle": {
+            "carries": 12,
+            "yards_per_carry_allowed": 3.0,
+            "epa_per_carry_allowed": -0.4167,
+            "success_rate_allowed": 0.1667,
+            "stuff_rate": 0.4167
+          },
+          "gap_end": {
+            "carries": 10,
+            "yards_per_carry_allowed": 2.7,
+            "epa_per_carry_allowed": -0.3533,
+            "success_rate_allowed": 0.2,
+            "stuff_rate": 0.3
+          },
+          "lane_left": {
+            "carries": 19,
+            "yards_per_carry_allowed": 3.7368,
+            "epa_per_carry_allowed": -0.1881,
+            "success_rate_allowed": 0.3158,
+            "stuff_rate": 0.1579
+          },
+          "lane_middle": {
+            "carries": 14,
+            "yards_per_carry_allowed": 3.5714,
+            "epa_per_carry_allowed": -0.0679,
+            "success_rate_allowed": 0.5714,
+            "stuff_rate": 0.0714
+          },
+          "lane_right": {
+            "carries": 13,
+            "yards_per_carry_allowed": 1.7692,
+            "epa_per_carry_allowed": -0.4724,
+            "success_rate_allowed": 0.1538,
+            "stuff_rate": 0.4615
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "home_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -4402,6 +4474,14 @@
             "format": "pct",
             "rank": 23,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 1.9737,
+            "better": "high",
+            "format": "num",
+            "rank": 19,
+            "of": 31
           }
         },
         "defense": {
@@ -4452,12 +4532,65 @@
             "format": "pct",
             "rank": 10,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 1.375,
+            "better": "low",
+            "format": "num",
+            "rank": 3,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 24,
+            "yards_per_carry_allowed": 2.0833,
+            "epa_per_carry_allowed": -0.2385,
+            "success_rate_allowed": 0.4167,
+            "stuff_rate": 0.2917
+          },
+          "gap_tackle": {
+            "carries": 22,
+            "yards_per_carry_allowed": 3.2273,
+            "epa_per_carry_allowed": -0.0759,
+            "success_rate_allowed": 0.4091,
+            "stuff_rate": 0.1364
+          },
+          "gap_end": {
+            "carries": 26,
+            "yards_per_carry_allowed": 8.5,
+            "epa_per_carry_allowed": 0.3644,
+            "success_rate_allowed": 0.5385,
+            "stuff_rate": 0.2308
+          },
+          "lane_left": {
+            "carries": 44,
+            "yards_per_carry_allowed": 5.0909,
+            "epa_per_carry_allowed": 0.1118,
+            "success_rate_allowed": 0.4318,
+            "stuff_rate": 0.1818
+          },
+          "lane_middle": {
+            "carries": 17,
+            "yards_per_carry_allowed": 3.0588,
+            "epa_per_carry_allowed": -0.1424,
+            "success_rate_allowed": 0.3529,
+            "stuff_rate": 0.1765
+          },
+          "lane_right": {
+            "carries": 28,
+            "yards_per_carry_allowed": 4.2143,
+            "epa_per_carry_allowed": -0.1014,
+            "success_rate_allowed": 0.5,
+            "stuff_rate": 0.2857
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "away_rest_days": 4,
@@ -5978,7 +6111,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:05Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -6124,7 +6257,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:05Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -6581,7 +6714,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 23,
+            "eight_plus_box_rate": 0.1304,
+            "avg_time_to_los": 2.569,
+            "expected_yards_per_carry": 4.0443,
+            "ryoe_per_carry": 0.0427,
+            "rush_pct_over_expected": 0.4783,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0036355",
@@ -7863,7 +8007,18 @@
               "epa_per_carry": 0.5495,
               "success_rate": 1.0
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 21,
+            "eight_plus_box_rate": 0.5238,
+            "avg_time_to_los": 2.719,
+            "expected_yards_per_carry": 3.9756,
+            "ryoe_per_carry": 2.4756,
+            "rush_pct_over_expected": 0.5,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0034857",
@@ -9108,7 +9263,7 @@
       },
       "away_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -9149,6 +9304,14 @@
             "format": "pct",
             "rank": 29,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 2.0455,
+            "better": "high",
+            "format": "num",
+            "rank": 17,
+            "of": 31
           }
         },
         "defense": {
@@ -9199,17 +9362,70 @@
             "format": "pct",
             "rank": 28,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 1.6346,
+            "better": "low",
+            "format": "num",
+            "rank": 7,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 11,
+            "yards_per_carry_allowed": 2.0909,
+            "epa_per_carry_allowed": -0.2495,
+            "success_rate_allowed": 0.2727,
+            "stuff_rate": 0.1818
+          },
+          "gap_tackle": {
+            "carries": 12,
+            "yards_per_carry_allowed": 1.9167,
+            "epa_per_carry_allowed": -0.4389,
+            "success_rate_allowed": 0.0833,
+            "stuff_rate": 0.0833
+          },
+          "gap_end": {
+            "carries": 10,
+            "yards_per_carry_allowed": 5.9,
+            "epa_per_carry_allowed": 0.3313,
+            "success_rate_allowed": 0.7,
+            "stuff_rate": 0.2
+          },
+          "lane_left": {
+            "carries": 13,
+            "yards_per_carry_allowed": 3.2308,
+            "epa_per_carry_allowed": 0.0357,
+            "success_rate_allowed": 0.5385,
+            "stuff_rate": 0.1538
+          },
+          "lane_middle": {
+            "carries": 22,
+            "yards_per_carry_allowed": 2.6818,
+            "epa_per_carry_allowed": -0.3679,
+            "success_rate_allowed": 0.2727,
+            "stuff_rate": 0.2727
+          },
+          "lane_right": {
+            "carries": 20,
+            "yards_per_carry_allowed": 3.15,
+            "epa_per_carry_allowed": -0.2581,
+            "success_rate_allowed": 0.2,
+            "stuff_rate": 0.15
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "home_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -9250,6 +9466,14 @@
             "format": "pct",
             "rank": 8,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 4.2222,
+            "better": "high",
+            "format": "num",
+            "rank": 1,
+            "of": 31
           }
         },
         "defense": {
@@ -9300,12 +9524,65 @@
             "format": "pct",
             "rank": 17,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 2.1087,
+            "better": "low",
+            "format": "num",
+            "rank": 16,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 20,
+            "yards_per_carry_allowed": 2.7,
+            "epa_per_carry_allowed": -0.2645,
+            "success_rate_allowed": 0.3,
+            "stuff_rate": 0.3
+          },
+          "gap_tackle": {
+            "carries": 13,
+            "yards_per_carry_allowed": 3.0769,
+            "epa_per_carry_allowed": 0.0063,
+            "success_rate_allowed": 0.4615,
+            "stuff_rate": 0.3846
+          },
+          "gap_end": {
+            "carries": 6,
+            "yards_per_carry_allowed": 3.1667,
+            "epa_per_carry_allowed": -0.0544,
+            "success_rate_allowed": 0.3333,
+            "stuff_rate": 0.3333
+          },
+          "lane_left": {
+            "carries": 18,
+            "yards_per_carry_allowed": 3.0556,
+            "epa_per_carry_allowed": -0.2819,
+            "success_rate_allowed": 0.2778,
+            "stuff_rate": 0.2778
+          },
+          "lane_middle": {
+            "carries": 9,
+            "yards_per_carry_allowed": 6.1111,
+            "epa_per_carry_allowed": 0.4956,
+            "success_rate_allowed": 0.5556,
+            "stuff_rate": 0.3333
+          },
+          "lane_right": {
+            "carries": 21,
+            "yards_per_carry_allowed": 2.7619,
+            "epa_per_carry_allowed": -0.0219,
+            "success_rate_allowed": 0.4286,
+            "stuff_rate": 0.381
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "away_rest_days": 6,
@@ -10808,7 +11085,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:05Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -10954,7 +11231,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:05Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -11396,7 +11673,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 12,
+            "eight_plus_box_rate": 0.3333,
+            "avg_time_to_los": 2.543,
+            "expected_yards_per_carry": 3.5215,
+            "ryoe_per_carry": 0.8952,
+            "rush_pct_over_expected": 0.5833,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0039150",
@@ -12688,7 +12976,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 12,
+            "eight_plus_box_rate": 0.5,
+            "avg_time_to_los": 2.608,
+            "expected_yards_per_carry": 2.899,
+            "ryoe_per_carry": -1.3443,
+            "rush_pct_over_expected": 0.2727,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0040784",
@@ -13313,7 +13612,7 @@
       },
       "away_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -13354,6 +13653,14 @@
             "format": "pct",
             "rank": 9,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 2.7949,
+            "better": "high",
+            "format": "num",
+            "rank": 4,
+            "of": 31
           }
         },
         "defense": {
@@ -13404,17 +13711,70 @@
             "format": "pct",
             "rank": 15,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 2.9091,
+            "better": "low",
+            "format": "num",
+            "rank": 27,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 23,
+            "yards_per_carry_allowed": 5.4783,
+            "epa_per_carry_allowed": 0.2011,
+            "success_rate_allowed": 0.3913,
+            "stuff_rate": 0.0
+          },
+          "gap_tackle": {
+            "carries": 17,
+            "yards_per_carry_allowed": 6.0588,
+            "epa_per_carry_allowed": -0.0897,
+            "success_rate_allowed": 0.2941,
+            "stuff_rate": 0.0588
+          },
+          "gap_end": {
+            "carries": 7,
+            "yards_per_carry_allowed": 2.7143,
+            "epa_per_carry_allowed": -0.6343,
+            "success_rate_allowed": 0.4286,
+            "stuff_rate": 0.2857
+          },
+          "lane_left": {
+            "carries": 24,
+            "yards_per_carry_allowed": 5.0417,
+            "epa_per_carry_allowed": -0.1182,
+            "success_rate_allowed": 0.375,
+            "stuff_rate": 0.0417
+          },
+          "lane_middle": {
+            "carries": 13,
+            "yards_per_carry_allowed": 8.0769,
+            "epa_per_carry_allowed": 0.3385,
+            "success_rate_allowed": 0.5385,
+            "stuff_rate": 0.1538
+          },
+          "lane_right": {
+            "carries": 23,
+            "yards_per_carry_allowed": 5.5217,
+            "epa_per_carry_allowed": 0.0651,
+            "success_rate_allowed": 0.3478,
+            "stuff_rate": 0.087
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "home_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -13455,6 +13815,14 @@
             "format": "pct",
             "rank": 30,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 1.0714,
+            "better": "high",
+            "format": "num",
+            "rank": 31,
+            "of": 31
           }
         },
         "defense": {
@@ -13505,12 +13873,65 @@
             "format": "pct",
             "rank": 9,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 2.3889,
+            "better": "low",
+            "format": "num",
+            "rank": 22,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 10,
+            "yards_per_carry_allowed": 3.1,
+            "epa_per_carry_allowed": -0.1992,
+            "success_rate_allowed": 0.3,
+            "stuff_rate": 0.3
+          },
+          "gap_tackle": {
+            "carries": 12,
+            "yards_per_carry_allowed": 3.6667,
+            "epa_per_carry_allowed": -0.0264,
+            "success_rate_allowed": 0.4167,
+            "stuff_rate": 0.25
+          },
+          "gap_end": {
+            "carries": 16,
+            "yards_per_carry_allowed": 7.5,
+            "epa_per_carry_allowed": 0.1345,
+            "success_rate_allowed": 0.5,
+            "stuff_rate": 0.125
+          },
+          "lane_left": {
+            "carries": 24,
+            "yards_per_carry_allowed": 5.7083,
+            "epa_per_carry_allowed": 0.0378,
+            "success_rate_allowed": 0.4167,
+            "stuff_rate": 0.1667
+          },
+          "lane_middle": {
+            "carries": 13,
+            "yards_per_carry_allowed": 3.4615,
+            "epa_per_carry_allowed": -0.0469,
+            "success_rate_allowed": 0.6923,
+            "stuff_rate": 0.1538
+          },
+          "lane_right": {
+            "carries": 14,
+            "yards_per_carry_allowed": 4.1429,
+            "epa_per_carry_allowed": -0.0761,
+            "success_rate_allowed": 0.4286,
+            "stuff_rate": 0.2857
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "away_rest_days": 7,
@@ -15013,7 +15434,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:05Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -15159,7 +15580,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:05Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -15657,7 +16078,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 16,
+            "eight_plus_box_rate": 0.1875,
+            "avg_time_to_los": 2.604,
+            "expected_yards_per_carry": 2.826,
+            "ryoe_per_carry": -1.0135,
+            "rush_pct_over_expected": 0.125,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0038120",
@@ -16292,7 +16724,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 16,
+            "eight_plus_box_rate": 0.0,
+            "avg_time_to_los": 3.276,
+            "expected_yards_per_carry": 3.4508,
+            "ryoe_per_carry": -0.6808,
+            "rush_pct_over_expected": 0.4,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0033106",
@@ -17546,7 +17989,7 @@
       },
       "away_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -17587,6 +18030,14 @@
             "format": "pct",
             "rank": 13,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 1.7736,
+            "better": "high",
+            "format": "num",
+            "rank": 24,
+            "of": 31
           }
         },
         "defense": {
@@ -17629,17 +18080,70 @@
             "format": "pct",
             "rank": 6,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 2.3214,
+            "better": "low",
+            "format": "num",
+            "rank": 21,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 9,
+            "yards_per_carry_allowed": 4.2222,
+            "epa_per_carry_allowed": -0.0814,
+            "success_rate_allowed": 0.3333,
+            "stuff_rate": 0.1111
+          },
+          "gap_tackle": {
+            "carries": 6,
+            "yards_per_carry_allowed": 3.0,
+            "epa_per_carry_allowed": -1.0498,
+            "success_rate_allowed": 0.1667,
+            "stuff_rate": 0.0
+          },
+          "gap_end": {
+            "carries": 3,
+            "yards_per_carry_allowed": 8.3333,
+            "epa_per_carry_allowed": 0.2967,
+            "success_rate_allowed": 0.6667,
+            "stuff_rate": 0.0
+          },
+          "lane_left": {
+            "carries": 11,
+            "yards_per_carry_allowed": 5.8182,
+            "epa_per_carry_allowed": -0.3164,
+            "success_rate_allowed": 0.4545,
+            "stuff_rate": 0.0909
+          },
+          "lane_middle": {
+            "carries": 10,
+            "yards_per_carry_allowed": 2.9,
+            "epa_per_carry_allowed": -0.2759,
+            "success_rate_allowed": 0.4,
+            "stuff_rate": 0.2
+          },
+          "lane_right": {
+            "carries": 7,
+            "yards_per_carry_allowed": 2.4286,
+            "epa_per_carry_allowed": -0.3802,
+            "success_rate_allowed": 0.1429,
+            "stuff_rate": 0.0
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "home_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -17680,6 +18184,14 @@
             "format": "pct",
             "rank": 12,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 3.1875,
+            "better": "high",
+            "format": "num",
+            "rank": 3,
+            "of": 31
           }
         },
         "defense": {
@@ -17730,12 +18242,65 @@
             "format": "pct",
             "rank": 22,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 3.7561,
+            "better": "low",
+            "format": "num",
+            "rank": 31,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 12,
+            "yards_per_carry_allowed": 5.6667,
+            "epa_per_carry_allowed": 0.0893,
+            "success_rate_allowed": 0.4167,
+            "stuff_rate": 0.0
+          },
+          "gap_tackle": {
+            "carries": 14,
+            "yards_per_carry_allowed": 3.1429,
+            "epa_per_carry_allowed": -0.0413,
+            "success_rate_allowed": 0.2143,
+            "stuff_rate": 0.2143
+          },
+          "gap_end": {
+            "carries": 6,
+            "yards_per_carry_allowed": 4.1667,
+            "epa_per_carry_allowed": 0.197,
+            "success_rate_allowed": 0.5,
+            "stuff_rate": 0.1667
+          },
+          "lane_left": {
+            "carries": 18,
+            "yards_per_carry_allowed": 4.7222,
+            "epa_per_carry_allowed": 0.1054,
+            "success_rate_allowed": 0.3333,
+            "stuff_rate": 0.1111
+          },
+          "lane_middle": {
+            "carries": 18,
+            "yards_per_carry_allowed": 5.9444,
+            "epa_per_carry_allowed": 0.3139,
+            "success_rate_allowed": 0.6667,
+            "stuff_rate": 0.0556
+          },
+          "lane_right": {
+            "carries": 14,
+            "yards_per_carry_allowed": 3.7143,
+            "epa_per_carry_allowed": -0.0158,
+            "success_rate_allowed": 0.3571,
+            "stuff_rate": 0.1429
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "away_rest_days": 7,
@@ -19244,7 +19809,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:05Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -19390,7 +19955,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:05Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -19860,7 +20425,18 @@
               "epa_per_carry": -0.4592,
               "success_rate": 0.0
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 1,
+            "attempts": 20,
+            "eight_plus_box_rate": 0.35,
+            "avg_time_to_los": 2.88,
+            "expected_yards_per_carry": 3.4144,
+            "ryoe_per_carry": -0.4144,
+            "rush_pct_over_expected": 0.3,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0039163",
@@ -20803,7 +21379,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 24,
+            "eight_plus_box_rate": 0.1667,
+            "avg_time_to_los": 2.896,
+            "expected_yards_per_carry": 3.8298,
+            "ryoe_per_carry": 0.0035,
+            "rush_pct_over_expected": 0.375,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0035710",
@@ -22048,7 +22635,7 @@
       },
       "away_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -22089,6 +22676,14 @@
             "format": "pct",
             "rank": 16,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 1.6047,
+            "better": "high",
+            "format": "num",
+            "rank": 27,
+            "of": 31
           }
         },
         "defense": {
@@ -22139,17 +22734,70 @@
             "format": "pct",
             "rank": 12,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 2.5405,
+            "better": "low",
+            "format": "num",
+            "rank": 25,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 18,
+            "yards_per_carry_allowed": 4.9444,
+            "epa_per_carry_allowed": 0.0349,
+            "success_rate_allowed": 0.4444,
+            "stuff_rate": 0.0556
+          },
+          "gap_tackle": {
+            "carries": 6,
+            "yards_per_carry_allowed": 2.0,
+            "epa_per_carry_allowed": -0.5335,
+            "success_rate_allowed": 0.1667,
+            "stuff_rate": 0.1667
+          },
+          "gap_end": {
+            "carries": 4,
+            "yards_per_carry_allowed": 3.0,
+            "epa_per_carry_allowed": -1.1181,
+            "success_rate_allowed": 0.5,
+            "stuff_rate": 0.25
+          },
+          "lane_left": {
+            "carries": 15,
+            "yards_per_carry_allowed": 4.4,
+            "epa_per_carry_allowed": -0.2857,
+            "success_rate_allowed": 0.4667,
+            "stuff_rate": 0.1333
+          },
+          "lane_middle": {
+            "carries": 12,
+            "yards_per_carry_allowed": 3.25,
+            "epa_per_carry_allowed": -0.1335,
+            "success_rate_allowed": 0.25,
+            "stuff_rate": 0.1667
+          },
+          "lane_right": {
+            "carries": 13,
+            "yards_per_carry_allowed": 3.6154,
+            "epa_per_carry_allowed": -0.2123,
+            "success_rate_allowed": 0.3077,
+            "stuff_rate": 0.0769
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "home_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -22190,6 +22838,14 @@
             "format": "pct",
             "rank": 25,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 2.0889,
+            "better": "high",
+            "format": "num",
+            "rank": 15,
+            "of": 31
           }
         },
         "defense": {
@@ -22240,12 +22896,65 @@
             "format": "pct",
             "rank": 32,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 2.2143,
+            "better": "low",
+            "format": "num",
+            "rank": 19,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 13,
+            "yards_per_carry_allowed": 5.1538,
+            "epa_per_carry_allowed": -0.02,
+            "success_rate_allowed": 0.6154,
+            "stuff_rate": 0.0769
+          },
+          "gap_tackle": {
+            "carries": 15,
+            "yards_per_carry_allowed": 6.7333,
+            "epa_per_carry_allowed": 0.266,
+            "success_rate_allowed": 0.4,
+            "stuff_rate": 0.0
+          },
+          "gap_end": {
+            "carries": 14,
+            "yards_per_carry_allowed": 5.0714,
+            "epa_per_carry_allowed": 0.3569,
+            "success_rate_allowed": 0.6429,
+            "stuff_rate": 0.1429
+          },
+          "lane_left": {
+            "carries": 23,
+            "yards_per_carry_allowed": 7.0,
+            "epa_per_carry_allowed": 0.3857,
+            "success_rate_allowed": 0.6522,
+            "stuff_rate": 0.0
+          },
+          "lane_middle": {
+            "carries": 16,
+            "yards_per_carry_allowed": 3.9375,
+            "epa_per_carry_allowed": 0.0737,
+            "success_rate_allowed": 0.4375,
+            "stuff_rate": 0.125
+          },
+          "lane_right": {
+            "carries": 19,
+            "yards_per_carry_allowed": 4.1053,
+            "epa_per_carry_allowed": -0.0076,
+            "success_rate_allowed": 0.4211,
+            "stuff_rate": 0.1579
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "away_rest_days": 7,
@@ -23730,7 +24439,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:07Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -23876,7 +24585,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:07Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -24374,7 +25083,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 24,
+            "eight_plus_box_rate": 0.2917,
+            "avg_time_to_los": 2.849,
+            "expected_yards_per_carry": 3.8609,
+            "ryoe_per_carry": 1.0581,
+            "rush_pct_over_expected": 0.4348,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0033873",
@@ -25316,7 +26036,18 @@
               "epa_per_carry": -0.3016,
               "success_rate": 0.0
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 20,
+            "eight_plus_box_rate": 0.2,
+            "avg_time_to_los": 2.406,
+            "expected_yards_per_carry": 4.0003,
+            "ryoe_per_carry": -0.4214,
+            "rush_pct_over_expected": 0.3684,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0039040",
@@ -25955,7 +26686,7 @@
       },
       "away_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -25996,6 +26727,14 @@
             "format": "pct",
             "rank": 4,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 2.0,
+            "better": "high",
+            "format": "num",
+            "rank": 18,
+            "of": 31
           }
         },
         "defense": {
@@ -26046,17 +26785,70 @@
             "format": "pct",
             "rank": 14,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 1.5946,
+            "better": "low",
+            "format": "num",
+            "rank": 5,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 5,
+            "yards_per_carry_allowed": 1.0,
+            "epa_per_carry_allowed": 0.086,
+            "success_rate_allowed": 0.2,
+            "stuff_rate": 0.4
+          },
+          "gap_tackle": {
+            "carries": 5,
+            "yards_per_carry_allowed": 2.8,
+            "epa_per_carry_allowed": -0.0958,
+            "success_rate_allowed": 0.4,
+            "stuff_rate": 0.2
+          },
+          "gap_end": {
+            "carries": 22,
+            "yards_per_carry_allowed": 5.0909,
+            "epa_per_carry_allowed": 0.16,
+            "success_rate_allowed": 0.4545,
+            "stuff_rate": 0.1818
+          },
+          "lane_left": {
+            "carries": 14,
+            "yards_per_carry_allowed": 4.0,
+            "epa_per_carry_allowed": 0.1739,
+            "success_rate_allowed": 0.4286,
+            "stuff_rate": 0.1429
+          },
+          "lane_middle": {
+            "carries": 10,
+            "yards_per_carry_allowed": 4.0,
+            "epa_per_carry_allowed": 0.2012,
+            "success_rate_allowed": 0.5,
+            "stuff_rate": 0.1
+          },
+          "lane_right": {
+            "carries": 18,
+            "yards_per_carry_allowed": 4.1667,
+            "epa_per_carry_allowed": 0.0577,
+            "success_rate_allowed": 0.3889,
+            "stuff_rate": 0.2778
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "home_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -26097,6 +26889,14 @@
             "format": "pct",
             "rank": 31,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 2.0588,
+            "better": "high",
+            "format": "num",
+            "rank": 16,
+            "of": 31
           }
         },
         "defense": {
@@ -26147,12 +26947,65 @@
             "format": "pct",
             "rank": 21,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 1.9804,
+            "better": "low",
+            "format": "num",
+            "rank": 13,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 16,
+            "yards_per_carry_allowed": 3.9375,
+            "epa_per_carry_allowed": -0.072,
+            "success_rate_allowed": 0.4375,
+            "stuff_rate": 0.125
+          },
+          "gap_tackle": {
+            "carries": 10,
+            "yards_per_carry_allowed": 4.3,
+            "epa_per_carry_allowed": -0.0778,
+            "success_rate_allowed": 0.3,
+            "stuff_rate": 0.1
+          },
+          "gap_end": {
+            "carries": 7,
+            "yards_per_carry_allowed": 0.8571,
+            "epa_per_carry_allowed": -0.5562,
+            "success_rate_allowed": 0.2857,
+            "stuff_rate": 0.4286
+          },
+          "lane_left": {
+            "carries": 17,
+            "yards_per_carry_allowed": 3.2353,
+            "epa_per_carry_allowed": -0.2764,
+            "success_rate_allowed": 0.2941,
+            "stuff_rate": 0.2353
+          },
+          "lane_middle": {
+            "carries": 22,
+            "yards_per_carry_allowed": 4.0,
+            "epa_per_carry_allowed": -0.0779,
+            "success_rate_allowed": 0.4091,
+            "stuff_rate": 0.2273
+          },
+          "lane_right": {
+            "carries": 16,
+            "yards_per_carry_allowed": 3.5625,
+            "epa_per_carry_allowed": -0.0703,
+            "success_rate_allowed": 0.4375,
+            "stuff_rate": 0.125
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "away_rest_days": 6,
@@ -27619,7 +28472,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:07Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -27765,7 +28618,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:07Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -28212,7 +29065,18 @@
               "epa_per_carry": 0.9002,
               "success_rate": 1.0
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 14,
+            "eight_plus_box_rate": 0.1429,
+            "avg_time_to_los": 3.015,
+            "expected_yards_per_carry": 3.3896,
+            "ryoe_per_carry": 1.1819,
+            "rush_pct_over_expected": 0.7143,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0040676",
@@ -29477,7 +30341,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 12,
+            "eight_plus_box_rate": 0.25,
+            "avg_time_to_los": 2.784,
+            "expected_yards_per_carry": 4.3695,
+            "ryoe_per_carry": -1.3695,
+            "rush_pct_over_expected": 0.25,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0031503",
@@ -30597,7 +31472,7 @@
       },
       "away_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -30638,6 +31513,14 @@
             "format": "pct",
             "rank": 22,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 2.7429,
+            "better": "high",
+            "format": "num",
+            "rank": 5,
+            "of": 31
           }
         },
         "defense": {
@@ -30688,17 +31571,70 @@
             "format": "pct",
             "rank": 24,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 1.9107,
+            "better": "low",
+            "format": "num",
+            "rank": 9,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 18,
+            "yards_per_carry_allowed": 3.3333,
+            "epa_per_carry_allowed": -0.0866,
+            "success_rate_allowed": 0.3889,
+            "stuff_rate": 0.2222
+          },
+          "gap_tackle": {
+            "carries": 15,
+            "yards_per_carry_allowed": 3.4,
+            "epa_per_carry_allowed": -0.2073,
+            "success_rate_allowed": 0.3333,
+            "stuff_rate": 0.1333
+          },
+          "gap_end": {
+            "carries": 13,
+            "yards_per_carry_allowed": 3.7692,
+            "epa_per_carry_allowed": 0.1637,
+            "success_rate_allowed": 0.5385,
+            "stuff_rate": 0.3846
+          },
+          "lane_left": {
+            "carries": 19,
+            "yards_per_carry_allowed": 3.5789,
+            "epa_per_carry_allowed": 0.025,
+            "success_rate_allowed": 0.4737,
+            "stuff_rate": 0.2105
+          },
+          "lane_middle": {
+            "carries": 17,
+            "yards_per_carry_allowed": 3.7059,
+            "epa_per_carry_allowed": 0.0399,
+            "success_rate_allowed": 0.4706,
+            "stuff_rate": 0.0
+          },
+          "lane_right": {
+            "carries": 27,
+            "yards_per_carry_allowed": 3.4074,
+            "epa_per_carry_allowed": -0.1117,
+            "success_rate_allowed": 0.3704,
+            "stuff_rate": 0.2593
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "home_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -30739,6 +31675,14 @@
             "format": "pct",
             "rank": 18,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 1.2222,
+            "better": "high",
+            "format": "num",
+            "rank": 30,
+            "of": 31
           }
         },
         "defense": {
@@ -30789,12 +31733,65 @@
             "format": "pct",
             "rank": 31,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 3.2564,
+            "better": "low",
+            "format": "num",
+            "rank": 30,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 9,
+            "yards_per_carry_allowed": 4.4444,
+            "epa_per_carry_allowed": -0.0526,
+            "success_rate_allowed": 0.3333,
+            "stuff_rate": 0.0
+          },
+          "gap_tackle": {
+            "carries": 9,
+            "yards_per_carry_allowed": 3.3333,
+            "epa_per_carry_allowed": -0.0105,
+            "success_rate_allowed": 0.5556,
+            "stuff_rate": 0.1111
+          },
+          "gap_end": {
+            "carries": 5,
+            "yards_per_carry_allowed": 10.8,
+            "epa_per_carry_allowed": 0.457,
+            "success_rate_allowed": 0.6,
+            "stuff_rate": 0.2
+          },
+          "lane_left": {
+            "carries": 9,
+            "yards_per_carry_allowed": 4.5556,
+            "epa_per_carry_allowed": -0.0513,
+            "success_rate_allowed": 0.4444,
+            "stuff_rate": 0.1111
+          },
+          "lane_middle": {
+            "carries": 17,
+            "yards_per_carry_allowed": 5.5882,
+            "epa_per_carry_allowed": -0.1866,
+            "success_rate_allowed": 0.5294,
+            "stuff_rate": 0.0588
+          },
+          "lane_right": {
+            "carries": 14,
+            "yards_per_carry_allowed": 5.9286,
+            "epa_per_carry_allowed": 0.1556,
+            "success_rate_allowed": 0.5,
+            "stuff_rate": 0.0714
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "away_rest_days": 7,
@@ -32285,7 +33282,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:07Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -32431,7 +33428,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:07Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -32929,7 +33926,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 20,
+            "eight_plus_box_rate": 0.4,
+            "avg_time_to_los": 2.942,
+            "expected_yards_per_carry": 4.2928,
+            "ryoe_per_carry": -0.2928,
+            "rush_pct_over_expected": 0.35,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0036442",
@@ -34134,7 +35142,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 11,
+            "eight_plus_box_rate": 0.0,
+            "avg_time_to_los": 2.83,
+            "expected_yards_per_carry": 3.7708,
+            "ryoe_per_carry": 0.1383,
+            "rush_pct_over_expected": 0.5455,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0023459",
@@ -35388,7 +36407,7 @@
       },
       "away_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -35429,6 +36448,14 @@
             "format": "pct",
             "rank": 21,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 2.2558,
+            "better": "high",
+            "format": "num",
+            "rank": 11,
+            "of": 31
           }
         },
         "defense": {
@@ -35479,17 +36506,70 @@
             "format": "pct",
             "rank": 11,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 1.3636,
+            "better": "low",
+            "format": "num",
+            "rank": 2,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 14,
+            "yards_per_carry_allowed": 2.6429,
+            "epa_per_carry_allowed": -0.4454,
+            "success_rate_allowed": 0.2143,
+            "stuff_rate": 0.2857
+          },
+          "gap_tackle": {
+            "carries": 9,
+            "yards_per_carry_allowed": 2.6667,
+            "epa_per_carry_allowed": -0.6377,
+            "success_rate_allowed": 0.2222,
+            "stuff_rate": 0.4444
+          },
+          "gap_end": {
+            "carries": 4,
+            "yards_per_carry_allowed": 5.5,
+            "epa_per_carry_allowed": 0.5249,
+            "success_rate_allowed": 0.5,
+            "stuff_rate": 0.25
+          },
+          "lane_left": {
+            "carries": 13,
+            "yards_per_carry_allowed": 3.5385,
+            "epa_per_carry_allowed": -0.0468,
+            "success_rate_allowed": 0.3077,
+            "stuff_rate": 0.3077
+          },
+          "lane_middle": {
+            "carries": 3,
+            "yards_per_carry_allowed": 2.3333,
+            "epa_per_carry_allowed": -0.3226,
+            "success_rate_allowed": 0.0,
+            "stuff_rate": 0.0
+          },
+          "lane_right": {
+            "carries": 14,
+            "yards_per_carry_allowed": 2.6429,
+            "epa_per_carry_allowed": -0.6619,
+            "success_rate_allowed": 0.2143,
+            "stuff_rate": 0.3571
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "home_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -35530,6 +36610,14 @@
             "format": "pct",
             "rank": 14,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 1.8421,
+            "better": "high",
+            "format": "num",
+            "rank": 23,
+            "of": 31
           }
         },
         "defense": {
@@ -35580,12 +36668,65 @@
             "format": "pct",
             "rank": 1,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 1.9778,
+            "better": "low",
+            "format": "num",
+            "rank": 12,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 12,
+            "yards_per_carry_allowed": 4.9167,
+            "epa_per_carry_allowed": -0.0387,
+            "success_rate_allowed": 0.25,
+            "stuff_rate": 0.3333
+          },
+          "gap_tackle": {
+            "carries": 14,
+            "yards_per_carry_allowed": 4.5,
+            "epa_per_carry_allowed": 0.093,
+            "success_rate_allowed": 0.5714,
+            "stuff_rate": 0.0714
+          },
+          "gap_end": {
+            "carries": 11,
+            "yards_per_carry_allowed": 5.8182,
+            "epa_per_carry_allowed": 0.0258,
+            "success_rate_allowed": 0.5455,
+            "stuff_rate": 0.2727
+          },
+          "lane_left": {
+            "carries": 19,
+            "yards_per_carry_allowed": 5.6316,
+            "epa_per_carry_allowed": 0.1393,
+            "success_rate_allowed": 0.5263,
+            "stuff_rate": 0.2105
+          },
+          "lane_middle": {
+            "carries": 18,
+            "yards_per_carry_allowed": 2.9444,
+            "epa_per_carry_allowed": -0.2059,
+            "success_rate_allowed": 0.3333,
+            "stuff_rate": 0.2778
+          },
+          "lane_right": {
+            "carries": 18,
+            "yards_per_carry_allowed": 4.3889,
+            "epa_per_carry_allowed": -0.0847,
+            "success_rate_allowed": 0.3889,
+            "stuff_rate": 0.2222
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "away_rest_days": 7,
@@ -37088,7 +38229,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:07Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -37234,7 +38375,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:07Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -37614,7 +38755,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 13,
+            "eight_plus_box_rate": 0.3077,
+            "avg_time_to_los": 3.156,
+            "expected_yards_per_carry": 4.5605,
+            "ryoe_per_carry": -0.5605,
+            "rush_pct_over_expected": 0.3077,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0034869",
@@ -38570,7 +39722,18 @@
               "epa_per_carry": -0.5231,
               "success_rate": 0.0
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 12,
+            "eight_plus_box_rate": 0.0,
+            "avg_time_to_los": 2.989,
+            "expected_yards_per_carry": 4.9651,
+            "ryoe_per_carry": -1.3818,
+            "rush_pct_over_expected": 0.1667,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0039910",
@@ -39743,7 +40906,7 @@
       },
       "away_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -39784,6 +40947,14 @@
             "format": "pct",
             "rank": 11,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 2.6207,
+            "better": "high",
+            "format": "num",
+            "rank": 7,
+            "of": 31
           }
         },
         "defense": {
@@ -39834,12 +41005,65 @@
             "format": "pct",
             "rank": 3,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 1.1579,
+            "better": "low",
+            "format": "num",
+            "rank": 1,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 7,
+            "yards_per_carry_allowed": 2.4286,
+            "epa_per_carry_allowed": -0.6708,
+            "success_rate_allowed": 0.2857,
+            "stuff_rate": 0.4286
+          },
+          "gap_tackle": {
+            "carries": 10,
+            "yards_per_carry_allowed": 3.3,
+            "epa_per_carry_allowed": -0.4369,
+            "success_rate_allowed": 0.3,
+            "stuff_rate": 0.1
+          },
+          "gap_end": {
+            "carries": 6,
+            "yards_per_carry_allowed": 3.3333,
+            "epa_per_carry_allowed": -0.1166,
+            "success_rate_allowed": 0.3333,
+            "stuff_rate": 0.1667
+          },
+          "lane_left": {
+            "carries": 13,
+            "yards_per_carry_allowed": 2.2308,
+            "epa_per_carry_allowed": -0.5907,
+            "success_rate_allowed": 0.2308,
+            "stuff_rate": 0.2308
+          },
+          "lane_middle": {
+            "carries": 18,
+            "yards_per_carry_allowed": 3.2222,
+            "epa_per_carry_allowed": -0.3755,
+            "success_rate_allowed": 0.2222,
+            "stuff_rate": 0.2778
+          },
+          "lane_right": {
+            "carries": 10,
+            "yards_per_carry_allowed": 4.1,
+            "epa_per_carry_allowed": -0.2085,
+            "success_rate_allowed": 0.4,
+            "stuff_rate": 0.2
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "away_rest_days": 6,
@@ -41330,7 +42554,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:09Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -41476,7 +42700,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:09Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -41932,7 +43156,18 @@
               "epa_per_carry": -0.2182,
               "success_rate": 0.3333
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 1,
+            "attempts": 18,
+            "eight_plus_box_rate": 0.1667,
+            "avg_time_to_los": 3.147,
+            "expected_yards_per_carry": 4.0624,
+            "ryoe_per_carry": -1.229,
+            "rush_pct_over_expected": 0.3889,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0039851",
@@ -43182,7 +44417,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 13,
+            "eight_plus_box_rate": 0.0769,
+            "avg_time_to_los": 3.024,
+            "expected_yards_per_carry": 4.9065,
+            "ryoe_per_carry": 0.0935,
+            "rush_pct_over_expected": 0.3077,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0036971",
@@ -44436,7 +45682,7 @@
       },
       "away_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -44477,6 +45723,14 @@
             "format": "pct",
             "rank": 32,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 1.625,
+            "better": "high",
+            "format": "num",
+            "rank": 26,
+            "of": 31
           }
         },
         "defense": {
@@ -44527,17 +45781,70 @@
             "format": "pct",
             "rank": 19,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 2.5,
+            "better": "low",
+            "format": "num",
+            "rank": 24,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 9,
+            "yards_per_carry_allowed": 2.3333,
+            "epa_per_carry_allowed": -0.5726,
+            "success_rate_allowed": 0.0,
+            "stuff_rate": 0.1111
+          },
+          "gap_tackle": {
+            "carries": 7,
+            "yards_per_carry_allowed": 6.2857,
+            "epa_per_carry_allowed": 0.3649,
+            "success_rate_allowed": 0.5714,
+            "stuff_rate": 0.1429
+          },
+          "gap_end": {
+            "carries": 16,
+            "yards_per_carry_allowed": 4.0625,
+            "epa_per_carry_allowed": -0.1583,
+            "success_rate_allowed": 0.25,
+            "stuff_rate": 0.125
+          },
+          "lane_left": {
+            "carries": 15,
+            "yards_per_carry_allowed": 3.0667,
+            "epa_per_carry_allowed": -0.234,
+            "success_rate_allowed": 0.2,
+            "stuff_rate": 0.1333
+          },
+          "lane_middle": {
+            "carries": 9,
+            "yards_per_carry_allowed": 4.1111,
+            "epa_per_carry_allowed": 0.0632,
+            "success_rate_allowed": 0.4444,
+            "stuff_rate": 0.0
+          },
+          "lane_right": {
+            "carries": 17,
+            "yards_per_carry_allowed": 4.9412,
+            "epa_per_carry_allowed": -0.0955,
+            "success_rate_allowed": 0.2941,
+            "stuff_rate": 0.1176
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "home_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -44578,6 +45885,14 @@
             "format": "pct",
             "rank": 19,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 1.7714,
+            "better": "high",
+            "format": "num",
+            "rank": 25,
+            "of": 31
           }
         },
         "defense": {
@@ -44628,12 +45943,65 @@
             "format": "pct",
             "rank": 5,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 2.1471,
+            "better": "low",
+            "format": "num",
+            "rank": 17,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 11,
+            "yards_per_carry_allowed": 4.6364,
+            "epa_per_carry_allowed": 0.0344,
+            "success_rate_allowed": 0.5455,
+            "stuff_rate": 0.0909
+          },
+          "gap_tackle": {
+            "carries": 5,
+            "yards_per_carry_allowed": 4.0,
+            "epa_per_carry_allowed": -0.0018,
+            "success_rate_allowed": 0.4,
+            "stuff_rate": 0.2
+          },
+          "gap_end": {
+            "carries": 16,
+            "yards_per_carry_allowed": 4.3125,
+            "epa_per_carry_allowed": -0.0497,
+            "success_rate_allowed": 0.5625,
+            "stuff_rate": 0.3125
+          },
+          "lane_left": {
+            "carries": 20,
+            "yards_per_carry_allowed": 4.25,
+            "epa_per_carry_allowed": -0.0106,
+            "success_rate_allowed": 0.65,
+            "stuff_rate": 0.2
+          },
+          "lane_middle": {
+            "carries": 12,
+            "yards_per_carry_allowed": 2.8333,
+            "epa_per_carry_allowed": -0.2754,
+            "success_rate_allowed": 0.1667,
+            "stuff_rate": 0.0833
+          },
+          "lane_right": {
+            "carries": 12,
+            "yards_per_carry_allowed": 4.5833,
+            "epa_per_carry_allowed": -0.0178,
+            "success_rate_allowed": 0.3333,
+            "stuff_rate": 0.25
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "away_rest_days": 7,
@@ -46148,7 +47516,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:08Z",
+        "observed_at_utc": "2026-09-26T17:20:06Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -46294,7 +47662,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:09Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -46718,7 +48086,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 1,
+            "attempts": 11,
+            "eight_plus_box_rate": 0.0,
+            "avg_time_to_los": 3.093,
+            "expected_yards_per_carry": 2.8096,
+            "ryoe_per_carry": 0.9177,
+            "rush_pct_over_expected": 0.5455,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0033119",
@@ -47646,7 +49025,18 @@
               "epa_per_carry": -0.0008,
               "success_rate": 0.3333
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 10,
+            "eight_plus_box_rate": 0.4,
+            "avg_time_to_los": 2.375,
+            "expected_yards_per_carry": 2.7372,
+            "ryoe_per_carry": -0.4372,
+            "rush_pct_over_expected": 0.5,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0037834",
@@ -48914,7 +50304,7 @@
       },
       "away_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -48955,6 +50345,14 @@
             "format": "pct",
             "rank": 6,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 1.9524,
+            "better": "high",
+            "format": "num",
+            "rank": 20,
+            "of": 31
           }
         },
         "defense": {
@@ -49005,17 +50403,70 @@
             "format": "pct",
             "rank": 7,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 2.1852,
+            "better": "low",
+            "format": "num",
+            "rank": 18,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 7,
+            "yards_per_carry_allowed": 4.0,
+            "epa_per_carry_allowed": 0.1176,
+            "success_rate_allowed": 0.4286,
+            "stuff_rate": 0.0
+          },
+          "gap_tackle": {
+            "carries": 7,
+            "yards_per_carry_allowed": 5.5714,
+            "epa_per_carry_allowed": 0.2958,
+            "success_rate_allowed": 0.4286,
+            "stuff_rate": 0.1429
+          },
+          "gap_end": {
+            "carries": 17,
+            "yards_per_carry_allowed": 4.4706,
+            "epa_per_carry_allowed": -0.3726,
+            "success_rate_allowed": 0.4118,
+            "stuff_rate": 0.2941
+          },
+          "lane_left": {
+            "carries": 13,
+            "yards_per_carry_allowed": 3.1538,
+            "epa_per_carry_allowed": -0.3862,
+            "success_rate_allowed": 0.3846,
+            "stuff_rate": 0.2308
+          },
+          "lane_middle": {
+            "carries": 25,
+            "yards_per_carry_allowed": 2.84,
+            "epa_per_carry_allowed": -0.3785,
+            "success_rate_allowed": 0.4,
+            "stuff_rate": 0.24
+          },
+          "lane_right": {
+            "carries": 18,
+            "yards_per_carry_allowed": 5.6667,
+            "epa_per_carry_allowed": 0.0878,
+            "success_rate_allowed": 0.4444,
+            "stuff_rate": 0.1667
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "home_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -49056,6 +50507,14 @@
             "format": "pct",
             "rank": 1,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 2.6667,
+            "better": "high",
+            "format": "num",
+            "rank": 6,
+            "of": 31
           }
         },
         "defense": {
@@ -49106,12 +50565,65 @@
             "format": "pct",
             "rank": 13,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 2.625,
+            "better": "low",
+            "format": "num",
+            "rank": 26,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 17,
+            "yards_per_carry_allowed": 3.8824,
+            "epa_per_carry_allowed": -0.4149,
+            "success_rate_allowed": 0.4706,
+            "stuff_rate": 0.2353
+          },
+          "gap_tackle": {
+            "carries": 7,
+            "yards_per_carry_allowed": 3.1429,
+            "epa_per_carry_allowed": 0.0839,
+            "success_rate_allowed": 0.4286,
+            "stuff_rate": 0.2857
+          },
+          "gap_end": {
+            "carries": 5,
+            "yards_per_carry_allowed": 4.2,
+            "epa_per_carry_allowed": -0.734,
+            "success_rate_allowed": 0.2,
+            "stuff_rate": 0.0
+          },
+          "lane_left": {
+            "carries": 13,
+            "yards_per_carry_allowed": 5.0,
+            "epa_per_carry_allowed": -0.2129,
+            "success_rate_allowed": 0.4615,
+            "stuff_rate": 0.0769
+          },
+          "lane_middle": {
+            "carries": 25,
+            "yards_per_carry_allowed": 4.12,
+            "epa_per_carry_allowed": 0.1703,
+            "success_rate_allowed": 0.56,
+            "stuff_rate": 0.12
+          },
+          "lane_right": {
+            "carries": 16,
+            "yards_per_carry_allowed": 2.75,
+            "epa_per_carry_allowed": -0.4605,
+            "success_rate_allowed": 0.375,
+            "stuff_rate": 0.3125
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "away_rest_days": 6,
@@ -50578,7 +52090,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:09Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -50724,7 +52236,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:09Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -51155,7 +52667,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 23,
+            "eight_plus_box_rate": 0.3913,
+            "avg_time_to_los": 2.695,
+            "expected_yards_per_carry": 4.2058,
+            "ryoe_per_carry": 0.3594,
+            "rush_pct_over_expected": 0.4348,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0033293",
@@ -51762,7 +53285,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 17,
+            "eight_plus_box_rate": 0.0,
+            "avg_time_to_los": 2.928,
+            "expected_yards_per_carry": 5.3215,
+            "ryoe_per_carry": -0.0862,
+            "rush_pct_over_expected": 0.2941,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0034855",
@@ -52989,7 +54523,7 @@
       },
       "away_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -53030,6 +54564,14 @@
             "format": "pct",
             "rank": 17,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 2.3654,
+            "better": "high",
+            "format": "num",
+            "rank": 10,
+            "of": 31
           }
         },
         "defense": {
@@ -53080,17 +54622,70 @@
             "format": "pct",
             "rank": 4,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 2.0435,
+            "better": "low",
+            "format": "num",
+            "rank": 15,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 15,
+            "yards_per_carry_allowed": 2.8667,
+            "epa_per_carry_allowed": -0.3718,
+            "success_rate_allowed": 0.2667,
+            "stuff_rate": 0.2
+          },
+          "gap_tackle": {
+            "carries": 22,
+            "yards_per_carry_allowed": 3.6364,
+            "epa_per_carry_allowed": -0.3863,
+            "success_rate_allowed": 0.3182,
+            "stuff_rate": 0.1818
+          },
+          "gap_end": {
+            "carries": 9,
+            "yards_per_carry_allowed": 4.1111,
+            "epa_per_carry_allowed": -0.1714,
+            "success_rate_allowed": 0.4444,
+            "stuff_rate": 0.2222
+          },
+          "lane_left": {
+            "carries": 21,
+            "yards_per_carry_allowed": 3.8095,
+            "epa_per_carry_allowed": -0.1919,
+            "success_rate_allowed": 0.3333,
+            "stuff_rate": 0.1905
+          },
+          "lane_middle": {
+            "carries": 2,
+            "yards_per_carry_allowed": -2.0,
+            "epa_per_carry_allowed": -1.064,
+            "success_rate_allowed": 0.0,
+            "stuff_rate": 1.0
+          },
+          "lane_right": {
+            "carries": 25,
+            "yards_per_carry_allowed": 3.2,
+            "epa_per_carry_allowed": -0.4636,
+            "success_rate_allowed": 0.32,
+            "stuff_rate": 0.2
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "home_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -53131,6 +54726,14 @@
             "format": "pct",
             "rank": 28,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 3.24,
+            "better": "high",
+            "format": "num",
+            "rank": 2,
+            "of": 31
           }
         },
         "defense": {
@@ -53181,12 +54784,65 @@
             "format": "pct",
             "rank": 18,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 1.6111,
+            "better": "low",
+            "format": "num",
+            "rank": 6,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 12,
+            "yards_per_carry_allowed": 1.9167,
+            "epa_per_carry_allowed": -0.552,
+            "success_rate_allowed": 0.1667,
+            "stuff_rate": 0.1667
+          },
+          "gap_tackle": {
+            "carries": 7,
+            "yards_per_carry_allowed": 2.8571,
+            "epa_per_carry_allowed": -0.2341,
+            "success_rate_allowed": 0.2857,
+            "stuff_rate": 0.2857
+          },
+          "gap_end": {
+            "carries": 9,
+            "yards_per_carry_allowed": 2.5556,
+            "epa_per_carry_allowed": -0.3164,
+            "success_rate_allowed": 0.4444,
+            "stuff_rate": 0.4444
+          },
+          "lane_left": {
+            "carries": 15,
+            "yards_per_carry_allowed": 0.8,
+            "epa_per_carry_allowed": -0.5986,
+            "success_rate_allowed": 0.2,
+            "stuff_rate": 0.4
+          },
+          "lane_middle": {
+            "carries": 15,
+            "yards_per_carry_allowed": 4.4667,
+            "epa_per_carry_allowed": 0.1403,
+            "success_rate_allowed": 0.4,
+            "stuff_rate": 0.0667
+          },
+          "lane_right": {
+            "carries": 13,
+            "yards_per_carry_allowed": 4.1538,
+            "epa_per_carry_allowed": -0.1639,
+            "success_rate_allowed": 0.3846,
+            "stuff_rate": 0.1538
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "away_rest_days": 7,
@@ -54671,7 +56327,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:08Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -54817,7 +56473,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:09Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -55278,7 +56934,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 16,
+            "eight_plus_box_rate": 0.25,
+            "avg_time_to_los": 2.982,
+            "expected_yards_per_carry": 4.4859,
+            "ryoe_per_carry": -0.2359,
+            "rush_pct_over_expected": 0.375,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0034796",
@@ -56501,7 +58168,18 @@
               "epa_per_carry": -0.7349,
               "success_rate": 0.0
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 12,
+            "eight_plus_box_rate": 0.0,
+            "avg_time_to_los": 3.131,
+            "expected_yards_per_carry": 2.7704,
+            "ryoe_per_carry": -0.4768,
+            "rush_pct_over_expected": 0.4545,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0033077",
@@ -57769,7 +59447,7 @@
       },
       "away_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -57810,6 +59488,14 @@
             "format": "pct",
             "rank": 5,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 2.1458,
+            "better": "high",
+            "format": "num",
+            "rank": 12,
+            "of": 31
           }
         },
         "defense": {
@@ -57860,17 +59546,70 @@
             "format": "pct",
             "rank": 8,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 1.973,
+            "better": "low",
+            "format": "num",
+            "rank": 11,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 9,
+            "yards_per_carry_allowed": 6.0,
+            "epa_per_carry_allowed": 0.2569,
+            "success_rate_allowed": 0.6667,
+            "stuff_rate": 0.0
+          },
+          "gap_tackle": {
+            "carries": 18,
+            "yards_per_carry_allowed": 3.7778,
+            "epa_per_carry_allowed": -0.104,
+            "success_rate_allowed": 0.3333,
+            "stuff_rate": 0.3333
+          },
+          "gap_end": {
+            "carries": 5,
+            "yards_per_carry_allowed": 0.8,
+            "epa_per_carry_allowed": -0.3317,
+            "success_rate_allowed": 0.2,
+            "stuff_rate": 0.4
+          },
+          "lane_left": {
+            "carries": 11,
+            "yards_per_carry_allowed": 5.9091,
+            "epa_per_carry_allowed": 0.1873,
+            "success_rate_allowed": 0.6364,
+            "stuff_rate": 0.0909
+          },
+          "lane_middle": {
+            "carries": 10,
+            "yards_per_carry_allowed": 2.6,
+            "epa_per_carry_allowed": 0.34,
+            "success_rate_allowed": 0.5,
+            "stuff_rate": 0.2
+          },
+          "lane_right": {
+            "carries": 21,
+            "yards_per_carry_allowed": 2.9048,
+            "epa_per_carry_allowed": -0.1561,
+            "success_rate_allowed": 0.2857,
+            "stuff_rate": 0.3333
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "home_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -57911,6 +59650,14 @@
             "format": "pct",
             "rank": 3,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 1.5161,
+            "better": "high",
+            "format": "num",
+            "rank": 28,
+            "of": 31
           }
         },
         "defense": {
@@ -57961,12 +59708,65 @@
             "format": "pct",
             "rank": 29,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 1.96,
+            "better": "low",
+            "format": "num",
+            "rank": 10,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 12,
+            "yards_per_carry_allowed": 5.3333,
+            "epa_per_carry_allowed": 0.1733,
+            "success_rate_allowed": 0.75,
+            "stuff_rate": 0.0833
+          },
+          "gap_tackle": {
+            "carries": 19,
+            "yards_per_carry_allowed": 3.8421,
+            "epa_per_carry_allowed": -0.2011,
+            "success_rate_allowed": 0.3684,
+            "stuff_rate": 0.0526
+          },
+          "gap_end": {
+            "carries": 15,
+            "yards_per_carry_allowed": 6.1333,
+            "epa_per_carry_allowed": 0.1483,
+            "success_rate_allowed": 0.4667,
+            "stuff_rate": 0.0667
+          },
+          "lane_left": {
+            "carries": 32,
+            "yards_per_carry_allowed": 5.3438,
+            "epa_per_carry_allowed": -0.0348,
+            "success_rate_allowed": 0.4688,
+            "stuff_rate": 0.0312
+          },
+          "lane_middle": {
+            "carries": 10,
+            "yards_per_carry_allowed": 4.1,
+            "epa_per_carry_allowed": 0.1569,
+            "success_rate_allowed": 0.5,
+            "stuff_rate": 0.1
+          },
+          "lane_right": {
+            "carries": 14,
+            "yards_per_carry_allowed": 4.1429,
+            "epa_per_carry_allowed": 0.114,
+            "success_rate_allowed": 0.5714,
+            "stuff_rate": 0.1429
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "away_rest_days": 7,
@@ -59463,7 +61263,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:10Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -59609,7 +61409,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:10Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -60125,7 +61925,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 21,
+            "eight_plus_box_rate": 0.4762,
+            "avg_time_to_los": 2.782,
+            "expected_yards_per_carry": 2.9377,
+            "ryoe_per_carry": -0.652,
+            "rush_pct_over_expected": 0.2857,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0040122",
@@ -60746,7 +62557,18 @@
               "epa_per_carry": -1.2374,
               "success_rate": 0.0
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 0,
+            "attempts": 17,
+            "eight_plus_box_rate": 0.0588,
+            "avg_time_to_los": 2.697,
+            "expected_yards_per_carry": 5.1754,
+            "ryoe_per_carry": -0.9989,
+            "rush_pct_over_expected": 0.1765,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0040743",
@@ -61647,7 +63469,7 @@
       },
       "away_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -61688,6 +63510,14 @@
             "format": "pct",
             "rank": 24,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 1.8519,
+            "better": "high",
+            "format": "num",
+            "rank": 21,
+            "of": 31
           }
         },
         "defense": {
@@ -61738,17 +63568,70 @@
             "format": "pct",
             "rank": 2,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 2.275,
+            "better": "low",
+            "format": "num",
+            "rank": 20,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 8,
+            "yards_per_carry_allowed": 1.875,
+            "epa_per_carry_allowed": -0.5193,
+            "success_rate_allowed": 0.25,
+            "stuff_rate": 0.375
+          },
+          "gap_tackle": {
+            "carries": 9,
+            "yards_per_carry_allowed": 3.7778,
+            "epa_per_carry_allowed": -0.0355,
+            "success_rate_allowed": 0.3333,
+            "stuff_rate": 0.1111
+          },
+          "gap_end": {
+            "carries": 9,
+            "yards_per_carry_allowed": 4.6667,
+            "epa_per_carry_allowed": -0.0123,
+            "success_rate_allowed": 0.4444,
+            "stuff_rate": 0.2222
+          },
+          "lane_left": {
+            "carries": 19,
+            "yards_per_carry_allowed": 4.0526,
+            "epa_per_carry_allowed": 0.0144,
+            "success_rate_allowed": 0.4211,
+            "stuff_rate": 0.1053
+          },
+          "lane_middle": {
+            "carries": 16,
+            "yards_per_carry_allowed": 4.3125,
+            "epa_per_carry_allowed": -0.6939,
+            "success_rate_allowed": 0.25,
+            "stuff_rate": 0.125
+          },
+          "lane_right": {
+            "carries": 7,
+            "yards_per_carry_allowed": 2.0,
+            "epa_per_carry_allowed": -0.6942,
+            "success_rate_allowed": 0.1429,
+            "stuff_rate": 0.5714
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "home_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -61789,6 +63672,14 @@
             "format": "pct",
             "rank": 15,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 1.8421,
+            "better": "high",
+            "format": "num",
+            "rank": 22,
+            "of": 31
           }
         },
         "defense": {
@@ -61839,12 +63730,65 @@
             "format": "pct",
             "rank": 20,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 3.2449,
+            "better": "low",
+            "format": "num",
+            "rank": 29,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 13,
+            "yards_per_carry_allowed": 4.8462,
+            "epa_per_carry_allowed": 0.1161,
+            "success_rate_allowed": 0.6154,
+            "stuff_rate": 0.0769
+          },
+          "gap_tackle": {
+            "carries": 11,
+            "yards_per_carry_allowed": 5.3636,
+            "epa_per_carry_allowed": -0.087,
+            "success_rate_allowed": 0.6364,
+            "stuff_rate": 0.1818
+          },
+          "gap_end": {
+            "carries": 12,
+            "yards_per_carry_allowed": 4.9167,
+            "epa_per_carry_allowed": 0.2773,
+            "success_rate_allowed": 0.75,
+            "stuff_rate": 0.25
+          },
+          "lane_left": {
+            "carries": 16,
+            "yards_per_carry_allowed": 5.375,
+            "epa_per_carry_allowed": 0.1139,
+            "success_rate_allowed": 0.75,
+            "stuff_rate": 0.1875
+          },
+          "lane_middle": {
+            "carries": 13,
+            "yards_per_carry_allowed": 4.3077,
+            "epa_per_carry_allowed": -0.031,
+            "success_rate_allowed": 0.4615,
+            "stuff_rate": 0.0
+          },
+          "lane_right": {
+            "carries": 20,
+            "yards_per_carry_allowed": 4.75,
+            "epa_per_carry_allowed": 0.1029,
+            "success_rate_allowed": 0.6,
+            "stuff_rate": 0.15
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "away_rest_days": 7,
@@ -63347,7 +65291,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:10Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -63493,7 +65437,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:09Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -63921,7 +65865,18 @@
               "epa_per_carry": 0.5379,
               "success_rate": 0.5
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 12,
+            "eight_plus_box_rate": 0.5833,
+            "avg_time_to_los": 2.73,
+            "expected_yards_per_carry": 4.2385,
+            "ryoe_per_carry": 2.8448,
+            "rush_pct_over_expected": 0.5,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0026498",
@@ -65157,7 +67112,18 @@
                 }
               }
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 10,
+            "eight_plus_box_rate": 0.3,
+            "avg_time_to_los": 3.116,
+            "expected_yards_per_carry": 3.1536,
+            "ryoe_per_carry": 0.4464,
+            "rush_pct_over_expected": 0.4,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0039732",
@@ -66411,7 +68377,7 @@
       },
       "home_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -66452,6 +68418,14 @@
             "format": "pct",
             "rank": 10,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 2.125,
+            "better": "high",
+            "format": "num",
+            "rank": 14,
+            "of": 31
           }
         },
         "defense": {
@@ -66502,12 +68476,65 @@
             "format": "pct",
             "rank": 25,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 1.8298,
+            "better": "low",
+            "format": "num",
+            "rank": 8,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 7,
+            "yards_per_carry_allowed": 3.1429,
+            "epa_per_carry_allowed": 0.0362,
+            "success_rate_allowed": 0.4286,
+            "stuff_rate": 0.0
+          },
+          "gap_tackle": {
+            "carries": 13,
+            "yards_per_carry_allowed": 4.3846,
+            "epa_per_carry_allowed": 0.0362,
+            "success_rate_allowed": 0.4615,
+            "stuff_rate": 0.1538
+          },
+          "gap_end": {
+            "carries": 18,
+            "yards_per_carry_allowed": 8.6667,
+            "epa_per_carry_allowed": 0.5144,
+            "success_rate_allowed": 0.4444,
+            "stuff_rate": 0.1111
+          },
+          "lane_left": {
+            "carries": 20,
+            "yards_per_carry_allowed": 8.15,
+            "epa_per_carry_allowed": 0.5007,
+            "success_rate_allowed": 0.55,
+            "stuff_rate": 0.15
+          },
+          "lane_middle": {
+            "carries": 17,
+            "yards_per_carry_allowed": 3.3529,
+            "epa_per_carry_allowed": 0.0688,
+            "success_rate_allowed": 0.4118,
+            "stuff_rate": 0.1176
+          },
+          "lane_right": {
+            "carries": 18,
+            "yards_per_carry_allowed": 4.0,
+            "epa_per_carry_allowed": -0.0016,
+            "success_rate_allowed": 0.3333,
+            "stuff_rate": 0.0556
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "away_rest_days": 6,
@@ -66550,6 +68577,12 @@
           "detail": "knee"
         },
         {
+          "name": "DeVonta Smith",
+          "position": "WR",
+          "status": "Questionable",
+          "detail": "hamstring"
+        },
+        {
           "name": "Jonathan Greenard",
           "position": "LB",
           "status": "Questionable",
@@ -66572,12 +68605,6 @@
           "position": "RB",
           "status": "Questionable",
           "detail": "abdomen"
-        },
-        {
-          "name": "DeVonta Smith",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "hamstring"
         },
         {
           "name": "Landon Dickerson",
@@ -66606,6 +68633,12 @@
           "detail": "hamstring"
         },
         {
+          "name": "Tyson Bagent",
+          "position": "QB",
+          "status": "Questionable",
+          "detail": "concussion"
+        },
+        {
           "name": "Tyrique Stevenson Sr.",
           "position": "CB",
           "status": "Questionable",
@@ -66616,12 +68649,6 @@
           "position": "PK",
           "status": "Questionable",
           "detail": "right hip"
-        },
-        {
-          "name": "Tyson Bagent",
-          "position": "QB",
-          "status": "Questionable",
-          "detail": "concussion"
         },
         {
           "name": "Anthony Johnson Jr.",
@@ -68040,7 +70067,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:10Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -68186,7 +70213,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T16:30:09Z",
+        "observed_at_utc": "2026-09-26T17:23:09Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -68642,7 +70669,18 @@
               "epa_per_carry": -0.1999,
               "success_rate": 0.5
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 1,
+            "attempts": 15,
+            "eight_plus_box_rate": 0.0667,
+            "avg_time_to_los": 3.04,
+            "expected_yards_per_carry": 3.6953,
+            "ryoe_per_carry": 1.8979,
+            "rush_pct_over_expected": 0.5,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0036389",
@@ -69892,7 +71930,18 @@
               "epa_per_carry": 0.2222,
               "success_rate": 0.75
             }
-          ]
+          ],
+          "tracking": {
+            "season": 2026,
+            "week": 2,
+            "attempts": 16,
+            "eight_plus_box_rate": 0.375,
+            "avg_time_to_los": 2.635,
+            "expected_yards_per_carry": 3.8269,
+            "ryoe_per_carry": -1.2821,
+            "rush_pct_over_expected": 0.3333,
+            "source": "NFL Next Gen Stats via nflverse"
+          }
         },
         {
           "player_id": "00-0039918",
@@ -71128,7 +73177,7 @@
       },
       "away_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -71169,6 +73218,14 @@
             "format": "pct",
             "rank": 27,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 1.4286,
+            "better": "high",
+            "format": "num",
+            "rank": 29,
+            "of": 31
           }
         },
         "defense": {
@@ -71219,17 +73276,70 @@
             "format": "pct",
             "rank": 23,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 2.4423,
+            "better": "low",
+            "format": "num",
+            "rank": 23,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 17,
+            "yards_per_carry_allowed": 3.7647,
+            "epa_per_carry_allowed": 0.0553,
+            "success_rate_allowed": 0.5294,
+            "stuff_rate": 0.1176
+          },
+          "gap_tackle": {
+            "carries": 17,
+            "yards_per_carry_allowed": 3.1176,
+            "epa_per_carry_allowed": -0.2369,
+            "success_rate_allowed": 0.2941,
+            "stuff_rate": 0.3529
+          },
+          "gap_end": {
+            "carries": 4,
+            "yards_per_carry_allowed": 12.0,
+            "epa_per_carry_allowed": 0.9944,
+            "success_rate_allowed": 0.75,
+            "stuff_rate": 0.0
+          },
+          "lane_left": {
+            "carries": 25,
+            "yards_per_carry_allowed": 4.76,
+            "epa_per_carry_allowed": 0.0896,
+            "success_rate_allowed": 0.44,
+            "stuff_rate": 0.2
+          },
+          "lane_middle": {
+            "carries": 18,
+            "yards_per_carry_allowed": 3.0556,
+            "epa_per_carry_allowed": 0.0154,
+            "success_rate_allowed": 0.5,
+            "stuff_rate": 0.1111
+          },
+          "lane_right": {
+            "carries": 13,
+            "yards_per_carry_allowed": 3.5385,
+            "epa_per_carry_allowed": -0.1038,
+            "success_rate_allowed": 0.4615,
+            "stuff_rate": 0.2308
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "home_line_stats": {
         "season": 2026,
-        "source": "nflverse/nflfastR; FTN Data via nflverse",
+        "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
         "offense": {
           "line_yards": {
             "label": "Adjusted Line Yards / Carry",
@@ -71270,6 +73380,14 @@
             "format": "pct",
             "rank": 20,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact / Carry",
+            "value": 2.463,
+            "better": "high",
+            "format": "num",
+            "rank": 9,
+            "of": 31
           }
         },
         "defense": {
@@ -71320,12 +73438,65 @@
             "format": "pct",
             "rank": 26,
             "of": 32
+          },
+          "yards_before_contact": {
+            "label": "RB Yards Before Contact Allowed / Carry",
+            "value": 3.0682,
+            "better": "low",
+            "format": "num",
+            "rank": 28,
+            "of": 31
+          }
+        },
+        "defense_run_front": {
+          "gap_guard": {
+            "carries": 18,
+            "yards_per_carry_allowed": 3.5556,
+            "epa_per_carry_allowed": -0.0084,
+            "success_rate_allowed": 0.3333,
+            "stuff_rate": 0.1111
+          },
+          "gap_tackle": {
+            "carries": 12,
+            "yards_per_carry_allowed": 5.9167,
+            "epa_per_carry_allowed": 0.1497,
+            "success_rate_allowed": 0.5,
+            "stuff_rate": 0.1667
+          },
+          "gap_end": {
+            "carries": 9,
+            "yards_per_carry_allowed": 5.4444,
+            "epa_per_carry_allowed": -0.1493,
+            "success_rate_allowed": 0.4444,
+            "stuff_rate": 0.1111
+          },
+          "lane_left": {
+            "carries": 17,
+            "yards_per_carry_allowed": 5.5882,
+            "epa_per_carry_allowed": 0.0796,
+            "success_rate_allowed": 0.5882,
+            "stuff_rate": 0.1176
+          },
+          "lane_middle": {
+            "carries": 6,
+            "yards_per_carry_allowed": 3.6667,
+            "epa_per_carry_allowed": -0.5147,
+            "success_rate_allowed": 0.1667,
+            "stuff_rate": 0.1667
+          },
+          "lane_right": {
+            "carries": 22,
+            "yards_per_carry_allowed": 4.0455,
+            "epa_per_carry_allowed": -0.0478,
+            "success_rate_allowed": 0.2727,
+            "stuff_rate": 0.1364
           }
         },
         "definitions": {
           "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",
+          "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
-          "blocking_scheme": "Zone-versus-gap blocking charting is not published in the licensed public feed."
+          "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
         }
       },
       "away_rest_days": 8,

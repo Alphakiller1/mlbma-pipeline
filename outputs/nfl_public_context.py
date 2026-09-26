@@ -415,6 +415,10 @@ PLAYER_SCHEME_FIELDS = {
         "epa_per_carry", "success_rate",
     ),
 }
+PLAYER_TRACKING_FIELDS = (
+    "season", "week", "attempts", "eight_plus_box_rate", "avg_time_to_los",
+    "expected_yards_per_carry", "ryoe_per_carry", "rush_pct_over_expected", "source",
+)
 
 
 def player_scheme(board: dict) -> dict[str, list[dict]]:
@@ -441,11 +445,17 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
                 continue
             splits.append({"look": look, **stats})
         if splits:
-            out.setdefault(team, []).append({
+            published = {
                 "player_id": str(row.get("player_id") or ""), "player_name": name,
                 "position": position, "source_season": int(season),
                 "play_family": family, "splits": splits,
-            })
+            }
+            if position == "RB" and isinstance(row.get("tracking"), dict):
+                tracking = {key: row["tracking"][key] for key in PLAYER_TRACKING_FIELDS
+                            if row["tracking"].get(key) is not None}
+                if tracking:
+                    published["tracking"] = tracking
+            out.setdefault(team, []).append(published)
     rows = [profile for profiles in out.values() for profile in profiles]
     for position in ("QB", "RB"):
         volume = "dropbacks" if position == "QB" else "carries"

@@ -6293,6 +6293,53 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-trench-note strong { color: var(--text-primary); }
 .ca-trench-note p { max-width: 94ch; margin: 0; color: var(--text-secondary); line-height: 1.5; }
 
+.ca-rb-tracking {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border-bottom: 1px solid var(--border-card);
+}
+.ca-rb-tracking__stat {
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--space-2);
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface-field));
+  border-right: 1px solid var(--border-subtle);
+}
+.ca-rb-tracking__stat:last-child { border-right: 0; }
+.ca-rb-tracking__stat span { color: var(--text-muted); font-size: var(--type-caps); font-weight: 800; text-transform: uppercase; }
+.ca-rb-tracking__stat strong { color: var(--text-primary); font-family: var(--font-display); font-size: var(--type-16); font-variant-numeric: tabular-nums; }
+.ca-rb-tracking__stat small { color: var(--text-muted); font-size: var(--type-meta); line-height: 1.25; }
+
+.ca-run-front-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.ca-run-front {
+  min-width: 0;
+  overflow: hidden;
+  background: var(--surface-well);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+}
+.ca-run-front > header { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3); border-bottom: 1px solid var(--border-card); }
+.ca-run-front > header div { display: grid; gap: 2px; }
+.ca-run-front > header strong { color: var(--text-primary); }
+.ca-run-front > header span { color: var(--text-muted); font-size: var(--type-meta); }
+.ca-run-front__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ca-run-front__tile { min-width: 0; padding: var(--space-3); border-right: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+.ca-run-front__tile:nth-child(3n) { border-right: 0; }
+.ca-run-front__tile:nth-last-child(-n+3) { border-bottom: 0; }
+.ca-run-front__tile > header { display: flex; justify-content: space-between; gap: var(--space-1); margin-bottom: var(--space-2); }
+.ca-run-front__tile > header strong { color: var(--text-accent); }
+.ca-run-front__tile > header span { color: var(--text-muted); font-size: var(--type-meta); }
+.ca-run-front__tile dl { display: grid; gap: 5px; margin: 0; }
+.ca-run-front__tile dl div { display: flex; justify-content: space-between; gap: var(--space-2); }
+.ca-run-front__tile dt { color: var(--text-muted); font-size: var(--type-meta); }
+.ca-run-front__tile dd { margin: 0; color: var(--text-primary); font-weight: 800; font-variant-numeric: tabular-nums; }
+
 .ca-player-filter-dock { align-items: flex-end; }
 .ca-player-filter-dock > div { gap: var(--space-2); }
 .ca-player-filter-dock > div:last-child { justify-items: end; }
@@ -6305,7 +6352,8 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-player-stat[hidden] { display: none !important; }
 
 @media (max-width: 980px) {
-  .ca-nfl-family-grid { grid-template-columns: minmax(0, 1fr); }
+  .ca-nfl-family-grid,
+  .ca-run-front-grid { grid-template-columns: minmax(0, 1fr); }
   .ca-filter-dock,
   .ca-player-filter-dock { align-items: stretch; flex-direction: column; }
   .ca-player-filter-dock > div:last-child { justify-items: start; }
@@ -6324,6 +6372,13 @@ body[data-sport="nfl"] .ca-detail-nav {
   .ca-nfl-split-stat:nth-child(2n) { border-right: 0; }
   .ca-nfl-split-stat:nth-last-child(-n+3) { border-bottom: 1px solid var(--border-subtle); }
   .ca-nfl-split-stat:nth-last-child(-n+2) { border-bottom: 0; }
+  .ca-rb-tracking { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ca-rb-tracking__stat:nth-child(2n) { border-right: 0; }
+  .ca-run-front__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ca-run-front__tile:nth-child(3n) { border-right: 1px solid var(--border-subtle); }
+  .ca-run-front__tile:nth-child(2n) { border-right: 0; }
+  .ca-run-front__tile:nth-last-child(-n+3) { border-bottom: 1px solid var(--border-subtle); }
+  .ca-run-front__tile:nth-last-child(-n+2) { border-bottom: 0; }
   .ca-nfl-split-duel__row { grid-template-columns: 72px minmax(96px, 1fr) 72px; }
   .ca-nfl-split-duel__value,
   .ca-nfl-split-duel__axis { padding: var(--space-2); }

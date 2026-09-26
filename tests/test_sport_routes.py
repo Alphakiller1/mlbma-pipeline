@@ -473,8 +473,10 @@ class AdapterHoleTests(unittest.TestCase):
             "data-team-stat-view", "data-team-stat-panel", "Team Stat Splits",
             "Passing", "Rushing", "DVOA", "nflTeamFamilyPanel",
             "Trenches", "nflTrenchesPanel", "Adjusted Line Yards", "Havoc Rate",
+            "RB Yards Before Contact / Carry", "nflRunFrontCard", "YPC Allowed",
             "Single High / MFC", "Two High / MFO", "nickel", "dime",
             "zone-versus-gap blocking", "POA = point of attack",
+            "8+ Box Faced", "Time To LOS", "RYOE / Carry",
             "Rush EPA / Play", "EPA Vs Stacked Box", "data-player-position",
             "data-player-family", "Advanced Splits", "wirePlayerFilters",
             "League rank color", "League Avg", "nflGradeLegend",
@@ -501,6 +503,8 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn(".ca-filter-pill", css)
         self.assertIn(".ca-nfl-family-grid", css)
         self.assertIn(".ca-nfl-split-duel__row", css)
+        self.assertIn(".ca-rb-tracking", css)
+        self.assertIn(".ca-run-front__grid", css)
         self.assertIn(".ca-player-filter-dock", css)
         self.assertIn(".ca-nfl-matchup-cell.c-elite strong", css)
         self.assertIn(".ca-nfl-matchup-cell.c-poor strong", css)
