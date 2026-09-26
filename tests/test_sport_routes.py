@@ -488,6 +488,26 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertNotIn("Charted from the ", detail)
         self.assertNotIn("Charted ' + esc(charted)", detail)
 
+    def test_mlb_detail_has_active_bullpen_splits_and_workload(self):
+        detail = (ROOT / "dashboard" / "public_game_detail.js").read_text(encoding="utf-8")
+        css = (ROOT / "dashboard" / "styles" / "chase-public.css").read_text(
+            encoding="utf-8")
+        for text in (
+            "function loadActiveBullpen", "function bullpenStatTotal",
+            "Season Quality And Matchup Splits", "Full Season", "On Road", "At Home",
+            "Vs LHB", "Vs RHB", "Pitch Count By Day", "active for this game",
+            "rotation arms and tonight’s starter removed", "ERA is not published on the hand splits",
+        ):
+            self.assertIn(text, detail)
+        self.assertIn("stat.earnedRuns != null", detail)
+        self.assertIn("(sums.so / sums.bf) * 100", detail)
+        self.assertIn("(sums.bb / sums.bf) * 100", detail)
+        self.assertIn("loadPeople(ids, 'pitching', season, 'vl')", detail)
+        self.assertIn("loadPeople(ids, 'pitching', season, 'vr')", detail)
+        self.assertIn(".ca-bullpen-split-table", css)
+        self.assertIn("tr.is-matchup", css)
+        self.assertIn("min-width: 600px", css)
+
     def test_no_formatclock_in_nav(self):
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
         self.assertNotIn("function formatClock", nav)

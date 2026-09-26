@@ -459,6 +459,92 @@
     }).catch(function () { return {}; });
   }
 
+  /* The unit table below is about the bullpen available for this game, not
+     every pitcher who has appeared for the club this season. Start with the
+     official active roster on game day, remove rotation arms by their own
+     season usage, then add their counting stats before deriving rates. This
+     avoids the classic error of averaging twelve pitcher ERAs or percentages.
+
+     The hand splits do not publish earned runs, so ERA is deliberately blank
+     there. WHIP, OPS, K%, BB% and HR/9 all have the counting fields required
+     to aggregate them exactly. */
+  function bullpenStatTotal(people, ids) {
+    var sums = {
+      outs: 0, bf: 0, so: 0, bb: 0, hits: 0, hbp: 0, ab: 0,
+      tb: 0, sf: 0, er: 0, hr: 0, apps: 0, hasEr: false
+    };
+    ids.forEach(function (id) {
+      var stat = ((people || {})[id] || {}).stat || {};
+      var outs = Number(stat.outsPitched != null ? stat.outsPitched : stat.outs) || 0;
+      sums.outs += outs;
+      sums.bf += Number(stat.battersFaced) || 0;
+      sums.so += Number(stat.strikeOuts) || 0;
+      sums.bb += Number(stat.baseOnBalls) || 0;
+      sums.hits += Number(stat.hits) || 0;
+      sums.hbp += Number(stat.hitBatsmen) || 0;
+      sums.ab += Number(stat.atBats) || 0;
+      sums.tb += Number(stat.totalBases) || 0;
+      sums.sf += Number(stat.sacFlies) || 0;
+      sums.hr += Number(stat.homeRuns) || 0;
+      sums.apps += Number(stat.gamesPitched != null ? stat.gamesPitched : stat.gamesPlayed) || 0;
+      if (stat.earnedRuns != null && stat.earnedRuns !== '') {
+        sums.er += Number(stat.earnedRuns) || 0;
+        sums.hasEr = true;
+      }
+    });
+    if (!sums.outs && !sums.bf) return null;
+    var obpDen = sums.ab + sums.bb + sums.hbp + sums.sf;
+    var obp = obpDen ? (sums.hits + sums.bb + sums.hbp) / obpDen : null;
+    var slg = sums.ab ? sums.tb / sums.ab : null;
+    return {
+      era: sums.hasEr && sums.outs ? (sums.er * 27) / sums.outs : null,
+      whip: sums.outs ? ((sums.hits + sums.bb) * 3) / sums.outs : null,
+      ops: obp != null && slg != null ? obp + slg : null,
+      kPct: sums.bf ? (sums.so / sums.bf) * 100 : null,
+      bbPct: sums.bf ? (sums.bb / sums.bf) * 100 : null,
+      hr9: sums.outs ? (sums.hr * 27) / sums.outs : null,
+      outs: sums.outs,
+      apps: sums.apps,
+      arms: ids.length
+    };
+  }
+
+  function loadActiveBullpen(teamId, season, siteCode, dateIso, starterId) {
+    if (!teamId) return Promise.resolve(null);
+    var rosterUrl = 'https://statsapi.mlb.com/api/v1/teams/' + teamId +
+      '/roster?rosterType=active' + (dateIso ? '&date=' + encodeURIComponent(dateIso) : '');
+    return fetchJson(rosterUrl).then(function (payload) {
+      var ids = (payload.roster || []).filter(function (row) {
+        return row && row.person && row.person.id &&
+          ((row.position || {}).type === 'Pitcher' || (row.position || {}).abbreviation === 'P');
+      }).map(function (row) { return row.person.id; });
+      if (!ids.length) return null;
+      return Promise.all([
+        loadPeople(ids, 'pitching', season),
+        loadPeople(ids, 'pitching', season, siteCode),
+        loadPeople(ids, 'pitching', season, 'vl'),
+        loadPeople(ids, 'pitching', season, 'vr')
+      ]).then(function (packs) {
+        var overallPeople = packs[0] || {};
+        var tonight = starterId == null ? '' : String(starterId);
+        var reliefIds = ids.filter(function (id) {
+          var stat = (overallPeople[id] || {}).stat;
+          return stat && String(id) !== tonight && !isRotationArm(stat);
+        });
+        return {
+          ids: reliefIds,
+          people: overallPeople,
+          overall: bullpenStatTotal(overallPeople, reliefIds),
+          site: bullpenStatTotal(packs[1], reliefIds),
+          vsL: bullpenStatTotal(packs[2], reliefIds),
+          vsR: bullpenStatTotal(packs[3], reliefIds),
+          siteCode: siteCode,
+          rosterDate: dateIso || ''
+        };
+      });
+    }).catch(function () { return null; });
+  }
+
   /** Pitch mix for one arm. Usage share, count and average velocity. */
   function loadArsenal(id, season) {
     if (!id) return Promise.resolve(null);
@@ -1498,6 +1584,61 @@
       'its sample beside it, and is not a coefficient from a model.</p>';
   }
 
+  function bullpenIp(outs) {
+    outs = Number(outs) || 0;
+    return Math.floor(outs / 3) + '.' + (outs % 3);
+  }
+
+  function bullpenRate(value, digits, suffix) {
+    if (value == null || !isFinite(Number(value))) return '&mdash;';
+    return esc(Number(value).toFixed(digits)) + (suffix || '');
+  }
+
+  function bullpenSplitPanel(sport, game, side, unit) {
+    var club = fullName(sport, game, side);
+    var head = '<article class="ca-bullpen-splits"><header class="ca-bullpen-splits__head">' +
+      logo(sport, game, side, 40, 'ca-bullpen-splits__logo') + '<div><h3>' + esc(club) +
+      '</h3><p>' + (side === 'away' ? 'Away bullpen · road split highlighted' :
+        'Home bullpen · home split highlighted') + '</p></div></header>';
+    if (unit === undefined) return head + pending('Bullpen splits are loading.') + '</article>';
+    if (!unit || !unit.overall) {
+      return head + pending('Active bullpen split record is not published for this game.') + '</article>';
+    }
+    var rows = [
+      ['overall', 'Full Season', unit.overall, false],
+      ['site', side === 'away' ? 'On Road' : 'At Home', unit.site, true],
+      ['vsL', 'Vs LHB', unit.vsL, false],
+      ['vsR', 'Vs RHB', unit.vsR, false]
+    ].map(function (row) {
+      var stat = row[2];
+      if (!stat) return '';
+      return '<tr' + (row[3] ? ' class="is-matchup"' : '') + '><th scope="row">' +
+        esc(row[1]) + (row[3] ? ' <span>Tonight</span>' : '') + '</th>' +
+        '<td class="num">' + bullpenRate(stat.era, 2) + '</td>' +
+        '<td class="num">' + bullpenRate(stat.whip, 2) + '</td>' +
+        '<td class="num">' + bullpenRate(stat.ops, 3) + '</td>' +
+        '<td class="num">' + bullpenRate(stat.kPct, 1, '%') + '</td>' +
+        '<td class="num">' + bullpenRate(stat.bbPct, 1, '%') + '</td>' +
+        '<td class="num">' + bullpenRate(stat.hr9, 2) + '</td>' +
+        '<td class="num">' + esc(bullpenIp(stat.outs)) + '</td></tr>';
+    }).join('');
+    var sample = unit.overall.arms + ' active relievers · ' +
+      Number(unit.overall.apps || 0).toLocaleString('en-US') + ' appearances · ' +
+      bullpenIp(unit.overall.outs) + ' IP';
+    return head + '<p class="ca-bullpen-splits__sample">' + esc(sample) + '</p>' +
+      '<div class="ca-lineup-scroll"><table class="ca-bullpen-split-table"><thead><tr>' +
+      '<th>Split</th><th class="num">ERA</th><th class="num">WHIP</th>' +
+      '<th class="num">OPS</th><th class="num">K%</th><th class="num">BB%</th>' +
+      '<th class="num">HR/9</th><th class="num">IP</th></tr></thead><tbody>' +
+      rows + '</tbody></table></div></article>';
+  }
+
+  function bullpenQualityBody(sport, game, extra) {
+    return '<div class="ca-detail-duo ca-bullpen-split-grid">' +
+      bullpenSplitPanel(sport, game, 'away', extra.awayBullpenUnit) +
+      bullpenSplitPanel(sport, game, 'home', extra.homeBullpenUnit) + '</div>';
+  }
+
   function bullpenPanel(sport, game, side, report, quality) {
     quality = quality || {};
     var label = fullName(sport, game, side);
@@ -2357,10 +2498,23 @@
   }
 
   function bullpenBody(sport, game, extra) {
-    return '<div class="ca-detail-stack-inner">' +
+    return '<div class="ca-bullpen-subsection"><header class="ca-bullpen-subhead"><div>' +
+      '<p>Active Pen</p><h3>Season Quality And Matchup Splits</h3></div>' +
+      '<span>Game-day roster</span></header>' + bullpenQualityBody(sport, game, extra) +
+      '<p class="ca-detail-source-note">Rates combine the official counting stats of the ' +
+      'relievers active for this game, with rotation arms and tonight’s starter removed by ' +
+      'their season usage. Full Season is the anchor; the highlighted row is the bullpen’s ' +
+      'home or road record for tonight’s setting. Vs LHB and Vs RHB show how those same arms ' +
+      'have handled each batter side. ERA is not published on the hand splits, so it stays ' +
+      'blank there rather than being inferred. Lower is better for ERA, WHIP, OPS, BB% and ' +
+      'HR/9; higher is better for K%.</p></div>' +
+      '<div class="ca-bullpen-subsection"><header class="ca-bullpen-subhead"><div>' +
+      '<p>Availability</p><h3>Pitch Count By Day</h3></div><span>Previous seven days</span></header>' +
+      '<div class="ca-detail-stack-inner">' +
       bullpenPanel(sport, game, 'away', extra.awayBullpen, extra.bullpenQuality) +
       bullpenPanel(sport, game, 'home', extra.homeBullpen, extra.bullpenQuality) + '</div>' +
-      '<p class="ca-detail-source-note">Pitch counts read from the official box score of each completed game. Relief appearances only — a pitcher who started that game is excluded by his own line, tonight’s starter is left out of his own club’s pen, and rotation arms who pitched behind an opener are listed under the table rather than counted as bullpen load. A dash is a day that arm did not pitch. The shading runs dim to hot with the size of the day, not good to bad: thirty-five pitches is a heavy outing, which is a fact about availability tonight rather than a judgement about the pitcher.</p>';
+      '<p class="ca-detail-source-note">Pitch counts read from the official box score of each completed game. Relief appearances only — a pitcher who started that game is excluded by his own line, tonight’s starter is left out of his own club’s pen, and rotation arms who pitched behind an opener are listed under the table rather than counted as bullpen load. A dash is a day that arm did not pitch. The shading runs dim to hot with the size of the day, not good to bad: thirty-five pitches is a heavy outing, which is a fact about availability tonight rather than a judgement about the pitcher.</p>' +
+      '</div>';
   }
 
   function mlbSections(sport, game, extra) {
@@ -2380,7 +2534,7 @@
         formBody(sport, game)),
       section('radar', 'Team Profile Radar', 'Both Clubs On One Shape, By Percentile',
         radarBody(sport, game)),
-      section('bullpens', 'Bullpen Workload', 'Pitch Count By Day, The Week Before This Game',
+      section('bullpens', 'Bullpen Matchup', 'Season Quality, Situational Splits And Recent Workload',
         bullpenBody(sport, game, extra))
     ].join('');
   }
@@ -4364,17 +4518,26 @@
           paintSection(host, 'recent', recentBody(sport, game, extra));
         }).catch(function () { /* the strip keeps its pending note */ });
 
-        // Stage 3 - bullpen workload, then one bulk call for those arms.
-        // The second request earns its place: saves, holds and games finished
-        // are what say which of these men is the closer and which is the long
-        // man, and neither is derivable from a pitch count.
+        // Stage 3 - bullpen quality splits and recent workload. The active
+        // roster requests establish the unit available on this game date; the
+        // box scores answer the separate question of how heavily it was used.
         Promise.all([
           loadBullpen(game.away_team_id, game.away, dateIso, game.away_starter_id),
-          loadBullpen(game.home_team_id, game.home, dateIso, game.home_starter_id)
+          loadBullpen(game.home_team_id, game.home, dateIso, game.home_starter_id),
+          loadActiveBullpen(game.away_team_id, season, 'a', dateIso, game.away_starter_id),
+          loadActiveBullpen(game.home_team_id, season, 'h', dateIso, game.home_starter_id)
         ]).then(function (reports) {
           var none = { used: [], bulk: [], starter: null, games: 0, window: 'window not published' };
           extra.awayBullpen = reports[0] || none;
           extra.homeBullpen = reports[1] || none;
+          extra.awayBullpenUnit = reports[2];
+          extra.homeBullpenUnit = reports[3];
+          extra.bullpenQuality = {};
+          [reports[2], reports[3]].forEach(function (unit) {
+            Object.keys((unit && unit.people) || {}).forEach(function (id) {
+              extra.bullpenQuality[id] = unit.people[id];
+            });
+          });
           paintSection(host, 'bullpens', bullpenBody(sport, game, extra));
           var ids = [];
           [extra.awayBullpen, extra.homeBullpen].forEach(function (report) {
@@ -4382,7 +4545,9 @@
           });
           return loadPeople(ids, 'pitching', season);
         }).then(function (quality) {
-          extra.bullpenQuality = quality || {};
+          Object.keys(quality || {}).forEach(function (id) {
+            extra.bullpenQuality[id] = quality[id];
+          });
           paintSection(host, 'bullpens', bullpenBody(sport, game, extra));
         }).catch(function () { /* the section keeps its pending note */ });
       }

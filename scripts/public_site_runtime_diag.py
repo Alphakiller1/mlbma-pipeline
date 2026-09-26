@@ -172,6 +172,22 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               .count() == 7)
         check("MLB detail no longer carries a ballpark or sources section",
               page.locator("#conditions, #sources").count() == 0)
+        try:
+            page.wait_for_selector("#bullpens .ca-bullpen-split-table", timeout=timeout_ms)
+        except Exception:
+            pass
+        bullpen_tables = page.locator("#bullpens .ca-bullpen-split-table")
+        check("MLB bullpen splits render for both clubs", bullpen_tables.count() == 2,
+              f"tables={bullpen_tables.count()}")
+        check("MLB bullpen split table includes season, venue and batter hand",
+              page.locator("#bullpens .ca-bullpen-split-table tbody tr").count() == 8,
+              f"rows={page.locator('#bullpens .ca-bullpen-split-table tbody tr').count()}")
+        check("MLB bullpen workload remains available",
+              page.locator("#bullpens .ca-pc-table").count() == 2)
+        mlb_overflow = page.evaluate(
+            "Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth")
+        check("MLB detail no horizontal overflow", mlb_overflow <= 1,
+              f"overflow={mlb_overflow}")
         mlb_ids = page.eval_on_selector_all(
             ".ca-detail-section", "els => els.map(e => e.id)")
         check("MLB pitch mix is read before the lineup it explains",
@@ -232,6 +248,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         mlb_detail_text = page.locator("main").inner_text()
         match = PROHIBITED.search(mlb_detail_text)
         check("MLB detail public copy boundary", match is None, match.group(0) if match else "")
+        page.set_viewport_size({"width": 390, "height": 844})
+        phone_overflow = page.evaluate(
+            "Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth")
+        check("MLB phone layout has no horizontal overflow", phone_overflow <= 1,
+              f"overflow={phone_overflow}")
+        check("MLB phone split tables scroll inside their panels",
+              page.locator("#bullpens .ca-lineup-scroll").count() >= 4)
         legacy_url = base_url.rstrip("/") + "/dashboard/matchup_compare.html?away=MIN&home=DET&date=2026-09-09"
         page.goto(legacy_url, wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_url(re.compile(r"/mlb/matchup(?:\.html)?(?:\?|$)"), timeout=timeout_ms)
