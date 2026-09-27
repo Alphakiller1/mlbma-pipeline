@@ -382,6 +382,10 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # Every number in the analysis is either graded (tier colour + rank),
         # marked against the league (neutral arrow), tagged as a thin sample, or
         # a plain sample count. A number that is simply grey is a regression.
+        unpilled = page.evaluate("""() => [...document.querySelectorAll('main td.num, main .ca-stat__value')]
+          .filter(el => el.offsetParent && /(^|\s)c-(elite|good|mid|weak|poor)(\s|$)/.test(el.className)
+            && !el.querySelector('.ca-rank')).length""")
+        check("NFL every graded number shows its rank pill", unpilled == 0, f"{unpilled} without a pill")
         grading = page.evaluate(NFL_GRADING_AUDIT)
         check("NFL every number is graded, marked, tagged thin or a count",
               grading["checked"] > 200 and grading["ungraded"] == 0,

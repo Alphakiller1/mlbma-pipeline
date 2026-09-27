@@ -5356,3 +5356,29 @@ body[data-sport="nfl"] .ca-detail-nav {
 /* A sample count beside a graded figure stays neutral; only the figure is graded. */
 .ca-nfl-split td.num small,
 .ca-nfl-mix td.num small { color: var(--text-2); margin-left: 4px; font-size: var(--type-meta); }
+
+/* Every graded NFL number carries its rank pill. Where a column is too narrow
+   for both on one line the pill wraps under the number instead of clipping. */
+.ca-nfl-split td.num .ca-rank,
+.ca-nfl-mix td.num .ca-rank { margin-left: 2px; padding: 0 3px; letter-spacing: -0.02em; }
+.ca-nfl-split td.num,
+.ca-nfl-mix td.num { white-space: normal; }
+.ca-nfl-split th.num,
+.ca-nfl-mix th.num { padding-left: var(--space-1); padding-right: var(--space-1); }
+.ca-nfl-split td.num,
+.ca-nfl-mix td.num { padding-left: var(--space-1); padding-right: var(--space-1); }
+/* Side-by-side duos between 1380 and 1599px are the tightest the split tables
+   get; the row label gives up a little so every rank pill stays on its line. */
+@media (min-width: 1380px) and (max-width: 1599px) {
+  .ca-nfl-split thead th:first-child,
+  .ca-nfl-split tbody td:first-child { width: 18%; }
+}
+@media (max-width: 899px), (min-width: 1380px) and (max-width: 1439px) {
+  .ca-nfl-split td.num .ca-rank,
+  .ca-nfl-mix td.num .ca-rank { padding: 0 2px; margin-left: 1px; letter-spacing: -0.04em; }
+  .ca-nfl-split td.num, .ca-nfl-mix td.num { padding-left: 2px; padding-right: 2px; }
+}
+@media (min-width: 561px) and (max-width: 899px), (min-width: 1380px) and (max-width: 1439px) {
+  .ca-nfl-split thead th:first-child,
+  .ca-nfl-split tbody td:first-child { width: 16%; }
+}

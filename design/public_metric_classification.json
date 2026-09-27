@@ -438,6 +438,7 @@
     "home_player_stats_prior",
     "away_scheme_current",
     "home_scheme_current",
+    "personnel_22_rate",
     "away_defenders_current",
     "home_defenders_current",
     "adot",
