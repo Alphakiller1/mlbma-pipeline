@@ -148,7 +148,9 @@
     "away_team_stats_prior",
     "home_team_stats_prior",
     "away_player_stats_prior",
-    "home_player_stats_prior"
+    "home_player_stats_prior",
+    "away_scheme_current",
+    "home_scheme_current"
   ],
   "notes": {
     "away_availability_list": "Official injury designations: name, position, status, body part. factual-status. No projection, snap share or confidence.",

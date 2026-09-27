@@ -435,7 +435,14 @@
     "away_team_stats_prior",
     "home_team_stats_prior",
     "away_player_stats_prior",
-    "home_player_stats_prior"
+    "home_player_stats_prior",
+    "away_scheme_current",
+    "home_scheme_current",
+    "light_box_rate",
+    "pass_epa_no_blitz",
+    "pass_epa_motion",
+    "pass_epa_screen",
+    "rush_epa_light_box"
   ],
   "derived_descriptive": [
     "depth_rank",

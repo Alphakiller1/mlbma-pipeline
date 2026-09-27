@@ -914,6 +914,7 @@ def build(board: dict | None = None, rooms: dict | None = None,
         "team_stats": season_stats.get("teams") or {},
         "player_stats": season_stats.get("players") or {},
         "team_stats_prior": prior_stats.get("teams") or {},
+        "scheme_current": advanced_context.get("team_scheme_current") or {},
         "player_stats_prior": prior_stats.get("players") or {},
         "team_line": advanced_context.get("team_line") or {},
         "source": {

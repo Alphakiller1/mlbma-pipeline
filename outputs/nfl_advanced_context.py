@@ -498,6 +498,156 @@ def _team_line(frame, season: int, pfr_rushing=None) -> dict[str, dict]:
     return out
 
 
+# ---------------------------------------------------------------------------
+# Current-season team scheme, from what is published for it.
+#
+# Coverage, man/zone, pressure and personnel come from nflverse participation
+# data, which is not released for a season in progress. FTN charting and the
+# play-by-play are: blitzers, pass rushers, box counts, motion, play action,
+# RPO, screens, no-huddle and QB alignment, with EPA and success on every play.
+# This builds the current season's team scheme from those, in the same shape
+# as the model board's scheme profiles (rates by group, responses, league
+# frequency ranks, league response baselines) so the page renders it the same
+# way. A look with no public source is simply absent, never borrowed.
+# ---------------------------------------------------------------------------
+SCHEME_PBP_COLUMNS = (
+    "game_id", "play_id", "season_type", "posteam", "defteam", "play_type",
+    "qb_dropback", "pass", "rush", "shotgun", "no_huddle", "down", "wp",
+    "half_seconds_remaining", "epa", "success",
+)
+SCHEME_FTN_COLUMNS = (
+    "nflverse_game_id", "nflverse_play_id", "n_defense_box", "n_blitzers",
+    "n_pass_rushers", "is_motion", "is_play_action", "is_screen_pass", "is_rpo",
+    "is_no_huddle", "qb_location",
+)
+
+
+def _scheme_frame(season: int):
+    pbp = _frame(PBP_URL.format(season=season), SCHEME_PBP_COLUMNS)
+    if pbp is None:
+        return None
+    pbp = pbp[pbp["season_type"].eq("REG") & pbp["play_type"].isin(["pass", "run"])].copy()
+    ftn = _frame(FTN_URL.format(season=season), SCHEME_FTN_COLUMNS)
+    if ftn is not None:
+        ftn = ftn.rename(columns={"nflverse_game_id": "game_id", "nflverse_play_id": "play_id"})
+        ftn = ftn.drop_duplicates(["game_id", "play_id"], keep="last")
+        pbp = pbp.merge(ftn, on=["game_id", "play_id"], how="left")
+    return pbp
+
+
+def _flag(series):
+    return series.map(lambda v: None if v is None or v != v else bool(v))
+
+
+def _rate(mask, base) -> float | None:
+    known = int(base.sum())
+    return round(float((mask & base).sum()) / known, 4) if known else None
+
+
+def _mean(values) -> float | None:
+    values = values.dropna()
+    return round(float(values.mean()), 4) if len(values) else None
+
+
+def _unit_scheme(rows) -> dict:
+    """Rates and responses for one club's plays, from its offense or defense view."""
+    dropback = rows["qb_dropback"].fillna(0).eq(1)
+    rush = rows["rush"].fillna(0).eq(1) & ~dropback
+    charted = rows["n_defense_box"].notna() if "n_defense_box" in rows else rows.index != rows.index
+    has_blitz = rows["n_blitzers"].notna() if "n_blitzers" in rows else rows.index != rows.index
+    blitz = has_blitz & rows["n_blitzers"].fillna(0).gt(0) if "n_blitzers" in rows else has_blitz
+    stacked = charted & rows["n_defense_box"].fillna(0).ge(8)
+    light = charted & rows["n_defense_box"].fillna(99).le(6)
+    flags = {}
+    for col in ("is_motion", "is_play_action", "is_screen_pass", "is_rpo", "is_no_huddle"):
+        flags[col] = rows[col].fillna(False).astype(bool) if col in rows else rows.index != rows.index
+    has_ftn = rows["is_motion"].notna() if "is_motion" in rows else rows.index != rows.index
+    shotgun = rows["shotgun"].fillna(0).eq(1)
+    neutral = (rows["down"].isin([1, 2]) & rows["wp"].between(0.2, 0.8)
+               & rows["half_seconds_remaining"].gt(120))
+    epa = rows["epa"]
+    success = rows["success"]
+
+    pressure = {
+        "blitz_rate": _rate(blitz, dropback & has_blitz),
+        "stacked_box_rate": _rate(stacked, charted),
+        "light_box_rate": _rate(light, charted),
+        "avg_box": _mean(rows.loc[charted, "n_defense_box"]) if "n_defense_box" in rows else None,
+    }
+    personnel = {
+        "formation_shotgun_rate": _rate(shotgun, rows.index == rows.index),
+        "formation_under_center_rate": _rate(~shotgun, rows.index == rows.index),
+        "motion_rate": _rate(flags["is_motion"], has_ftn),
+        "play_action_rate": _rate(flags["is_play_action"], dropback & has_ftn),
+        "rpo_rate": _rate(flags["is_rpo"], has_ftn),
+        "screen_rate": _rate(flags["is_screen_pass"], dropback & has_ftn),
+        "no_huddle_rate": _rate(rows["no_huddle"].fillna(0).eq(1), rows.index == rows.index),
+        "neutral_pass_rate": _rate(dropback & neutral, neutral),
+    }
+    response = {
+        "pass_epa": _mean(epa[dropback]),
+        "rush_epa": _mean(epa[rush]),
+        "pass_success_rate": _mean(success[dropback]),
+        "rush_success_rate": _mean(success[rush]),
+        "pass_epa_blitz": _mean(epa[dropback & blitz]),
+        "pass_epa_no_blitz": _mean(epa[dropback & has_blitz & ~blitz]),
+        "pass_epa_play_action": _mean(epa[dropback & flags["is_play_action"]]),
+        "pass_epa_motion": _mean(epa[dropback & flags["is_motion"]]),
+        "pass_epa_screen": _mean(epa[dropback & flags["is_screen_pass"]]),
+        "rush_epa_stacked_box": _mean(epa[rush & stacked]),
+        "rush_epa_light_box": _mean(epa[rush & light]),
+    }
+    strip = lambda d: {k: v for k, v in d.items() if v is not None}
+    return {"pressure": strip(pressure), "personnel": strip(personnel), "response": strip(response)}
+
+
+def team_scheme_current(season: int) -> dict[str, dict]:
+    """Current-season scheme for every club, ranked and baselined across the league."""
+    frame = _scheme_frame(season)
+    if frame is None or frame.empty:
+        return {}
+    out: dict[str, dict] = {}
+    for phase, col in (("offense", "posteam"), ("defense", "defteam")):
+        for team, rows in frame.groupby(col, dropna=True):
+            club = _team(team)
+            entry = out.setdefault(club, {"team": club, "source_seasons": [season],
+                                          "participation_source_seasons": [],
+                                          "offense_plays": 0, "defense_plays": 0})
+            entry[phase] = _unit_scheme(rows)
+            entry[phase + "_plays"] = int(len(rows))
+    if len(out) < 30:
+        return {}
+    # League places for every rate (1st = most often) and the league mean and
+    # spread for every response, per phase, over the same clubs.
+    for phase in ("offense", "defense"):
+        for group in ("pressure", "personnel"):
+            keys = {k for club in out.values() for k in (club.get(phase) or {}).get(group, {})}
+            for key in keys:
+                pool = [(team, club[phase][group][key]) for team, club in out.items()
+                        if key in (club.get(phase) or {}).get(group, {})]
+                ranks = _ranked_desc(pool)
+                for team, _ in pool:
+                    out[team].setdefault("league_frequency_ranks", {}).setdefault(phase, {}) \
+                        .setdefault(group, {})[key] = {"place": ranks[team], "of": len(pool)}
+        keys = {k for club in out.values() for k in (club.get(phase) or {}).get("response", {})}
+        for key in keys:
+            values = [club[phase]["response"][key] for club in out.values()
+                      if key in (club.get(phase) or {}).get("response", {})]
+            if len(values) < 2:
+                continue
+            mean = sum(values) / len(values)
+            std = (sum((v - mean) ** 2 for v in values) / len(values)) ** 0.5
+            for club in out.values():
+                club.setdefault("league_response", {}).setdefault(phase, {})[key] = {
+                    "mean": round(mean, 4), "std": round(std, 4), "n": len(values)}
+    return out
+
+
+def _ranked_desc(pool: list[tuple[str, float]]) -> dict[str, int]:
+    ordered = sorted(pool, key=lambda pair: pair[1], reverse=True)
+    return {team: index + 1 for index, (team, _) in enumerate(ordered)}
+
+
 def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
     """Return derived observed context; any unavailable feed fails soft."""
     names = {
@@ -532,5 +682,6 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
     return {
         "player_scheme_profiles": profiles,
         "player_coverage_profiles": receivers,
+        "team_scheme_current": team_scheme_current(season),
         "team_line": _team_line(current, season, pfr_rushing) if current is not None else {},
     }

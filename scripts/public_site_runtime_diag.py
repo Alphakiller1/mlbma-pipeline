@@ -335,7 +335,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                                ("#coverage", ".ca-arsenal-panel"), ("#looks", ".ca-arsenal-panel"),
                                ("#rushing", ".ca-starter-panel"), ("#trenches", ".ca-form-panel"),
                                ("#receivers", ".ca-form-panel"), ("#tendencies", ".ca-arsenal-panel")):
-            n = page.locator(f"{sid} .ca-detail-duo > {component}").count()
+            n = page.locator(f"{sid} .ca-detail-duo:visible > {component}").count()
             check(f"NFL {sid[1:]} is a two-club duo of {component}", n == 2, f"panels={n}")
         # Unit Matchups: each possession is the offense's row directly above the
         # defense it meets, in the same columns.
@@ -346,13 +346,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL unit matchups grade on the five-band ramp", grades >= 4, f"distinct colors={grades}")
         # Pitch Mix shape: ten usage squares per row, a ranked result, and the
         # other club's result in the last column.
-        mix_rows = page.locator("#coverage .ca-arsenal-table tbody tr")
-        squares = page.locator("#coverage .ca-usage__grid > i").count()
+        mix_rows = page.locator("#coverage .ca-arsenal-table:visible tbody tr")
+        squares = page.locator("#coverage .ca-arsenal-table:visible .ca-usage__grid > i").count()
         check("NFL coverage rows carry ten usage squares",
               mix_rows.count() > 0 and squares == mix_rows.count() * 10,
               f"{squares} squares across {mix_rows.count()} rows")
         check("NFL coverage results carry league rank chips",
-              page.locator("#coverage .ca-arsenal-table .ca-rank").count() >= mix_rows.count())
+              page.locator("#coverage .ca-arsenal-table:visible .ca-rank").count() >= mix_rows.count())
         usage = page.locator("#coverage .ca-arsenal-panel").first.locator(".ca-usage b").evaluate_all(
             "nodes => nodes.map(n => parseFloat(n.textContent))")
         check("NFL coverage shells are ordered by the defense's own usage, never by gap",
@@ -393,6 +393,12 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.locator("[data-season-scope='current']").click()
         current_tiles = page.evaluate(tiles_of)
         page.locator("[data-season-scope='combined']").click()
+        page.locator("[data-season-scope='current']").click()
+        now_looks = page.locator("#looks .ca-arsenal-table:visible tbody tr").count()
+        now_tend = page.locator("#tendencies .ca-arsenal-table:visible tbody tr").count()
+        page.locator("[data-season-scope='combined']").click()
+        check("NFL 2026 Only fills looks and tendencies with current-season charting",
+              now_looks >= 4 and now_tend >= 6, f"looks={now_looks} tendencies={now_tend}")
         check("NFL evidence window changes the numbers, not just what is hidden",
               combined_tiles and current_tiles and combined_tiles != current_tiles,
               f"{combined_tiles[:40]} vs {current_tiles[:40]}")
@@ -421,7 +427,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               all(label in rb_text for label in ("light box", "run left", "ryoe / carry")))
         trench_text = page.locator("#trenches").inner_text().lower()
         check("NFL trenches pair each line with the front it meets and map run direction",
-              page.locator("#trenches .ca-arsenal-table").count() == 2 and
+              page.locator("#trenches .ca-arsenal-table:visible").count() == 2 and
               all(label in trench_text for label in ("line yds", "havoc", "ybc", "run direction",
                                                      "at the guards", "outside the ends")))
         rec_text = page.locator("#receivers").inner_text().lower()
@@ -429,7 +435,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               "receivers by coverage" in rec_text and
               all(label in rec_text for label in ("vs man", "vs zone", "single high (mfc)", "vs blitz")))
         check("NFL pass catchers include the target distribution against the other defense",
-              page.locator("#receivers .ca-arsenal-table").count() == 2 and
+              page.locator("#receivers .ca-arsenal-table:visible").count() == 2 and
               "target distribution" in page.locator("#receivers").inner_text().lower())
         detail_text = page.locator("main").inner_text()
         match = PROHIBITED.search(detail_text)
@@ -439,7 +445,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL phone layout has no horizontal overflow",
               page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
         check("NFL phone stacks each duo into one column",
-              page.locator("#coverage .ca-detail-duo").evaluate(
+              page.locator("#coverage .ca-detail-duo").first.evaluate(
                   "el => getComputedStyle(el).gridTemplateColumns.split(' ').length") == 1)
         page.set_viewport_size({"width": 1280, "height": 900})
 

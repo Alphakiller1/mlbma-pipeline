@@ -463,9 +463,13 @@ class AdapterHoleTests(unittest.TestCase):
         # so each panel names the seasons it is drawn from instead.
         # The evidence window is back (owner direction 2026-09-27); an empty
         # section under 2026 Only says so instead of standing blank.
-        for text in ("function seasonToggle", "data-season-scope", "data-scheme-seasons",
-                     "data-season-section-empty"):
+        for text in ("function seasonToggle", "data-season-scope"):
             self.assertIn(text, detail)
+        # Every scheme section carries a current-season window built from FTN
+        # charting and play-by-play; nothing reports "no 2026 charting".
+        for text in ("function nflBothWindows", "'_scheme_current'", "schemeCurrent"):
+            self.assertIn(text, detail)
+        self.assertNotIn("-only scheme charting is published yet", detail)
         self.assertIn("function nflSampleLabel", detail)
         # The window changes the data: both seasons combined look by look and
         # re-ranked on the slate, or the current season alone.

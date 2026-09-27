@@ -693,6 +693,7 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
     team_stats = context.get("team_stats") or {}
     player_stats = context.get("player_stats") or {}
     team_stats_prior = context.get("team_stats_prior") or {}
+    scheme_current = context.get("scheme_current") or {}
     # Prior lines are matched by player, across every club: a receiver who
     # changed teams keeps his 2025 season.
     prior_by_id = {
@@ -863,6 +864,8 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             "home_line_stats": team_line.get(home_abbr),
             "away_player_stats": starter_stats(away_abbr),
             "home_player_stats": starter_stats(home_abbr),
+            "away_scheme_current": scheme_current.get(away_abbr),
+            "home_scheme_current": scheme_current.get(home_abbr),
             "away_team_stats_prior": team_stats_prior.get(away_abbr),
             "home_team_stats_prior": team_stats_prior.get(home_abbr),
             "away_player_stats_prior": [
