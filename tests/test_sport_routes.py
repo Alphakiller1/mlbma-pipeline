@@ -110,13 +110,14 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertNotIn("Largest Percentile Gaps", js)
         self.assertNotIn("function cfbEdges", js)
         self.assertIn("function cfbDecisionPaths", js)
-        self.assertIn("function cfbReadingKey", js)
         self.assertIn("function cfbScriptLens", js)
-        self.assertIn("Values are ' + esc(season) + ' season-to-date results only", js)
-        self.assertIn("No prior-season stats are used", js)
         self.assertIn("Number(form.season) !== season", js)
         self.assertIn("How The Matchup Can Change Possessions And Play Mix", js)
-        self.assertIn("How To Read The CFB Metrics", js)
+        # Section explanations are gone site-wide (owner direction 2026-09-26):
+        # no reading key, metric guide, card impact copy or verdict lines.
+        for gone in ("function cfbReadingKey", "function cfbMetricGuide", "How To Read The CFB Metrics",
+                     "season-to-date results only", "esc(lens.impact)", "esc(verdict)"):
+            self.assertNotIn(gone, js)
         self.assertIn("cfbMirrorHead", js)
         self.assertIn("side + '_logo'", js)
         self.assertIn("ca-arsenal-table", js)
@@ -457,12 +458,17 @@ class AdapterHoleTests(unittest.TestCase):
         adapter = (ROOT / "dashboard" / "sports" / "chase_public_slate.js").read_text(
             encoding="utf-8")
         nfl = detail[detail.index("function nflLeaguePool"):detail.index("function nflSections")]
-        # Lineups, the season scope and the injury report are unchanged.
+        # Lineups and the injury report are unchanged. There is no season
+        # toggle: coverage charting has no current-season sample to switch to,
+        # so each panel names the seasons it is drawn from instead.
+        for gone in ("function seasonToggle", "data-season-scope", "data-scheme-seasons"):
+            self.assertNotIn(gone, detail)
+        self.assertIn("function nflSampleLabel", detail)
+        self.assertIn("single_high: 'Single High (MFC)', two_high: 'Two High (MFO)'", detail)
         for text in (
             "data-lineup-unit", "data-lineup-panel", "Offensive Line", "Linebackers",
             "status: Array.isArray(entries) ? 'Active' : 'Report pending'",
-            "var status = designation.status || 'Active'", "Report pending", "data-scheme-seasons",
-            "panel.hidden = !show", "seasons.length === 1", "Full Injury Report",
+            "var status = designation.status || 'Active'", "Report pending", "Full Injury Report",
             "Quarterbacks", "Running Backs", "league_ranks",
         ):
             self.assertIn(text, detail)
@@ -530,7 +536,7 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn(".ca-lineup-board", css)
         self.assertIn("min-height: var(--touch-min)", css)
         self.assertIn("grid-template-columns: repeat(10, minmax(0, 1fr))", css)
-        self.assertIn(".ca-season-toggle", css)
+        self.assertNotIn(".ca-season-toggle", css)
         self.assertIn("game.slate_date ||", (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8"))
         self.assertIn("game.slate_date = date", (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8"))
         self.assertNotIn("ca-matchup-lens", detail)
@@ -539,6 +545,24 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertNotIn("Charted from the ", detail)
         self.assertNotIn("Charted ' + esc(charted)", detail)
 
+    def test_detail_pages_carry_no_section_explanations(self):
+        """Only status lines (loading, not published) use the source-note style."""
+        js = (ROOT / "dashboard" / "public_game_detail.js").read_text(encoding="utf-8")
+        opener = "'<p class=\"ca-detail-source-note\">"
+        allowed = ("' + esc(message) + '", "Team form is not published", "Batting order not published yet")
+        start = 0
+        while True:
+            i = js.find(opener, start)
+            if i < 0:
+                break
+            head = js[i + len(opener):i + len(opener) + 60]
+            self.assertTrue(any(head.startswith(a) for a in allowed), head)
+            start = i + 1
+        card = (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8")
+        self.assertNotIn('class="ca-ctx-note"', card)
+        self.assertNotIn("ca-wx-note", js)
+        self.assertNotIn("ca-analysis-scope__copy", js)
+
     def test_mlb_detail_has_active_bullpen_splits_and_workload(self):
         detail = (ROOT / "dashboard" / "public_game_detail.js").read_text(encoding="utf-8")
         css = (ROOT / "dashboard" / "styles" / "chase-public.css").read_text(
@@ -546,8 +570,7 @@ class AdapterHoleTests(unittest.TestCase):
         for text in (
             "function loadActiveBullpen", "function bullpenStatTotal",
             "Season Quality And Matchup Splits", "Full Season", "On Road", "At Home",
-            "Vs LHB", "Vs RHB", "Pitch Count By Day", "active for this game",
-            "rotation arms and tonight’s starter removed", "ERA is not published on the hand splits",
+            "Vs LHB", "Vs RHB", "Pitch Count By Day",
         ):
             self.assertIn(text, detail)
         self.assertIn("stat.earnedRuns != null", detail)

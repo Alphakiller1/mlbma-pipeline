@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-09-26T17:41:24Z",
+  "generated_at_utc": "2026-09-27T02:33:19Z",
   "data_through_utc": "2026-09-25T00:15Z",
   "games": [
     {
@@ -1507,7 +1507,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:08Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -1653,7 +1653,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:08Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -1948,6 +1948,12 @@
             "attempts": 25,
             "avg_time_to_throw": 2.273,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 32,
+              "of": 32
+            }
           }
         },
         {
@@ -1967,7 +1973,21 @@
               "success_rate": 0.5303,
               "games": 3,
               "carries_per_game": 22.0,
-              "rushing_yards_per_game": 116.3333
+              "rushing_yards_per_game": 116.3333,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 10,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 14,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 7,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -2200,6 +2220,16 @@
             "ryoe_per_carry": 2.6731,
             "rush_pct_over_expected": 0.4828,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 2,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 15,
+              "of": 45
+            }
           }
         },
         {
@@ -2858,15 +2888,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 7,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
                   "place": 30,
-                  "of": 55
+                  "of": 56
                 },
                 "success_rate": {
                   "place": 28,
-                  "of": 55
+                  "of": 56
                 }
               }
             },
@@ -3207,7 +3237,25 @@
               "success_rate": 0.3864,
               "games": 3,
               "dropbacks_per_game": 44.0,
-              "passing_yards_per_game": 281.3333
+              "passing_yards_per_game": 281.3333,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 31,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 23,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 21,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 29,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -3352,6 +3400,12 @@
             "attempts": 53,
             "avg_time_to_throw": 2.538,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 29,
+              "of": 32
+            }
           }
         },
         {
@@ -3371,7 +3425,21 @@
               "success_rate": 0.3333,
               "games": 2,
               "carries_per_game": 6.0,
-              "rushing_yards_per_game": 19.0
+              "rushing_yards_per_game": 19.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 51,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 57,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 40,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -4891,15 +4959,9 @@
       "broadcast": "FOX",
       "away_starter": "J. Herbert",
       "home_starter": "J. Allen",
-      "away_availability": "6 out \u00b7 2 questionable",
+      "away_availability": "5 out \u00b7 2 questionable",
       "home_availability": "1 out \u00b7 4 questionable",
       "away_availability_list": [
-        {
-          "name": "Trey Pipkins III",
-          "position": "OT",
-          "status": "Out",
-          "detail": "knee"
-        },
         {
           "name": "Kayode Awosika",
           "position": "G",
@@ -4941,6 +5003,12 @@
           "position": "CB",
           "status": "Questionable",
           "detail": ""
+        },
+        {
+          "name": "Trey Pipkins III",
+          "position": "OT",
+          "status": "Injured Reserve",
+          "detail": "knee"
         },
         {
           "name": "David Njoku",
@@ -6278,6 +6346,12 @@
           "headshot_url": null
         },
         {
+          "name": "DJ Uiagalelei",
+          "position": "QB",
+          "depth_rank": 3,
+          "headshot_url": null
+        },
+        {
           "player_id": "00-0040666",
           "name": "Omarion Hampton",
           "position": "RB",
@@ -6379,7 +6453,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:04Z",
+        "observed_at_utc": "2026-09-27T02:32:25Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -6390,16 +6464,16 @@
               "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4374269.png&w=160&h=160"
             },
             {
-              "name": "Dalvin Tomlinson",
+              "name": "Jamaree Caldwell",
               "position": "NT",
               "group": "Front",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/2979860.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/5089178.png&w=160&h=160"
             },
             {
-              "name": "Jamaree Caldwell",
+              "name": "Justin Eboigbe",
               "position": "RDE",
               "group": "Front",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/5089178.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4567138.png&w=160&h=160"
             },
             {
               "name": "Tuli Tuipulotu",
@@ -6525,7 +6599,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:04Z",
+        "observed_at_utc": "2026-09-27T02:32:25Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -6693,7 +6767,25 @@
               "success_rate": 0.4167,
               "games": 2,
               "dropbacks_per_game": 30.0,
-              "passing_yards_per_game": 200.5
+              "passing_yards_per_game": 200.5,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 28,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 18,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 26,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 23,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -6804,6 +6896,12 @@
             "attempts": 27,
             "avg_time_to_throw": 2.858,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 13,
+              "of": 32
+            }
           }
         },
         {
@@ -6823,7 +6921,21 @@
               "success_rate": 0.3714,
               "games": 2,
               "carries_per_game": 17.5,
-              "rushing_yards_per_game": 68.5
+              "rushing_yards_per_game": 68.5,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 33,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 64,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 32,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -7042,6 +7154,16 @@
             "ryoe_per_carry": 0.0427,
             "rush_pct_over_expected": 0.4783,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 21,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 32,
+              "of": 45
+            }
           }
         },
         {
@@ -7754,15 +7876,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 28,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
                   "place": 21,
-                  "of": 55
+                  "of": 56
                 },
                 "success_rate": {
                   "place": 24,
-                  "of": 55
+                  "of": 56
                 }
               }
             },
@@ -8103,7 +8225,25 @@
               "success_rate": 0.4769,
               "games": 2,
               "dropbacks_per_game": 32.5,
-              "passing_yards_per_game": 291.0
+              "passing_yards_per_game": 291.0,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 18,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 2,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 3,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 11,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -8248,6 +8388,12 @@
             "attempts": 31,
             "avg_time_to_throw": 2.836,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 16,
+              "of": 32
+            }
           }
         },
         {
@@ -8267,7 +8413,21 @@
               "success_rate": 0.4412,
               "games": 2,
               "carries_per_game": 17.0,
-              "rushing_yards_per_game": 96.0
+              "rushing_yards_per_game": 96.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 5,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 5,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 16,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -8486,6 +8646,16 @@
             "ryoe_per_carry": 2.4756,
             "rush_pct_over_expected": 0.5,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 3,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 2,
+              "of": 45
+            }
           }
         },
         {
@@ -9198,15 +9368,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 4,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
                   "place": 16,
-                  "of": 55
+                  "of": 56
                 },
                 "success_rate": {
                   "place": 13,
-                  "of": 55
+                  "of": 56
                 }
               }
             },
@@ -10187,15 +10357,9 @@
       "broadcast": "FOX",
       "away_starter": "B. Young",
       "home_starter": "D. Watson",
-      "away_availability": "3 out \u00b7 2 questionable",
+      "away_availability": "2 out \u00b7 2 questionable",
       "home_availability": "1 out \u00b7 2 questionable",
       "away_availability_list": [
-        {
-          "name": "Claudin Cherelus",
-          "position": "LB",
-          "status": "Out",
-          "detail": "shoulder"
-        },
         {
           "name": "Nick Scott",
           "position": "S",
@@ -10219,6 +10383,12 @@
           "position": "WR",
           "status": "Questionable",
           "detail": "knee"
+        },
+        {
+          "name": "Claudin Cherelus",
+          "position": "LB",
+          "status": "Injured Reserve",
+          "detail": "shoulder"
         },
         {
           "name": "Jonathon Brooks",
@@ -11657,7 +11827,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:04Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -11803,7 +11973,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:04Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -11971,7 +12141,25 @@
               "success_rate": 0.4545,
               "games": 2,
               "dropbacks_per_game": 38.5,
-              "passing_yards_per_game": 324.0
+              "passing_yards_per_game": 324.0,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 22,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 6,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 6,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 17,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -12098,6 +12286,12 @@
             "attempts": 36,
             "avg_time_to_throw": 2.939,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 11,
+              "of": 32
+            }
           }
         },
         {
@@ -12117,7 +12311,21 @@
               "success_rate": 0.5909,
               "games": 2,
               "carries_per_game": 11.0,
-              "rushing_yards_per_game": 51.0
+              "rushing_yards_per_game": 51.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 18,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 13,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 4,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -12308,6 +12516,16 @@
             "ryoe_per_carry": 0.8952,
             "rush_pct_over_expected": 0.5833,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 11,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 13,
+              "of": 45
+            }
           }
         },
         {
@@ -13019,16 +13237,16 @@
               "rushing_yards_per_game": 34.0667,
               "league_ranks": {
                 "yards_per_carry": {
-                  "place": 43,
-                  "of": 55
+                  "place": 44,
+                  "of": 56
                 },
                 "epa_per_carry": {
-                  "place": 44,
-                  "of": 55
+                  "place": 45,
+                  "of": 56
                 },
                 "success_rate": {
                   "place": 30,
-                  "of": 55
+                  "of": 56
                 }
               }
             },
@@ -13369,7 +13587,25 @@
               "success_rate": 0.5085,
               "games": 2,
               "dropbacks_per_game": 29.5,
-              "passing_yards_per_game": 221.5
+              "passing_yards_per_game": 221.5,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 5,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 8,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 20,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 6,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -13496,6 +13732,12 @@
             "attempts": 30,
             "avg_time_to_throw": 2.553,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 28,
+              "of": 32
+            }
           }
         },
         {
@@ -13515,7 +13757,21 @@
               "success_rate": 0.25,
               "games": 2,
               "carries_per_game": 12.0,
-              "rushing_yards_per_game": 27.0
+              "rushing_yards_per_game": 27.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 64,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 65,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 55,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -13762,6 +14018,16 @@
             "ryoe_per_carry": -1.3443,
             "rush_pct_over_expected": 0.2727,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 43,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 3,
+              "of": 45
+            }
           }
         },
         {
@@ -13784,16 +14050,16 @@
               "rushing_yards_per_game": 59.2143,
               "league_ranks": {
                 "yards_per_carry": {
-                  "place": 50,
-                  "of": 55
+                  "place": 51,
+                  "of": 56
                 },
                 "epa_per_carry": {
-                  "place": 43,
-                  "of": 55
+                  "place": 44,
+                  "of": 56
                 },
                 "success_rate": {
-                  "place": 52,
-                  "of": 55
+                  "place": 53,
+                  "of": 56
                 }
               }
             },
@@ -14786,9 +15052,15 @@
       "broadcast": "FOX",
       "away_starter": "G. Smith",
       "home_starter": "J. Goff",
-      "away_availability": "3 out \u00b7 1 doubtful \u00b7 2 questionable",
-      "home_availability": "2 out",
+      "away_availability": "4 out \u00b7 2 questionable",
+      "home_availability": "1 out",
       "away_availability_list": [
+        {
+          "name": "Kene Nwangwu",
+          "position": "RB",
+          "status": "Out",
+          "detail": "back"
+        },
         {
           "name": "Kiko Mauigoa",
           "position": "LB",
@@ -14806,12 +15078,6 @@
           "position": "TE",
           "status": "Out",
           "detail": "thumb"
-        },
-        {
-          "name": "Kene Nwangwu",
-          "position": "RB",
-          "status": "Doubtful",
-          "detail": "back"
         },
         {
           "name": "Joseph Ossai",
@@ -14854,7 +15120,7 @@
         {
           "name": "Thomas Harper",
           "position": "S",
-          "status": "Out",
+          "status": "Injured Reserve",
           "detail": "ankle"
         },
         {
@@ -16256,7 +16522,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:04Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -16402,7 +16668,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:04Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -16455,10 +16721,10 @@
               "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3139387.png&w=160&h=160"
             },
             {
-              "name": "Thomas Harper",
+              "name": "Jalen Mills",
               "position": "SS",
               "group": "Secondary",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4569323.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/2976540.png&w=160&h=160"
             },
             {
               "name": "Chuck Clark",
@@ -16570,7 +16836,25 @@
               "success_rate": 0.4706,
               "games": 2,
               "dropbacks_per_game": 34.0,
-              "passing_yards_per_game": 231.0
+              "passing_yards_per_game": 231.0,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 6,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 13,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 11,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 12,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -16697,6 +16981,12 @@
             "attempts": 41,
             "avg_time_to_throw": 2.934,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 12,
+              "of": 32
+            }
           }
         },
         {
@@ -16716,7 +17006,21 @@
               "success_rate": 0.3684,
               "games": 2,
               "carries_per_game": 19.0,
-              "rushing_yards_per_game": 65.5
+              "rushing_yards_per_game": 65.5,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 46,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 35,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 33,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -16963,6 +17267,16 @@
             "ryoe_per_carry": -1.0135,
             "rush_pct_over_expected": 0.125,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 39,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 28,
+              "of": 45
+            }
           }
         },
         {
@@ -16986,15 +17300,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 29,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
-                  "place": 42,
-                  "of": 55
+                  "place": 43,
+                  "of": 56
                 },
                 "success_rate": {
                   "place": 31,
-                  "of": 55
+                  "of": 56
                 }
               }
             },
@@ -17321,7 +17635,25 @@
               "success_rate": 0.5,
               "games": 2,
               "dropbacks_per_game": 41.0,
-              "passing_yards_per_game": 266.5
+              "passing_yards_per_game": 266.5,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 14,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 20,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 8,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 7,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -17448,6 +17780,12 @@
             "attempts": 38,
             "avg_time_to_throw": 2.942,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 9,
+              "of": 32
+            }
           }
         },
         {
@@ -17467,7 +17805,21 @@
               "success_rate": 0.4667,
               "games": 2,
               "carries_per_game": 22.5,
-              "rushing_yards_per_game": 104.0
+              "rushing_yards_per_game": 104.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 19,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 23,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 11,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -17700,6 +18052,16 @@
             "ryoe_per_carry": -0.6808,
             "rush_pct_over_expected": 0.4,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 35,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 41,
+              "of": 45
+            }
           }
         },
         {
@@ -18412,15 +18774,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 10,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
                   "place": 24,
-                  "of": 55
+                  "of": 56
                 },
                 "success_rate": {
-                  "place": 33,
-                  "of": 55
+                  "place": 34,
+                  "of": 56
                 }
               }
             },
@@ -19405,18 +19767,12 @@
       "broadcast": "CBS",
       "away_starter": "C.J. Stroud",
       "home_starter": "D. Jones",
-      "away_availability": "5 out \u00b7 1 questionable",
+      "away_availability": "4 out \u00b7 1 questionable",
       "home_availability": "1 out \u00b7 1 questionable",
       "away_availability_list": [
         {
           "name": "Ed Ingram",
           "position": "G",
-          "status": "Out",
-          "detail": "groin"
-        },
-        {
-          "name": "Jake Hummel",
-          "position": "LB",
           "status": "Out",
           "detail": "groin"
         },
@@ -19443,6 +19799,12 @@
           "position": "OT",
           "status": "Questionable",
           "detail": ""
+        },
+        {
+          "name": "Jake Hummel",
+          "position": "LB",
+          "status": "Injured Reserve",
+          "detail": "groin"
         },
         {
           "name": "Henry To'oTo'o",
@@ -20881,7 +21243,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:04Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -20922,10 +21284,10 @@
               "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3919117.png&w=160&h=160"
             },
             {
-              "name": "Jake Hummel",
+              "name": "Wade Woodaz",
               "position": "SLB",
               "group": "Linebackers",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4241250.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4837286.png&w=160&h=160"
             },
             {
               "name": "Derek Stingley Jr.",
@@ -21027,7 +21389,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:04Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -21195,7 +21557,25 @@
               "success_rate": 0.4286,
               "games": 2,
               "dropbacks_per_game": 49.0,
-              "passing_yards_per_game": 313.5
+              "passing_yards_per_game": 313.5,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 24,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 22,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 22,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 21,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -21322,6 +21702,12 @@
             "attempts": 55,
             "avg_time_to_throw": 2.983,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 7,
+              "of": 32
+            }
           }
         },
         {
@@ -21341,7 +21727,21 @@
               "success_rate": 0.3077,
               "games": 2,
               "carries_per_game": 13.0,
-              "rushing_yards_per_game": 35.0
+              "rushing_yards_per_game": 35.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 61,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 49,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 47,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -21560,6 +21960,16 @@
             "ryoe_per_carry": -0.4144,
             "rush_pct_over_expected": 0.3,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 28,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 12,
+              "of": 45
+            }
           }
         },
         {
@@ -22256,7 +22666,25 @@
               "success_rate": 0.4375,
               "games": 2,
               "dropbacks_per_game": 32.0,
-              "passing_yards_per_game": 188.0
+              "passing_yards_per_game": 188.0,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 11,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 26,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 28,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 20,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -22383,6 +22811,12 @@
             "attempts": 31,
             "avg_time_to_throw": 2.796,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 18,
+              "of": 32
+            }
           }
         },
         {
@@ -22402,7 +22836,21 @@
               "success_rate": 0.4651,
               "games": 2,
               "carries_per_game": 21.5,
-              "rushing_yards_per_game": 95.0
+              "rushing_yards_per_game": 95.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 23,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 7,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 12,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -22623,6 +23071,16 @@
             "ryoe_per_carry": 0.0035,
             "rush_pct_over_expected": 0.375,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 22,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 29,
+              "of": 45
+            }
           }
         },
         {
@@ -23335,15 +23793,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 11,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
                   "place": 6,
-                  "of": 55
+                  "of": 56
                 },
                 "success_rate": {
                   "place": 16,
-                  "of": 55
+                  "of": 56
                 }
               }
             },
@@ -25779,7 +26237,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:06Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -25925,7 +26383,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:06Z",
+        "observed_at_utc": "2026-09-27T02:32:38Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -26093,7 +26551,25 @@
               "success_rate": 0.4872,
               "games": 2,
               "dropbacks_per_game": 39.0,
-              "passing_yards_per_game": 283.0
+              "passing_yards_per_game": 283.0,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 20,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 9,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 13,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 9,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -26220,6 +26696,12 @@
             "attempts": 47,
             "avg_time_to_throw": 2.786,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 19,
+              "of": 32
+            }
           }
         },
         {
@@ -26239,7 +26721,21 @@
               "success_rate": 0.5106,
               "games": 2,
               "carries_per_game": 23.5,
-              "rushing_yards_per_game": 145.0
+              "rushing_yards_per_game": 145.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 2,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 2,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 8,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -26486,6 +26982,16 @@
             "ryoe_per_carry": 1.0581,
             "rush_pct_over_expected": 0.4348,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 9,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 20,
+              "of": 45
+            }
           }
         },
         {
@@ -27200,7 +27706,25 @@
               "success_rate": 0.3559,
               "games": 2,
               "dropbacks_per_game": 29.5,
-              "passing_yards_per_game": 208.5
+              "passing_yards_per_game": 208.5,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 32,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 10,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 24,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 31,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -27327,6 +27851,12 @@
             "attempts": 23,
             "avg_time_to_throw": 2.977,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 8,
+              "of": 32
+            }
           }
         },
         {
@@ -27346,7 +27876,21 @@
               "success_rate": 0.3548,
               "games": 2,
               "carries_per_game": 15.5,
-              "rushing_yards_per_game": 55.0
+              "rushing_yards_per_game": 55.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 43,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 42,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 37,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -27551,6 +28095,16 @@
             "ryoe_per_carry": -0.4214,
             "rush_pct_over_expected": 0.3684,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 30,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 25,
+              "of": 45
+            }
           }
         },
         {
@@ -27574,15 +28128,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 3,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
                   "place": 5,
-                  "of": 55
+                  "of": 56
                 },
                 "success_rate": {
-                  "place": 39,
-                  "of": 55
+                  "place": 40,
+                  "of": 56
                 }
               }
             },
@@ -29973,9 +30527,15 @@
           "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/e5qyxnibbyawi0pvfpjl"
         },
         {
-          "name": "Jaxson Dart",
+          "name": "Jake Haener",
           "position": "QB",
           "depth_rank": 2,
+          "headshot_url": null
+        },
+        {
+          "name": "Jaxson Dart",
+          "position": "QB",
+          "depth_rank": 3,
           "headshot_url": null
         },
         {
@@ -30023,7 +30583,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:41:01Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -30169,7 +30729,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:05Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -30337,7 +30897,25 @@
               "success_rate": 0.4035,
               "games": 2,
               "dropbacks_per_game": 28.5,
-              "passing_yards_per_game": 161.5
+              "passing_yards_per_game": 161.5,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 25,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 28,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 27,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 25,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -30464,6 +31042,12 @@
             "attempts": 20,
             "avg_time_to_throw": 3.072,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 4,
+              "of": 32
+            }
           }
         },
         {
@@ -30483,7 +31067,21 @@
               "success_rate": 0.4286,
               "games": 2,
               "carries_per_game": 10.5,
-              "rushing_yards_per_game": 49.5
+              "rushing_yards_per_game": 49.5,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 15,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 24,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 21,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -30676,6 +31274,16 @@
             "ryoe_per_carry": 1.1819,
             "rush_pct_over_expected": 0.7143,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 8,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 31,
+              "of": 45
+            }
           }
         },
         {
@@ -31388,15 +31996,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 26,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
-                  "place": 40,
-                  "of": 55
+                  "place": 41,
+                  "of": 56
                 },
                 "success_rate": {
-                  "place": 36,
-                  "of": 55
+                  "place": 37,
+                  "of": 56
                 }
               }
             },
@@ -31848,6 +32456,12 @@
             "attempts": 27,
             "avg_time_to_throw": 2.857,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 14,
+              "of": 32
+            }
           }
         },
         {
@@ -31867,7 +32481,21 @@
               "success_rate": 0.3667,
               "games": 2,
               "carries_per_game": 15.0,
-              "rushing_yards_per_game": 58.5
+              "rushing_yards_per_game": 58.5,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 36,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 27,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 34,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -32100,6 +32728,16 @@
             "ryoe_per_carry": -1.3695,
             "rush_pct_over_expected": 0.25,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 44,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 23,
+              "of": 45
+            }
           }
         },
         {
@@ -32671,16 +33309,16 @@
               "rushing_yards_per_game": 51.5,
               "league_ranks": {
                 "yards_per_carry": {
-                  "place": 39,
-                  "of": 55
+                  "place": 40,
+                  "of": 56
                 },
                 "epa_per_carry": {
-                  "place": 45,
-                  "of": 55
+                  "place": 46,
+                  "of": 56
                 },
                 "success_rate": {
                   "place": 29,
-                  "of": 55
+                  "of": 56
                 }
               }
             },
@@ -33673,29 +34311,23 @@
       "broadcast": "CBS",
       "away_starter": "J. Burrow",
       "home_starter": "A. Rodgers",
-      "away_availability": "1 out \u00b7 1 doubtful",
-      "home_availability": "2 out \u00b7 4 questionable",
+      "away_availability": "1 doubtful",
+      "home_availability": "1 out \u00b7 4 questionable",
       "away_availability_list": [
-        {
-          "name": "Andrei Iosivas",
-          "position": "WR",
-          "status": "Out",
-          "detail": ""
-        },
         {
           "name": "B.J. Hill",
           "position": "DT",
           "status": "Doubtful",
           "detail": ""
+        },
+        {
+          "name": "Andrei Iosivas",
+          "position": "WR",
+          "status": "Injured Reserve",
+          "detail": "thumb"
         }
       ],
       "home_availability_list": [
-        {
-          "name": "Gennings Dunker",
-          "position": "G",
-          "status": "Out",
-          "detail": "knee"
-        },
         {
           "name": "Rico Dowdle",
           "position": "RB",
@@ -33725,6 +34357,12 @@
           "position": "RB",
           "status": "Questionable",
           "detail": "shoulder"
+        },
+        {
+          "name": "Gennings Dunker",
+          "position": "G",
+          "status": "Injured Reserve",
+          "detail": "knee"
         }
       ],
       "roof": "Outdoor",
@@ -35131,7 +35769,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:06Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -35277,7 +35915,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:29Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -35445,7 +36083,25 @@
               "success_rate": 0.3889,
               "games": 2,
               "dropbacks_per_game": 36.0,
-              "passing_yards_per_game": 230.5
+              "passing_yards_per_game": 230.5,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 16,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 21,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 23,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 27,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -35572,6 +36228,12 @@
             "attempts": 31,
             "avg_time_to_throw": 2.479,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 30,
+              "of": 32
+            }
           }
         },
         {
@@ -35591,7 +36253,21 @@
               "success_rate": 0.3611,
               "games": 2,
               "carries_per_game": 18.0,
-              "rushing_yards_per_game": 68.0
+              "rushing_yards_per_game": 68.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 38,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 36,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 36,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -35838,6 +36514,16 @@
             "ryoe_per_carry": -0.2928,
             "rush_pct_over_expected": 0.35,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 25,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 7,
+              "of": 45
+            }
           }
         },
         {
@@ -36514,15 +37200,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 30,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
                   "place": 26,
-                  "of": 55
+                  "of": 56
                 },
                 "success_rate": {
-                  "place": 34,
-                  "of": 55
+                  "place": 35,
+                  "of": 56
                 }
               }
             },
@@ -36863,7 +37549,25 @@
               "success_rate": 0.3882,
               "games": 2,
               "dropbacks_per_game": 42.5,
-              "passing_yards_per_game": 204.0
+              "passing_yards_per_game": 204.0,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 26,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 32,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 31,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 28,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -36990,6 +37694,12 @@
             "attempts": 39,
             "avg_time_to_throw": 2.579,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 27,
+              "of": 32
+            }
           }
         },
         {
@@ -37009,7 +37719,21 @@
               "success_rate": 0.3333,
               "games": 2,
               "carries_per_game": 10.5,
-              "rushing_yards_per_game": 44.5
+              "rushing_yards_per_game": 44.5,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 26,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 38,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 43,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -37202,6 +37926,16 @@
             "ryoe_per_carry": 0.1383,
             "rush_pct_over_expected": 0.5455,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 18,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 42,
+              "of": 45
+            }
           }
         },
         {
@@ -37914,15 +38648,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 23,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
                   "place": 18,
-                  "of": 55
+                  "of": 56
                 },
                 "success_rate": {
                   "place": 21,
-                  "of": 55
+                  "of": 56
                 }
               }
             },
@@ -40385,7 +41119,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:30Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -40531,7 +41265,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:41:01Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -40643,10 +41377,10 @@
               "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3115922.png&w=160&h=160"
             },
             {
-              "name": "Sam Cosmi",
+              "name": "Andrew Wylie",
               "position": "RG",
               "group": "Offensive Line",
-              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4262199.png&w=160&h=160"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3042702.png&w=160&h=160"
             },
             {
               "name": "Josh Conerly Jr.",
@@ -40768,7 +41502,21 @@
               "success_rate": 0.3478,
               "games": 2,
               "carries_per_game": 11.5,
-              "rushing_yards_per_game": 52.0
+              "rushing_yards_per_game": 52.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 21,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 55,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 39,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -40961,6 +41709,16 @@
             "ryoe_per_carry": -0.5605,
             "rush_pct_over_expected": 0.3077,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 33,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 16,
+              "of": 45
+            }
           }
         },
         {
@@ -41675,7 +42433,25 @@
               "success_rate": 0.3774,
               "games": 2,
               "dropbacks_per_game": 26.5,
-              "passing_yards_per_game": 130.0
+              "passing_yards_per_game": 130.0,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 27,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 31,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 18,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 30,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -41821,7 +42597,21 @@
               "success_rate": 0.4286,
               "games": 2,
               "carries_per_game": 14.0,
-              "rushing_yards_per_game": 53.0
+              "rushing_yards_per_game": 53.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 37,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 17,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 22,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -42040,6 +42830,16 @@
             "ryoe_per_carry": -1.3818,
             "rush_pct_over_expected": 0.1667,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 45,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 45,
+              "of": 45
+            }
           }
         },
         {
@@ -42680,15 +43480,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 21,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
                   "place": 29,
-                  "of": 55
+                  "of": 56
                 },
                 "success_rate": {
                   "place": 22,
-                  "of": 55
+                  "of": 56
                 }
               }
             },
@@ -44965,7 +45765,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:07Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -45111,7 +45911,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:07Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -45279,7 +46079,25 @@
               "success_rate": 0.4426,
               "games": 2,
               "dropbacks_per_game": 30.5,
-              "passing_yards_per_game": 193.0
+              "passing_yards_per_game": 193.0,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 19,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 24,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 29,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 19,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -45406,6 +46224,12 @@
             "attempts": 22,
             "avg_time_to_throw": 2.94,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 10,
+              "of": 32
+            }
           }
         },
         {
@@ -45425,7 +46249,21 @@
               "success_rate": 0.3333,
               "games": 2,
               "carries_per_game": 12.0,
-              "rushing_yards_per_game": 47.0
+              "rushing_yards_per_game": 47.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 32,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 50,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 41,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -45630,6 +46468,16 @@
             "ryoe_per_carry": -1.229,
             "rush_pct_over_expected": 0.3889,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 41,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 30,
+              "of": 45
+            }
           }
         },
         {
@@ -46342,15 +47190,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 19,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
-                  "place": 48,
-                  "of": 55
+                  "place": 49,
+                  "of": 56
                 },
                 "success_rate": {
-                  "place": 42,
-                  "of": 55
+                  "place": 43,
+                  "of": 56
                 }
               }
             },
@@ -46677,7 +47525,25 @@
               "success_rate": 0.5455,
               "games": 2,
               "dropbacks_per_game": 27.5,
-              "passing_yards_per_game": 217.0
+              "passing_yards_per_game": 217.0,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 13,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 7,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 7,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 3,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -46804,6 +47670,12 @@
             "attempts": 29,
             "avg_time_to_throw": 2.805,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 17,
+              "of": 32
+            }
           }
         },
         {
@@ -46823,7 +47695,21 @@
               "success_rate": 0.4643,
               "games": 2,
               "carries_per_game": 14.0,
-              "rushing_yards_per_game": 65.5
+              "rushing_yards_per_game": 65.5,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 16,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 20,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 13,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -47042,6 +47928,16 @@
             "ryoe_per_carry": 0.0935,
             "rush_pct_over_expected": 0.3077,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 19,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 36,
+              "of": 45
+            }
           }
         },
         {
@@ -47753,16 +48649,16 @@
               "rushing_yards_per_game": 20.4667,
               "league_ranks": {
                 "yards_per_carry": {
-                  "place": 46,
-                  "of": 55
+                  "place": 47,
+                  "of": 56
                 },
                 "epa_per_carry": {
-                  "place": 46,
-                  "of": 55
+                  "place": 47,
+                  "of": 56
                 },
                 "success_rate": {
                   "place": 9,
-                  "of": 55
+                  "of": 56
                 }
               }
             },
@@ -48756,7 +49652,7 @@
       "away_starter": "J. Brissett",
       "home_starter": "B. Purdy",
       "away_availability": "1 out \u00b7 2 questionable",
-      "home_availability": "5 out \u00b7 2 questionable",
+      "home_availability": "4 out \u00b7 2 questionable",
       "away_availability_list": [
         {
           "name": "Dadrion Taylor-Demerson",
@@ -48803,12 +49699,6 @@
           "detail": "calf"
         },
         {
-          "name": "Demarcus Robinson",
-          "position": "WR",
-          "status": "Out",
-          "detail": ""
-        },
-        {
           "name": "Brandon Aiyuk",
           "position": "WR",
           "status": "Out",
@@ -48825,6 +49715,12 @@
           "position": "CB",
           "status": "Questionable",
           "detail": "foot"
+        },
+        {
+          "name": "Demarcus Robinson",
+          "position": "WR",
+          "status": "Injured Reserve",
+          "detail": "ankle"
         },
         {
           "name": "C.J. West",
@@ -50237,7 +51133,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:07Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -50383,7 +51279,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:30Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -50471,10 +51367,10 @@
               "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/ntgyhqg6hq7fanhhsqiw"
             },
             {
-              "name": "Demarcus Robinson",
+              "name": "Jacob Cowing",
               "position": "WR",
               "group": "Receivers",
-              "headshot_url": "https://static.www.nfl.com/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/league/cokassoz2z7hb4wk2krh"
+              "headshot_url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4575665.png&w=160&h=160"
             },
             {
               "name": "Trent Williams",
@@ -50551,7 +51447,25 @@
               "success_rate": 0.4559,
               "games": 2,
               "dropbacks_per_game": 34.0,
-              "passing_yards_per_game": 186.0
+              "passing_yards_per_game": 186.0,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 9,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 29,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 19,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 16,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -50678,6 +51592,12 @@
             "attempts": 28,
             "avg_time_to_throw": 2.705,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 23,
+              "of": 32
+            }
           }
         },
         {
@@ -50697,7 +51617,21 @@
               "success_rate": 0.3,
               "games": 2,
               "carries_per_game": 10.0,
-              "rushing_yards_per_game": 35.0
+              "rushing_yards_per_game": 35.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 44,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 32,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 48,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -50864,6 +51798,16 @@
             "ryoe_per_carry": 0.9177,
             "rush_pct_over_expected": 0.5455,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 10,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 39,
+              "of": 45
+            }
           }
         },
         {
@@ -51578,7 +52522,25 @@
               "success_rate": 0.6429,
               "games": 2,
               "dropbacks_per_game": 28.0,
-              "passing_yards_per_game": 246.0
+              "passing_yards_per_game": 246.0,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 1,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 3,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 2,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 2,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -51705,6 +52667,12 @@
             "attempts": 22,
             "avg_time_to_throw": 3.038,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 5,
+              "of": 32
+            }
           }
         },
         {
@@ -51724,7 +52692,21 @@
               "success_rate": 0.5,
               "games": 2,
               "carries_per_game": 10.0,
-              "rushing_yards_per_game": 45.5
+              "rushing_yards_per_game": 45.5,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 20,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 9,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 9,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -51915,6 +52897,16 @@
             "ryoe_per_carry": -0.4372,
             "rush_pct_over_expected": 0.5,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 31,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 8,
+              "of": 45
+            }
           }
         },
         {
@@ -52626,16 +53618,16 @@
               "rushing_yards_per_game": 70.7059,
               "league_ranks": {
                 "yards_per_carry": {
-                  "place": 42,
-                  "of": 55
+                  "place": 43,
+                  "of": 56
                 },
                 "epa_per_carry": {
-                  "place": 35,
-                  "of": 55
+                  "place": 36,
+                  "of": 56
                 },
                 "success_rate": {
-                  "place": 37,
-                  "of": 55
+                  "place": 38,
+                  "of": 56
                 }
               }
             },
@@ -53188,8 +54180,8 @@
           "fantasy_points_ppr": 25.3
         },
         {
-          "player_id": "00-0032775",
-          "player_name": "Demarcus Robinson",
+          "player_id": "00-0039365",
+          "player_name": "Jacob Cowing",
           "position": "WR",
           "season": 2026,
           "source": "nflverse/nflfastR",
@@ -53202,13 +54194,13 @@
           "carries": 0,
           "rushing_yards": 0,
           "rushing_tds": 0,
-          "receptions": 5,
-          "targets": 6,
-          "receiving_yards": 84,
-          "receiving_tds": 1,
-          "target_share": 0.1091,
-          "fantasy_points": 14.4,
-          "fantasy_points_ppr": 19.4
+          "receptions": 0,
+          "targets": 0,
+          "receiving_yards": 0,
+          "receiving_tds": 0,
+          "target_share": 0,
+          "fantasy_points": 0,
+          "fantasy_points_ppr": 0
         },
         {
           "player_id": "00-0033288",
@@ -53642,7 +54634,7 @@
       "broadcast": "FOX",
       "away_starter": "C. Wentz",
       "home_starter": "B. Mayfield",
-      "away_availability": "2 out",
+      "away_availability": "1 out \u00b7 1 questionable",
       "home_availability": "2 out",
       "away_availability_list": [
         {
@@ -53652,9 +54644,15 @@
           "detail": "hamstring"
         },
         {
+          "name": "Ivan Pace Jr.",
+          "position": "LB",
+          "status": "Questionable",
+          "detail": "personal"
+        },
+        {
           "name": "Nick Samac",
           "position": "C",
-          "status": "Out",
+          "status": "Injured Reserve",
           "detail": "knee"
         }
       ],
@@ -55076,7 +56074,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:07Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -55222,7 +56220,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:41:00Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -55459,7 +56457,21 @@
               "success_rate": 0.3143,
               "games": 2,
               "carries_per_game": 17.5,
-              "rushing_yards_per_game": 72.5
+              "rushing_yards_per_game": 72.5,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 27,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 28,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 46,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -55706,6 +56718,16 @@
             "ryoe_per_carry": 0.3594,
             "rush_pct_over_expected": 0.4348,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 16,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 9,
+              "of": 45
+            }
           }
         },
         {
@@ -55729,15 +56751,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 35,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
                   "place": 25,
-                  "of": 55
+                  "of": 56
                 },
                 "success_rate": {
                   "place": 20,
-                  "of": 55
+                  "of": 56
                 }
               }
             },
@@ -56064,7 +57086,25 @@
               "success_rate": 0.3913,
               "games": 2,
               "dropbacks_per_game": 34.5,
-              "passing_yards_per_game": 199.0
+              "passing_yards_per_game": 199.0,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 12,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 27,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 30,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 26,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -56191,6 +57231,12 @@
             "attempts": 34,
             "avg_time_to_throw": 2.988,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 6,
+              "of": 32
+            }
           }
         },
         {
@@ -56210,7 +57256,21 @@
               "success_rate": 0.44,
               "games": 2,
               "carries_per_game": 12.5,
-              "rushing_yards_per_game": 67.0
+              "rushing_yards_per_game": 67.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 7,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 8,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 17,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -56415,6 +57475,16 @@
             "ryoe_per_carry": -0.0862,
             "rush_pct_over_expected": 0.2941,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 23,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 44,
+              "of": 45
+            }
           }
         },
         {
@@ -57108,16 +58178,16 @@
               "rushing_yards_per_game": 58.8,
               "league_ranks": {
                 "yards_per_carry": {
-                  "place": 52,
-                  "of": 55
+                  "place": 53,
+                  "of": 56
                 },
                 "epa_per_carry": {
-                  "place": 52,
-                  "of": 55
+                  "place": 53,
+                  "of": 56
                 },
                 "success_rate": {
-                  "place": 51,
-                  "of": 55
+                  "place": 52,
+                  "of": 56
                 }
               }
             },
@@ -58102,7 +59172,7 @@
       "away_starter": "L. Jackson",
       "home_starter": "D. Prescott",
       "away_availability": "1 out \u00b7 1 questionable",
-      "home_availability": "4 out",
+      "home_availability": "3 out",
       "away_availability_list": [
         {
           "name": "Ronnie Stanley",
@@ -58125,12 +59195,6 @@
       ],
       "home_availability_list": [
         {
-          "name": "P.J. Locke",
-          "position": "S",
-          "status": "Out",
-          "detail": "foot"
-        },
-        {
           "name": "Cobie Durant",
           "position": "CB",
           "status": "Out",
@@ -58147,6 +59211,12 @@
           "position": "LB",
           "status": "Out",
           "detail": "hamstring"
+        },
+        {
+          "name": "P.J. Locke",
+          "position": "S",
+          "status": "Injured Reserve",
+          "detail": "foot"
         }
       ],
       "roof": "Outdoor",
@@ -59553,7 +60623,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:07Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -59699,7 +60769,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:07Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -59867,7 +60937,25 @@
               "success_rate": 0.5424,
               "games": 2,
               "dropbacks_per_game": 29.5,
-              "passing_yards_per_game": 279.5
+              "passing_yards_per_game": 279.5,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 10,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 1,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 9,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 4,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -59994,6 +61082,12 @@
             "attempts": 31,
             "avg_time_to_throw": 3.091,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 3,
+              "of": 32
+            }
           }
         },
         {
@@ -60013,7 +61107,21 @@
               "success_rate": 0.625,
               "games": 2,
               "carries_per_game": 20.0,
-              "rushing_yards_per_game": 106.0
+              "rushing_yards_per_game": 106.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 8,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 1,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 3,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -60220,6 +61328,16 @@
             "ryoe_per_carry": -0.2359,
             "rush_pct_over_expected": 0.375,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 24,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 22,
+              "of": 45
+            }
           }
         },
         {
@@ -60914,15 +62032,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 5,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
                   "place": 11,
-                  "of": 55
+                  "of": 56
                 },
                 "success_rate": {
                   "place": 25,
-                  "of": 55
+                  "of": 56
                 }
               }
             },
@@ -61249,7 +62367,25 @@
               "success_rate": 0.5373,
               "games": 2,
               "dropbacks_per_game": 33.5,
-              "passing_yards_per_game": 227.0
+              "passing_yards_per_game": 227.0,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 3,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 15,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 5,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 5,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -61376,6 +62512,12 @@
             "attempts": 31,
             "avg_time_to_throw": 2.659,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 24,
+              "of": 32
+            }
           }
         },
         {
@@ -61395,7 +62537,21 @@
               "success_rate": 0.4583,
               "games": 2,
               "carries_per_game": 12.0,
-              "rushing_yards_per_game": 35.5
+              "rushing_yards_per_game": 35.5,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 57,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 29,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 14,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -61602,6 +62758,16 @@
             "ryoe_per_carry": -0.4768,
             "rush_pct_over_expected": 0.4545,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 32,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 40,
+              "of": 45
+            }
           }
         },
         {
@@ -62314,15 +63480,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 15,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
                   "place": 8,
-                  "of": 55
+                  "of": 56
                 },
                 "success_rate": {
                   "place": 14,
-                  "of": 55
+                  "of": 56
                 }
               }
             },
@@ -63329,20 +64495,20 @@
       "broadcast": "CBS",
       "away_starter": "K. Cousins",
       "home_starter": "T. Shough",
-      "away_availability": "1 out \u00b7 3 questionable",
+      "away_availability": "2 out \u00b7 2 questionable",
       "home_availability": "2 out \u00b7 1 questionable",
       "away_availability_list": [
+        {
+          "name": "Aidan O'Connell",
+          "position": "QB",
+          "status": "Out",
+          "detail": "personal"
+        },
         {
           "name": "Treydan Stukes",
           "position": "S",
           "status": "Out",
           "detail": "concussion"
-        },
-        {
-          "name": "Aidan O'Connell",
-          "position": "QB",
-          "status": "Questionable",
-          "detail": "personal"
         },
         {
           "name": "Brock Bowers",
@@ -63381,12 +64547,6 @@
           "position": "OT",
           "status": "Injured Reserve",
           "detail": "ankle"
-        },
-        {
-          "name": "Zach Wood",
-          "position": "LS",
-          "status": "Injured Reserve",
-          "detail": "calf"
         }
       ],
       "roof": "Indoor",
@@ -64793,7 +65953,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:08Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -64939,7 +66099,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:08Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -65107,7 +66267,25 @@
               "success_rate": 0.459,
               "games": 2,
               "dropbacks_per_game": 30.5,
-              "passing_yards_per_game": 206.5
+              "passing_yards_per_game": 206.5,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 8,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 16,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 16,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 15,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -65252,6 +66430,12 @@
             "attempts": 29,
             "avg_time_to_throw": 2.853,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 15,
+              "of": 32
+            }
           }
         },
         {
@@ -65271,7 +66455,21 @@
               "success_rate": 0.3182,
               "games": 2,
               "carries_per_game": 22.0,
-              "rushing_yards_per_game": 75.0
+              "rushing_yards_per_game": 75.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 47,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 58,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 45,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -65518,6 +66716,16 @@
             "ryoe_per_carry": -0.652,
             "rush_pct_over_expected": 0.2857,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 34,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 4,
+              "of": 45
+            }
           }
         },
         {
@@ -65540,16 +66748,16 @@
               "rushing_yards_per_game": 57.3529,
               "league_ranks": {
                 "yards_per_carry": {
-                  "place": 47,
-                  "of": 55
+                  "place": 48,
+                  "of": 56
                 },
                 "epa_per_carry": {
-                  "place": 54,
-                  "of": 55
+                  "place": 55,
+                  "of": 56
                 },
                 "success_rate": {
-                  "place": 54,
-                  "of": 55
+                  "place": 55,
+                  "of": 56
                 }
               }
             },
@@ -65890,7 +67098,25 @@
               "success_rate": 0.4796,
               "games": 2,
               "dropbacks_per_game": 49.0,
-              "passing_yards_per_game": 331.0
+              "passing_yards_per_game": 331.0,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 15,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 17,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 17,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 10,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -66017,6 +67243,12 @@
             "attempts": 34,
             "avg_time_to_throw": 2.734,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 22,
+              "of": 32
+            }
           }
         },
         {
@@ -66036,7 +67268,21 @@
               "success_rate": 0.4444,
               "games": 2,
               "carries_per_game": 9.0,
-              "rushing_yards_per_game": 36.5
+              "rushing_yards_per_game": 36.5,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 29,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 25,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 15,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -66241,6 +67487,16 @@
             "ryoe_per_carry": -0.9989,
             "rush_pct_over_expected": 0.1765,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 38,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 38,
+              "of": 45
+            }
           }
         },
         {
@@ -67563,7 +68819,7 @@
       "away_starter": "M. Stafford",
       "home_starter": "B. Nix",
       "away_availability": "2 doubtful \u00b7 1 questionable",
-      "home_availability": "3 out \u00b7 1 questionable",
+      "home_availability": "2 out \u00b7 1 questionable",
       "away_availability_list": [
         {
           "name": "Kamren Kinchens",
@@ -67592,12 +68848,6 @@
       ],
       "home_availability_list": [
         {
-          "name": "Jonah Coleman",
-          "position": "RB",
-          "status": "Out",
-          "detail": "ankle"
-        },
-        {
           "name": "Jonathon Cooper",
           "position": "LB",
           "status": "Out",
@@ -67616,10 +68866,10 @@
           "detail": "foot"
         },
         {
-          "name": "Frank Crum",
-          "position": "OT",
+          "name": "Jonah Coleman",
+          "position": "RB",
           "status": "Injured Reserve",
-          "detail": "undisclosed"
+          "detail": "ankle"
         }
       ],
       "roof": "Outdoor",
@@ -69032,7 +70282,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:08Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -69178,7 +70428,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:08Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -69346,7 +70596,25 @@
               "success_rate": 0.4643,
               "games": 2,
               "dropbacks_per_game": 28.0,
-              "passing_yards_per_game": 241.0
+              "passing_yards_per_game": 241.0,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 7,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 4,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 14,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 13,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -69473,6 +70741,12 @@
             "attempts": 31,
             "avg_time_to_throw": 2.626,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 26,
+              "of": 32
+            }
           }
         },
         {
@@ -69492,7 +70766,21 @@
               "success_rate": 0.4783,
               "games": 2,
               "carries_per_game": 11.5,
-              "rushing_yards_per_game": 63.0
+              "rushing_yards_per_game": 63.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 6,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 34,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 10,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -69669,6 +70957,16 @@
             "ryoe_per_carry": 2.8448,
             "rush_pct_over_expected": 0.5,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 1,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 1,
+              "of": 45
+            }
           }
         },
         {
@@ -70381,15 +71679,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 13,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
                   "place": 15,
-                  "of": 55
+                  "of": 56
                 },
                 "success_rate": {
                   "place": 3,
-                  "of": 55
+                  "of": 56
                 }
               }
             },
@@ -70730,7 +72028,25 @@
               "success_rate": 0.4603,
               "games": 2,
               "dropbacks_per_game": 31.5,
-              "passing_yards_per_game": 209.5
+              "passing_yards_per_game": 209.5,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 17,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 19,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 25,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 14,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -70857,6 +72173,12 @@
             "attempts": 31,
             "avg_time_to_throw": 2.738,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 21,
+              "of": 32
+            }
           }
         },
         {
@@ -70876,7 +72198,21 @@
               "success_rate": 0.2222,
               "games": 2,
               "carries_per_game": 9.0,
-              "rushing_yards_per_game": 36.0
+              "rushing_yards_per_game": 36.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 30,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 47,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 58,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -71067,6 +72403,16 @@
             "ryoe_per_carry": 0.4464,
             "rush_pct_over_expected": 0.4,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 14,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 18,
+              "of": 45
+            }
           }
         },
         {
@@ -71779,15 +73125,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 9,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
                   "place": 12,
-                  "of": 55
+                  "of": 56
                 },
                 "success_rate": {
                   "place": 12,
-                  "of": 55
+                  "of": 56
                 }
               }
             },
@@ -72618,53 +73964,41 @@
       "broadcast": "ESPN",
       "away_starter": "J. Hurts",
       "home_starter": "T. Bagent",
-      "away_availability": "1 doubtful \u00b7 5 questionable",
-      "home_availability": "2 out \u00b7 1 doubtful \u00b7 3 questionable",
+      "away_availability": "3 out \u00b7 1 questionable",
+      "home_availability": "3 out \u00b7 1 questionable",
       "away_availability_list": [
         {
-          "name": "Dallas Goedert",
-          "position": "TE",
-          "status": "Doubtful",
+          "name": "Fred Johnson",
+          "position": "OT",
+          "status": "Out",
           "detail": "knee"
         },
         {
-          "name": "DeVonta Smith",
+          "name": "Hollywood Brown",
           "position": "WR",
-          "status": "Questionable",
-          "detail": "hamstring"
+          "status": "Out",
+          "detail": "ankle"
+        },
+        {
+          "name": "Dallas Goedert",
+          "position": "TE",
+          "status": "Out",
+          "detail": "knee"
         },
         {
           "name": "Jonathan Greenard",
           "position": "LB",
           "status": "Questionable",
           "detail": "pectoral"
-        },
-        {
-          "name": "Hollywood Brown",
-          "position": "WR",
-          "status": "Questionable",
-          "detail": "ankle"
-        },
-        {
-          "name": "Will Shipley",
-          "position": "RB",
-          "status": "Questionable",
-          "detail": "foot"
-        },
-        {
-          "name": "Tank Bigsby",
-          "position": "RB",
-          "status": "Questionable",
-          "detail": "abdomen"
-        },
-        {
-          "name": "Landon Dickerson",
-          "position": "G",
-          "status": "Injured Reserve",
-          "detail": "knee"
         }
       ],
       "home_availability_list": [
+        {
+          "name": "Caleb Williams",
+          "position": "QB",
+          "status": "Out",
+          "detail": "hamstring"
+        },
         {
           "name": "Shemar Turner",
           "position": "DT",
@@ -72678,28 +74012,10 @@
           "detail": "Achilles"
         },
         {
-          "name": "Caleb Williams",
-          "position": "QB",
-          "status": "Doubtful",
-          "detail": "hamstring"
-        },
-        {
           "name": "Tyson Bagent",
           "position": "QB",
           "status": "Questionable",
           "detail": "concussion"
-        },
-        {
-          "name": "Tyrique Stevenson Sr.",
-          "position": "CB",
-          "status": "Questionable",
-          "detail": "hamstring"
-        },
-        {
-          "name": "Cairo Santos",
-          "position": "PK",
-          "status": "Questionable",
-          "detail": "right hip"
         },
         {
           "name": "Anthony Johnson Jr.",
@@ -74118,7 +75434,7 @@
       ],
       "away_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:29Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 3-4 D",
           "players": [
@@ -74264,7 +75580,7 @@
       },
       "home_lineups": {
         "source": "ESPN depth chart",
-        "observed_at_utc": "2026-09-26T17:40:08Z",
+        "observed_at_utc": "2026-09-27T02:32:35Z",
         "defense": {
           "package": "Base 4-3 D",
           "players": [
@@ -74432,7 +75748,25 @@
               "success_rate": 0.4265,
               "games": 2,
               "dropbacks_per_game": 34.0,
-              "passing_yards_per_game": 233.5
+              "passing_yards_per_game": 233.5,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 23,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 12,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 12,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 22,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -74559,6 +75893,12 @@
             "attempts": 37,
             "avg_time_to_throw": 3.502,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 2,
+              "of": 32
+            }
           }
         },
         {
@@ -74578,7 +75918,21 @@
               "success_rate": 0.2632,
               "games": 2,
               "carries_per_game": 9.5,
-              "rushing_yards_per_game": 46.0
+              "rushing_yards_per_game": 46.0,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 12,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 31,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 52,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -74783,6 +76137,16 @@
             "ryoe_per_carry": 1.8979,
             "rush_pct_over_expected": 0.5,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 5,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 37,
+              "of": 45
+            }
           }
         },
         {
@@ -75494,16 +76858,16 @@
               "rushing_yards_per_game": 71.375,
               "league_ranks": {
                 "yards_per_carry": {
-                  "place": 38,
-                  "of": 55
+                  "place": 39,
+                  "of": 56
                 },
                 "epa_per_carry": {
-                  "place": 39,
-                  "of": 55
+                  "place": 40,
+                  "of": 56
                 },
                 "success_rate": {
-                  "place": 41,
-                  "of": 55
+                  "place": 42,
+                  "of": 56
                 }
               }
             },
@@ -75844,7 +77208,25 @@
               "success_rate": 0.45,
               "games": 2,
               "dropbacks_per_game": 30.0,
-              "passing_yards_per_game": 203.5
+              "passing_yards_per_game": 203.5,
+              "league_ranks": {
+                "completion_rate": {
+                  "place": 21,
+                  "of": 32
+                },
+                "yards_per_attempt": {
+                  "place": 14,
+                  "of": 32
+                },
+                "epa_per_dropback": {
+                  "place": 10,
+                  "of": 32
+                },
+                "success_rate": {
+                  "place": 18,
+                  "of": 32
+                }
+              }
             },
             {
               "look": "blitz",
@@ -75971,6 +77353,12 @@
             "attempts": 26,
             "avg_time_to_throw": 3.707,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "avg_time_to_throw": {
+              "place": 1,
+              "of": 32
+            }
           }
         },
         {
@@ -75990,7 +77378,21 @@
               "success_rate": 0.4118,
               "games": 2,
               "carries_per_game": 17.0,
-              "rushing_yards_per_game": 84.5
+              "rushing_yards_per_game": 84.5,
+              "league_ranks": {
+                "yards_per_carry": {
+                  "place": 11,
+                  "of": 66
+                },
+                "epa_per_carry": {
+                  "place": 18,
+                  "of": 66
+                },
+                "success_rate": {
+                  "place": 24,
+                  "of": 66
+                }
+              }
             },
             {
               "look": "no_blitz",
@@ -76195,6 +77597,16 @@
             "ryoe_per_carry": -1.2821,
             "rush_pct_over_expected": 0.3333,
             "source": "NFL Next Gen Stats via nflverse"
+          },
+          "tracking_ranks": {
+            "ryoe_per_carry": {
+              "place": 42,
+              "of": 45
+            },
+            "eight_plus_box_rate": {
+              "place": 11,
+              "of": 45
+            }
           }
         },
         {
@@ -76889,15 +78301,15 @@
               "league_ranks": {
                 "yards_per_carry": {
                   "place": 12,
-                  "of": 55
+                  "of": 56
                 },
                 "epa_per_carry": {
                   "place": 4,
-                  "of": 55
+                  "of": 56
                 },
                 "success_rate": {
                   "place": 6,
-                  "of": 55
+                  "of": 56
                 }
               }
             },
