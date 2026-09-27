@@ -5382,3 +5382,131 @@ body[data-sport="nfl"] .ca-detail-nav {
   .ca-nfl-split thead th:first-child,
   .ca-nfl-split tbody td:first-child { width: 16%; }
 }
+
+/* ===========================================================================
+ * NFL DESK: TABS AND ONE CLUB AT A TIME
+ *
+ * The desk reads one group of sections at a time. The tab bar and, where the
+ * two clubs' panels stack, the club switch stay stuck under the header.
+ * ======================================================================== */
+.ca-nfl-bar {
+  position: sticky;
+  top: var(--shell-header-h);
+  z-index: calc(var(--z-header) - 1);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+  background: color-mix(in srgb, var(--surface-canvas) 90%, transparent);
+  box-shadow: 0 1px 0 var(--border-card);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.ca-nfl-bar .ca-detail-nav {
+  position: static;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  grid-template-columns: repeat(7, minmax(max-content, 1fr));
+}
+.ca-nfl-tabs a.is-on {
+  color: var(--accent-text);
+  background: var(--accent-soft);
+  box-shadow: inset 0 -2px 0 var(--accent-strong);
+}
+.ca-nfl-tabs a.is-on .ca-detail-nav__ico { color: var(--text-accent); }
+
+.ca-detail-stack[data-nfl-tab]:not([data-nfl-tab="all"]) > .ca-detail-section:not(.is-tab-on) { display: none; }
+.ca-detail-stack[data-nfl-tab] > .ca-detail-section { scroll-margin-top: calc(var(--shell-header-h) + 72px); }
+
+.ca-nfl-club {
+  display: none;
+  flex: 0 0 auto;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.ca-nfl-club__btn {
+  appearance: none;
+  min-height: var(--touch-min);
+  border: 0;
+  cursor: pointer;
+  padding: 0 var(--space-3);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: var(--type-meta);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.ca-nfl-club__btn + .ca-nfl-club__btn { border-left: 1px solid var(--border-default); }
+.ca-nfl-club__btn:hover { color: var(--text-primary); }
+.ca-nfl-club__btn.is-on {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  box-shadow: inset 0 0 0 1px var(--accent-strong);
+}
+.ca-nfl-club__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+/* The two clubs sit side by side from 1380px; narrower, they stack, so the
+   switch appears and the chosen club's panel is the one on screen. */
+@media (max-width: 1379px) {
+  .ca-nfl-club { display: inline-flex; }
+  .ca-detail-stack[data-club="away"] .ca-detail-duo > :nth-child(2),
+  .ca-detail-stack[data-club="home"] .ca-detail-duo > :nth-child(1) { display: none; }
+}
+
+@media (max-width: 899px) {
+  .ca-nfl-bar {
+    top: var(--shell-header-h-phone);
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-1);
+    padding-bottom: var(--space-1);
+  }
+  .ca-nfl-bar .ca-detail-nav { display: flex; }
+  .ca-nfl-bar .ca-detail-nav a { flex: 0 0 auto; }
+  .ca-nfl-club { display: flex; }
+  .ca-nfl-club__btn { flex: 1 1 0; }
+  .ca-detail-stack[data-nfl-tab] > .ca-detail-section {
+    scroll-margin-top: calc(var(--shell-header-h-phone) + 120px);
+  }
+}
+
+/* Phone tables: the row label stays pinned while the figures scroll, and a
+   rank pill sits under its figure. */
+@media (max-width: 560px) {
+  .ca-nfl-split thead th:first-child,
+  .ca-nfl-split tbody td:first-child,
+  .ca-nfl-mix thead th:first-child,
+  .ca-nfl-mix tbody td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--surface-board-raised);
+    box-shadow: 1px 0 0 var(--border-card);
+  }
+  .ca-nfl-split tbody td:first-child { min-width: 6rem; max-width: 7.5rem; }
+  .ca-nfl-split td.num .ca-rank,
+  .ca-nfl-mix td.num .ca-rank { display: block; margin: 2px 0 0 auto; width: max-content; }
+  .ca-nfl-split th.num, .ca-nfl-split td.num { min-width: 3.4rem; }
+}
+
+/* Phone: the matchup banner's facts read two across, and the evidence window
+   is one row - its label beside the two windows. */
+@media (max-width: 560px) {
+  .ca-detail-page .ca-detail-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .ca-detail-page .ca-detail-fact { padding: var(--space-2); }
+  .ca-analysis-scope {
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+  }
+  .ca-analysis-scope > div:first-child strong { display: none; }
+  .ca-analysis-scope .ca-season-toggle { justify-self: end; }
+  .ca-analysis-scope .ca-season-toggle__btn { padding: 5px 10px; }
+}

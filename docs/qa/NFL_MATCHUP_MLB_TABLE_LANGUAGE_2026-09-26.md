@@ -91,3 +91,35 @@ The section nav is a single row on every sport (`grid-auto-flow: column`). It
 used to be a fixed six-track grid, which wrapped MLB's nine anchors onto a second
 sticky row. The NFL nav groups its anchors: Units, Passing, Rushing, Receiving,
 Tendencies, Lineups, Radar, Context.
+
+## Tabs and one club at a time (2026-09-27)
+
+The desk reads one group of sections at a time. `NFL_TABS` in
+`dashboard/public_game_detail.js` groups the sections:
+
+| Tab | Sections |
+| --- | --- |
+| Units | efficiency |
+| Passing | quarterbacks, coverage, looks |
+| Rushing | rushing, trenches |
+| Receiving | receivers |
+| Tendencies | tendencies |
+| Lineups | availability |
+| Profile | radar, team-context |
+
+- The page opens on Units.
+- `#<tab>` or `#<section id>` in the address opens the tab that holds it.
+- Below 1380px the two clubs' panels stack. There, a sticky club switch
+  (away / home / both) shows one club's panels, and one club is the default.
+- The state lives on `.ca-detail-stack` as `data-nfl-tab` and `data-club`.
+  `data-nfl-tab="all"` shows every section; the runtime diag uses it for its
+  content checks.
+- On phones the row label is pinned while the figures scroll, and rank pills
+  sit under their figure.
+
+Measured on the same game:
+
+| View | Before | After |
+| --- | --- | --- |
+| Desktop 1440px | 10.4 screens, one page | 1.5 to 3.3 screens per tab |
+| Phone 390px | 27 screens | 2 to 5 screens per tab |
