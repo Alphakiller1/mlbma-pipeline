@@ -2842,12 +2842,43 @@
     return est && est.rank ? { rank: est.rank, of: est.of } : null;
   }
 
-  function nflUsageCell(rate) {
+  /* How often, against the league: an up arrow when this club does it more
+     than most clubs, a down arrow when less, a dash in the middle band. The
+     band is the site's own middle tier (|percentile - 0.5| < 0.13, about 13th
+     to 20th of 32), so an arrow means the same distance from average as a
+     coloured grade does. The marks stay neutral ink: how often is never how
+     well. Read from the published league_frequency_ranks (place 1 = most). */
+  function nflFreqRank(scheme, phase, group, key) {
+    return (((((scheme || {}).league_frequency_ranks || {})[phase] || {})[group] || {})[key]) || null;
+  }
+
+  function nflFreqMark(rank, invert) {
+    if (!rank || !(rank.of > 1) || !(rank.place >= 1)) return '';
+    var p = (rank.of - rank.place) / (rank.of - 1);
+    if (invert) p = 1 - p;
+    var d = p - 0.5;
+    var cls = Math.abs(d) < 0.13 ? 'is-avg' : (d > 0 ? 'is-up' : 'is-down');
+    var glyph = cls === 'is-up' ? '\u25b2' : (cls === 'is-down' ? '\u25bc' : '\u2013');
+    var place = invert ? rank.of + 1 - rank.place : rank.place;
+    var words = (cls === 'is-up' ? 'Above' : (cls === 'is-down' ? 'Below' : 'Near')) +
+      ' league average ' + '\u00b7' + ' ' + place + ordinal(place) + ' most of ' + rank.of;
+    return '<span class="ca-freq-mark ' + cls + '" title="' + esc(words) + '" aria-label="' +
+      esc(words) + '">' + glyph + '</span>';
+  }
+
+  function nflUsageCell(rate, rank, invert) {
     var n = Number(rate);
     if (rate == null || !isFinite(n)) return '<td class="num">&mdash;</td>';
     var pct = n * 100;
     return '<td class="num"><span class="ca-usage ' + usageTone(pct) + '">' +
-      usageSquares(pct) + '<b>' + pct.toFixed(1) + '%</b></span></td>';
+      usageSquares(pct) + '<b>' + pct.toFixed(1) + '%</b></span>' + nflFreqMark(rank, invert) + '</td>';
+  }
+
+  // A plain rate with its league marker, for the other club's column.
+  function nflRateCell(rate, rank, invert) {
+    var n = Number(rate);
+    if (rate == null || !isFinite(n)) return '<td class="num">&mdash;</td>';
+    return '<td class="num">' + esc(pctText(n)) + nflFreqMark(rank, invert) + '</td>';
   }
 
   /* The club's own result is coloured and chipped, like RV/100 on Pitch Mix;
@@ -2876,7 +2907,7 @@
   // Non-breaking, so a shell name never splits across lines in a narrow column.
   var NFL_SHELLS = [
     ['cover_0', 'Cover 0'], ['cover_1', 'Cover 1'], ['cover_2', 'Cover 2'],
-    ['cover_2_man', 'Cover 2 Man'], ['cover_3', 'Cover 3'], ['cover_4', 'Cover 4'],
+    ['cover_2_man', 'Cover 2 Man'], ['cover_3', 'Cover 3'], ['cover_4', 'Cover 4'],
     ['cover_6', 'Cover 6']
   ];
 
@@ -2897,7 +2928,7 @@
       .map(function (s) {
         var key = 'pass_epa_' + s[0];
         return '<tr><td class="ca-lineup-name">' + esc(s[1]) + '</td>' +
-          nflUsageCell(cov[s[0] + '_rate']) +
+          nflUsageCell(cov[s[0] + '_rate'], nflFreqRank(dScheme, 'defense', 'coverage', s[0] + '_rate')) +
           nflResultCell(allowed[key], nflResultRank(dScheme, 'defense', key, allowed[key]), true) +
           nflResultCell(faced[key], nflResultRank(oScheme, 'offense', key, faced[key]), false) +
           '</tr>';
@@ -2937,7 +2968,8 @@
     var rows = NFL_LOOKS.map(function (spec) {
       var rate = (unit[spec[1]] || {})[spec[2]];
       if (rate == null && allowed[spec[3]] == null) return '';
-      return '<tr><td class="ca-lineup-name">' + esc(spec[0]) + '</td>' + nflUsageCell(rate) +
+      return '<tr><td class="ca-lineup-name">' + esc(spec[0]) + '</td>' +
+        nflUsageCell(rate, nflFreqRank(dScheme, 'defense', spec[1], spec[2])) +
         nflResultCell(allowed[spec[3]], nflResultRank(dScheme, 'defense', spec[3], allowed[spec[3]]), true) +
         nflResultCell(faced[spec[3]], nflResultRank(oScheme, 'offense', spec[3], faced[spec[3]]), false) +
         '</tr>';
@@ -2965,13 +2997,15 @@
     var defSide = nflOther(offSide);
     var oScheme = game[offSide + '_scheme'] || {};
     var mine = ((oScheme.offense || {}).personnel) || {};
-    var seen = (((game[defSide + '_scheme'] || {}).defense || {}).personnel) || {};
+    var dScheme = game[defSide + '_scheme'] || {};
+    var seen = ((dScheme.defense || {}).personnel) || {};
     var head = '<section class="ca-arsenal-panel"' + nflSeasonsAttr(oScheme) + '><h3>' +
       esc(fullName(sport, game, offSide)) + ' Offense</h3>';
     var rows = NFL_TENDENCIES.map(function (spec) {
       if (mine[spec[1]] == null) return '';
-      return '<tr><td class="ca-lineup-name">' + esc(spec[0]) + '</td>' + nflUsageCell(mine[spec[1]]) +
-        '<td class="num">' + esc(seen[spec[1]] == null ? '—' : pctText(seen[spec[1]])) + '</td></tr>';
+      return '<tr><td class="ca-lineup-name">' + esc(spec[0]) + '</td>' +
+        nflUsageCell(mine[spec[1]], nflFreqRank(oScheme, 'offense', 'personnel', spec[1])) +
+        nflRateCell(seen[spec[1]], nflFreqRank(dScheme, 'defense', 'personnel', spec[1])) + '</tr>';
     }).filter(Boolean);
     if (!rows.length) return head + pending('Offensive tendencies are not published for this club.') + '</section>';
     var stats = game[offSide + '_team_stats'] || {};
@@ -3086,6 +3120,15 @@
     return inverse ? 1 - Number(v) : Number(v);
   }
 
+  // The same look's league place for the opponent; a complement (no blitz,
+  // clean pocket) reads its source rate's place turned over.
+  function nflOppShowsMark(oppScheme, look) {
+    var inverse = { no_blitz: 'blitz', clean: 'pressure' }[look];
+    var spec = NFL_LOOK_RATE[inverse || look];
+    if (!spec) return '';
+    return nflFreqMark(nflFreqRank(oppScheme, 'defense', spec[0], spec[1]), !!inverse);
+  }
+
   /* The latest season is the table; an earlier one is a disclosure whose
      summary still names its season and sample, so nothing is hidden without
      saying what it is. Open on a wide screen, closed on a phone (see
@@ -3153,7 +3196,8 @@
             (rank ? ' title="' + rank.place + ordinal(rank.place) + ' of ' + rank.of +
               ' at his position in this look"' : '') + '>' + esc(nflFormat(r[col[0]], col[3])) + '</td>';
         }).join('') + (showCol ? '<td class="num ca-opp-shows">' +
-          (shows == null ? '&mdash;' : esc(pctText(shows))) + '</td>' : '') + '</tr>';
+          (shows == null ? '&mdash;' : esc(pctText(shows)) + nflOppShowsMark(opp.scheme, r.look)) +
+          '</td>' : '') + '</tr>';
     }).join('');
     return nflSplitWrap(prior, season, title,
       '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-nfl-split"><thead><tr><th>Look</th>' +
@@ -3225,6 +3269,7 @@
     }
     var oppSide = nflOther(side);
     var opp = {
+      scheme: game[oppSide + '_scheme'] || {},
       defense: (game[oppSide + '_scheme'] || {}).defense || null,
       name: fullName(sport, game, oppSide),
       nick: nflNick(sport, game, oppSide)
@@ -3432,8 +3477,10 @@
     var mixRows = [['wr', 'Wide Receivers'], ['te', 'Tight Ends'], ['rb', 'Running Backs']].map(function (k) {
       var v = mine['target_share_' + k[0] + '_all'], a = allowed['target_share_' + k[0] + '_all'];
       if (v == null && a == null) return '';
-      return '<tr><td class="ca-lineup-name">' + k[1] + '</td>' + nflUsageCell(v) +
-        '<td class="num">' + esc(a == null ? '—' : pctText(a)) + '</td></tr>';
+      var tk = 'target_share_' + k[0] + '_all';
+      return '<tr><td class="ca-lineup-name">' + k[1] + '</td>' +
+        nflUsageCell(v, nflFreqRank(game[side + '_scheme'], 'offense', 'target_share', tk)) +
+        nflRateCell(a, nflFreqRank(game[defSide + '_scheme'], 'defense', 'target_share', tk)) + '</tr>';
     }).filter(Boolean);
     var mixHtml = mixRows.length
       ? '<div class="ca-split-block"' + nflSeasonsAttr(game[side + '_scheme']) + '><h4>Target Distribution</h4>' +
@@ -3486,13 +3533,19 @@
         'snaps. EPA Allowed is dropback EPA per play against it in that shell; the last column is how ' +
         'the other offense has passed against the same shell. Both are ' + poolNote + ', 1st being ' +
         'the fewest allowed or the most gained. Rows are this defense’s shells, most played ' +
-        'first.</p>'),
+        'first.' +
+        ' ' + '\u25b2' + ' and ' + '\u25bc' + ' mark a rate above or below the league average for that same ' +
+        'rate, ' + '\u2013' + ' a rate near it (the middle of the 32 clubs); the marks are neutral, because ' +
+        'how often is not how well.</p>'),
 
       section('looks', 'Defensive Looks', 'Man, Zone, Blitz, Pressure And Box',
         nflDuo(nflLooksPanel, sport, game) +
         '<p class="ca-detail-source-note">Usage is how often this defense shows the look on its ' +
         'charted snaps. Stacked Box is rush EPA; every other row is dropback EPA. Results are ' +
-        poolNote + '.</p>'),
+        poolNote + '.' +
+        ' ' + '\u25b2' + ' and ' + '\u25bc' + ' mark a rate above or below the league average for that same ' +
+        'rate, ' + '\u2013' + ' a rate near it (the middle of the 32 clubs); the marks are neutral, because ' +
+        'how often is not how well.</p>'),
 
       section('rushing', 'Running Backs', 'Season Line And Splits By Box And Direction',
         nflDuo(nflBackPanel, sport, game, 'RB') +
@@ -3517,13 +3570,19 @@
         '<p class="ca-detail-source-note">Completed regular-season games, from nflverse. Per-game ' +
         'figures divide season totals by games played; they are not projections. Target Distribution ' +
         'is the charted share of this offense’s targets by position, beside the share the other ' +
-        'defense has allowed to the same position. Volume is not graded.</p>'),
+        'defense has allowed to the same position. Volume is not graded.' +
+        ' ' + '\u25b2' + ' and ' + '\u25bc' + ' mark a rate above or below the league average for that same ' +
+        'rate, ' + '\u2013' + ' a rate near it (the middle of the 32 clubs); the marks are neutral, because ' +
+        'how often is not how well.</p>'),
 
       section('tendencies', 'Offensive Tendencies', 'Personnel, Formation And Play Type',
         nflDuo(nflTendencyPanel, sport, game) +
         '<p class="ca-detail-source-note">Usage is this offense’s rate on its charted snaps; the ' +
         'last column is how often the other defense has faced the same thing. Tendencies are how ' +
-        'often, not how well, so nothing here is coloured.</p>'),
+        'often, not how well, so nothing here is coloured.' +
+        ' ' + '\u25b2' + ' and ' + '\u25bc' + ' mark a rate above or below the league average for that same ' +
+        'rate, ' + '\u2013' + ' a rate near it (the middle of the 32 clubs); the marks are neutral, because ' +
+        'how often is not how well.</p>'),
 
       section('availability', 'Starting Lineups And Availability',
         'Offense, Defense And Official Designations',

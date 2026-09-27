@@ -326,6 +326,18 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator(".ca-nfl-signal, .is-off, .is-def, [data-matchup-side]").count() == 0)
         check("NFL tendencies are never graded",
               page.locator("#tendencies td[class*='c-']").count() == 0)
+        cov_usage = page.locator("#coverage .ca-arsenal-table td:has(.ca-usage)").count()
+        cov_marks = page.locator("#coverage .ca-arsenal-table td:has(.ca-usage) .ca-freq-mark").count()
+        check("NFL coverage usage carries a league marker on every row",
+              cov_usage > 0 and cov_marks == cov_usage, f"{cov_marks} marks on {cov_usage} usage cells")
+        glyphs = page.locator(".ca-freq-mark").evaluate_all("ns => [...new Set(ns.map(n => n.textContent))].sort().join('')")
+        check("NFL league markers are up, down and dash only", set(glyphs) <= set("▲▼–") and len(glyphs) >= 2, glyphs)
+        check("NFL league markers are never grade-coloured",
+              page.locator(".ca-freq-mark[class*='c-']").count() == 0 and
+              page.locator("td:has(> .ca-freq-mark)[class*='c-']").count() == 0)
+        check("NFL tendencies, looks, receivers and QB opponent rates carry markers",
+              all(page.locator(f"{sid} .ca-freq-mark").count() > 0
+                  for sid in ("#looks", "#tendencies", "#receivers", "#quarterbacks")))
         check("NFL usage is never graded",
               page.locator(".ca-arsenal-table td:has(.ca-usage)[class*='c-']").count() == 0)
         check("NFL thin samples are tagged and never graded",

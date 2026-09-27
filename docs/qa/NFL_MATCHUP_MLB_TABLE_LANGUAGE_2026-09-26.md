@@ -79,7 +79,7 @@ If the NFL data needs something none of the three components can show, build
 it from the same classes, and add a runtime-diag check for it.
 
 Widths. NFL pairs (`.ca-nfl-duo`) tighten their cell padding at 1400px and
-below, and stack to one column below 1340px, so no table has to scroll between
+below, and stack to one column below 1380px, so no table has to scroll between
 768px and 1440px. On phones (560px and below), the mix tables drop the usage
 squares and keep the percentage, so the matchup columns stay on screen. The
 seven-column QB table scrolls inside its panel, as the MLB tables do.

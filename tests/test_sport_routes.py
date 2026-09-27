@@ -474,7 +474,7 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("ca-lineup-table ca-split-table", nfl)
         self.assertIn('<div class="ca-detail-duo ca-nfl-duo">', nfl)
         # The pairs stack before a table must scroll, keeping the other club's column on screen.
-        self.assertRegex(css, r"@media \(max-width: 1339px\) \{\s+\.ca-nfl-duo \{ grid-template-columns: minmax\(0, 1fr\); \}")
+        self.assertRegex(css, r"@media \(max-width: 1379px\) \{\s+\.ca-nfl-duo \{ grid-template-columns: minmax\(0, 1fr\); \}")
         for section_id in ("efficiency", "quarterbacks", "coverage", "looks", "rushing",
                            "trenches", "receivers", "tendencies", "availability", "radar",
                            "team-context"):
@@ -496,6 +496,14 @@ class AdapterHoleTests(unittest.TestCase):
         tendency = nfl[nfl.index("function nflTendencyPanel"):nfl.index("function nflStarter")]
         self.assertNotIn("rankTone", tendency)
         self.assertNotIn("nflResultCell", tendency)
+        # Frequencies carry a neutral league marker (up / down / dash in the middle
+        # tier band), read from the published frequency ranks, never a grade colour.
+        self.assertIn("function nflFreqMark(rank, invert)", nfl)
+        self.assertIn("Math.abs(d) < 0.13 ? 'is-avg'", nfl)
+        self.assertIn("nflFreqRank(oScheme, 'offense', 'personnel', spec[1])", tendency)
+        mark_css = css[css.index(".ca-freq-mark {"):]
+        mark_css = mark_css[:mark_css.index("}", mark_css.index(".ca-freq-mark.is-up"))]
+        self.assertNotIn("--metric", mark_css)
         # A split under its sample floor is printed, dimmed, and never graded.
         self.assertIn("floor: 30", nfl)
         self.assertIn("floor: 15", nfl)
