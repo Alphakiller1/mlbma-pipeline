@@ -144,7 +144,11 @@
     "venue_id",
     "weather_cond",
     "weather_temp",
-    "weather_wind"
+    "weather_wind",
+    "away_team_stats_prior",
+    "home_team_stats_prior",
+    "away_player_stats_prior",
+    "home_player_stats_prior"
   ],
   "notes": {
     "away_availability_list": "Official injury designations: name, position, status, body part. factual-status. No projection, snap share or confidence.",

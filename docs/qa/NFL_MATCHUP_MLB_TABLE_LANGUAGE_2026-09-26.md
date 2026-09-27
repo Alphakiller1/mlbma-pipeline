@@ -55,7 +55,8 @@ all of these:
   or rank colour. Each carries a league marker instead: a green up arrow above
   the league, a red down arrow below, a yellow dash in the middle band (owner
   direction 2026-09-27).
-- **Show the sample.** A split under its floor (30 dropbacks, 15 carries) is
+- **Show the sample.** A split under its floor (10 dropbacks, 5 carries, 3 targets: the
+  pipeline's own ranking minimums, so early-season rows are graded) is
   printed with a Low n tag and never graded. Run Direction prints the carry
   count beside every YPC.
 - **Real ranks.** Situational EPA is ranked among the clubs on the slate
@@ -67,7 +68,7 @@ all of these:
   stats publish a second sack rate from another source, so Trenches leaves it out.
 - **Thin samples are tagged, not just grey.** Every ungraded number on the desk
   is already secondary grey, so a row under its floor carries a "Low n" tag.
-  A Run Direction count under 15 carries is underlined with a dotted line.
+  A Run Direction count under 5 carries is underlined with a dotted line.
 - **Looks come in families.** QB rows are grouped Coverage / Pass Rush / Box /
   Shells, and RB rows Box / Personnel Faced / Direction / Point Of Attack, using
   `tr.ca-split-group` rows. Only the QB table carries the opponent's "Show"

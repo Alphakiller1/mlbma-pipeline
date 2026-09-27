@@ -431,7 +431,11 @@
     "lane_middle",
     "lane_right",
     "ytd",
-    "zone_rate"
+    "zone_rate",
+    "away_team_stats_prior",
+    "home_team_stats_prior",
+    "away_player_stats_prior",
+    "home_player_stats_prior"
   ],
   "derived_descriptive": [
     "depth_rank",

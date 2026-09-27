@@ -386,6 +386,16 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL every number is graded, marked, tagged thin or a count",
               grading["checked"] > 200 and grading["ungraded"] == 0,
               f"{grading['ungraded']} of {grading['checked']}: {grading['sample'][:3]}")
+        # The evidence window changes the data: combined two-season lines under
+        # "2025 + 2026", the current season alone under "2026 Only".
+        tiles_of = "() => [...document.querySelectorAll('#quarterbacks .ca-stat__value')].filter(e => e.offsetParent).map(e => e.innerText).join('|')"
+        combined_tiles = page.evaluate(tiles_of)
+        page.locator("[data-season-scope='current']").click()
+        current_tiles = page.evaluate(tiles_of)
+        page.locator("[data-season-scope='combined']").click()
+        check("NFL evidence window changes the numbers, not just what is hidden",
+              combined_tiles and current_tiles and combined_tiles != current_tiles,
+              f"{combined_tiles[:40]} vs {current_tiles[:40]}")
         check("NFL usage is never graded",
               page.locator(".ca-arsenal-table td:has(.ca-usage)[class*='c-']").count() == 0)
         check("NFL thin samples are tagged and never graded",

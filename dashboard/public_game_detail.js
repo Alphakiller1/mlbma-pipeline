@@ -2603,6 +2603,9 @@ function wireSeasonToggle(host) {
         panel.hidden = !show;
         if (show) visible += 1;
       });
+      Array.prototype.forEach.call(host.querySelectorAll('[data-season-view]'), function (node) {
+        node.hidden = node.getAttribute('data-season-view') !== scope;
+      });
       Array.prototype.forEach.call(host.querySelectorAll('[data-season-prior-only]'), function (node) {
         node.hidden = scope === 'current';
       });
@@ -2707,7 +2710,10 @@ function seasonToggle(game) {
           line: g[side + '_line_stats'] || {},
           stats: g[side + '_team_stats'] || {},
           players: g[side + '_player_stats'] || [],
-          backs: g[side + '_player_scheme'] || []
+          playersPrior: g[side + '_player_stats_prior'] || [],
+          statsPrior: g[side + '_team_stats_prior'] || {},
+          backs: g[side + '_player_scheme'] || [],
+          receivers: g[side + '_player_coverage'] || []
         };
       });
     });
@@ -2960,6 +2966,165 @@ function seasonToggle(game) {
       nflMixTable('Tendency', [fullName(sport, game, defSide) + ' Faced'], rows) + '</section>';
   }
 
+
+  /* ---- the 2025 + 2026 window ----------------------------------------
+     The evidence window changes the data, not just what is hidden. Under
+     "2025 + 2026" each player's two seasons are combined look by look -
+     counts summed, rates recomputed from the sums - and graded against every
+     player on the slate combined the same way. Under "2026 Only" the current
+     season stands alone with its published league ranks. */
+  var NFL_MERGE = {
+    QB: { volume: 'dropbacks', key: 'look',
+      sums: ['dropbacks', 'attempts', 'completions', 'passing_yards', 'passing_tds', 'interceptions', 'games'],
+      weighted: [['epa_per_dropback', 'dropbacks'], ['success_rate', 'dropbacks']],
+      derive: function (t) {
+        t.completion_rate = t.attempts ? t.completions / t.attempts : null;
+        t.yards_per_attempt = t.attempts ? t.passing_yards / t.attempts : null;
+        t.dropbacks_per_game = t.games ? t.dropbacks / t.games : null;
+        t.passing_yards_per_game = t.games ? t.passing_yards / t.games : null;
+      },
+      metrics: [['completion_rate', true], ['yards_per_attempt', true], ['epa_per_dropback', true], ['success_rate', true]],
+      minimum: 10, allFloor: 100 },
+    RB: { volume: 'carries', key: 'look',
+      sums: ['carries', 'rushing_yards', 'rushing_tds', 'games'],
+      weighted: [['epa_per_carry', 'carries'], ['success_rate', 'carries']],
+      derive: function (t) {
+        t.yards_per_carry = t.carries ? t.rushing_yards / t.carries : null;
+        t.carries_per_game = t.games ? t.carries / t.games : null;
+        t.rushing_yards_per_game = t.games ? t.rushing_yards / t.games : null;
+      },
+      metrics: [['yards_per_carry', true], ['epa_per_carry', true], ['success_rate', true]],
+      minimum: 5, allFloor: 50 },
+    REC: { volume: 'targets', key: 'coverage',
+      sums: ['targets', 'receptions', 'receiving_yards', 'touchdowns'],
+      weighted: [['epa_per_target', 'targets']],
+      derive: function (t) {
+        t.catch_rate = t.targets ? t.receptions / t.targets : null;
+        t.yards_per_target = t.targets ? t.receiving_yards / t.targets : null;
+      },
+      metrics: [['catch_rate', true], ['yards_per_target', true], ['epa_per_target', true]],
+      minimum: 3, allFloor: 20 }
+  };
+
+  function nflMergeSplits(profiles, kind) {
+    var spec = NFL_MERGE[kind];
+    var byLook = {};
+    profiles.forEach(function (p) {
+      (p.splits || []).forEach(function (sp) {
+        var look = sp[spec.key];
+        var t = byLook[look] || (byLook[look] = {});
+        spec.sums.forEach(function (k) { t[k] = (t[k] || 0) + (Number(sp[k]) || 0); });
+        spec.weighted.forEach(function (w) {
+          if (sp[w[0]] == null) return;
+          t['_' + w[0]] = (t['_' + w[0]] || 0) + Number(sp[w[0]]) * (Number(sp[w[1]]) || 0);
+          t['_' + w[0] + '_n'] = (t['_' + w[0] + '_n'] || 0) + (Number(sp[w[1]]) || 0);
+        });
+      });
+    });
+    return Object.keys(byLook).map(function (look) {
+      var t = byLook[look];
+      spec.weighted.forEach(function (w) {
+        t[w[0]] = t['_' + w[0] + '_n'] ? t['_' + w[0]] / t['_' + w[0] + '_n'] : null;
+        delete t['_' + w[0]]; delete t['_' + w[0] + '_n'];
+      });
+      spec.derive(t);
+      t[spec.key] = look;
+      return t;
+    });
+  }
+
+  // Every player on the slate, both seasons combined, by kind (QB / RB / REC).
+  var nflMergedPool = null;
+  function nflMergedPlayers(kind) {
+    if (!nflPool) return [];
+    nflMergedPool = nflMergedPool || {};
+    if (nflMergedPool[kind]) return nflMergedPool[kind];
+    var groups = {};
+    Object.keys(nflPool).forEach(function (team) {
+      var rows = kind === 'REC' ? (nflPool[team].receivers || []) : (nflPool[team].backs || []);
+      rows.forEach(function (p) {
+        if (kind !== 'REC' && p.position !== kind) return;
+        var id = p.player_id || playerNameKey(p.player_name);
+        (groups[id] = groups[id] || { position: p.position, profiles: [] }).profiles.push(p);
+      });
+    });
+    nflMergedPool[kind] = Object.keys(groups).map(function (id) {
+      return { id: id, position: groups[id].position, splits: nflMergeSplits(groups[id].profiles, kind) };
+    });
+    return nflMergedPool[kind];
+  }
+
+  // Rank a combined split among slate players of the same position, same look.
+  function nflRankMerged(splits, kind, position) {
+    var spec = NFL_MERGE[kind];
+    var players = nflMergedPlayers(kind).filter(function (p) { return p.position === position; });
+    var alls = players.map(function (p) {
+      var a = p.splits.filter(function (x) { return x[spec.key] === 'all'; })[0];
+      return a ? Number(a[spec.volume]) || 0 : 0;
+    }).sort(function (a, b) { return a - b; });
+    var median = alls.length ? alls[Math.floor(alls.length / 2)] : 0;
+    var allFloor = Math.max(spec.minimum, Math.min(spec.allFloor, Math.round(median / 2)));
+    splits.forEach(function (sp) {
+      var look = sp[spec.key];
+      var floor = look === 'all' ? allFloor : spec.minimum;
+      if ((Number(sp[spec.volume]) || 0) < floor) return;
+      spec.metrics.forEach(function (m) {
+        var pool = players.map(function (p) {
+          var x = p.splits.filter(function (y) { return y[spec.key] === look; })[0];
+          return x && (Number(x[spec.volume]) || 0) >= floor && x[m[0]] != null ? Number(x[m[0]]) : null;
+        }).filter(function (v) { return v != null; });
+        if (pool.length < 2 || sp[m[0]] == null) return;
+        var v = Number(sp[m[0]]);
+        var ahead = pool.filter(function (x) { return m[1] ? x > v : x < v; }).length;
+        (sp.league_ranks = sp.league_ranks || {})[m[0]] = { place: ahead + 1, of: pool.length };
+      });
+    });
+    return splits;
+  }
+
+  /* A player's two seasons as one line: totals summed; target share is the
+     combined targets over the combined team targets each share implies. */
+  function nflCombineRows(current, prior) {
+    var byId = {};
+    (prior || []).forEach(function (r) { byId[r.player_id || playerNameKey(r.player_name)] = r; });
+    return (current || []).map(function (c) {
+      var p = byId[c.player_id || playerNameKey(c.player_name)];
+      if (!p) return c;
+      var out = {};
+      Object.keys(c).forEach(function (k) { out[k] = c[k]; });
+      ['games', 'targets', 'receptions', 'receiving_yards', 'receiving_tds', 'completions', 'attempts',
+        'passing_yards', 'passing_tds', 'passing_interceptions', 'carries', 'rushing_yards', 'rushing_tds']
+        .forEach(function (k) {
+          if (c[k] != null || p[k] != null) out[k] = (Number(c[k]) || 0) + (Number(p[k]) || 0);
+        });
+      var teamTargets = (c.target_share ? Number(c.targets) / Number(c.target_share) : 0) +
+        (p.target_share ? Number(p.targets) / Number(p.target_share) : 0);
+      out.target_share = teamTargets ? out.targets / teamTargets : c.target_share;
+      out.season = (p.season || '') + ' + ' + (c.season || '');
+      return out;
+    });
+  }
+
+  function nflCombineTeam(current, prior) {
+    if (!prior || !current) return current || prior || null;
+    var out = {};
+    Object.keys(current).forEach(function (k) {
+      var a = Number(current[k]), b = Number(prior[k]);
+      out[k] = isFinite(a) && isFinite(b) && typeof current[k] === 'number' ? a + b : current[k];
+    });
+    var snaps = ['attempts', 'carries', 'sacks_suffered'].reduce(function (t, k) {
+      return t + (Number(out[k]) || 0); }, 0);
+    out.offensive_plays_per_game = out.games ? snaps / out.games : null;
+    delete out.offensive_pace_rank;
+    return out;
+  }
+
+  // Both views of one block: combined shown, current-season held back.
+  function nflSeasonViews(combined, current) {
+    return '<div data-season-view="combined">' + combined + '</div>' +
+      '<div data-season-view="current" hidden>' + current + '</div>';
+  }
+
   /* ---- starter panels: the quarterback and the lead back ---- */
 
   function nflStarter(game, side, position) {
@@ -2989,7 +3154,7 @@ function seasonToggle(game) {
 
   var NFL_BACK = {
     QB: {
-      family: 'passing', volume: 'dropbacks', unit: 'Dropbacks', minimum: 10, floor: 30, opponent: true,
+      family: 'passing', volume: 'dropbacks', unit: 'Dropbacks', minimum: 10, floor: 10, opponent: true,
       groups: [
         ['Coverage', ['man', 'zone', 'single_high', 'two_high']],
         ['Pass Rush', ['blitz', 'no_blitz', 'pressure', 'clean']],
@@ -3002,7 +3167,7 @@ function seasonToggle(game) {
         ['success_rate', 'Succ%', 'success_rate', 'pct']]
     },
     RB: {
-      family: 'rushing', volume: 'carries', unit: 'Carries', minimum: 5, floor: 15, opponent: false,
+      family: 'rushing', volume: 'carries', unit: 'Carries', minimum: 5, floor: 5, opponent: false,
       groups: [
         ['Box', ['light_box', 'stacked_box']],
         ['Personnel Faced', ['base', 'nickel', 'dime']],
@@ -3106,7 +3271,7 @@ function seasonToggle(game) {
       ? ' · ' + all[spec.volume] + ' ' + spec.unit : '');
     if (!rows.length) {
       return nflSplitWrap(title, pending('No look reaches ' + spec.minimum + ' ' +
-        spec.unit.toLowerCase() + ' yet this season.'), '', season);
+        spec.unit.toLowerCase() + ' yet this season.'), '', '');
     }
     var cols = spec.cols.filter(function (col) {
       return rows.some(function (r) { return r[col[0]] != null; });
@@ -3143,14 +3308,14 @@ function seasonToggle(game) {
     // Coverage, shells and pressure come from NFL participation data, which is
     // published after a season; a current season shows its charted looks only.
     var hasCoverage = rows.some(function (r) { return groupOf[r.look] === 'Coverage' || groupOf[r.look] === 'Shells'; });
-    var status = spec.opponent && !hasCoverage
+    var status = spec.opponent && !hasCoverage && typeof season === 'number'
       ? season + ' coverage and pressure splits publish with the ' + season + ' participation data.' : '';
     return nflSplitWrap(title,
       '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-nfl-split"><thead><tr><th>Look</th>' +
       cols.map(function (col) { return '<th class="num">' + esc(col[1]) + '</th>'; }).join('') +
       (showCol ? '<th class="num ca-opp-shows" title="How often ' + esc(opp.name) +
         ' shows this look on its charted snaps">' + esc(opp.nick) + ' Show</th>' : '') +
-      '</tr></thead><tbody>' + body + '</tbody></table></div>', status, season);
+      '</tr></thead><tbody>' + body + '</tbody></table></div>', status, '');
   }
 
   function nflBackPanel(sport, game, side, position) {
@@ -3162,9 +3327,11 @@ function seasonToggle(game) {
     var profiles = (game[side + '_player_scheme'] || []).filter(function (p) {
       return p.play_family === spec.family && playerNameKey(p.player_name) === key;
     }).sort(function (a, b) { return Number(b.source_season) - Number(a.source_season); });
-    var stats = (game[side + '_player_stats'] || []).filter(function (p) {
-      return playerNameKey(p.player_name) === key;
-    })[0] || {};
+    function statsFor(rows) {
+      return (rows || []).filter(function (p) { return playerNameKey(p.player_name) === key; })[0] || null;
+    }
+    var stats = statsFor(game[side + '_player_stats']);
+    var prior = statsFor(game[side + '_player_stats_prior']);
     var status = nflAvailability(game, side)[key];
     var shot = starter && starter.headshot_url
       ? '<img class="ca-starter-shot" src="' + esc(starter.headshot_url) + '" width="72" height="72" alt="' +
@@ -3176,57 +3343,21 @@ function seasonToggle(game) {
     if (!name) return head + pending('No ' + position + ' is published on the depth chart.') + '</section>';
 
     var current = profiles[0] || null;
-    var all = current ? ((current.splits || []).filter(function (s) { return s.look === 'all'; })[0] || {}) : {};
-    var ranks = all.league_ranks || {};
+    // Tracking is NFL Next Gen, published for the current season only; it
+    // reads the same in both windows.
     var tracking = (current && current.tracking) || {};
     var trackRanks = (current && current.tracking_ranks) || {};
-    // A season line below the league floor carries no rank at all: say so on
-    // the tile instead of leaving a number that simply looks ungraded.
-    var thinLine = !!current && !Object.keys(ranks).length;
     var lowTag = ' <span class="ca-thin-tag" title="Too few ' + spec.unit.toLowerCase() +
-      ' this season to rank against the league">Low n</span>';
-    function tile(labelText, raw, kind, rank) {
-      if (raw == null || !isFinite(Number(raw))) return '';
-      var tone = nflRankTone(rank);
-      return '<div class="ca-stat"><span class="ca-stat__label">' + esc(labelText) +
-        (thinLine ? lowTag : '') + '</span><strong class="ca-stat__value' + (tone ? ' ' + tone : '') + '"' +
-        (rank ? ' title="' + rank.place + ordinal(rank.place) + ' of ' + rank.of + '"' : '') + '>' +
-        esc(nflFormat(raw, kind)) + '</strong></div>';
-    }
-    var tiles = position === 'QB'
-      ? tile('EPA / DB', all.epa_per_dropback, 'epa', ranks.epa_per_dropback) +
-        tile('Cmp%', all.completion_rate, 'pct', ranks.completion_rate) +
-        tile('Y/A', all.yards_per_attempt, 'num1', ranks.yards_per_attempt) +
-        (tracking.avg_time_to_throw != null
-          ? '<div class="ca-stat"><span class="ca-stat__label">Time To Throw' +
-            (trackRanks.avg_time_to_throw ? '' : lowTag) + '</span><strong class="ca-stat__value">' +
-            Number(tracking.avg_time_to_throw).toFixed(2) + 's' + nflFreqMark(trackRanks.avg_time_to_throw) +
-            '</strong></div>' : '')
-      : tile('YPC', all.yards_per_carry, 'num1', ranks.yards_per_carry) +
-        tile('EPA / Carry', all.epa_per_carry, 'epa', ranks.epa_per_carry) +
-        tile('Success', all.success_rate, 'pct', ranks.success_rate) +
-        (tracking.ryoe_per_carry != null
-          ? '<div class="ca-stat"><span class="ca-stat__label">RYOE / Carry' +
-            (trackRanks.ryoe_per_carry ? '' : lowTag) + '</span><strong class="ca-stat__value' +
-            (trackRanks.ryoe_per_carry ? ' ' + nflRankTone(trackRanks.ryoe_per_carry) : '') + '"' +
-            (trackRanks.ryoe_per_carry ? ' title="' + trackRanks.ryoe_per_carry.place +
-              ordinal(trackRanks.ryoe_per_carry.place) + ' of ' + trackRanks.ryoe_per_carry.of + '"' : '') + '>' +
-            nflFormat(tracking.ryoe_per_carry, 'epa').replace(/(\.\d\d)\d$/, '$1') + '</strong></div>' : '');
-
-    // The season line, the way the MLB panel prints the last start.
-    var line = '';
-    if (stats.games) {
-      var bits = position === 'QB'
-        ? [stats.completions + '/' + stats.attempts, stats.passing_yards + ' yds',
-          stats.passing_tds + ' TD', stats.passing_interceptions + ' INT']
-        : [stats.carries + ' car', stats.rushing_yards + ' yds', stats.rushing_tds + ' TD',
-          stats.receptions + ' rec'];
-      var gamesText = stats.games + (Number(stats.games) === 1 ? ' game' : ' games');
-      line = '<p class="ca-last-start"><span>' + esc(stats.season || '') + ' Season</span>' +
-        esc(gamesText + ' · ' + bits.join(' · ')) +
-        (position === 'RB' && tracking.eight_plus_box_rate != null
-          ? esc(' · 8+ box ' + pctText(tracking.eight_plus_box_rate)) +
-            nflFreqMark(trackRanks.eight_plus_box_rate) : '') + '</p>';
+      ' to rank against the league">Low n</span>';
+    var combined = null;
+    if (profiles.length) {
+      combined = {
+        source_season: profiles.length > 1 ? profiles.map(function (p) { return p.source_season; })
+          .sort().join(' + ') : profiles[0].source_season,
+        splits: profiles.length > 1
+          ? nflRankMerged(nflMergeSplits(profiles, position), position, position)
+          : profiles[0].splits
+      };
     }
     var oppSide = nflOther(side);
     var opp = {
@@ -3235,9 +3366,72 @@ function seasonToggle(game) {
       name: fullName(sport, game, oppSide),
       nick: nflNick(sport, game, oppSide)
     };
-    var splits = profiles.map(function (p) { return nflBackSplits(p, spec, opp); }).join('');
-    return head + (tiles ? '<div class="ca-stat-row">' + tiles + '</div>' : '') + line +
-      (splits || pending('Scheme splits are not published for this player yet.')) + '</section>';
+
+    function tiles(profile) {
+      var all = profile ? ((profile.splits || []).filter(function (x) { return x.look === 'all'; })[0] || {}) : {};
+      var ranks = all.league_ranks || {};
+      // A line below the league floor carries no rank: the tile says so.
+      var thin = !!profile && !Object.keys(ranks).length;
+      function tile(labelText, raw, kind, rank) {
+        if (raw == null || !isFinite(Number(raw))) return '';
+        var tone = nflRankTone(rank);
+        return '<div class="ca-stat"><span class="ca-stat__label">' + esc(labelText) +
+          (thin ? lowTag : '') + '</span><strong class="ca-stat__value' + (tone ? ' ' + tone : '') + '"' +
+          (rank ? ' title="' + rank.place + ordinal(rank.place) + ' of ' + rank.of + '"' : '') + '>' +
+          esc(nflFormat(raw, kind)) + '</strong></div>';
+      }
+      var html = position === 'QB'
+        ? tile('EPA / DB', all.epa_per_dropback, 'epa', ranks.epa_per_dropback) +
+          tile('Cmp%', all.completion_rate, 'pct', ranks.completion_rate) +
+          tile('Y/A', all.yards_per_attempt, 'num1', ranks.yards_per_attempt) +
+          (tracking.avg_time_to_throw != null
+            ? '<div class="ca-stat"><span class="ca-stat__label">Time To Throw' +
+              (trackRanks.avg_time_to_throw ? '' : lowTag) + '</span><strong class="ca-stat__value">' +
+              Number(tracking.avg_time_to_throw).toFixed(2) + 's' + nflFreqMark(trackRanks.avg_time_to_throw) +
+              '</strong></div>' : '')
+        : tile('YPC', all.yards_per_carry, 'num1', ranks.yards_per_carry) +
+          tile('EPA / Carry', all.epa_per_carry, 'epa', ranks.epa_per_carry) +
+          tile('Success', all.success_rate, 'pct', ranks.success_rate) +
+          (tracking.ryoe_per_carry != null
+            ? '<div class="ca-stat"><span class="ca-stat__label">RYOE / Carry' +
+              (trackRanks.ryoe_per_carry ? '' : lowTag) + '</span><strong class="ca-stat__value' +
+              (trackRanks.ryoe_per_carry ? ' ' + nflRankTone(trackRanks.ryoe_per_carry) : '') + '"' +
+              (trackRanks.ryoe_per_carry ? ' title="' + trackRanks.ryoe_per_carry.place +
+                ordinal(trackRanks.ryoe_per_carry.place) + ' of ' + trackRanks.ryoe_per_carry.of + '"' : '') + '>' +
+              nflFormat(tracking.ryoe_per_carry, 'epa').replace(/(\.\d\d)\d$/, '$1') + '</strong></div>' : '');
+      return html ? '<div class="ca-stat-row">' + html + '</div>' : '';
+    }
+
+    // The season line, the way the MLB panel prints the last start.
+    function seasonLine(rows, title) {
+      rows = rows.filter(Boolean);
+      if (!rows.length) return '';
+      function sum(k) { return rows.reduce(function (t, r) { return t + (Number(r[k]) || 0); }, 0); }
+      var games = sum('games');
+      if (!games) return '';
+      var bits = position === 'QB'
+        ? [sum('completions') + '/' + sum('attempts'), sum('passing_yards') + ' yds',
+          sum('passing_tds') + ' TD', sum('passing_interceptions') + ' INT']
+        : [sum('carries') + ' car', sum('rushing_yards') + ' yds', sum('rushing_tds') + ' TD',
+          sum('receptions') + ' rec'];
+      return '<p class="ca-last-start"><span>' + esc(title) + '</span>' +
+        esc(games + (games === 1 ? ' game' : ' games') + ' · ' + bits.join(' · ')) +
+        (position === 'RB' && tracking.eight_plus_box_rate != null
+          ? esc(' · 8+ box ' + pctText(tracking.eight_plus_box_rate)) +
+            nflFreqMark(trackRanks.eight_plus_box_rate) : '') + '</p>';
+    }
+
+    var currentSeasonNo = current ? current.source_season : (stats && stats.season);
+    var combinedView = tiles(combined) +
+      seasonLine([stats, prior], (prior ? (prior.season || (currentSeasonNo - 1)) + ' + ' : '') +
+        (currentSeasonNo || '') + ' Seasons') +
+      (combined ? nflBackSplits(combined, spec, opp) : pending('Scheme splits are not published for this player yet.'));
+    var currentOnly = profiles.filter(function (p) { return p.source_season === currentSeasonNo; })[0] || null;
+    var currentView = tiles(currentOnly) +
+      seasonLine([stats], (currentSeasonNo || '') + ' Season') +
+      (currentOnly ? nflBackSplits(currentOnly, spec, opp)
+        : pending('No ' + (currentSeasonNo || 'current') + ' splits are published for this player yet.'));
+    return head + nflSeasonViews(combinedView, currentView) + '</section>';
   }
 
   /* ---- club split tables ---- */
@@ -3277,7 +3471,8 @@ function seasonToggle(game) {
     var oNick = nflNick(sport, game, offSide), dNick = nflNick(sport, game, defSide);
     var head = '<section class="ca-form-panel"><h3>When The ' + esc(oNick) + ' Have The Ball</h3>' +
       '<p class="ca-lineup-context">' + esc(fullName(sport, game, offSide)) + ' offense ' + '\u00b7' + ' ' +
-      esc(fullName(sport, game, defSide)) + ' defense</p>';
+      esc(fullName(sport, game, defSide)) + ' defense' +
+      esc((game.scheme_source || {}).season ? ' · ' + game.scheme_source.season + ' form' : '') + '</p>';
     if (!Object.keys(oRates).length && !Object.keys(dRates).length) {
       return head + pending('Team form is not published yet.') + '</section>';
     }
@@ -3315,10 +3510,12 @@ function seasonToggle(game) {
         schemeRow(dNick + ' Defense', dScheme, 'defense')
       ]) + '</div>';
 
-    var stats = game[offSide + '_team_stats'] || {};
-    if (stats.games) {
+    function perGameBlock(stats, prior, windowLabel) {
+    if (!stats || !stats.games) return '';
+    var html = '';
       var g = Number(stats.games);
       function perGame(st, read) {
+        st = st || {};
         var n = read(st), gp = Number(st.games);
         return n == null || !(gp > 0) ? null : Number(n) / gp;
       }
@@ -3326,11 +3523,17 @@ function seasonToggle(game) {
       function perCell(read) {
         var v = perGame(stats, read);
         if (v == null) return '<td class="num">—</td>';
-        var pool = nflPoolValues(function (t) { return perGame(t.stats || {}, read); });
+        var pool = nflPoolValues(function (t) {
+          return perGame(prior ? nflCombineTeam(t.stats, t.statsPrior) : (t.stats || {}), read);
+        });
         return nflPlacedTd(v.toFixed(1), nflPlace(pool, v, true));
       }
       var pace = stats.offensive_plays_per_game;
-      html += '<div class="ca-split-block"><h4>' + esc(oNick) + ' Per Game · ' + g + ' Games</h4>' +
+      var pacePlace = prior
+        ? nflAsFreq(nflPlace(nflPoolValues(function (t) {
+            var c = nflCombineTeam(t.stats, t.statsPrior); return c && c.offensive_plays_per_game; }), pace, true))
+        : (stats.offensive_pace_rank ? { place: stats.offensive_pace_rank, of: stats.offensive_pace_of || 32 } : null);
+      html += '<div class="ca-split-block"><h4>' + esc(oNick + ' Per Game · ' + windowLabel + ' · ' + g + ' Games') + '</h4>' +
         nflSplitTable(['Pass Yds', 'Rush Yds', 'TD', '1st Downs', 'Plays'], [
           '<tr><td>Offense</td>' +
           perCell(function (st) { return st.passing_yards; }) +
@@ -3338,9 +3541,16 @@ function seasonToggle(game) {
           perCell(function (st) { return safeTotal(st.passing_tds, st.rushing_tds); }) +
           perCell(function (st) { return safeTotal(st.passing_first_downs, st.rushing_first_downs); }) +
           '<td class="num">' + (pace == null ? '—' : esc(Number(pace).toFixed(1)) +
-            nflFreqMark(stats.offensive_pace_rank ? { place: stats.offensive_pace_rank,
-              of: stats.offensive_pace_of || 32 } : null)) + '</td></tr>']) + '</div>';
+            nflFreqMark(pacePlace)) + '</td></tr>']) + '</div>';
+    return html;
     }
+    var teamNow = game[offSide + '_team_stats'] || {};
+    var teamPrior = game[offSide + '_team_stats_prior'] || null;
+    var seasonNow = teamNow.season;
+    html += nflSeasonViews(
+      perGameBlock(nflCombineTeam(teamNow, teamPrior), teamPrior,
+        teamPrior ? (seasonNow - 1) + ' + ' + seasonNow : String(seasonNow || '')),
+      perGameBlock(teamNow, null, String(seasonNow || '')));
     return html + '</section>';
   }
 
@@ -3383,7 +3593,8 @@ function seasonToggle(game) {
     var oNick = nflNick(sport, game, offSide), dNick = nflNick(sport, game, defSide);
     var head = '<section class="ca-form-panel"><h3>When The ' + esc(oNick) + ' Have The Ball</h3>' +
       '<p class="ca-lineup-context">' + esc(fullName(sport, game, offSide)) + ' line ' + '\u00b7' + ' ' +
-      esc(fullName(sport, game, defSide)) + ' front</p>';
+      esc(fullName(sport, game, defSide)) + ' front' +
+      esc((game.scheme_source || {}).season ? ' · ' + game.scheme_source.season : '') + '</p>';
     if (!oLine && !dLine.defense) return head + pending('Line data is not published yet.') + '</section>';
     var html = head + nflSplitTable(NFL_TRENCH_COLS.map(function (c) { return c[1]; }), [
       [oNick + ' Line', oLine || {}], [dNick + ' Front', dLine.defense || {}]
@@ -3417,8 +3628,8 @@ function seasonToggle(game) {
         }).map(function (p) { return shareOf(p, lane[0]); });
       });
       function ypc(value, carries) {
-        var low = Number(carries) < 15;
-        return nflFormat(value, 'num1') + ' <small' + (low ? ' class="is-low" title="Under 15 carries"' : '') +
+        var low = Number(carries) < 5;
+        return nflFormat(value, 'num1') + ' <small' + (low ? ' class="is-low" title="Under 5 carries"' : '') +
           '>' + esc(carries) + '</small>';
       }
       // The back's YPC in this lane is placed among backs in the same lane
@@ -3430,11 +3641,11 @@ function seasonToggle(game) {
       var frontStuff = nflPoolValues(function (t) {
         return (((t.line || {}).defense_run_front || {})[lane[1]] || {}).stuff_rate;
       });
-      var thinTheirs = theirs && Number(theirs.carries) < 15;
+      var thinTheirs = theirs && Number(theirs.carries) < 5;
       return '<tr><td class="ca-lineup-name">' + esc(lane[2]) + '</td>' +
         nflUsageCell(share, nflAsFreq(nflPlace(sharePool, share, true))) +
         (mine ? nflPlacedTd(ypc(mine.yards_per_carry, mine.carries),
-          mineRank ? { rank: mineRank.place, of: mineRank.of } : null, Number(mine.carries) < 15)
+          mineRank ? { rank: mineRank.place, of: mineRank.of } : null, Number(mine.carries) < 5)
           : '<td class="num">—</td>') +
         (theirs ? nflPlacedTd(ypc(theirs.yards_per_carry_allowed, theirs.carries),
           nflPlace(frontYpc, theirs.yards_per_carry_allowed, false), thinTheirs)
@@ -3466,7 +3677,7 @@ function seasonToggle(game) {
     // with at least five targets. Receptions, yards and yards per target are
     // production, so they are graded; targets and target share are
     // opportunity, so they carry the league marker instead.
-    var MIN_TARGETS = 5;
+    var MIN_TARGETS = 3;
     function perG(p, key) {
       var gp = Number(p.games) || 0;
       return gp > 0 && p[key] != null ? Number(p[key]) / gp : null;
@@ -3474,14 +3685,16 @@ function seasonToggle(game) {
     function yPerT(p) {
       return Number(p.targets) ? Number(p.receiving_yards) / Number(p.targets) : null;
     }
+    function volumeTable(list, combinedPool) {
     function posPool(position, read) {
       return nflPoolValues(function (t) {
-        return (t.players || []).filter(function (x) {
+        var rowsForTeam = combinedPool ? nflCombineRows(t.players, t.playersPrior) : (t.players || []);
+        return rowsForTeam.filter(function (x) {
           return x.position === position && Number(x.targets) >= MIN_TARGETS;
         }).map(read);
       });
     }
-    var rows = players.map(function (p) {
+    var rows = list.map(function (p) {
       var st = status[playerNameKey(p.player_name)];
       var stText = nflStatusText(st);
       var thin = Number(p.targets) < MIN_TARGETS;
@@ -3510,6 +3723,18 @@ function seasonToggle(game) {
           function (x) { return x.target_share; }) +
         '<td class="num">' + esc(p.receiving_tds == null ? '—' : p.receiving_tds) + '</td></tr>';
     });
+    return '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-nfl-split">' +
+      '<thead><tr><th>Player</th><th class="num">Tgt/G</th><th class="num">Rec/G</th>' +
+      '<th class="num">Yds/G</th><th class="num">Y/Tgt</th><th class="num">Share</th><th class="num">TD</th>' +
+      '</tr></thead><tbody>' + rows.join('') + '</tbody></table></div>';
+    }
+    var combinedPlayers = nflCombineRows(players, game[side + '_player_stats_prior']);
+    var seasonNow = (players[0] || {}).season;
+    var volume = nflSeasonViews(
+      '<div class="ca-split-block"><h4>' + esc((seasonNow ? (seasonNow - 1) + ' + ' + seasonNow : '') +
+        ' Per Game') + '</h4>' + volumeTable(combinedPlayers, true) + '</div>',
+      '<div class="ca-split-block"><h4>' + esc((seasonNow || '') + ' Per Game') + '</h4>' +
+        volumeTable(players, false) + '</div>');
     var mine = (((game[side + '_scheme'] || {}).offense || {}).target_share) || {};
     var allowed = (((game[defSide + '_scheme'] || {}).defense || {}).target_share) || {};
     var mixRows = [['wr', 'Wide Receivers'], ['te', 'Tight Ends'], ['rb', 'Running Backs']].map(function (k) {
@@ -3523,11 +3748,7 @@ function seasonToggle(game) {
     var mixHtml = mixRows.length
       ? '<div class="ca-split-block"' + nflSeasonsAttr(game[side + '_scheme'], false) + '><h4>Target Distribution</h4>' +
         nflMixTable('Position', [nflNick(sport, game, defSide) + ' Allow'], mixRows) + '</div>' : '';
-    return head + '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-nfl-split">' +
-      '<thead><tr><th>Player</th><th class="num">Tgt/G</th><th class="num">Rec/G</th>' +
-      '<th class="num">Yds/G</th><th class="num">Y/Tgt</th><th class="num">Share</th><th class="num">TD</th>' +
-      '</tr></thead><tbody>' + rows.join('') + '</tbody></table></div>' + mixHtml +
-      nflReceiverMatrices(sport, game, side, players) + '</section>';
+    return head + volume + mixHtml + nflReceiverMatrices(sport, game, side, players) + '</section>';
   }
 
   /* Receivers against coverage, in the quarterback table's shape: rows are the
@@ -3543,7 +3764,7 @@ function seasonToggle(game) {
     ['Box', ['light_box', 'stacked_box']],
     ['Shells', ['cover_0', 'cover_1', 'cover_2', 'cover_2_man', 'cover_3', 'cover_4', 'cover_6']]
   ];
-  var NFL_REC_FLOOR = 5;
+  var NFL_REC_FLOOR = 3;
 
   function nflReceiverMatrices(sport, game, side, statRows) {
     var profiles = game[side + '_player_coverage'] || [];
@@ -3553,7 +3774,7 @@ function seasonToggle(game) {
     var byName = {};
     profiles.forEach(function (p) {
       var k = playerNameKey(p.player_name);
-      (byName[k] = byName[k] || {})[p.source_season] = p;
+      (byName[k] = byName[k] || []).push(p);
     });
     var leaders = order.filter(function (k) { return byName[k]; }).slice(0, 3);
     if (!leaders.length) return '';
@@ -3561,10 +3782,10 @@ function seasonToggle(game) {
     var oppScheme = game[oppSide + '_scheme'] || {};
     var oppDef = oppScheme.defense || null;
     var oppNick = nflNick(sport, game, oppSide);
-    var seasons = {};
-    leaders.forEach(function (k) { Object.keys(byName[k]).forEach(function (y) { seasons[y] = true; }); });
-    return Object.keys(seasons).map(Number).sort(function (a, b) { return b - a; }).map(function (season) {
-      var cols = leaders.map(function (k) { return byName[k][season] || null; });
+    var seasons = profiles.map(function (p) { return p.source_season; });
+    var now = Math.max.apply(null, seasons);
+
+    function matrix(cols, title) {
       var looks = {};
       cols.forEach(function (p, i) {
         ((p && p.splits) || []).forEach(function (sp) { (looks[sp.coverage] = looks[sp.coverage] || [])[i] = sp; });
@@ -3595,18 +3816,30 @@ function seasonToggle(game) {
               : esc(pctText(shows)) + nflOppShowsMark(oppScheme, look)) + '</td></tr>';
         });
       });
-      if (!body) return '';
-      var heads = leaders.map(function (k, i) {
-        var p = cols[i] || byName[k][Object.keys(byName[k])[0]];
+      if (!body) return pending('No receiver splits are published for this window yet.');
+      var heads = leaders.map(function (k) {
+        var p = byName[k][0];
         return '<th class="num">' + esc(String(p.player_name).split(' ').slice(-1)[0]) + ' ' +
           '<span class="ca-lineup-player__position">' + esc(p.position) + '</span></th>';
       }).join('');
-      return '<div class="ca-split-block" data-scheme-seasons="' + esc(season) + '"><h4>' +
-        esc(season + ' Receivers By Coverage · Yards Per Target') + '</h4>' +
+      return '<div class="ca-split-block"><h4>' + esc(title) + '</h4>' +
         '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-nfl-split">' +
         '<thead><tr><th>Look</th>' + heads + '<th class="num ca-opp-shows">' + esc(oppNick) +
         ' Show</th></tr></thead><tbody>' + body + '</tbody></table></div></div>';
-    }).join('');
+    }
+
+    var combinedCols = leaders.map(function (k) {
+      var rows = byName[k];
+      if (rows.length === 1) return rows[0];
+      return { splits: nflRankMerged(nflMergeSplits(rows, 'REC'), 'REC', rows[0].position) };
+    });
+    var currentCols = leaders.map(function (k) {
+      return byName[k].filter(function (p) { return p.source_season === now; })[0] || null;
+    });
+    var allSeasons = seasons.filter(function (y, i, a) { return a.indexOf(y) === i; }).sort();
+    return nflSeasonViews(
+      matrix(combinedCols, allSeasons.join(' + ') + ' Receivers By Coverage · Yards Per Target'),
+      matrix(currentCols, now + ' Receivers By Coverage · Yards Per Target'));
   }
 
   function nflDuo(fn, sport, game) {

@@ -467,6 +467,12 @@ class AdapterHoleTests(unittest.TestCase):
                      "data-season-section-empty"):
             self.assertIn(text, detail)
         self.assertIn("function nflSampleLabel", detail)
+        # The window changes the data: both seasons combined look by look and
+        # re-ranked on the slate, or the current season alone.
+        for text in ("function nflMergeSplits", "function nflRankMerged", "function nflCombineRows",
+                     "function nflCombineTeam", 'data-season-view="combined"',
+                     "node.hidden = node.getAttribute('data-season-view') !== scope"):
+            self.assertIn(text, detail)
         self.assertIn("single_high: 'Single High (MFC)', two_high: 'Two High (MFO)'", detail)
         for text in (
             "data-lineup-unit", "data-lineup-panel", "Offensive Line", "Linebackers",
@@ -517,8 +523,8 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn(".ca-freq-mark.is-down { color: var(--metric-poor); }", css)
         self.assertIn(".ca-freq-mark.is-avg { color: var(--metric-mid);", css)
         # A split under its sample floor is printed, dimmed, and never graded.
-        self.assertIn("floor: 30", nfl)
-        self.assertIn("floor: 15", nfl)
+        self.assertIn("floor: 10", nfl)
+        self.assertIn("floor: 5", nfl)
         self.assertIn("ranks[col[2]] : null", nfl)
         self.assertIn(".ca-lineup-table tr.is-thin td", css)
         self.assertIn('class="ca-thin-tag"', nfl)
