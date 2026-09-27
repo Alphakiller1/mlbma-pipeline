@@ -321,7 +321,8 @@ def key_players(board: dict) -> dict[str, list[dict]]:
 
 PLAYER_COVERAGE_SPLITS = {
     "all", "man", "zone", "cover_0", "cover_1", "cover_2", "cover_3",
-    "cover_4", "cover_6", "cover_2_man",
+    "cover_4", "cover_6", "cover_2_man", "single_high", "two_high",
+    "blitz", "no_blitz", "pressure", "clean", "light_box", "stacked_box",
 }
 PLAYER_COVERAGE_FIELDS = (
     "targets", "receptions", "receiving_yards", "touchdowns", "catch_rate",
@@ -369,8 +370,17 @@ def player_coverage(board: dict) -> dict[str, list[dict]]:
                          if profile["position"] == position and
                          profile["source_season"] == season
                          for split in profile["splits"]}
+            # Same scaled floor as the QB and RB season lines: half the pool's
+            # median targets, capped at the full-season 20, so a week-three
+            # receiver line is ranked instead of left grey.
+            volumes = sorted(
+                float(split.get("targets") or 0) for profile in rows
+                if profile["position"] == position and profile["source_season"] == season
+                for split in profile["splits"] if split["coverage"] == "all")
+            median = volumes[len(volumes) // 2] if volumes else 0.0
+            all_floor = max(3, min(20, round(median / 2)))
             for coverage in coverages:
-                minimum = 20 if coverage == "all" else 3
+                minimum = all_floor if coverage == "all" else 3
                 for metric in ("catch_rate", "yards_per_target", "epa_per_target"):
                     pool = []
                     for profile in rows:
@@ -881,6 +891,10 @@ def build(board: dict | None = None, rooms: dict | None = None,
         advanced_context = ({} if supplied_board else nfl_advanced_context.build(
             int(board.get("season") or 0), season_stats.get("players") or {}))
     scheme_board = dict(board)
+    scheme_board["player_coverage_profiles"] = [
+        *(board.get("player_coverage_profiles") or []),
+        *(advanced_context.get("player_coverage_profiles") or []),
+    ]
     scheme_board["player_scheme_profiles"] = [
         *(board.get("player_scheme_profiles") or []),
         *(advanced_context.get("player_scheme_profiles") or []),
@@ -891,7 +905,7 @@ def build(board: dict | None = None, rooms: dict | None = None,
         "scheme": team_scheme(board),
         "players": players,
         "lineups": attach_known_headshots(lineups, players),
-        "player_coverage": player_coverage(board),
+        "player_coverage": player_coverage(scheme_board),
         "player_scheme": player_scheme(scheme_board),
         "team_stats": season_stats.get("teams") or {},
         "player_stats": season_stats.get("players") or {},

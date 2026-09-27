@@ -414,6 +414,10 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("#trenches .ca-arsenal-table").count() == 2 and
               all(label in trench_text for label in ("line yds", "havoc", "ybc", "run direction",
                                                      "at the guards", "outside the ends")))
+        rec_text = page.locator("#receivers").inner_text().lower()
+        check("NFL receivers carry splits against coverage, shell and pass rush",
+              "receivers by coverage" in rec_text and
+              all(label in rec_text for label in ("vs man", "vs zone", "single high (mfc)", "vs blitz")))
         check("NFL pass catchers include the target distribution against the other defense",
               page.locator("#receivers .ca-arsenal-table").count() == 2 and
               "target distribution" in page.locator("#receivers").inner_text().lower())
