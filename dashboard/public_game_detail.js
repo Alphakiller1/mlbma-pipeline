@@ -2593,43 +2593,9 @@ function wireSeasonToggle(host) {
         b.setAttribute('aria-pressed', String(on));
       });
       var scope = btn.getAttribute('data-season-scope');
-      var current = Number(group.getAttribute('data-current-season'));
-      var visible = 0;
-      Array.prototype.forEach.call(host.querySelectorAll('[data-scheme-seasons]'), function (panel) {
-        var seasons = String(panel.getAttribute('data-scheme-seasons') || '')
-          .split(',').map(Number).filter(Number.isFinite);
-        var isCurrentOnly = seasons.length === 1 && seasons[0] === current;
-        var show = scope !== 'current' || isCurrentOnly;
-        panel.hidden = !show;
-        if (show) visible += 1;
-      });
+      // Each season-bound block carries both windows; show the chosen one.
       Array.prototype.forEach.call(host.querySelectorAll('[data-season-view]'), function (node) {
         node.hidden = node.getAttribute('data-season-view') !== scope;
-      });
-      Array.prototype.forEach.call(host.querySelectorAll('[data-season-prior-only]'), function (node) {
-        node.hidden = scope === 'current';
-      });
-      var note = host.querySelector('[data-season-empty]');
-      if (note) note.hidden = scope !== 'current' || visible > 0;
-      // A section whose every block belongs to the other window says so,
-      // rather than standing empty under its heading.
-      Array.prototype.forEach.call(host.querySelectorAll('.ca-detail-section'), function (sec) {
-        var panels = sec.querySelectorAll('.ca-detail-duo > *');
-        var scoped = sec.querySelectorAll('.ca-detail-duo > [data-scheme-seasons]');
-        if (!scoped.length || scoped.length !== panels.length) return;
-        var any = Array.prototype.some.call(scoped, function (n) { return !n.hidden; });
-        var empty = sec.querySelector('[data-season-section-empty]');
-        if (!empty && !any) {
-          empty = document.createElement('p');
-          empty.className = 'ca-detail-source-note';
-          empty.setAttribute('data-season-section-empty', '');
-          empty.textContent = 'This section is charted across ' +
-            group.querySelector('[data-season-scope="combined"]').textContent +
-            '. No ' + current + '-only charting is published for it yet.';
-          var body = sec.querySelector('.ca-detail-section__body');
-          body.insertBefore(empty, body.firstChild);
-        }
-        if (empty) empty.hidden = any;
       });
       host.setAttribute('data-season-scope', scope);
     });
@@ -2674,8 +2640,6 @@ function seasonToggle(game) {
           esc(opt[2]) + '">' + esc(opt[1]) + '</button>';
       }).join('') +
       '</div>' +
-      '<p class="ca-season-toggle__note" data-season-empty hidden>No ' + now +
-      '-only scheme charting is published yet. Current Team Form and Radar remain below.</p>' +
       '</aside>';
   }
 
@@ -2707,6 +2671,7 @@ function seasonToggle(game) {
         if (!g || !g[side] || !g[side + '_scheme']) return;
         teams[g[side]] = {
           scheme: g[side + '_scheme'],
+          schemeCurrent: g[side + '_scheme_current'] || null,
           line: g[side + '_line_stats'] || {},
           stats: g[side + '_team_stats'] || {},
           players: g[side + '_player_stats'] || [],
@@ -2764,13 +2729,32 @@ function seasonToggle(game) {
      fewer than twenty clubs in the pool (a bye-heavy week, a partial slate) the
      league mean and spread published with the scheme stand in, which is the
      estimate the page has always used. */
+  /* Which season window the scheme panels are reading. The combined window
+     is the model board's charting (participation + FTN, prior season in); the
+     current window is this season alone, built from FTN charting and the
+     play-by-play (outputs/nfl_advanced_context.team_scheme_current). */
+  var nflWindow = { key: '_scheme', pool: 'scheme' };
+
+  function nflScheme(game, side) {
+    return game[side + nflWindow.key] || {};
+  }
+
+  // Render a scheme block once per window, as the two season views.
+  function nflBothWindows(render) {
+    var combined = render();
+    nflWindow = { key: '_scheme_current', pool: 'schemeCurrent' };
+    var current;
+    try { current = render(); } finally { nflWindow = { key: '_scheme', pool: 'scheme' }; }
+    return nflSeasonViews(combined, current);
+  }
+
   function nflResultRank(scheme, phase, key, raw) {
     if (raw == null || !isFinite(Number(raw))) return null;
     var v = Number(raw);
     var hi = phase === 'offense';
     if (nflPool) {
       var pool = Object.keys(nflPool).map(function (team) {
-        return nflResponse(nflPool[team].scheme, phase)[key];
+        return nflResponse(nflPool[team][nflWindow.pool], phase)[key];
       }).filter(function (x) { return x != null && isFinite(Number(x)); }).map(Number);
       if (pool.length >= 20) {
         var ahead = pool.filter(function (x) { return hi ? x > v : x < v; }).length;
@@ -2837,14 +2821,6 @@ function seasonToggle(game) {
       '</tr></thead><tbody>' + rows.join('') + '</tbody></table></div>';
   }
 
-  // The seasons behind a club's charting: participation (coverage, pressure,
-  // personnel, box) or the full charted sample (motion, play action, pace).
-  function nflSeasonsAttr(scheme, participation) {
-    var seasons = ((scheme || {})[participation ? 'participation_source_seasons' : 'source_seasons']) ||
-      (scheme || {}).source_seasons || [];
-    return seasons.length ? ' data-scheme-seasons="' + esc(seasons.join(',')) + '"' : '';
-  }
-
   function nflSampleLabel(scheme, participation) {
     var seasons = ((scheme || {})[participation ? 'participation_source_seasons' : 'source_seasons']) ||
       (scheme || {}).source_seasons || [];
@@ -2864,13 +2840,13 @@ function seasonToggle(game) {
      own usage is a fact about the club; it never reorders by a gap. */
   function nflShellPanel(sport, game, defSide) {
     var offSide = nflOther(defSide);
-    var dScheme = game[defSide + '_scheme'] || {};
-    var oScheme = game[offSide + '_scheme'] || {};
+    var dScheme = nflScheme(game, defSide);
+    var oScheme = nflScheme(game, offSide);
     var cov = ((dScheme.defense || {}).coverage) || {};
     var allowed = nflResponse(dScheme, 'defense');
     var faced = nflResponse(oScheme, 'offense');
     var oppLabel = fullName(sport, game, offSide);
-    var head = '<section class="ca-arsenal-panel"' + nflSeasonsAttr(dScheme, true) + '><h3>' +
+    var head = '<section class="ca-arsenal-panel"><h3>' +
       esc(fullName(sport, game, defSide)) + ' Defense</h3>';
     var rows = NFL_SHELLS.filter(function (s) { return cov[s[0] + '_rate'] != null; })
       .sort(function (a, b) { return cov[b[0] + '_rate'] - cov[a[0] + '_rate']; })
@@ -2882,7 +2858,11 @@ function seasonToggle(game) {
           nflResultCell(faced[key], nflResultRank(oScheme, 'offense', key, faced[key]), false) +
           '</tr>';
       });
-    if (!rows.length) return head + pending('Coverage charting is not published for this defense.') + '</section>';
+    if (!rows.length) {
+      return head + pending(nflWindow.pool === 'schemeCurrent'
+        ? 'Current-season coverage shells publish with the nflverse participation data.'
+        : 'Coverage charting is not published for this defense.') + '</section>';
+    }
     var context = [
       cov.man_rate != null ? pctText(cov.man_rate) + ' man' : '',
       cov.zone_rate != null ? pctText(cov.zone_rate) + ' zone' : '',
@@ -2902,17 +2882,20 @@ function seasonToggle(game) {
     ['Blitz', 'pressure', 'blitz_rate', 'pass_epa_blitz'],
     ['Pressure', 'pressure', 'pressure_rate', 'pass_epa_pressure'],
     ['Play Action Faced', 'personnel', 'play_action_rate', 'pass_epa_play_action'],
-    ['Stacked Box', 'pressure', 'stacked_box_rate', 'rush_epa_stacked_box']
+    ['Stacked Box', 'pressure', 'stacked_box_rate', 'rush_epa_stacked_box'],
+    ['Light Box', 'pressure', 'light_box_rate', 'rush_epa_light_box'],
+    ['Motion Faced', 'personnel', 'motion_rate', 'pass_epa_motion'],
+    ['Screen Faced', 'personnel', 'screen_rate', 'pass_epa_screen']
   ];
 
   function nflLooksPanel(sport, game, defSide) {
     var offSide = nflOther(defSide);
-    var dScheme = game[defSide + '_scheme'] || {};
-    var oScheme = game[offSide + '_scheme'] || {};
+    var dScheme = nflScheme(game, defSide);
+    var oScheme = nflScheme(game, offSide);
     var unit = dScheme.defense || {};
     var allowed = nflResponse(dScheme, 'defense');
     var faced = nflResponse(oScheme, 'offense');
-    var head = '<section class="ca-arsenal-panel"' + nflSeasonsAttr(dScheme, true) + '><h3>' +
+    var head = '<section class="ca-arsenal-panel"><h3>' +
       esc(fullName(sport, game, defSide)) + ' Defense</h3>';
     var rows = NFL_LOOKS.map(function (spec) {
       var rate = (unit[spec[1]] || {})[spec[2]];
@@ -2945,11 +2928,11 @@ function seasonToggle(game) {
 
   function nflTendencyPanel(sport, game, offSide) {
     var defSide = nflOther(offSide);
-    var oScheme = game[offSide + '_scheme'] || {};
+    var oScheme = nflScheme(game, offSide);
     var mine = ((oScheme.offense || {}).personnel) || {};
-    var dScheme = game[defSide + '_scheme'] || {};
+    var dScheme = nflScheme(game, defSide);
     var seen = ((dScheme.defense || {}).personnel) || {};
-    var head = '<section class="ca-arsenal-panel"' + nflSeasonsAttr(oScheme, false) + '><h3>' +
+    var head = '<section class="ca-arsenal-panel"><h3>' +
       esc(fullName(sport, game, offSide)) + ' Offense</h3>';
     var rows = NFL_TENDENCIES.map(function (spec) {
       if (mine[spec[1]] == null) return '';
@@ -3240,9 +3223,8 @@ function seasonToggle(game) {
   }
 
   // One season's splits under a heading that names the season and its sample.
-  function nflSplitWrap(title, inner, status, season) {
-    return '<div class="ca-split-block"' + (season ? ' data-scheme-seasons="' + esc(season) + '"' : '') +
-      '><h4>' + esc(title) + '</h4>' +
+  function nflSplitWrap(title, inner, status) {
+    return '<div class="ca-split-block"><h4>' + esc(title) + '</h4>' +
       (status ? pending(status) : '') + inner + '</div>';
   }
 
@@ -3271,7 +3253,7 @@ function seasonToggle(game) {
       ? ' · ' + all[spec.volume] + ' ' + spec.unit : '');
     if (!rows.length) {
       return nflSplitWrap(title, pending('No look reaches ' + spec.minimum + ' ' +
-        spec.unit.toLowerCase() + ' yet this season.'), '', '');
+        spec.unit.toLowerCase() + ' yet this season.'), '');
     }
     var cols = spec.cols.filter(function (col) {
       return rows.some(function (r) { return r[col[0]] != null; });
@@ -3315,7 +3297,7 @@ function seasonToggle(game) {
       cols.map(function (col) { return '<th class="num">' + esc(col[1]) + '</th>'; }).join('') +
       (showCol ? '<th class="num ca-opp-shows" title="How often ' + esc(opp.name) +
         ' shows this look on its charted snaps">' + esc(opp.nick) + ' Show</th>' : '') +
-      '</tr></thead><tbody>' + body + '</tbody></table></div>', status, '');
+      '</tr></thead><tbody>' + body + '</tbody></table></div>', status);
   }
 
   function nflBackPanel(sport, game, side, position) {
@@ -3427,9 +3409,11 @@ function seasonToggle(game) {
         (currentSeasonNo || '') + ' Seasons') +
       (combined ? nflBackSplits(combined, spec, opp) : pending('Scheme splits are not published for this player yet.'));
     var currentOnly = profiles.filter(function (p) { return p.source_season === currentSeasonNo; })[0] || null;
+    var oppNow = game[oppSide + '_scheme_current'] || {};
+    var oppCurrent = { scheme: oppNow, defense: oppNow.defense || null, name: opp.name, nick: opp.nick };
     var currentView = tiles(currentOnly) +
       seasonLine([stats], (currentSeasonNo || '') + ' Season') +
-      (currentOnly ? nflBackSplits(currentOnly, spec, opp)
+      (currentOnly ? nflBackSplits(currentOnly, spec, oppCurrent)
         : pending('No ' + (currentSeasonNo || 'current') + ' splits are published for this player yet.'));
     return head + nflSeasonViews(combinedView, currentView) + '</section>';
   }
@@ -3502,13 +3486,17 @@ function seasonToggle(game) {
           esc(epaText(raw, col[1] === 'pct')) + '</td>';
       }).join('') + '</tr>';
     }
-    var seasons = (oScheme.source_seasons || []).join(' + ');
-    html += '<div class="ca-split-block"' + nflSeasonsAttr(oScheme, false) + '><h4>Pass And Run' +
-      (seasons ? ' · ' + esc(seasons) + ' Charting' : '') + '</h4>' +
-      nflSplitTable(['Pass EPA', 'Pass Succ', 'Rush EPA', 'Rush Succ', 'PA EPA'], [
-        schemeRow(oNick + ' Offense', oScheme, 'offense'),
-        schemeRow(dNick + ' Defense', dScheme, 'defense')
-      ]) + '</div>';
+    html += nflBothWindows(function () {
+      var o = nflScheme(game, offSide), d = nflScheme(game, defSide);
+      var seasons = (o.source_seasons || []).join(' + ');
+      if (!Object.keys(o).length && !Object.keys(d).length) return '';
+      return '<div class="ca-split-block"><h4>Pass And Run' +
+        (seasons ? ' · ' + esc(seasons) + ' Charting' : '') + '</h4>' +
+        nflSplitTable(['Pass EPA', 'Pass Succ', 'Rush EPA', 'Rush Succ', 'PA EPA'], [
+          schemeRow(oNick + ' Offense', o, 'offense'),
+          schemeRow(dNick + ' Defense', d, 'defense')
+        ]) + '</div>';
+    });
 
     function perGameBlock(stats, prior, windowLabel) {
     if (!stats || !stats.games) return '';
@@ -3746,7 +3734,7 @@ function seasonToggle(game) {
         nflRateCell(a, nflFreqRank(game[defSide + '_scheme'], 'defense', 'target_share', tk)) + '</tr>';
     }).filter(Boolean);
     var mixHtml = mixRows.length
-      ? '<div class="ca-split-block"' + nflSeasonsAttr(game[side + '_scheme'], false) + '><h4>Target Distribution</h4>' +
+      ? '<div class="ca-split-block"><h4>Target Distribution</h4>' +
         nflMixTable('Position', [nflNick(sport, game, defSide) + ' Allow'], mixRows) + '</div>' : '';
     return head + volume + mixHtml + nflReceiverMatrices(sport, game, side, players) + '</section>';
   }
@@ -3785,7 +3773,8 @@ function seasonToggle(game) {
     var seasons = profiles.map(function (p) { return p.source_season; });
     var now = Math.max.apply(null, seasons);
 
-    function matrix(cols, title) {
+    function matrix(cols, title, oppScheme) {
+      var oppDef = (oppScheme || {}).defense || null;
       var looks = {};
       cols.forEach(function (p, i) {
         ((p && p.splits) || []).forEach(function (sp) { (looks[sp.coverage] = looks[sp.coverage] || [])[i] = sp; });
@@ -3838,8 +3827,9 @@ function seasonToggle(game) {
     });
     var allSeasons = seasons.filter(function (y, i, a) { return a.indexOf(y) === i; }).sort();
     return nflSeasonViews(
-      matrix(combinedCols, allSeasons.join(' + ') + ' Receivers By Coverage · Yards Per Target'),
-      matrix(currentCols, now + ' Receivers By Coverage · Yards Per Target'));
+      matrix(combinedCols, allSeasons.join(' + ') + ' Receivers By Coverage · Yards Per Target', oppScheme),
+      matrix(currentCols, now + ' Receivers By Coverage · Yards Per Target',
+        game[oppSide + '_scheme_current'] || {}));
   }
 
   function nflDuo(fn, sport, game) {
@@ -3859,10 +3849,10 @@ function seasonToggle(game) {
         nflDuo(nflBackPanel, sport, game, 'QB')),
 
       section('coverage', 'Coverage Shells', 'What Each Defense Plays, And How Often',
-        nflDuo(nflShellPanel, sport, game)),
+        nflBothWindows(function () { return nflDuo(nflShellPanel, sport, game); })),
 
       section('looks', 'Defensive Looks', 'Man, Zone, Blitz, Pressure And Box',
-        nflDuo(nflLooksPanel, sport, game)),
+        nflBothWindows(function () { return nflDuo(nflLooksPanel, sport, game); })),
 
       section('rushing', 'Running Backs', 'Season Line And Splits By Box And Direction',
         nflDuo(nflBackPanel, sport, game, 'RB')),
@@ -3874,7 +3864,7 @@ function seasonToggle(game) {
         nflDuo(nflCatchersPanel, sport, game)),
 
       section('tendencies', 'Offensive Tendencies', 'Personnel, Formation And Play Type',
-        nflDuo(nflTendencyPanel, sport, game)),
+        nflBothWindows(function () { return nflDuo(nflTendencyPanel, sport, game); })),
 
       section('availability', 'Starting Lineups And Availability',
         'Offense, Defense And Official Designations',
