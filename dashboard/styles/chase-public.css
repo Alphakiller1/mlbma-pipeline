@@ -4971,8 +4971,6 @@ body[data-sport="nfl"] .ca-detail-nav {
     var(--surface-well);
 }
 
-.ca-cfb-gap-detail { margin-top: var(--space-3); }
-.ca-cfb-gap-detail .ca-arsenal-panel { background: transparent; }
 
 .ca-nfl-matchup-duo,
 .ca-production-duo,

@@ -105,7 +105,10 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("function cfbCompareBody", js)
         self.assertIn("Matchup Analysis", js)
         self.assertNotIn("function nflScriptLens", js)
-        self.assertIn("Largest unit gaps", js)
+        # Evidence, never verdicts: CFB no longer ranks the widest gaps for the reader.
+        self.assertNotIn("Largest unit gaps", js)
+        self.assertNotIn("Largest Percentile Gaps", js)
+        self.assertNotIn("function cfbEdges", js)
         self.assertIn("function cfbDecisionPaths", js)
         self.assertIn("function cfbReadingKey", js)
         self.assertIn("function cfbScriptLens", js)

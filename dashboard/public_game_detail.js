@@ -3841,51 +3841,13 @@
       '</section>';
   }
 
-  function cfbEdgesBoard(sport, game, offSide, defSide) {
-    var offRates = cfbRates(game, offSide);
-    var defRates = cfbRates(game, defSide);
-    var styles = clubPair(sport, game, offSide, defSide);
-    var items = cfbClashSpecs().map(function (spec) {
-      var off = offRates[spec.off];
-      var def = defRates[spec.def];
-      var gap = (percentOf(off) == null || percentOf(def) == null)
-        ? null : percentOf(off) - percentOf(def);
-      if (gap == null || Math.abs(gap) < 8) return null;
-      return { abs: Math.abs(gap), off: off, def: def, spec: spec };
-    }).filter(Boolean);
-    items.sort(function (a, b) { return b.abs - a.abs; });
-    items = items.slice(0, 6);
-    if (!items.length) return '';
-    var rows = items.map(function (item) {
-      return mirrorRow(
-        cfbShortLabel(item.off || item.def, item.spec.off),
-        item.off, item.def, cfbFmt(item.off || item.def), styles);
-    }).join('');
-    return '<div class="ca-mirror">' +
-      cfbMirrorHead(sport, game, offSide, defSide,
-        'Largest Percentile Gaps', 'Offense', 'Defense') +
-      rows + '</div>';
-  }
-
-  function cfbEdges(sport, game) {
-    var a = cfbEdgesBoard(sport, game, 'away', 'home');
-    var b = cfbEdgesBoard(sport, game, 'home', 'away');
-    if (!a && !b) return '';
-    return '<section class="ca-arsenal-panel"><h3>Largest unit gaps</h3>' +
-      '<p class="ca-lineup-context">The widest FBS-percentile separations between each offense and the defense it meets. These show where the matchup is most different—not which team will win.</p>' +
-      a + b + '</section>';
-  }
-
   function cfbClashBody(sport, game) {
     var a = cfbClashCard(sport, game, 'away', 'home');
     var b = cfbClashCard(sport, game, 'home', 'away');
     if (!a && !b) return pending('Unit rates are not published for this pairing yet.');
     var espn = ((game.away_form || {}).source === 'espn') || ((game.home_form || {}).source === 'espn');
-    var edges = cfbEdges(sport, game);
     return '<div class="ca-detail-stack-inner"><div class="ca-cfb-matchup-stack">' + a + b + '</div>' +
       cfbScriptLens(sport, game) +
-      (edges ? '<details class="ca-ranking-detail ca-cfb-gap-detail"><summary>Open Largest Unit Gaps</summary>' +
-        '<div class="ca-ranking-detail__body">' + edges + '</div></details>' : '') +
       cfbMetricGuide() +
       '<p class="ca-detail-source-note">' +
       (espn

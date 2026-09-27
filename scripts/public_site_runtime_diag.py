@@ -384,8 +384,9 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator(".ca-cfb-reading-key").count() == 1)
         check("CFB matchup explains six competitive dynamics",
               page.locator(".ca-cfb-script-dynamics .ca-script-lens").count() == 6)
-        check("CFB matchup keeps largest gaps progressive",
-              page.locator(".ca-cfb-gap-detail:not([open])").count() == 1)
+        check("CFB names no largest gaps for the reader",
+              page.locator(".ca-cfb-gap-detail").count() == 0 and
+              "largest" not in page.locator(".ca-detail-stack").inner_text().lower())
         page.locator("[data-cfb-compare='passing']").click()
         check("CFB stat-family tabs select one visible panel",
               page.locator("[data-cfb-compare='passing'][aria-selected='true']").count() == 1
