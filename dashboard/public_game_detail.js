@@ -2581,6 +2581,101 @@
     'off_fg', 'off_punt', 'off_kr', 'off_pr', 'off_pen'
   ];
 
+function wireSeasonToggle(host) {
+    host.addEventListener('click', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-season-scope]');
+      if (!btn || !host.contains(btn)) return;
+      var group = btn.closest('.ca-season-toggle');
+      if (!group) return;
+      Array.prototype.forEach.call(group.querySelectorAll('[data-season-scope]'), function (b) {
+        var on = b === btn;
+        b.classList.toggle('is-on', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+      var scope = btn.getAttribute('data-season-scope');
+      var current = Number(group.getAttribute('data-current-season'));
+      var visible = 0;
+      Array.prototype.forEach.call(host.querySelectorAll('[data-scheme-seasons]'), function (panel) {
+        var seasons = String(panel.getAttribute('data-scheme-seasons') || '')
+          .split(',').map(Number).filter(Number.isFinite);
+        var isCurrentOnly = seasons.length === 1 && seasons[0] === current;
+        var show = scope !== 'current' || isCurrentOnly;
+        panel.hidden = !show;
+        if (show) visible += 1;
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('[data-season-prior-only]'), function (node) {
+        node.hidden = scope === 'current';
+      });
+      var note = host.querySelector('[data-season-empty]');
+      if (note) note.hidden = scope !== 'current' || visible > 0;
+      // A section whose every block belongs to the other window says so,
+      // rather than standing empty under its heading.
+      Array.prototype.forEach.call(host.querySelectorAll('.ca-detail-section'), function (sec) {
+        var panels = sec.querySelectorAll('.ca-detail-duo > *');
+        var scoped = sec.querySelectorAll('.ca-detail-duo > [data-scheme-seasons]');
+        if (!scoped.length || scoped.length !== panels.length) return;
+        var any = Array.prototype.some.call(scoped, function (n) { return !n.hidden; });
+        var empty = sec.querySelector('[data-season-section-empty]');
+        if (!empty && !any) {
+          empty = document.createElement('p');
+          empty.className = 'ca-detail-source-note';
+          empty.setAttribute('data-season-section-empty', '');
+          empty.textContent = 'This section is charted across ' +
+            group.querySelector('[data-season-scope="combined"]').textContent +
+            '. No ' + current + '-only charting is published for it yet.';
+          var body = sec.querySelector('.ca-detail-section__body');
+          body.insertBefore(empty, body.firstChild);
+        }
+        if (empty) empty.hidden = any;
+      });
+      host.setAttribute('data-season-scope', scope);
+    });
+  }
+
+function schemeSeasons(game) {
+    var out = {};
+    ['away', 'home'].forEach(function (side) {
+      var profile = game[side + '_scheme'] || {};
+      (profile.participation_source_seasons || profile.source_seasons || []).forEach(function (y) {
+        out[Number(y)] = true;
+      });
+    });
+    return Object.keys(out).map(Number).sort();
+  }
+
+function currentSeason(game) {
+    var declared = Number((game.scheme_source || {}).season);
+    if (isFinite(declared) && declared > 2000) return declared;
+    return seasonOf(game.kickoff_utc);
+  }
+
+function seasonToggle(game) {
+    var charted = schemeSeasons(game);
+    var now = currentSeason(game);
+    if (!charted.length) return '';
+    var shown = charted.concat([now]).filter(function (year, index, all) {
+      return all.indexOf(year) === index;
+    }).sort();
+    var options = [
+      ['combined', shown.join(' + '), 'Prior-season charting and current-season form'],
+      ['current', String(now) + ' Only', 'Current-season evidence only']
+    ];
+    return '<aside class="ca-analysis-scope" aria-label="Analysis scope"><div>' +
+      '<span class="ca-analysis-scope__eyebrow">Evidence Window</span>' +
+      '<strong>Choose The Seasons In View</strong></div>' +
+      '<div class="ca-season-toggle" role="group" aria-label="Statistics shown" ' +
+      'data-current-season="' + now + '">' +
+      options.map(function (opt, i) {
+        return '<button type="button" class="ca-season-toggle__btn' + (i === 0 ? ' is-on' : '') +
+          '" data-season-scope="' + opt[0] + '" aria-pressed="' + (i === 0) + '" title="' +
+          esc(opt[2]) + '">' + esc(opt[1]) + '</button>';
+      }).join('') +
+      '</div>' +
+      '<p class="ca-season-toggle__note" data-season-empty hidden>No ' + now +
+      '-only scheme charting is published yet. Current Team Form and Radar remain below.</p>' +
+      '</aside>';
+  }
+
   /* ---------------------------------------------------------------------
    * The NFL desk, drawn in the MLB page's table language.
    *
@@ -2650,7 +2745,7 @@
       html + '</td>';
   }
 
-  // A published {place, of} read as a frequency place for the neutral marker.
+  // A published {place, of} read as a frequency place for the league marker.
   function nflAsFreq(place) {
     return place ? { place: place.rank, of: place.of } : null;
   }
@@ -2684,8 +2779,8 @@
      than most clubs, a down arrow when less, a dash in the middle band. The
      band is the site's own middle tier (|percentile - 0.5| < 0.13, about 13th
      to 20th of 32), so an arrow means the same distance from average as a
-     coloured grade does. The marks stay neutral ink: how often is never how
-     well. Read from the published league_frequency_ranks (place 1 = most). */
+     coloured grade does: up green, down red, the middle band a yellow dash.
+     Read from the published league_frequency_ranks (place 1 = most). */
   function nflFreqRank(scheme, phase, group, key) {
     return (((((scheme || {}).league_frequency_ranks || {})[phase] || {})[group] || {})[key]) || null;
   }
@@ -2738,6 +2833,12 @@
 
   // The seasons behind a club's charting: participation (coverage, pressure,
   // personnel, box) or the full charted sample (motion, play action, pace).
+  function nflSeasonsAttr(scheme, participation) {
+    var seasons = ((scheme || {})[participation ? 'participation_source_seasons' : 'source_seasons']) ||
+      (scheme || {}).source_seasons || [];
+    return seasons.length ? ' data-scheme-seasons="' + esc(seasons.join(',')) + '"' : '';
+  }
+
   function nflSampleLabel(scheme, participation) {
     var seasons = ((scheme || {})[participation ? 'participation_source_seasons' : 'source_seasons']) ||
       (scheme || {}).source_seasons || [];
@@ -2763,7 +2864,7 @@
     var allowed = nflResponse(dScheme, 'defense');
     var faced = nflResponse(oScheme, 'offense');
     var oppLabel = fullName(sport, game, offSide);
-    var head = '<section class="ca-arsenal-panel"><h3>' +
+    var head = '<section class="ca-arsenal-panel"' + nflSeasonsAttr(dScheme, true) + '><h3>' +
       esc(fullName(sport, game, defSide)) + ' Defense</h3>';
     var rows = NFL_SHELLS.filter(function (s) { return cov[s[0] + '_rate'] != null; })
       .sort(function (a, b) { return cov[b[0] + '_rate'] - cov[a[0] + '_rate']; })
@@ -2805,7 +2906,7 @@
     var unit = dScheme.defense || {};
     var allowed = nflResponse(dScheme, 'defense');
     var faced = nflResponse(oScheme, 'offense');
-    var head = '<section class="ca-arsenal-panel"><h3>' +
+    var head = '<section class="ca-arsenal-panel"' + nflSeasonsAttr(dScheme, true) + '><h3>' +
       esc(fullName(sport, game, defSide)) + ' Defense</h3>';
     var rows = NFL_LOOKS.map(function (spec) {
       var rate = (unit[spec[1]] || {})[spec[2]];
@@ -2842,7 +2943,7 @@
     var mine = ((oScheme.offense || {}).personnel) || {};
     var dScheme = game[defSide + '_scheme'] || {};
     var seen = ((dScheme.defense || {}).personnel) || {};
-    var head = '<section class="ca-arsenal-panel"><h3>' +
+    var head = '<section class="ca-arsenal-panel"' + nflSeasonsAttr(oScheme, false) + '><h3>' +
       esc(fullName(sport, game, offSide)) + ' Offense</h3>';
     var rows = NFL_TENDENCIES.map(function (spec) {
       if (mine[spec[1]] == null) return '';
@@ -2974,8 +3075,9 @@
   }
 
   // One season's splits under a heading that names the season and its sample.
-  function nflSplitWrap(title, inner, status) {
-    return '<div class="ca-split-block"><h4>' + esc(title) + '</h4>' +
+  function nflSplitWrap(title, inner, status, season) {
+    return '<div class="ca-split-block"' + (season ? ' data-scheme-seasons="' + esc(season) + '"' : '') +
+      '><h4>' + esc(title) + '</h4>' +
       (status ? pending(status) : '') + inner + '</div>';
   }
 
@@ -3004,7 +3106,7 @@
       ? ' · ' + all[spec.volume] + ' ' + spec.unit : '');
     if (!rows.length) {
       return nflSplitWrap(title, pending('No look reaches ' + spec.minimum + ' ' +
-        spec.unit.toLowerCase() + ' yet this season.'));
+        spec.unit.toLowerCase() + ' yet this season.'), '', season);
     }
     var cols = spec.cols.filter(function (col) {
       return rows.some(function (r) { return r[col[0]] != null; });
@@ -3048,7 +3150,7 @@
       cols.map(function (col) { return '<th class="num">' + esc(col[1]) + '</th>'; }).join('') +
       (showCol ? '<th class="num ca-opp-shows" title="How often ' + esc(opp.name) +
         ' shows this look on its charted snaps">' + esc(opp.nick) + ' Show</th>' : '') +
-      '</tr></thead><tbody>' + body + '</tbody></table></div>', status);
+      '</tr></thead><tbody>' + body + '</tbody></table></div>', status, season);
   }
 
   function nflBackPanel(sport, game, side, position) {
@@ -3206,7 +3308,7 @@
       }).join('') + '</tr>';
     }
     var seasons = (oScheme.source_seasons || []).join(' + ');
-    html += '<div class="ca-split-block"><h4>Pass And Run' +
+    html += '<div class="ca-split-block"' + nflSeasonsAttr(oScheme, false) + '><h4>Pass And Run' +
       (seasons ? ' · ' + esc(seasons) + ' Charting' : '') + '</h4>' +
       nflSplitTable(['Pass EPA', 'Pass Succ', 'Rush EPA', 'Rush Succ', 'PA EPA'], [
         schemeRow(oNick + ' Offense', oScheme, 'offense'),
@@ -3363,7 +3465,7 @@
     // Receivers are placed among players at the same position on the slate
     // with at least five targets. Receptions, yards and yards per target are
     // production, so they are graded; targets and target share are
-    // opportunity, so they carry the neutral league marker instead.
+    // opportunity, so they carry the league marker instead.
     var MIN_TARGETS = 5;
     function perG(p, key) {
       var gp = Number(p.games) || 0;
@@ -3419,7 +3521,7 @@
         nflRateCell(a, nflFreqRank(game[defSide + '_scheme'], 'defense', 'target_share', tk)) + '</tr>';
     }).filter(Boolean);
     var mixHtml = mixRows.length
-      ? '<div class="ca-split-block"><h4>Target Distribution</h4>' +
+      ? '<div class="ca-split-block"' + nflSeasonsAttr(game[side + '_scheme'], false) + '><h4>Target Distribution</h4>' +
         nflMixTable('Position', [nflNick(sport, game, defSide) + ' Allow'], mixRows) + '</div>' : '';
     return head + '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-nfl-split">' +
       '<thead><tr><th>Player</th><th class="num">Tgt/G</th><th class="num">Rec/G</th>' +
@@ -3844,7 +3946,7 @@
         var glyph = item[0] === 'overview' ? ico('info', 'ca-detail-nav__ico', 14)
           : (SECTION_ICON[item[0]] ? ico(SECTION_ICON[item[0]], 'ca-detail-nav__ico', 14) : '');
         return '<a href="#' + item[0] + '">' + glyph + item[1] + '</a>';
-      }).join('') + '</nav>' +
+      }).join('') + '</nav>' + (sport === 'nfl' ? seasonToggle(game) : '') +
       '<div class="ca-detail-stack">' +
       (sport === 'mlb' ? mlbSections(sport, game, extra)
         : sport === 'cfb' ? cfbSections(sport, game)
@@ -3856,6 +3958,7 @@
     fitRadar(host);
     // Delegated once on the host, so a repainted section keeps working.
     if (!host.dataset.seasonWired) {
+      wireSeasonToggle(host);
       wireLineupTabs(host);
       wireCfbCompare(host);
       wireRadarReadout(host);

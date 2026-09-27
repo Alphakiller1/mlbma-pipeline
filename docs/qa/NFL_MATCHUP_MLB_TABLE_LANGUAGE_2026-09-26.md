@@ -51,8 +51,10 @@ all of these:
   `is-off`/`is-def` leads, or rows sorted by gap. Rows are ordered by a fixed
   list, or by the club's own usage. Finding the gap is the reader's job. This
   is owner direction.
-- **Tendency is not performance.** Usage and frequency are never tier-coloured.
-  Offensive Tendencies carries no grade at all.
+- **Tendency is not performance.** Usage and frequency never take a tier grade
+  or rank colour. Each carries a league marker instead: a green up arrow above
+  the league, a red down arrow below, a yellow dash in the middle band (owner
+  direction 2026-09-27).
 - **Show the sample.** A split under its floor (30 dropbacks, 15 carries) is
   printed with a Low n tag and never graded. Run Direction prints the carry
   count beside every YPC.

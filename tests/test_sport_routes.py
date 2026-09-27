@@ -461,8 +461,11 @@ class AdapterHoleTests(unittest.TestCase):
         # Lineups and the injury report are unchanged. There is no season
         # toggle: coverage charting has no current-season sample to switch to,
         # so each panel names the seasons it is drawn from instead.
-        for gone in ("function seasonToggle", "data-season-scope", "data-scheme-seasons"):
-            self.assertNotIn(gone, detail)
+        # The evidence window is back (owner direction 2026-09-27); an empty
+        # section under 2026 Only says so instead of standing blank.
+        for text in ("function seasonToggle", "data-season-scope", "data-scheme-seasons",
+                     "data-season-section-empty"):
+            self.assertIn(text, detail)
         self.assertIn("function nflSampleLabel", detail)
         self.assertIn("single_high: 'Single High (MFC)', two_high: 'Two High (MFO)'", detail)
         for text in (
@@ -502,14 +505,17 @@ class AdapterHoleTests(unittest.TestCase):
         tendency = nfl[nfl.index("function nflTendencyPanel"):nfl.index("function nflStarter")]
         self.assertNotIn("rankTone", tendency)
         self.assertNotIn("nflResultCell", tendency)
-        # Frequencies carry a neutral league marker (up / down / dash in the middle
-        # tier band), read from the published frequency ranks, never a grade colour.
+        # Frequencies carry a league marker (up / down / dash in the middle tier
+        # band), read from the published frequency ranks.
         self.assertIn("function nflFreqMark(rank, invert)", nfl)
         self.assertIn("Math.abs(d) < 0.13 ? 'is-avg'", nfl)
         self.assertIn("nflFreqRank(oScheme, 'offense', 'personnel', spec[1])", tendency)
         mark_css = css[css.index(".ca-freq-mark {"):]
         mark_css = mark_css[:mark_css.index("}", mark_css.index(".ca-freq-mark.is-up"))]
-        self.assertNotIn("--metric", mark_css)
+        # Owner direction 2026-09-27: up green, down red, dash yellow.
+        self.assertIn(".ca-freq-mark.is-up { color: var(--metric-good); }", css)
+        self.assertIn(".ca-freq-mark.is-down { color: var(--metric-poor); }", css)
+        self.assertIn(".ca-freq-mark.is-avg { color: var(--metric-mid);", css)
         # A split under its sample floor is printed, dimmed, and never graded.
         self.assertIn("floor: 30", nfl)
         self.assertIn("floor: 15", nfl)
@@ -536,7 +542,7 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn(".ca-lineup-board", css)
         self.assertIn("min-height: var(--touch-min)", css)
         self.assertIn("grid-template-columns: repeat(10, minmax(0, 1fr))", css)
-        self.assertNotIn(".ca-season-toggle", css)
+        self.assertIn(".ca-season-toggle", css)
         self.assertIn("game.slate_date ||", (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8"))
         self.assertIn("game.slate_date = date", (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8"))
         self.assertNotIn("ca-matchup-lens", detail)
