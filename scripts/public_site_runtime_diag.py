@@ -32,7 +32,7 @@ PROHIBITED = re.compile(
 NFL_GRADING_AUDIT = r"""
 () => {
   const SECTIONS = ['efficiency','quarterbacks','coverage','looks','rushing','trenches','receivers','tendencies'];
-  const COUNT_HEADS = new Set(['DB','ATT','TD']);
+  const COUNT_HEADS = new Set(['DB','ATT','TD','TGT']);
   const bad = [];
   let checked = 0;
   function headOf(td) {

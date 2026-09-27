@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-09-27T16:35:58Z",
-  "data_through_utc": "2026-09-27T16:34:40+00:00",
+  "generated_at_utc": "2026-09-27T20:37:55Z",
+  "data_through_utc": "2026-09-27T16:57:56+00:00",
   "season": 2026,
   "week": 3,
   "note": "Ten observed rates per club with ranks recomputed from each rate against the 32-team pool. No power rating, projected win total or playoff probability is present.",
@@ -2454,24 +2454,24 @@
       "through": "2026-09-20"
     },
     "BUF": {
-      "games": 2,
-      "through": "2026-09-18"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "CAR": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "CHI": {
       "games": 2,
       "through": "2026-09-20"
     },
     "CIN": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "CLE": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "DAL": {
       "games": 2,
@@ -2482,32 +2482,32 @@
       "through": "2026-09-20"
     },
     "DET": {
-      "games": 2,
-      "through": "2026-09-18"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "GB": {
       "games": 3,
       "through": "2026-09-25"
     },
     "HOU": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "IND": {
-      "games": 2,
-      "through": "2026-09-21"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "JAX": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "KC": {
-      "games": 2,
-      "through": "2026-09-21"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "LAC": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "LAR": {
       "games": 2,
@@ -2518,40 +2518,40 @@
       "through": "2026-09-20"
     },
     "MIA": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "MIN": {
       "games": 2,
       "through": "2026-09-20"
     },
     "NE": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "NO": {
       "games": 2,
       "through": "2026-09-20"
     },
     "NYG": {
-      "games": 2,
-      "through": "2026-09-22"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "NYJ": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "PHI": {
       "games": 2,
       "through": "2026-09-20"
     },
     "PIT": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "SEA": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "SF": {
       "games": 2,
@@ -2562,12 +2562,12 @@
       "through": "2026-09-20"
     },
     "TEN": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "WSH": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     }
   }
 }
