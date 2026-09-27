@@ -320,6 +320,28 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.goto(base_url.rstrip("/") + detail_url, wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
         check("NFL detail uses team logos", page.locator(".ca-detail-team__logo").count() == 2)
+        # The desk reads a tab at a time, and where the clubs stack, one club at a time.
+        shown = "() => [...document.querySelectorAll('.ca-detail-section')].filter(s => s.offsetParent).map(s => s.id).join(',')"
+        check("NFL desk opens on the Units tab alone", page.evaluate(shown) == "efficiency", page.evaluate(shown))
+        page.locator('a[data-nfl-tab="passing"]').click()
+        check("NFL Passing tab shows quarterbacks, coverage and looks",
+              page.evaluate(shown) == "quarterbacks,coverage,looks" and page.url.endswith("#passing"),
+              page.evaluate(shown) + " " + page.url)
+        club_panels = "() => [...document.querySelectorAll('#coverage .ca-detail-duo')].filter(d => d.offsetParent).map(d => [...d.children].filter(c => c.offsetParent).length).join(',')"
+        check("NFL stacked layout reads one club at a time", page.evaluate(club_panels) == "1",
+              page.evaluate(club_panels))
+        page.locator('.ca-nfl-club__btn[data-club="both"]').click()
+        check("NFL club switch shows both clubs on request", page.evaluate(club_panels) == "2",
+              page.evaluate(club_panels))
+        page.goto(base_url.rstrip("/") + detail_url + "#trenches", wait_until="domcontentloaded", timeout=timeout_ms)
+        page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
+        check("NFL section deep link opens the tab that holds it",
+              page.evaluate("document.querySelector('.ca-detail-stack').dataset.nflTab") == "rushing")
+        # Every section and both clubs on screen for the content checks below.
+        page.locator('.ca-nfl-club__btn[data-club="both"]').click()
+        page.evaluate("document.querySelector('.ca-detail-stack').setAttribute('data-nfl-tab', 'all')")
+        page.evaluate("() => { const r = document.getElementById('radar'); r && r.scrollIntoView(); }")
+        page.wait_for_timeout(300)
         nfl_sections = ("#efficiency", "#quarterbacks", "#coverage", "#looks", "#rushing",
                         "#trenches", "#receivers", "#tendencies", "#availability", "#radar",
                         "#team-context")

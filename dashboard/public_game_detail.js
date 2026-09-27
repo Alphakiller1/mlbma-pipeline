@@ -3908,6 +3908,107 @@ function seasonToggle(game) {
       fn.apply(null, [sport, game, 'home'].concat(args)) + '</div>';
   }
 
+  /* The NFL desk is read a group at a time. Each tab names the sections it
+     shows; a section id in the address opens the tab that holds it. */
+  var NFL_TABS = [
+    ['units', 'Units', ['efficiency']],
+    ['passing', 'Passing', ['quarterbacks', 'coverage', 'looks']],
+    ['rushing', 'Rushing', ['rushing', 'trenches']],
+    ['receiving', 'Receiving', ['receivers']],
+    ['tendencies', 'Tendencies', ['tendencies']],
+    ['lineups', 'Lineups', ['availability']],
+    ['profile', 'Profile', ['radar', 'team-context']]
+  ];
+
+  function nflTabOf(key) {
+    var hit = NFL_TABS.filter(function (t) { return t[0] === key || t[2].indexOf(key) >= 0; })[0];
+    return hit ? hit[0] : null;
+  }
+
+  /* Where the two clubs' panels stack (narrower than 1380px), one club is read
+     at a time; the switch is sticky with the tabs. */
+  function nflClubSwitch(sport, game) {
+    return '<div class="ca-nfl-club" role="group" aria-label="Club in view">' +
+      ['away', 'home'].map(function (side) {
+        return '<button type="button" class="ca-nfl-club__btn" data-club="' + side + '" aria-pressed="false">' +
+          esc(nflNick(sport, game, side)) + '</button>';
+      }).join('') +
+      '<button type="button" class="ca-nfl-club__btn" data-club="both" aria-pressed="false">Both</button></div>';
+  }
+
+  function nflSetTab(host, key, scrollTo) {
+    var stack = host.querySelector('.ca-detail-stack');
+    var tab = NFL_TABS.filter(function (t) { return t[0] === key; })[0];
+    if (!stack || !tab) return;
+    stack.setAttribute('data-nfl-tab', key);
+    Array.prototype.forEach.call(stack.querySelectorAll(':scope > .ca-detail-section'), function (sec) {
+      sec.classList.toggle('is-tab-on', tab[2].indexOf(sec.id) >= 0);
+    });
+    Array.prototype.forEach.call(host.querySelectorAll('[data-nfl-tab]'), function (a) {
+      if (a === stack) return;
+      var on = a.getAttribute('data-nfl-tab') === key;
+      a.classList.toggle('is-on', on);
+      a.setAttribute('aria-selected', String(on));
+    });
+    fitRadar(host);
+    var target = scrollTo && document.getElementById(scrollTo);
+    if (target && target !== stack) {
+      target.scrollIntoView({ block: 'start' });
+    } else if (scrollTo) {
+      var bar = host.querySelector('.ca-nfl-bar');
+      var top = bar ? bar.getBoundingClientRect().top : 0;
+      // Back to the top of the tab when the bar is already stuck.
+      if (bar && top <= 80) {
+        var start = stack.getBoundingClientRect().top + global.pageYOffset -
+          bar.getBoundingClientRect().height - 80;
+        global.scrollTo(0, Math.max(0, start));
+      }
+    }
+  }
+
+  function nflSetClub(host, club) {
+    var stack = host.querySelector('.ca-detail-stack');
+    if (!stack) return;
+    stack.setAttribute('data-club', club);
+    Array.prototype.forEach.call(host.querySelectorAll('.ca-nfl-club__btn'), function (b) {
+      var on = b.getAttribute('data-club') === club;
+      b.classList.toggle('is-on', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+  }
+
+  function wireNflDesk(host) {
+    host.addEventListener('click', function (event) {
+      var tab = event.target.closest && event.target.closest('a[data-nfl-tab]');
+      if (tab && host.contains(tab)) {
+        event.preventDefault();
+        var key = tab.getAttribute('data-nfl-tab');
+        nflSetTab(host, key, 'stack');
+        if (global.history && global.history.replaceState) {
+          global.history.replaceState(null, '', '#' + key);
+        }
+        return;
+      }
+      var club = event.target.closest && event.target.closest('[data-club]');
+      if (club && host.contains(club) && club.classList.contains('ca-nfl-club__btn')) {
+        nflSetClub(host, club.getAttribute('data-club'));
+      }
+    });
+    global.addEventListener('hashchange', function () {
+      var key = String(global.location.hash || '').slice(1);
+      var tab = nflTabOf(key);
+      if (tab) nflSetTab(host, tab, key === tab ? 'stack' : key);
+    });
+  }
+
+  function nflInitDesk(host) {
+    var key = String(global.location.hash || '').slice(1);
+    var tab = nflTabOf(key) || 'units';
+    nflSetTab(host, tab, key && key !== tab && nflTabOf(key) ? key : null);
+    var narrow = global.matchMedia && global.matchMedia('(max-width: 1379px)').matches;
+    nflSetClub(host, narrow ? 'away' : 'both');
+  }
+
   function nflSections(sport, game, games) {
     nflPool = nflLeaguePool(games);
     return [
@@ -4314,17 +4415,25 @@ function seasonToggle(game) {
           fact('Status', gameStatus(game))) + '</div>' +
       (sport === 'cfb' ? cfbScoreboard(sport, game) : '') +
       '</article>' +
-      '<nav class="ca-detail-nav" aria-label="Matchup sections">' + nav.map(function (item) {
-        var glyph = item[0] === 'overview' ? ico('info', 'ca-detail-nav__ico', 14)
-          : (SECTION_ICON[item[0]] ? ico(SECTION_ICON[item[0]], 'ca-detail-nav__ico', 14) : '');
-        return '<a href="#' + item[0] + '">' + glyph + item[1] + '</a>';
-      }).join('') + '</nav>' + (sport === 'nfl' ? seasonToggle(game) : '') +
+      (sport === 'nfl'
+        ? '<div class="ca-nfl-bar"><nav class="ca-detail-nav ca-nfl-tabs" aria-label="Matchup sections" role="tablist">' +
+          NFL_TABS.map(function (tab) {
+            var glyph = SECTION_ICON[tab[2][0]] ? ico(SECTION_ICON[tab[2][0]], 'ca-detail-nav__ico', 14) : '';
+            return '<a href="#' + tab[0] + '" role="tab" data-nfl-tab="' + tab[0] + '" aria-selected="false">' +
+              glyph + tab[1] + '</a>';
+          }).join('') + '</nav>' + nflClubSwitch(sport, game) + '</div>' + seasonToggle(game)
+        : '<nav class="ca-detail-nav" aria-label="Matchup sections">' + nav.map(function (item) {
+          var glyph = item[0] === 'overview' ? ico('info', 'ca-detail-nav__ico', 14)
+            : (SECTION_ICON[item[0]] ? ico(SECTION_ICON[item[0]], 'ca-detail-nav__ico', 14) : '');
+          return '<a href="#' + item[0] + '">' + glyph + item[1] + '</a>';
+        }).join('') + '</nav>') +
       '<div class="ca-detail-stack">' +
       (sport === 'mlb' ? mlbSections(sport, game, extra)
         : sport === 'cfb' ? cfbSections(sport, game)
         : nflSections(sport, game, (result && result.games) || [])) +
       '</div>';
     host.innerHTML = html;
+    if (sport === 'nfl') nflInitDesk(host);
     host.setAttribute('data-state', 'ready');
     host.__caRadar = { sport: sport, game: game };
     fitRadar(host);
@@ -4334,6 +4443,7 @@ function seasonToggle(game) {
       wireLineupTabs(host);
       wireCfbCompare(host);
       wireRadarReadout(host);
+      if (sport === 'nfl') wireNflDesk(host);
       if (global.ResizeObserver) {
         new global.ResizeObserver(function () { fitRadar(host); }).observe(host);
       }
