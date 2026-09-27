@@ -452,7 +452,8 @@
     "percentile",
     "pitchScore",
     "pitch_score",
-    "sos"
+    "sos",
+    "tracking_ranks"
   ],
   "contextual_environment": [
     "conditions",

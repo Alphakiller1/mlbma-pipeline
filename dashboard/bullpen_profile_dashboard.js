@@ -244,7 +244,7 @@
 
   function renderLeveragePanel(unit, ctx) {
     return '<div class="tp-table-wrap">' + buildLeverageTableHtml(unit, ctx.pickCol, ctx.levView)
-      + '<p class="tp-trend-table-note">Platoon &amp; venue splits (vs LHB / vs RHB · Away / Home) — color grades vs league bullpen context.</p></div>';
+      + '</div>';
   }
 
   // Tier splits styled exactly like the pitcher profile: plain graded-text values

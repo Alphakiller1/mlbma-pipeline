@@ -28,6 +28,44 @@ PROHIBITED = re.compile(
 )
 
 
+
+NFL_GRADING_AUDIT = r"""
+() => {
+  const SECTIONS = ['efficiency','quarterbacks','coverage','looks','rushing','trenches','receivers','tendencies'];
+  const COUNT_HEADS = new Set(['DB','ATT','TD']);
+  const bad = [];
+  let checked = 0;
+  function headOf(td) {
+    const table = td.closest('table'); if (!table) return '';
+    const idx = [...td.parentElement.cells].indexOf(td);
+    const hr = table.tHead && table.tHead.rows[table.tHead.rows.length - 1];
+    return hr && hr.cells[idx] ? hr.cells[idx].innerText.trim().toUpperCase() : '';
+  }
+  SECTIONS.forEach(id => {
+    const sec = document.getElementById(id);
+    if (!sec) return;
+    sec.querySelectorAll('td.num, .ca-stat__value').forEach(el => {
+      if (el.closest('[hidden]')) return;
+      const text = el.innerText.trim();
+      if (!text || text === '—' || !/\d/.test(text)) return;
+      checked++;
+      const graded = /(^|\s)c-(elite|good|mid|weak|poor)(\s|$)/.test(el.className);
+      const marked = !!el.querySelector('.ca-freq-mark');
+      const thinRow = !!el.closest('tr.is-thin');
+      const thinTile = el.classList.contains('ca-stat__value') &&
+        !!el.parentElement.querySelector('.ca-thin-tag');
+      const lowCount = !!el.querySelector('small.is-low') || el.classList.contains('is-low-cell');
+      const count = el.tagName === 'TD' && COUNT_HEADS.has(headOf(el));
+      if (!(graded || marked || thinRow || thinTile || lowCount || count)) {
+        bad.push(id + ' | ' + (el.tagName === 'TD' ? headOf(el) : 'tile ' +
+          (el.parentElement.querySelector('.ca-stat__label') || {}).innerText) + ' | ' + text);
+      }
+    });
+  });
+  return { checked, ungraded: bad.length, sample: bad.slice(0, 30) };
+}
+"""
+
 def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
     results: list[Result] = []
 
@@ -338,6 +376,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL tendencies, looks, receivers and QB opponent rates carry markers",
               all(page.locator(f"{sid} .ca-freq-mark").count() > 0
                   for sid in ("#looks", "#tendencies", "#receivers", "#quarterbacks")))
+        # Every number in the analysis is either graded (tier colour + rank),
+        # marked against the league (neutral arrow), tagged as a thin sample, or
+        # a plain sample count. A number that is simply grey is a regression.
+        grading = page.evaluate(NFL_GRADING_AUDIT)
+        check("NFL every number is graded, marked, tagged thin or a count",
+              grading["checked"] > 200 and grading["ungraded"] == 0,
+              f"{grading['ungraded']} of {grading['checked']}: {grading['sample'][:3]}")
         check("NFL usage is never graded",
               page.locator(".ca-arsenal-table td:has(.ca-usage)[class*='c-']").count() == 0)
         check("NFL thin samples are tagged and never graded",
@@ -389,12 +434,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               cfb_detail_url.startswith("/cfb/matchup.html?game="), cfb_detail_url)
         page.goto(base_url.rstrip("/") + cfb_detail_url,
                   wait_until="domcontentloaded", timeout=timeout_ms)
-        page.wait_for_selector(".ca-cfb-reading-key", timeout=timeout_ms)
+        page.wait_for_selector("#clash", timeout=timeout_ms)
         check("CFB current matchup has both directional unit boards",
               page.locator(".ca-cfb-matchup-stack > .ca-arsenal-panel").count() == 2)
-        check("CFB matchup exposes the reading order",
-              page.locator(".ca-cfb-reading-key").count() == 1)
-        check("CFB matchup explains six competitive dynamics",
+        check("CFB carries no section explanations or verdict lines",
+              page.locator(".ca-cfb-reading-key, .ca-metric-guide").count() == 0 and
+              "carries the stronger" not in page.locator(".ca-detail-stack").inner_text())
+        check("CFB matchup shows six competitive dynamics",
               page.locator(".ca-cfb-script-dynamics .ca-script-lens").count() == 6)
         check("CFB names no largest gaps for the reader",
               page.locator(".ca-cfb-gap-detail").count() == 0 and
@@ -403,9 +449,6 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CFB stat-family tabs select one visible panel",
               page.locator("[data-cfb-compare='passing'][aria-selected='true']").count() == 1
               and page.locator("[data-cfb-compare-panel='passing']:not([hidden])").count() == 1)
-        page.locator(".ca-metric-guide summary").click()
-        check("CFB metric guide expands",
-              page.locator(".ca-metric-guide[open]").count() == 1)
         cfb_text = page.locator("main").inner_text()
         match = PROHIBITED.search(cfb_text)
         check("CFB detail public copy boundary", match is None, match.group(0) if match else "")

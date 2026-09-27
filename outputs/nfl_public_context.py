@@ -469,9 +469,21 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
         for season in seasons:
             looks = {split["look"] for profile in rows if profile["position"] == position
                      and profile["source_season"] == season for split in profile["splits"]}
+            # A season line's floor scales with the season. The full-season floor
+            # (100 dropbacks, 50 carries) is right from midseason on, but in week
+            # three it admitted one quarterback, left a pool of one, and published
+            # no rank at all - every current-season headline went ungraded. Half
+            # the pool's median volume tracks how far the season has run, capped
+            # at the full-season floor.
+            volumes = sorted(
+                float(split.get(volume) or 0) for profile in rows
+                if profile["position"] == position and profile["source_season"] == season
+                for split in profile["splits"] if split["look"] == "all")
+            median = volumes[len(volumes) // 2] if volumes else 0.0
+            season_floor = 100 if position == "QB" else 50
+            all_floor = max(10 if position == "QB" else 5, min(season_floor, round(median / 2)))
             for look in looks:
-                minimum = 100 if look == "all" and position == "QB" else (
-                    50 if look == "all" else (10 if position == "QB" else 5))
+                minimum = all_floor if look == "all" else (10 if position == "QB" else 5)
                 for metric in metrics:
                     pool = []
                     for profile in rows:
@@ -490,6 +502,34 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
                                 and split and identity in ranks):
                             split.setdefault("league_ranks", {})[metric] = {
                                 "place": ranks[identity], "of": len(pool)}
+    # Next Gen tracking, placed among the same position and season. RYOE is a
+    # result (more is better); time to throw and eight-man boxes faced are how a
+    # player operates, published as a frequency place (1st = most) that the page
+    # marks neutrally, never as a grade.
+    TRACKING_RANKED = {
+        "QB": (("avg_time_to_throw", 20),),
+        "RB": (("ryoe_per_carry", 10), ("eight_plus_box_rate", 10)),
+    }
+    for position, metrics in TRACKING_RANKED.items():
+        seasons = {profile["source_season"] for profile in rows
+                   if profile["position"] == position and profile.get("tracking")}
+        for season in seasons:
+            for metric, minimum in metrics:
+                pool = [((profile["player_id"] or profile["player_name"]),
+                         float(profile["tracking"][metric]))
+                        for profile in rows
+                        if profile["position"] == position and profile["source_season"] == season
+                        and profile.get("tracking", {}).get(metric) is not None
+                        and float(profile["tracking"].get("attempts") or 0) >= minimum]
+                if len(pool) < 2:
+                    continue
+                ranks = _ranked(pool, "high")
+                for profile in rows:
+                    identity = profile["player_id"] or profile["player_name"]
+                    if (profile["position"] == position and profile["source_season"] == season
+                            and identity in ranks):
+                        profile.setdefault("tracking_ranks", {})[metric] = {
+                            "place": ranks[identity], "of": len(pool)}
     return out
 
 

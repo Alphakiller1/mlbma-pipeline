@@ -390,9 +390,7 @@
       var awayAv = availabilityPanel(game, 'away', awayName);
       var homeAv = availabilityPanel(game, 'home', homeName);
       if (awayAv || homeAv) {
-        html += '<div class="ca-ctx-duo">' + awayAv + homeAv + '</div>' +
-          '<p class="ca-ctx-note">Official injury report designations. ' +
-          'Roster status only; no projection or snap share.</p>';
+        html += '<div class="ca-ctx-duo">' + awayAv + homeAv + '</div>';
       }
     }
     if (sport === 'mlb') {
@@ -401,9 +399,7 @@
         html += '<div class="ca-ctx-duo">' +
           '<section><h4 class="ca-ctx-head">' + esc(awayName) + ' Offense</h4>' + awayCtx + '</section>' +
           '<section><h4 class="ca-ctx-head">' + esc(homeName) + ' Offense</h4>' + homeCtx + '</section>' +
-          '</div>' +
-          '<p class="ca-ctx-note">Season to date, graded against the 30-team league pool. ' +
-          'OSI = 0.43&#183;RCV + 0.37&#183;ABQ + 0.20&#183;OBR.</p>';
+          '</div>';
       }
     }
     if (sport === 'mlb') {
@@ -569,10 +565,7 @@
       miniFact('Market margin', cfbSigned(game.market_margin)) +
       miniFact('Edge points', game.edge_points != null ? cfbSigned(game.edge_points) : (game.edge_withheld_reason || 'Withheld')) +
       '</div>';
-    var note = '<p class="ca-ctx-note">Projected scoreline is the scoring model; the headline margin is the ' +
-      'opponent-adjusted ratings model — separate views that need not agree.' +
-      (game.evidence ? ' ' + esc(game.evidence) : '') + '</p>';
-    return grid + note;
+    return grid;
   }
 
   function cardHtml(sport, game) {
