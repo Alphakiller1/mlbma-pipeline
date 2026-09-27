@@ -16,6 +16,15 @@ class PipelineOrderTests(unittest.TestCase):
         self.assertIn("scrapers.scrape_pitch_mix", src.split("SCRIPTS_HEAVY", 1)[1][:400])
         self.assertNotIn("scrapers.scrape_pitch_mix", src.split("SCRIPTS_OPTIONAL", 1)[1].split("SCRIPTS_HEAVY", 1)[0])
 
+    def test_team_form_snapshot_is_rebuilt_before_it_is_published(self) -> None:
+        # team_context.json is built from the team-rankings snapshot; when only a
+        # person rebuilt the snapshot, the public MLB team form froze at the last
+        # manual build while the pipeline reported success every day.
+        src = (ROOT / "pipeline" / "main.py").read_text(encoding="utf-8")
+        snapshot = src.index('publisher("build_team_rankings_snapshot.py")')
+        context = src.index('publisher("publish_public_context.py")')
+        self.assertLess(snapshot, context)
+
     def test_ci_workflow_keeps_reusable_statcast_cache(self) -> None:
         yml = (ROOT / ".github" / "workflows" / "run-pipeline.yml").read_text(encoding="utf-8")
         self.assertNotIn("${{ github.run_id }}", yml)

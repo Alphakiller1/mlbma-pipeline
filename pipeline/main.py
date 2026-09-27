@@ -690,6 +690,12 @@ def run_public_slate_publish():
             # stopping the publishers after it.
             ([sys.executable, "-m", "scrapers.scrape_league_hitting_splits"], False),
             ([sys.executable, "-m", "core.compute_baselines"], False),
+            # The MLB team-form snapshot is what publish_public_context reads. It
+            # was only ever rebuilt by hand, so team_context.json was republished
+            # every day from a snapshot days or weeks old (data_through stuck at
+            # the last manual build). The builder refuses to write on missing
+            # CSVs or a short team pool, so a bad day keeps the last good one.
+            (publisher("build_team_rankings_snapshot.py"), False),
             (publisher("publish_public_context.py"), True),
             (publisher("publish_public_batters.py"), True),
             (publisher("publish_public_run_value.py"), True),
