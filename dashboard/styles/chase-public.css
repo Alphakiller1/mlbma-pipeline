@@ -5322,7 +5322,7 @@ body[data-sport="nfl"] .ca-detail-nav {
 
 /* The NFL pairs carry wider tables than MLB's (a matchup column in every row),
    so they tighten before they stack, and stack before a table has to scroll:
-   below 1340px each club gets the full width, which keeps the other club's
+   below 1380px each club gets the full width, which keeps the other club's
    result column on screen on a laptop or tablet. */
 @media (max-width: 1400px) {
   .ca-nfl-duo .ca-lineup-table th,
@@ -5330,6 +5330,27 @@ body[data-sport="nfl"] .ca-detail-nav {
   .ca-nfl-duo .ca-arsenal-table th.num,
   .ca-nfl-duo .ca-arsenal-table td.num { width: auto; }
 }
-@media (max-width: 1339px) {
+@media (max-width: 1379px) {
   .ca-nfl-duo { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* League marker beside a frequency: up, down, or a dash for the middle band.
+   Neutral ink on purpose - how often a club does something is never graded -
+   and a fixed width so the percentages above and below stay aligned. */
+.ca-freq-mark {
+  display: inline-block;
+  width: 1.1em;
+  margin-left: 4px;
+  text-align: center;
+  font-size: var(--type-meta);
+  line-height: 1;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+.ca-freq-mark.is-up,
+.ca-freq-mark.is-down { color: var(--text-primary); }
+@media (max-width: 560px) {
+  .ca-freq-mark { width: auto; margin-left: 2px; }
+  /* In a phone mix table the marker sits under its percentage, like the rank chips. */
+  .ca-nfl-mix td.num .ca-freq-mark { display: block; margin: 2px 0 0 auto; }
 }
