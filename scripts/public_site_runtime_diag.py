@@ -370,9 +370,12 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               cov_usage > 0 and cov_marks == cov_usage, f"{cov_marks} marks on {cov_usage} usage cells")
         glyphs = page.locator(".ca-freq-mark").evaluate_all("ns => [...new Set(ns.map(n => n.textContent))].sort().join('')")
         check("NFL league markers are up, down and dash only", set(glyphs) <= set("▲▼–") and len(glyphs) >= 2, glyphs)
-        check("NFL league markers are never grade-coloured",
-              page.locator(".ca-freq-mark[class*='c-']").count() == 0 and
-              page.locator("td:has(> .ca-freq-mark)[class*='c-']").count() == 0)
+        mark_colors = page.evaluate("""() => {
+          const pick = c => { const e = document.querySelector('.ca-freq-mark.' + c);
+            return e ? getComputedStyle(e).color : null; };
+          return [pick('is-up'), pick('is-down'), pick('is-avg')]; }""")
+        check("NFL league markers are green up, red down, yellow dash",
+              None not in mark_colors and len(set(mark_colors)) == 3, str(mark_colors))
         check("NFL tendencies, looks, receivers and QB opponent rates carry markers",
               all(page.locator(f"{sid} .ca-freq-mark").count() > 0
                   for sid in ("#looks", "#tendencies", "#receivers", "#quarterbacks")))

@@ -5207,8 +5207,9 @@ body[data-sport="nfl"] .ca-detail-nav {
 }
 
 /* League marker beside a frequency: up, down, or a dash for the middle band.
-   Neutral ink on purpose - how often a club does something is never graded -
-   and a fixed width so the percentages above and below stay aligned. */
+   Owner direction 2026-09-27: up is green, down is red, the dash yellow, from
+   the grade tokens so they match the rest of the desk. Fixed width keeps the
+   percentages above and below aligned. */
 .ca-freq-mark {
   display: inline-block;
   width: 1.1em;
@@ -5219,8 +5220,9 @@ body[data-sport="nfl"] .ca-detail-nav {
   color: var(--text-2);
   font-variant-numeric: tabular-nums;
 }
-.ca-freq-mark.is-up,
-.ca-freq-mark.is-down { color: var(--text-primary); }
+.ca-freq-mark.is-up { color: var(--metric-good); }
+.ca-freq-mark.is-down { color: var(--metric-poor); }
+.ca-freq-mark.is-avg { color: var(--metric-mid); font-weight: 700; }
 /* A marked figure keeps its marker on the same line (phones stack it instead). */
 @media (min-width: 561px) {
   .ca-nfl-split td.num,
@@ -5231,4 +5233,111 @@ body[data-sport="nfl"] .ca-detail-nav {
   .ca-freq-mark { width: auto; margin-left: 2px; }
   /* In a phone mix table the marker sits under its percentage, like the rank chips. */
   .ca-nfl-mix td.num .ca-freq-mark { display: block; margin: 2px 0 0 auto; }
+}
+
+/* ===========================================================================
+ * EVIDENCE WINDOW - restored 2026-09-27 (owner direction), without its
+ * explanatory copy. Rules as they stood before 2026-09-26.
+ * ======================================================================== */
+/* --- Season scope control ------------------------------------------------ */
+.ca-analysis-scope {
+  display: grid;
+  grid-template-columns: minmax(180px, auto) auto minmax(240px, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-board-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  box-shadow: inset 3px 0 0 var(--accent), inset 0 1px 0 var(--border-subtle);
+}
+
+.ca-analysis-scope > div:first-child { display: grid; gap: 2px; }
+.ca-analysis-scope > div:first-child strong {
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: var(--type-16);
+}
+
+.ca-analysis-scope__eyebrow {
+  color: var(--text-accent);
+  font-family: var(--font-sans);
+  font-size: var(--type-caps);
+  font-weight: 800;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+.ca-season-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  background: var(--surface-field);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0;
+}
+
+.ca-season-toggle__btn {
+  appearance: none;
+  min-height: var(--touch-min);
+  border: 0;
+  cursor: pointer;
+  padding: 5px 12px;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: var(--type-meta);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.ca-season-toggle__btn:hover { color: var(--text-primary); }
+.ca-season-toggle__btn.is-on {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  box-shadow: inset 0 0 0 1px var(--accent-strong);
+}
+.ca-season-toggle__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.ca-season-toggle__note {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: var(--type-meta);
+  color: var(--metric-watch);
+}
+
+
+@media (max-width: 980px) {
+  .ca-analysis-scope { grid-template-columns: 1fr auto; }
+}
+@media (max-width: 560px) {
+  .ca-analysis-scope { grid-template-columns: 1fr; padding: var(--space-3); }
+  .ca-season-toggle { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ca-season-toggle__btn { transition: none; }
+}
+.ca-season-toggle { border-color: transparent; box-shadow: none; }
+
+/* ===========================================================================
+ * ONE TABLE GRID - 2026-09-27 (owner direction: page-wide congruency)
+ * Every NFL table lays out on fixed tracks, so the same column sits at the
+ * same place in every table down the page: the label column is one width,
+ * the figures share what is left evenly. A split table and a mix table each
+ * keep their own label width, applied to every table of that kind.
+ * ======================================================================== */
+@media (min-width: 561px) {
+  .ca-nfl-split,
+  .ca-nfl-mix { table-layout: fixed; width: 100%; }
+  .ca-nfl-split thead th:first-child,
+  .ca-nfl-split tbody td:first-child { width: 30%; }
+  .ca-nfl-mix thead th:first-child,
+  .ca-nfl-mix tbody td:first-child { width: 24%; }
+  .ca-nfl-mix thead th:nth-child(2) { width: 26%; }
+  .ca-nfl-split th, .ca-nfl-split td,
+  .ca-nfl-mix th, .ca-nfl-mix td { overflow: hidden; text-overflow: ellipsis; }
+  .ca-nfl-split thead th, .ca-nfl-mix thead th { white-space: normal; }
 }
