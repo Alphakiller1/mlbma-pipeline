@@ -105,6 +105,8 @@ def project_game(sport: str, game: dict) -> dict:
         "home_player_stats": game.get("home_player_stats"),
         "away_team_stats": game.get("away_team_stats"),
         "home_team_stats": game.get("home_team_stats"),
+        "away_defenders_current": game.get("away_defenders_current"),
+        "home_defenders_current": game.get("home_defenders_current"),
         "away_scheme_current": game.get("away_scheme_current"),
         "home_scheme_current": game.get("home_scheme_current"),
         "away_team_stats_prior": game.get("away_team_stats_prior"),

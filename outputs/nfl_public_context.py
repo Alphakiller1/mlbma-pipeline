@@ -103,6 +103,11 @@ SCHEME_GROUPS = {
 TEAM_ALIAS = {"LA": "LAR", "WAS": "WSH", "JAC": "JAX", "LVR": "LV", "SD": "LAC", "OAK": "LV"}
 
 
+def _canon_keys(by_team: dict | None) -> dict:
+    """Club-keyed maps from nflverse use WAS and LA; the slate uses WSH and LAR."""
+    return {canon(team): value for team, value in (by_team or {}).items()}
+
+
 def canon(code: str) -> str:
     key = str(code or "").upper().strip()
     return TEAM_ALIAS.get(key, key)
@@ -427,7 +432,8 @@ PLAYER_SCHEME_FIELDS = {
     ),
 }
 PLAYER_TRACKING_FIELDS = (
-    "season", "week", "attempts", "eight_plus_box_rate", "avg_time_to_los",
+    "season", "week", "attempts", "eight_plus_box_rate", "avg_time_to_los", "pressure_rate",
+    "pressure_dropbacks",
     "avg_time_to_throw", "expected_yards_per_carry", "ryoe_per_carry",
     "rush_pct_over_expected", "source",
 )
@@ -517,7 +523,7 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
     # player operates, published as a frequency place (1st = most) that the page
     # marks neutrally, never as a grade.
     TRACKING_RANKED = {
-        "QB": (("avg_time_to_throw", 20),),
+        "QB": (("avg_time_to_throw", 20), ("pressure_rate", 10)),
         "RB": (("ryoe_per_carry", 10), ("eight_plus_box_rate", 10)),
     }
     for position, metrics in TRACKING_RANKED.items():
@@ -530,7 +536,8 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
                         for profile in rows
                         if profile["position"] == position and profile["source_season"] == season
                         and profile.get("tracking", {}).get(metric) is not None
-                        and float(profile["tracking"].get("attempts") or 0) >= minimum]
+                        and float(profile["tracking"].get("attempts")
+                                  or profile["tracking"].get("pressure_dropbacks") or 0) >= minimum]
                 if len(pool) < 2:
                     continue
                 ranks = _ranked(pool, "high")
@@ -914,9 +921,10 @@ def build(board: dict | None = None, rooms: dict | None = None,
         "team_stats": season_stats.get("teams") or {},
         "player_stats": season_stats.get("players") or {},
         "team_stats_prior": prior_stats.get("teams") or {},
-        "scheme_current": advanced_context.get("team_scheme_current") or {},
+        "scheme_current": _canon_keys(advanced_context.get("team_scheme_current")),
+        "defenders_current": _canon_keys(advanced_context.get("defenders_current")),
         "player_stats_prior": prior_stats.get("players") or {},
-        "team_line": advanced_context.get("team_line") or {},
+        "team_line": _canon_keys(advanced_context.get("team_line")),
         "source": {
             "season": board.get("season"),
             "week": board.get("week"),

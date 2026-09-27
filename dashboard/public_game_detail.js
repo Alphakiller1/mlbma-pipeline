@@ -2678,7 +2678,8 @@ function seasonToggle(game) {
           playersPrior: g[side + '_player_stats_prior'] || [],
           statsPrior: g[side + '_team_stats_prior'] || {},
           backs: g[side + '_player_scheme'] || [],
-          receivers: g[side + '_player_coverage'] || []
+          receivers: g[side + '_player_coverage'] || [],
+          defenders: g[side + '_defenders_current'] || []
         };
       });
     });
@@ -2858,11 +2859,10 @@ function seasonToggle(game) {
           nflResultCell(faced[key], nflResultRank(oScheme, 'offense', key, faced[key]), false) +
           '</tr>';
       });
-    if (!rows.length) {
-      return head + pending(nflWindow.pool === 'schemeCurrent'
-        ? 'Current-season coverage shells publish with the nflverse participation data.'
-        : 'Coverage charting is not published for this defense.') + '</section>';
+    if (!rows.length && nflWindow.pool === 'schemeCurrent') {
+      return head + nflDefendersTable(game[defSide + '_defenders_current']) + '</section>';
     }
+    if (!rows.length) return head + pending('Coverage charting is not published for this defense.') + '</section>';
     var context = [
       cov.man_rate != null ? pctText(cov.man_rate) + ' man' : '',
       cov.zone_rate != null ? pctText(cov.zone_rate) + ' zone' : '',
@@ -2871,6 +2871,46 @@ function seasonToggle(game) {
     ].concat([nflSampleLabel(dScheme, true)]).filter(Boolean).join(' · ');
     return head + '<p class="ca-lineup-context">' + esc(context || 'Charted coverage snaps') + '</p>' +
       nflMixTable('Shell', ['EPA Allowed', oppLabel + ' EPA'], rows) + '</section>';
+  }
+
+  /* The current season's coverage by defender (Pro Football Reference
+     charting): each defender's targets and what was completed on them, placed
+     among every defender on the slate with enough targets. Allowed rates grade
+     low as good; aDOT is how deep he is tested, marked, never graded. */
+  var NFL_DEFENDER_FLOOR = 5;
+
+  function nflDefendersTable(list) {
+    var rows = (list || []).filter(function (d) { return d && d.targets > 0; });
+    if (!rows.length) return pending('Coverage charting is not published for this defense.');
+    function pool(key) {
+      return nflPoolValues(function (t) {
+        return (t.defenders || []).filter(function (d) { return d.targets >= NFL_DEFENDER_FLOOR; })
+          .map(function (d) { return d[key]; });
+      });
+    }
+    var pools = {
+      completion_rate: pool('completion_rate'), yards_per_target: pool('yards_per_target'),
+      passer_rating: pool('passer_rating'), adot: pool('adot')
+    };
+    var body = rows.slice(0, 8).map(function (d) {
+      var thin = d.targets < NFL_DEFENDER_FLOOR;
+      function graded(key, text) {
+        return nflPlacedTd(esc(text), nflPlace(pools[key], d[key], false), thin);
+      }
+      var adotPlace = nflPlace(pools.adot, d.adot, true);
+      return '<tr' + (thin ? ' class="is-thin"' : '') + '><td class="ca-lineup-name">' + esc(d.player_name) +
+        (d.position ? ' <small>' + esc(d.position) + '</small>' : '') +
+        (thin ? ' <span class="ca-thin-tag" title="Under ' + NFL_DEFENDER_FLOOR +
+          ' targets: printed, not graded">Low n</span>' : '') + '</td>' +
+        '<td class="num">' + esc(String(d.targets)) + '</td>' +
+        graded('completion_rate', d.completion_rate == null ? '' : pctText(d.completion_rate)) +
+        graded('yards_per_target', d.yards_per_target == null ? '' : Number(d.yards_per_target).toFixed(1)) +
+        graded('passer_rating', d.passer_rating == null ? '' : Number(d.passer_rating).toFixed(1)) +
+        '<td class="num">' + (d.adot == null ? '&mdash;' : esc(Number(d.adot).toFixed(1)) +
+          (thin ? '' : nflFreqMark(nflAsFreq(adotPlace)))) + '</td></tr>';
+    });
+    return '<p class="ca-lineup-context">Coverage allowed by defender</p>' +
+      nflSplitTable(['Tgt', 'Cmp%', 'Yds/Tgt', 'Rating', 'aDOT'], body, 'Defender');
   }
 
   /* How a defense plays beyond the shell - man or zone, extra rushers, the
@@ -3291,7 +3331,7 @@ function seasonToggle(game) {
     // published after a season; a current season shows its charted looks only.
     var hasCoverage = rows.some(function (r) { return groupOf[r.look] === 'Coverage' || groupOf[r.look] === 'Shells'; });
     var status = spec.opponent && !hasCoverage && typeof season === 'number'
-      ? season + ' coverage and pressure splits publish with the ' + season + ' participation data.' : '';
+      ? season + ' coverage splits publish with the ' + season + ' participation data.' : '';
     return nflSplitWrap(title,
       '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-nfl-split"><thead><tr><th>Look</th>' +
       cols.map(function (col) { return '<th class="num">' + esc(col[1]) + '</th>'; }).join('') +
@@ -3370,6 +3410,11 @@ function seasonToggle(game) {
             ? '<div class="ca-stat"><span class="ca-stat__label">Time To Throw' +
               (trackRanks.avg_time_to_throw ? '' : lowTag) + '</span><strong class="ca-stat__value">' +
               Number(tracking.avg_time_to_throw).toFixed(2) + 's' + nflFreqMark(trackRanks.avg_time_to_throw) +
+              '</strong></div>' : '') +
+          (tracking.pressure_rate != null
+            ? '<div class="ca-stat"><span class="ca-stat__label">Pressured' +
+              (trackRanks.pressure_rate ? '' : lowTag) + '</span><strong class="ca-stat__value">' +
+              esc(pctText(tracking.pressure_rate)) + nflFreqMark(trackRanks.pressure_rate) +
               '</strong></div>' : '')
         : tile('YPC', all.yards_per_carry, 'num1', ranks.yards_per_carry) +
           tile('EPA / Carry', all.epa_per_carry, 'epa', ranks.epa_per_carry) +

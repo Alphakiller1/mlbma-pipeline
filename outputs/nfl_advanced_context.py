@@ -99,6 +99,11 @@ def _name_key(value: object) -> str:
     return re.sub(r"[^a-z0-9]", "", str(value or "").lower())
 
 
+def _bare_name(value: object) -> str:
+    """A name key that ignores suffixes: PFR prints "Michael Penix", others "Michael Penix Jr."."""
+    return re.sub(r"(jr|sr|ii|iii|iv|v)$", "", _name_key(value))
+
+
 def _team(value: object) -> str:
     return {"LA": "LAR", "JAC": "JAX", "OAK": "LV", "SD": "LAC",
             "STL": "LAR"}.get(str(value or "").upper(), str(value or "").upper())
@@ -336,7 +341,8 @@ def _split_masks(rows, position: str) -> dict[str, Any]:
 def _player_profiles(frame, season: int, names: dict[str, str],
                      positions: dict[str, str],
                      ngs_rushing: dict[str, dict[str, Any]] | None = None,
-                     ngs_passing: dict[str, dict[str, Any]] | None = None) -> list[dict]:
+                     ngs_passing: dict[str, dict[str, Any]] | None = None,
+                     qb_pressure: dict[str, dict[str, Any]] | None = None) -> list[dict]:
     profiles = []
     for position, id_col, name_col, family, flag in (
         ("QB", "passer_player_id", "passer_player_name", "passing", "qb_dropback"),
@@ -367,6 +373,8 @@ def _player_profiles(frame, season: int, names: dict[str, str],
                 profile["tracking"] = ngs_rushing[str(player_id)]
             if position == "QB" and ngs_passing and str(player_id) in ngs_passing:
                 profile["tracking"] = ngs_passing[str(player_id)]
+            if position == "QB" and qb_pressure and _bare_name(profile["player_name"]) in qb_pressure:
+                profile.setdefault("tracking", {}).update(qb_pressure[_bare_name(profile["player_name"])])
             profiles.append(profile)
     return profiles
 
@@ -601,6 +609,100 @@ def _unit_scheme(rows) -> dict:
     return {"pressure": strip(pressure), "personnel": strip(personnel), "response": strip(response)}
 
 
+# ---------------------------------------------------------------------------
+# Pro Football Reference charting, republished weekly by nflverse. Two 2026
+# facts the participation file would carry and nothing else public does:
+# pressure (per quarterback game: times pressured, over the dropbacks the
+# published rate implies) and coverage by defender (targets, completions,
+# yards, touchdowns and interceptions allowed in coverage, and aDOT).
+# ---------------------------------------------------------------------------
+PFR_ADV_URL = (
+    "https://github.com/nflverse/nflverse-data/releases/download/pfr_advstats/"
+    "advstats_week_{kind}_{season}.parquet"
+)
+PLAYERS_URL = "https://github.com/nflverse/nflverse-data/releases/download/players/players.parquet"
+
+
+def pfr_pressure(season: int) -> dict:
+    """Team pressure faced and generated, and each quarterback's, for a season."""
+    rows = _frame(PFR_ADV_URL.format(kind="pass", season=season), (
+        "team", "opponent", "pfr_player_name", "times_pressured", "times_pressured_pct",
+        "game_type"))
+    if rows is None or rows.empty:
+        return {"offense": {}, "defense": {}, "qbs": {}}
+    rows = rows[rows["game_type"].fillna("REG").eq("REG")].copy()
+    pressured = rows["times_pressured"].fillna(0)
+    pct = rows["times_pressured_pct"]
+    # The published rate is pressures over dropbacks; recover the dropbacks.
+    rows["dropbacks"] = (pressured / pct).where(pct.gt(0))
+    rows = rows[rows["dropbacks"].notna()]
+    out = {"offense": {}, "defense": {}, "qbs": {}}
+    for phase, col in (("offense", "team"), ("defense", "opponent")):
+        for team, grp in rows.groupby(col):
+            db = float(grp["dropbacks"].sum())
+            if db > 0:
+                out[phase][_team(team)] = round(float(grp["times_pressured"].sum()) / db, 4)
+    for name, grp in rows.groupby("pfr_player_name"):
+        db = float(grp["dropbacks"].sum())
+        if db > 0:
+            out["qbs"][_bare_name(name)] = {"pressure_rate": round(float(grp["times_pressured"].sum()) / db, 4),
+                                           "pressure_dropbacks": int(round(db))}
+    return out
+
+
+def _passer_rating(att: float, cmp_: float, yds: float, td: float, ints: float) -> float | None:
+    if not att:
+        return None
+    clamp = lambda v: max(0.0, min(2.375, v))
+    a = clamp((cmp_ / att - 0.3) * 5)
+    b = clamp((yds / att - 3) * 0.25)
+    c = clamp(td / att * 20)
+    d = clamp(2.375 - ints / att * 25)
+    return round((a + b + c + d) / 6 * 100, 1)
+
+
+def pfr_coverage(season: int) -> dict[str, list[dict]]:
+    """Each club's defenders in coverage this season, from PFR charting."""
+    rows = _frame(PFR_ADV_URL.format(kind="def", season=season), (
+        "team", "pfr_player_name", "pfr_player_id", "game_type", "def_targets",
+        "def_completions_allowed", "def_yards_allowed", "def_receiving_td_allowed",
+        "def_ints", "def_adot"))
+    if rows is None or rows.empty:
+        return {}
+    rows = rows[rows["game_type"].fillna("REG").eq("REG") & rows["def_targets"].fillna(0).gt(0)].copy()
+    positions: dict[str, str] = {}
+    registry = _frame(PLAYERS_URL, ("pfr_id", "position", "position_group"))
+    if registry is not None:
+        for pid, pos, grp in registry.itertuples(index=False):
+            if pid:
+                positions[str(pid)] = str(pos or grp or "")
+    out: dict[str, list[dict]] = {}
+    rows["adot_x_t"] = rows["def_adot"].fillna(0) * rows["def_targets"].fillna(0)
+    for (team, pid), grp in rows.groupby(["team", "pfr_player_id"]):
+        targets = float(grp["def_targets"].sum())
+        cmp_ = float(grp["def_completions_allowed"].fillna(0).sum())
+        yds = float(grp["def_yards_allowed"].fillna(0).sum())
+        td = float(grp["def_receiving_td_allowed"].fillna(0).sum())
+        ints = float(grp["def_ints"].fillna(0).sum())
+        out.setdefault(_team(team), []).append({
+            "player_name": str(grp["pfr_player_name"].iloc[0]),
+            "position": positions.get(str(pid), ""),
+            "games": int(len(grp)),
+            "targets": int(targets),
+            "completions": int(cmp_),
+            "yards": int(yds),
+            "touchdowns": int(td),
+            "interceptions": int(ints),
+            "completion_rate": round(cmp_ / targets, 4) if targets else None,
+            "yards_per_target": round(yds / targets, 2) if targets else None,
+            "passer_rating": _passer_rating(targets, cmp_, yds, td, ints),
+            "adot": round(float(grp["adot_x_t"].sum()) / targets, 1) if targets else None,
+        })
+    for team in out:
+        out[team].sort(key=lambda r: -r["targets"])
+    return out
+
+
 def team_scheme_current(season: int) -> dict[str, dict]:
     """Current-season scheme for every club, ranked and baselined across the league."""
     frame = _scheme_frame(season)
@@ -617,6 +719,11 @@ def team_scheme_current(season: int) -> dict[str, dict]:
             entry[phase + "_plays"] = int(len(rows))
     if len(out) < 30:
         return {}
+    pressure = pfr_pressure(season)
+    for phase in ("offense", "defense"):
+        for team, rate in pressure[phase].items():
+            if team in out and phase in out[team]:
+                out[team][phase].setdefault("pressure", {})["pressure_rate"] = rate
     # League places for every rate (1st = most often) and the league mean and
     # spread for every response, per phase, over the same clubs.
     for phase in ("offense", "defense"):
@@ -667,6 +774,7 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
     }
     ngs_rushing = _ngs_rushing(season)
     ngs_passing = _ngs_passing(season)
+    qb_pressure = pfr_pressure(season).get("qbs") or {}
     pfr_rushing = _pfr_rushing(season, rb_names)
     # Participation (coverage, man/zone, pressure, personnel) is requested for
     # the current season too: it is not released mid-season today and the pull
@@ -678,7 +786,7 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
     receivers = []
     if current is not None:
         profiles.extend(_player_profiles(
-            current, season, names, positions, ngs_rushing, ngs_passing))
+            current, season, names, positions, ngs_rushing, ngs_passing, qb_pressure))
         receivers.extend(_receiver_profiles(current, season, names, positions))
     if prior is not None:
         profiles.extend(_player_profiles(prior, season - 1, names, positions))
@@ -687,5 +795,6 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
         "player_scheme_profiles": profiles,
         "player_coverage_profiles": receivers,
         "team_scheme_current": team_scheme_current(season),
+        "defenders_current": pfr_coverage(season),
         "team_line": _team_line(current, season, pfr_rushing) if current is not None else {},
     }
