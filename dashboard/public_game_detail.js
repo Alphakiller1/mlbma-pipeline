@@ -776,6 +776,11 @@
       entry.rank + ordinal(entry.rank) + '</span>';
   }
 
+  // The rank pill for either shape a place comes in: {rank, of} or {place, of}.
+  function nflBadge(r) {
+    return r ? rankBadge({ rank: r.rank != null ? r.rank : r.place, of: r.of }) : '';
+  }
+
   function percentBar(rank, of) {
     if (!(of > 1) || !(rank >= 1)) return '';
     var pct = Math.round(((of - rank) / (of - 1)) * 100);
@@ -2714,7 +2719,7 @@ function seasonToggle(game) {
     return '<td class="num' + (tone ? ' ' + tone : '') + (thin ? ' is-low-cell' : '') + '"' +
       (thin ? ' title="Thin sample: printed, not graded"'
         : (place ? ' title="' + place.rank + ordinal(place.rank) + ' of ' + place.of + '"' : '')) + '>' +
-      html + '</td>';
+      html + (thin ? '' : nflBadge(place)) + '</td>';
   }
 
   // A published {place, of} read as a frequency place for the league marker.
@@ -2836,6 +2841,7 @@ function seasonToggle(game) {
     ['cover_2_man', 'Cover 2 Man'], ['cover_3', 'Cover 3'], ['cover_4', 'Cover 4'],
     ['cover_6', 'Cover 6']
   ];
+  var NFL_MIDDLE = [['single_high', 'Middle Closed'], ['two_high', 'Middle Open']];
 
   /* One defense's coverage shells, most-played first. Ordering by this club's
      own usage is a fact about the club; it never reorders by a gap. */
@@ -2849,7 +2855,12 @@ function seasonToggle(game) {
     var oppLabel = fullName(sport, game, offSide);
     var head = '<section class="ca-arsenal-panel"><h3>' +
       esc(fullName(sport, game, defSide)) + ' Defense</h3>';
-    var rows = NFL_SHELLS.filter(function (s) { return cov[s[0] + '_rate'] != null; })
+    // Without shell charting (the current season), the middle of the field -
+    // closed for the one-high family, open for the two-high family - is the
+    // shell evidence that is charted.
+    var shells = NFL_SHELLS.some(function (s) { return cov[s[0] + '_rate'] != null; })
+      ? NFL_SHELLS : NFL_MIDDLE;
+    var rows = shells.filter(function (s) { return cov[s[0] + '_rate'] != null; })
       .sort(function (a, b) { return cov[b[0] + '_rate'] - cov[a[0] + '_rate']; })
       .map(function (s) {
         var key = 'pass_epa_' + s[0];
@@ -2859,9 +2870,9 @@ function seasonToggle(game) {
           nflResultCell(faced[key], nflResultRank(oScheme, 'offense', key, faced[key]), false) +
           '</tr>';
       });
-    if (!rows.length && nflWindow.pool === 'schemeCurrent') {
-      return head + nflDefendersTable(game[defSide + '_defenders_current']) + '</section>';
-    }
+    var defenders = nflWindow.pool === 'schemeCurrent'
+      ? nflDefendersTable(game[defSide + '_defenders_current']) : '';
+    if (!rows.length && defenders) return head + defenders + '</section>';
     if (!rows.length) return head + pending('Coverage charting is not published for this defense.') + '</section>';
     var context = [
       cov.man_rate != null ? pctText(cov.man_rate) + ' man' : '',
@@ -2870,7 +2881,7 @@ function seasonToggle(game) {
       cov.two_high_rate != null ? pctText(cov.two_high_rate) + ' two-high' : ''
     ].concat([nflSampleLabel(dScheme, true)]).filter(Boolean).join(' · ');
     return head + '<p class="ca-lineup-context">' + esc(context || 'Charted coverage snaps') + '</p>' +
-      nflMixTable('Shell', ['EPA Allowed', oppLabel + ' EPA'], rows) + '</section>';
+      nflMixTable('Shell', ['EPA Allowed', oppLabel + ' EPA'], rows) + defenders + '</section>';
   }
 
   /* The current season's coverage by defender (Pro Football Reference
@@ -2960,7 +2971,8 @@ function seasonToggle(game) {
      thing, which is what makes it a matchup rather than a profile. */
   var NFL_TENDENCIES = [
     ['11 Personnel', 'personnel_11_rate'], ['12 Personnel', 'personnel_12_rate'],
-    ['21 Personnel', 'personnel_21_rate'], ['Shotgun', 'formation_shotgun_rate'],
+    ['13 Personnel', 'personnel_13_rate'], ['21 Personnel', 'personnel_21_rate'],
+    ['22 Personnel', 'personnel_22_rate'], ['Shotgun', 'formation_shotgun_rate'],
     ['Under Center', 'formation_under_center_rate'], ['Motion', 'motion_rate'],
     ['Play Action', 'play_action_rate'], ['RPO', 'rpo_rate'], ['Screen', 'screen_rate'],
     ['No Huddle', 'no_huddle_rate'], ['Neutral Pass Rate', 'neutral_pass_rate']
@@ -3322,7 +3334,8 @@ function seasonToggle(game) {
           var tone = nflRankTone(rank);
           return '<td class="num' + (tone ? ' ' + tone : '') + '"' +
             (rank ? ' title="' + rank.place + ordinal(rank.place) + ' of ' + rank.of +
-              ' at his position in this look"' : '') + '>' + esc(nflFormat(r[col[0]], col[3])) + '</td>';
+              ' at his position in this look"' : '') + '>' + esc(nflFormat(r[col[0]], col[3])) +
+            nflBadge(rank) + '</td>';
         }).join('') + (showCol ? '<td class="num ca-opp-shows">' +
           (shows == null ? '&mdash;' : esc(pctText(shows)) + nflOppShowsMark(opp.scheme, r.look)) +
           '</td>' : '') + '</tr>';
@@ -3400,7 +3413,7 @@ function seasonToggle(game) {
         return '<div class="ca-stat"><span class="ca-stat__label">' + esc(labelText) +
           (thin ? lowTag : '') + '</span><strong class="ca-stat__value' + (tone ? ' ' + tone : '') + '"' +
           (rank ? ' title="' + rank.place + ordinal(rank.place) + ' of ' + rank.of + '"' : '') + '>' +
-          esc(nflFormat(raw, kind)) + '</strong></div>';
+          esc(nflFormat(raw, kind)) + nflBadge(rank) + '</strong></div>';
       }
       var html = position === 'QB'
         ? tile('EPA / DB', all.epa_per_dropback, 'epa', ranks.epa_per_dropback) +
@@ -3425,7 +3438,8 @@ function seasonToggle(game) {
               (trackRanks.ryoe_per_carry ? ' ' + nflRankTone(trackRanks.ryoe_per_carry) : '') + '"' +
               (trackRanks.ryoe_per_carry ? ' title="' + trackRanks.ryoe_per_carry.place +
                 ordinal(trackRanks.ryoe_per_carry.place) + ' of ' + trackRanks.ryoe_per_carry.of + '"' : '') + '>' +
-              nflFormat(tracking.ryoe_per_carry, 'epa').replace(/(\.\d\d)\d$/, '$1') + '</strong></div>' : '');
+              nflFormat(tracking.ryoe_per_carry, 'epa').replace(/(\.\d\d)\d$/, '$1') +
+              nflBadge(trackRanks.ryoe_per_carry) + '</strong></div>' : '');
       return html ? '<div class="ca-stat-row">' + html + '</div>' : '';
     }
 
@@ -3470,7 +3484,8 @@ function seasonToggle(game) {
     var tone = entry.rank ? rankTone(entry.rank, entry.of || 32) : '';
     return '<td class="num' + (tone ? ' ' + tone : '') + '" title="' +
       esc((entry.label || '') + (entry.rank ? ' · ' + entry.rank + ordinal(entry.rank) +
-        ' of ' + (entry.of || 32) : '')) + '">' + esc(nflFormat(entry.value, kind)) + '</td>';
+        ' of ' + (entry.of || 32) : '')) + '">' + esc(nflFormat(entry.value, kind)) +
+      (entry.rank ? nflBadge({ rank: entry.rank, of: entry.of || 32 }) : '') + '</td>';
   }
 
   function nflSplitTable(heads, rows, first) {
@@ -3528,7 +3543,7 @@ function seasonToggle(game) {
         var tone = rank ? rankTone(rank.rank, rank.of) : '';
         return '<td class="num' + (tone ? ' ' + tone : '') + '"' +
           (rank ? ' title="' + rank.rank + ordinal(rank.rank) + ' of ' + rank.of + '"' : '') + '>' +
-          esc(epaText(raw, col[1] === 'pct')) + '</td>';
+          esc(epaText(raw, col[1] === 'pct')) + nflBadge(rank) + '</td>';
       }).join('') + '</tr>';
     }
     html += nflBothWindows(function () {
@@ -3662,8 +3677,8 @@ function seasonToggle(game) {
       });
       function ypc(value, carries) {
         var low = Number(carries) < 5;
-        return nflFormat(value, 'num1') + ' <small' + (low ? ' class="is-low" title="Under 5 carries"' : '') +
-          '>' + esc(carries) + '</small>';
+        return nflFormat(value, 'num1') + (low ? ' <small class="is-low" title="Under 5 carries">' +
+          esc(carries) + '</small>' : '');
       }
       // The back's YPC in this lane is placed among backs in the same lane
       // (published); the front's YPC and stuff rate among the clubs' fronts.
@@ -3840,9 +3855,10 @@ function seasonToggle(game) {
             return '<td class="num' + (rank && !thin ? ' ' + rankTone(rank.place, rank.of) : '') +
               (thin ? ' is-low-cell' : '') + '" title="' + esc(title +
               (rank && !thin ? ' · ' + rank.place + ordinal(rank.place) + ' of ' + rank.of : '') +
+              ' · ' + sp.targets + ' targets' +
               (thin ? ' · under ' + NFL_REC_FLOOR + ' targets, not graded' : '')) + '">' +
-              esc(Number(sp.yards_per_target).toFixed(1)) + ' <small' + (thin ? ' class="is-low"' : '') + '>' +
-              esc(sp.targets) + '</small></td>';
+              esc(Number(sp.yards_per_target).toFixed(1)) +
+              (thin ? ' <small class="is-low">' + esc(sp.targets) + '</small>' : nflBadge(rank)) + '</td>';
           }).join('');
           var shows = oppDef ? nflOppShows(oppDef, look) : null;
           body += '<tr><td>' + esc(NFL_LOOK_LABEL[look] || look) + '</td>' + cells +

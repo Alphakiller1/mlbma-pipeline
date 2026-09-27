@@ -11,6 +11,8 @@ import math
 import re
 from typing import Any
 
+from outputs import sharp_nfl
+
 PBP_URL = (
     "https://github.com/nflverse/nflverse-data/releases/download/pbp/"
     "play_by_play_{season}.parquet"
@@ -719,6 +721,21 @@ def team_scheme_current(season: int) -> dict[str, dict]:
             entry[phase + "_plays"] = int(len(rows))
     if len(out) < 30:
         return {}
+    # Coverage, man/zone and personnel for the current season come from Sharp
+    # Football Analysis charting (used with permission); see outputs/sharp_nfl.
+    sharp = sharp_nfl.current_season(season)
+    sharp.pop("_source", None)
+    for team, phases in sharp.items():
+        club = out.get(_team(team))
+        if not club:
+            continue
+        for phase, groups in phases.items():
+            if phase not in club:
+                continue
+            for group, values in groups.items():
+                club[phase].setdefault(group, {}).update(values)
+        if (phases.get("defense") or {}).get("coverage"):
+            club["participation_source_seasons"] = [season]
     pressure = pfr_pressure(season)
     for phase in ("offense", "defense"):
         for team, rate in pressure[phase].items():
@@ -727,7 +744,7 @@ def team_scheme_current(season: int) -> dict[str, dict]:
     # League places for every rate (1st = most often) and the league mean and
     # spread for every response, per phase, over the same clubs.
     for phase in ("offense", "defense"):
-        for group in ("pressure", "personnel"):
+        for group in ("coverage", "pressure", "personnel"):
             keys = {k for club in out.values() for k in (club.get(phase) or {}).get(group, {})}
             for key in keys:
                 pool = [(team, club[phase][group][key]) for team, club in out.items()
