@@ -668,7 +668,11 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
     ngs_rushing = _ngs_rushing(season)
     ngs_passing = _ngs_passing(season)
     pfr_rushing = _pfr_rushing(season, rb_names)
-    current = _joined(season, participation=False)
+    # Participation (coverage, man/zone, pressure, personnel) is requested for
+    # the current season too: it is not released mid-season today and the pull
+    # fails soft to charting-only splits, but the day nflverse publishes it the
+    # current season's coverage splits fill in without a code change.
+    current = _joined(season, participation=True)
     prior = _joined(season - 1, participation=True)
     profiles = []
     receivers = []
