@@ -2905,8 +2905,16 @@ function seasonToggle(game) {
     };
     var body = rows.slice(0, 8).map(function (d) {
       var thin = d.targets < NFL_DEFENDER_FLOOR;
+      // Defenders are placed among every defender on the slate (a pool of a
+      // couple of hundred), so the pill is the percentile, not the place.
       function graded(key, text) {
-        return nflPlacedTd(esc(text), nflPlace(pools[key], d[key], false), thin);
+        var place = nflPlace(pools[key], d[key], false);
+        if (!place || thin) return nflPlacedTd(esc(text), null, thin);
+        var pct = Math.round(((place.of - place.rank) / (place.of - 1)) * 100);
+        var tone = rankTone(place.rank, place.of);
+        return '<td class="num' + (tone ? ' ' + tone : '') + '" title="' + pct + ordinal(pct) +
+          ' percentile of ' + place.of + ' defenders with ' + NFL_DEFENDER_FLOOR + '+ targets">' +
+          esc(text) + '<span class="ca-rank ' + tone + '">' + pct + '%ile</span></td>';
       }
       var adotPlace = nflPlace(pools.adot, d.adot, true);
       return '<tr' + (thin ? ' class="is-thin"' : '') + '><td class="ca-lineup-name">' + esc(d.player_name) +
