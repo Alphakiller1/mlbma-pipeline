@@ -884,6 +884,10 @@ def build(board: dict | None = None, rooms: dict | None = None,
         # league-wide downloads.
         season_stats = ({} if supplied_board else
                         nflverse_season_stats(int(board.get("season") or 0)))
+    # Last season's totals, so the page's 2025 + 2026 window can combine each
+    # player's and club's two seasons instead of showing 2026 under that label.
+    prior_stats = ({} if supplied_board else
+                   nflverse_season_stats(int(board.get("season") or 0) - 1))
     if advanced_context is None:
         # Only the production no-argument build owns the large play-by-play
         # downloads. Tests and callers supplying a board remain offline unless
@@ -909,6 +913,8 @@ def build(board: dict | None = None, rooms: dict | None = None,
         "player_scheme": player_scheme(scheme_board),
         "team_stats": season_stats.get("teams") or {},
         "player_stats": season_stats.get("players") or {},
+        "team_stats_prior": prior_stats.get("teams") or {},
+        "player_stats_prior": prior_stats.get("players") or {},
         "team_line": advanced_context.get("team_line") or {},
         "source": {
             "season": board.get("season"),

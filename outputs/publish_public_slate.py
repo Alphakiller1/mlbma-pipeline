@@ -692,6 +692,14 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
     player_scheme = context.get("player_scheme") or {}
     team_stats = context.get("team_stats") or {}
     player_stats = context.get("player_stats") or {}
+    team_stats_prior = context.get("team_stats_prior") or {}
+    # Prior lines are matched by player, across every club: a receiver who
+    # changed teams keeps his 2025 season.
+    prior_by_id = {
+        str(row.get("player_id")): row
+        for rows in (context.get("player_stats_prior") or {}).values() for row in rows
+        if row.get("player_id")
+    }
     team_line = context.get("team_line") or {}
     rest = rest_history if rest_history is not None else {}
 
@@ -855,6 +863,14 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             "home_line_stats": team_line.get(home_abbr),
             "away_player_stats": starter_stats(away_abbr),
             "home_player_stats": starter_stats(home_abbr),
+            "away_team_stats_prior": team_stats_prior.get(away_abbr),
+            "home_team_stats_prior": team_stats_prior.get(home_abbr),
+            "away_player_stats_prior": [
+                prior_by_id[str(row.get("player_id"))] for row in starter_stats(away_abbr)
+                if str(row.get("player_id") or "") in prior_by_id],
+            "home_player_stats_prior": [
+                prior_by_id[str(row.get("player_id"))] for row in starter_stats(home_abbr)
+                if str(row.get("player_id") or "") in prior_by_id],
             "away_rest_days": away_ctx["rest_days"],
             "home_rest_days": home_ctx["rest_days"],
             "away_travel": away_ctx["travel"],
