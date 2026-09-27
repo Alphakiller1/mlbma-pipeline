@@ -282,146 +282,81 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.goto(base_url.rstrip("/") + detail_url, wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
         check("NFL detail uses team logos", page.locator(".ca-detail-team__logo").count() == 2)
+        nfl_sections = ("#efficiency", "#quarterbacks", "#coverage", "#looks", "#rushing",
+                        "#trenches", "#receivers", "#tendencies", "#availability", "#radar",
+                        "#team-context")
         check("NFL detail has factual sections",
-              page.locator("#availability, #scheme, #form, #radar, #team-context").count() == 5)
+              page.locator(", ".join(nfl_sections)).count() == len(nfl_sections))
         check("NFL detail no longer carries a venue or sources section",
-              page.locator("#conditions, #sources").count() == 0)
+              page.locator("#conditions, #sources, #form, #scheme, #players").count() == 0)
         nfl_webs = page.locator("#radar .ca-radar svg").count()
         check("NFL radar draws both phases", nfl_webs == 2, f"webs={nfl_webs}")
-        # inner_text() returns rendered text, and the provenance line is
-        # uppercased by the stylesheet, so the comparison is case-insensitive.
-        scheme_text = page.locator("#scheme").inner_text().lower()
-        check("NFL scheme removes redundant charting banner", "charted from the" not in scheme_text)
-        check("NFL scheme speaks in the past tense", "played zone on" in scheme_text)
-        meters = page.locator("#scheme .ca-segment-meter")
-        meter_count = meters.count()
-        cells = page.locator("#scheme .ca-segment-meter > i").count()
-        check("NFL analysis uses ten-cell league-rank meters",
-              meter_count > 0 and cells == meter_count * 10,
-              f"{cells} cells across {meter_count} meters")
-        check("NFL form removes continuous fill bars",
-              page.locator("#form .ca-mirror__fill").count() == 0)
-        check("NFL pressure rows pair tendency with opponent response",
-              page.locator("#scheme .ca-pressure-row").count() == 6)
-        # Team form is a mirrored comparison now: one row per rate, both clubs
-        # on one axis, a rank under every value.
-        rows = page.locator("#form .ca-mirror__row").count()
-        ranks = page.locator("#form .ca-mirror__value i").count()
-        check("NFL form compares both clubs on one axis", rows == 10, f"rows={rows}")
-        check("NFL form annotates every rate with a rank", ranks == rows * 2,
-              f"{ranks} ranks across {rows} rows")
-        legend = page.locator("#form .ca-grade-legend > span")
-        legend_colors = legend.evaluate_all(
+        # The NFL desk reads in the MLB table language: every evidence section is
+        # an away | home duo of one of the three MLB components.
+        for sid, component in (("#efficiency", ".ca-form-panel"), ("#quarterbacks", ".ca-starter-panel"),
+                               ("#coverage", ".ca-arsenal-panel"), ("#looks", ".ca-arsenal-panel"),
+                               ("#rushing", ".ca-starter-panel"), ("#trenches", ".ca-form-panel"),
+                               ("#receivers", ".ca-form-panel"), ("#tendencies", ".ca-arsenal-panel")):
+            n = page.locator(f"{sid} .ca-detail-duo > {component}").count()
+            check(f"NFL {sid[1:]} is a two-club duo of {component}", n == 2, f"panels={n}")
+        # Unit Matchups: each possession is the offense's row directly above the
+        # defense it meets, in the same columns.
+        rows = page.locator("#efficiency .ca-form-panel >  .ca-lineup-scroll tbody tr").count()
+        check("NFL unit matchups pair each offense with the defense it meets", rows == 4, f"rows={rows}")
+        grades = page.locator("#efficiency td[class*='c-']").evaluate_all(
             "nodes => [...new Set(nodes.map(n => getComputedStyle(n).color))].length")
-        check("NFL rank legend exposes all five named grade bands",
-              legend.count() == 5 and legend_colors == 5,
-              f"bands={legend.count()} colors={legend_colors}")
-        overview_values = page.locator(
-            "#form [data-matchup-panel]:not([hidden]) .ca-nfl-matchup-cell strong")
-        overview_colors = overview_values.evaluate_all(
-            "nodes => [...new Set(nodes.map(n => getComputedStyle(n).color))].length")
-        check("NFL overview values inherit their direction-aware rank colors",
-              overview_colors >= 4, f"distinct colors={overview_colors}")
-        check("NFL matchup lab exposes four connected team stat views",
-              page.locator("#form [data-team-stat-view]").count() == 4)
-        check("NFL matchup lab opens one team stat view at a time",
-              page.locator("#form [data-team-stat-panel]:not([hidden])").count() == 1)
-        page.locator("#form [data-team-stat-view='rushing']").click()
-        check("NFL rushing view shows both offense-defense pairings",
-              page.locator("#form [data-team-stat-panel='rushing'] .ca-nfl-split-card").count() == 2)
-        check("NFL team cards separate volume from matchup efficiency",
-              page.locator("#form [data-team-stat-panel='rushing'] .ca-nfl-split-section__head").count() == 4 and
-              all(label in page.locator("#form [data-team-stat-panel='rushing']").inner_text()
-                  for label in ("Per-Game Volume", "Matchup Efficiency")))
-        check("NFL rushing view includes EPA, success and stacked-box splits",
-              page.locator("#form [data-team-stat-panel='rushing'] .ca-nfl-split-duel__row").count() == 6)
-        split_values = page.locator(
-            "#form [data-team-stat-panel='rushing'] .ca-nfl-split-duel__value strong")
-        split_colors = split_values.evaluate_all(
-            "nodes => [...new Set(nodes.map(n => getComputedStyle(n).color))].length")
-        check("NFL rushing splits use the same five-band grade ramp",
-              split_colors == 5, f"distinct colors={split_colors}")
-        page.locator("#form [data-team-stat-view='trenches']").click()
-        trench = page.locator("#form [data-team-stat-panel='trenches']")
-        check("NFL trenches view shows both line confrontations",
-              trench.locator(".ca-trench-card").count() == 2)
-        check("NFL trenches view publishes contact yards, line yards and havoc",
-              all(label in trench.inner_text() for label in
-                  ("RB Yards Before Contact / Carry", "Adjusted Line Yards", "Havoc Rate")))
-        check("NFL trenches view shows run defense by point of attack",
-              trench.locator(".ca-run-front").count() == 2 and
-              all(label in trench.inner_text() for label in ("Guard", "Tackle", "End")))
-        check("NFL trenches view states the blocking-charting limit",
-              "zone-versus-gap blocking" in trench.inner_text().lower())
-        check("NFL hides the unconnected DVOA view instead of opening a dead panel",
-              page.locator("#form [data-team-stat-view='dvoa']").count() == 0 and
-              page.locator("#form [data-team-stat-panel='dvoa']").count() == 0)
-        page.locator("#form [data-team-stat-view='overview']").click()
-        check("NFL opens with four concise matchup signals",
-              page.locator("#form .ca-nfl-signal").count() == 4)
-        check("NFL shows one directional unit board at a time",
-              page.locator("#form [data-matchup-panel]:not([hidden])").count() == 1)
-        check("NFL standard production includes ranked per-game offensive pace",
-              page.locator("#form .ca-production-compare__row").count() == 7 and
-              "Offensive Pace" in page.locator("#form .ca-production-compare").inner_text() and
-              "plays per game" in page.locator("#form .ca-production-compare").inner_text())
-        page.locator("#form [data-matchup-side='home']").click()
-        check("NFL unit switch exposes the selected offense-defense pairing",
-              page.locator("#form [data-matchup-side='home'][aria-selected='true']").count() == 1
-              and page.locator("#form [data-matchup-panel='home']:not([hidden])").count() == 1)
-        check("NFL removes the duplicate narrative lens cards",
-              page.locator("#form .ca-script-lens").count() == 0)
-        check("NFL opens the core coverage matchup while keeping secondary detail progressive",
-              page.locator(
-                  "#scheme [data-scheme-direction-panel]:not([hidden]) .ca-scheme-detail[open]"
-              ).count() == 1 and page.locator(
-                  "#scheme [data-scheme-direction-panel]:not([hidden]) .ca-scheme-detail:not([open])"
-              ).count() == 1)
-        scheme_text = page.locator(
-            "#scheme [data-scheme-direction-panel]:not([hidden])").inner_text()
-        check("NFL quarterback splits include shell, coverage and pressure looks",
-              all(label in scheme_text for label in (
-                  "Single High / MFC", "Two High / MFO", "Middle Field Closed",
-                  "Middle Field Open", "Cover 3", "Cover 4", "Man", "Zone", "Blitz", "Pressure")))
-        check("NFL quarterback splits show time to throw and per-game volume",
-              all(label in scheme_text.lower() for label in
-                  ("time to throw", "pass att / g", "db/g", "yds/g")))
-        check("NFL scheme tables group sample, per-game and efficiency columns",
-              page.locator("#scheme .ca-scheme-table__groups").count() >= 2 and
-              all(label in scheme_text.lower() for label in
-                  ("per game", "efficiency", "next gen timing & volume")))
-        check("NFL running-back splits include box, personnel and NGS context",
-              all(label in scheme_text.lower() for label in
-                  ("stacked box", "light box", "nickel", "8+ box faced", "ryoe / carry")))
-        check("NFL player research opens with four comparable volume baselines",
-              page.locator("#players .ca-player-compare__row").count() == 4)
-        check("NFL player research exposes position and stat-family filters",
-              page.locator("#players [data-player-position]").count() == 5
-              and page.locator("#players [data-player-family]").count() == 6)
-        page.locator("#players [data-player-family='splits']").click()
-        check("NFL advanced player lab does not invent unavailable receiving splits",
-              page.locator("#players .ca-player-deep-dive summary").count() >= 1 or
-              "No qualifying advanced player split sample" in page.locator("#players").inner_text())
-        page.locator("#players [data-player-family='overview']").click()
-        page.locator("#players [data-player-position='rb']").click()
-        page.locator("#players [data-player-family='rushing']").click()
-        check("NFL player filters isolate the selected rushing workload",
-              page.locator(
-                  "#players [data-player-panel]:not([hidden]) "
-                  ".ca-player-volume-card:not([hidden])"
-              ).count() == 1
-              and page.locator(
-                  "#players [data-player-panel]:not([hidden]) "
-                  ".ca-player-volume-card:not([hidden]) .ca-player-stat:not([hidden])"
-              ).count() == 3)
-        page.locator("#players [data-player-position='all']").click()
-        page.locator("#players [data-player-family='overview']").click()
-        check("NFL player research shows one team board at a time",
-              page.locator("#players [data-player-panel]:not([hidden])").count() == 1)
-        page.locator("#players [data-player-side='home']").click()
-        check("NFL player team switch exposes the selected club",
-              page.locator("#players [data-player-side='home'][aria-selected='true']").count() == 1
-              and page.locator("#players [data-player-panel='home']:not([hidden])").count() == 1)
+        check("NFL unit matchups grade on the five-band ramp", grades >= 4, f"distinct colors={grades}")
+        # Pitch Mix shape: ten usage squares per row, a ranked result, and the
+        # other club's result in the last column.
+        mix_rows = page.locator("#coverage .ca-arsenal-table tbody tr")
+        squares = page.locator("#coverage .ca-usage__grid > i").count()
+        check("NFL coverage rows carry ten usage squares",
+              mix_rows.count() > 0 and squares == mix_rows.count() * 10,
+              f"{squares} squares across {mix_rows.count()} rows")
+        check("NFL coverage results carry league rank chips",
+              page.locator("#coverage .ca-arsenal-table .ca-rank").count() >= mix_rows.count())
+        usage = page.locator("#coverage .ca-arsenal-panel").first.locator(".ca-usage b").evaluate_all(
+            "nodes => nodes.map(n => parseFloat(n.textContent))")
+        check("NFL coverage shells are ordered by the defense's own usage, never by gap",
+              usage == sorted(usage, reverse=True), str(usage))
+        # Evidence, never verdicts.
+        detail_lower = page.locator(".ca-detail-stack").inner_text().lower()
+        check("NFL names no gaps for the reader",
+              "largest matchup gaps" not in detail_lower and "quick read" not in detail_lower and
+              page.locator(".ca-nfl-signal, .is-off, .is-def, [data-matchup-side]").count() == 0)
+        check("NFL tendencies are never graded",
+              page.locator("#tendencies td[class*='c-']").count() == 0)
+        check("NFL usage is never graded",
+              page.locator(".ca-arsenal-table td:has(.ca-usage)[class*='c-']").count() == 0)
+        check("NFL thin samples are tagged and never graded",
+              page.locator("tr.is-thin td[class*='c-']").count() == 0 and
+              page.locator("tr.is-thin").count() == page.locator("tr.is-thin .ca-thin-tag").count())
+        check("NFL quarterback looks are read in families",
+              page.locator("#quarterbacks tr.ca-split-group").count() >= 4)
+        check("NFL reads sack rate once, in Unit Matchups",
+              "sack" not in page.locator("#trenches thead").all_inner_texts()[0].lower())
+        nav_rows = page.locator(".ca-detail-nav").evaluate(
+            "el => new Set([...el.children].map(a => Math.round(a.getBoundingClientRect().top))).size")
+        check("NFL section nav is a single row", nav_rows == 1, f"rows={nav_rows}")
+        qb_text = page.locator("#quarterbacks").inner_text().lower()
+        check("NFL quarterback panels carry the season line, splits and time to throw",
+              page.locator("#quarterbacks .ca-starter-panel .ca-stat").count() >= 6 and
+              all(label in qb_text for label in ("vs man", "vs zone", "vs blitz", "pressured", "time to throw")))
+        check("NFL quarterback splits show how often the opponent shows each look",
+              page.locator("#quarterbacks th.ca-opp-shows").count() >= 2)
+        check("NFL quarterback splits drop the renamed middle-field duplicates",
+              "middle field" not in qb_text)
+        rb_text = page.locator("#rushing").inner_text().lower()
+        check("NFL running-back panels carry box, direction and NGS context",
+              all(label in rb_text for label in ("light box", "run left", "ryoe / carry")))
+        trench_text = page.locator("#trenches").inner_text().lower()
+        check("NFL trenches pair each line with the front it meets and map run direction",
+              page.locator("#trenches .ca-arsenal-table").count() == 2 and
+              all(label in trench_text for label in ("line yds", "havoc", "ybc", "run direction",
+                                                     "at the guards", "outside the ends")))
+        check("NFL pass catchers include the target distribution against the other defense",
+              page.locator("#receivers .ca-arsenal-table").count() == 2 and
+              "target distribution" in page.locator("#receivers").inner_text().lower())
         detail_text = page.locator("main").inner_text()
         match = PROHIBITED.search(detail_text)
         check("NFL detail public copy boundary", match is None, match.group(0) if match else "")
@@ -429,9 +364,9 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.set_viewport_size({"width": 390, "height": 844})
         check("NFL phone layout has no horizontal overflow",
               page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
-        check("NFL phone quick read uses a two-column scan",
-              page.locator(".ca-nfl-signal-grid").evaluate(
-                  "el => getComputedStyle(el).gridTemplateColumns.split(' ').length") == 2)
+        check("NFL phone stacks each duo into one column",
+              page.locator("#coverage .ca-detail-duo").evaluate(
+                  "el => getComputedStyle(el).gridTemplateColumns.split(' ').length") == 1)
         page.set_viewport_size({"width": 1280, "height": 900})
 
         page.goto(base_url.rstrip("/") + "/cfb/", wait_until="domcontentloaded", timeout=timeout_ms)

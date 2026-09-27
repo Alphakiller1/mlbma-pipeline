@@ -104,18 +104,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("function cfbClashBody", js)
         self.assertIn("function cfbCompareBody", js)
         self.assertIn("Matchup Analysis", js)
-        self.assertIn("function nflScriptSnapshot", js)
         self.assertNotIn("function nflScriptLens", js)
-        self.assertIn("function playerComparison", js)
-        self.assertIn("function teamProductionComparison", js)
-        self.assertIn("function nflMatchupSwitcher", js)
-        self.assertIn("data-matchup-panel", js)
-        self.assertIn("wireMatchupTabs", js)
-        self.assertIn("data-player-side", js)
-        self.assertIn("data-player-panel", js)
-        self.assertIn("wirePlayerTabs", js)
-        self.assertIn("Team-To-Team Prop Baselines", js)
-        self.assertIn('class="ca-scheme-detail"', js)
         self.assertIn("Largest unit gaps", js)
         self.assertIn("function cfbDecisionPaths", js)
         self.assertIn("function cfbReadingKey", js)
@@ -454,70 +443,83 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("opts.context !== false", shell)
 
     def test_nfl_detail_has_real_season_scope_and_two_unit_lineups(self):
+        """The NFL desk is built from the MLB page's three components.
+
+        Owner direction 2026-09-26: the NFL matchup reads in the MLB table
+        language (Probable Starters, Club Batting Splits, Pitch Mix), and the
+        page presents evidence without ever naming a gap for the reader.
+        """
         detail = (ROOT / "dashboard" / "public_game_detail.js").read_text(encoding="utf-8")
         css = (ROOT / "dashboard" / "styles" / "chase-public.css").read_text(encoding="utf-8")
         adapter = (ROOT / "dashboard" / "sports" / "chase_public_slate.js").read_text(
             encoding="utf-8")
+        nfl = detail[detail.index("function nflLeaguePool"):detail.index("function nflSections")]
+        # Lineups, the season scope and the injury report are unchanged.
         for text in (
             "data-lineup-unit", "data-lineup-panel", "Offensive Line", "Linebackers",
             "status: Array.isArray(entries) ? 'Active' : 'Report pending'",
             "var status = designation.status || 'Active'", "Report pending", "data-scheme-seasons",
             "panel.hidden = !show", "seasons.length === 1", "Full Injury Report",
-            "segmentedMeter", "league_frequency_ranks", "Pressure Matchups",
-            "scroll horizontally on small screens", "ca-player-coverage-card__shot",
-            "starterProfiles[playerNameKey(profile.player_name)]", "Position Rank",
-            "Quarterbacks", "Running Backs", "Wide Receivers", "league_ranks",
-            "schemeSwitcher", "data-scheme-direction", "data-scheme-direction-panel",
-            "wireSchemeTabs", "ca-scheme-grid", "ca-rate-block--personnel",
-            "personnelDuel", "nflEpaCell", "Offensive form", "Defensive form",
-            "data-team-stat-view", "data-team-stat-panel", "Team Stat Splits",
-            "Passing", "Rushing", "DVOA", "nflTeamFamilyPanel",
-            "Trenches", "nflTrenchesPanel", "Adjusted Line Yards", "Havoc Rate",
-            "RB Yards Before Contact / Carry", "nflRunFrontCard", "YPC Allowed",
-            "Single High / MFC", "Two High / MFO", "nickel", "dime",
-            "zone-versus-gap blocking", "POA = point of attack",
-            "8+ Box Faced", "Time To LOS", "RYOE / Carry", "Time To Throw",
-            "Pass Att / G", "DB/G", "Yds/G", "Offensive Pace", "Pace · Plays / G",
-            "Per-Game Volume", "Matchup Efficiency", "ca-scheme-table__groups",
-            "ca-scheme-table-hint", "Scrollable player scheme statistics",
-            "Next Gen Timing &amp; Volume", "var hasDvoa",
-            "Rush EPA / Play", "EPA Vs Stacked Box", "data-player-position",
-            "data-player-family", "Advanced Splits", "wirePlayerFilters",
-            "League rank color", "League Avg", "nflGradeLegend",
+            "Quarterbacks", "Running Backs", "league_ranks",
         ):
             self.assertIn(text, detail)
+        # Every NFL block is one of the three MLB components, in an away | home duo.
+        self.assertIn('class="ca-starter-panel"', nfl)
+        self.assertIn('class="ca-form-panel"', nfl)
+        self.assertIn('class="ca-arsenal-panel"', nfl)
+        self.assertIn("ca-lineup-table ca-arsenal-table", nfl)
+        self.assertIn("ca-lineup-table ca-split-table", nfl)
+        self.assertIn('<div class="ca-detail-duo ca-nfl-duo">', nfl)
+        # The pairs stack before a table must scroll, keeping the other club's column on screen.
+        self.assertRegex(css, r"@media \(max-width: 1339px\) \{\s+\.ca-nfl-duo \{ grid-template-columns: minmax\(0, 1fr\); \}")
+        for section_id in ("efficiency", "quarterbacks", "coverage", "looks", "rushing",
+                           "trenches", "receivers", "tendencies", "availability", "radar",
+                           "team-context"):
+            self.assertIn("section('" + section_id + "'", detail)
+        # A mix row is usage squares beside a ranked result, with the other
+        # club's result in the last column (Pitch Mix's opposing xwOBA).
+        self.assertIn("usageSquares(pct)", nfl)
+        self.assertIn("rankBadge(entry)", nfl)
+        self.assertIn("nflResultRank(oScheme, 'offense'", nfl)
+        self.assertIn("nflResultRank(dScheme, 'defense'", nfl)
+        # Real ranks from the slate, with the published league spread as fallback.
+        self.assertIn("nflSections(sport, game, (result && result.games) || [])", detail)
+        self.assertIn("pool.length >= 20", nfl)
+        # Evidence, never verdicts: no gap summaries, no winner labels, no side toggles.
+        for gone in ("Largest Matchup Gaps", "Quick Read", "ca-nfl-signal", "is-off", "is-def",
+                     "data-matchup-side", "data-scheme-direction", "data-player-side"):
+            self.assertNotIn(gone, nfl)
+        # Tendencies are how often, not how well: that table carries no grade.
+        tendency = nfl[nfl.index("function nflTendencyPanel"):nfl.index("function nflStarter")]
+        self.assertNotIn("rankTone", tendency)
+        self.assertNotIn("nflResultCell", tendency)
+        # A split under its sample floor is printed, dimmed, and never graded.
+        self.assertIn("floor: 30", nfl)
+        self.assertIn("floor: 15", nfl)
+        self.assertIn("ranks[col[2]] : null", nfl)
+        self.assertIn(".ca-lineup-table tr.is-thin td", css)
+        self.assertIn('class="ca-thin-tag"', nfl)
+        # Looks are read in families, and sack rate is read once (Unit Matchups).
+        self.assertIn('<tr class="ca-split-group">', nfl)
+        self.assertIn("['Pass Rush', ['blitz', 'no_blitz', 'pressure', 'clean']]", nfl)
+        trench_cols = nfl[nfl.index("var NFL_TRENCH_COLS"):nfl.index("var NFL_LANES")]
+        self.assertNotIn("sack_rate", trench_cols)
+        # The section nav is one row on every sport.
+        self.assertRegex(css, r"\.ca-detail-nav \{\s+grid-auto-flow: column;\s+grid-template-columns: none;")
+        # Middle-field closed/open duplicate single/two-high and are not repeated.
+        self.assertNotIn("middle_field_closed", nfl)
+        # The QB table carries how often this opponent shows each look.
+        self.assertIn("nflOppShows(opp.defense, r.look)", nfl)
+        self.assertIn(".ca-split-table td.ca-opp-shows", css)
         self.assertIn("away_lineups", adapter)
-        self.assertIn("away_player_coverage", adapter)
         self.assertIn("away_player_scheme", adapter)
         self.assertIn("away_line_stats", adapter)
-        self.assertIn("playerSchemePanels", detail)
         self.assertIn("kickoffTime(game.kickoff_utc)", detail)
         self.assertIn("home_lineups", adapter)
         self.assertIn(".ca-lineup-board", css)
         self.assertIn("min-height: var(--touch-min)", css)
         self.assertIn("grid-template-columns: repeat(10, minmax(0, 1fr))", css)
-        self.assertIn(".ca-segment-meter i.is-on", css)
-        self.assertIn("scroll-snap-type: x mandatory", css)
-        self.assertIn(".ca-player-coverage-card__shot", css)
-        self.assertIn(".ca-player-coverage-card__grade", css)
-        self.assertIn("linear-gradient(180deg, var(--surface-elevated), var(--surface-inset))", css)
         self.assertIn(".ca-season-toggle", css)
-        self.assertIn(".ca-scheme-switch__tabs", css)
-        self.assertIn(".ca-scheme-grid", css)
-        self.assertIn(".ca-filter-pill", css)
-        self.assertIn(".ca-nfl-family-grid", css)
-        self.assertIn(".ca-nfl-split-duel__row", css)
-        self.assertIn(".ca-rb-tracking", css)
-        self.assertIn(".ca-run-front__grid", css)
-        self.assertIn(".ca-player-filter-dock", css)
-        self.assertIn(".ca-nfl-matchup-cell.c-elite strong", css)
-        self.assertIn(".ca-nfl-matchup-cell.c-poor strong", css)
-        self.assertIn(".ca-nfl-split-duel__value.c-elite", css)
-        self.assertIn(".ca-nfl-split-duel__value.c-poor", css)
-        self.assertIn(".ca-grade-legend", css)
-        self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr))", css)
-        self.assertIn("min-height: 354px", css)
-        self.assertIn("border-radius: 0", css)
         self.assertIn("game.slate_date ||", (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8"))
         self.assertIn("game.slate_date = date", (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8"))
         self.assertNotIn("ca-matchup-lens", detail)
