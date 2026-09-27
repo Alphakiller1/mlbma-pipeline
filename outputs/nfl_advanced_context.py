@@ -39,6 +39,7 @@ PFR_RUSHING_URL = (
 PBP_COLUMNS = (
     "game_id", "play_id", "season", "season_type", "posteam", "defteam",
     "passer_player_id", "passer_player_name", "rusher_player_id", "rusher_player_name",
+    "receiver_player_id", "receiver_player_name", "receiving_yards",
     "qb_dropback", "rush_attempt", "pass_attempt", "complete_pass", "passing_yards",
     "pass_touchdown", "interception", "sack", "qb_hit", "epa", "success",
     "yards_gained", "tackled_for_loss", "fumble_forced", "fumble_lost",
@@ -225,6 +226,59 @@ def _player_stats(rows, position: str) -> dict[str, Any] | None:
     }
 
 
+def _receiver_stats(rows) -> dict[str, Any] | None:
+    """Targets and what came of them: the receiving side of a split."""
+    targets = int(len(rows))
+    if not targets:
+        return None
+    receptions = int(rows["complete_pass"].fillna(0).sum())
+    yards_col = "receiving_yards" if "receiving_yards" in rows else "yards_gained"
+    yards = float(rows[yards_col].fillna(0).sum())
+    return {
+        "targets": targets,
+        "receptions": receptions,
+        "receiving_yards": int(yards),
+        "touchdowns": int(rows["pass_touchdown"].fillna(0).sum()),
+        "catch_rate": _safe_ratio(receptions, targets),
+        "yards_per_target": round(yards / targets, 4),
+        "epa_per_target": round(float(rows["epa"].fillna(0).sum()) / targets, 4),
+    }
+
+
+def _receiver_profiles(frame, season: int, names: dict[str, str],
+                       positions: dict[str, str]) -> list[dict]:
+    """WR / TE / RB targets split by the defense's coverage, shell and rush.
+
+    A target is a pass attempt with a named receiver (sacks and throwaways
+    have none). Coverage, shell and pressure exist only where the season's
+    participation data is joined; the current season carries its charted
+    blitz and box looks until that data publishes.
+    """
+    if "receiver_player_id" not in frame:
+        return []
+    targets = frame[frame["pass_attempt"].fillna(0).eq(1) & frame["receiver_player_id"].notna()]
+    profiles = []
+    for (team, player_id), rows in targets.groupby(["posteam", "receiver_player_id"], dropna=True):
+        position = positions.get(str(player_id))
+        if position not in ("WR", "TE", "RB"):
+            continue
+        splits = {}
+        for look, mask in _split_masks(rows, "REC").items():
+            stats = _receiver_stats(rows[mask])
+            if stats:
+                splits[look] = stats
+        if not splits:
+            continue
+        fallback = (str(rows["receiver_player_name"].dropna().iloc[0])
+                    if rows["receiver_player_name"].notna().any() else str(player_id))
+        profiles.append({
+            "player_id": str(player_id), "player_name": names.get(str(player_id), fallback),
+            "team": _team(team), "position": position, "source_season": season,
+            "splits": splits,
+        })
+    return profiles
+
+
 def _db_count(value: object) -> int | None:
     text = str(value or "")
     if not text or text == "nan":
@@ -247,7 +301,7 @@ def _split_masks(rows, position: str) -> dict[str, Any]:
         known = rows[box_col].notna()
         masks.update({"stacked_box": known & rows[box_col].ge(8),
                       "light_box": known & rows[box_col].le(6)})
-    if position == "QB" and "defense_coverage_type" in rows:
+    if position in ("QB", "REC") and "defense_coverage_type" in rows:
         coverage = rows["defense_coverage_type"].fillna("").astype(str).str.upper()
         man_zone = rows["defense_man_zone_type"].fillna("").astype(str).str.upper()
         masks.update({"man": man_zone.eq("MAN_COVERAGE"), "zone": man_zone.eq("ZONE_COVERAGE")})
@@ -467,12 +521,16 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
     current = _joined(season, participation=False)
     prior = _joined(season - 1, participation=True)
     profiles = []
+    receivers = []
     if current is not None:
         profiles.extend(_player_profiles(
             current, season, names, positions, ngs_rushing, ngs_passing))
+        receivers.extend(_receiver_profiles(current, season, names, positions))
     if prior is not None:
         profiles.extend(_player_profiles(prior, season - 1, names, positions))
+        receivers.extend(_receiver_profiles(prior, season - 1, names, positions))
     return {
         "player_scheme_profiles": profiles,
+        "player_coverage_profiles": receivers,
         "team_line": _team_line(current, season, pfr_rushing) if current is not None else {},
     }

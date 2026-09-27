@@ -5333,11 +5333,26 @@ body[data-sport="nfl"] .ca-detail-nav {
   .ca-nfl-split,
   .ca-nfl-mix { table-layout: fixed; width: 100%; }
   .ca-nfl-split thead th:first-child,
-  .ca-nfl-split tbody td:first-child { width: 30%; }
+  .ca-nfl-split tbody td:first-child { width: 26%; }
   .ca-nfl-mix thead th:first-child,
-  .ca-nfl-mix tbody td:first-child { width: 24%; }
-  .ca-nfl-mix thead th:nth-child(2) { width: 26%; }
-  .ca-nfl-split th, .ca-nfl-split td,
-  .ca-nfl-mix th, .ca-nfl-mix td { overflow: hidden; text-overflow: ellipsis; }
+  .ca-nfl-mix tbody td:first-child { width: 22%; }
+  .ca-nfl-mix thead th:nth-child(2) { width: 30%; }
+  .ca-nfl-mix .ca-usage { min-width: 0; }
+  /* Figures share what the label leaves, evenly; nothing is ever clipped. */
+  .ca-nfl-split th.num, .ca-nfl-split td.num,
+  .ca-nfl-mix th.num, .ca-nfl-mix td.num { width: auto; }
   .ca-nfl-split thead th, .ca-nfl-mix thead th { white-space: normal; }
+  .ca-nfl-split tbody td:first-child,
+  .ca-nfl-mix tbody td:first-child { white-space: normal; overflow-wrap: anywhere; }
 }
+
+/* The usage squares need room the percentage does not: they show where the
+   usage column is wide (a full-width stacked table, or a wide desktop pair)
+   and step aside elsewhere, leaving the percentage and its league marker. */
+@media (min-width: 1380px) and (max-width: 1599px), (max-width: 899px) {
+  .ca-nfl-mix .ca-usage__grid { display: none; }
+}
+
+/* A sample count beside a graded figure stays neutral; only the figure is graded. */
+.ca-nfl-split td.num small,
+.ca-nfl-mix td.num small { color: var(--text-2); margin-left: 4px; font-size: var(--type-meta); }
