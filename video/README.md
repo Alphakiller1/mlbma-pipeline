@@ -192,6 +192,59 @@ These are built by the game pack from the site's own matchup data.
 
 Headshots download once into `public/players/`.
 
+## Record a breakdown on the site itself (the site booth)
+
+The recording booth above plays our own graphics. The **site booth** puts
+**chase-analytics.com itself** on the stage. You click through the real site (slates,
+matchup pages, Model Center) while you talk. Your camera sits in a bubble, you draw on
+the page, and the take comes out as a finished mp4.
+
+```powershell
+.\site-booth.bat                                    # double-click works too
+.\content.bat site-booth --page "/nfl/"             # start on a given page
+node scripts/site-booth.mjs --origin http://localhost:8788   # record a local build
+```
+
+It opens in **Chrome or Edge**, which are the only browsers that can record just one
+part of a tab. The first time you press **R**, Chrome asks to share this tab: pick
+**Share**. After that, only the framed stage is recorded. The panel on the right, your
+notes and the toast messages never show up in the video.
+
+| Key | What it does |
+|---|---|
+| **R** | Record, after a 3-2-1 countdown; press again to stop |
+| **Q** | Pause / resume |
+| **M** | Chapter marker (by default, every new page you open drops one as well) |
+| **V** | Browse: use the site normally |
+| **D H A X O** | Pen, highlighter, arrow, box, circle |
+| **S** | Spotlight: click a row or card to dim everything else (click again for its parent), or drag an area |
+| **Z** | Zoom: click a card or drag an area to fill the frame with it; **Esc** zooms out |
+| **T** | Next colour (the site's violet, amber, green, red, white) |
+| **U / Ctrl+Z, C** | Undo, clear |
+| **W E [ ]** | Camera on/off, next corner, smaller/bigger (or drag the bubble anywhere) |
+| **B / N** | Site mark / name strap |
+
+The keys also work while you are clicking around inside the site.
+
+- **How it works:** the booth server proxies the site (`localhost:8792/nfl/` is
+  `chase-analytics.com/nfl/`), so the page on stage is same-origin with the booth. That
+  is what lets it pick up your keys inside the page, pin marks to the page so they
+  scroll with it, and spotlight a real table row. Links that leave the site are blocked
+  on stage so a stray click cannot drag the take off the site.
+- **Format:** 16:9 (YouTube) or 9:16 (Reels, which shows the site's phone layout).
+  **Page size** sets how wide the site thinks the screen is. A narrower page means
+  bigger type on stage.
+- **Output:** `video/footage/site/site-<date>-<time>.webm` is written while you record,
+  in 1 s chunks, so a long take never sits in memory. On stop, ffmpeg makes `.mp4`
+  (1920x1080 or 1080x1920, loudness -14 LUFS). `.chapters.txt` is ready to paste into a
+  YouTube description. Markers under 10 s apart give way to the later one, because
+  YouTube needs chapters of 10 s or more.
+- **Sharpness:** the recording has the stage's real screen pixels. Maximise the window,
+  or use F11 fullscreen, before recording, especially for 9:16.
+- **ffmpeg** comes from the Remotion compositor in `node_modules` (run `npm install`
+  once). The Remotion build has no `pad` or `fps` filter and rejects positional filter
+  options, so the encode uses only `scale` + `format` with named options, plus `-r 30`.
+
 ## Change what happens and when (cue sheets)
 
 Every recording has a cue sheet at `video/footage/<name>.cues.txt`. The booth writes it;
