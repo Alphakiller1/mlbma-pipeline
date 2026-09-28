@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="/dashboard/assets/fonts/chase-fonts.css" />
     <link rel="stylesheet" href="/design/chase-tokens-v1.css" />
     <link rel="stylesheet" href="/__booth/app.css" />
+    <!-- The site's public Supabase config, for the phone-mic room (mic/room.js). -->
+    <script src="/dashboard/mlbma_config.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1" crossorigin="anonymous"></script>
   </head>
   <body>
     <div class="booth">
@@ -137,10 +140,11 @@
           <select id="micSel" title="Computer microphone"></select>
           <div class="phone" id="phoneBox" hidden>
             <b id="phoneState" class="warn">Waiting for the phone</b>
-            <span>On your phone (same Wi-Fi), open:</span>
+            <span>Scan with your phone's camera, or open:</span>
+            <div class="phone-qr" id="phoneQr" hidden></div>
             <button class="phone-url" id="phoneUrl" title="Click to copy">...</button>
+            <span>Tap "Use this phone as the mic" and Allow. Keep that page open with the screen on. The link stays the same, so you can bookmark it.</span>
             <span id="phoneAlt" hidden></span>
-            <span>Tap past the certificate warning, then "Use this phone as the mic". Keep that page open with the screen on.</span>
           </div>
           <div class="meter" title="Level of what is being recorded"><i id="meter"></i></div>
         </section>

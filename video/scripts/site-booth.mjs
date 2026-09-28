@@ -289,7 +289,7 @@ if (pfx) {
   // Never the proxy or the takes API: anyone on the Wi-Fi can reach this port.
   const secure = https.createServer({ pfx: fs.readFileSync(pfx), passphrase: "booth" }, (req, res) => {
     const p = new URL(req.url, "https://booth").pathname;
-    if (p === "/mic" || p === "/") return sendFile(res, path.join(root, "booth", "mic.html"));
+    if (p === "/mic" || p === "/") return sendFile(res, path.join(root, "..", "mic", "index.html"));
     res.writeHead(404).end("not found");
   });
   secure.on("upgrade", onUpgrade);

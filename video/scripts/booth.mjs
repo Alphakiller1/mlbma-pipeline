@@ -186,7 +186,7 @@ const server = http.createServer(async (req, res) => {
   const p = url.pathname;
   try {
     if (p === "/") return sendFile(res, path.join(root, "booth", "index.html"));
-    if (p === "/mic") return sendFile(res, path.join(root, "booth", "mic.html"));
+    if (p === "/mic") return sendFile(res, path.join(root, "..", "mic", "index.html"));
     if (p === "/api/lan") {
       const ips = lanIps();
       res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store" });
