@@ -65,6 +65,22 @@ def main(argv: list[str]) -> int:
         below = sum(1 for other in series if other < value)
         return round(100.0 * below / len(series), 1)
 
+    # K% per pitch type, pooled the same way: a slider's strikeout rate is
+    # compared with other sliders.
+    k_pools: dict[str, list[float]] = {}
+    for row in rows:
+        k = num(row.get("k_percent"))
+        code = str(row.get("pitch_type") or "").upper()
+        if k is None or not code or (num(row.get("pitches")) or 0) < RANKABLE_PITCHES:
+            continue
+        k_pools.setdefault(code, []).append(k)
+
+    def k_percentile(code: str, value: float):
+        series = k_pools.get(code) or []
+        if len(series) < 15:
+            return None
+        return round(100.0 * sum(1 for other in series if other < value) / len(series), 1)
+
     arms: dict[str, dict] = {}
     for row in rows:
         pid = str(row.get("player_id") or "").strip()
@@ -81,6 +97,10 @@ def main(argv: list[str]) -> int:
             "percentile": percentile(code, rv),
             "of": len(pools.get(code) or []),
         }
+        k = num(row.get("k_percent"))
+        if k is not None:
+            entry["pitches"][code]["k_percent"] = {"value": round(k, 1),
+                                                   "percentile": k_percentile(code, k)}
 
     if not arms:
         print("  skip run value: no usable rows")
