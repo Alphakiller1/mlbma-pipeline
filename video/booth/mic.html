@@ -58,10 +58,11 @@
       const say = (t, k) => { st.textContent = t; st.className = "status " + (k || "wait"); };
 
       const proto = location.protocol === "https:" ? "wss:" : "ws:";
-      let pc, stream, ws, raf;
+      let pc, stream, ws, raf, meterCtx;
 
       const level = (s) => {
-        const ctx = new AudioContext();
+        meterCtx?.close();
+        const ctx = (meterCtx = new AudioContext());
         const src = ctx.createMediaStreamSource(s);
         const an = ctx.createAnalyser();
         an.fftSize = 1024;
@@ -80,9 +81,14 @@
 
       const start = async () => {
         go.disabled = true;
+        go.classList.remove("off");
+        pc?.close();
+        if (ws) ws.onclose = ws.onerror = null;
+        ws?.close();
         say("Asking for the microphone…");
         try {
-          stream = await navigator.mediaDevices.getUserMedia({
+          // A reconnect keeps the mic it already has, so there is no second permission prompt.
+          if (!stream?.getAudioTracks().some((t) => t.readyState === "live")) stream = await navigator.mediaDevices.getUserMedia({
             audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
             video: false,
           });
@@ -91,6 +97,7 @@
           say("Microphone blocked: " + e.message + " If Safari warned about the certificate, tap Show Details and visit the site, then try again.", "err");
           return;
         }
+        cancelAnimationFrame(raf);
         level(stream);
         ws = new WebSocket(proto + "//" + location.host + "/ws");
         pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
@@ -122,8 +129,18 @@
             say("Open the booth on the computer and pick Phone (or Both) as the microphone.", "wait");
           }
         };
-        ws.onclose = () => say("Disconnected. Tap to reconnect.", "err");
-        ws.onerror = () => say("Could not reach the computer. Same Wi‑Fi, and allow the booth through Windows Firewall.", "err");
+        const drop = (text) => {
+          ws.onclose = ws.onerror = null;
+          say(text, "err");
+          go.textContent = "Reconnect the mic";
+          go.classList.remove("off");
+          go.disabled = false;
+        };
+        ws.onclose = () => drop("Disconnected. Tap to reconnect.");
+        ws.onerror = () => drop("Could not reach the computer. Same Wi‑Fi, and allow the booth through Windows Firewall.");
+        pc.onconnectionstatechange = () => {
+          if (pc.connectionState === "failed") drop("The audio link failed. Check both are on the same Wi‑Fi, then tap to reconnect.");
+        };
       };
       go.onclick = start;
     </script>

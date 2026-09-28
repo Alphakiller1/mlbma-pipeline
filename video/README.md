@@ -243,8 +243,11 @@ The keys also work while you are clicking around inside the site.
   graphics booth's phone mic. On a phone on the same Wi-Fi, open the `https://<PC IP>:8793/mic`
   link shown under Sound, tap past the certificate warning, and tap "Use this phone as
   the mic". Both mixes the two into one track. The LAN port serves only that mic page:
-  the site proxy and your takes stay on this PC. The first time, Windows Firewall asks
-  about Node; allow it on private networks.
+  the site proxy and your takes stay on this PC. The link uses the PC's Wi-Fi address
+  (WSL, Hyper-V, VirtualBox and VPN adapters go last); any other addresses show underneath
+  as fallbacks. The booth adds a Windows Firewall rule for the port. Without admin rights it
+  prints the one `netsh` command to run in an admin terminal. If the phone page drops, tap
+  "Reconnect the mic".
 - **Camera:** the feed is painted onto a canvas, not shown as a `<video>`. Chrome can put a
   live camera video on its own GPU overlay layer, which tab capture misses, and the
   bubble records grey. If the camera cannot start, the box says why (for example

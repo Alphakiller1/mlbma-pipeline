@@ -683,6 +683,8 @@ fetch("/__booth/api/lan")
   .then(({ urls }) => {
     $("phoneUrl").textContent = urls[0] || "Phone mic unavailable (no Wi-Fi address, or its port is busy).";
     $("phoneUrl").dataset.url = urls[0] || "";
+    $("phoneAlt").hidden = urls.length < 2;
+    $("phoneAlt").textContent = `Link not loading? Try ${urls.slice(1).join(" or ")}, and allow Node.js through Windows Firewall.`;
   })
   .catch(() => {});
 
