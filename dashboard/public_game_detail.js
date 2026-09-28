@@ -1387,8 +1387,13 @@
 
   /* The centrepiece: one lineup against the other side's arm, with the context
      the fixture already resolves stated rather than left to a filter. */
-  function lineupPanel(sport, game, side, people, oppLabel, oppHand) {
-    var players = game[side + '_lineup'] || [];
+  function lineupPanel(sport, game, side, people, oppLabel, oppHand, extra) {
+    var posted = game[side + '_lineup'] || [];
+    // No order posted: the likely starting nine stand in, in their usual spots.
+    var roster = (extra || {})[side + 'RosterHitters'];
+    var players = posted.length ? posted : (roster || []).map(function (h) {
+      return { id: h.id, fullName: h.name };
+    });
     var teamLabel = fullName(sport, game, side);
     // The heading names the split the numbers actually are. It used to name the
     // opposing starter, which reads as "this lineup against this man" while the
@@ -1399,6 +1404,11 @@
       ' \u00b7 ' + handLabel + ' \u00b7 ' + seasonOf(game.kickoff_utc) + ' Season' +
       (oppLabel ? ' \u00b7 ' + oppLabel + ' Starts' : '');
 
+    if (!players.length && !posted.length && roster === undefined) {
+      return '<section class="ca-lineup-panel"><h3 class="ca-lineup-head">' +
+        logo(sport, game, side, 26, 'ca-lineup-head__crest') + '<span>Versus ' +
+        esc(handLabel) + '</span></h3>' + pending('Likely starters are loading.') + '</section>';
+    }
     if (!players.length) {
       return '<section class="ca-lineup-panel"><h3>' + esc(teamLabel) + ' Versus ' +
         esc(handLabel) + '</h3>' +
@@ -1498,6 +1508,13 @@
       percentileBadge(entry.percentile) + '</td>';
   }
 
+  function opponentCell(entry, format) {
+    if (!entry || entry.value == null) return '<td class="num ca-vs-none">Few Seen</td>';
+    var tone = rankTone(entry.rank, entry.of);
+    return '<td class="num ' + tone + '">' + esc(format(Number(entry.value))) +
+      rankBadge(entry) + '</td>';
+  }
+
   function arsenalPanel(sport, game, side, people, rows, boards, runValue) {
     // The away starter faces the home lineup, and the other way round.
     var oppSide = side === 'away' ? 'home' : 'away';
@@ -1529,19 +1546,18 @@
         '<td class="ca-lineup-name">' + esc(row.name) + '</td>' +
         '<td class="num"><span class="ca-usage ' + usageTone(pct) + '">' +
         usageSquares(pct) + '<b>' + pct.toFixed(1) + '%</b></span></td>' +
-        '<td class="num">' + row.count.toLocaleString('en-US') + '</td>' +
         '<td class="num">' + (isFinite(row.speed) ? row.speed.toFixed(1) : '\u2014') + '</td>' +
         rvCell(rv) +
-        '<td class="num">' + (opp && opp.xwoba
-          ? esc(formatStat(opp.xwoba.value, 3)) + rankBadge(opp.xwoba) : '\u2014') + '</td>' +
-        '<td class="num">' + (opp && opp.contact_rate
-          ? opp.contact_rate.value.toFixed(1) + '%' + rankBadge(opp.contact_rate) : '\u2014') + '</td>' +
+        // The value takes the same grade as its rank pill, so the colour reads
+        // on the figure and not only on the badge beside it.
+        opponentCell(opp && opp.xwoba, function (v) { return formatStat(v, 3); }) +
+        opponentCell(opp && opp.contact_rate, function (v) { return v.toFixed(1) + '%'; }) +
         '</tr>';
     }).join('');
 
     return head +
       '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-arsenal-table">' +
-      '<thead><tr><th>Pitch</th><th class="num">Usage</th><th class="num">Count</th>' +
+      '<thead><tr><th>Pitch</th><th class="num">Usage</th>' +
       '<th class="num">MPH</th><th class="num">RV/100</th>' +
       '<th class="num">' + esc(oppLabel) + ' xwOBA</th>' +
       '<th class="num">Contact</th></tr></thead>' +
@@ -2083,9 +2099,11 @@
     var homeArm = people[game.home_starter_id] || {};
     return '<div class="ca-detail-stack-inner">' +
       lineupPanel(sport, game, 'away', people,
-        homeArm.name || value(game.home_starter, 'the home starter'), homeArm.throws) +
+        homeArm.name || value(game.home_starter, 'the home starter'),
+        homeArm.throws || String(game.home_hand || '').toUpperCase(), extra) +
       lineupPanel(sport, game, 'home', people,
-        awayArm.name || value(game.away_starter, 'the away starter'), awayArm.throws) +
+        awayArm.name || value(game.away_starter, 'the away starter'),
+        awayArm.throws || String(game.away_hand || '').toUpperCase(), extra) +
       '</div>';
   }
 
@@ -3321,7 +3339,7 @@
         startersBody(sport, game, extra)),
       section('arsenal', 'Pitch Mix', 'What Each Starter Throws, And How Often',
         arsenalBody(sport, game, extra)),
-      section('lineups', 'Lineup Versus Starter', 'Each Order Against The Opposing Arm',
+      section('lineups', 'Lineup Vs Handedness', 'Each Order Against The Hand It Faces',
         lineupsBody(sport, game, extra)),
       section('pitch-matchup', 'Lineup Versus Pitch Mix', 'Every Hitter Against Every Pitch He Will See',
         pitchMatchupBody(sport, game, extra)),
@@ -5753,8 +5771,9 @@ function seasonToggle(game) {
     document.title = awayName + ' at ' + homeName + ' — Chase Analytics';
     var nav = sport === 'mlb'
       ? [['overview', 'Overview'], ['starters', 'Starters'], ['arsenal', 'Pitch Mix'],
-         ['lineups', 'Lineup Vs Starter'], ['club-splits', 'Club Splits'], ['recent', 'Last Ten'], ['form', 'Offensive Form'],
-         ['radar', 'Radar'], ['bullpens', 'Bullpens']]
+         ['lineups', 'Vs Hand'], ['pitch-matchup', 'Vs Pitch Mix'], ['bvp', 'Batter Vs Pitcher'],
+         ['club-splits', 'Club Splits'], ['recent', 'Last Ten'], ['runs-hand', 'Runs Vs Hand'],
+         ['series', 'Series'], ['form', 'Offensive Form'], ['radar', 'Radar'], ['bullpens', 'Bullpens']]
       : sport === 'cfb'
       ? [['overview', 'Overview'], ['clash', 'Matchup'], ['form', 'Comparison'],
          ['radar', 'Radar'], ['recent', 'Recent'],
@@ -5909,7 +5928,15 @@ function seasonToggle(game) {
               : loadRosterHitters(game[side + '_team_id'], dateIso, season).then(function (list) {
                   extra[side + 'RosterHitters'] = list || [];
                   repaintPitchMatchup();
-                  return (list || []).map(function (h) { return h.id; });
+                  var ids = (list || []).map(function (h) { return h.id; });
+                  var arm = extra.people[game[opp + '_starter_id']] || {};
+                  loadPeople(ids, 'hitting', season,
+                    sit(arm.throws || String(game[opp + '_hand'] || '').toUpperCase()))
+                    .then(function (batch) {
+                      Object.keys(batch).forEach(function (id) { extra.people[id] = batch[id]; });
+                      paintSection(host, 'lineups', lineupsBody(sport, game, extra));
+                    });
+                  return ids;
                 });
             ids.then(function (list) {
               return loadVsPitcher(list, game[opp + '_starter_id']);

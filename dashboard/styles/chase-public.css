@@ -5599,3 +5599,15 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-runs-hand-table td.num,
 .ca-h2h-table td.num { white-space: nowrap; }
 .ca-h2h-table { margin-bottom: var(--space-3); }
+
+/* Pitch Mix fits its panel (2026-09-28): the opposing club's name made the
+   xwOBA header one long line and pushed Contact off the edge. Headers wrap,
+   and the tracks are fixed so both starters' tables line up. */
+.ca-arsenal-panel .ca-arsenal-table { table-layout: fixed; min-width: 0; }
+.ca-arsenal-panel .ca-arsenal-table thead th { white-space: normal; line-height: 1.2; }
+.ca-arsenal-panel .ca-arsenal-table th:nth-child(1) { width: auto; }
+.ca-arsenal-panel .ca-arsenal-table th:nth-child(2) { width: 9.5rem; }
+.ca-arsenal-panel .ca-arsenal-table th:nth-child(3) { width: 3.75rem; }
+.ca-arsenal-panel .ca-arsenal-table th:nth-child(4) { width: 6.5rem; }
+.ca-arsenal-panel .ca-arsenal-table th:nth-child(5),
+.ca-arsenal-panel .ca-arsenal-table th:nth-child(6) { width: 6.25rem; }
