@@ -1674,8 +1674,8 @@
       return '<tr><td>' + esc(spec[1]) + '</td>' +
         cell(st.avg, tm + 'avg') + cell(st.obp, tm + 'obp') + cell(st.slg, tm + 'slg') +
         cell(st.ops, tm + 'ops') +
-        '<td class="num">' + esc(st.homeRuns == null ? '—' : st.homeRuns) + '</td>' +
-        cell(kPct, null, '%') + cell(bbPct, null, '%') +
+        cell(st.homeRuns, tm + 'hr') +
+        cell(kPct, tm + 'kpct', '%') + cell(bbPct, tm + 'bbpct', '%') +
         '<td class="num">' + esc(pa || '—') + '</td></tr>';
     }).filter(Boolean).join('');
     if (!rows) return head + pending('Club splits are not published for this season.') + '</section>';

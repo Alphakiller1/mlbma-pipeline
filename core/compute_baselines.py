@@ -26,7 +26,8 @@ Reference populations:
       sp_<vs_lhh|vs_rhh|home|away>_<whip|xfip|kpct|bbpct|ops|ops_plus>
           from data/public/starter_splits.json - the exact lines the matchup page shows
       bat_<vl|vr|season>_<avg|obp|slg|ops>   from data/league_batter_splits.csv
-      tm_<h|a|vl|vr|sp|rp>_<avg|obp|slg|ops> from data/league_team_splits.csv
+      tm_<h|a|vl|vr|sp|rp>_<avg|obp|slg|ops|hr|kpct|bbpct>
+          from data/league_team_splits.csv
 
 A run that cannot recompute a context (FanGraphs skipped in CI, a scraper down) carries
 the previous value forward with the time it WAS computed in `as_of`, so a partial run
@@ -93,6 +94,10 @@ SP_SEASON_MIN_STARTS = 5
 SP_MIN_IP_PER_OUTING = 4.0
 
 HIT_RATES = ("avg", "obp", "slg", "ops")
+TEAM_HITTING_STATS = {
+    "avg": True, "obp": True, "slg": True, "ops": True,
+    "hr": True, "kpct": False, "bbpct": True,
+}
 BATTER_SPLITS = ("vl", "vr", "season")
 TEAM_SPLITS = ("h", "a", "vl", "vr", "sp", "rp")
 MIN_POOL = 20
@@ -272,8 +277,27 @@ def team_split_baselines(frame: pd.DataFrame | None) -> dict:
         if rows.empty:
             continue
         league = league_hitting_rates(rows)
-        for stat in HIT_RATES:
-            anchor = _anchor(league.get(stat), rows[stat], hi=True)
+        values = {stat: rows[stat] for stat in HIT_RATES}
+        pa = pd.to_numeric(rows.get("pa"), errors="coerce").replace(0, pd.NA)
+        if {"hr", "k", "bb"}.issubset(rows.columns) and pa.notna().any():
+            hr = pd.to_numeric(rows["hr"], errors="coerce")
+            strikeouts = pd.to_numeric(rows["k"], errors="coerce")
+            walks = pd.to_numeric(rows["bb"], errors="coerce")
+            values.update({
+                "hr": hr,
+                "kpct": strikeouts / pa * 100,
+                "bbpct": walks / pa * 100,
+            })
+            total_pa = float(pa.fillna(0).sum())
+            league.update({
+                "hr": float(hr.mean()),
+                "kpct": float(strikeouts.fillna(0).sum()) / total_pa * 100,
+                "bbpct": float(walks.fillna(0).sum()) / total_pa * 100,
+            })
+        for stat, hi in TEAM_HITTING_STATS.items():
+            if stat not in values:
+                continue
+            anchor = _anchor(league.get(stat), values[stat], hi=hi)
             if anchor:
                 out[f"tm_{split}_{stat}"] = anchor
     return out
