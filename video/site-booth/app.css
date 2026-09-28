@@ -533,6 +533,20 @@ textarea {
 .phone .warn {
   color: var(--ca-amber-500, #e8c24a);
 }
+.phone-qr {
+  width: 148px;
+  padding: 6px;
+  border-radius: 6px;
+  background: var(--ca-paper-50, #fff); /* a QR code needs light quiet space to scan */
+}
+.phone-qr[hidden] {
+  display: none;
+}
+.phone-qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
 .phone-url {
   text-align: left;
   font: 700 13px/1.3 var(--ca-font-ui, sans-serif);

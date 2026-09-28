@@ -239,12 +239,18 @@ The keys also work while you are clicking around inside the site.
   (1920x1080 or 1080x1920, loudness -14 LUFS). `.chapters.txt` is ready to paste into a
   YouTube description. Markers under 10 s apart give way to the later one, because
   YouTube needs chapters of 10 s or more.
-- **Sound: Computer, Phone or Both.** Phone and Both work the same way as the
-  graphics booth's phone mic. On a phone on the same Wi-Fi, open the `https://<PC IP>:8793/mic`
-  link shown under Sound, tap past the certificate warning, and tap "Use this phone as
-  the mic". Both mixes the two into one track. The LAN port serves only that mic page:
-  the site proxy and your takes stay on this PC. The first time, Windows Firewall asks
-  about Node; allow it on private networks.
+- **Sound: Computer, Phone or Both.** Pick Phone (or Both) and scan the QR code under
+  Sound with the phone, or open the link shown there: `https://chase-analytics.com/mic/?room=CODE`.
+  Tap "Use this phone as the mic" and allow it. Both mixes the two into one track.
+  The phone and the booth pair through the site's Supabase realtime room (`mic/room.js`,
+  public key only), so any network works (Wi-Fi or cellular) with no certificate warning,
+  PC IP or firewall port. Only the WebRTC handshake passes through Supabase; the audio
+  goes straight from the phone to the PC. The room code is kept in the booth's browser, so
+  the phone link stays the same and can be bookmarked.
+  Fallback without internet: on the same Wi-Fi, the `https://<PC IP>:8793/mic` link (shown
+  under the main link) still works through the booth's own relay. That link needs the
+  certificate warning tapped past, and the Windows Firewall rule the booth adds (or the
+  `netsh` command it prints).
 - **Camera:** the feed is painted onto a canvas, not shown as a `<video>`. Chrome can put a
   live camera video on its own GPU overlay layer, which tab capture misses, and the
   bubble records grey. If the camera cannot start, the box says why (for example

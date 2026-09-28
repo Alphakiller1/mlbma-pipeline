@@ -650,41 +650,87 @@ function setPhone(stream) {
   if (stream) toast("Phone mic connected.");
   else if (rec.state !== "idle" && prefs.sound !== "computer") toast("The phone mic dropped. Keep its page open and the screen on.", 5000);
 }
+/* One handler for both ways the phone reaches us; `send` replies on the same route. */
+let phonePc = null;
+async function onPhoneSignal(msg, send) {
+  if (msg.role === "phone") {
+    send({ type: "booth-ready" }); // the phone joined the room after us: invite its offer
+  } else if (msg.type === "offer" && msg.sdp) {
+    phonePc?.close();
+    const pc = (phonePc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] }));
+    pc.onicecandidate = (e) => e.candidate && send({ type: "ice", candidate: e.candidate });
+    pc.ontrack = (e) => setPhone(e.streams[0] ?? new MediaStream([e.track]));
+    pc.onconnectionstatechange = () => {
+      if (pc === phonePc && ["failed", "closed", "disconnected"].includes(pc.connectionState)) setPhone(null);
+    };
+    await pc.setRemoteDescription(msg.sdp);
+    await pc.setLocalDescription(await pc.createAnswer());
+    send({ type: "answer", sdp: pc.localDescription });
+  } else if (msg.type === "ice" && msg.candidate && phonePc) {
+    try {
+      await phonePc.addIceCandidate(msg.candidate);
+    } catch {
+      /* stale candidate */
+    }
+  }
+}
+/* Same Wi-Fi: the booth server's /ws relay (the https://<PC IP>:8793/mic link). */
 function connectPhoneRelay() {
   const ws = new WebSocket(`ws://${location.host}/ws`);
-  let pc = null;
-  ws.onopen = () => ws.send(JSON.stringify({ role: "booth" }));
-  ws.onmessage = async (ev) => {
-    const msg = JSON.parse(ev.data);
-    if (msg.type === "offer" && msg.sdp) {
-      pc?.close();
-      pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
-      const mine = pc;
-      pc.onicecandidate = (e) => e.candidate && ws.send(JSON.stringify({ type: "ice", candidate: e.candidate }));
-      pc.ontrack = (e) => setPhone(e.streams[0] ?? new MediaStream([e.track]));
-      pc.onconnectionstatechange = () => {
-        if (pc === mine && ["failed", "closed", "disconnected"].includes(mine.connectionState)) setPhone(null);
-      };
-      await pc.setRemoteDescription(msg.sdp);
-      await pc.setLocalDescription(await pc.createAnswer());
-      ws.send(JSON.stringify({ type: "answer", sdp: pc.localDescription }));
-    } else if (msg.type === "ice" && msg.candidate && pc) {
-      try {
-        await pc.addIceCandidate(msg.candidate);
-      } catch {
-        /* stale candidate */
-      }
-    }
-  };
+  const send = (m) => ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify(m));
+  ws.onopen = () => send({ role: "booth" });
+  ws.onmessage = (ev) => onPhoneSignal(JSON.parse(ev.data), send);
   ws.onclose = () => setTimeout(connectPhoneRelay, 2000);
 }
-fetch("/__booth/api/lan")
-  .then((r) => r.json())
-  .then(({ urls }) => {
-    $("phoneUrl").textContent = urls[0] || "Phone mic unavailable (no Wi-Fi address, or its port is busy).";
-    $("phoneUrl").dataset.url = urls[0] || "";
-  })
-  .catch(() => {});
+/*
+ * Any network: the phone opens chase-analytics.com/mic/?room=CODE and pairs through the
+ * site's realtime room (mic/room.js, loaded through the proxy). The code is kept in this
+ * browser so a bookmarked phone link keeps working across booth restarts.
+ */
+const PHONE_SITE = "https://chase-analytics.com";
+const ROOM_KEY = "siteBooth.phoneRoom.v1";
+async function connectPhoneRoom() {
+  const { joinRoom, newRoomCode, isRoomCode } = await import("/mic/room.js");
+  let code = "";
+  try {
+    code = localStorage.getItem(ROOM_KEY) || "";
+  } catch {
+    /* private window: a new code each session */
+  }
+  if (!isRoomCode(code)) {
+    code = newRoomCode();
+    try {
+      localStorage.setItem(ROOM_KEY, code);
+    } catch {
+      /* not persisted */
+    }
+  }
+  const link = joinRoom(code, (msg) => onPhoneSignal(msg, link.send), (s) => s === "open" && link.send({ type: "booth-ready" }));
+  return `${PHONE_SITE}/mic/?room=${code}`;
+}
+function showPhoneLink(url, alts) {
+  $("phoneUrl").textContent = url || "Phone mic unavailable: the booth could not reach chase-analytics.com.";
+  $("phoneUrl").dataset.url = url || "";
+  $("phoneQr").hidden = !url || !window.qrcode;
+  if (url && window.qrcode) {
+    const qr = window.qrcode(0, "M");
+    qr.addData(url);
+    qr.make();
+    $("phoneQr").innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
+  }
+  $("phoneAlt").hidden = !alts.length;
+  $("phoneAlt").textContent = `Same Wi-Fi only, no internet link? ${alts.join(" or ")}`;
+}
+Promise.all([
+  connectPhoneRoom().catch((e) => {
+    console.warn("phone room:", e);
+    return "";
+  }),
+  fetch("/__booth/api/lan")
+    .then((r) => r.json())
+    .then((d) => d.urls ?? [])
+    .catch(() => []),
+]).then(([url, lan]) => (url ? showPhoneLink(url, lan) : showPhoneLink(lan[0] || "", lan.slice(1))));
 
 // Drag the camera anywhere on the stage.
 cam.addEventListener("pointerdown", (e) => {

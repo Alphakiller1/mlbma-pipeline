@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Booth Mic · Chase Analytics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png" />
+    <!-- Site tokens. The same page is also served by the booth over the Wi-Fi, where
+         these do not load, so every var() below carries a fallback. -->
+    <link rel="stylesheet" href="/design/chase-tokens-v1.css?v=20260928j" />
+    <link rel="stylesheet" href="/dashboard/styles/chase-semantic.css?v=20260928j" />
+    <style>
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        min-height: 100%;
+        background: var(--surface-page, #050506);
+        color: var(--text-primary, #f4f4f5);
+        font-family: var(--font-ui, ui-sans-serif, system-ui, sans-serif);
+        color-scheme: dark;
+      }
+      main { max-width: 420px; margin: 0 auto; padding: 48px 16px 80px; }
+      .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent, #9a6bff); }
+      h1 { font-family: var(--font-display, inherit); font-size: 32px; line-height: 1.05; margin: 8px 0 12px; }
+      p { color: var(--text-secondary, #a1a1aa); line-height: 1.45; }
+      button {
+        width: 100%;
+        min-height: 56px;
+        margin-top: 24px;
+        border: 0;
+        border-radius: 999px;
+        padding: 16px 20px;
+        font: inherit;
+        font-size: 18px;
+        font-weight: 800;
+        background: var(--accent, #9a6bff);
+        color: var(--text-on-accent, #050506);
+      }
+      button.off { background: var(--surface-card, #16161c); color: var(--text-primary, #f4f4f5); }
+      button:disabled { opacity: 0.7; }
+      .meter { height: 10px; background: var(--surface-inset, #27272a); border-radius: 999px; overflow: hidden; margin-top: 28px; }
+      .meter > div { height: 100%; width: 0; background: var(--status-live, #22c55e); }
+      .status { margin-top: 18px; font-weight: 700; }
+      .status.wait { color: var(--status-stale, #f5b942); }
+      .status.live { color: var(--status-live, #22c55e); }
+      .status.err { color: var(--status-error, #f2545b); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="eyebrow">Recording booth</div>
+      <h1>This phone is the microphone.</h1>
+      <p>The camera stays on the computer. Keep this page open, the screen on, and the phone a foot from your mouth while you record.</p>
+      <button id="go" type="button">Use this phone as the mic</button>
+      <div class="meter"><div id="bar"></div></div>
+      <div class="status wait" id="st">Tap the button, then Allow microphone.</div>
+    </main>
+    <script src="/dashboard/mlbma_config.js?v=20260928j"></script>
+    <script type="module">
+      /*
+       * Two ways to reach the booth on the computer:
+       *   /mic/?room=CODE  (chase-analytics.com) - paired through the site's Supabase realtime
+       *                    room (mic/room.js). Works on any network, no certificate warning.
+       *   /mic             (served by the booth on https://<PC IP>) - the booth's own /ws relay.
+       * Either way the audio goes phone -> computer over WebRTC.
+       */
+      const st = document.getElementById("st");
+      const bar = document.getElementById("bar");
+      const go = document.getElementById("go");
+      const say = (t, k) => { st.textContent = t; st.className = "status " + (k || "wait"); };
+      const room = new URLSearchParams(location.search).get("room");
+
+      let pc, stream, link, raf, meterCtx;
+
+      const level = (s) => {
+        meterCtx?.close();
+        const ctx = (meterCtx = new AudioContext());
+        const src = ctx.createMediaStreamSource(s);
+        const an = ctx.createAnalyser();
+        an.fftSize = 1024;
+        src.connect(an);
+        const buf = new Float32Array(an.fftSize);
+        const tick = () => {
+          an.getFloatTimeDomainData(buf);
+          let sum = 0;
+          for (const v of buf) sum += v * v;
+          const db = 20 * Math.log10(Math.sqrt(sum / buf.length) + 1e-9);
+          bar.style.width = Math.max(0, Math.min(1, (db + 60) / 60)) * 100 + "%";
+          raf = requestAnimationFrame(tick);
+        };
+        tick();
+      };
+
+      const drop = (text) => {
+        link?.close();
+        link = null;
+        pc?.close();
+        say(text, "err");
+        go.textContent = "Reconnect the mic";
+        go.classList.remove("off");
+        go.disabled = false;
+      };
+
+      /* A new peer connection per booth-ready: the booth may have reloaded since the last one. */
+      const sendOffer = async () => {
+        pc?.close();
+        const mine = (pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] }));
+        stream.getTracks().forEach((t) => mine.addTrack(t, stream));
+        mine.onicecandidate = (e) => e.candidate && link?.send({ type: "ice", candidate: e.candidate });
+        mine.onconnectionstatechange = () => {
+          if (pc !== mine) return;
+          if (mine.connectionState === "connected") {
+            say("Live — leave this page open. The computer is recording this mic.", "live");
+            go.textContent = "Mic is live";
+            go.classList.add("off");
+          } else if (mine.connectionState === "failed") {
+            drop("The audio link failed. Tap to reconnect.");
+          }
+        };
+        await mine.setLocalDescription(await mine.createOffer());
+        link?.send({ type: "offer", sdp: mine.localDescription });
+        say("Connecting to the computer…");
+      };
+
+      const onMsg = async (msg) => {
+        if (msg.type === "booth-ready") {
+          await sendOffer();
+        } else if (msg.type === "answer" && msg.sdp && pc) {
+          try { await pc.setRemoteDescription(msg.sdp); } catch {} // a second booth tab answered too
+        } else if (msg.type === "ice" && msg.candidate && pc) {
+          try { await pc.addIceCandidate(msg.candidate); } catch {}
+        } else if (msg.type === "need-booth") {
+          say("Open the booth on the computer and set Sound to Phone (or Both).", "wait");
+        }
+      };
+
+      /* Phone -> booth over the site's realtime room. */
+      const roomLink = async () => {
+        const { joinRoom } = await import("/mic/room.js?v=20260928j");
+        return joinRoom(room, onMsg, (s) => {
+          if (s === "open") {
+            link?.send({ role: "phone" });
+            say("Waiting for the booth — open it on the computer and set Sound to Phone (or Both).", "wait");
+          } else {
+            say("Reconnecting…", "wait");
+          }
+        });
+      };
+
+      /* Phone -> booth over the booth's own relay on the Wi-Fi. */
+      const lanLink = () =>
+        new Promise((resolve) => {
+          const ws = new WebSocket((location.protocol === "https:" ? "wss:" : "ws:") + "//" + location.host + "/ws");
+          const out = { send: (m) => ws.readyState === 1 && ws.send(JSON.stringify(m)), close: () => { ws.onclose = ws.onerror = null; ws.close(); } };
+          ws.onopen = () => out.send({ role: "phone" });
+          ws.onmessage = (ev) => onMsg(JSON.parse(ev.data));
+          ws.onclose = () => drop("Disconnected. Tap to reconnect.");
+          ws.onerror = () => drop("Could not reach the computer. Same Wi‑Fi, and allow the booth through Windows Firewall.");
+          resolve(out);
+        });
+
+      const start = async () => {
+        go.disabled = true;
+        go.classList.remove("off");
+        link?.close();
+        link = null;
+        pc?.close();
+        say("Asking for the microphone…");
+        try {
+          // A reconnect keeps the mic it already has, so there is no second permission prompt.
+          if (!stream?.getAudioTracks().some((t) => t.readyState === "live")) stream = await navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+            video: false,
+          });
+        } catch (e) {
+          go.disabled = false;
+          say("Microphone blocked: " + e.message + " Allow the microphone for this site in the browser settings, then try again.", "err");
+          return;
+        }
+        cancelAnimationFrame(raf);
+        level(stream);
+        try {
+          link = room ? await roomLink() : await lanLink();
+        } catch (e) {
+          drop("Could not start: " + e.message);
+        }
+      };
+      go.onclick = start;
+      if (!room && location.hostname.endsWith("chase-analytics.com")) {
+        go.disabled = true;
+        say("This link is missing its room code. Scan the QR code shown under Sound in the booth on your computer.", "err");
+      }
+    </script>
+  </body>
+</html>

@@ -28,7 +28,7 @@ import https from "node:https";
 import path from "node:path";
 import { Readable } from "node:stream";
 import { fileURLToPath } from "node:url";
-import { createRelay, ensureBoothPfx, lanIps } from "./lib/phone-mic.mjs";
+import { createRelay, ensureBoothPfx, ensureFirewall, lanIps } from "./lib/phone-mic.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
@@ -289,7 +289,7 @@ if (pfx) {
   // Never the proxy or the takes API: anyone on the Wi-Fi can reach this port.
   const secure = https.createServer({ pfx: fs.readFileSync(pfx), passphrase: "booth" }, (req, res) => {
     const p = new URL(req.url, "https://booth").pathname;
-    if (p === "/mic" || p === "/") return sendFile(res, path.join(root, "booth", "mic.html"));
+    if (p === "/mic" || p === "/") return sendFile(res, path.join(root, "..", "mic", "index.html"));
     res.writeHead(404).end("not found");
   });
   secure.on("upgrade", onUpgrade);
@@ -298,6 +298,8 @@ if (pfx) {
     secureUp = true;
     const urls = lanIps().map((ip) => `https://${ip}:${phonePort}/mic`);
     if (urls.length) console.log(`  phone as mic: open ${urls[0]} on the phone (same Wi-Fi)`);
+    if (urls.length > 1) console.log(`    if that does not load, try: ${urls.slice(1).join("  ")}`);
+    ensureFirewall(phonePort);
   });
 }
 

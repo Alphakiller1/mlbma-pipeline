@@ -24,7 +24,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadPack, newestPack } from "./lib/catalog.mjs";
 import { formatCueSheet } from "./lib/cues.mjs";
-import { createRelay, ensureBoothPfx, lanIps } from "./lib/phone-mic.mjs";
+import { createRelay, ensureBoothPfx, ensureFirewall, lanIps } from "./lib/phone-mic.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
@@ -186,7 +186,7 @@ const server = http.createServer(async (req, res) => {
   const p = url.pathname;
   try {
     if (p === "/") return sendFile(res, path.join(root, "booth", "index.html"));
-    if (p === "/mic") return sendFile(res, path.join(root, "booth", "mic.html"));
+    if (p === "/mic") return sendFile(res, path.join(root, "..", "mic", "index.html"));
     if (p === "/api/lan") {
       const ips = lanIps();
       res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store" });
@@ -341,6 +341,7 @@ if (pfx) {
   secure.listen(phonePort, "0.0.0.0", () => {
     const urls = lanIps().map((ip) => `https://${ip}:${phonePort}/mic`);
     console.log(urls.length ? `Phone as mic (desktop camera stays here): ${urls.join("  ")}\n` : `\n`);
+    ensureFirewall(phonePort);
   });
 } else {
   console.log("");
