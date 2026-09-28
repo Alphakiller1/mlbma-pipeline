@@ -1189,12 +1189,73 @@ def _lost_evidence(fresh: dict, published: Path) -> str | None:
     return None
 
 
+# Club-level NFL evidence. A club missing one of these while nearly every other
+# club on the same slate has it lost it to an upstream hiccup (on 2026-09-28 the
+# Jets alone published with no player profiles and no lineups), not to a fact
+# about the club.
+NFL_CLUB_FIELDS = (
+    "player_scheme", "player_coverage", "player_stats", "lineups", "scheme",
+    "scheme_current", "line_stats", "run_game", "defenders_current", "red_zone",
+    "team_stats", "form",
+)
+
+
+def _present(value) -> bool:
+    return value not in (None, "", [], {})
+
+
+def patch_club_gaps(fresh: dict, published: Path) -> list[str]:
+    """Carry a club's field forward from the published slate when this run lost it.
+
+    Only a field at least 90% of the fresh slate's clubs carry is treated as a
+    gap; only the same club's value from the published slate is used. Returns
+    what was patched and what could not be, so a run never passes silently.
+    """
+    games = fresh.get("games") or []
+    sides = [(g, side) for g in games for side in ("away", "home") if g.get(side)]
+    if not sides:
+        return []
+    previous: dict[tuple[str, str], object] = {}
+    if published.is_file():
+        try:
+            old = json.loads(published.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            old = {}
+        for g in old.get("games") or []:
+            for side in ("away", "home"):
+                club = g.get(side)
+                for field in NFL_CLUB_FIELDS:
+                    value = g.get(f"{side}_{field}")
+                    if club and _present(value):
+                        previous[(club, field)] = value
+    notes: list[str] = []
+    for field in NFL_CLUB_FIELDS:
+        have = sum(1 for g, side in sides if _present(g.get(f"{side}_{field}")))
+        if have == len(sides) or have < 0.9 * len(sides):
+            continue
+        for g, side in sides:
+            key = f"{side}_{field}"
+            if _present(g.get(key)):
+                continue
+            club = g[side]
+            carried = previous.get((club, field))
+            if _present(carried):
+                g[key] = carried
+                notes.append(f"{club} {field} carried from the published slate")
+            else:
+                notes.append(f"{club} {field} MISSING (no published value to carry)")
+    return notes
+
+
 def write_if_better(sport: str, producer: dict, dest: Path) -> bool:
     if not producer.get("games"):
         print(f"  skip {sport}: empty producer; keeping {dest}")
         return False
     out = project_slate(sport, producer)
     assert_clean(out)
+    if sport == "nfl":
+        for note in patch_club_gaps(out, dest):
+            print(f"  WARNING nfl: {note}")
     lost = _lost_evidence(out, dest)
     if lost:
         print(f"  skip {sport}: {lost}; keeping the published slate")
