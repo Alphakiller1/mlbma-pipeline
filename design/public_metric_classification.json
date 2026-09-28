@@ -121,7 +121,10 @@
     "opponent",
     "abbreviation",
     "school",
-    "display"
+    "display",
+    "WR",
+    "TE",
+    "RB"
   ],
   "factual_status": [
     "game_state",
@@ -438,6 +441,12 @@
     "home_player_stats_prior",
     "away_scheme_current",
     "home_scheme_current",
+    "away_run_game",
+    "home_run_game",
+    "seasons",
+    "carriers",
+    "yards_per_game",
+    "explosive_rate",
     "personnel_22_rate",
     "away_defenders_current",
     "home_defenders_current",
@@ -449,7 +458,29 @@
     "pass_epa_no_blitz",
     "pass_epa_motion",
     "pass_epa_screen",
-    "rush_epa_light_box"
+    "rush_epa_light_box",
+    "away_red_zone",
+    "home_red_zone",
+    "current",
+    "combined",
+    "all",
+    "offense_by_position",
+    "defense_by_position",
+    "drives",
+    "trips",
+    "td_trips",
+    "score_trips",
+    "sacks",
+    "carries_inside5",
+    "targets_inside10",
+    "trips_per_game",
+    "trip_rate",
+    "td_rate",
+    "score_rate",
+    "pass_rate",
+    "epa_per_play",
+    "carry_share",
+    "receiving_tds_per_game"
   ],
   "derived_descriptive": [
     "depth_rank",
@@ -471,7 +502,10 @@
     "pitchScore",
     "pitch_score",
     "sos",
-    "tracking_ranks"
+    "tracking_ranks",
+    "ranks",
+    "target_share_rank",
+    "receiving_tds_rank"
   ],
   "contextual_environment": [
     "conditions",

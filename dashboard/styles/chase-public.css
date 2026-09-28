@@ -5510,3 +5510,9 @@ body[data-sport="nfl"] .ca-detail-nav {
   .ca-analysis-scope .ca-season-toggle { justify-self: end; }
   .ca-analysis-scope .ca-season-toggle__btn { padding: 5px 10px; }
 }
+
+/* Ball carriers: the touchdown count needs little room; the graded figures
+   take what it leaves so a percentile pill stays on its figure's line. */
+@media (min-width: 561px) {
+  .ca-nfl-carriers .ca-nfl-split thead th:last-child { width: 8%; }
+}

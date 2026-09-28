@@ -878,7 +878,7 @@ def build(board: dict | None = None, rooms: dict | None = None,
     if not board:
         return {"form": {}, "scheme": {}, "players": {}, "lineups": {},
                 "player_coverage": {}, "player_scheme": {}, "team_stats": {},
-                "player_stats": {}, "team_line": {}, "source": None}
+                "player_stats": {}, "team_line": {}, "red_zone": {}, "source": None}
     if rooms is None and lineups is None:
         lineups, rooms = fetch_depth_chart_context()
     elif lineups is None:
@@ -923,8 +923,13 @@ def build(board: dict | None = None, rooms: dict | None = None,
         "team_stats_prior": prior_stats.get("teams") or {},
         "scheme_current": _canon_keys(advanced_context.get("team_scheme_current")),
         "defenders_current": _canon_keys(advanced_context.get("defenders_current")),
+        "run_game": _canon_keys(advanced_context.get("run_game")),
         "player_stats_prior": prior_stats.get("players") or {},
         "team_line": _canon_keys(advanced_context.get("team_line")),
+        # {"current": {club: ...}, "combined": {club: ...}} - the page's two
+        # evidence windows, 2026 alone and 2025 + 2026 pooled play by play.
+        "red_zone": {window: _canon_keys(clubs) for window, clubs in
+                     (advanced_context.get("red_zone") or {}).items()},
         "source": {
             "season": board.get("season"),
             "week": board.get("week"),
