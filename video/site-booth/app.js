@@ -23,7 +23,7 @@ const prefs = Object.assign(
     camOn: true,
     corner: "br",
     camSize: 1,
-    shape: "circle",
+    camShape: "box", // new key, so a saved "circle" from before does not override the box
     mirror: true,
     camFree: null, // {x, y} as fractions of the stage when dragged
     bug: false, // the site's own header already carries the logo
@@ -115,8 +115,10 @@ function placeOverlays() {
   const m = Math.round(Math.min(sw, sh) * 0.035);
   const base = Math.min(sw, sh);
   const size = Math.round(base * CAM_SIZES[prefs.camSize] * (prefs.aspect === "vertical" ? 1.3 : 1));
-  const w = size;
-  const h = prefs.shape === "rect" ? Math.round(size * 1.25) : size;
+  // The box is landscape 4:3, the webcam's own shape, so less of the picture is cropped.
+  const box = prefs.camShape === "box";
+  const w = box ? Math.round(size * 1.2) : size;
+  const h = box ? Math.round(size * 0.9) : size;
   let x, y;
   if (prefs.camFree) {
     x = prefs.camFree.x * sw;
@@ -129,7 +131,7 @@ function placeOverlays() {
   y = Math.max(0, Math.min(sh - h, y));
   Object.assign(cam.style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px` });
   cam.classList.toggle("off", !prefs.camOn);
-  cam.classList.toggle("rect", prefs.shape === "rect");
+  cam.classList.toggle("box", box);
   cam.classList.toggle("mirror", prefs.mirror);
 
   // Site mark: top-right (the site's own logo is top-left), top-left if the camera is there.
@@ -285,6 +287,20 @@ function pick(vx, vy, again) {
   return el;
 }
 
+/** A selector that finds the same place again after the site re-renders: from the nearest id, by tag position. */
+function cssPath(el) {
+  const parts = [];
+  for (let n = el; n && n.nodeType === 1 && n.tagName !== "HTML"; n = n.parentElement) {
+    if (n.id && !/^\d/.test(n.id)) {
+      parts.unshift(`#${CSS.escape(n.id)}`);
+      break;
+    }
+    const same = [...(n.parentElement?.children ?? [])].filter((c) => c.tagName === n.tagName);
+    parts.unshift(`${n.tagName.toLowerCase()}:nth-of-type(${same.indexOf(n) + 1})`);
+  }
+  return parts.join(" > ");
+}
+
 ink.addEventListener("pointerdown", (e) => {
   if (tool === "browse") return;
   e.preventDefault();
@@ -312,7 +328,7 @@ ink.addEventListener("pointerup", (e) => {
     // A click: that row or card. Clicking inside the same one again takes its parent.
     const el = pick(vx, vy, true);
     if (!el) return;
-    if (d.kind === "spot") spot = { el };
+    if (d.kind === "spot") spot = { el, path: cssPath(el), rect: null };
     else {
       const r = el.getBoundingClientRect();
       zoomTo({ x: r.left, y: r.top, w: r.width, h: r.height });
@@ -446,11 +462,19 @@ function render(now) {
   if (spot) {
     let r = spot.rect;
     if (spot.el) {
-      if (!spot.el.isConnected) spot = null;
-      else {
-        const b = spot.el.getBoundingClientRect();
-        r = { x: b.left + sx, y: b.top + sy, w: b.width, h: b.height };
+      // The site re-renders its cards on a timer, swapping the picked row for a new one
+      // (the old node can stay in the document, hidden, at 0x0). Find the same spot in the
+      // new markup; failing that, hold the last good position.
+      const shown = (el) => el?.isConnected && el.getBoundingClientRect().width > 0;
+      if (!shown(spot.el)) {
+        const again = spot.path && win()?.document.querySelector(spot.path);
+        if (shown(again)) spot.el = again;
       }
+      if (shown(spot.el)) {
+        const b = spot.el.getBoundingClientRect();
+        spot.rect = { x: b.left + sx, y: b.top + sy, w: b.width, h: b.height };
+      }
+      r = spot.rect;
     }
     if (r) {
       const pad = 6 * u;
@@ -847,7 +871,7 @@ function paintRail() {
   document.querySelectorAll("#aspectSeg button").forEach((b) => b.classList.toggle("on", b.dataset.aspect === prefs.aspect));
   document.querySelectorAll("#cornerSeg button").forEach((b) => b.classList.toggle("on", !prefs.camFree && b.dataset.corner === prefs.corner));
   document.querySelectorAll("#sizeSeg button").forEach((b) => b.classList.toggle("on", Number(b.dataset.size) === prefs.camSize));
-  document.querySelectorAll("#shapeSeg button").forEach((b) => b.classList.toggle("on", b.dataset.shape === prefs.shape));
+  document.querySelectorAll("#shapeSeg button").forEach((b) => b.classList.toggle("on", b.dataset.shape === prefs.camShape));
   document.querySelectorAll("#tones button").forEach((b, i) => b.classList.toggle("on", i === prefs.tone % TONES.length));
   $("siteWidth").value = prefs.siteWidth[prefs.aspect];
   $("siteWidthOut").textContent = `${prefs.siteWidth[prefs.aspect]}px`;
@@ -872,6 +896,7 @@ document.querySelectorAll("#aspectSeg button").forEach(
   (b) =>
     (b.onclick = () => {
       prefs.aspect = b.dataset.aspect;
+      strokes.length = 0; // the site reflows, so drawn marks would land on the wrong things
       save();
       paintRail();
       layout();
@@ -886,10 +911,11 @@ document.querySelectorAll("#cornerSeg button").forEach(
     }),
 );
 document.querySelectorAll("#sizeSeg button").forEach((b) => (b.onclick = () => setPref("camSize", Number(b.dataset.size))));
-document.querySelectorAll("#shapeSeg button").forEach((b) => (b.onclick = () => setPref("shape", b.dataset.shape)));
+document.querySelectorAll("#shapeSeg button").forEach((b) => (b.onclick = () => setPref("camShape", b.dataset.shape)));
 document.querySelectorAll("#quick button").forEach((b) => (b.onclick = () => go(b.dataset.go)));
 $("siteWidth").oninput = (e) => {
   prefs.siteWidth[prefs.aspect] = Number(e.target.value);
+  strokes.length = 0;
   save();
   paintRail();
   layout();
