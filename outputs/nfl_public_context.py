@@ -174,6 +174,19 @@ def team_form(board: dict) -> dict[str, dict]:
     return out
 
 
+def _with_packages(scheme: dict[str, dict], packages: dict[str, dict]) -> dict[str, dict]:
+    """Add participation-charted personnel packages to the combined scheme."""
+    for team, entry in scheme.items():
+        extra = packages.get(team) or {}
+        for phase in ("defense", "offense"):
+            if extra.get(phase):
+                entry.setdefault(phase, {})["package"] = extra[phase]
+                ranks = ((extra.get("league_frequency_ranks") or {}).get(phase) or {}).get("package")
+                if ranks:
+                    entry.setdefault("league_frequency_ranks", {}).setdefault(phase, {})["package"] = ranks
+    return scheme
+
+
 def team_scheme(board: dict) -> dict[str, dict]:
     out: dict[str, dict] = {}
     for row in board.get("scheme_profiles") or []:
@@ -913,7 +926,8 @@ def build(board: dict | None = None, rooms: dict | None = None,
     players = merge_quarterbacks(key_players(board), rooms)
     return {
         "form": team_form(board),
-        "scheme": team_scheme(board),
+        "scheme": _with_packages(team_scheme(board),
+                                 _canon_keys(advanced_context.get("packages_prior"))),
         "players": players,
         "lineups": attach_known_headshots(lineups, players),
         "player_coverage": player_coverage(scheme_board),

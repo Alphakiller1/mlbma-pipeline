@@ -98,6 +98,41 @@ def coverage_table(names: dict[str, str]) -> dict[str, dict[str, float]]:
     return out if len(out) >= 30 else {}
 
 
+TENDENCIES_URL = "https://www.sharpfootballanalysis.com/stats-nfl/nfl-defensive-tendencies/"
+
+
+def sub_package_table(names: dict[str, str]) -> dict[str, float]:
+    """Each defense's sub-package (nickel and dime) rate, 0-1."""
+    raw = _get(TENDENCIES_URL)
+    if not raw:
+        return {}
+    page = raw.decode("utf-8", errors="ignore")
+    start = page.find('id="table_1"')
+    if start < 0:
+        return {}
+    body = page[start:page.find("</table>", start)]
+    heads = [html.unescape(re.sub(r"<[^>]+>", "", h)).strip().lower()
+             for h in re.findall(r"<th[^>]*>(.*?)</th>", body, re.S)]
+    if heads[:1] != ["team"] or "sub package rate" not in heads:
+        print("  WARNING: Sharp defensive tendencies table changed shape; skipped")
+        return {}
+    col = heads.index("sub package rate")
+    code_of = {full.lower(): code for code, full in names.items()}
+    out: dict[str, float] = {}
+    for row in re.findall(r"<tr[^>]*>(.*?)</tr>", body, re.S):
+        cells = [html.unescape(re.sub(r"<[^>]+>", "", c)).strip()
+                 for c in re.findall(r"<td[^>]*>(.*?)</td>", row, re.S)]
+        if len(cells) != len(heads) or not code_of.get(cells[0].lower()):
+            continue
+        try:
+            value = float(cells[col]) / 100
+        except ValueError:
+            continue
+        if 0 <= value <= 1:
+            out[_code(code_of[cells[0].lower()])] = round(value, 4)
+    return out if len(out) >= 30 else {}
+
+
 def _unit_values(unit: dict) -> tuple[dict, dict]:
     """(coverage rates, EPA responses) from one matchup unit's current-season values."""
     metrics = (unit or {}).get("m") or {}
@@ -197,6 +232,8 @@ def current_season(season: int) -> dict[str, dict]:
     # The published Coverage Schemes table is the defense's own usage.
     for code, rates in coverage_table(names).items():
         out[code]["defense"]["coverage"] = rates
+    for code, rate in sub_package_table(names).items():
+        out[code]["defense"]["package"] = {"sub_package_rate": rate}
     for phase, by_team in _personnel(season, matchup.get("schedule") or []).items():
         for code, rates in by_team.items():
             if rates:
