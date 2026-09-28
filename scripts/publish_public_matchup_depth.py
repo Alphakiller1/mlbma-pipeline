@@ -16,7 +16,6 @@ bullpen_board.json
     those lines against:
       relievers   every qualified reliever, per split, per rate
       units       the thirty pens as rostered now, per split, per rate
-      pen_pitches the thirty pens' run value per 100, per pitch type
     and the FIP constant for the season, so a FIP the page computes from a
     reliever's counting stats sits on the same scale as the league's.
 
@@ -38,7 +37,6 @@ PUBLIC = ROOT / "data" / "public"
 
 BATTER_SOURCE = "batter_pitch_types.csv"
 RELIEVER_SOURCE = "reliever_splits.csv"
-RUN_VALUE_SOURCE = "pitch_run_value.csv"
 
 # A hitter joins a pitch type's pool at this many plate appearances ending on it.
 # Below it his line is still published and still placed against the pool, so no
@@ -54,7 +52,6 @@ ROTATION_START_SHARE = 0.4
 # floor) and a split pool at 20 batters faced in that split.
 MIN_GAMES = 10
 MIN_SPLIT_BF = 20
-MIN_PEN_PITCHES = 100
 
 # FIP is on every split because it is built from counts every split carries;
 # ERA only where the Stats API publishes earned runs.
@@ -66,13 +63,6 @@ SPLIT_METRICS = {
     "vr": ("fip", "whip", "k_pct", "bb_pct", "hr9", "ops"),
     "lc": ("fip", "whip", "k_pct", "bb_pct", "hr9", "ops"),
     "risp": ("fip", "whip", "k_pct", "bb_pct", "hr9", "ops"),
-}
-# The page's own pitch families (dashboard/public_game_detail.js PITCH_FAMILY).
-PITCH_FAMILY = {
-    "FF": "heat", "FA": "heat", "FT": "heat", "SI": "heat", "FC": "heat",
-    "SL": "break", "ST": "break", "CU": "break", "KC": "break", "SV": "break",
-    "SC": "break", "CS": "break",
-    "CH": "offspeed", "FS": "offspeed", "FO": "offspeed", "EP": "offspeed",
 }
 COUNTS = ("outs", "bf", "ab", "h", "bb", "hbp", "so", "hr", "tb", "sf", "er")
 # The Stats API publishes earned runs on the season line and the home / road
@@ -239,43 +229,10 @@ def bullpen_board(data_dir: Path) -> dict | None:
     if len(units["season"].get("era") or []) < 30:
         return None
 
-    # Run value per 100 for each pen as rostered now, per pitch type, from the
-    # same Savant pitcher board the arsenal panel reads.
-    pen_pitches: dict[str, list[float]] = {}
-    pen_families: dict[str, list[float]] = {}
-    rv_rows = read(data_dir / RUN_VALUE_SOURCE)
-    if rv_rows:
-        team_of = {pid: row["team_id"] for pid, row in season.items() if pid in relief}
-        sums: dict[tuple[str, str], list[float]] = defaultdict(lambda: [0.0, 0.0])
-        for row in rv_rows:
-            pid = str(row.get("player_id") or "")
-            code = str(row.get("pitch_type") or "").upper()
-            rv, thrown = num(row.get("run_value")), num(row.get("pitches"))
-            if pid not in team_of or not code or rv is None or not thrown:
-                continue
-            cell = sums[(team_of[pid], code)]
-            cell[0] += rv
-            cell[1] += thrown
-        grouped: dict[str, list[float]] = defaultdict(list)
-        families: dict[str, list[float]] = defaultdict(list)
-        for (_, code), (rv, thrown) in sums.items():
-            if thrown >= MIN_PEN_PITCHES:
-                grouped[code].append(round(rv / thrown * 100, 2))
-                if code in PITCH_FAMILY:
-                    families[PITCH_FAMILY[code]].append(round(rv / thrown * 100, 2))
-        pen_pitches = {code: sorted(values) for code, values in grouped.items()
-                       if len(values) >= MIN_POOL}
-        # A forkball or a slurve is thrown by too few pens to rank on its own,
-        # so it is placed among every pen pitch of its family instead.
-        pen_families = {name: sorted(values) for name, values in families.items()
-                        if len(values) >= MIN_POOL}
-
     return {
         "fip_constant": round(fip_constant, 3) if fip_constant is not None else None,
         "relievers": relievers,
         "units": units,
-        "pen_pitches": pen_pitches,
-        "pen_families": pen_families,
     }
 
 
@@ -329,6 +286,58 @@ def team_index_splits(data_dir: Path) -> tuple[dict, dict]:
     return teams, fresh
 
 
+# ---------------------------------------------------------------- runs by hand
+
+GAMES_SOURCE = "team_game_starters.csv"
+# The same windows as the team-context sparkline: a club's last N games.
+RUN_WINDOWS = (("ytd", None), ("l30", 30), ("l14", 14), ("l7", 7))
+VENUES = ("all", "home", "away")
+HANDS = (("any", None), ("vs_rhp", "R"), ("vs_lhp", "L"))
+
+
+def team_runs_by_hand(data_dir: Path) -> dict:
+    """Runs scored and allowed per game, by the hand of the pitcher who
+    started against the club, over four windows and three venues, each rate
+    ranked among the clubs with a game in that same cell."""
+    rows = read(data_dir / GAMES_SOURCE)
+    if len(rows) < 2000:
+        return {}
+    by_team: dict[str, list[dict]] = defaultdict(list)
+    for row in rows:
+        by_team[str(row["team_id"])].append(row)
+    cells: dict[str, dict] = {}
+    for team, games in by_team.items():
+        games.sort(key=lambda g: (g["date"], g["game_pk"]))
+        for window, size in RUN_WINDOWS:
+            span = games if size is None else games[-size:]
+            for venue in VENUES:
+                pool = [g for g in span if venue == "all" or (g["home"] == "1") == (venue == "home")]
+                for hand_key, hand in HANDS:
+                    picked = [g for g in pool if hand is None or g["opp_starter_hand"] == hand]
+                    if not picked:
+                        continue
+                    n = len(picked)
+                    wins = sum(1 for g in picked if g["won"] == "1")
+                    cells.setdefault(team, {}).setdefault(window, {}).setdefault(venue, {})[hand_key] = {
+                        "games": n, "wins": wins, "losses": n - wins,
+                        "runs_per_game": sum(int(float(g["runs"] or 0)) for g in picked) / n,
+                        "allowed_per_game": sum(int(float(g["allowed"] or 0)) for g in picked) / n,
+                    }
+    # Rank each rate among the clubs holding that same cell.
+    for window, _ in RUN_WINDOWS:
+        for venue in VENUES:
+            for hand_key, _ in HANDS:
+                held = [(team, data[window][venue][hand_key]) for team, data in cells.items()
+                        if hand_key in data.get(window, {}).get(venue, {})]
+                for key, higher in (("runs_per_game", True), ("allowed_per_game", False)):
+                    values = [cell[key] for _, cell in held]
+                    for _, cell in held:
+                        v = cell[key]
+                        ahead = sum(1 for o in values if (o > v if higher else o < v))
+                        cell[key] = {"value": round(v, 2), "rank": ahead + 1, "of": len(values)}
+    return cells
+
+
 def write(name: str, payload: dict) -> None:
     dest = PUBLIC / name
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -367,11 +376,23 @@ def main(argv: list[str]) -> int:
         })
         print(f"  wrote data/public/bullpen_board.json "
               f"({len(board['relievers']['season']['era'])} relievers, "
-              f"{len(board['units']['season']['era'])} pens, "
-              f"{len(board['pen_pitches'])} pen pitch types)")
+              f"{len(board['units']['season']['era'])} pens)")
         written += 1
     else:
         print(f"  skip bullpen board: no usable {RELIEVER_SOURCE} under {data_dir}")
+
+    runs = team_runs_by_hand(data_dir)
+    if runs:
+        write("team_runs_by_hand.json", {
+            "schema": "chase-public-team-runs-by-hand/1",
+            "sport": "mlb",
+            "generated_at_utc": now,
+            "through": max(r["date"] for r in read(data_dir / GAMES_SOURCE)),
+            "teams": runs,
+        })
+        print(f"  wrote data/public/team_runs_by_hand.json ({len(runs)} clubs)")
+    else:
+        print(f"  skip runs by hand: no usable {GAMES_SOURCE} under {data_dir}")
 
     teams, fresh = team_index_splits(data_dir)
     if teams:

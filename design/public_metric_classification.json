@@ -495,7 +495,8 @@
     "units",
     "pen_pitches",
     "pen_families",
-    "hard_hit_percent"
+    "hard_hit_percent",
+    "any"
   ],
   "derived_descriptive": [
     "depth_rank",

@@ -5565,3 +5565,37 @@ body[data-sport="nfl"] .ca-detail-nav {
   color: var(--text-secondary);
 }
 .ca-index-table td.num { white-space: nowrap; }
+
+/* Player tables line up across both clubs (2026-09-28). With automatic
+   layout each table sized its columns to its own names and values, so the
+   away and home tables stacked one above the other landed at different x.
+   Fixed layout with set tracks puts every column in the same place in both. */
+.ca-pitch-matchup-table,
+.ca-bvp-table,
+.ca-relief-table { table-layout: fixed; }
+.ca-pitch-matchup-table th:nth-child(1) { width: 2.5rem; }
+.ca-pitch-matchup-table th:nth-child(2) { width: 13rem; }
+.ca-pitch-matchup-table th:nth-child(3) { width: 3.5rem; }
+.ca-pitch-matchup-table th.ca-pm-pitch { width: 7rem; }
+.ca-bvp-table th:nth-child(1) { width: 13rem; }
+.ca-bvp-table th:nth-child(2) { width: 3.5rem; }
+.ca-bvp-table th:nth-child(n+3):nth-child(-n+8) { width: 3.5rem; }
+.ca-bvp-table th:nth-child(n+9):nth-child(-n+12) { width: 5rem; }
+.ca-bvp-table th:nth-child(13) { width: 7rem; }
+.ca-relief-table th:nth-child(1) { width: 15rem; }
+.ca-relief-table th:nth-child(2) { width: 2.5rem; }
+.ca-relief-table th:nth-child(3) { width: 3rem; }
+.ca-relief-table th:nth-child(4) { width: 4rem; }
+.ca-pitch-matchup-table td.ca-lineup-name,
+.ca-bvp-table td.ca-lineup-name,
+.ca-relief-table td.ca-lineup-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The last column takes the slack, so the pitch tracks keep their width
+   whether the starter throws four pitches or five. */
+.ca-pitch-matchup-table th:last-child { width: auto; }
+.ca-bvp-table th:last-child { width: auto; }
+
+/* Runs versus starter hand and the head-to-head table (2026-09-28). */
+.ca-runs-hand-controls { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.ca-runs-hand-table td.num,
+.ca-h2h-table td.num { white-space: nowrap; }
+.ca-h2h-table { margin-bottom: var(--space-3); }

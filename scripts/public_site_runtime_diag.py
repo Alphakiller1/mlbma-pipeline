@@ -229,8 +229,16 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             pass
         check("MLB reliever table renders for both clubs",
               page.locator("#bullpens .ca-relief-table").count() == 2)
-        check("MLB bullpen mix renders for both clubs",
-              page.locator("#bullpens .ca-arsenal-table").count() == 2)
+        check("MLB bullpen section carries no pen pitch mix",
+              page.locator("#bullpens .ca-arsenal-table").count() == 0)
+        try:
+            page.wait_for_selector("#runs-hand .ca-runs-hand-table", timeout=timeout_ms)
+        except Exception:
+            pass
+        check("MLB runs by starter hand read for both clubs with window and venue filters",
+              page.locator("#runs-hand .ca-form-panel").count() == 2
+              and page.locator("#runs-hand [data-runs-pick]").count() == 7
+              and page.locator("#runs-hand [data-runs-view]:not([hidden])").count() == 2)
         check("MLB batter vs pitcher reads for both clubs",
               page.locator("#bvp .ca-bvp").count() == 2)
         check("MLB club splits carry RISP, two-out RISP and late & close",
@@ -241,18 +249,25 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("#pitch-matchup .ca-pitch-matchup-table").count() % 3 == 0,
               f"tables={page.locator('#pitch-matchup .ca-pitch-matchup-table').count()}")
         depth = page.evaluate("""() => {
-          const tds = [...document.querySelectorAll('#pitch-matchup td, #bvp td, #club-splits .ca-index-table td, '
-            + '#bullpens .ca-relief-table td, '
-            + '#bullpens .ca-bullpen-split-table td, #bullpens .ca-arsenal-table td')].filter(td => td.offsetParent);
+          const vis = sel => [...document.querySelectorAll(sel)].filter(td => td.offsetParent);
+          const graded = td => /(^|\\s)c-(elite|good|mid|weak|poor)(\\s|$)/.test(td.className);
+          // Owner rule: MLB ranks print on team stats and pitch-mix stats only.
+          const ranked = vis('#pitch-matchup td, #club-splits .ca-index-table td, '
+            + '#bullpens .ca-bullpen-split-table td');
+          const player = vis('#bvp td, #bullpens .ca-relief-table td');
           return {
-            dashes: tds.filter(td => td.innerText.trim() === '—').length,
-            unpilled: tds.filter(td => /(^|\\s)c-(elite|good|mid|weak|poor)(\\s|$)/.test(td.className)
-              && !td.querySelector('.ca-rank')).length
+            dashes: ranked.concat(player).filter(td => td.innerText.trim() === '—').length,
+            unpilled: ranked.filter(td => graded(td) && !td.querySelector('.ca-rank')).length,
+            playerRanks: player.filter(td => td.querySelector('.ca-rank')).length,
+            playerGraded: player.filter(graded).length
           }; }""")
         check("MLB depth tables have no empty (dash) cells", depth["dashes"] == 0,
               f"{depth['dashes']} dash cells")
         check("MLB depth tables pill every graded number", depth["unpilled"] == 0,
               f"{depth['unpilled']} without a pill")
+        check("MLB player stats (BvP, relievers) are graded by colour with no rank numbers",
+              depth["playerRanks"] == 0 and depth["playerGraded"] > 0,
+              f"{depth['playerRanks']} ranked, {depth['playerGraded']} graded")
         check("MLB bullpen workload remains available",
               page.locator("#bullpens .ca-pc-table").count() == 2)
         mlb_overflow = page.evaluate(
@@ -296,11 +311,11 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # profile at a glance. What replaced the board is checked instead.
         check("MLB form section no longer carries the full league board",
               page.locator("#form .ca-league-table").count() == 0)
-        mirror_rows = page.locator("#form .ca-mirror__row").count()
+        mirror_rows = page.locator("#form [data-form-view='season'] .ca-mirror__row").count()
         check("MLB mirror grades both clubs row by row", mirror_rows >= 8,
               f"rows={mirror_rows}")
         undecided = page.locator(
-            "#form .ca-mirror__row:not(.is-away):not(.is-home)").count()
+            "#form [data-form-view='season'] .ca-mirror__row:not(.is-away):not(.is-home)").count()
         check("MLB mirror gives every row a side", undecided == 0,
               f"undecided={undecided}")
         webs = page.locator("#radar .ca-radar svg").count()
@@ -308,12 +323,23 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("MLB radar draws both webs", webs == 2, f"webs={webs}")
         check("MLB radar overlays both clubs on each web", shapes == 4,
               f"shapes={shapes}")
-        form_meters = page.locator("#form .ca-segment-meter")
+        form_meters = page.locator("#form [data-form-view='season'] .ca-segment-meter")
         meter_count = form_meters.count()
-        meter_cells = page.locator("#form .ca-segment-meter > i").count()
+        meter_cells = page.locator("#form [data-form-view='season'] .ca-segment-meter > i").count()
         check("MLB form uses ten-cell grade meters",
               meter_count == 20 and meter_cells == meter_count * 10,
               f"{meter_cells} cells across {meter_count} meters")
+        # Split filters: every split view is a graded mirror of both clubs.
+        page.locator("#form [data-form-split='vr']").click()
+        try:
+            page.wait_for_selector("#form [data-form-view='vr']:not([hidden]) .ca-mirror__row",
+                                   timeout=timeout_ms)
+        except Exception:
+            pass
+        check("MLB form filters read both clubs on a split",
+              page.locator("#form [data-form-view='vr']:not([hidden]) .ca-mirror__row").count() >= 8,
+              str(page.locator("#form [data-form-split]").count()) + " filters")
+        page.locator("#form [data-form-split='season']").click()
         check("MLB form meters do not use club-brand grading",
               page.locator("#form [data-club]").count() == 0)
         mlb_detail_text = page.locator("main").inner_text()
