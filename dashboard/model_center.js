@@ -370,6 +370,90 @@
     }).join('');
   }
 
+  /* ---- MLB starter prop projections ----------------------------------
+     Each probable starter's simulated distribution per prop: the projection,
+     its 10th-90th percentile band drawn on a scale, the median, and the book's
+     line where one is posted, with the model's over probability against the
+     market's no-vig one. Without a posted line the nearest half-run line to the
+     projection is priced from the same simulated distribution. */
+  var MLB_PROPS = [
+    ['K', 'Strikeouts', 12], ['Outs', 'Outs Recorded', 27], ['H', 'Hits Allowed', 12],
+    ['BB', 'Walks', 6], ['ER', 'Earned Runs', 8]
+  ];
+  // Last regular-season day, for the "Playoffs" label.
+  var MLB_REGULAR_SEASON_END = { 2026: '2026-09-28' };
+
+  function overProbability(dist, line) {
+    var pmf = dist && dist.pmf;
+    if (!pmf) return null;
+    var p = 0;
+    Object.keys(pmf).forEach(function (k) { if (Number(k) > line) p += Number(pmf[k]); });
+    return p;
+  }
+
+  function pctText(v) { return v == null ? '' : Math.round(v * 100) + '%'; }
+
+  function propRow(stat, dist, lines) {
+    var scale = stat[2];
+    var at = function (v) { return Math.max(0, Math.min(100, (Number(v) / scale) * 100)); };
+    var posted = (lines || []).filter(function (l) {
+      return l.prop === stat[0] && String(l.side || '').toLowerCase() === 'over' && l.line != null;
+    })[0];
+    var line = posted ? Number(posted.line) : Math.floor(Number(dist.mean)) + 0.5;
+    var modelOver = posted && posted.model_probability != null
+      ? Number(posted.model_probability) : overProbability(dist, line);
+    var label = stat[1] + ': projected ' + fixed(dist.mean, 1) + ', middle 80% ' + dist.p10 +
+      ' to ' + dist.p90 + ', line ' + line;
+    var bar = '<div class="mc-prop__bar" role="img" aria-label="' + esc(label) + '">' +
+      '<span class="mc-prop__band" style="left:' + at(dist.p10).toFixed(1) + '%;width:' +
+      Math.max(1, at(dist.p90) - at(dist.p10)).toFixed(1) + '%"></span>' +
+      '<span class="mc-prop__median" style="left:' + at(dist.p50).toFixed(1) + '%"></span>' +
+      '<span class="mc-prop__line' + (posted ? '' : ' is-model') + '" style="left:' +
+      at(line).toFixed(1) + '%"></span></div>';
+    var tone = modelOver == null ? '' : (modelOver >= 0.55 ? ' is-over' : (modelOver <= 0.45 ? ' is-under' : ''));
+    var BOOKS = { draftkings: 'DraftKings', fanduel: 'FanDuel', betmgm: 'BetMGM',
+      bovada: 'Bovada', caesars: 'Caesars', prizepicks: 'PrizePicks', underdog: 'Underdog',
+      sleeper: 'Sleeper', espnbet: 'ESPN BET', betrivers: 'BetRivers' };
+    var bookKey = String((posted && posted.best_book) || '').toLowerCase();
+    var source = posted ? (BOOKS[bookKey] || posted.best_book || 'Book') : 'Model';
+    return '<tr><th scope="row">' + esc(stat[1]) + '</th>' +
+      '<td class="mc-prop__proj"><strong>' + esc(fixed(dist.mean, 1)) + '</strong>' +
+      '<small>' + esc(dist.p10 + '–' + dist.p90) + '</small></td>' +
+      '<td class="mc-prop__viz">' + bar + '</td>' +
+      '<td class="mc-prop__price' + tone + '"><span>' + esc(source + ' O ' + line) + '</span>' +
+      '<strong>' + esc(pctText(modelOver)) + '</strong>' +
+      (posted && posted.market_probability != null
+        ? '<small>Mkt ' + esc(pctText(Number(posted.market_probability))) + '</small>' : '') +
+      '</td></tr>';
+  }
+
+  function propsSection(sport, board, mapped) {
+    var rows = (mapped && mapped.player_projections) || (board && board.player_projections) || [];
+    rows = rows.filter(function (p) { return p && p.stats; });
+    if (sport !== 'mlb' || !rows.length) return '';
+    var slate = String((board && board.slate_date) || '');
+    var end = MLB_REGULAR_SEASON_END[Number(slate.slice(0, 4))];
+    var eyebrow = end && slate > end ? 'MLB Playoffs' : 'MLB';
+    var cards = rows.map(function (p) {
+      var body = MLB_PROPS.filter(function (stat) { return p.stats[stat[0]]; })
+        .map(function (stat) { return propRow(stat, p.stats[stat[0]], p.lines); }).join('');
+      var meta = [p.team + ' vs ' + p.opponent, p.hand ? p.hand + 'HP' : '',
+        p.expected_ip != null ? fixed(p.expected_ip, 1) + ' IP projected' : '',
+        p.trust === 'thin' ? 'Thin sample' : ''].filter(Boolean).join(' · ');
+      return '<article class="mc-prop">' +
+        '<header class="mc-prop__head">' + chip(sport, p.team) +
+        '<div><h4>' + esc(p.player_name) + '</h4><p>' + esc(meta) + '</p></div></header>' +
+        '<table class="mc-prop__table"><thead><tr><th>Prop</th><th>Proj · 80%</th>' +
+        '<th>Distribution</th><th>Over</th></tr></thead><tbody>' + body + '</tbody></table>' +
+        '</article>';
+    }).join('');
+    return '<section class="mc-props" aria-labelledby="mcPropsTitle">' +
+      '<header class="mc-board__head"><div><p class="mc-board__eyebrow">' + esc(eyebrow) + '</p>' +
+      '<h2 class="mc-board__title" id="mcPropsTitle">Starter Prop Projections</h2></div>' +
+      '<div class="mc-board__status"><strong>' + rows.length + '</strong><span>starters projected</span></div>' +
+      '</header><div class="mc-grid mc-props__grid">' + cards + '</div></section>';
+  }
+
   function renderBoard(sport, payload, options) {
     var host = $('mcBoard');
     if (!host) return;
@@ -424,7 +508,7 @@
       '<h2 class="mc-board__title">' + esc(title) + '</h2></div>' +
       '<div class="mc-board__status"><strong>' + projected + '/' + games.length + '</strong>' +
       '<span>scores published</span></div></header>' +
-      body + '</div>';
+      body + propsSection(sport, board, mapped) + '</div>';
     host.innerHTML = html;
   }
 
