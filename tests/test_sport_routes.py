@@ -598,6 +598,29 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("tr.is-matchup", css)
         self.assertIn("min-width: 600px", css)
 
+    def test_mlb_lineups_read_the_published_person_id(self):
+        """The slate names a hitter as person_id / name. The page read pl.id and
+        pl.fullName, so every lineup row on the live site was blank."""
+        detail = (ROOT / "dashboard" / "public_game_detail.js").read_text(encoding="utf-8")
+        self.assertIn("pl.id || pl.person_id", detail)
+        self.assertIn("pl.fullName || pl.name", detail)
+        self.assertNotIn("people[pl.id]", detail)
+        slate = json.loads((ROOT / "data" / "public" / "mlb" / "slate.json").read_text(encoding="utf-8"))
+        for game in slate.get("games", []):
+            for row in game.get("away_lineup") or []:
+                self.assertTrue(row.get("id") or row.get("person_id"), row)
+
+    def test_mlb_playoff_depth_sections(self):
+        detail = (ROOT / "dashboard" / "public_game_detail.js").read_text(encoding="utf-8")
+        for text in ("section('pitch-matchup'", "section('series'", "function reliefArmsPanel",
+                     "function penMixPanel", "loadPeople(ids, 'pitching', season, 'lc')",
+                     "loadPeople(ids, 'pitching', season, 'risp')",
+                     "hydrate=seriesStatus", "/data/public/batter_pitch_types.json",
+                     "/data/public/bullpen_board.json", "section('bvp'", "type=[vsPlayer]",
+                     "gameType=[R,F,D,L,W]", "BVP_PA_VARIANCE", "sitCodes=h,a,vl,vr,sp,rp,risp,risp2,lc",
+                     "/data/public/team_index_splits.json", "function indexSplitTable"):
+            self.assertIn(text, detail)
+
     def test_no_formatclock_in_nav(self):
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
         self.assertNotIn("function formatClock", nav)
