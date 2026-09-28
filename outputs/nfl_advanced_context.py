@@ -473,10 +473,10 @@ def _team_line(frame, season: int, pfr_rushing=None) -> dict[str, dict]:
         }
         if pfr_rushing is not None:
             off_ybc = _pfr_contact_entry(
-                pfr_rushing[pfr_rushing["team"].eq(team)],
+                pfr_rushing[pfr_rushing["team"].eq(_team(team))],
                 "rushing_yards_before_contact", "RB Yards Before Contact / Carry", "high")
             def_ybc = _pfr_contact_entry(
-                pfr_rushing[pfr_rushing["opponent"].eq(team)],
+                pfr_rushing[pfr_rushing["opponent"].eq(_team(team))],
                 "rushing_yards_before_contact", "RB Yards Before Contact Allowed / Carry", "low")
             if off_ybc:
                 off["yards_before_contact"] = off_ybc
@@ -503,7 +503,7 @@ def _team_line(frame, season: int, pfr_rushing=None) -> dict[str, dict]:
                 continue
             better = rows[0][1]["better"]
             rows.sort(key=lambda item: item[1]["value"], reverse=(better == "high"))
-            for place, (_team, entry) in enumerate(rows, 1):
+            for place, (_club, entry) in enumerate(rows, 1):
                 entry.update({"rank": place, "of": len(rows)})
     return out
 
@@ -705,42 +705,23 @@ def pfr_coverage(season: int) -> dict[str, list[dict]]:
     return out
 
 
-def team_scheme_current(season: int) -> dict[str, dict]:
-    """Current-season scheme for every club, ranked and baselined across the league."""
-    frame = _scheme_frame(season)
-    if frame is None or frame.empty:
-        return {}
+def _scheme_units(frame, seasons: list[int]) -> dict[str, dict]:
+    """Each club's offense and defense scheme from one FTN + play-by-play frame."""
     out: dict[str, dict] = {}
+    if frame is None or frame.empty:
+        return out
     for phase, col in (("offense", "posteam"), ("defense", "defteam")):
         for team, rows in frame.groupby(col, dropna=True):
             club = _team(team)
-            entry = out.setdefault(club, {"team": club, "source_seasons": [season],
+            entry = out.setdefault(club, {"team": club, "source_seasons": list(seasons),
                                           "participation_source_seasons": [],
                                           "offense_plays": 0, "defense_plays": 0})
             entry[phase] = _unit_scheme(rows)
             entry[phase + "_plays"] = int(len(rows))
-    if len(out) < 30:
-        return {}
-    # Coverage, man/zone and personnel for the current season come from Sharp
-    # Football Analysis charting (used with permission); see outputs/sharp_nfl.
-    sharp = sharp_nfl.current_season(season)
-    sharp.pop("_source", None)
-    for team, phases in sharp.items():
-        club = out.get(_team(team))
-        if not club:
-            continue
-        for phase, groups in phases.items():
-            if phase not in club:
-                continue
-            for group, values in groups.items():
-                club[phase].setdefault(group, {}).update(values)
-        if (phases.get("defense") or {}).get("coverage"):
-            club["participation_source_seasons"] = [season]
-    pressure = pfr_pressure(season)
-    for phase in ("offense", "defense"):
-        for team, rate in pressure[phase].items():
-            if team in out and phase in out[team]:
-                out[team][phase].setdefault("pressure", {})["pressure_rate"] = rate
+    return out if len(out) >= 30 else {}
+
+
+def _rank_scheme(out: dict[str, dict]) -> dict[str, dict]:
     # League places for every rate (1st = most often) and the league mean and
     # spread for every response, per phase, over the same clubs.
     for phase in ("offense", "defense"):
@@ -766,6 +747,52 @@ def team_scheme_current(season: int) -> dict[str, dict]:
                     "mean": round(mean, 4), "std": round(std, 4), "n": len(values)}
     return out
 
+
+
+def team_scheme_combined(season: int) -> dict[str, dict]:
+    """The prior and current seasons pooled play by play, ranked across the league.
+
+    The combined window's charting comes from the model board, which does not
+    carry every look (motion, screens, light boxes); this fills those from the
+    same FTN + play-by-play source the current window uses.
+    """
+    try:
+        import pandas as pd
+        frames = [f for f in (_scheme_frame(season - 1), _scheme_frame(season)) if f is not None]
+        if not frames:
+            return {}
+        return _rank_scheme(_scheme_units(pd.concat(frames, ignore_index=True), [season - 1, season]))
+    except Exception as exc:
+        print(f"  WARNING: NFL combined scheme fill unavailable ({exc})")
+        return {}
+
+
+def team_scheme_current(season: int) -> dict[str, dict]:
+    """Current-season scheme for every club, ranked and baselined across the league."""
+    out = _scheme_units(_scheme_frame(season), [season])
+    if not out:
+        return {}
+    # Coverage, man/zone and personnel for the current season come from Sharp
+    # Football Analysis charting (used with permission); see outputs/sharp_nfl.
+    sharp = sharp_nfl.current_season(season)
+    sharp.pop("_source", None)
+    for team, phases in sharp.items():
+        club = out.get(_team(team))
+        if not club:
+            continue
+        for phase, groups in phases.items():
+            if phase not in club:
+                continue
+            for group, values in groups.items():
+                club[phase].setdefault(group, {}).update(values)
+        if (phases.get("defense") or {}).get("coverage"):
+            club["participation_source_seasons"] = [season]
+    pressure = pfr_pressure(season)
+    for phase in ("offense", "defense"):
+        for team, rate in pressure[phase].items():
+            if team in out and phase in out[team]:
+                out[team][phase].setdefault("pressure", {})["pressure_rate"] = rate
+    return _rank_scheme(out)
 
 def _ranked_desc(pool: list[tuple[str, float]]) -> dict[str, int]:
     ordered = sorted(pool, key=lambda pair: pair[1], reverse=True)
@@ -841,10 +868,20 @@ def _credit_offense_coverage(profiles: list[dict], frame, season: int) -> None:
         mine = passer_db.get((profile.get("team"), profile.get("player_id")), 0)
         total = team_db.get(profile.get("team")) or 0
         looks = by_team.get(_team(profile.get("team")))
-        if not looks or not total or mine / total < SOLE_PASSER_SHARE:
+        if not looks or not total:
             continue
+        if mine and mine / total >= SOLE_PASSER_SHARE:
+            for look, stats in looks.items():
+                credited = {k: v for k, v in stats.items() if k != "offense_place"}
+                splits.setdefault(look, credited)
+            continue
+        # A quarterback sharing the job: his offense's figures, named as the
+        # offense's, placed among the 32 offenses.
         for look, stats in looks.items():
-            splits.setdefault(look, dict(stats))
+            row = {"dropbacks": stats["dropbacks"], "epa_per_dropback": stats["epa_per_dropback"]}
+            if stats.get("offense_place"):
+                row["league_ranks"] = {"epa_per_dropback": {"place": stats["offense_place"], "of": 32}}
+            splits.setdefault("team_" + look, row)
 
 
 def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
@@ -890,6 +927,7 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
         "player_scheme_profiles": profiles,
         "player_coverage_profiles": receivers,
         "team_scheme_current": team_scheme_current(season),
+        "team_scheme_combined": team_scheme_combined(season),
         "defenders_current": pfr_coverage(season),
         "run_game": nfl_run_game.build(current, prior, season, positions, names),
         "packages_prior": team_packages(prior),

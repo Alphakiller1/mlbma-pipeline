@@ -187,6 +187,37 @@ def _with_packages(scheme: dict[str, dict], packages: dict[str, dict]) -> dict[s
     return scheme
 
 
+def _fill_combined(scheme: dict[str, dict], fill: dict[str, dict]) -> dict[str, dict]:
+    """Fill looks the board does not chart from the pooled FTN + play-by-play scheme.
+
+    Only missing keys are added - the board's charting is never overwritten -
+    each with its league place and, for a response, the league mean and spread.
+    """
+    if not fill:
+        return scheme
+    for team, entry in scheme.items():
+        extra = fill.get(team) or {}
+        for phase in ("offense", "defense"):
+            for group, values in (extra.get(phase) or {}).items():
+                if not isinstance(values, dict):
+                    continue
+                target = entry.setdefault(phase, {}).setdefault(group, {})
+                for key, value in values.items():
+                    if key in target or value is None:
+                        continue
+                    target[key] = value
+                    place = ((((extra.get("league_frequency_ranks") or {}).get(phase) or {})
+                              .get(group) or {}).get(key))
+                    if place and group != "response":
+                        (entry.setdefault("league_frequency_ranks", {}).setdefault(phase, {})
+                         .setdefault(group, {}))[key] = place
+                    base = ((extra.get("league_response") or {}).get(phase) or {}).get(key)
+                    if group == "response" and base:
+                        league = entry.setdefault("league_response", {})
+                        league.setdefault(phase, {}).setdefault(key, base)
+    return scheme
+
+
 def team_scheme(board: dict) -> dict[str, dict]:
     out: dict[str, dict] = {}
     for row in board.get("scheme_profiles") or []:
@@ -431,6 +462,7 @@ PLAYER_SCHEME_SPLITS = {
     "clean", "stacked_box", "light_box", "left", "middle", "right",
     "gap_guard", "gap_tackle", "gap_end", "single_high", "two_high",
     "middle_field_closed", "middle_field_open", "base", "nickel", "dime",
+    "team_man", "team_zone",
 }
 PLAYER_SCHEME_FIELDS = {
     "QB": (
@@ -474,6 +506,9 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
                      if values.get(key) is not None}
             if not stats.get(volume):
                 continue
+            # An offense-level row carries its own league place (among offenses).
+            if look.startswith("team_") and isinstance(values.get("league_ranks"), dict):
+                stats["league_ranks"] = values["league_ranks"]
             splits.append({"look": look, **stats})
         if splits:
             published = {
@@ -512,6 +547,8 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
             season_floor = 100 if position == "QB" else 50
             all_floor = max(10 if position == "QB" else 5, min(season_floor, round(median / 2)))
             for look in looks:
+                if look.startswith("team_"):
+                    continue
                 minimum = all_floor if look == "all" else (10 if position == "QB" else 5)
                 for metric in metrics:
                     pool = []
@@ -524,13 +561,22 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
                     if len(pool) < 2:
                         continue
                     ranks = _ranked(pool, "high")
+                    values = [value for _, value in pool]
                     for profile in rows:
                         split = next((item for item in profile["splits"] if item["look"] == look), None)
                         identity = profile["player_id"] or profile["player_name"]
-                        if (profile["position"] == position and profile["source_season"] == season
-                                and split and identity in ranks):
-                            split.setdefault("league_ranks", {})[metric] = {
-                                "place": ranks[identity], "of": len(pool)}
+                        if not (profile["position"] == position and profile["source_season"] == season
+                                and split and split.get(metric) is not None):
+                            continue
+                        if identity in ranks:
+                            place = ranks[identity]
+                        elif split.get(volume, 0) > 0:
+                            # Under the floor: still graded (owner rule), placed
+                            # against the players above it.
+                            place = min(1 + sum(1 for v in values if v > float(split[metric])), len(values))
+                        else:
+                            continue
+                        split.setdefault("league_ranks", {})[metric] = {"place": place, "of": len(pool)}
     # Next Gen tracking, placed among the same position and season. RYOE is a
     # result (more is better); time to throw and eight-man boxes faced are how a
     # player operates, published as a frequency place (1st = most) that the page
@@ -554,12 +600,18 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
                 if len(pool) < 2:
                     continue
                 ranks = _ranked(pool, "high")
+                values = [value for _, value in pool]
                 for profile in rows:
                     identity = profile["player_id"] or profile["player_name"]
-                    if (profile["position"] == position and profile["source_season"] == season
-                            and identity in ranks):
-                        profile.setdefault("tracking_ranks", {})[metric] = {
-                            "place": ranks[identity], "of": len(pool)}
+                    tracked = (profile.get("tracking") or {}).get(metric)
+                    if not (profile["position"] == position and profile["source_season"] == season
+                            and tracked is not None):
+                        continue
+                    # Under the sample floor: still graded (owner rule), placed
+                    # against the players above it.
+                    place = ranks.get(identity) or min(
+                        1 + sum(1 for v in values if v > float(tracked)), len(values))
+                    profile.setdefault("tracking_ranks", {})[metric] = {"place": place, "of": len(pool)}
     return out
 
 
@@ -926,8 +978,9 @@ def build(board: dict | None = None, rooms: dict | None = None,
     players = merge_quarterbacks(key_players(board), rooms)
     return {
         "form": team_form(board),
-        "scheme": _with_packages(team_scheme(board),
-                                 _canon_keys(advanced_context.get("packages_prior"))),
+        "scheme": _fill_combined(
+            _with_packages(team_scheme(board), _canon_keys(advanced_context.get("packages_prior"))),
+            _canon_keys(advanced_context.get("team_scheme_combined"))),
         "players": players,
         "lineups": attach_known_headshots(lineups, players),
         "player_coverage": player_coverage(scheme_board),
