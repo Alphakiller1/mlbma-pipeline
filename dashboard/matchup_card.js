@@ -699,6 +699,12 @@
   function sameGame(left, right) {
     if (!left || !right) return false;
     if (left.game_pk && right.game_pk && String(left.game_pk) === String(right.game_pk)) return true;
+    // A club pair repeats on every day of a series. Two games on different
+    // days are never the same game, whatever clubs they share.
+    if (left.kickoff_utc && right.kickoff_utc &&
+        easternDateIso(new Date(left.kickoff_utc)) !== easternDateIso(new Date(right.kickoff_utc))) {
+      return false;
+    }
     return String(left.away || '').toUpperCase() === String(right.away || '').toUpperCase() &&
       String(left.home || '').toUpperCase() === String(right.home || '').toUpperCase();
   }
@@ -742,7 +748,27 @@
         };
       });
     }
-    var date = dateIso || query().get('date') || easternDateIso();
+    var explicit = dateIso || query().get('date');
+    return (explicit ? Promise.resolve(explicit) : nextMlbDate(easternDateIso()))
+      .then(function (date) { return loadMlbDay(date, publicRequest, baselines); });
+  }
+
+  /* The day the desk opens on: today when anything is scheduled, else the
+     next day with games. On an off day - the eve of the Wild Card Series,
+     the gaps between postseason rounds, the All-Star break - today's schedule
+     is empty and the desk used to fall back to the last published slate,
+     which painted the regular-season finale as today's games. */
+  function nextMlbDate(today) {
+    return loadJson('https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=' + today +
+      '&endDate=' + shiftIso(today, 7)).then(function (payload) {
+      var found = (payload.dates || []).filter(function (block) {
+        return block.date >= today && (block.games || []).length;
+      })[0];
+      return found ? found.date : today;
+    }).catch(function () { return today; });
+  }
+
+  function loadMlbDay(date, publicRequest, baselines) {
     var officialUrl = 'https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=' + encodeURIComponent(date) +
       // NOTE: probablePitcher cannot be hydrated with stats on this endpoint -
       // probablePitcher(stats(...)) returns identity only (verified 2026-09-10),
@@ -1073,7 +1099,10 @@
     host.__desk.dateIso = opts.dateIso || query().get('date') || easternDateIso();
     host.setAttribute('data-state', 'loading');
     host.innerHTML = '<div class="ca-loading-state" role="status">Loading ' + esc(opts.sport.toUpperCase()) + ' matchups…</div>';
-    return loadGames(opts.sport, opts.adapter, host.__desk.dateIso).then(function (result) {
+    // Only a date somebody chose is passed down; with none, the MLB loader
+    // opens on the next day with games rather than on an empty today.
+    return loadGames(opts.sport, opts.adapter,
+      opts.dateIso || query().get('date') || null).then(function (result) {
       host.__desk.games = result.games;
       host.__desk.dateIso = result.dateIso || host.__desk.dateIso;
       if (!host.__desk.embedded) updateStatus(opts.sport, result);

@@ -274,3 +274,49 @@ class MlbScheduleParityTests(unittest.TestCase):
         merged = merge_producers(official, curated)
         self.assertEqual(len(merged["games"]), 1)
         self.assertEqual(merged["games"][0]["away_bullpen"], "Two arms unavailable")
+
+
+class MlbOffDayLookaheadTests(unittest.TestCase):
+    """On an off day the publisher and the desk move to the next day with games."""
+
+    def setUp(self):
+        from outputs import publish_public_slate as publisher
+        self.publisher = publisher
+        self.real_fetch = publisher.fetch_mlb_schedule
+
+    def tearDown(self):
+        self.publisher.fetch_mlb_schedule = self.real_fetch
+
+    def schedule(self, games_by_day):
+        def fetch(day):
+            count = games_by_day.get(day, 0)
+            return {"dates": [{"date": day, "games": [{}] * count}] if count else []}
+        return fetch
+
+    def test_off_day_publishes_the_next_slate(self):
+        self.publisher.fetch_mlb_schedule = self.schedule({"2026-09-29": 4})
+        day, found = self.publisher.next_mlb_slate("2026-09-28")
+        self.assertEqual(day, "2026-09-29")
+        self.assertEqual(self.publisher._schedule_games(found), 4)
+
+    def test_a_day_with_games_stays_put(self):
+        self.publisher.fetch_mlb_schedule = self.schedule({"2026-09-28": 1, "2026-09-29": 4})
+        self.assertEqual(self.publisher.next_mlb_slate("2026-09-28")[0], "2026-09-28")
+
+    def test_unreachable_schedule_does_not_jump(self):
+        self.publisher.fetch_mlb_schedule = lambda day: None
+        self.assertEqual(self.publisher.next_mlb_slate("2026-09-28"), ("2026-09-28", None))
+
+    def test_curated_rows_from_another_day_are_dropped(self):
+        curated = {"games": [{"id": "2026-09-27-bos-nyy"}, {"id": "2026-09-29-bos-nyy"},
+                             {"id": "mlb-bos-nyy"}]}
+        kept = [g["id"] for g in self.publisher._for_day(curated, "2026-09-29")["games"]]
+        self.assertEqual(kept, ["2026-09-29-bos-nyy", "mlb-bos-nyy"])
+
+    def test_desk_opens_on_the_next_day_with_games(self):
+        card = (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8")
+        self.assertIn("function nextMlbDate(today)", card)
+        self.assertIn("opts.dateIso || query().get('date') || null", card)
+        # Series games share a club pair; different days are never one game.
+        self.assertIn("easternDateIso(new Date(left.kickoff_utc)) !== "
+                      "easternDateIso(new Date(right.kickoff_utc))", card)
