@@ -233,6 +233,48 @@ def fetch_mlb_schedule(date_iso: str) -> dict | None:
         return None
 
 
+# How far ahead an off day looks for the next slate. The longest gap in an
+# MLB calendar is the All-Star break (four days); a postseason round can wait
+# on its opponent a little longer.
+MLB_LOOKAHEAD_DAYS = 7
+
+
+def _schedule_games(schedule: dict | None) -> int:
+    return sum(len(block.get("games") or []) for block in ((schedule or {}).get("dates") or []))
+
+
+def next_mlb_slate(today: str) -> tuple[str, dict | None]:
+    """The day the desk should show: today when anything is scheduled, else
+    the next day with games.
+
+    On an off day - the day between the regular season and the Wild Card
+    Series, the gaps between postseason rounds, the All-Star break - today's
+    schedule is empty and the publisher used to keep the last slate on
+    screen, so the desk showed the regular-season finale on the eve of the
+    playoffs.
+    """
+    schedule = fetch_mlb_schedule(today)
+    if schedule is None or _schedule_games(schedule):
+        return today, schedule
+    start = datetime.fromisoformat(today).date()
+    for ahead in range(1, MLB_LOOKAHEAD_DAYS + 1):
+        day = (start + timedelta(days=ahead)).isoformat()
+        found = fetch_mlb_schedule(day)
+        if _schedule_games(found):
+            print(f"  mlb: no games on {today}; publishing the next slate, {day}")
+            return day, found
+    return today, schedule
+
+
+def _for_day(curated: dict, day: str) -> dict:
+    """Curated rows that belong to `day`. The CSVs behind them describe the
+    pipeline's own run date; merged by club pair onto another day's fixtures
+    they would paint one series game's starters and lineups onto the next."""
+    games = [g for g in curated.get("games") or []
+             if not str(g.get("id") or "").startswith("20") or str(g.get("id")).startswith(day)]
+    return {**curated, "games": games}
+
+
 MLB_PEOPLE = (
     "https://statsapi.mlb.com/api/v1/people?personIds={ids}"
     "&hydrate=stats(group=[pitching],type=[season],season={season})"
@@ -1025,9 +1067,8 @@ def write_if_better(sport: str, producer: dict, dest: Path) -> bool:
 def run(data_dir: Path | None = None) -> int:
     data_dir = Path(data_dir or DATA_DIR)
     ok = False
-    slate_date = datetime.now(ET).strftime("%Y-%m-%d")
-    curated = mlb_producer(data_dir)
-    schedule = fetch_mlb_schedule(slate_date)
+    slate_date, schedule = next_mlb_slate(datetime.now(ET).strftime("%Y-%m-%d"))
+    curated = _for_day(mlb_producer(data_dir), slate_date)
     if schedule:
         starter_ids = [
             ((node.get("probablePitcher") or {}).get("id"))
