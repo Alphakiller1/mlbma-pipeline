@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from bs4 import BeautifulSoup
 
-from outputs.publish_public_slate import mlb_producer_from_statsapi
+from outputs.publish_public_slate import (
+    _person_name_key,
+    add_rotowire_starter_ids,
+    mlb_producer_from_statsapi,
+)
 from scrapers.scrape_lineups import _parse_lineup_cards
 
 
@@ -72,18 +76,42 @@ def test_public_slate_defaults_missing_official_probable_to_rotowire():
         },
     }]}]}
     rotowire = {("CWS", "HOU"): {
-        "away": {"name": "Erick Fedde", "hand": "R", "role": "primary"},
+        "away": {"name": "Erick Fedde", "hand": "R", "role": "primary", "id": 607200},
         "home": {"name": "Wrong Fallback", "hand": "L", "role": "starter"},
     }}
 
     game = mlb_producer_from_statsapi(
         schedule,
-        arms={99: {"hand": "R", "era": "3.50"}},
+        arms={
+            99: {"hand": "R", "era": "3.50"},
+            607200: {"hand": "R", "era": "4.42"},
+        },
         rotowire_starters=rotowire,
     )["games"][0]
 
     assert game["away_starter"] == "Erick Fedde"
     assert game["away_hand"] == "R"
-    assert game["away_starter_id"] is None
+    assert game["away_starter_id"] == 607200
+    assert game["away_era"] == "4.42"
     assert game["home_starter"] == "Official Astro"
+    assert game["home_starter_id"] == 99
     assert game["home_hand"] == "R"
+
+
+def test_rotowire_ids_are_attached_and_accent_matching_is_stable(monkeypatch):
+    starters = {
+        ("CHC", "SD"): {
+            "away": {"name": "Matthew Boyd", "hand": "L"},
+            "home": {"name": "Cristopher Sanchez", "hand": "L"},
+        }
+    }
+    monkeypatch.setattr(
+        "outputs.publish_public_slate.fetch_mlb_person_ids",
+        lambda names: {"Matthew Boyd": 571510, "Cristopher Sanchez": 650911},
+    )
+
+    enriched = add_rotowire_starter_ids(starters)
+
+    assert enriched[("CHC", "SD")]["away"]["id"] == 571510
+    assert enriched[("CHC", "SD")]["home"]["id"] == 650911
+    assert _person_name_key("Cristopher Sánchez") == _person_name_key("Cristopher Sanchez")

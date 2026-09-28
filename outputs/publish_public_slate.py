@@ -9,6 +9,8 @@ import csv
 import json
 import re
 import sys
+import unicodedata
+import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -330,6 +332,59 @@ def fetch_rotowire_starters(slate_date: str, schedule: dict) -> dict[tuple[str, 
     return {}
 
 
+MLB_PEOPLE_SEARCH = "https://statsapi.mlb.com/api/v1/people/search?{query}"
+
+
+def _person_name_key(value: str) -> str:
+    """Fold accents and punctuation for an exact MLB/RotoWire name match."""
+    plain = unicodedata.normalize("NFKD", str(value or ""))
+    return "".join(char for char in plain if not unicodedata.combining(char)).casefold().strip()
+
+
+def fetch_mlb_person_ids(names: list[str]) -> dict[str, int]:
+    """Resolve RotoWire fallback names to the IDs used by MLB headshots.
+
+    The people search can return similarly named players, so only a unique
+    normalized full-name match is accepted. An unresolved name remains usable
+    as text; it simply keeps the generic headshot rather than risking the wrong
+    player's image.
+    """
+    resolved: dict[str, int] = {}
+    for name in dict.fromkeys(str(value or "").strip() for value in names):
+        if not name:
+            continue
+        url = MLB_PEOPLE_SEARCH.format(query=urllib.parse.urlencode({"names": name}))
+        try:
+            payload = _json(url)
+        except Exception as exc:
+            print(f"  WARNING: MLB player ID lookup failed for {name} ({exc})")
+            continue
+        key = _person_name_key(name)
+        matches = [
+            person for person in payload.get("people") or []
+            if _person_name_key(person.get("fullName")) == key and person.get("id")
+        ]
+        if len(matches) == 1:
+            resolved[name] = int(matches[0]["id"])
+    return resolved
+
+
+def add_rotowire_starter_ids(starters: dict[tuple[str, str], dict]) -> dict:
+    """Attach MLB person IDs to RotoWire arms without changing provenance."""
+    names = [
+        side.get("name")
+        for matchup in starters.values()
+        for side in (matchup.get("away") or {}, matchup.get("home") or {})
+        if side.get("name")
+    ]
+    person_ids = fetch_mlb_person_ids(names)
+    for matchup in starters.values():
+        for side in (matchup.get("away") or {}, matchup.get("home") or {}):
+            if side.get("name") in person_ids:
+                side["id"] = person_ids[side["name"]]
+    return starters
+
+
 def _for_day(curated: dict, day: str) -> dict:
     """Curated rows that belong to `day`. The CSVs behind them describe the
     pipeline's own run date; merged by club pair onto another day's fixtures
@@ -527,6 +582,8 @@ def mlb_producer_from_statsapi(
             )
             away_fallback = fallback.get("away") or {}
             home_fallback = fallback.get("home") or {}
+            away_starter_id = away_sp.get("id") or away_fallback.get("id") or None
+            home_starter_id = home_sp.get("id") or home_fallback.get("id") or None
             venue = game.get("venue") or {}
             location = venue.get("location") or {}
             weather = game.get("weather") or {}
@@ -551,9 +608,9 @@ def mlb_producer_from_statsapi(
                 "away_team_id": away_team.get("id") or None,
                 "home_team_id": home_team.get("id") or None,
                 "away_bullpen": bullpen_load(away_team.get("id"), _game_day(game), pen_cache,
-                                             exclude=away_sp.get("id")),
+                                             exclude=away_starter_id),
                 "home_bullpen": bullpen_load(home_team.get("id"), _game_day(game), pen_cache,
-                                             exclude=home_sp.get("id")),
+                                             exclude=home_starter_id),
                 "away_record": record(away_node), "home_record": record(home_node),
                 # Scores only once there is a game to describe.
                 "away_score": away_node.get("score") if state in {"live", "final"} else None,
@@ -580,18 +637,18 @@ def mlb_producer_from_statsapi(
                 "home_starter": (
                     home_sp.get("fullName") or home_fallback.get("name") or None
                 ),
-                "away_starter_id": away_sp.get("id") or None,
-                "home_starter_id": home_sp.get("id") or None,
+                "away_starter_id": away_starter_id,
+                "home_starter_id": home_starter_id,
                 "away_hand": (
-                    (arms.get(away_sp.get("id")) or {}).get("hand")
+                    (arms.get(away_starter_id) or {}).get("hand")
                     or away_fallback.get("hand") or None
                 ),
                 "home_hand": (
-                    (arms.get(home_sp.get("id")) or {}).get("hand")
+                    (arms.get(home_starter_id) or {}).get("hand")
                     or home_fallback.get("hand") or None
                 ),
-                "away_era": (arms.get(away_sp.get("id")) or {}).get("era"),
-                "home_era": (arms.get(home_sp.get("id")) or {}).get("era"),
+                "away_era": (arms.get(away_starter_id) or {}).get("era"),
+                "home_era": (arms.get(home_starter_id) or {}).get("era"),
                 # The real batting order, not the single word the CSV producer
                 # collapsed it to.
                 "away_lineup": away_order,
@@ -1154,6 +1211,9 @@ def run(data_dir: Path | None = None) -> int:
     slate_date, schedule = next_mlb_slate(datetime.now(ET).strftime("%Y-%m-%d"))
     curated = _for_day(mlb_producer(data_dir), slate_date)
     if schedule:
+        rotowire_starters = add_rotowire_starter_ids(
+            fetch_rotowire_starters(slate_date, schedule)
+        )
         starter_ids = [
             ((node.get("probablePitcher") or {}).get("id"))
             for block in (schedule.get("dates") or [])
@@ -1162,10 +1222,16 @@ def run(data_dir: Path | None = None) -> int:
                          (game.get("teams") or {}).get("home"))
             if node
         ]
+        starter_ids.extend(
+            side.get("id")
+            for matchup in rotowire_starters.values()
+            for side in (matchup.get("away") or {}, matchup.get("home") or {})
+            if side.get("id")
+        )
         official = mlb_producer_from_statsapi(
             schedule,
             fetch_mlb_arms(starter_ids, int(slate_date[:4])),
-            fetch_rotowire_starters(slate_date, schedule),
+            rotowire_starters,
         )
         mlb = merge_producers(official, curated)
         print(f"  mlb: {len(official['games'])} on the official schedule for {slate_date}, "
