@@ -184,6 +184,13 @@
     var mm = signed(g.model_margin), km = signed(g.market_margin);
     if (mm) vals += '<span>Model ' + esc(mm) + '</span>';
     if (km) vals += '<span>Market ' + esc(km) + '</span>';
+    // The book's moneylines, both sides, as quoted.
+    var ml = function (v) { return v == null ? null : (v > 0 ? '+' : '') + Math.round(v); };
+    if (g.away_moneyline != null && g.home_moneyline != null) {
+      vals += '<span>ML ' + esc(g.away || 'Away') + ' ' + esc(ml(g.away_moneyline)) + ' · ' +
+        esc(g.home || 'Home') + ' ' + esc(ml(g.home_moneyline)) + '</span>';
+    }
+    if (g.market_book) vals += '<span class="mc-game__book">' + esc(g.market_book) + '</span>';
     return '<div class="mc-game__read">' +
       '<div><span class="mc-game__lean">' + esc(lean || 'No lean published') + '</span>' +
       (withheld ? '<span class="mc-withheld mc-game__note">' + esc(withheld) + '</span>' : '') +

@@ -141,6 +141,29 @@
     return mapped;
   }
 
+  /* Unit rates belong to a team, not to a pairing. When the week's slate is
+     published without them (the model's stats source was out of calls), each
+     team keeps its most recent published rates - the latest slate that carries
+     them wins - rather than the matchup page going blank. */
+  function teamForms(payloads, season) {
+    var forms = {};
+    payloads.forEach(function (payload) {
+      if (!payload || Number(payload.season) !== Number(season)) return;
+      (payload.games || []).forEach(function (g) {
+        [['away', g.away_form], ['home', g.home_form]].forEach(function (pair) {
+          var form = pair[1];
+          var name = String(g[pair[0] + '_name'] || g[pair[0]] || '').toLowerCase();
+          if (!name || !form || Number(form.season) !== Number(season)) return;
+          var prior = forms[name];
+          if (!prior || Number(payload.week || 0) >= Number(prior.week || 0)) {
+            forms[name] = { form: form, week: payload.week };
+          }
+        });
+      });
+    });
+    return forms;
+  }
+
   function seasonGames(payload, season) {
     if (!payload || Number(payload.season) !== Number(season)) return [];
     return (payload.games || []).filter(function (game) {
@@ -175,6 +198,7 @@
       var statsSeason = boardSeason === currentYear ? currentYear : null;
       var local = indexPublic(seasonGames(parts[2], statsSeason));
       var remote = indexPublic(seasonGames(parts[3], statsSeason));
+      var forms = teamForms([parts[2], parts[3]], statsSeason);
       var raw = Array.isArray(board.games) ? board.games : [];
       var games = sortGames(raw.map(function (g) {
         var key = publicKey({
@@ -183,7 +207,14 @@
         });
         var mapped = mapGame(g, board);
         mapped.season = statsSeason;
-        return mergePublic(mergePublic(mapped, remote[key]), local[key]);
+        mapped = mergePublic(mergePublic(mapped, remote[key]), local[key]);
+        ['away', 'home'].forEach(function (side) {
+          if (mapped[side + '_form']) return;
+          var name = String((g[side] && (g[side].school || g[side].name)) || g[side] || '').toLowerCase();
+          var known = forms[name];
+          if (known) mapped[side + '_form'] = known.form;
+        });
+        return mapped;
       }));
       var auth = board.authority || {};
       return {
