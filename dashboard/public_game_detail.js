@@ -98,6 +98,7 @@
     'club-splits': 'users',
     recent: 'calendar', form: 'trend', radar: 'gauge', bullpens: 'users',
     availability: 'whistle', scheme: 'football', 'team-context': 'plane', 'run-game': 'football',
+    'def-tendencies': 'target',
     projection: 'target', clash: 'football', players: 'users',
     efficiency: 'trend', quarterbacks: 'football', coverage: 'target', looks: 'target',
     rushing: 'football', trenches: 'users', receivers: 'users', redzone: 'target',
@@ -3025,6 +3026,44 @@ function seasonToggle(game) {
   }
 
 
+  /* Defensive tendencies: how often each defense plays each coverage, shell,
+     pressure look and personnel package, beside how often the other offense
+     has faced the same thing. Frequencies, so marked, never graded. */
+  var NFL_DEF_TENDENCIES = [
+    ['Man Coverage', 'coverage', 'man_rate'], ['Zone Coverage', 'coverage', 'zone_rate'],
+    ['Middle Closed (MFC)', 'coverage', 'single_high_rate'], ['Middle Open (MFO)', 'coverage', 'two_high_rate'],
+    ['Cover 0', 'coverage', 'cover_0_rate'], ['Cover 1', 'coverage', 'cover_1_rate'],
+    ['Cover 2', 'coverage', 'cover_2_rate'], ['Cover 2 Man', 'coverage', 'cover_2_man_rate'],
+    ['Cover 3', 'coverage', 'cover_3_rate'], ['Cover 4', 'coverage', 'cover_4_rate'],
+    ['Cover 6', 'coverage', 'cover_6_rate'],
+    ['Blitz', 'pressure', 'blitz_rate'], ['Stacked Box', 'pressure', 'stacked_box_rate'],
+    ['Light Box', 'pressure', 'light_box_rate'],
+    ['Base Defense', 'package', 'base_rate'], ['Nickel', 'package', 'nickel_rate'],
+    ['Dime', 'package', 'dime_rate'], ['Sub Package', 'package', 'sub_package_rate']
+  ];
+
+  function nflDefTendencyPanel(sport, game, defSide) {
+    var offSide = nflOther(defSide);
+    var dScheme = nflScheme(game, defSide);
+    var oScheme = nflScheme(game, offSide);
+    var mine = dScheme.defense || {};
+    var seen = oScheme.offense || {};
+    var head = '<section class="ca-arsenal-panel"><h3>' +
+      esc(fullName(sport, game, defSide)) + ' Defense</h3>';
+    var rows = NFL_DEF_TENDENCIES.map(function (spec) {
+      var own = (mine[spec[1]] || {})[spec[2]];
+      if (own == null) return '';
+      return '<tr><td class="ca-lineup-name">' + esc(spec[0]) + '</td>' +
+        nflUsageCell(own, nflFreqRank(dScheme, 'defense', spec[1], spec[2])) +
+        nflRateCell((seen[spec[1]] || {})[spec[2]], nflFreqRank(oScheme, 'offense', spec[1], spec[2])) +
+        '</tr>';
+    }).filter(Boolean);
+    if (!rows.length) return head + pending('Defensive tendencies are not published for this club.') + '</section>';
+    return head + '<p class="ca-lineup-context">' +
+      esc(nflSampleLabel(dScheme, true) || 'Charted defensive snaps') + '</p>' +
+      nflMixTable('Tendency', [fullName(sport, game, offSide) + ' Faced'], rows) + '</section>';
+  }
+
   /* ---- the 2025 + 2026 window ----------------------------------------
      The evidence window changes the data, not just what is hidden. Under
      "2025 + 2026" each player's two seasons are combined look by look -
@@ -4154,7 +4193,7 @@ function seasonToggle(game) {
     ['rushing', 'Rushing', ['run-game', 'trenches', 'rushing']],
     ['receiving', 'Receiving', ['receivers']],
     ['redzone', 'Red Zone', ['redzone']],
-    ['tendencies', 'Tendencies', ['tendencies']],
+    ['tendencies', 'Tendencies', ['tendencies', 'def-tendencies']],
     ['lineups', 'Lineups', ['availability']],
     ['profile', 'Profile', ['radar', 'team-context']]
   ];
@@ -4291,6 +4330,9 @@ function seasonToggle(game) {
 
       section('tendencies', 'Offensive Tendencies', 'Personnel, Formation And Play Type',
         nflBothWindows(function () { return nflDuo(nflTendencyPanel, sport, game); })),
+
+      section('def-tendencies', 'Defensive Tendencies', 'Coverage, Shells, Pressure And Personnel Packages',
+        nflBothWindows(function () { return nflDuo(nflDefTendencyPanel, sport, game); })),
 
       section('availability', 'Starting Lineups And Availability',
         'Offense, Defense And Official Designations',

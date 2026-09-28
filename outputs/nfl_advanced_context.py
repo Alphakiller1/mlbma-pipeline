@@ -744,7 +744,7 @@ def team_scheme_current(season: int) -> dict[str, dict]:
     # League places for every rate (1st = most often) and the league mean and
     # spread for every response, per phase, over the same clubs.
     for phase in ("offense", "defense"):
-        for group in ("coverage", "pressure", "personnel"):
+        for group in ("coverage", "pressure", "personnel", "package"):
             keys = {k for club in out.values() for k in (club.get(phase) or {}).get(group, {})}
             for key in keys:
                 pool = [(team, club[phase][group][key]) for team, club in out.items()
@@ -770,6 +770,46 @@ def team_scheme_current(season: int) -> dict[str, dict]:
 def _ranked_desc(pool: list[tuple[str, float]]) -> dict[str, int]:
     ordered = sorted(pool, key=lambda pair: pair[1], reverse=True)
     return {team: index + 1 for index, (team, _) in enumerate(ordered)}
+
+
+def team_packages(frame) -> dict[str, dict]:
+    """Defensive personnel packages from participation data, by club.
+
+    Base is four or fewer defensive backs, nickel five, dime six or more; sub
+    package is nickel and dime together. Each defense's own rates, what each
+    offense has faced, and league places (1st = used or faced most).
+    """
+    if frame is None or "defense_personnel" not in frame:
+        return {}
+    plays = frame[(frame["qb_dropback"].fillna(0).eq(1) | frame["rush_attempt"].fillna(0).eq(1))
+                  & frame["defense_personnel"].notna()].copy()
+    if plays.empty:
+        return {}
+    dbs = plays["defense_personnel"].map(_db_count)
+    plays = plays[dbs.notna()]
+    dbs = dbs[dbs.notna()]
+    plays["_base"] = dbs.le(4).astype(float)
+    plays["_nickel"] = dbs.eq(5).astype(float)
+    plays["_dime"] = dbs.ge(6).astype(float)
+    out: dict[str, dict] = {}
+    for phase, col in (("defense", "defteam"), ("offense", "posteam")):
+        for team, rows in plays.groupby(col):
+            rates = {
+                "base_rate": round(float(rows["_base"].mean()), 4),
+                "nickel_rate": round(float(rows["_nickel"].mean()), 4),
+                "dime_rate": round(float(rows["_dime"].mean()), 4),
+            }
+            rates["sub_package_rate"] = round(rates["nickel_rate"] + rates["dime_rate"], 4)
+            out.setdefault(_team(team), {})[phase] = rates
+    if len(out) < 30:
+        return {}
+    for phase in ("defense", "offense"):
+        for key in ("base_rate", "nickel_rate", "dime_rate", "sub_package_rate"):
+            pool = [(t, v[phase][key]) for t, v in out.items() if key in v.get(phase, {})]
+            places = _ranked_desc(pool)
+            for team, _ in pool:
+                out[team].setdefault("league_frequency_ranks", {}).setdefault(phase, {})                     .setdefault("package", {})[key] = {"place": places[team], "of": len(pool)}
+    return out
 
 
 # A quarterback is credited with his offense's man and zone figures only when
@@ -852,6 +892,7 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
         "team_scheme_current": team_scheme_current(season),
         "defenders_current": pfr_coverage(season),
         "run_game": nfl_run_game.build(current, prior, season, positions, names),
+        "packages_prior": team_packages(prior),
         "team_line": _team_line(current, season, pfr_rushing) if current is not None else {},
         "red_zone": nfl_red_zone.build(season),
     }
