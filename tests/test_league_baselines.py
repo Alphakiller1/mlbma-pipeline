@@ -72,6 +72,23 @@ class LeagueRateTest(unittest.TestCase):
         self.assertEqual(april, 30)
         self.assertGreater(september, 100)
 
+    def test_team_split_counts_and_discipline_use_their_own_club_pool(self):
+        rows = []
+        for i in range(30):
+            pa = 1000 + i * 10
+            rows.append({
+                "split": "h", "pa": pa, "ab": 900, "h": 225, "hr": 60 + i,
+                "k": 180 + i * 2, "bb": 70 + i, "hbp": 5, "sf": 5, "tb": 360,
+                "avg": .250, "obp": .300, "slg": .400, "ops": .700,
+            })
+        out = cb.team_split_baselines(pd.DataFrame(rows))
+
+        self.assertEqual(out["tm_h_hr"]["n"], 30)
+        self.assertTrue(out["tm_h_hr"]["hi"])
+        self.assertFalse(out["tm_h_kpct"]["hi"])
+        self.assertTrue(out["tm_h_bbpct"]["hi"])
+        self.assertGreater(out["tm_h_kpct"]["mean"], 10)
+
 
 class StarterPoolTest(unittest.TestCase):
     def _payload(self):

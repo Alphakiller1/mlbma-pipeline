@@ -46,7 +46,7 @@ BATTER_SPLITS = ("vl", "vr", "season")
 # risp, risp2 (two outs) and lc (late and close): the club with runners in
 # scoring position, the Club Batting Splits rows added for the postseason.
 TEAM_SPLITS = ("h", "a", "vl", "vr", "sp", "rp", "risp", "risp2", "lc")
-COLUMNS = ["split", "id", "name", "pa", "ab", "h", "bb", "hbp", "sf", "tb",
+COLUMNS = ["split", "id", "name", "pa", "ab", "h", "hr", "k", "bb", "hbp", "sf", "tb",
            "avg", "obp", "slg", "ops"]
 
 # Below these a pull is incomplete, not a quiet day. The endpoint defaults to a
@@ -89,7 +89,8 @@ def _row(split: str, ident, name: str, stat: dict) -> dict:
     return {
         "split": split, "id": ident, "name": name,
         "pa": _int(stat, "plateAppearances"), "ab": _int(stat, "atBats"),
-        "h": _int(stat, "hits"), "bb": _int(stat, "baseOnBalls"),
+        "h": _int(stat, "hits"), "hr": _int(stat, "homeRuns"),
+        "k": _int(stat, "strikeOuts"), "bb": _int(stat, "baseOnBalls"),
         "hbp": _int(stat, "hitByPitch"), "sf": _int(stat, "sacFlies"),
         "tb": _int(stat, "totalBases"),
         "avg": _rate(stat, "avg"), "obp": _rate(stat, "obp"),
