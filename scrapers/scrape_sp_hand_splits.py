@@ -164,8 +164,39 @@ def _probable_starters() -> List[dict]:
     return out
 
 
+def _slate_starters() -> List[dict]:
+    """Every starter the published slate names (data/public/mlb/slate.json).
+
+    MLB's probables are not the whole list. When a club has not announced its
+    starter, the slate fills the side from RotoWire, so the card shows that arm.
+    AJ Blubaugh was the case: a reliever with no starts, listed by RotoWire to start
+    for Houston, and absent from both MLB sources above - so his card had a name
+    and an ERA and no splits. The slate is the set of arms the cards show, so every
+    one of them is looked up.
+    """
+    path = Path(DATA_DIR) / "public" / "mlb" / "slate.json"
+    try:
+        games = json.loads(path.read_text(encoding="utf-8")).get("games") or []
+    except (OSError, ValueError, AttributeError):
+        return []
+    out = []
+    for game in games:
+        for side in ("away", "home"):
+            try:
+                pid = int(game.get(f"{side}_starter_id") or 0)
+            except (TypeError, ValueError):
+                continue
+            if pid:
+                out.append({
+                    "id": pid,
+                    "name": game.get(f"{side}_starter") or "",
+                    "team": game.get(side) or "",
+                })
+    return out
+
+
 def target_pitchers() -> List[dict]:
-    """Every probable starter, everyone who has started, plus the profile set.
+    """Every probable starter, every slate starter, everyone who has started, plus the profile set.
 
     This used to be the profile set ALONE, with the leaderboard as a fallback for
     when that file was missing. The profile set is a qualified population, so a
@@ -184,6 +215,8 @@ def target_pitchers() -> List[dict]:
     # Probables first: they are the most current and the most needed.
     for row in _probable_starters():
         seen[row["id"]] = row
+    for row in _slate_starters():
+        seen.setdefault(row["id"], row)
     for row in _leaderboard_starters():
         seen.setdefault(row["id"], row)
 
