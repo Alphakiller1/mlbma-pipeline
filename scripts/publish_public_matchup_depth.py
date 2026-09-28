@@ -16,7 +16,6 @@ bullpen_board.json
     those lines against:
       relievers   every qualified reliever, per split, per rate
       units       the thirty pens as rostered now, per split, per rate
-      pen_pitches the thirty pens' run value per 100, per pitch type
     and the FIP constant for the season, so a FIP the page computes from a
     reliever's counting stats sits on the same scale as the league's.
 
@@ -38,7 +37,6 @@ PUBLIC = ROOT / "data" / "public"
 
 BATTER_SOURCE = "batter_pitch_types.csv"
 RELIEVER_SOURCE = "reliever_splits.csv"
-RUN_VALUE_SOURCE = "pitch_run_value.csv"
 
 # A hitter joins a pitch type's pool at this many plate appearances ending on it.
 # Below it his line is still published and still placed against the pool, so no
@@ -54,7 +52,6 @@ ROTATION_START_SHARE = 0.4
 # floor) and a split pool at 20 batters faced in that split.
 MIN_GAMES = 10
 MIN_SPLIT_BF = 20
-MIN_PEN_PITCHES = 100
 
 # FIP is on every split because it is built from counts every split carries;
 # ERA only where the Stats API publishes earned runs.
@@ -66,13 +63,6 @@ SPLIT_METRICS = {
     "vr": ("fip", "whip", "k_pct", "bb_pct", "hr9", "ops"),
     "lc": ("fip", "whip", "k_pct", "bb_pct", "hr9", "ops"),
     "risp": ("fip", "whip", "k_pct", "bb_pct", "hr9", "ops"),
-}
-# The page's own pitch families (dashboard/public_game_detail.js PITCH_FAMILY).
-PITCH_FAMILY = {
-    "FF": "heat", "FA": "heat", "FT": "heat", "SI": "heat", "FC": "heat",
-    "SL": "break", "ST": "break", "CU": "break", "KC": "break", "SV": "break",
-    "SC": "break", "CS": "break",
-    "CH": "offspeed", "FS": "offspeed", "FO": "offspeed", "EP": "offspeed",
 }
 COUNTS = ("outs", "bf", "ab", "h", "bb", "hbp", "so", "hr", "tb", "sf", "er")
 # The Stats API publishes earned runs on the season line and the home / road
@@ -239,43 +229,10 @@ def bullpen_board(data_dir: Path) -> dict | None:
     if len(units["season"].get("era") or []) < 30:
         return None
 
-    # Run value per 100 for each pen as rostered now, per pitch type, from the
-    # same Savant pitcher board the arsenal panel reads.
-    pen_pitches: dict[str, list[float]] = {}
-    pen_families: dict[str, list[float]] = {}
-    rv_rows = read(data_dir / RUN_VALUE_SOURCE)
-    if rv_rows:
-        team_of = {pid: row["team_id"] for pid, row in season.items() if pid in relief}
-        sums: dict[tuple[str, str], list[float]] = defaultdict(lambda: [0.0, 0.0])
-        for row in rv_rows:
-            pid = str(row.get("player_id") or "")
-            code = str(row.get("pitch_type") or "").upper()
-            rv, thrown = num(row.get("run_value")), num(row.get("pitches"))
-            if pid not in team_of or not code or rv is None or not thrown:
-                continue
-            cell = sums[(team_of[pid], code)]
-            cell[0] += rv
-            cell[1] += thrown
-        grouped: dict[str, list[float]] = defaultdict(list)
-        families: dict[str, list[float]] = defaultdict(list)
-        for (_, code), (rv, thrown) in sums.items():
-            if thrown >= MIN_PEN_PITCHES:
-                grouped[code].append(round(rv / thrown * 100, 2))
-                if code in PITCH_FAMILY:
-                    families[PITCH_FAMILY[code]].append(round(rv / thrown * 100, 2))
-        pen_pitches = {code: sorted(values) for code, values in grouped.items()
-                       if len(values) >= MIN_POOL}
-        # A forkball or a slurve is thrown by too few pens to rank on its own,
-        # so it is placed among every pen pitch of its family instead.
-        pen_families = {name: sorted(values) for name, values in families.items()
-                        if len(values) >= MIN_POOL}
-
     return {
         "fip_constant": round(fip_constant, 3) if fip_constant is not None else None,
         "relievers": relievers,
         "units": units,
-        "pen_pitches": pen_pitches,
-        "pen_families": pen_families,
     }
 
 
@@ -367,8 +324,7 @@ def main(argv: list[str]) -> int:
         })
         print(f"  wrote data/public/bullpen_board.json "
               f"({len(board['relievers']['season']['era'])} relievers, "
-              f"{len(board['units']['season']['era'])} pens, "
-              f"{len(board['pen_pitches'])} pen pitch types)")
+              f"{len(board['units']['season']['era'])} pens)")
         written += 1
     else:
         print(f"  skip bullpen board: no usable {RELIEVER_SOURCE} under {data_dir}")

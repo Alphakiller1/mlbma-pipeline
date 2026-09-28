@@ -1,6 +1,6 @@
 # MLB matchup depth for the postseason (2026-09-28)
 
-Stamp `20260928f`. Branch `mlb/playoff-matchup-depth`.
+Stamp `20260928g`. Branch `mlb/playoff-matchup-depth`.
 
 ## What the MLB matchup page gained
 
@@ -10,7 +10,6 @@ Stamp `20260928f`. Branch `mlb/playoff-matchup-depth`.
 | **Season Series** (`#series`, new) | Postseason series, game number and standing (`seriesStatus`), then every regular-season meeting as W/L squares with runs. | Counts and results only. |
 | **Bullpen → Active Pen** (extended) | Late & Close and With RISP rows added. FIP replaces ERA in the table because the Stats API publishes no earned runs on hand or situation splits. Season ERA sits, graded, on the sample line. | Place among the 30 pens as rostered now, on the same split. |
 | **Bullpen → Relief Arms** (new) | Every active reliever: role, throws, G, IP, ERA, FIP, WHIP, K%, BB%, OPS vs L / vs R, Late & Close OPS, RISP OPS. | Percentile among qualified relievers (10+ G; 20+ BF on a split). |
-| **Bullpen → Bullpen Mix** (new) | The active pen's combined arsenal: usage, count, number of arms throwing it (5%+ of their own mix), RV/100, and the opposing club's xwOBA / contact vs that pitch. | RV/100 placed among the 30 pens for that pitch type, or among the pitch family when too few pens throw it. |
 
 Nothing added here is a verdict: no gap summaries and no "favours" labels
 (see the evidence-not-verdicts rule). Empty cells say what is missing: "No PA",
@@ -29,6 +28,14 @@ the FanGraphs metrics, which only the local (Selenium) pipeline scrapes, so **CI
 Home / Away and L30 / L14 / L7 publish only when their source (`batter_splits_*.csv`) is under 3 days old.
 Those files were last scraped 2026-09-08, so today only the hand splits are published (FanGraphs data through Sept 26).
 A local `run_pipeline.bat` refreshes them all.
+
+## Third pass (owner direction, same day)
+
+- **Rank numbers:** in MLB they print only on team stats and pitch-mix stats: the starter Pitch Mix, Lineup Versus Pitch Mix, and every club table. Batter Versus Pitcher and Relief Arms are graded by colour alone. The runtime diag enforces both halves.
+- **Bullpen Mix removed** (renderer, publisher pools, tests).
+- **Starters only:** with no posted order, Lineup Versus Pitch Mix and Batter Versus Pitcher show the likely starting nine. That is the active-roster position players with the most starts in the club's last 10 box scores (a battingOrder slot that is a multiple of 100), in their usual spot. No bench players.
+- **Aligned tables:** the pitch-grid, BvP and reliever tables use fixed layout with set tracks, so the away and home tables line up column for column. The last column takes the slack, so a four-pitch and a five-pitch starter still align.
+- **Offensive Form filters:** Season, Vs Righties, Vs Lefties, At Home, On The Road, Vs Starters, Vs Bullpens. Each split view is the same mirror, fed by one Stats API request for all 30 clubs' split lines. AVG, OBP, SLG, OPS, ISO, K%, BB% and HR% are ranked on that split, and OSI/ABQ/RCV/OBR are added where team_index_splits carries the split.
 
 ## Data
 

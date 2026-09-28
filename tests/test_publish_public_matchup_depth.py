@@ -76,11 +76,6 @@ class BullpenBoardTests(unittest.TestCase):
         publisher = load_publisher()
         with tempfile.TemporaryDirectory() as tmp:
             write_csv(Path(tmp) / publisher.RELIEVER_SOURCE, self.reliever_rows())
-            write_csv(Path(tmp) / publisher.RUN_VALUE_SOURCE, [
-                {"player_id": f"{team}-1", "pitch_type": code, "run_value": team / 10,
-                 "pitches": 150}
-                for team in range(30) for code in ("FF", "FO")
-            ])
             board = publisher.bullpen_board(Path(tmp))
         self.assertEqual(len(board["units"]["season"]["era"]), 30)
         self.assertEqual(len(board["relievers"]["season"]["era"]), 30 * 14,
@@ -92,9 +87,7 @@ class BullpenBoardTests(unittest.TestCase):
             self.assertEqual(len(board["units"][split]["fip"]), 30)
         self.assertEqual(board["units"]["season"]["ops"],
                          sorted(board["units"]["season"]["ops"]))
-        self.assertIn("FF", board["pen_pitches"])
-        self.assertIn("heat", board["pen_families"])
-        self.assertIn("offspeed", board["pen_families"], "a forkball is pooled by family")
+        self.assertNotIn("pen_pitches", board)
 
     def test_short_pull_publishes_nothing(self):
         publisher = load_publisher()

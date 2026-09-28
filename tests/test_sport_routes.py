@@ -613,13 +613,19 @@ class AdapterHoleTests(unittest.TestCase):
     def test_mlb_playoff_depth_sections(self):
         detail = (ROOT / "dashboard" / "public_game_detail.js").read_text(encoding="utf-8")
         for text in ("section('pitch-matchup'", "section('series'", "function reliefArmsPanel",
-                     "function penMixPanel", "loadPeople(ids, 'pitching', season, 'lc')",
+                     "loadPeople(ids, 'pitching', season, 'lc')",
                      "loadPeople(ids, 'pitching', season, 'risp')",
                      "hydrate=seriesStatus", "/data/public/batter_pitch_types.json",
                      "/data/public/bullpen_board.json", "section('bvp'", "type=[vsPlayer]",
                      "gameType=[R,F,D,L,W]", "BVP_PA_VARIANCE", "sitCodes=h,a,vl,vr,sp,rp,risp,risp2,lc",
-                     "/data/public/team_index_splits.json", "function indexSplitTable"):
+                     "/data/public/team_index_splits.json", "function indexSplitTable",
+                     "Likely Starters From The Last 10 Games", "function wireFormSplit",
+                     "sitCodes=h,a,vl,vr,sp,rp&season="):
             self.assertIn(text, detail)
+        # Owner rule: MLB ranks print on team and pitch-mix stats only.
+        bvp = detail[detail.index("function bvpRateCells"):detail.index("function bvpCountCells")]
+        self.assertNotIn("Badge", bvp)
+        self.assertNotIn("penMixPanel", detail)
 
     def test_no_formatclock_in_nav(self):
         nav = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
