@@ -57,6 +57,17 @@
     var away = teamName(awayRaw);
     var home = teamName(homeRaw);
     var priced = g.priced === true || g.has_price === true;
+    var book = g.book || {};
+    var awayProj = pickScore(g.away_projected, g.away_proj, g.projected_away, g.projected_away_score);
+    var homeProj = pickScore(g.home_projected, g.home_proj, g.projected_home, g.projected_home_score);
+    // A board that publishes a projected score but no margin (MLB) still has a
+    // model margin: the home projection less the away one.
+    var modelMargin = g.model_margin != null ? g.model_margin
+      : (g.model != null ? g.model : (awayProj != null && homeProj != null
+        ? Math.round((homeProj - awayProj) * 100) / 100 : null));
+    // The consensus market line when the board has one, else its own book's.
+    var marketMargin = g.market_margin != null ? g.market_margin
+      : (g.market != null ? g.market : (book.margin != null ? book.margin : null));
     return {
       id: g.id || g.game_id || g.key || (away + '@' + home),
       kickoff_utc: kickoffUtc(g),
@@ -68,11 +79,14 @@
       home_logo: g.home_logo || (homeRaw && homeRaw.logo) || null,
       away_color: g.away_color || (awayRaw && awayRaw.color) || null,
       home_color: g.home_color || (homeRaw && homeRaw.color) || null,
-      model_margin: g.model_margin != null ? g.model_margin : g.model,
-      market_margin: g.market_margin != null ? g.market_margin : g.market,
+      model_margin: modelMargin,
+      market_margin: marketMargin,
       market_gap: g.market_gap != null ? g.market_gap : (
-        g.model_margin != null && g.market_margin != null ? Number(g.model_margin) - Number(g.market_margin) : null
+        modelMargin != null && marketMargin != null ? Number(modelMargin) - Number(marketMargin) : null
       ),
+      home_moneyline: pickScore(g.home_moneyline, book.home_moneyline),
+      away_moneyline: pickScore(g.away_moneyline, book.away_moneyline),
+      market_book: book.name ? (book.source ? book.name + ' via ' + book.source : book.name) : null,
       published_margin: g.published_margin != null ? g.published_margin : g.published,
       edge_points: g.edge_points,
       edge_withheld_reason: g.edge_withheld_reason || (g.edge_points == null ? (g.withheld_reason || 'not published') : null),
@@ -90,8 +104,8 @@
       home_name: g.home_name || teamName(g.home) || null,
       away_record: g.away_record || null,
       home_record: g.home_record || null,
-      away_projected: pickScore(g.away_projected, g.away_proj, g.projected_away, g.projected_away_score),
-      home_projected: pickScore(g.home_projected, g.home_proj, g.projected_home, g.projected_home_score),
+      away_projected: awayProj,
+      home_projected: homeProj,
       total_projected: pickScore(g.total_projected, g.total_proj, g.projected_total),
       market_total: pickScore(g.market_total, g.book && g.book.total),
       win_probability: g.win_probability != null ? g.win_probability : g.win_prob,

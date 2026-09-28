@@ -1459,6 +1459,21 @@
     return esc(Number(value).toFixed(digits)) + (suffix || '');
   }
 
+  /* A bullpen cell graded against the 30 club bullpens (bp_* baselines). OPS
+     allowed has no bullpen baseline of its own; the league's OPS against
+     relievers (tm_rp_ops) is the same plate appearances seen from the hitters'
+     side, so it grades with its direction turned over. */
+  function bullpenTd(value, digits, suffix, context) {
+    var A = global.MLBMAAssets;
+    var n = Number(value);
+    var tone = '';
+    if (value != null && isFinite(n) && A && A.valueTier) {
+      var tier = context === 'tm_rp_ops' ? A.valueTier(n, context, true) : A.valueTier(n, context);
+      tone = tier ? A.TIER_CHIP[tier] : '';
+    }
+    return '<td class="num' + (tone ? ' ' + tone : '') + '">' + bullpenRate(value, digits, suffix) + '</td>';
+  }
+
   function bullpenSplitPanel(sport, game, side, unit) {
     var club = fullName(sport, game, side);
     var head = '<article class="ca-bullpen-splits"><header class="ca-bullpen-splits__head">' +
@@ -1479,12 +1494,12 @@
       if (!stat) return '';
       return '<tr' + (row[3] ? ' class="is-matchup"' : '') + '><th scope="row">' +
         esc(row[1]) + (row[3] ? ' <span>Tonight</span>' : '') + '</th>' +
-        '<td class="num">' + bullpenRate(stat.era, 2) + '</td>' +
-        '<td class="num">' + bullpenRate(stat.whip, 2) + '</td>' +
-        '<td class="num">' + bullpenRate(stat.ops, 3) + '</td>' +
-        '<td class="num">' + bullpenRate(stat.kPct, 1, '%') + '</td>' +
-        '<td class="num">' + bullpenRate(stat.bbPct, 1, '%') + '</td>' +
-        '<td class="num">' + bullpenRate(stat.hr9, 2) + '</td>' +
+        bullpenTd(stat.era, 2, '', 'bp_era') +
+        bullpenTd(stat.whip, 2, '', 'bp_whip') +
+        bullpenTd(stat.ops, 3, '', 'tm_rp_ops') +
+        bullpenTd(stat.kPct, 1, '%', 'bp_kpct') +
+        bullpenTd(stat.bbPct, 1, '%', 'bp_bbpct') +
+        bullpenTd(stat.hr9, 2, '', 'bp_hr9') +
         '<td class="num">' + esc(bullpenIp(stat.outs)) + '</td></tr>';
     }).join('');
     var sample = unit.overall.arms + ' active relievers · ' +
