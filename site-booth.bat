@@ -10,6 +10,7 @@ rem  video\footage\site\ as an .mp4 plus NAME.chapters.txt for YouTube.
 rem
 rem  Options:  --origin http://localhost:8788   record a local build
 rem            --port 8792                      another port
+rem            --room CODE                      the phone mic link's room (kept after that)
 rem  Keep this window open while recording.
 rem ================================================================
 setlocal

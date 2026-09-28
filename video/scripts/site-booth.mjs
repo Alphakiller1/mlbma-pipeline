@@ -24,6 +24,7 @@
 import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import http from "node:http";
+import crypto from "node:crypto";
 import https from "node:https";
 import path from "node:path";
 import { Readable } from "node:stream";
@@ -40,6 +41,25 @@ const origin = new URL(opt("origin", "https://chase-analytics.com")).origin;
 const originHosts = [new URL(origin).host, "chase-analytics.com", "www.chase-analytics.com"];
 const pageDir = path.join(root, "site-booth");
 const footage = path.join(root, "footage", "site");
+
+/* ── the phone-mic room: `--room CODE` sets it, video/.cache keeps it, so the phone link never changes ── */
+const ROOM_RE = /^[a-z0-9]{8,32}$/;
+const roomFile = path.join(root, ".cache", "phone-room.txt");
+const phoneRoom = (() => {
+  let code = String(opt("room", "") || "").trim().toLowerCase();
+  if (!ROOM_RE.test(code)) {
+    try {
+      code = fs.readFileSync(roomFile, "utf8").trim();
+    } catch {
+      code = "";
+    }
+  }
+  if (!ROOM_RE.test(code)) code = Array.from(crypto.randomBytes(12), (b) => "abcdefghjkmnpqrstuvwxyz23456789"[b % 31]).join("");
+  fs.mkdirSync(path.dirname(roomFile), { recursive: true });
+  fs.writeFileSync(roomFile, code);
+  return code;
+})();
+const phoneLink = `https://chase-analytics.com/mic/?room=${phoneRoom}`;
 fs.mkdirSync(footage, { recursive: true });
 
 /* ── ffmpeg: --ffmpeg, $FFMPEG, the Remotion compositor build, then PATH ── */
@@ -127,7 +147,13 @@ const chapterSheet = (chapters, duration) => {
   return `${lines.join("\n")}\n${note}\n# Every marker you dropped (recording seconds):\n${sorted.map((c) => `# ${stamp(c.t)} ${c.label}`).join("\n")}\n`;
 };
 
-const encode = (name, aspect) => {
+/**
+ * `audioShift` (seconds) moves the sound EARLIER: the phone mic reaches the PC over
+ * Wi-Fi a beat after the camera frame it belongs to (the booth measures it), so
+ * without this the voice trails the lips. It is done by starting the audio input
+ * that far in, which needs no filter the lean ffmpeg build might not have.
+ */
+const encode = (name, aspect, audioShift = 0) => {
   if (!ffmpeg) {
     jobs.set(name, { state: "failed", error: "ffmpeg not found - the .webm is your video (pass --ffmpeg PATH)" });
     return;
@@ -139,7 +165,9 @@ const encode = (name, aspect) => {
   // The Remotion ffmpeg build is lean (no pad/fps filters, no positional filter args):
   // stick to scale + format with named options, and set the frame rate on the output.
   const vf = `scale=w=${W}:h=${H}:flags=lanczos,format=pix_fmts=yuv420p`;
-  const argv = ["-y", "-hide_banner", "-loglevel", "error", "-i", src, "-vf", vf, "-r", "30", "-c:v", "libx264", "-preset", "medium", "-crf", "18",
+  const shift = Math.min(1, Math.max(0, Number(audioShift) || 0));
+  const inputs = shift >= 0.01 ? ["-i", src, "-ss", shift.toFixed(3), "-i", src, "-map", "0:v:0", "-map", "1:a:0?"] : ["-i", src];
+  const argv = ["-y", "-hide_banner", "-loglevel", "error", ...inputs, "-vf", vf, "-r", "30", "-c:v", "libx264", "-preset", "medium", "-crf", "18",
     "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", out];
   jobs.set(name, { state: "encoding", started: Date.now() });
   console.log(`  encoding ${name}.mp4 (${W}x${H}) ...`);
@@ -219,7 +247,7 @@ const server = http.createServer(async (req, res) => {
     if (p.startsWith("/__booth/api/")) {
       const api = p.slice("/__booth/api/".length);
       const name = safeName(url.searchParams.get("name"));
-      if (api === "info") return json(res, { origin, ffmpeg: Boolean(ffmpeg), footage: path.relative(path.resolve(root, ".."), footage) });
+      if (api === "info") return json(res, { origin, ffmpeg: Boolean(ffmpeg), footage: path.relative(path.resolve(root, ".."), footage), room: phoneRoom });
       if (api === "takes") return json(res, { takes: listTakes() });
       if (api === "lan") return json(res, { urls: secureUp ? lanIps().map((ip) => `https://${ip}:${phonePort}/mic`) : [], port: phonePort });
       if (req.method === "POST" && api === "chunk") {
@@ -239,7 +267,7 @@ const server = http.createServer(async (req, res) => {
         fs.writeFileSync(path.join(footage, `${name}.json`), JSON.stringify({ ...body, origin }, null, 2));
         const mb = (fs.statSync(path.join(footage, `${name}.webm`)).size / 1e6).toFixed(1);
         console.log(`  saved ${name}.webm (${mb} MB, ${stamp(duration)}, ${(body.chapters ?? []).length} markers)`);
-        encode(name, body.aspect === "vertical" ? "vertical" : "wide");
+        encode(name, body.aspect === "vertical" ? "vertical" : "wide", body.audioDelay);
         return json(res, { ok: true });
       }
       if (req.method === "POST" && api === "reveal") {
@@ -314,6 +342,7 @@ server.listen(port, "127.0.0.1", () => {
   const url = boothUrl;
   console.log(`\nSite booth: ${url}`);
   console.log(`  stage shows ${origin} (proxied)`);
+  console.log(`  PHONE MIC LINK (works on any network): ${phoneLink}`);
   console.log(`  takes save to ${path.relative(path.resolve(root, ".."), footage)}`);
   console.log(ffmpeg ? `  mp4 encode: ${ffmpeg}` : "  ffmpeg not found - takes stay .webm (pass --ffmpeg PATH to get .mp4)");
   console.log("Keep this window open while you record.\n");

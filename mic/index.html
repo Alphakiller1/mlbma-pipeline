@@ -72,7 +72,17 @@
       const say = (t, k) => { st.textContent = t; st.className = "status " + (k || "wait"); };
       const room = new URLSearchParams(location.search).get("room");
 
-      let pc, stream, link, raf, meterCtx;
+      let pc, stream, link, raf, meterCtx, wake;
+
+      /* A phone that locks stops sending its mic, so the screen is held on while live. */
+      const holdScreen = async () => {
+        try {
+          if (!wake || wake.released) wake = await navigator.wakeLock?.request("screen");
+        } catch {}
+      };
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible" && pc?.connectionState === "connected") holdScreen();
+      });
 
       const level = (s) => {
         meterCtx?.close();
@@ -113,6 +123,7 @@
           if (pc !== mine) return;
           if (mine.connectionState === "connected") {
             say("Live — leave this page open. The computer is recording this mic.", "live");
+            holdScreen();
             go.textContent = "Mic is live";
             go.classList.add("off");
           } else if (mine.connectionState === "failed") {
