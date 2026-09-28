@@ -157,6 +157,29 @@ def _personnel(season: int, schedule: list[dict]) -> dict[str, dict[str, dict[st
             "defense": {t: rates(c) for t, c in faced.items()}}
 
 
+def offense_coverage(season: int) -> dict[str, dict[str, dict]]:
+    """Each offense's dropbacks and EPA per dropback against man and against zone.
+
+    Sharp publishes these per offense, not per passer; the caller credits them
+    to a quarterback only when he has taken nearly all of his club's dropbacks.
+    """
+    matchup = _json("matchup", season)
+    out: dict[str, dict[str, dict]] = {}
+    for code, unit in (((matchup or {}).get("latest") or {}).get("units") or {}).items():
+        metrics = ((unit or {}).get("off") or {}).get("m") or {}
+        looks = {}
+        for look in ("man", "zone"):
+            entry = metrics.get(look + "_epa")
+            # [shrunk, current season, sample, league place, prior season]
+            if isinstance(entry, list) and len(entry) >= 3 and entry[1] is not None and entry[2]:
+                looks[look] = {"dropbacks": int(entry[2]), "epa_per_dropback": round(float(entry[1]), 4)}
+        if looks:
+            out[_code(code)] = looks
+    if out:
+        out["_through_week"] = (matchup or {}).get("latest_played_week")
+    return out
+
+
 def current_season(season: int) -> dict[str, dict]:
     """{team: {offense: {coverage, response, personnel}, defense: {...}}}."""
     matchup = _json("matchup", season)
