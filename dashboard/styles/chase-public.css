@@ -5611,3 +5611,26 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-arsenal-panel .ca-arsenal-table th:nth-child(4) { width: 6.5rem; }
 .ca-arsenal-panel .ca-arsenal-table th:nth-child(5),
 .ca-arsenal-panel .ca-arsenal-table th:nth-child(6) { width: 6.25rem; }
+
+/* Matchup audit (2026-09-28). Every away | home pair of tables uses fixed
+   layout, so the two clubs' columns sit at the same x. The first-column
+   widths need the doubled class: `.ca-lineup-table thead th:first-child`
+   (2.5rem, sized for the lineup slot) otherwise wins and squeezes a name
+   column to 40px. A day off in the workload grid prints 0 on the dim
+   p-zero shade rather than a dash. */
+.ca-lineup-table.ca-bvp-table thead th:first-child { width: 13rem; }
+.ca-lineup-table.ca-relief-table thead th:first-child { width: 17rem; }
+.ca-lineup-table.ca-split-table { table-layout: fixed; }
+.ca-lineup-table.ca-split-table thead th:first-child { width: 9.5rem; }
+.ca-lineup-table.ca-runs-hand-table thead th:first-child { width: 12rem; }
+.ca-bullpen-split-table { table-layout: fixed; min-width: 600px; }
+.ca-bullpen-split-table thead th:first-child { width: 7.5rem; }
+.ca-bullpen-split-table td.num { font-size: var(--type-meta); }
+.ca-lineup-table.ca-pc-table { table-layout: fixed; }
+.ca-lineup-table.ca-pc-table thead th:first-child { width: 15rem; }
+.ca-pc-table td.ca-lineup-name { white-space: normal; }
+/* Seven graded columns with rank pills do not fit half the page: the two
+   bullpen unit tables stack, full width, with room for the Tonight tag. */
+.ca-detail-duo.ca-bullpen-split-grid { grid-template-columns: minmax(0, 1fr); }
+.ca-bullpen-split-table thead th:first-child { width: 11rem; }
+.ca-bullpen-split-table td.num { font-size: inherit; }
