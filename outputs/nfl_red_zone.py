@@ -322,17 +322,26 @@ def rank(clubs: dict[str, dict]) -> dict[str, dict]:
             for team, value in per_game:
                 clubs[team][side][group]["receiving_tds_per_game"] = round(value, 2)
                 clubs[team][side][group]["receiving_tds_rank"] = {"place": places[team], "of": len(per_game)}
-    # Players among the league at their position, above each metric's floor:
-    # the share a player earns is only graded once he has a few chances at it.
+    # Players among the league at their position. The pool is the players above
+    # each metric's floor; a player with fewer chances is still graded, placed
+    # against that pool (the owner wants every row graded; his count is printed).
     everyone = [p for club in clubs.values() for p in club["players"]]
     for metric, volume, floor, groups in PLAYER_RANKED:
         for position in groups:
             pool = [(p["player_id"], p[metric]) for p in everyone
                     if p["position"] == position and p[volume] >= floor and p.get(metric) is not None]
             places = _places(pool, "high")
+            values = [v for _, v in pool]
             for p in everyone:
-                if p["player_id"] in places and p["position"] == position:
-                    p.setdefault("ranks", {})[metric] = {"place": places[p["player_id"]], "of": len(pool)}
+                if p["position"] != position or p.get(metric) is None:
+                    continue
+                if p["player_id"] in places:
+                    place = places[p["player_id"]]
+                elif values and p[volume] >= 1:
+                    place = min(1 + sum(1 for v in values if v > p[metric]), len(values))
+                else:
+                    continue
+                p.setdefault("ranks", {})[metric] = {"place": place, "of": len(pool)}
     return clubs
 
 

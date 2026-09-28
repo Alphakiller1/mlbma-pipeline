@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-09-27T21:57:15Z",
+  "generated_at_utc": "2026-09-28T02:03:07Z",
   "data_through_utc": "2026-09-27T16:57:56+00:00",
   "season": 2026,
   "week": 3,
@@ -2442,16 +2442,16 @@
   },
   "recent": {
     "ARI": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "ATL": {
       "games": 3,
       "through": "2026-09-25"
     },
     "BAL": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "BUF": {
       "games": 3,
@@ -2474,8 +2474,8 @@
       "through": "2026-09-27"
     },
     "DAL": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "DEN": {
       "games": 2,
@@ -2514,24 +2514,24 @@
       "through": "2026-09-22"
     },
     "LV": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "MIA": {
       "games": 3,
       "through": "2026-09-27"
     },
     "MIN": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "NE": {
       "games": 3,
       "through": "2026-09-27"
     },
     "NO": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "NYG": {
       "games": 3,
@@ -2554,12 +2554,12 @@
       "through": "2026-09-27"
     },
     "SF": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "TB": {
-      "games": 2,
-      "through": "2026-09-20"
+      "games": 3,
+      "through": "2026-09-27"
     },
     "TEN": {
       "games": 3,

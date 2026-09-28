@@ -150,6 +150,8 @@
     "away_player_stats_prior",
     "home_player_stats_prior",
     "away_scheme_current",
+    "away_run_game",
+    "home_run_game",
     "away_defenders_current",
     "home_defenders_current",
     "home_scheme_current",

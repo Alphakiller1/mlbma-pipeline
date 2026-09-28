@@ -195,7 +195,7 @@ class RedZoneRankTests(unittest.TestCase):
         self.assertEqual(clubs["BBB"]["ranks"]["defense"]["trip_rate"], {"place": 2, "of": 2})
 
 
-    def test_a_share_is_graded_only_above_its_floor(self):
+    def test_a_share_under_its_floor_is_placed_against_the_pool(self):
         rows = []
         for i, yl in enumerate((18, 15, 11, 7)):
             rows.append(play("g1", 1, "AAA", "BBB", yl, kind="pass", passer_player_id="qb1",
@@ -205,8 +205,9 @@ class RedZoneRankTests(unittest.TestCase):
         clubs = rz.rank(rz.red_zone_from_frame(frame(rows), POSITIONS))
         players = {p["player_id"]: p for p in clubs["AAA"]["players"]}
         self.assertEqual(players["wr1"]["ranks"]["target_share"], {"place": 1, "of": 1})
-        # One target: printed with its share, never placed.
-        self.assertNotIn("ranks", players["wr2"])
+        # One target: still graded (owner rule), placed against the players
+        # above the floor, and the pool size is theirs alone.
+        self.assertEqual(players["wr2"]["ranks"]["target_share"], {"place": 1, "of": 1})
         self.assertEqual(players["wr2"]["target_share"], 0.2)
 
 

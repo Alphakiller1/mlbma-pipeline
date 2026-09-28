@@ -923,6 +923,7 @@ def build(board: dict | None = None, rooms: dict | None = None,
         "team_stats_prior": prior_stats.get("teams") or {},
         "scheme_current": _canon_keys(advanced_context.get("team_scheme_current")),
         "defenders_current": _canon_keys(advanced_context.get("defenders_current")),
+        "run_game": _canon_keys(advanced_context.get("run_game")),
         "player_stats_prior": prior_stats.get("players") or {},
         "team_line": _canon_keys(advanced_context.get("team_line")),
         # {"current": {club: ...}, "combined": {club: ...}} - the page's two

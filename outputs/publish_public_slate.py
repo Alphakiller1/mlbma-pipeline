@@ -695,6 +695,7 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
     team_stats_prior = context.get("team_stats_prior") or {}
     scheme_current = context.get("scheme_current") or {}
     defenders_current = context.get("defenders_current") or {}
+    run_game = context.get("run_game") or {}
     red_zone = context.get("red_zone") or {}
 
     def red_zone_for(club: str) -> dict | None:
@@ -872,6 +873,8 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             "home_player_stats": starter_stats(home_abbr),
             "away_red_zone": red_zone_for(away_abbr),
             "home_red_zone": red_zone_for(home_abbr),
+            "away_run_game": run_game.get(away_abbr),
+            "home_run_game": run_game.get(home_abbr),
             "away_defenders_current": defenders_current.get(away_abbr),
             "home_defenders_current": defenders_current.get(home_abbr),
             "away_scheme_current": scheme_current.get(away_abbr),

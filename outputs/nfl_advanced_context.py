@@ -11,7 +11,7 @@ import math
 import re
 from typing import Any
 
-from outputs import sharp_nfl
+from outputs import nfl_run_game, sharp_nfl
 
 PBP_URL = (
     "https://github.com/nflverse/nflverse-data/releases/download/pbp/"
@@ -815,6 +815,7 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
         "player_coverage_profiles": receivers,
         "team_scheme_current": team_scheme_current(season),
         "defenders_current": pfr_coverage(season),
+        "run_game": nfl_run_game.build(current, prior, season, positions, names),
         "team_line": _team_line(current, season, pfr_rushing) if current is not None else {},
         "red_zone": nfl_red_zone.build(season),
     }
