@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Site Booth</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png" />
+    <!-- The site's own fonts and tokens, through the proxy: the booth never copies a value. -->
+    <link rel="stylesheet" href="/dashboard/assets/fonts/chase-fonts.css" />
+    <link rel="stylesheet" href="/design/chase-tokens-v1.css" />
+    <link rel="stylesheet" href="/__booth/app.css" />
+  </head>
+  <body>
+    <div class="booth">
+      <main class="deck" id="deck">
+        <!-- The recording ring lives on this wrapper, OUTSIDE the stage: an outline on the
+             stage itself counts as part of its box and gets captured. -->
+        <div class="ring" id="ring">
+        <div class="stage" id="stage">
+          <div class="zoom" id="zoom">
+            <div class="viewport" id="viewport">
+              <iframe id="site" title="chase-analytics.com"></iframe>
+              <canvas id="ink"></canvas>
+            </div>
+          </div>
+          <div class="bug" id="bug"><img src="/dashboard/assets/chase-icon-outline.png" alt="" /><span>chase-analytics.com</span></div>
+          <div class="lower" id="lower"><b id="lowerName"></b><span id="lowerHandle"></span></div>
+          <div class="cam" id="cam"><video id="camVideo" autoplay muted playsinline></video></div>
+          <div class="countdown" id="countdown"></div>
+        </div>
+        </div>
+        <p class="deck-note" id="deckNote">Only the framed stage is recorded. Everything on the right stays off camera.</p>
+      </main>
+
+      <aside class="rail" id="rail">
+        <section class="rec">
+          <button class="rec-btn" id="recBtn" title="Record / stop (R)"><i></i><span id="recLabel">Record</span></button>
+          <div class="rec-meta">
+            <div class="timer" id="timer">0:00</div>
+            <div class="rec-actions">
+              <button id="pauseBtn" disabled title="Pause / resume (Q)">Pause</button>
+              <button id="chapterBtn" title="Chapter marker (M)">+ Chapter <em id="chapterCount"></em></button>
+            </div>
+          </div>
+          <div class="status" id="status">Camera and mic starting...</div>
+        </section>
+
+        <section>
+          <h2>Site</h2>
+          <div class="nav">
+            <button id="backBtn" title="Back">&#8592;</button>
+            <button id="fwdBtn" title="Forward">&#8594;</button>
+            <button id="reloadBtn" title="Reload">&#8635;</button>
+            <input id="address" spellcheck="false" autocomplete="off" />
+          </div>
+          <div class="chips" id="quick">
+            <button data-go="/">Home</button>
+            <button data-go="/nfl/">NFL</button>
+            <button data-go="/mlb/">MLB</button>
+            <button data-go="/cfb/">CFB</button>
+            <button data-go="/model-center/">Models</button>
+          </div>
+          <div class="row">
+            <span class="lbl">Format</span>
+            <div class="seg" id="aspectSeg">
+              <button data-aspect="wide">16:9 YouTube</button>
+              <button data-aspect="vertical">9:16 Reels</button>
+            </div>
+          </div>
+          <label class="row">
+            <span class="lbl">Page size</span>
+            <input type="range" id="siteWidth" min="360" max="1920" step="10" />
+            <output id="siteWidthOut"></output>
+          </label>
+          <p class="hint">Narrower page = bigger type on stage. Around 430 is the phone layout.</p>
+        </section>
+
+        <section>
+          <h2>Markers</h2>
+          <div class="tools" id="tools">
+            <button data-tool="browse" title="Use the site (V)"><b>V</b>Browse</button>
+            <button data-tool="pen" title="Pen (D)"><b>D</b>Pen</button>
+            <button data-tool="highlight" title="Highlighter (H)"><b>H</b>Highlight</button>
+            <button data-tool="arrow" title="Arrow (A)"><b>A</b>Arrow</button>
+            <button data-tool="box" title="Box (X)"><b>X</b>Box</button>
+            <button data-tool="circle" title="Circle (O)"><b>O</b>Circle</button>
+            <button data-tool="spot" title="Spotlight: click a row or card, or drag an area (S)"><b>S</b>Spotlight</button>
+            <button data-tool="zoom" title="Zoom: click a card or drag an area, Esc to zoom out (Z)"><b>Z</b>Zoom</button>
+          </div>
+          <div class="row">
+            <div class="tones" id="tones" title="Colour (T cycles)"></div>
+            <button id="undoBtn" title="Undo (U)">Undo</button>
+            <button id="clearBtn" title="Clear (C)">Clear</button>
+          </div>
+          <label class="check"><input type="checkbox" id="fade" /> Fade marks after 4 s</label>
+          <p class="hint">Marks stick to the page and scroll with it. You can scroll with the wheel in any tool.</p>
+        </section>
+
+        <section>
+          <h2>Camera</h2>
+          <div class="row">
+            <label class="check"><input type="checkbox" id="camOn" /> Show (W)</label>
+            <label class="check"><input type="checkbox" id="mirror" /> Mirror</label>
+          </div>
+          <div class="row">
+            <span class="lbl">Spot</span>
+            <div class="seg" id="cornerSeg">
+              <button data-corner="tl" title="Top left">&#8598;</button>
+              <button data-corner="tr" title="Top right">&#8599;</button>
+              <button data-corner="bl" title="Bottom left">&#8601;</button>
+              <button data-corner="br" title="Bottom right">&#8600;</button>
+            </div>
+          </div>
+          <div class="row">
+            <span class="lbl">Size</span>
+            <div class="seg" id="sizeSeg">
+              <button data-size="0">S</button>
+              <button data-size="1">M</button>
+              <button data-size="2">L</button>
+            </div>
+            <div class="seg" id="shapeSeg">
+              <button data-shape="circle">Circle</button>
+              <button data-shape="rect">Card</button>
+            </div>
+          </div>
+          <select id="camSel" title="Camera"></select>
+          <select id="micSel" title="Microphone"></select>
+          <div class="meter" title="Mic level"><i id="meter"></i></div>
+          <p class="hint">Drag the bubble on stage to put it anywhere.</p>
+        </section>
+
+        <section>
+          <h2>On screen</h2>
+          <label class="check"><input type="checkbox" id="bugOn" /> Site mark (B)</label>
+          <label class="check"><input type="checkbox" id="lowerOn" /> Name strap (N)</label>
+          <input id="nameIn" placeholder="Your name" />
+          <input id="handleIn" placeholder="@handle or tagline" />
+          <label class="check"><input type="checkbox" id="countOn" /> 3-2-1 countdown</label>
+          <label class="check"><input type="checkbox" id="autoCh" /> Chapter on every new page</label>
+        </section>
+
+        <section>
+          <h2>Notes</h2>
+          <textarea id="notes" rows="5" placeholder="Talking points. Only you see this."></textarea>
+        </section>
+
+        <section>
+          <h2>Takes <button class="link" id="folderBtn">Open folder</button></h2>
+          <ul class="takes" id="takes"></ul>
+        </section>
+
+        <details class="keys">
+          <summary>Keys</summary>
+          <dl>
+            <dt>R</dt><dd>record / stop</dd>
+            <dt>Q</dt><dd>pause / resume</dd>
+            <dt>M</dt><dd>chapter marker</dd>
+            <dt>V D H A X O</dt><dd>browse, pen, highlight, arrow, box, circle</dd>
+            <dt>S / Z</dt><dd>spotlight / zoom (click = that row or card, again = its parent)</dd>
+            <dt>Esc</dt><dd>zoom out, clear spotlight, back to browse</dd>
+            <dt>T</dt><dd>next colour</dd>
+            <dt>U / C</dt><dd>undo / clear marks</dd>
+            <dt>W E [ ]</dt><dd>camera show, move corner, size</dd>
+            <dt>B / N</dt><dd>site mark / name strap</dd>
+          </dl>
+        </details>
+      </aside>
+    </div>
+    <div class="toast" id="toast"></div>
+    <script type="module" src="/__booth/app.js"></script>
+  </body>
+</html>

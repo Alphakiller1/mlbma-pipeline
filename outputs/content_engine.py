@@ -26,6 +26,9 @@ COMMANDS
                 --type team --family scoring --window L30
   booth       Recording booth: live graphics + camera, one take.
                 --sport nfl --games IND@KC --show "Week 3 Sunday Night Football"
+  site-booth  Record a breakdown ON chase-analytics.com: the live site on stage,
+              camera bubble, markers, spotlight/zoom, chapter markers.
+                --page "/nfl/matchup.html?game=401772..."   (optional start page)
 
 TEXT LAYER (every command; see docs/CONTENT_ENGINE_SPEC.md section 6)
   --eyebrow   category label      --headline  the claim
@@ -1337,9 +1340,27 @@ def run_booth(a) -> None:
     raise SystemExit(subprocess.call(argv, cwd=VIDEO))
 
 
+def run_site_booth(a) -> None:
+    """Start the site booth: chase-analytics.com on stage, recorded with camera + markers."""
+    js = VIDEO / "scripts" / "site-booth.mjs"
+    if not js.is_file():
+        fail("site booth is missing (video/scripts/site-booth.mjs)")
+    node = shutil.which("node")
+    if not node:
+        fail("node is not on PATH; the site booth needs Node to serve the stage")
+    argv = [node, str(js)]
+    if getattr(a, "page", None):
+        argv += ["--page", a.page]
+    if getattr(a, "no_open", False):
+        argv.append("--no-open")
+    print("[content-engine] site booth - keep this window open while you record")
+    raise SystemExit(subprocess.call(argv, cwd=VIDEO))
+
+
 COMMANDS = {
     "keys": None,          # handled before any browser/slate work in main()
     "booth": None,         # recording studio; does not compose a still
+    "site-booth": None,    # records the live site; does not compose a still
     "compose": cmd_compose,
     "preview": cmd_preview,
     "deep": cmd_deep,
@@ -1359,6 +1380,7 @@ def main() -> None:
     ap.add_argument("--pack",
                     help="booth: existing pack folder, e.g. props/pack/2026-09-20-IND-KC")
     ap.add_argument("--show", help="booth: show / slot name written into the pack")
+    ap.add_argument("--page", help="site-booth: site page to open on stage, e.g. /nfl/")
     ap.add_argument("--tag", help="booth: short badge on the pack, e.g. SNF")
     ap.add_argument("--no-open", action="store_true", dest="no_open",
                     help="booth: serve the studio but do not open a browser")
@@ -1409,6 +1431,9 @@ def main() -> None:
         return
     if a.command == "booth":
         run_booth(a)
+        return
+    if a.command == "site-booth":
+        run_site_booth(a)
         return
 
     day = a.date
