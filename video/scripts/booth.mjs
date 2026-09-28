@@ -16,16 +16,15 @@
  * auto-edit on it (scripts/edit.mjs), which follows that sheet.
  */
 import { build } from "esbuild";
-import { spawn, spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import fs from "node:fs";
 import http from "node:http";
 import https from "node:https";
-import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadPack, newestPack } from "./lib/catalog.mjs";
 import { formatCueSheet } from "./lib/cues.mjs";
-import { attachWs } from "./lib/ws-text.mjs";
+import { createRelay, ensureBoothPfx, lanIps } from "./lib/phone-mic.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
@@ -178,70 +177,9 @@ const readBody = (req) =>
     req.on("error", reject);
   });
 
-const lanIps = () => {
-  const ips = [];
-  for (const rows of Object.values(os.networkInterfaces())) {
-    for (const a of rows ?? []) {
-      const v4 = a.family === "IPv4" || a.family === 4;
-      if (v4 && !a.internal) ips.push(a.address);
-    }
-  }
-  return ips;
-};
 const phonePort = port + 1;
-const ensureBoothPfx = () => {
-  if (process.platform !== "win32") return null;
-  const dir = path.join(root, ".cache");
-  const pfx = path.join(dir, "booth.pfx");
-  const meta = path.join(dir, "booth-cert.json");
-  const names = ["localhost", os.hostname(), ...lanIps()].filter(Boolean);
-  fs.mkdirSync(dir, { recursive: true });
-  try {
-    const prev = JSON.parse(fs.readFileSync(meta, "utf8"));
-    if (fs.existsSync(pfx) && names.every((n) => prev.names?.includes(n))) return pfx;
-  } catch {
-    /* rebuild */
-  }
-  const dns = names.map((n) => `'${String(n).replace(/'/g, "")}'`).join(",");
-  const ps1 = path.join(dir, "booth-cert.ps1");
-  fs.writeFileSync(
-    ps1,
-    `$ErrorActionPreference = 'Stop'
-$names = @(${dns})
-$cert = New-SelfSignedCertificate -DnsName $names -NotAfter (Get-Date).AddYears(3) -KeyExportPolicy Exportable -KeySpec KeyExchange -CertStoreLocation 'Cert:\\CurrentUser\\My' -FriendlyName 'Chase recording booth'
-$pwd = ConvertTo-SecureString 'booth' -AsPlainText -Force
-Export-PfxCertificate -Cert $cert -FilePath '${pfx.replace(/'/g, "''")}' -Password $pwd | Out-Null
-Remove-Item -LiteralPath ('Cert:\\CurrentUser\\My\\' + $cert.Thumbprint)
-`,
-  );
-  const r = spawnSync("powershell.exe", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", ps1], { windowsHide: true, encoding: "utf8" });
-  if (r.status !== 0 || !fs.existsSync(pfx)) {
-    console.log(`  phone mic cert skipped: ${(r.stderr || r.stdout || "powershell failed").trim().slice(-240)}`);
-    return null;
-  }
-  fs.writeFileSync(meta, JSON.stringify({ names }));
-  return pfx;
-};
-const rooms = { booth: null, phone: null };
-const onUpgrade = (req, socket, head) => {
-  if (new URL(req.url, "http://booth").pathname !== "/ws") {
-    socket.destroy();
-    return;
-  }
-  attachWs(req, socket, head, (msg, send) => {
-    if (msg.role === "booth" || msg.role === "phone") {
-      rooms[msg.role]?.close();
-      rooms[msg.role] = { send, close: () => socket.end() };
-      if (msg.role === "phone") send(rooms.booth ? { type: "booth-ready" } : { type: "need-booth" });
-      if (msg.role === "booth" && rooms.phone) rooms.phone.send({ type: "booth-ready" });
-      return;
-    }
-    const fromPhone = rooms.phone && rooms.phone.send === send;
-    const other = fromPhone ? rooms.booth : rooms.phone;
-    if (other) other.send(msg);
-    else if (fromPhone) send({ type: "need-booth" });
-  });
-};
+const ensurePfx = () => ensureBoothPfx(root);
+const onUpgrade = createRelay();
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${port}`);
@@ -391,7 +329,7 @@ server.listen(port, "127.0.0.1", () => {
   openBrowser(url);
 });
 
-const pfx = ensureBoothPfx();
+const pfx = ensurePfx();
 if (pfx) {
   const handler = server.listeners("request")[0];
   const secure = https.createServer({ pfx: fs.readFileSync(pfx), passphrase: "booth" }, handler);

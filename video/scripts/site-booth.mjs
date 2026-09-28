@@ -24,15 +24,18 @@
 import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import http from "node:http";
+import https from "node:https";
 import path from "node:path";
 import { Readable } from "node:stream";
 import { fileURLToPath } from "node:url";
+import { createRelay, ensureBoothPfx, lanIps } from "./lib/phone-mic.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
 const opt = (n, d) => (args.includes(`--${n}`) ? args[args.indexOf(`--${n}`) + 1] : d);
 const port = Number(opt("port", 8792));
 const startPage = opt("page", null);
+const phonePort = port + 1;
 const origin = new URL(opt("origin", "https://chase-analytics.com")).origin;
 const originHosts = [new URL(origin).host, "chase-analytics.com", "www.chase-analytics.com"];
 const pageDir = path.join(root, "site-booth");
@@ -218,6 +221,7 @@ const server = http.createServer(async (req, res) => {
       const name = safeName(url.searchParams.get("name"));
       if (api === "info") return json(res, { origin, ffmpeg: Boolean(ffmpeg), footage: path.relative(path.resolve(root, ".."), footage) });
       if (api === "takes") return json(res, { takes: listTakes() });
+      if (api === "lan") return json(res, { urls: secureUp ? lanIps().map((ip) => `https://${ip}:${phonePort}/mic`) : [], port: phonePort });
       if (req.method === "POST" && api === "chunk") {
         // Chunks arrive in order (the page sends them one at a time); seq 0 starts the file.
         if (!name) return res.writeHead(400).end("bad name");
@@ -276,6 +280,27 @@ const openBrowser = (url) => {
   const app = registered("chrome.exe") ? "chrome" : registered("msedge.exe") ? "msedge" : "";
   spawn("cmd.exe", ["/c", "start", "", ...(app ? [app] : []), url], { detached: true, stdio: "ignore" }).unref();
 };
+/* ── phone as a mic: an https port on the LAN that serves ONLY the mic page and the relay ── */
+const onUpgrade = createRelay();
+server.on("upgrade", onUpgrade);
+let secureUp = false;
+const pfx = ensureBoothPfx(root);
+if (pfx) {
+  // Never the proxy or the takes API: anyone on the Wi-Fi can reach this port.
+  const secure = https.createServer({ pfx: fs.readFileSync(pfx), passphrase: "booth" }, (req, res) => {
+    const p = new URL(req.url, "https://booth").pathname;
+    if (p === "/mic" || p === "/") return sendFile(res, path.join(root, "booth", "mic.html"));
+    res.writeHead(404).end("not found");
+  });
+  secure.on("upgrade", onUpgrade);
+  secure.on("error", (e) => console.log(e.code === "EADDRINUSE" ? `  phone mic port ${phonePort} is already in use.` : `  phone mic https: ${e.message}`));
+  secure.listen(phonePort, "0.0.0.0", () => {
+    secureUp = true;
+    const urls = lanIps().map((ip) => `https://${ip}:${phonePort}/mic`);
+    if (urls.length) console.log(`  phone as mic: open ${urls[0]} on the phone (same Wi-Fi)`);
+  });
+}
+
 const boothUrl = `http://localhost:${port}/__booth/${startPage ? `?page=${encodeURIComponent(startPage)}` : ""}`;
 server.on("error", (e) => {
   if (e.code !== "EADDRINUSE") throw e;
