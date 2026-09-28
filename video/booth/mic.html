@@ -119,7 +119,7 @@
           } else if (msg.type === "ice" && msg.candidate) {
             try { await pc.addIceCandidate(msg.candidate); } catch {}
           } else if (msg.type === "need-booth") {
-            say("On the computer: Setup → Microphone → Phone (desktop camera stays here).", "wait");
+            say("Open the booth on the computer and pick Phone (or Both) as the microphone.", "wait");
           }
         };
         ws.onclose = () => say("Disconnected. Tap to reconnect.", "err");

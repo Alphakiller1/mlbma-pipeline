@@ -25,6 +25,7 @@ const prefs = Object.assign(
     camSize: 1,
     camShape: "box", // new key, so a saved "circle" from before does not override the box
     mirror: true,
+    sound: "computer", // computer | phone | both
     camFree: null, // {x, y} as fractions of the stage when dragged
     bug: false, // the site's own header already carries the logo
     lower: false,
@@ -132,7 +133,6 @@ function placeOverlays() {
   Object.assign(cam.style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px` });
   cam.classList.toggle("off", !prefs.camOn);
   cam.classList.toggle("box", box);
-  cam.classList.toggle("mirror", prefs.mirror);
 
   // Site mark: top-right (the site's own logo is top-left), top-left if the camera is there.
   const bug = $("bug");
@@ -503,30 +503,121 @@ function render(now) {
 }
 requestAnimationFrame(render);
 
-/* ── camera + mic ── */
+/* ── camera ──
+ * The camera is PAINTED onto a canvas, not shown as a <video>. Chrome can hand a live
+ * camera <video> to the graphics card as its own overlay layer, and tab capture then
+ * records the empty box behind it (a grey bubble). A canvas is always composited. */
 let camStream = null;
+let camError = "";
+const camCanvas = $("camCanvas");
+const camCtx = camCanvas.getContext("2d");
+function paintCam() {
+  requestAnimationFrame(paintCam);
+  const w = Math.round(cam.clientWidth * (window.devicePixelRatio || 1));
+  const h = Math.round(cam.clientHeight * (window.devicePixelRatio || 1));
+  if (!w || !h) return;
+  if (camCanvas.width !== w || camCanvas.height !== h) Object.assign(camCanvas, { width: w, height: h });
+  const v = camVideo;
+  camCtx.setTransform(1, 0, 0, 1, 0, 0);
+  if (!camStream || v.readyState < 2 || !v.videoWidth) {
+    camCtx.fillStyle = "#1a1a1e";
+    camCtx.fillRect(0, 0, w, h);
+    camCtx.fillStyle = "#a4a8b6";
+    camCtx.font = `600 ${Math.max(11, Math.round(h * 0.07))}px system-ui, sans-serif`;
+    camCtx.textAlign = "center";
+    camCtx.textBaseline = "middle";
+    const lines = camStream ? ["Camera starting..."] : ["No camera", camError || "allow it in the address bar"];
+    lines.forEach((t, i) => camCtx.fillText(t.slice(0, 40), w / 2, h / 2 + (i - (lines.length - 1) / 2) * h * 0.1));
+    return;
+  }
+  // object-fit: cover, mirrored when asked
+  const k = Math.max(w / v.videoWidth, h / v.videoHeight);
+  const dw = v.videoWidth * k;
+  const dh = v.videoHeight * k;
+  if (prefs.mirror) camCtx.setTransform(-1, 0, 0, 1, w, 0);
+  camCtx.drawImage(v, (w - dw) / 2, (h - dh) / 2, dw, dh);
+}
+requestAnimationFrame(paintCam);
+
+/* ── sound: computer mic, phone, or both, mixed into ONE track the recorder records ── */
 let micStream = null;
-let meterRaf = 0;
-let meterCtx = null;
+let phoneStream = null;
+let phoneState = "wait"; // wait | live
+const mix = { ctx: null, dest: null, an: null, nodes: [] };
+function ensureMix() {
+  if (mix.ctx) return;
+  mix.ctx = new AudioContext();
+  mix.dest = mix.ctx.createMediaStreamDestination();
+  mix.an = mix.ctx.createAnalyser();
+  mix.an.fftSize = 512;
+  const buf = new Uint8Array(mix.an.fftSize);
+  const tick = () => {
+    mix.an.getByteTimeDomainData(buf);
+    let peak = 0;
+    for (const v of buf) peak = Math.max(peak, Math.abs(v - 128));
+    $("meter").style.width = `${Math.min(100, (peak / 128) * 160)}%`;
+    requestAnimationFrame(tick);
+  };
+  tick();
+  const wake = () => mix.ctx.state === "suspended" && mix.ctx.resume();
+  document.addEventListener("pointerdown", wake);
+  document.addEventListener("keydown", wake);
+}
+/** Which streams feed the recording right now. */
+const soundSources = () => {
+  const src = prefs.sound;
+  return [(src === "computer" || src === "both") && micStream, (src === "phone" || src === "both") && phoneStream].filter(Boolean);
+};
+function rewireSound() {
+  ensureMix();
+  mix.nodes.forEach((n) => n.disconnect());
+  mix.nodes = soundSources().map((stream) => {
+    const n = mix.ctx.createMediaStreamSource(stream);
+    n.connect(mix.dest);
+    n.connect(mix.an);
+    return n;
+  });
+  paintSound();
+}
+function paintSound() {
+  document.querySelectorAll("#soundSeg button").forEach((b) => b.classList.toggle("on", b.dataset.sound === prefs.sound));
+  $("phoneBox").hidden = prefs.sound === "computer";
+  $("micSel").hidden = prefs.sound === "phone";
+  const st = $("phoneState");
+  st.textContent = phoneState === "live" ? "Phone connected" : "Waiting for the phone";
+  st.className = phoneState === "live" ? "ok" : "warn";
+}
+
 async function startDevices() {
   try {
     camStream?.getTracks().forEach((t) => t.stop());
     micStream?.getTracks().forEach((t) => t.stop());
-    const [c, m] = await Promise.all([
-      navigator.mediaDevices
-        .getUserMedia({ video: { deviceId: prefs.camId ? { exact: prefs.camId } : undefined, width: { ideal: 1280 }, height: { ideal: 720 } } })
-        .catch((e) => (prefs.camId ? navigator.mediaDevices.getUserMedia({ video: true }) : Promise.reject(e))),
-      navigator.mediaDevices
-        .getUserMedia({ audio: { deviceId: prefs.micId ? { exact: prefs.micId } : undefined, echoCancellation: true, noiseSuppression: true, autoGainControl: true } })
-        .catch((e) => (prefs.micId ? navigator.mediaDevices.getUserMedia({ audio: true }) : Promise.reject(e))),
-    ].map((p) => p.catch((e) => e)));
+    const [c, m] = await Promise.all(
+      [
+        navigator.mediaDevices
+          .getUserMedia({ video: { deviceId: prefs.camId ? { exact: prefs.camId } : undefined, width: { ideal: 1280 }, height: { ideal: 720 } } })
+          .catch((e) => (prefs.camId ? navigator.mediaDevices.getUserMedia({ video: true }) : Promise.reject(e))),
+        navigator.mediaDevices
+          .getUserMedia({ audio: { deviceId: prefs.micId ? { exact: prefs.micId } : undefined, echoCancellation: true, noiseSuppression: true, autoGainControl: true } })
+          .catch((e) => (prefs.micId ? navigator.mediaDevices.getUserMedia({ audio: true }) : Promise.reject(e))),
+      ].map((p) => p.catch((e) => e)),
+    );
     camStream = c instanceof MediaStream ? c : null;
     micStream = m instanceof MediaStream ? m : null;
+    // NotReadableError = another app (Zoom, OBS, the other booth) has the camera.
+    camError = camStream
+      ? ""
+      : c?.name === "NotReadableError"
+        ? "another app is using it"
+        : c?.name === "NotAllowedError"
+          ? "blocked: allow it in the address bar"
+          : c?.message || "";
     camVideo.srcObject = camStream;
+    camVideo.play?.().catch(() => {});
     await listDevices();
-    meter();
-    const miss = [!camStream && "camera", !micStream && "mic"].filter(Boolean);
-    if (miss.length) status(`No ${miss.join(" or ")}: allow it in the address bar, then reload.`, true);
+    rewireSound();
+    const miss = [!camStream && `camera (${camError})`, !micStream && prefs.sound !== "phone" && "mic"].filter(Boolean);
+    if (miss.length) status(`No ${miss.join(" or ")}. Fix it, then reload.`, true);
     else status(captureNote());
   } catch (e) {
     status(`Devices: ${e.message}`, true);
@@ -546,26 +637,54 @@ async function listDevices() {
   fill($("camSel"), "videoinput", camStream, "camId");
   fill($("micSel"), "audioinput", micStream, "micId");
 }
-function meter() {
-  cancelAnimationFrame(meterRaf);
-  meterCtx?.close();
-  meterCtx = null;
-  if (!micStream) return;
-  const ac = (meterCtx = new AudioContext());
-  const an = ac.createAnalyser();
-  an.fftSize = 512;
-  ac.createMediaStreamSource(micStream).connect(an);
-  const buf = new Uint8Array(an.fftSize);
-  const tick = () => {
-    an.getByteTimeDomainData(buf);
-    let peak = 0;
-    for (const v of buf) peak = Math.max(peak, Math.abs(v - 128));
-    $("meter").style.width = `${Math.min(100, (peak / 128) * 160)}%`;
-    meterRaf = requestAnimationFrame(tick);
-  };
-  tick();
-  if (ac.state === "suspended") document.addEventListener("pointerdown", () => ac.resume(), { once: true });
+
+/* ── the phone: WebRTC audio, signalled through the booth server's /ws relay ── */
+const phoneSink = new Audio(); // Chrome only feeds a remote WebRTC stream into Web Audio while a media element plays it
+phoneSink.muted = true;
+function setPhone(stream) {
+  phoneStream = stream;
+  phoneState = stream ? "live" : "wait";
+  phoneSink.srcObject = stream;
+  if (stream) phoneSink.play().catch(() => {});
+  rewireSound();
+  if (stream) toast("Phone mic connected.");
+  else if (rec.state !== "idle" && prefs.sound !== "computer") toast("The phone mic dropped. Keep its page open and the screen on.", 5000);
 }
+function connectPhoneRelay() {
+  const ws = new WebSocket(`ws://${location.host}/ws`);
+  let pc = null;
+  ws.onopen = () => ws.send(JSON.stringify({ role: "booth" }));
+  ws.onmessage = async (ev) => {
+    const msg = JSON.parse(ev.data);
+    if (msg.type === "offer" && msg.sdp) {
+      pc?.close();
+      pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+      const mine = pc;
+      pc.onicecandidate = (e) => e.candidate && ws.send(JSON.stringify({ type: "ice", candidate: e.candidate }));
+      pc.ontrack = (e) => setPhone(e.streams[0] ?? new MediaStream([e.track]));
+      pc.onconnectionstatechange = () => {
+        if (pc === mine && ["failed", "closed", "disconnected"].includes(mine.connectionState)) setPhone(null);
+      };
+      await pc.setRemoteDescription(msg.sdp);
+      await pc.setLocalDescription(await pc.createAnswer());
+      ws.send(JSON.stringify({ type: "answer", sdp: pc.localDescription }));
+    } else if (msg.type === "ice" && msg.candidate && pc) {
+      try {
+        await pc.addIceCandidate(msg.candidate);
+      } catch {
+        /* stale candidate */
+      }
+    }
+  };
+  ws.onclose = () => setTimeout(connectPhoneRelay, 2000);
+}
+fetch("/__booth/api/lan")
+  .then((r) => r.json())
+  .then(({ urls }) => {
+    $("phoneUrl").textContent = urls[0] || "Phone mic unavailable (no Wi-Fi address, or its port is busy).";
+    $("phoneUrl").dataset.url = urls[0] || "";
+  })
+  .catch(() => {});
 
 // Drag the camera anywhere on the stage.
 cam.addEventListener("pointerdown", (e) => {
@@ -665,6 +784,10 @@ async function countdown() {
 
 async function startRecording() {
   if (rec.state !== "idle") return;
+  if (prefs.sound !== "computer" && !phoneStream) {
+    status("The phone mic is not connected yet. Open the phone link under Sound, or switch Sound to Computer.", true);
+    return;
+  }
   rec.state = "arming";
   let track;
   try {
@@ -677,7 +800,10 @@ async function startRecording() {
   setAspectLocked(true);
   await countdown();
   const tracks = [track];
-  if (micStream) tracks.push(micStream.getAudioTracks()[0]);
+  ensureMix();
+  await mix.ctx.resume();
+  if (soundSources().length) tracks.push(mix.dest.stream.getAudioTracks()[0]);
+  else toast("Recording with no sound: no microphone is connected.", 5000);
   const d = new Date();
   const pad = (n) => String(n).padStart(2, "0");
   rec.name = `site-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
@@ -937,6 +1063,18 @@ $("notes").oninput = (e) => {
   prefs.notes = e.target.value;
   save();
 };
+document.querySelectorAll("#soundSeg button").forEach(
+  (b) =>
+    (b.onclick = () => {
+      prefs.sound = b.dataset.sound;
+      save();
+      rewireSound();
+    }),
+);
+$("phoneUrl").onclick = (e) => {
+  const u = e.target.dataset.url;
+  if (u) navigator.clipboard?.writeText(u).then(() => toast("Link copied."), () => {});
+};
 $("camSel").onchange = (e) => {
   prefs.camId = e.target.value;
   save();
@@ -975,6 +1113,7 @@ layout();
 // ?page=/nfl/ (from --page) wins over the page you were last on.
 go(new URLSearchParams(location.search).get("page") || prefs.path);
 startDevices();
+connectPhoneRelay();
 refreshTakes();
 fetch("/__booth/api/info")
   .then((r) => r.json())

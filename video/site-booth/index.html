@@ -25,7 +25,7 @@
           </div>
           <div class="bug" id="bug"><img src="/dashboard/assets/chase-icon-outline.png" alt="" /><span>chase-analytics.com</span></div>
           <div class="lower" id="lower"><b id="lowerName"></b><span id="lowerHandle"></span></div>
-          <div class="cam" id="cam"><video id="camVideo" autoplay muted playsinline></video></div>
+          <div class="cam" id="cam"><canvas id="camCanvas"></canvas></div>
           <div class="countdown" id="countdown"></div>
         </div>
         </div>
@@ -124,9 +124,24 @@
             </div>
           </div>
           <select id="camSel" title="Camera"></select>
-          <select id="micSel" title="Microphone"></select>
-          <div class="meter" title="Mic level"><i id="meter"></i></div>
-          <p class="hint">Drag the bubble on stage to put it anywhere.</p>
+          <p class="hint">Drag the camera on stage to put it anywhere.</p>
+        </section>
+
+        <section>
+          <h2>Sound</h2>
+          <div class="seg" id="soundSeg">
+            <button data-sound="computer">Computer</button>
+            <button data-sound="phone">Phone</button>
+            <button data-sound="both">Both</button>
+          </div>
+          <select id="micSel" title="Computer microphone"></select>
+          <div class="phone" id="phoneBox" hidden>
+            <b id="phoneState" class="warn">Waiting for the phone</b>
+            <span>On your phone (same Wi-Fi), open:</span>
+            <button class="phone-url" id="phoneUrl" title="Click to copy">...</button>
+            <span>Tap past the certificate warning, then "Use this phone as the mic". Keep that page open with the screen on.</span>
+          </div>
+          <div class="meter" title="Level of what is being recorded"><i id="meter"></i></div>
         </section>
 
         <section>
@@ -167,6 +182,7 @@
       </aside>
     </div>
     <div class="toast" id="toast"></div>
+    <video id="camVideo" class="cam-source" autoplay muted playsinline></video>
     <script type="module" src="/__booth/app.js"></script>
   </body>
 </html>
