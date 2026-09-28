@@ -39,7 +39,7 @@ PFR_RUSHING_URL = (
 )
 
 PBP_COLUMNS = (
-    "game_id", "play_id", "season", "season_type", "posteam", "defteam",
+    "game_id", "play_id", "season", "season_type", "week", "posteam", "defteam",
     "passer_player_id", "passer_player_name", "rusher_player_id", "rusher_player_name",
     "receiver_player_id", "receiver_player_name", "receiving_yards",
     "qb_dropback", "rush_attempt", "pass_attempt", "complete_pass", "passing_yards",
@@ -772,6 +772,41 @@ def _ranked_desc(pool: list[tuple[str, float]]) -> dict[str, int]:
     return {team: index + 1 for index, (team, _) in enumerate(ordered)}
 
 
+# A quarterback is credited with his offense's man and zone figures only when
+# he has taken nearly all of its dropbacks; otherwise they belong to the club.
+SOLE_PASSER_SHARE = 0.85
+
+
+def _credit_offense_coverage(profiles: list[dict], frame, season: int) -> None:
+    """Fill a current-season starter's Vs Man / Vs Zone rows from Sharp.
+
+    Participation data (the only public per-play coverage) is not released
+    mid-season; Sharp Football Analysis charts coverage live but publishes it
+    per offense. Rows the participation data already filled are left alone.
+    """
+    by_team = sharp_nfl.offense_coverage(season)
+    through = by_team.pop("_through_week", None) if by_team else None
+    if not by_team or frame is None:
+        return
+    # Shares over the weeks Sharp's figures cover, on dropbacks with a named passer.
+    drops = frame[frame["qb_dropback"].fillna(0).eq(1) & frame["passer_player_id"].notna()]
+    if through and "week" in drops:
+        drops = drops[drops["week"].le(through)]
+    team_db = drops.groupby("posteam").size().to_dict()
+    passer_db = drops.groupby(["posteam", "passer_player_id"]).size().to_dict()
+    for profile in profiles:
+        if profile.get("position") != "QB" or profile.get("source_season") != season:
+            continue
+        splits = profile.get("splits") or {}
+        mine = passer_db.get((profile.get("team"), profile.get("player_id")), 0)
+        total = team_db.get(profile.get("team")) or 0
+        looks = by_team.get(_team(profile.get("team")))
+        if not looks or not total or mine / total < SOLE_PASSER_SHARE:
+            continue
+        for look, stats in looks.items():
+            splits.setdefault(look, dict(stats))
+
+
 def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
     """Return derived observed context; any unavailable feed fails soft."""
     # Imported here, not at the top: nfl_red_zone reuses this module's loaders.
@@ -807,6 +842,7 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
         profiles.extend(_player_profiles(
             current, season, names, positions, ngs_rushing, ngs_passing, qb_pressure))
         receivers.extend(_receiver_profiles(current, season, names, positions))
+        _credit_offense_coverage(profiles, current, season)
     if prior is not None:
         profiles.extend(_player_profiles(prior, season - 1, names, positions))
         receivers.extend(_receiver_profiles(prior, season - 1, names, positions))

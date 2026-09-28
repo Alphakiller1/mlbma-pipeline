@@ -4151,7 +4151,7 @@ function seasonToggle(game) {
   var NFL_TABS = [
     ['units', 'Units', ['efficiency']],
     ['passing', 'Passing', ['quarterbacks', 'coverage', 'looks']],
-    ['rushing', 'Rushing', ['run-game', 'rushing', 'trenches']],
+    ['rushing', 'Rushing', ['run-game', 'trenches', 'rushing']],
     ['receiving', 'Receiving', ['receivers']],
     ['redzone', 'Red Zone', ['redzone']],
     ['tendencies', 'Tendencies', ['tendencies']],
@@ -4277,11 +4277,11 @@ function seasonToggle(game) {
       section('run-game', 'Run Game', 'Each Rushing Unit, Then Every Ball Carrier',
         nflBothWindows(function () { return nflDuo(nflRunGamePanel, sport, game); })),
 
-      section('rushing', 'Running Backs', 'Season Line And Splits By Box And Direction',
-        nflDuo(nflBackPanel, sport, game, 'RB')),
-
       section('trenches', 'Trenches', 'Each Line, And Where Runs Have Gone Against Each Front',
         nflDuo(nflTrenchPanel, sport, game)),
+
+      section('rushing', 'Running Backs', 'Season Line And Splits By Box And Direction',
+        nflDuo(nflBackPanel, sport, game, 'RB')),
 
       section('receivers', 'Pass Catchers', 'Volume Per Game And Where Targets Go',
         nflDuo(nflCatchersPanel, sport, game)),
