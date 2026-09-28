@@ -245,8 +245,14 @@ The keys also work while you are clicking around inside the site.
   The phone and the booth pair through the site's Supabase realtime room (`mic/room.js`,
   public key only), so any network works (Wi-Fi or cellular) with no certificate warning,
   PC IP or firewall port. Only the WebRTC handshake passes through Supabase; the audio
-  goes straight from the phone to the PC. The room code is kept in the booth's browser, so
-  the phone link stays the same and can be bookmarked.
+  goes straight from the phone to the PC. The room code lives in `video/.cache/phone-room.txt`
+  (set it with `site-booth.bat --room CODE`), and the link is printed in the booth window
+  at start, so it never changes and can be bookmarked. While live, the phone page keeps the
+  screen awake.
+  **Sync:** phone audio reaches the PC about 0.1-0.3 s after the camera frame. The booth
+  measures that delay (WebRTC stats, shown under Sound) and the MP4 encode moves the audio
+  earlier by it. In Both, the computer mic is delayed by the same amount so the two
+  voices don't echo.
   Fallback without internet: on the same Wi-Fi, the `https://<PC IP>:8793/mic` link (shown
   under the main link) still works through the booth's own relay. That link needs the
   certificate warning tapped past, and the Windows Firewall rule the booth adds (or the
@@ -255,8 +261,13 @@ The keys also work while you are clicking around inside the site.
   live camera video on its own GPU overlay layer, which tab capture misses, and the
   bubble records grey. If the camera cannot start, the box says why (for example
   "another app is using it").
-- **Sharpness:** the recording has the stage's real screen pixels. Maximise the window,
-  or use F11 fullscreen, before recording, especially for 9:16.
+- **Smooth takes:** the capture is sized so the stage comes out at about 1080p (the encode
+  size). It is recorded with H.264, which Chrome/Edge encode on the graphics card, at
+  30 fps with Chrome told to keep the frame rate. It used to ask for 4K, encode VP9 on the
+  CPU, and hint "detail", which let Chrome drop frames whenever it was busy (choppy
+  scrolls). The camera box repaints once per camera frame, not on every screen refresh.
+- **Sharpness:** maximise the window, or use F11 fullscreen, before recording, especially
+  for 9:16.
 - **ffmpeg** comes from the Remotion compositor in `node_modules` (run `npm install`
   once). The Remotion build has no `pad` or `fps` filter and rejects positional filter
   options, so the encode uses only `scale` + `format` with named options, plus `-r 30`.

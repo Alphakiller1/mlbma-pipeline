@@ -512,7 +512,6 @@ let camError = "";
 const camCanvas = $("camCanvas");
 const camCtx = camCanvas.getContext("2d");
 function paintCam() {
-  requestAnimationFrame(paintCam);
   const w = Math.round(cam.clientWidth * (window.devicePixelRatio || 1));
   const h = Math.round(cam.clientHeight * (window.devicePixelRatio || 1));
   if (!w || !h) return;
@@ -537,13 +536,32 @@ function paintCam() {
   if (prefs.mirror) camCtx.setTransform(-1, 0, 0, 1, w, 0);
   camCtx.drawImage(v, (w - dw) / 2, (h - dh) / 2, dw, dh);
 }
-requestAnimationFrame(paintCam);
+// Paint when the camera delivers a frame (30 a second) rather than on every screen
+// refresh, so the booth is not redrawing the bubble twice as often as it changes while
+// the recorder needs the machine. Size changes and the placeholder repaint on their own.
+if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
+  const onFrame = () => {
+    paintCam();
+    camVideo.requestVideoFrameCallback(onFrame);
+  };
+  camVideo.requestVideoFrameCallback(onFrame);
+  new ResizeObserver(paintCam).observe(cam);
+  setInterval(() => (!camStream || camVideo.readyState < 2) && paintCam(), 500);
+} else {
+  const loop = () => {
+    paintCam();
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+}
 
 /* ── sound: computer mic, phone, or both, mixed into ONE track the recorder records ── */
 let micStream = null;
 let phoneStream = null;
 let phoneState = "wait"; // wait | live
-const mix = { ctx: null, dest: null, an: null, nodes: [] };
+const mix = { ctx: null, dest: null, an: null, nodes: [], delay: null };
+// How late the phone's sound reaches us, in seconds (measured from the WebRTC stats).
+let phoneLag = 0;
 function ensureMix() {
   if (mix.ctx) return;
   mix.ctx = new AudioContext();
@@ -573,8 +591,21 @@ function rewireSound() {
   mix.nodes.forEach((n) => n.disconnect());
   mix.nodes = soundSources().map((stream) => {
     const n = mix.ctx.createMediaStreamSource(stream);
-    n.connect(mix.dest);
-    n.connect(mix.an);
+    let out = n;
+    // Both: the computer mic is held back by the phone's lag so the two voices land
+    // together instead of as an echo. The whole track is then pulled forward in the encode.
+    if (prefs.sound === "both" && stream === micStream) {
+      if (!mix.delay) {
+        mix.delay = mix.ctx.createDelay(1);
+        mix.delay.connect(mix.dest);
+        mix.delay.connect(mix.an);
+      }
+      mix.delay.delayTime.value = phoneLag;
+      n.connect(mix.delay);
+      return n;
+    }
+    out.connect(mix.dest);
+    out.connect(mix.an);
     return n;
   });
   paintSound();
@@ -584,7 +615,10 @@ function paintSound() {
   $("phoneBox").hidden = prefs.sound === "computer";
   $("micSel").hidden = prefs.sound === "phone";
   const st = $("phoneState");
-  st.textContent = phoneState === "live" ? "Phone connected" : "Waiting for the phone";
+  st.textContent =
+    phoneState === "live"
+      ? `Phone connected${phoneLag ? ` · ${Math.round(phoneLag * 1000)} ms behind, synced in the video` : ""}`
+      : "Waiting for the phone";
   st.className = phoneState === "live" ? "ok" : "warn";
 }
 
@@ -595,7 +629,7 @@ async function startDevices() {
     const [c, m] = await Promise.all(
       [
         navigator.mediaDevices
-          .getUserMedia({ video: { deviceId: prefs.camId ? { exact: prefs.camId } : undefined, width: { ideal: 1280 }, height: { ideal: 720 } } })
+          .getUserMedia({ video: { deviceId: prefs.camId ? { exact: prefs.camId } : undefined, width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } } })
           .catch((e) => (prefs.camId ? navigator.mediaDevices.getUserMedia({ video: true }) : Promise.reject(e))),
         navigator.mediaDevices
           .getUserMedia({ audio: { deviceId: prefs.micId ? { exact: prefs.micId } : undefined, echoCancellation: true, noiseSuppression: true, autoGainControl: true } })
@@ -674,6 +708,27 @@ async function onPhoneSignal(msg, send) {
     }
   }
 }
+/* The phone's lag: the jitter buffer, half the round trip, and ~40 ms of the phone's own
+   capture and Opus framing. Smoothed, and held still while a take is rolling. */
+async function measurePhoneLag() {
+  const pc = phonePc;
+  if (!pc || phoneState !== "live") return;
+  let jb = null;
+  let rtt = 0;
+  (await pc.getStats()).forEach((s) => {
+    if (s.type === "inbound-rtp" && s.kind === "audio" && s.jitterBufferEmittedCount) jb = s.jitterBufferDelay / s.jitterBufferEmittedCount;
+    if (s.type === "candidate-pair" && s.nominated && s.state === "succeeded" && s.currentRoundTripTime != null) rtt = s.currentRoundTripTime;
+  });
+  if (jb == null || pc !== phonePc) return;
+  const lag = Math.min(0.8, jb + rtt / 2 + 0.04);
+  phoneLag = phoneLag ? phoneLag * 0.7 + lag * 0.3 : lag;
+  if (rec.state === "idle") {
+    if (mix.delay) mix.delay.delayTime.value = phoneLag;
+    paintSound();
+  }
+}
+setInterval(() => measurePhoneLag().catch(() => {}), 2000);
+
 /* Same Wi-Fi: the booth server's /ws relay (the https://<PC IP>:8793/mic link). */
 function connectPhoneRelay() {
   const ws = new WebSocket(`ws://${location.host}/ws`);
@@ -684,27 +739,15 @@ function connectPhoneRelay() {
 }
 /*
  * Any network: the phone opens chase-analytics.com/mic/?room=CODE and pairs through the
- * site's realtime room (mic/room.js, loaded through the proxy). The code is kept in this
- * browser so a bookmarked phone link keeps working across booth restarts.
+ * site's realtime room (mic/room.js, loaded through the proxy).
  */
 const PHONE_SITE = "https://chase-analytics.com";
-const ROOM_KEY = "siteBooth.phoneRoom.v1";
 async function connectPhoneRoom() {
-  const { joinRoom, newRoomCode, isRoomCode } = await import("/mic/room.js");
-  let code = "";
-  try {
-    code = localStorage.getItem(ROOM_KEY) || "";
-  } catch {
-    /* private window: a new code each session */
-  }
-  if (!isRoomCode(code)) {
-    code = newRoomCode();
-    try {
-      localStorage.setItem(ROOM_KEY, code);
-    } catch {
-      /* not persisted */
-    }
-  }
+  const { joinRoom, isRoomCode } = await import("/mic/room.js");
+  // The booth server owns the code (video/.cache/phone-room.txt, or --room), so the
+  // link is the same in every browser and after every restart.
+  const code = (await (await fetch("/__booth/api/info")).json()).room;
+  if (!isRoomCode(code)) throw new Error("the booth server has no room code");
   const link = joinRoom(code, (msg) => onPhoneSignal(msg, link.send), (s) => s === "open" && link.send({ type: "booth-ready" }));
   return `${PHONE_SITE}/mic/?room=${code}`;
 }
@@ -765,11 +808,27 @@ const captureNote = () =>
       ? "Ready. R to record."
       : "Ready. R to record (the first time, Chrome asks to share this tab: pick Share).";
 
+/** Tab pixels per CSS pixel that put the stage's long side at 1920. */
+function captureScale() {
+  const dpr = window.devicePixelRatio || 1;
+  const r = stage.getBoundingClientRect();
+  const long = prefs.aspect === "vertical" ? r.height : r.width;
+  return long ? Math.min(2 * dpr, Math.max(dpr, 1920 / long)) : dpr;
+}
+
 async function ensureCapture() {
   const live = capture?.getVideoTracks()[0];
   if (live && live.readyState === "live") return live;
   capture = await navigator.mediaDevices.getDisplayMedia({
-    video: { displaySurface: "browser", frameRate: { ideal: 30, max: 30 }, width: { ideal: 3840 }, height: { ideal: 2160 } },
+    // Sized so the STAGE comes out at about 1080p, the size the take is encoded to.
+    // Asking for 4K made Chrome render and encode every frame at up to four times
+    // that, which is where the dropped frames (the stutter in the takes) came from.
+    video: {
+      displaySurface: "browser",
+      frameRate: { ideal: 30, max: 30 },
+      width: { ideal: Math.round(innerWidth * captureScale()) },
+      height: { ideal: Math.round(innerHeight * captureScale()) },
+    },
     audio: false,
     preferCurrentTab: true,
     selfBrowserSurface: "include",
@@ -777,7 +836,10 @@ async function ensureCapture() {
     monitorTypeSurfaces: "exclude",
   });
   const track = capture.getVideoTracks()[0];
-  track.contentHint = "detail"; // text-heavy: keep it sharp rather than smooth
+  // "detail" told Chrome to keep resolution and DROP FRAMES whenever it was busy, so
+  // scrolls and zooms recorded choppy. The output is 1080p at a high bitrate, which
+  // keeps text sharp anyway; smooth motion is what reads as quality on YouTube.
+  track.contentHint = "motion";
   captureMode = "";
   try {
     if ("RestrictionTarget" in window) {
@@ -806,8 +868,12 @@ async function ensureCapture() {
   return track;
 }
 
+// H.264 first: Chrome/Edge encode it on the graphics card on almost every Windows PC.
+// VP9 is encoded on the CPU, and at recording size that is what starved the frames.
 const pickType = () =>
-  ["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"].find((t) => MediaRecorder.isTypeSupported(t)) ?? "";
+  ["video/webm;codecs=h264,opus", "video/webm;codecs=vp8,opus", "video/webm;codecs=vp9,opus", "video/webm"].find((t) =>
+    MediaRecorder.isTypeSupported(t),
+  ) ?? "";
 const elapsed = () => {
   if (rec.state === "idle") return 0;
   const end = rec.state === "paused" ? rec.pauseAt : performance.now();
@@ -849,6 +915,8 @@ async function startRecording() {
   ensureMix();
   await mix.ctx.resume();
   if (soundSources().length) tracks.push(mix.dest.stream.getAudioTracks()[0]);
+  rec.audioDelay = prefs.sound !== "computer" && phoneStream ? Math.round(phoneLag * 1000) / 1000 : 0;
+  if (mix.delay) mix.delay.delayTime.value = phoneLag;
   else toast("Recording with no sound: no microphone is connected.", 5000);
   const d = new Date();
   const pad = (n) => String(n).padStart(2, "0");
@@ -860,7 +928,7 @@ async function startRecording() {
   rec.failed = false;
   const w = win();
   if (w) rec.chapters.push({ t: 0, label: pageLabel(w), path: w.location.pathname + w.location.search });
-  rec.recorder = new MediaRecorder(new MediaStream(tracks), { mimeType: pickType(), videoBitsPerSecond: 16_000_000, audioBitsPerSecond: 192_000 });
+  rec.recorder = new MediaRecorder(new MediaStream(tracks), { mimeType: pickType(), videoBitsPerSecond: 12_000_000, audioBitsPerSecond: 192_000 });
   rec.recorder.ondataavailable = (e) => {
     if (!e.data.size) return;
     const seq = rec.seq++;
@@ -897,7 +965,7 @@ async function stopRecording() {
   if (rec.failed) return;
   const res = await fetch(`/__booth/api/finish?name=${rec.name}`, {
     method: "POST",
-    body: JSON.stringify({ duration, chapters: rec.chapters, aspect: prefs.aspect, siteWidth: geo.W, capture: captureMode }),
+    body: JSON.stringify({ duration, chapters: rec.chapters, aspect: prefs.aspect, siteWidth: geo.W, capture: captureMode, audioDelay: rec.audioDelay || 0 }),
   });
   status(res.ok ? `Saved ${rec.name}. Making the mp4...` : `Finishing failed (${res.status}).`, !res.ok);
   refreshTakes();
