@@ -95,7 +95,7 @@
      its destination are obviously the same thing. */
   var SECTION_ICON = {
     starters: 'baseball', arsenal: 'target', lineups: 'lineup',
-    'club-splits': 'users',
+    'club-splits': 'users', 'pitch-matchup': 'target', bvp: 'lineup', series: 'calendar',
     recent: 'calendar', form: 'trend', radar: 'gauge', bullpens: 'users',
     availability: 'whistle', scheme: 'football', 'team-context': 'plane', 'run-game': 'football',
     'def-tendencies': 'target',
@@ -194,6 +194,8 @@
     var node = host.querySelector('[data-body="' + id + '"]');
     if (node) node.innerHTML = body;
     if (id === 'radar') fitRadar(host);
+    if (id === 'pitch-matchup') applyPitchMetric(host);
+    if (id === 'bvp') applyBvpView(host);
   }
 
   function pending(message) {
@@ -377,6 +379,10 @@
       kPct: sums.bf ? (sums.so / sums.bf) * 100 : null,
       bbPct: sums.bf ? (sums.bb / sums.bf) * 100 : null,
       hr9: sums.outs ? (sums.hr * 27) / sums.outs : null,
+      // FIP less its league constant; the page adds the season's constant
+      // from the bullpen board so it sits on the league's own scale.
+      fipRaw: sums.outs
+        ? (13 * sums.hr + 3 * (sums.bb + sums.hbp) - 2 * sums.so) / (sums.outs / 3) : null,
       outs: sums.outs,
       apps: sums.apps,
       arms: ids.length
@@ -397,7 +403,11 @@
         loadPeople(ids, 'pitching', season),
         loadPeople(ids, 'pitching', season, siteCode),
         loadPeople(ids, 'pitching', season, 'vl'),
-        loadPeople(ids, 'pitching', season, 'vr')
+        loadPeople(ids, 'pitching', season, 'vr'),
+        // Late and close, and runners in scoring position: the two
+        // situations a pen is brought in for.
+        loadPeople(ids, 'pitching', season, 'lc'),
+        loadPeople(ids, 'pitching', season, 'risp')
       ]).then(function (packs) {
         var overallPeople = packs[0] || {};
         var tonight = starterId == null ? '' : String(starterId);
@@ -412,6 +422,11 @@
           site: bullpenStatTotal(packs[1], reliefIds),
           vsL: bullpenStatTotal(packs[2], reliefIds),
           vsR: bullpenStatTotal(packs[3], reliefIds),
+          lc: bullpenStatTotal(packs[4], reliefIds),
+          risp: bullpenStatTotal(packs[5], reliefIds),
+          // Each arm's own line on every split, for the reliever table.
+          byArm: { season: packs[0], site: packs[1], vl: packs[2], vr: packs[3],
+                   lc: packs[4], risp: packs[5] },
           siteCode: siteCode,
           rosterDate: dateIso || ''
         };
@@ -746,6 +761,163 @@
     if (starterSplitsPromise) return starterSplitsPromise;
     starterSplitsPromise = fetchJson(STARTER_SPLITS_URL).catch(function () { return null; });
     return starterSplitsPromise;
+  }
+
+  /* Every hitter against every pitch type, each placed among the hitters who
+     have seen that pitch type (scripts/publish_public_matchup_depth.py). */
+  var INDEX_SPLITS_URL = '/data/public/team_index_splits.json';
+  var indexSplitsPromise = null;
+
+  function loadIndexSplits() {
+    if (indexSplitsPromise) return indexSplitsPromise;
+    indexSplitsPromise = fetchJson(INDEX_SPLITS_URL).catch(function () { return null; });
+    return indexSplitsPromise;
+  }
+
+  var BATTER_PITCH_URL = '/data/public/batter_pitch_types.json';
+  var batterPitchPromise = null;
+
+  function loadBatterPitch() {
+    if (batterPitchPromise) return batterPitchPromise;
+    batterPitchPromise = fetchJson(BATTER_PITCH_URL).catch(function () { return null; });
+    return batterPitchPromise;
+  }
+
+  /* League pools the bullpen section grades against: every qualified reliever
+     and the thirty pens as rostered now, per split, plus the season's FIP
+     constant. No player lines - those come live from the Stats API. */
+  var BULLPEN_BOARD_URL = '/data/public/bullpen_board.json';
+  var bullpenBoardPromise = null;
+
+  function loadBullpenBoard() {
+    if (bullpenBoardPromise) return bullpenBoardPromise;
+    bullpenBoardPromise = fetchJson(BULLPEN_BOARD_URL).catch(function () { return null; });
+    return bullpenBoardPromise;
+  }
+
+  /* Every hitter's history against one pitcher, for a whole lineup in one
+     request: each season he faced him, regular season and postseason apart,
+     summed here into a career line (both), a postseason line, and the
+     seasons. Rates are recomputed from the summed counts, never averaged. */
+  var BVP_COUNTS = ['plateAppearances', 'atBats', 'hits', 'doubles', 'triples', 'homeRuns',
+    'baseOnBalls', 'intentionalWalks', 'hitByPitch', 'strikeOuts', 'sacFlies', 'rbi'];
+  var POSTSEASON_TYPES = { F: true, D: true, L: true, W: true };
+
+  function bvpLine(stats) {
+    var line = {};
+    BVP_COUNTS.forEach(function (key) {
+      line[key] = stats.reduce(function (sum, st) { return sum + (Number(st[key]) || 0); }, 0);
+    });
+    var singles = line.hits - line.doubles - line.triples - line.homeRuns;
+    var tb = singles + 2 * line.doubles + 3 * line.triples + 4 * line.homeRuns;
+    var obpDen = line.atBats + line.baseOnBalls + line.hitByPitch + line.sacFlies;
+    line.avg = line.atBats ? line.hits / line.atBats : null;
+    line.obp = obpDen ? (line.hits + line.baseOnBalls + line.hitByPitch) / obpDen : null;
+    line.slg = line.atBats ? tb / line.atBats : null;
+    line.ops = line.obp != null && line.slg != null ? line.obp + line.slg : null;
+    return line;
+  }
+
+  function loadVsPitcher(batterIds, pitcherId) {
+    var ids = (batterIds || []).filter(Boolean);
+    if (!ids.length || !pitcherId) return Promise.resolve({});
+    return fetchJson('https://statsapi.mlb.com/api/v1/people?personIds=' + ids.join(',') +
+      '&hydrate=stats(group=[hitting],type=[vsPlayer],opposingPlayerId=' + pitcherId +
+      ',sportId=1,gameType=[R,F,D,L,W])').then(function (payload) {
+      var out = {};
+      (payload.people || []).forEach(function (person) {
+        var rows = [];
+        (person.stats || []).forEach(function (block) {
+          if (((block.type || {}).displayName || '') !== 'vsPlayer') return;
+          (block.splits || []).forEach(function (split) {
+            if (split && split.stat) {
+              rows.push({ season: String(split.season || ''), post: !!POSTSEASON_TYPES[split.gameType],
+                          stat: split.stat });
+            }
+          });
+        });
+        if (!rows.length) { out[person.id] = null; return; }
+        var post = rows.filter(function (r) { return r.post; });
+        var bySeason = {};
+        rows.forEach(function (r) { (bySeason[r.season] = bySeason[r.season] || []).push(r); });
+        out[person.id] = {
+          total: bvpLine(rows.map(function (r) { return r.stat; })),
+          post: post.length ? bvpLine(post.map(function (r) { return r.stat; })) : null,
+          seasons: Object.keys(bySeason).sort().reverse().map(function (season) {
+            var group = bySeason[season];
+            return { season: season, post: group.some(function (r) { return r.post; }),
+                     line: bvpLine(group.map(function (r) { return r.stat; })) };
+          })
+        };
+      });
+      return out;
+    }).catch(function () { return {}; });
+  }
+
+  /* When the order is not posted, the section still has hitters to show: the
+     position players on the active roster, most plate appearances first. */
+  function loadRosterHitters(teamId, dateIso, season) {
+    if (!teamId) return Promise.resolve(null);
+    return fetchJson('https://statsapi.mlb.com/api/v1/teams/' + teamId +
+      '/roster?rosterType=active' + (dateIso ? '&date=' + encodeURIComponent(dateIso) : ''))
+      .then(function (payload) {
+        var ids = (payload.roster || []).filter(function (row) {
+          var type = (row.position || {}).type;
+          return row && row.person && row.person.id && type !== 'Pitcher';
+        }).map(function (row) { return row.person.id; });
+        return loadPeople(ids, 'hitting', season).then(function (people) {
+          return ids.filter(function (id) { return people[id]; }).map(function (id) {
+            return { id: id, pa: Number((people[id].stat || {}).plateAppearances) || 0,
+                     name: people[id].name, bats: people[id].bats };
+          }).sort(function (a, b) { return b.pa - a.pa; }).slice(0, 13);
+        });
+      }).catch(function () { return null; });
+  }
+
+  /* This season's meetings between the two clubs, and - in October - where the
+     series stands. Both are read off the official schedule. */
+  function loadSeries(game, season) {
+    var a = game.away_team_id, h = game.home_team_id;
+    if (!a || !h) return Promise.resolve(null);
+    var meetings = fetchJson('https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=' + a +
+      '&opponentId=' + h + '&season=' + season + '&gameType=R').then(function (payload) {
+      var out = [];
+      (payload.dates || []).forEach(function (block) {
+        (block.games || []).forEach(function (g) {
+          if (((g.status || {}).detailedState || '') !== 'Final') return;
+          var t = g.teams || {};
+          var awayId = ((t.away || {}).team || {}).id;
+          var mine = awayId === a ? t.away : t.home;
+          var theirs = awayId === a ? t.home : t.away;
+          out.push({ date: g.officialDate || block.date, awayHosted: awayId !== a,
+                     scored: mine.score, allowed: theirs.score, won: !!mine.isWinner });
+        });
+      });
+      return out.sort(function (x, y) { return x.date < y.date ? -1 : 1; });
+    }).catch(function () { return []; });
+    var status = game.game_pk
+      ? fetchJson('https://statsapi.mlb.com/api/v1/schedule?sportId=1&gamePk=' + game.game_pk +
+        '&hydrate=seriesStatus').then(function (payload) {
+          var g = ((payload.dates || [])[0] || {}).games || [];
+          g = g[0] || {};
+          return ['F', 'D', 'L', 'W'].indexOf(g.gameType) >= 0 ? (g.seriesStatus || null) : null;
+        }).catch(function () { return null; })
+      : Promise.resolve(null);
+    return Promise.all([meetings, status]).then(function (parts) {
+      return { meetings: parts[0], status: parts[1] };
+    });
+  }
+
+  /* A batting-order entry names its hitter as `person_id` / `name` in the slate
+     published from the official schedule, and as `id` / `fullName` in the
+     older CSV-projected slate. Every reader goes through these two, so a shape
+     change upstream cannot blank the lineup tables again. */
+  function lineupId(pl) {
+    return pl ? (pl.id || pl.person_id || null) : null;
+  }
+
+  function lineupName(pl) {
+    return pl ? (pl.fullName || pl.name || '') : '';
   }
 
   function seasonOf(dateIso) {
@@ -1184,7 +1356,7 @@
     // every row to elite or poor.
     var split = oppHand === 'L' ? 'vl' : (oppHand === 'R' ? 'vr' : 'season');
     var rows = players.map(function (pl, i) {
-      var person = people[pl.id] || {};
+      var person = people[lineupId(pl)] || {};
       var stat = person.stat || {};
       function cell(key, context) {
         var v = stat[key];
@@ -1193,7 +1365,7 @@
       }
       return '<tr>' +
         '<td class="ca-lineup-slot">' + (i + 1) + '</td>' +
-        '<td class="ca-lineup-name">' + esc(person.name || pl.fullName || '') + '</td>' +
+        '<td class="ca-lineup-name">' + esc(person.name || lineupName(pl)) + '</td>' +
         '<td class="ca-lineup-bats">' + esc(person.bats || '\u2014') + '</td>' +
         cell('avg', 'avg') + cell('obp', 'obp') + cell('slg', 'slg') + cell('ops', 'ops') +
         '</tr>';
@@ -1459,22 +1631,51 @@
     return esc(Number(value).toFixed(digits)) + (suffix || '');
   }
 
-  /* A bullpen cell graded against the 30 club bullpens (bp_* baselines). OPS
-     allowed has no bullpen baseline of its own; the league's OPS against
-     relievers (tm_rp_ops) is the same plate appearances seen from the hitters'
-     side, so it grades with its direction turned over. */
-  function bullpenTd(value, digits, suffix, context) {
-    var A = global.MLBMAAssets;
-    var n = Number(value);
-    var tone = '';
-    if (value != null && isFinite(n) && A && A.valueTier) {
-      var tier = context === 'tm_rp_ops' ? A.valueTier(n, context, true) : A.valueTier(n, context);
-      tone = tier ? A.TIER_CHIP[tier] : '';
+  /* A pitching rate's place in a sorted league pool. Lower is better for
+     everything a pitcher allows, higher for strikeouts and run value. An arm
+     or pen that is not in the pool (too few batters on that split) is placed
+     against it all the same, so no number on the table is left ungraded. */
+  var PITCHING_HIGH = { k_pct: true, run_value_per_100: true };
+
+  function poolPlace(pool, value, metric) {
+    var v = Number(value);
+    if (!pool || pool.length < 2 || value == null || !isFinite(v)) return null;
+    var higher = !!PITCHING_HIGH[metric];
+    var ahead = 0;
+    for (var i = 0; i < pool.length; i++) {
+      if (higher ? pool[i] > v : pool[i] < v) ahead++;
     }
-    return '<td class="num' + (tone ? ' ' + tone : '') + '">' + bullpenRate(value, digits, suffix) + '</td>';
+    return { rank: Math.min(pool.length, ahead + 1), of: pool.length };
   }
 
-  function bullpenSplitPanel(sport, game, side, unit) {
+  /* A place in a pool of hundreds reads better as a percentile: "356th" of
+     373 relievers says less at a glance than "5th" percentile. */
+  function placePercentile(place) {
+    return place && place.of > 1 ? 100 * (place.of - place.rank) / (place.of - 1) : null;
+  }
+
+  function gradedCell(value, digits, suffix, place, withBadge) {
+    if (value == null || !isFinite(Number(value))) return '<td class="num">&mdash;</td>';
+    var tone = place ? rankTone(place.rank, place.of) : '';
+    var shown = digits === 3 ? formatStat(value, 3) : Number(value).toFixed(digits);
+    return '<td class="num ' + tone + '"' + (place ? ' title="' + place.rank +
+      ordinal(place.rank) + ' of ' + place.of + '"' : '') + '>' + esc(shown) +
+      (suffix || '') + (withBadge && place
+        ? (withBadge === 'percentile' ? percentileBadge(placePercentile(place)) : rankBadge(place))
+        : '') + '</td>';
+  }
+
+  // Unit-table row key -> the split its league pool is published under.
+  var UNIT_SPLIT = { overall: 'season', vsL: 'vl', vsR: 'vr', lc: 'lc', risp: 'risp' };
+  // FIP, not ERA: the Stats API publishes no earned runs on the hand and
+  // situation splits, and FIP is built from counts every split carries.
+  // Season ERA is carried, graded, on the sample line above the table.
+  var UNIT_COLUMNS = [
+    ['fip', 'fip', 2, ''], ['whip', 'whip', 2, ''], ['ops', 'ops', 3, ''],
+    ['kPct', 'k_pct', 1, '%'], ['bbPct', 'bb_pct', 1, '%'], ['hr9', 'hr9', 2, '']
+  ];
+
+  function bullpenSplitPanel(sport, game, side, unit, board) {
     var club = fullName(sport, game, side);
     var head = '<article class="ca-bullpen-splits"><header class="ca-bullpen-splits__head">' +
       logo(sport, game, side, 40, 'ca-bullpen-splits__logo') + '<div><h3>' + esc(club) +
@@ -1484,30 +1685,40 @@
     if (!unit || !unit.overall) {
       return head + pending('Active bullpen split record is not published for this game.') + '</article>';
     }
+    var pools = (board && board.units) || {};
+    var constant = board && board.fip_constant;
+    var siteSplit = side === 'away' ? 'a' : 'h';
     var rows = [
       ['overall', 'Full Season', unit.overall, false],
       ['site', side === 'away' ? 'On Road' : 'At Home', unit.site, true],
       ['vsL', 'Vs LHB', unit.vsL, false],
-      ['vsR', 'Vs RHB', unit.vsR, false]
+      ['vsR', 'Vs RHB', unit.vsR, false],
+      ['lc', 'Late & Close', unit.lc, false],
+      ['risp', 'With RISP', unit.risp, false]
     ].map(function (row) {
       var stat = row[2];
       if (!stat) return '';
+      if (stat.fipRaw != null && constant != null) stat.fip = stat.fipRaw + constant;
+      var pool = pools[row[0] === 'site' ? siteSplit : UNIT_SPLIT[row[0]]] || {};
       return '<tr' + (row[3] ? ' class="is-matchup"' : '') + '><th scope="row">' +
         esc(row[1]) + (row[3] ? ' <span>Tonight</span>' : '') + '</th>' +
-        bullpenTd(stat.era, 2, '', 'bp_era') +
-        bullpenTd(stat.whip, 2, '', 'bp_whip') +
-        bullpenTd(stat.ops, 3, '', 'tm_rp_ops') +
-        bullpenTd(stat.kPct, 1, '%', 'bp_kpct') +
-        bullpenTd(stat.bbPct, 1, '%', 'bp_bbpct') +
-        bullpenTd(stat.hr9, 2, '', 'bp_hr9') +
+        UNIT_COLUMNS.map(function (col) {
+          var v = stat[col[0]];
+          return gradedCell(v, col[2], col[3], poolPlace(pool[col[1]], v, col[1]), true);
+        }).join('') +
         '<td class="num">' + esc(bullpenIp(stat.outs)) + '</td></tr>';
     }).join('');
-    var sample = unit.overall.arms + ' active relievers · ' +
-      Number(unit.overall.apps || 0).toLocaleString('en-US') + ' appearances · ' +
-      bullpenIp(unit.overall.outs) + ' IP';
-    return head + '<p class="ca-bullpen-splits__sample">' + esc(sample) + '</p>' +
+    var era = unit.overall.era;
+    var eraPlace = poolPlace((pools.season || {}).era, era, 'era');
+    var sample = (era != null
+      ? '<span class="' + (eraPlace ? rankTone(eraPlace.rank, eraPlace.of) : '') + '">ERA ' +
+        esc(Number(era).toFixed(2)) + (eraPlace ? rankBadge(eraPlace) : '') + '</span> · ' : '') +
+      esc(unit.overall.arms + ' active relievers · ' +
+        Number(unit.overall.apps || 0).toLocaleString('en-US') + ' appearances · ' +
+        bullpenIp(unit.overall.outs) + ' IP');
+    return head + '<p class="ca-bullpen-splits__sample">' + sample + '</p>' +
       '<div class="ca-lineup-scroll"><table class="ca-bullpen-split-table"><thead><tr>' +
-      '<th>Split</th><th class="num">ERA</th><th class="num">WHIP</th>' +
+      '<th>Split</th><th class="num">FIP</th><th class="num">WHIP</th>' +
       '<th class="num">OPS</th><th class="num">K%</th><th class="num">BB%</th>' +
       '<th class="num">HR/9</th><th class="num">IP</th></tr></thead><tbody>' +
       rows + '</tbody></table></div></article>';
@@ -1515,8 +1726,153 @@
 
   function bullpenQualityBody(sport, game, extra) {
     return '<div class="ca-detail-duo ca-bullpen-split-grid">' +
-      bullpenSplitPanel(sport, game, 'away', extra.awayBullpenUnit) +
-      bullpenSplitPanel(sport, game, 'home', extra.homeBullpenUnit) + '</div>';
+      bullpenSplitPanel(sport, game, 'away', extra.awayBullpenUnit, extra.bullpenBoard) +
+      bullpenSplitPanel(sport, game, 'home', extra.homeBullpenUnit, extra.bullpenBoard) + '</div>';
+  }
+
+  /* Every arm in the active pen on one row: his role, his season, and the two
+     platoon and two leverage splits, each graded against the league's
+     relievers on that same split. Closer first, then set-up, then by innings. */
+  var ROLE_ORDER = { 'Closer': 0, 'Set-Up': 1, 'Middle': 2, 'Long': 3 };
+  var ARM_COLUMNS = [
+    // [split, rate key, pool metric, digits, suffix, header]
+    ['season', 'era', 'era', 2, '', 'ERA'],
+    ['season', 'fip', 'fip', 2, '', 'FIP'],
+    ['season', 'whip', 'whip', 2, '', 'WHIP'],
+    ['season', 'kPct', 'k_pct', 1, '%', 'K%'],
+    ['season', 'bbPct', 'bb_pct', 1, '%', 'BB%'],
+    ['vl', 'ops', 'ops', 3, '', 'OPS Vs L'],
+    ['vr', 'ops', 'ops', 3, '', 'OPS Vs R'],
+    ['lc', 'ops', 'ops', 3, '', 'Late & Close'],
+    ['risp', 'ops', 'ops', 3, '', 'RISP']
+  ];
+
+  function reliefArmsPanel(sport, game, side, unit, board) {
+    var label = fullName(sport, game, side);
+    var head = '<section class="ca-lineup-panel ca-relief-arms"><h3 class="ca-lineup-head">' +
+      logo(sport, game, side, 26, 'ca-lineup-head__crest') + '<span>' + esc(label) +
+      ' Relievers</span></h3>';
+    if (unit === undefined) return head + pending('Relievers are loading.') + '</section>';
+    if (!unit || !unit.ids || !unit.ids.length) {
+      return head + pending('Active relievers are not published for this game.') + '</section>';
+    }
+    var pools = (board && board.relievers) || {};
+    var constant = board && board.fip_constant;
+    var arms = unit.ids.map(function (id) {
+      var person = (unit.byArm.season || {})[id] || {};
+      var lines = {};
+      Object.keys(unit.byArm).forEach(function (split) {
+        lines[split] = bullpenStatTotal(unit.byArm[split], [id]);
+      });
+      Object.keys(lines).forEach(function (split) {
+        var line = lines[split];
+        if (line && line.fipRaw != null && constant != null) line.fip = line.fipRaw + constant;
+      });
+      return { id: id, name: person.name || '', throws: person.throws || '',
+               role: relieverRole(person.stat), lines: lines };
+    }).filter(function (arm) { return arm.lines.season; });
+    arms.sort(function (a, b) {
+      var ra = ROLE_ORDER[a.role] != null ? ROLE_ORDER[a.role] : 9;
+      var rb = ROLE_ORDER[b.role] != null ? ROLE_ORDER[b.role] : 9;
+      return ra - rb || b.lines.season.outs - a.lines.season.outs;
+    });
+    var rows = arms.map(function (arm) {
+      var season = arm.lines.season;
+      return '<tr><td class="ca-lineup-name">' + esc(arm.name) +
+        (arm.role ? ' <span class="ca-role" data-role="' + esc(arm.role.toLowerCase()) + '">' +
+          esc(arm.role) + '</span>' : '') + '</td>' +
+        '<td class="ca-lineup-bats">' + esc(arm.throws || '—') + '</td>' +
+        '<td class="num">' + esc(season.apps || 0) + '</td>' +
+        '<td class="num">' + esc(bullpenIp(season.outs)) + '</td>' +
+        ARM_COLUMNS.map(function (col) {
+          var line = arm.lines[col[0]];
+          // An arm who has not faced a batter in a split has a count, not a rate.
+          if (!line) return '<td class="num ca-vs-none">0 BF</td>';
+          var v = line[col[1]];
+          return gradedCell(v, col[3], col[4],
+            poolPlace((pools[col[0]] || {})[col[2]], v, col[2]), 'percentile');
+        }).join('') + '</tr>';
+    }).join('');
+    return head + '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-relief-table">' +
+      '<thead><tr><th>Pitcher</th><th class="ca-lineup-bats">T</th><th class="num">G</th>' +
+      '<th class="num">IP</th>' + ARM_COLUMNS.map(function (col) {
+        return '<th class="num">' + esc(col[5]) + '</th>';
+      }).join('') + '</tr></thead><tbody>' + rows + '</tbody></table></div></section>';
+  }
+
+  /* The active pen's combined arsenal, in the Pitch Mix table: what the
+     relievers throw between them, how well each pitch has done for this pen
+     (ranked among the thirty pens), and how the club they face has hit it. */
+  var UNTRACKED_PITCH = { PO: true, UN: true, UNK: true, AB: true, IN: true };
+
+  function penMixPanel(sport, game, side, unit, runValue, pitchBoard, board) {
+    var oppSide = side === 'away' ? 'home' : 'away';
+    var label = fullName(sport, game, side);
+    var oppLabel = fullName(sport, game, oppSide);
+    var head = '<section class="ca-arsenal-panel"><h3>' + esc(label) + ' Bullpen Mix</h3>';
+    if (unit === undefined || !runValue) return head + pending('Bullpen pitch mix is loading.') + '</section>';
+    if (!unit || !unit.ids || !unit.ids.length) {
+      return head + pending('Active relievers are not published for this game.') + '</section>';
+    }
+    var pitchers = runValue.pitchers || {};
+    var mix = {};
+    var total = 0;
+    unit.ids.forEach(function (id) {
+      var arm = pitchers[String(id)];
+      var pitches = (arm && arm.pitches) || {};
+      var own = 0;
+      Object.keys(pitches).forEach(function (code) { own += Number(pitches[code].thrown) || 0; });
+      Object.keys(pitches).forEach(function (code) {
+        if (UNTRACKED_PITCH[code]) return;
+        var p = pitches[code];
+        var thrown = Number(p.thrown) || 0;
+        if (!thrown) return;
+        var cell = mix[code] || (mix[code] = { name: p.name || code, thrown: 0, rv: 0, arms: 0 });
+        cell.thrown += thrown;
+        cell.rv += Number(p.run_value) || 0;
+        if (own && thrown / own >= 0.05) cell.arms += 1;
+        total += thrown;
+      });
+    });
+    var codes = Object.keys(mix).filter(function (code) { return mix[code].thrown / total >= 0.01; })
+      .sort(function (a, b) { return mix[b].thrown - mix[a].thrown; });
+    if (!codes.length) {
+      return head + pending('No tracked pitches published for this pen.') + '</section>';
+    }
+    var canon = (global.ChaseMatchupCard && ChaseMatchupCard.canonTeam) ||
+      function (c) { return String(c || '').toUpperCase(); };
+    var oppBoard = (((pitchBoard && pitchBoard.teams) || {})[canon(game[oppSide])]) || {};
+    var pools = (board && board.pen_pitches) || {};
+    var body = codes.map(function (code) {
+      var cell = mix[code];
+      var pct = cell.thrown / total * 100;
+      var rv100 = cell.rv / cell.thrown * 100;
+      var place = poolPlace(pools[code] ||
+        ((board && board.pen_families) || {})[pitchFamily(code)], rv100, 'run_value_per_100');
+      var tone = place ? rankTone(place.rank, place.of) : '';
+      var opp = oppBoard[code];
+      return '<tr data-pitch="' + esc(pitchFamily(code)) + '">' +
+        '<td class="ca-lineup-name">' + esc(cell.name) + '</td>' +
+        '<td class="num"><span class="ca-usage ' + usageTone(pct) + '">' +
+        usageSquares(pct) + '<b>' + pct.toFixed(1) + '%</b></span></td>' +
+        '<td class="num">' + cell.thrown.toLocaleString('en-US') + '</td>' +
+        '<td class="num">' + cell.arms + '</td>' +
+        '<td class="num ' + tone + '">' + esc((rv100 > 0 ? '+' : '') + rv100.toFixed(1)) +
+        (place ? rankBadge(place) : '') + '</td>' +
+        '<td class="num">' + (opp && opp.xwoba
+          ? esc(formatStat(opp.xwoba.value, 3)) + rankBadge(opp.xwoba)
+          : '<span class="ca-vs-none">Few Seen</span>') + '</td>' +
+        '<td class="num">' + (opp && opp.contact_rate
+          ? opp.contact_rate.value.toFixed(1) + '%' + rankBadge(opp.contact_rate)
+          : '<span class="ca-vs-none">Few Seen</span>') + '</td>' +
+        '</tr>';
+    }).join('');
+    return head + '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-arsenal-table">' +
+      '<thead><tr><th>Pitch</th><th class="num">Usage</th><th class="num">Count</th>' +
+      '<th class="num">Arms</th><th class="num">RV/100</th>' +
+      '<th class="num">' + esc(oppLabel) + ' xwOBA</th>' +
+      '<th class="num">Contact</th></tr></thead>' +
+      '<tbody>' + body + '</tbody></table></div></section>';
   }
 
   function bullpenPanel(sport, game, side, report, quality) {
@@ -1623,7 +1979,7 @@
    * it, from the same endpoint the starter splits come from.
    * ------------------------------------------------------------------ */
   var TEAM_SPLIT_URL = 'https://statsapi.mlb.com/api/v1/teams/{id}/stats?stats=statSplits' +
-    '&sitCodes=h,a,vl,vr,sp,rp&group=hitting&season={season}&gameType=R';
+    '&sitCodes=h,a,vl,vr,sp,rp,risp,risp2,lc&group=hitting&season={season}&gameType=R';
 
   /* `sp` and `rp` are the same split endpoint's own codes for the two halves of
      a pitching staff. A club's line against relievers is a different number
@@ -1633,7 +1989,10 @@
   var TEAM_SPLIT_ROWS = [
     ['h', 'At Home'], ['a', 'On The Road'],
     ['vl', 'Vs LHP'], ['vr', 'Vs RHP'],
-    ['sp', 'Vs Starters'], ['rp', 'Vs Bullpens']
+    ['sp', 'Vs Starters'], ['rp', 'Vs Bullpens'],
+    // With runners in scoring position, with two out, and late in a close
+    // game - each graded against the thirty clubs on that same split.
+    ['risp', 'With RISP'], ['risp2', 'RISP, 2 Outs'], ['lc', 'Late & Close']
   ];
 
   function loadTeamSplits(teamId, season) {
@@ -1654,7 +2013,7 @@
     return v == null || v === '' ? null : Number(v);
   }
 
-  function teamSplitPanel(sport, game, side, splits) {
+  function teamSplitPanel(sport, game, side, splits, extra) {
     var label = fullName(sport, game, side);
     var head = '<section class="ca-form-panel"><h3>' + esc(label) + '</h3>';
     if (!splits) return head + pending('Club splits are loading.') + '</section>';
@@ -1684,13 +2043,61 @@
       '<th class="num">AVG</th><th class="num">OBP</th><th class="num">SLG</th>' +
       '<th class="num">OPS</th><th class="num">HR</th><th class="num">K%</th>' +
       '<th class="num">BB%</th><th class="num">PA</th></tr></thead><tbody>' +
-      rows + '</tbody></table></div></section>';
+      rows + '</tbody></table></div>' + indexSplitTable(sport, game, side, extra) + '</section>';
+  }
+
+  /* The club's own offensive indices - OSI and the three it is built from -
+     for the season and on each split the pipeline has current, each ranked
+     among the thirty clubs. The hand and the park the club meets tonight are
+     marked. A split only appears when its source is current
+     (scripts/publish_public_matchup_depth.py MAX_SOURCE_AGE_DAYS). */
+  var INDEX_KEYS = [['osi', 'OSI'], ['abq', 'ABQ'], ['rcv', 'RCV'], ['obr', 'OBR']];
+  var INDEX_ROWS = [
+    ['vs_rhp', 'Vs RHP'], ['vs_lhp', 'Vs LHP'], ['home', 'At Home'], ['away', 'On The Road'],
+    ['l30', 'Last 30 Days'], ['l14', 'Last 14 Days'], ['l7', 'Last 7 Days']
+  ];
+
+  function indexSplitTable(sport, game, side, extra) {
+    extra = extra || {};
+    var canon = (global.ChaseMatchupCard && ChaseMatchupCard.canonTeam) ||
+      function (c) { return String(c || '').toUpperCase(); };
+    var code = canon(game[side]);
+    var season = ((window.__caLeagueBoard || {}).teams || {})[code] || {};
+    var splits = (((extra.indexSplits || {}).teams) || {})[code] || {};
+    var oppSide = side === 'away' ? 'home' : 'away';
+    var hand = ((extra.people || {})[game[oppSide + '_starter_id']] || {}).throws ||
+      String(game[oppSide + '_hand'] || '').toUpperCase();
+    var tonight = {};
+    if (hand === 'R') tonight.vs_rhp = true;
+    if (hand === 'L') tonight.vs_lhp = true;
+    tonight[side === 'away' ? 'away' : 'home'] = true;
+    function cells(entries) {
+      return INDEX_KEYS.map(function (key) {
+        var entry = entries[key[0]];
+        if (!entry || entry.value == null) return '<td class="num ca-vs-none">Not Rated</td>';
+        return '<td class="num ' + rankTone(entry.rank, entry.of) + '">' +
+          esc(Number(entry.value).toFixed(1)) + rankBadge(entry) + '</td>';
+      }).join('');
+    }
+    var rows = [];
+    if (season.osi) rows.push('<tr><td>Season</td>' + cells(season) + '</tr>');
+    INDEX_ROWS.forEach(function (row) {
+      if (!splits[row[0]]) return;
+      rows.push('<tr><td>' + esc(row[1]) +
+        (tonight[row[0]] ? ' <span class="ca-flag">Tonight</span>' : '') + '</td>' +
+        cells(splits[row[0]]) + '</tr>');
+    });
+    if (!rows.length) return '';
+    return '<h4 class="ca-index-head">Offensive Index</h4><div class="ca-lineup-scroll">' +
+      '<table class="ca-lineup-table ca-split-table ca-index-table"><thead><tr><th>Split</th>' +
+      INDEX_KEYS.map(function (key) { return '<th class="num">' + key[1] + '</th>'; }).join('') +
+      '</tr></thead><tbody>' + rows.join('') + '</tbody></table></div>';
   }
 
   function teamSplitsBody(sport, game, extra) {
     return '<div class="ca-detail-duo">' +
-      teamSplitPanel(sport, game, 'away', extra.awayTeamSplits) +
-      teamSplitPanel(sport, game, 'home', extra.homeTeamSplits) + '</div>';
+      teamSplitPanel(sport, game, 'away', extra.awayTeamSplits, extra) +
+      teamSplitPanel(sport, game, 'home', extra.homeTeamSplits, extra) + '</div>';
   }
 
   function lineupsBody(sport, game, extra) {
@@ -1710,6 +2117,353 @@
     return '<div class="ca-detail-duo">' +
       arsenalPanel(sport, game, 'away', people, extra.awayArsenal, extra.pitchBoard, extra.runValue) +
       arsenalPanel(sport, game, 'home', people, extra.homeArsenal, extra.pitchBoard, extra.runValue) + '</div>';
+  }
+
+  /* ---------------------------------------------------------------------
+   * Lineup versus pitch mix.
+   *
+   * The Pitch Mix section says how the whole club has hit each of the
+   * starter's pitches. This one asks it of every hitter in the order: one row
+   * per batter, one column per pitch the opposing starter leans on, each
+   * cell placed among the hitters who have seen that same pitch type. The
+   * metric switch reads the same grid three ways. The last column is the
+   * hitter's career line against this starter - a count, never graded.
+   * ------------------------------------------------------------------ */
+  var PITCH_SHORT = {
+    FF: '4-Seam', FA: 'Fastball', SI: 'Sinker', FT: '2-Seam', FC: 'Cutter',
+    SL: 'Slider', ST: 'Sweeper', SV: 'Slurve', CU: 'Curve', KC: 'Knuckle-Curve',
+    CS: 'Slow Curve', CH: 'Change', FS: 'Splitter', FO: 'Forkball', SC: 'Screwball',
+    KN: 'Knuckler', EP: 'Eephus'
+  };
+  var MATCHUP_METRICS = [
+    ['xwoba', 'xwOBA', 3, ''],
+    ['whiff_percent', 'Whiff%', 1, '%'],
+    ['hard_hit_percent', 'Hard-Hit%', 1, '%']
+  ];
+
+  function percentileBadge(percentile) {
+    var p = Number(percentile);
+    if (percentile == null || !isFinite(p)) return '';
+    var n = Math.round(p);
+    return '<span class="ca-rank ' + percentileClass(p) + '">' + n + ordinal(n) + '</span>';
+  }
+
+  function vsStarterCell(history) {
+    if (history === undefined) return '<td class="num">…</td>';
+    var line = history && history.total;
+    var pa = Number((line || {}).plateAppearances) || 0;
+    if (!pa) return '<td class="num ca-vs-none">No PA</td>';
+    var parts = [line.hits + '-' + line.atBats];
+    if (Number(line.homeRuns)) parts.push(line.homeRuns + ' HR');
+    if (Number(line.baseOnBalls)) parts.push(line.baseOnBalls + ' BB');
+    parts.push(line.strikeOuts + ' K');
+    return '<td class="num ca-vs-line" title="' + pa + ' career plate appearances">' +
+      esc(parts.join(' · ')) + '</td>';
+  }
+
+  /* ---------------------------------------------------------------------
+   * Batter versus pitcher: each hitter's whole history against tonight's
+   * starter - regular season and postseason, summed from the counts - with
+   * the seasons behind it one switch away. A rate over a dozen plate
+   * appearances is still a rate the hitter produced, so it is graded like
+   * every other number on the page, against the league's batters on the
+   * season split, and the PA beside it says how much it rests on.
+   * ------------------------------------------------------------------ */
+  var BVP_RATES = [['avg', 'AVG'], ['obp', 'OBP'], ['slg', 'SLG'], ['ops', 'OPS']];
+  /* Per-plate-appearance variance of each rate (a single at-bat's outcome):
+     AVG and OBP are binomial near .24 / .32; one at-bat's total bases and one
+     PA's OPS contribution spread about 0.75 and 0.95. */
+  var BVP_PA_VARIANCE = { avg: 0.19, obp: 0.21, slg: 0.56, ops: 0.9 };
+
+  /* Graded against the league's batters on the season split, with the
+     sampling noise of this many trips added to the league's spread: a
+     1-for-2 is not a 100th-percentile hitter, and an 0-for-3 is not the
+     worst in baseball. The grade says how far the history actually sits from
+     average once its size is counted, so a long history can reach the ends of
+     the scale and three trips cannot. */
+  function batterPercentile(value, stat, trips) {
+    var A = global.MLBMAAssets;
+    var cfg = A && A.CONTEXT_BASELINES && A.CONTEXT_BASELINES['bat_season_' + stat];
+    if (value == null || !cfg || !(cfg.std > 0) || !(trips > 0)) return null;
+    var spread = Math.sqrt(cfg.std * cfg.std + BVP_PA_VARIANCE[stat] / trips);
+    return schemeNorm((value - cfg.mean) / spread) * 100;
+  }
+
+  function bvpRateCells(line) {
+    return BVP_RATES.map(function (rate) {
+      var v = line[rate[0]];
+      if (v == null) return '<td class="num ca-vs-none">0 AB</td>';
+      var trips = rate[0] === 'avg' || rate[0] === 'slg' ? line.atBats : line.plateAppearances;
+      var pct = batterPercentile(v, rate[0], trips);
+      return '<td class="num ' + percentileClass(pct) + '">' + esc(formatStat(v, 3)) +
+        percentileBadge(pct) + '</td>';
+    }).join('');
+  }
+
+  function bvpCountCells(line) {
+    return ['plateAppearances', 'hits', 'doubles', 'homeRuns', 'baseOnBalls', 'strikeOuts']
+      .map(function (key) { return '<td class="num">' + esc(line[key]) + '</td>'; }).join('');
+  }
+
+  function bvpPost(post) {
+    if (!post) return '<td class="num ca-vs-none">None</td>';
+    var bits = [post.hits + '-' + post.atBats];
+    if (post.homeRuns) bits.push(post.homeRuns + ' HR');
+    return '<td class="num ca-vs-line" title="' + post.plateAppearances +
+      ' postseason plate appearances">' + esc(bits.join(' · ')) + '</td>';
+  }
+
+  function bvpSpan(seasons) {
+    var years = seasons.map(function (s) { return s.season; }).filter(Boolean).sort();
+    if (!years.length) return '';
+    return years[0] === years[years.length - 1] ? years[0]
+      : years[0] + '–' + years[years.length - 1].slice(2);
+  }
+
+  function bvpPanel(sport, game, side, extra) {
+    var oppSide = side === 'away' ? 'home' : 'away';
+    var people = extra.people || {};
+    var starterId = game[oppSide + '_starter_id'];
+    var starterName = (people[starterId] && people[starterId].name) ||
+      game[oppSide + '_starter'] || 'The Opposing Starter';
+    var head = '<section class="ca-lineup-panel ca-bvp"><h3 class="ca-lineup-head">' +
+      logo(sport, game, side, 26, 'ca-lineup-head__crest') + '<span>Versus ' +
+      esc(starterName) + '</span></h3>';
+    if (!starterId) return head + pending('Opposing starter not announced yet.') + '</section>';
+    var vs = extra[side + 'VsStarter'];
+    var posted = game[side + '_lineup'] || [];
+    var roster = extra[side + 'RosterHitters'];
+    var hitters = posted.length
+      ? posted.map(function (pl) {
+          var person = people[lineupId(pl)] || {};
+          return { id: lineupId(pl), name: person.name || lineupName(pl), bats: person.bats || '' };
+        })
+      : (roster || []);
+    if (vs === undefined || (!posted.length && roster === undefined)) {
+      return head + pending('Batter history is loading.') + '</section>';
+    }
+    var faced = hitters.filter(function (h) {
+      return vs[h.id] && vs[h.id].total && vs[h.id].total.plateAppearances;
+    });
+    var never = hitters.filter(function (h) { return faced.indexOf(h) < 0; });
+    var neverLine = never.length
+      ? '<p class="ca-bvp-never"><strong>Never Faced ' + esc(starterName) + ':</strong> ' +
+        esc(never.map(function (h) { return h.name; }).join(', ')) + '</p>'
+      : '';
+    if (!faced.length) {
+      return head + '<p class="ca-bvp-never"><strong>No hitter on this ' +
+        (posted.length ? 'lineup' : 'roster') + ' has faced ' + esc(starterName) +
+        '.</strong></p></section>';
+    }
+    var rows = faced.map(function (h) {
+      var history = vs[h.id];
+      var main = '<tr><td class="ca-lineup-name">' + esc(h.name) + '</td>' +
+        '<td class="ca-lineup-bats">' + esc(h.bats || '') + '</td>' +
+        bvpCountCells(history.total) + bvpRateCells(history.total) + bvpPost(history.post) +
+        '<td class="num">' + esc(bvpSpan(history.seasons)) + '</td></tr>';
+      var seasons = history.seasons.map(function (s) {
+        return '<tr class="ca-bvp-season" data-bvp-season hidden><td class="ca-lineup-name">' +
+          esc(s.season) + (s.post ? ' <span class="ca-flag">Incl. Postseason</span>' : '') +
+          '</td><td class="ca-lineup-bats"></td>' + bvpCountCells(s.line) +
+          bvpRateCells(s.line) + '<td class="num"></td><td class="num">' + esc(s.season) +
+          '</td></tr>';
+      }).join('');
+      return main + seasons;
+    }).join('');
+    return head + '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-bvp-table">' +
+      '<thead><tr><th>Batter</th><th class="ca-lineup-bats">Bats</th><th class="num">PA</th>' +
+      '<th class="num">H</th><th class="num">2B</th><th class="num">HR</th>' +
+      '<th class="num">BB</th><th class="num">K</th>' +
+      BVP_RATES.map(function (r) { return '<th class="num">' + r[1] + '</th>'; }).join('') +
+      '<th class="num">Postseason</th><th class="num">Seasons</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>' + neverLine + '</section>';
+  }
+
+  function bvpBody(sport, game, extra) {
+    return '<div class="ca-season-toggle ca-metric-switch" role="group" aria-label="Rows shown">' +
+      '<button type="button" class="ca-season-toggle__btn is-on" data-bvp-view="career" ' +
+      'aria-pressed="true">Career</button>' +
+      '<button type="button" class="ca-season-toggle__btn" data-bvp-view="seasons" ' +
+      'aria-pressed="false">By Season</button></div>' +
+      '<div class="ca-detail-stack-inner">' + bvpPanel(sport, game, 'away', extra) +
+      bvpPanel(sport, game, 'home', extra) + '</div>';
+  }
+
+  function wireBvpView(host) {
+    host.addEventListener('click', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-bvp-view]');
+      if (!btn || !host.contains(btn)) return;
+      host.setAttribute('data-bvp-view', btn.getAttribute('data-bvp-view'));
+      applyBvpView(host);
+    });
+  }
+
+  function applyBvpView(host) {
+    var view = host.getAttribute('data-bvp-view') || 'career';
+    Array.prototype.forEach.call(host.querySelectorAll('[data-bvp-view]'), function (b) {
+      if (b === host) return;
+      var on = b.getAttribute('data-bvp-view') === view;
+      b.classList.toggle('is-on', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+    Array.prototype.forEach.call(host.querySelectorAll('[data-bvp-season]'), function (row) {
+      row.hidden = view !== 'seasons';
+    });
+  }
+
+  function pitchMatchupPanel(sport, game, side, extra) {
+    var oppSide = side === 'away' ? 'home' : 'away';
+    var people = extra.people || {};
+    var starterId = game[oppSide + '_starter_id'];
+    var starterName = (people[starterId] && people[starterId].name) ||
+      game[oppSide + '_starter'] || 'The Opposing Starter';
+    var head = '<section class="ca-lineup-panel ca-pitch-matchup"><h3 class="ca-lineup-head">' +
+      logo(sport, game, side, 26, 'ca-lineup-head__crest') + '<span>Versus ' +
+      esc(starterName) + '</span></h3>';
+    if (!starterId) return head + pending('Opposing starter not announced yet.') + '</section>';
+    var arsenal = extra[oppSide + 'Arsenal'];
+    var board = extra.batterPitch;
+    if (arsenal === undefined || board === undefined) {
+      return head + pending('Pitch matchups are loading.') + '</section>';
+    }
+    if (!board || !board.hitters) {
+      return head + pending('Hitter pitch-type lines are not published yet.') + '</section>';
+    }
+    if (!arsenal || !arsenal.length) {
+      return head + pending('No tracked pitches published for the opposing starter.') + '</section>';
+    }
+    var pitches = arsenal.filter(function (row) {
+      return row.pct >= 0.05 && !UNTRACKED_PITCH[row.code];
+    }).slice(0, 5);
+    var posted = game[side + '_lineup'] || [];
+    var roster = extra[side + 'RosterHitters'];
+    var hitters = posted.length
+      ? posted.map(function (pl) {
+          var person = people[lineupId(pl)] || {};
+          return { id: lineupId(pl), name: person.name || lineupName(pl), bats: person.bats || '' };
+        })
+      : (roster || []);
+    if (!hitters.length) {
+      return head + pending(roster === undefined ? 'Pitch matchups are loading.'
+        : 'Batting order not published yet.') + '</section>';
+    }
+    var vs = extra[side + 'VsStarter'];
+    var sub = posted.length ? '' : '<p class="ca-lineup-context">Order Not Posted · ' +
+      'Active Roster By Plate Appearances</p>';
+    var tables = MATCHUP_METRICS.map(function (metric, index) {
+      var rows = hitters.map(function (hitter, i) {
+        var lines = ((board.hitters[String(hitter.id)] || {}).pitches) || {};
+        var cells = pitches.map(function (pitch) {
+          var line = lines[pitch.code];
+          var entry = line && line[metric[0]];
+          if (!line) return '<td class="num ca-vs-none">No PA</td>';
+          if (!entry || entry.value == null) {
+            // Whiff rate needs a swing and hard-hit rate a ball in play.
+            return '<td class="num ca-vs-none">' +
+              (metric[0] === 'hard_hit_percent' ? 'No BIP' : 'No Swings') + '</td>';
+          }
+          var shown = metric[2] === 3 ? formatStat(entry.value, 3)
+            : Number(entry.value).toFixed(metric[2]) + metric[3];
+          return '<td class="num ' + percentileClass(entry.percentile) + '" title="' +
+            esc(line.pa + ' PA · ' + Number(line.pitches).toLocaleString('en-US') +
+              ' pitches seen') + '">' + esc(shown) + percentileBadge(entry.percentile) + '</td>';
+        }).join('');
+        return '<tr><td class="ca-lineup-slot">' + (posted.length ? i + 1 : '') + '</td>' +
+          '<td class="ca-lineup-name">' + esc(hitter.name) + '</td>' +
+          '<td class="ca-lineup-bats">' + esc(hitter.bats || '—') + '</td>' +
+          cells + vsStarterCell(vs ? vs[hitter.id] : undefined) + '</tr>';
+      }).join('');
+      return '<div class="ca-lineup-scroll" data-pitch-metric="' + metric[0] + '"' +
+        (index ? ' hidden' : '') + '><table class="ca-lineup-table ca-pitch-matchup-table">' +
+        '<thead><tr><th>#</th><th>Batter</th><th class="ca-lineup-bats">Bats</th>' +
+        pitches.map(function (pitch) {
+          return '<th class="num">' + esc(PITCH_SHORT[pitch.code] || pitch.name) +
+            '<small>' + (pitch.pct * 100).toFixed(0) + '%</small></th>';
+        }).join('') + '<th class="num">Career Vs</th></tr></thead>' +
+        '<tbody>' + rows + '</tbody></table></div>';
+    }).join('');
+    return head + sub + tables + '</section>';
+  }
+
+  function pitchMatchupBody(sport, game, extra) {
+    return '<div class="ca-season-toggle ca-metric-switch" role="group" aria-label="Metric shown">' +
+      MATCHUP_METRICS.map(function (metric, i) {
+        return '<button type="button" class="ca-season-toggle__btn' + (i ? '' : ' is-on') +
+          '" data-pitch-metric-pick="' + metric[0] + '" aria-pressed="' + (i === 0) + '">' +
+          esc(metric[1]) + '</button>';
+      }).join('') + '</div>' +
+      '<div class="ca-detail-stack-inner">' +
+      pitchMatchupPanel(sport, game, 'away', extra) +
+      pitchMatchupPanel(sport, game, 'home', extra) + '</div>';
+  }
+
+  /* One switch for the whole section, remembered across repaints: the body
+     is repainted as each source lands, so the choice lives on the host. */
+  function wirePitchMetric(host) {
+    host.addEventListener('click', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-pitch-metric-pick]');
+      if (!btn || !host.contains(btn)) return;
+      host.setAttribute('data-pitch-metric', btn.getAttribute('data-pitch-metric-pick'));
+      applyPitchMetric(host);
+    });
+  }
+
+  function applyPitchMetric(host) {
+    var metric = host.getAttribute('data-pitch-metric') || MATCHUP_METRICS[0][0];
+    Array.prototype.forEach.call(host.querySelectorAll('[data-pitch-metric-pick]'), function (b) {
+      var on = b.getAttribute('data-pitch-metric-pick') === metric;
+      b.classList.toggle('is-on', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+    Array.prototype.forEach.call(host.querySelectorAll('[data-pitch-metric]'), function (node) {
+      if (node === host) return;
+      node.hidden = node.getAttribute('data-pitch-metric') !== metric;
+    });
+  }
+
+  /* ---------------------------------------------------------------------
+   * The season series, and in October the series being played.
+   * ------------------------------------------------------------------ */
+  function seriesBody(sport, game, extra) {
+    var data = extra.series;
+    if (data === undefined) return pending('Season series is loading.');
+    if (!data) return pending('Season series is not published for this pairing.');
+    var away = fullName(sport, game, 'away');
+    var home = fullName(sport, game, 'home');
+    var status = data.status;
+    var statusHtml = '';
+    if (status) {
+      var standing = status.isTied ? 'Series Tied ' + status.wins + '–' + status.losses
+        : (status.result || '');
+      statusHtml = '<div class="ca-detail-facts">' +
+        fact('Series', status.description || 'Postseason') +
+        fact('Game', status.gameNumber + ' Of ' + status.totalGames) +
+        (standing ? fact('Standing', standing) : '') + '</div>';
+    }
+    var games = data.meetings || [];
+    if (!games.length) {
+      return statusHtml + pending('The clubs did not meet in the regular season.');
+    }
+    var wins = games.filter(function (g) { return g.won; }).length;
+    var runsFor = games.reduce(function (sum, g) { return sum + (Number(g.scored) || 0); }, 0);
+    var runsAgainst = games.reduce(function (sum, g) { return sum + (Number(g.allowed) || 0); }, 0);
+    var squares = games.map(function (g) {
+      var where = g.awayHosted ? 'vs ' + home : 'at ' + home;
+      var title = g.date + ' ' + away + ' ' + where + ' ' + g.scored + '-' + g.allowed +
+        ' ' + (g.won ? 'won' : 'lost');
+      return '<span class="ca-recent__game' + (g.won ? ' is-win' : ' is-loss') +
+        '" title="' + esc(title) + '"><abbr title="' + esc(title) + '">' +
+        (g.won ? 'W' : 'L') + '</abbr><i>' + esc(g.scored) + '–' + esc(g.allowed) +
+        '</i></span>';
+    }).join('');
+    return statusHtml + '<div class="ca-recent-stack"><div class="ca-recent">' +
+      '<span class="ca-recent__team">' + logo(sport, game, 'away', 24, 'ca-recent__crest') +
+      esc(away) + '</span>' +
+      '<span class="ca-recent__record">' + wins + '–' + (games.length - wins) +
+      '<i>Regular Season</i></span>' +
+      '<span class="ca-recent__record">' + runsFor + '–' + runsAgainst +
+      '<i>Runs</i></span>' +
+      '<span class="ca-recent__games">' + squares + '</span></div></div>';
   }
 
   /* The legacy Team Rankings board, restored where the architecture puts it:
@@ -2320,6 +3074,20 @@
       '<span>Game-day roster</span></header>' + bullpenQualityBody(sport, game, extra) +
       '</div>' +
       '<div class="ca-bullpen-subsection"><header class="ca-bullpen-subhead"><div>' +
+      '<p>Relief Arms</p><h3>Every Active Reliever, Graded</h3></div>' +
+      '<span>Against league relievers</span></header><div class="ca-detail-stack-inner">' +
+      reliefArmsPanel(sport, game, 'away', extra.awayBullpenUnit, extra.bullpenBoard) +
+      reliefArmsPanel(sport, game, 'home', extra.homeBullpenUnit, extra.bullpenBoard) +
+      '</div></div>' +
+      '<div class="ca-bullpen-subsection"><header class="ca-bullpen-subhead"><div>' +
+      '<p>Bullpen Mix</p><h3>What The Pen Throws</h3></div>' +
+      '<span>Active relievers combined</span></header><div class="ca-detail-stack-inner">' +
+      penMixPanel(sport, game, 'away', extra.awayBullpenUnit, extra.runValue,
+        extra.pitchBoard, extra.bullpenBoard) +
+      penMixPanel(sport, game, 'home', extra.homeBullpenUnit, extra.runValue,
+        extra.pitchBoard, extra.bullpenBoard) +
+      '</div></div>' +
+      '<div class="ca-bullpen-subsection"><header class="ca-bullpen-subhead"><div>' +
       '<p>Availability</p><h3>Pitch Count By Day</h3></div><span>Previous seven days</span></header>' +
       '<div class="ca-detail-stack-inner">' +
       bullpenPanel(sport, game, 'away', extra.awayBullpen, extra.bullpenQuality) +
@@ -2336,10 +3104,16 @@
         arsenalBody(sport, game, extra)),
       section('lineups', 'Lineup Versus Starter', 'Each Order Against The Opposing Arm',
         lineupsBody(sport, game, extra)),
+      section('pitch-matchup', 'Lineup Versus Pitch Mix', 'Every Hitter Against Every Pitch He Will See',
+        pitchMatchupBody(sport, game, extra)),
+      section('bvp', 'Batter Versus Pitcher', 'Every Meeting With Tonight’s Starter',
+        bvpBody(sport, game, extra)),
       section('club-splits', 'Club Batting Splits', 'The Whole Roster, By Park And By Hand',
         teamSplitsBody(sport, game, extra)),
       section('recent', 'Last Ten Games', 'What Each Club Has Actually Been Doing',
         recentBody(sport, game, extra)),
+      section('series', 'Season Series', 'Every Meeting Between These Clubs',
+        seriesBody(sport, game, extra)),
       section('form', 'Offensive Form And League Context', 'Graded Against The 30-Team League Pool',
         formBody(sport, game)),
       section('radar', 'Team Profile Radar', 'Both Clubs On One Shape, By Percentile',
@@ -4815,6 +5589,8 @@ function seasonToggle(game) {
       wireLineupTabs(host);
       wireCfbCompare(host);
       wireRadarReadout(host);
+      wirePitchMetric(host);
+      wireBvpView(host);
       if (sport === 'nfl') wireNflDesk(host);
       if (global.ResizeObserver) {
         new global.ResizeObserver(function () { fitRadar(host); }).observe(host);
@@ -4869,18 +5645,23 @@ function seasonToggle(game) {
           paintSection(host, 'starters', startersBody(sport, game, extra));
           paintSection(host, 'lineups', lineupsBody(sport, game, extra));
           paintSection(host, 'arsenal', arsenalBody(sport, game, extra));
+          paintSection(host, 'pitch-matchup', pitchMatchupBody(sport, game, extra));
+        };
+        var repaintPitchMatchup = function () {
+          paintSection(host, 'pitch-matchup', pitchMatchupBody(sport, game, extra));
+          paintSection(host, 'bvp', bvpBody(sport, game, extra));
         };
 
         // Stage 1 - everyone named on the card, in one request per group.
         var hitterIds = [];
         ['away_lineup', 'home_lineup'].forEach(function (key) {
-          (game[key] || []).forEach(function (pl) { if (pl && pl.id) hitterIds.push(pl.id); });
+          (game[key] || []).forEach(function (pl) { if (lineupId(pl)) hitterIds.push(lineupId(pl)); });
         });
         var armIds = [game.away_starter_id, game.home_starter_id].filter(Boolean);
         // Each lineup is fetched against the hand it will actually face, so the
         // two orders can be on different splits within the same game.
-        var awayIds = (game.away_lineup || []).map(function (pl) { return pl.id; });
-        var homeIds = (game.home_lineup || []).map(function (pl) { return pl.id; });
+        var awayIds = (game.away_lineup || []).map(lineupId).filter(Boolean);
+        var homeIds = (game.home_lineup || []).map(lineupId).filter(Boolean);
         function sit(hand) { return hand === 'L' ? 'vl' : (hand === 'R' ? 'vr' : null); }
         loadPeople(armIds, 'pitching', season).then(function (arms) {
           extra.people = arms;
@@ -4896,6 +5677,24 @@ function seasonToggle(game) {
             Object.keys(batch).forEach(function (id) { extra.people[id] = batch[id]; });
           });
           repaintStarters();
+          // Each order's career line against the arm it faces. When no order
+          // is posted, the active roster's regulars stand in for it.
+          ['away', 'home'].forEach(function (side) {
+            var opp = side === 'away' ? 'home' : 'away';
+            var posted = (game[side + '_lineup'] || []).map(lineupId).filter(Boolean);
+            var ids = posted.length ? Promise.resolve(posted)
+              : loadRosterHitters(game[side + '_team_id'], dateIso, season).then(function (list) {
+                  extra[side + 'RosterHitters'] = list || [];
+                  repaintPitchMatchup();
+                  return (list || []).map(function (h) { return h.id; });
+                });
+            ids.then(function (list) {
+              return loadVsPitcher(list, game[opp + '_starter_id']);
+            }).then(function (lines) {
+              extra[side + 'VsStarter'] = lines || {};
+              repaintPitchMatchup();
+            });
+          });
           return Promise.all([
             loadArmSplits(armIds, season),
             loadLastStart(game.away_starter_id, season),
@@ -4920,6 +5719,7 @@ function seasonToggle(game) {
           paintSection(host, 'radar', radarBody(sport, game));
           paintSection(host, 'recent', recentBody(sport, game, extra));
           paintSection(host, 'conditions', ballparkBody(game, extra.venue));
+          paintSection(host, 'club-splits', teamSplitsBody(sport, game, extra));
         });
 
         loadStarterSplits().then(function (found) {
@@ -4942,7 +5742,24 @@ function seasonToggle(game) {
           extra.runValue = parts[4];
           paintSection(host, 'arsenal', arsenalBody(sport, game, extra));
           paintSection(host, 'conditions', ballparkBody(game, extra.venue));
+          repaintPitchMatchup();
+          paintSection(host, 'bullpens', bullpenBody(sport, game, extra));
         }).catch(function () { /* the section keeps its pending note */ });
+
+        loadIndexSplits().then(function (found) {
+          extra.indexSplits = found;
+          paintSection(host, 'club-splits', teamSplitsBody(sport, game, extra));
+        });
+
+        loadBatterPitch().then(function (found) {
+          extra.batterPitch = found;
+          repaintPitchMatchup();
+        });
+
+        loadSeries(game, season).then(function (found) {
+          extra.series = found;
+          paintSection(host, 'series', seriesBody(sport, game, extra));
+        });
 
         // The club's own splits, beside the order that produces them.
         Promise.all([
@@ -4971,8 +5788,10 @@ function seasonToggle(game) {
           loadBullpen(game.away_team_id, game.away, dateIso, game.away_starter_id),
           loadBullpen(game.home_team_id, game.home, dateIso, game.home_starter_id),
           loadActiveBullpen(game.away_team_id, season, 'a', dateIso, game.away_starter_id),
-          loadActiveBullpen(game.home_team_id, season, 'h', dateIso, game.home_starter_id)
+          loadActiveBullpen(game.home_team_id, season, 'h', dateIso, game.home_starter_id),
+          loadBullpenBoard()
         ]).then(function (reports) {
+          extra.bullpenBoard = reports[4];
           var none = { used: [], bulk: [], starter: null, games: 0, window: 'window not published' };
           extra.awayBullpen = reports[0] || none;
           extra.homeBullpen = reports[1] || none;

@@ -26,7 +26,7 @@ Reference populations:
       sp_<vs_lhh|vs_rhh|home|away>_<whip|xfip|kpct|bbpct|ops|ops_plus>
           from data/public/starter_splits.json - the exact lines the matchup page shows
       bat_<vl|vr|season>_<avg|obp|slg|ops>   from data/league_batter_splits.csv
-      tm_<h|a|vl|vr|sp|rp>_<avg|obp|slg|ops|hr|kpct|bbpct>
+      tm_<h|a|vl|vr|sp|rp|risp|risp2|lc>_<avg|obp|slg|ops|hr|kpct|bbpct>
           from data/league_team_splits.csv
 
 A run that cannot recompute a context (FanGraphs skipped in CI, a scraper down) carries
@@ -99,7 +99,9 @@ TEAM_HITTING_STATS = {
     "hr": True, "kpct": False, "bbpct": True,
 }
 BATTER_SPLITS = ("vl", "vr", "season")
-TEAM_SPLITS = ("h", "a", "vl", "vr", "sp", "rp")
+# risp, risp2 (two outs) and lc (late and close): the club with runners in
+# scoring position, the Club Batting Splits rows added for the postseason.
+TEAM_SPLITS = ("h", "a", "vl", "vr", "sp", "rp", "risp", "risp2", "lc")
 MIN_POOL = 20
 
 

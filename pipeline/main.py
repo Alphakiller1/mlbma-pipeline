@@ -699,6 +699,11 @@ def run_public_slate_publish():
             (publisher("publish_public_context.py"), True),
             (publisher("publish_public_batters.py"), True),
             (publisher("publish_public_run_value.py"), True),
+            # Hitter-by-pitch-type lines and the reliever / pen pools the deeper
+            # matchup sections grade against. Non-fatal: the scraper keeps the
+            # previous CSVs on a bad pull and the page keeps yesterday's pools.
+            ([sys.executable, "-m", "scrapers.scrape_matchup_depth"], False),
+            (publisher("publish_public_matchup_depth.py"), False),
         )
         for command, required in steps:
             result = subprocess.run(command, check=required, cwd=str(ROOT))

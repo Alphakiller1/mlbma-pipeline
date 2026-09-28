@@ -5516,3 +5516,52 @@ body[data-sport="nfl"] .ca-detail-nav {
 @media (min-width: 561px) {
   .ca-nfl-carriers .ca-nfl-split thead th:last-child { width: 8%; }
 }
+
+/* ---------------------------------------------------------------------
+ * MLB playoff depth (2026-09-28): Lineup Versus Pitch Mix, the reliever
+ * table and the bullpen mix. Same table language as the lineup and pitch
+ * mix tables; the wide ones scroll inside their panel on a phone.
+ * ------------------------------------------------------------------ */
+.ca-metric-switch { margin-bottom: var(--space-3); }
+.ca-pitch-matchup + .ca-pitch-matchup,
+.ca-relief-arms + .ca-relief-arms { margin-top: var(--space-4); }
+.ca-pitch-matchup-table { min-width: 760px; }
+.ca-pitch-matchup-table th.num small {
+  display: block;
+  color: var(--text-meta);
+  font-size: var(--type-meta);
+  font-weight: 700;
+}
+.ca-pitch-matchup-table td.num { white-space: nowrap; }
+.ca-pitch-matchup-table td.ca-vs-line { color: var(--text-secondary); }
+.ca-vs-none { color: var(--text-meta); }
+.ca-relief-table { min-width: 1120px; }
+.ca-relief-table td.num { white-space: nowrap; }
+.ca-relief-table td.ca-lineup-name { white-space: nowrap; }
+.ca-bullpen-split-table td.num { white-space: nowrap; }
+
+.ca-bullpen-split-table { min-width: 760px; }
+
+/* Batter versus pitcher (2026-09-28). */
+.ca-bvp + .ca-bvp { margin-top: var(--space-4); }
+.ca-bvp-table { min-width: 980px; }
+.ca-bvp-table td.num { white-space: nowrap; }
+.ca-bvp-table tr.ca-bvp-season td { color: var(--text-secondary); font-size: var(--type-meta); }
+.ca-bvp-table tr.ca-bvp-season td.ca-lineup-name { padding-left: var(--space-4); }
+.ca-bvp-never {
+  margin: var(--space-2) 0 0;
+  color: var(--text-secondary);
+  font-size: var(--type-meta);
+}
+.ca-bvp-never strong { color: var(--text-primary); }
+
+/* Offensive index splits under Club Batting Splits (2026-09-28). */
+.ca-index-head {
+  margin: var(--space-4) 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--type-caps);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.ca-index-table td.num { white-space: nowrap; }

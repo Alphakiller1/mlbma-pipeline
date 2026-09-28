@@ -43,7 +43,9 @@ TEAM_OUT = Path(DATA_DIR) / "league_team_splits.csv"
 # `vl` is versus left-handed pitching. The season line is fetched as its own split
 # so a lineup whose opposing hand is unknown still grades against its own pool.
 BATTER_SPLITS = ("vl", "vr", "season")
-TEAM_SPLITS = ("h", "a", "vl", "vr", "sp", "rp")
+# risp, risp2 (two outs) and lc (late and close): the club with runners in
+# scoring position, the Club Batting Splits rows added for the postseason.
+TEAM_SPLITS = ("h", "a", "vl", "vr", "sp", "rp", "risp", "risp2", "lc")
 COLUMNS = ["split", "id", "name", "pa", "ab", "h", "hr", "k", "bb", "hbp", "sf", "tb",
            "avg", "obp", "slg", "ops"]
 
