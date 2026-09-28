@@ -908,3 +908,55 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 }
 
 .mc-score { border-color: var(--border-card); }
+
+/* —— MLB starter prop projections ——————————————————————————————— */
+.mc-props { display: grid; gap: var(--space-3); margin-top: var(--space-5); }
+.mc-props__grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); }
+.mc-prop {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--surface-board-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+}
+.mc-prop__head { display: flex; align-items: center; gap: var(--space-3); }
+.mc-prop__head h4 { margin: 0; font-family: var(--font-display); font-size: var(--type-18); color: var(--text-primary); }
+.mc-prop__head p { margin: 2px 0 0; font-size: var(--type-meta); color: var(--text-secondary); }
+.mc-prop__table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.mc-prop__table th, .mc-prop__table td {
+  padding: var(--space-2) var(--space-1);
+  border-top: 1px solid var(--border-subtle);
+  text-align: left;
+  vertical-align: middle;
+  font-size: var(--type-meta);
+}
+.mc-prop__table thead th {
+  border-top: 0;
+  color: var(--text-muted);
+  font-weight: 800;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+.mc-prop__table thead th:first-child { width: 28%; }
+.mc-prop__table thead th:nth-child(2) { width: 20%; }
+.mc-prop__table thead th:last-child { width: 26%; text-align: right; }
+.mc-prop__table tbody th { color: var(--text-secondary); font-weight: 700; }
+.mc-prop__proj strong { display: block; font-family: var(--font-display); font-size: var(--type-16); color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.mc-prop__proj small, .mc-prop__price small { display: block; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.mc-prop__bar {
+  position: relative;
+  height: 14px;
+  background: var(--surface-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+}
+.mc-prop__band { position: absolute; top: 2px; bottom: 2px; background: var(--accent-soft); border: 1px solid var(--accent-strong); border-radius: 2px; }
+.mc-prop__median { position: absolute; top: 1px; bottom: 1px; width: 2px; margin-left: -1px; background: var(--text-primary); }
+.mc-prop__line { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--metric-mid); }
+.mc-prop__line.is-model { background: var(--text-muted); }
+.mc-prop__price { text-align: right; font-variant-numeric: tabular-nums; }
+.mc-prop__price span { display: block; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-prop__price strong { font-family: var(--font-display); font-size: var(--type-16); color: var(--text-primary); }
+.mc-prop__price.is-over strong { color: var(--metric-good); }
+.mc-prop__price.is-under strong { color: var(--metric-poor); }
