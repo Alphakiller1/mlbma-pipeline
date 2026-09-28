@@ -5541,3 +5541,27 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-bullpen-split-table td.num { white-space: nowrap; }
 
 .ca-bullpen-split-table { min-width: 760px; }
+
+/* Batter versus pitcher (2026-09-28). */
+.ca-bvp + .ca-bvp { margin-top: var(--space-4); }
+.ca-bvp-table { min-width: 980px; }
+.ca-bvp-table td.num { white-space: nowrap; }
+.ca-bvp-table tr.ca-bvp-season td { color: var(--text-secondary); font-size: var(--type-meta); }
+.ca-bvp-table tr.ca-bvp-season td.ca-lineup-name { padding-left: var(--space-4); }
+.ca-bvp-never {
+  margin: var(--space-2) 0 0;
+  color: var(--text-secondary);
+  font-size: var(--type-meta);
+}
+.ca-bvp-never strong { color: var(--text-primary); }
+
+/* Offensive index splits under Club Batting Splits (2026-09-28). */
+.ca-index-head {
+  margin: var(--space-4) 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--type-caps);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.ca-index-table td.num { white-space: nowrap; }

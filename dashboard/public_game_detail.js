@@ -95,7 +95,7 @@
      its destination are obviously the same thing. */
   var SECTION_ICON = {
     starters: 'baseball', arsenal: 'target', lineups: 'lineup',
-    'club-splits': 'users', 'pitch-matchup': 'target', series: 'calendar',
+    'club-splits': 'users', 'pitch-matchup': 'target', bvp: 'lineup', series: 'calendar',
     recent: 'calendar', form: 'trend', radar: 'gauge', bullpens: 'users',
     availability: 'whistle', scheme: 'football', 'team-context': 'plane', 'run-game': 'football',
     'def-tendencies': 'target',
@@ -195,6 +195,7 @@
     if (node) node.innerHTML = body;
     if (id === 'radar') fitRadar(host);
     if (id === 'pitch-matchup') applyPitchMetric(host);
+    if (id === 'bvp') applyBvpView(host);
   }
 
   function pending(message) {
@@ -764,6 +765,15 @@
 
   /* Every hitter against every pitch type, each placed among the hitters who
      have seen that pitch type (scripts/publish_public_matchup_depth.py). */
+  var INDEX_SPLITS_URL = '/data/public/team_index_splits.json';
+  var indexSplitsPromise = null;
+
+  function loadIndexSplits() {
+    if (indexSplitsPromise) return indexSplitsPromise;
+    indexSplitsPromise = fetchJson(INDEX_SPLITS_URL).catch(function () { return null; });
+    return indexSplitsPromise;
+  }
+
   var BATTER_PITCH_URL = '/data/public/batter_pitch_types.json';
   var batterPitchPromise = null;
 
@@ -785,21 +795,60 @@
     return bullpenBoardPromise;
   }
 
-  /* Each hitter's career line against one pitcher, for a whole lineup in one
-     request. */
+  /* Every hitter's history against one pitcher, for a whole lineup in one
+     request: each season he faced him, regular season and postseason apart,
+     summed here into a career line (both), a postseason line, and the
+     seasons. Rates are recomputed from the summed counts, never averaged. */
+  var BVP_COUNTS = ['plateAppearances', 'atBats', 'hits', 'doubles', 'triples', 'homeRuns',
+    'baseOnBalls', 'intentionalWalks', 'hitByPitch', 'strikeOuts', 'sacFlies', 'rbi'];
+  var POSTSEASON_TYPES = { F: true, D: true, L: true, W: true };
+
+  function bvpLine(stats) {
+    var line = {};
+    BVP_COUNTS.forEach(function (key) {
+      line[key] = stats.reduce(function (sum, st) { return sum + (Number(st[key]) || 0); }, 0);
+    });
+    var singles = line.hits - line.doubles - line.triples - line.homeRuns;
+    var tb = singles + 2 * line.doubles + 3 * line.triples + 4 * line.homeRuns;
+    var obpDen = line.atBats + line.baseOnBalls + line.hitByPitch + line.sacFlies;
+    line.avg = line.atBats ? line.hits / line.atBats : null;
+    line.obp = obpDen ? (line.hits + line.baseOnBalls + line.hitByPitch) / obpDen : null;
+    line.slg = line.atBats ? tb / line.atBats : null;
+    line.ops = line.obp != null && line.slg != null ? line.obp + line.slg : null;
+    return line;
+  }
+
   function loadVsPitcher(batterIds, pitcherId) {
     var ids = (batterIds || []).filter(Boolean);
     if (!ids.length || !pitcherId) return Promise.resolve({});
     return fetchJson('https://statsapi.mlb.com/api/v1/people?personIds=' + ids.join(',') +
-      '&hydrate=stats(group=[hitting],type=[vsPlayerTotal],opposingPlayerId=' + pitcherId +
-      ',sportId=1)').then(function (payload) {
+      '&hydrate=stats(group=[hitting],type=[vsPlayer],opposingPlayerId=' + pitcherId +
+      ',sportId=1,gameType=[R,F,D,L,W])').then(function (payload) {
       var out = {};
       (payload.people || []).forEach(function (person) {
+        var rows = [];
         (person.stats || []).forEach(function (block) {
-          var split = (block.splits || [])[0];
-          if (split && split.stat) out[person.id] = split.stat;
+          if (((block.type || {}).displayName || '') !== 'vsPlayer') return;
+          (block.splits || []).forEach(function (split) {
+            if (split && split.stat) {
+              rows.push({ season: String(split.season || ''), post: !!POSTSEASON_TYPES[split.gameType],
+                          stat: split.stat });
+            }
+          });
         });
-        if (!out[person.id]) out[person.id] = null;
+        if (!rows.length) { out[person.id] = null; return; }
+        var post = rows.filter(function (r) { return r.post; });
+        var bySeason = {};
+        rows.forEach(function (r) { (bySeason[r.season] = bySeason[r.season] || []).push(r); });
+        out[person.id] = {
+          total: bvpLine(rows.map(function (r) { return r.stat; })),
+          post: post.length ? bvpLine(post.map(function (r) { return r.stat; })) : null,
+          seasons: Object.keys(bySeason).sort().reverse().map(function (season) {
+            var group = bySeason[season];
+            return { season: season, post: group.some(function (r) { return r.post; }),
+                     line: bvpLine(group.map(function (r) { return r.stat; })) };
+          })
+        };
       });
       return out;
     }).catch(function () { return {}; });
@@ -1930,7 +1979,7 @@
    * it, from the same endpoint the starter splits come from.
    * ------------------------------------------------------------------ */
   var TEAM_SPLIT_URL = 'https://statsapi.mlb.com/api/v1/teams/{id}/stats?stats=statSplits' +
-    '&sitCodes=h,a,vl,vr,sp,rp&group=hitting&season={season}&gameType=R';
+    '&sitCodes=h,a,vl,vr,sp,rp,risp,risp2,lc&group=hitting&season={season}&gameType=R';
 
   /* `sp` and `rp` are the same split endpoint's own codes for the two halves of
      a pitching staff. A club's line against relievers is a different number
@@ -1940,7 +1989,10 @@
   var TEAM_SPLIT_ROWS = [
     ['h', 'At Home'], ['a', 'On The Road'],
     ['vl', 'Vs LHP'], ['vr', 'Vs RHP'],
-    ['sp', 'Vs Starters'], ['rp', 'Vs Bullpens']
+    ['sp', 'Vs Starters'], ['rp', 'Vs Bullpens'],
+    // With runners in scoring position, with two out, and late in a close
+    // game - each graded against the thirty clubs on that same split.
+    ['risp', 'With RISP'], ['risp2', 'RISP, 2 Outs'], ['lc', 'Late & Close']
   ];
 
   function loadTeamSplits(teamId, season) {
@@ -1961,7 +2013,7 @@
     return v == null || v === '' ? null : Number(v);
   }
 
-  function teamSplitPanel(sport, game, side, splits) {
+  function teamSplitPanel(sport, game, side, splits, extra) {
     var label = fullName(sport, game, side);
     var head = '<section class="ca-form-panel"><h3>' + esc(label) + '</h3>';
     if (!splits) return head + pending('Club splits are loading.') + '</section>';
@@ -1991,13 +2043,61 @@
       '<th class="num">AVG</th><th class="num">OBP</th><th class="num">SLG</th>' +
       '<th class="num">OPS</th><th class="num">HR</th><th class="num">K%</th>' +
       '<th class="num">BB%</th><th class="num">PA</th></tr></thead><tbody>' +
-      rows + '</tbody></table></div></section>';
+      rows + '</tbody></table></div>' + indexSplitTable(sport, game, side, extra) + '</section>';
+  }
+
+  /* The club's own offensive indices - OSI and the three it is built from -
+     for the season and on each split the pipeline has current, each ranked
+     among the thirty clubs. The hand and the park the club meets tonight are
+     marked. A split only appears when its source is current
+     (scripts/publish_public_matchup_depth.py MAX_SOURCE_AGE_DAYS). */
+  var INDEX_KEYS = [['osi', 'OSI'], ['abq', 'ABQ'], ['rcv', 'RCV'], ['obr', 'OBR']];
+  var INDEX_ROWS = [
+    ['vs_rhp', 'Vs RHP'], ['vs_lhp', 'Vs LHP'], ['home', 'At Home'], ['away', 'On The Road'],
+    ['l30', 'Last 30 Days'], ['l14', 'Last 14 Days'], ['l7', 'Last 7 Days']
+  ];
+
+  function indexSplitTable(sport, game, side, extra) {
+    extra = extra || {};
+    var canon = (global.ChaseMatchupCard && ChaseMatchupCard.canonTeam) ||
+      function (c) { return String(c || '').toUpperCase(); };
+    var code = canon(game[side]);
+    var season = ((window.__caLeagueBoard || {}).teams || {})[code] || {};
+    var splits = (((extra.indexSplits || {}).teams) || {})[code] || {};
+    var oppSide = side === 'away' ? 'home' : 'away';
+    var hand = ((extra.people || {})[game[oppSide + '_starter_id']] || {}).throws ||
+      String(game[oppSide + '_hand'] || '').toUpperCase();
+    var tonight = {};
+    if (hand === 'R') tonight.vs_rhp = true;
+    if (hand === 'L') tonight.vs_lhp = true;
+    tonight[side === 'away' ? 'away' : 'home'] = true;
+    function cells(entries) {
+      return INDEX_KEYS.map(function (key) {
+        var entry = entries[key[0]];
+        if (!entry || entry.value == null) return '<td class="num ca-vs-none">Not Rated</td>';
+        return '<td class="num ' + rankTone(entry.rank, entry.of) + '">' +
+          esc(Number(entry.value).toFixed(1)) + rankBadge(entry) + '</td>';
+      }).join('');
+    }
+    var rows = [];
+    if (season.osi) rows.push('<tr><td>Season</td>' + cells(season) + '</tr>');
+    INDEX_ROWS.forEach(function (row) {
+      if (!splits[row[0]]) return;
+      rows.push('<tr><td>' + esc(row[1]) +
+        (tonight[row[0]] ? ' <span class="ca-flag">Tonight</span>' : '') + '</td>' +
+        cells(splits[row[0]]) + '</tr>');
+    });
+    if (!rows.length) return '';
+    return '<h4 class="ca-index-head">Offensive Index</h4><div class="ca-lineup-scroll">' +
+      '<table class="ca-lineup-table ca-split-table ca-index-table"><thead><tr><th>Split</th>' +
+      INDEX_KEYS.map(function (key) { return '<th class="num">' + key[1] + '</th>'; }).join('') +
+      '</tr></thead><tbody>' + rows.join('') + '</tbody></table></div>';
   }
 
   function teamSplitsBody(sport, game, extra) {
     return '<div class="ca-detail-duo">' +
-      teamSplitPanel(sport, game, 'away', extra.awayTeamSplits) +
-      teamSplitPanel(sport, game, 'home', extra.homeTeamSplits) + '</div>';
+      teamSplitPanel(sport, game, 'away', extra.awayTeamSplits, extra) +
+      teamSplitPanel(sport, game, 'home', extra.homeTeamSplits, extra) + '</div>';
   }
 
   function lineupsBody(sport, game, extra) {
@@ -2048,8 +2148,9 @@
     return '<span class="ca-rank ' + percentileClass(p) + '">' + n + ordinal(n) + '</span>';
   }
 
-  function vsStarterCell(line) {
-    if (line === undefined) return '<td class="num">…</td>';
+  function vsStarterCell(history) {
+    if (history === undefined) return '<td class="num">…</td>';
+    var line = history && history.total;
     var pa = Number((line || {}).plateAppearances) || 0;
     if (!pa) return '<td class="num ca-vs-none">No PA</td>';
     var parts = [line.hits + '-' + line.atBats];
@@ -2058,6 +2159,156 @@
     parts.push(line.strikeOuts + ' K');
     return '<td class="num ca-vs-line" title="' + pa + ' career plate appearances">' +
       esc(parts.join(' · ')) + '</td>';
+  }
+
+  /* ---------------------------------------------------------------------
+   * Batter versus pitcher: each hitter's whole history against tonight's
+   * starter - regular season and postseason, summed from the counts - with
+   * the seasons behind it one switch away. A rate over a dozen plate
+   * appearances is still a rate the hitter produced, so it is graded like
+   * every other number on the page, against the league's batters on the
+   * season split, and the PA beside it says how much it rests on.
+   * ------------------------------------------------------------------ */
+  var BVP_RATES = [['avg', 'AVG'], ['obp', 'OBP'], ['slg', 'SLG'], ['ops', 'OPS']];
+  /* Per-plate-appearance variance of each rate (a single at-bat's outcome):
+     AVG and OBP are binomial near .24 / .32; one at-bat's total bases and one
+     PA's OPS contribution spread about 0.75 and 0.95. */
+  var BVP_PA_VARIANCE = { avg: 0.19, obp: 0.21, slg: 0.56, ops: 0.9 };
+
+  /* Graded against the league's batters on the season split, with the
+     sampling noise of this many trips added to the league's spread: a
+     1-for-2 is not a 100th-percentile hitter, and an 0-for-3 is not the
+     worst in baseball. The grade says how far the history actually sits from
+     average once its size is counted, so a long history can reach the ends of
+     the scale and three trips cannot. */
+  function batterPercentile(value, stat, trips) {
+    var A = global.MLBMAAssets;
+    var cfg = A && A.CONTEXT_BASELINES && A.CONTEXT_BASELINES['bat_season_' + stat];
+    if (value == null || !cfg || !(cfg.std > 0) || !(trips > 0)) return null;
+    var spread = Math.sqrt(cfg.std * cfg.std + BVP_PA_VARIANCE[stat] / trips);
+    return schemeNorm((value - cfg.mean) / spread) * 100;
+  }
+
+  function bvpRateCells(line) {
+    return BVP_RATES.map(function (rate) {
+      var v = line[rate[0]];
+      if (v == null) return '<td class="num ca-vs-none">0 AB</td>';
+      var trips = rate[0] === 'avg' || rate[0] === 'slg' ? line.atBats : line.plateAppearances;
+      var pct = batterPercentile(v, rate[0], trips);
+      return '<td class="num ' + percentileClass(pct) + '">' + esc(formatStat(v, 3)) +
+        percentileBadge(pct) + '</td>';
+    }).join('');
+  }
+
+  function bvpCountCells(line) {
+    return ['plateAppearances', 'hits', 'doubles', 'homeRuns', 'baseOnBalls', 'strikeOuts']
+      .map(function (key) { return '<td class="num">' + esc(line[key]) + '</td>'; }).join('');
+  }
+
+  function bvpPost(post) {
+    if (!post) return '<td class="num ca-vs-none">None</td>';
+    var bits = [post.hits + '-' + post.atBats];
+    if (post.homeRuns) bits.push(post.homeRuns + ' HR');
+    return '<td class="num ca-vs-line" title="' + post.plateAppearances +
+      ' postseason plate appearances">' + esc(bits.join(' · ')) + '</td>';
+  }
+
+  function bvpSpan(seasons) {
+    var years = seasons.map(function (s) { return s.season; }).filter(Boolean).sort();
+    if (!years.length) return '';
+    return years[0] === years[years.length - 1] ? years[0]
+      : years[0] + '–' + years[years.length - 1].slice(2);
+  }
+
+  function bvpPanel(sport, game, side, extra) {
+    var oppSide = side === 'away' ? 'home' : 'away';
+    var people = extra.people || {};
+    var starterId = game[oppSide + '_starter_id'];
+    var starterName = (people[starterId] && people[starterId].name) ||
+      game[oppSide + '_starter'] || 'The Opposing Starter';
+    var head = '<section class="ca-lineup-panel ca-bvp"><h3 class="ca-lineup-head">' +
+      logo(sport, game, side, 26, 'ca-lineup-head__crest') + '<span>Versus ' +
+      esc(starterName) + '</span></h3>';
+    if (!starterId) return head + pending('Opposing starter not announced yet.') + '</section>';
+    var vs = extra[side + 'VsStarter'];
+    var posted = game[side + '_lineup'] || [];
+    var roster = extra[side + 'RosterHitters'];
+    var hitters = posted.length
+      ? posted.map(function (pl) {
+          var person = people[lineupId(pl)] || {};
+          return { id: lineupId(pl), name: person.name || lineupName(pl), bats: person.bats || '' };
+        })
+      : (roster || []);
+    if (vs === undefined || (!posted.length && roster === undefined)) {
+      return head + pending('Batter history is loading.') + '</section>';
+    }
+    var faced = hitters.filter(function (h) {
+      return vs[h.id] && vs[h.id].total && vs[h.id].total.plateAppearances;
+    });
+    var never = hitters.filter(function (h) { return faced.indexOf(h) < 0; });
+    var neverLine = never.length
+      ? '<p class="ca-bvp-never"><strong>Never Faced ' + esc(starterName) + ':</strong> ' +
+        esc(never.map(function (h) { return h.name; }).join(', ')) + '</p>'
+      : '';
+    if (!faced.length) {
+      return head + '<p class="ca-bvp-never"><strong>No hitter on this ' +
+        (posted.length ? 'lineup' : 'roster') + ' has faced ' + esc(starterName) +
+        '.</strong></p></section>';
+    }
+    var rows = faced.map(function (h) {
+      var history = vs[h.id];
+      var main = '<tr><td class="ca-lineup-name">' + esc(h.name) + '</td>' +
+        '<td class="ca-lineup-bats">' + esc(h.bats || '') + '</td>' +
+        bvpCountCells(history.total) + bvpRateCells(history.total) + bvpPost(history.post) +
+        '<td class="num">' + esc(bvpSpan(history.seasons)) + '</td></tr>';
+      var seasons = history.seasons.map(function (s) {
+        return '<tr class="ca-bvp-season" data-bvp-season hidden><td class="ca-lineup-name">' +
+          esc(s.season) + (s.post ? ' <span class="ca-flag">Incl. Postseason</span>' : '') +
+          '</td><td class="ca-lineup-bats"></td>' + bvpCountCells(s.line) +
+          bvpRateCells(s.line) + '<td class="num"></td><td class="num">' + esc(s.season) +
+          '</td></tr>';
+      }).join('');
+      return main + seasons;
+    }).join('');
+    return head + '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-bvp-table">' +
+      '<thead><tr><th>Batter</th><th class="ca-lineup-bats">Bats</th><th class="num">PA</th>' +
+      '<th class="num">H</th><th class="num">2B</th><th class="num">HR</th>' +
+      '<th class="num">BB</th><th class="num">K</th>' +
+      BVP_RATES.map(function (r) { return '<th class="num">' + r[1] + '</th>'; }).join('') +
+      '<th class="num">Postseason</th><th class="num">Seasons</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>' + neverLine + '</section>';
+  }
+
+  function bvpBody(sport, game, extra) {
+    return '<div class="ca-season-toggle ca-metric-switch" role="group" aria-label="Rows shown">' +
+      '<button type="button" class="ca-season-toggle__btn is-on" data-bvp-view="career" ' +
+      'aria-pressed="true">Career</button>' +
+      '<button type="button" class="ca-season-toggle__btn" data-bvp-view="seasons" ' +
+      'aria-pressed="false">By Season</button></div>' +
+      '<div class="ca-detail-stack-inner">' + bvpPanel(sport, game, 'away', extra) +
+      bvpPanel(sport, game, 'home', extra) + '</div>';
+  }
+
+  function wireBvpView(host) {
+    host.addEventListener('click', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-bvp-view]');
+      if (!btn || !host.contains(btn)) return;
+      host.setAttribute('data-bvp-view', btn.getAttribute('data-bvp-view'));
+      applyBvpView(host);
+    });
+  }
+
+  function applyBvpView(host) {
+    var view = host.getAttribute('data-bvp-view') || 'career';
+    Array.prototype.forEach.call(host.querySelectorAll('[data-bvp-view]'), function (b) {
+      if (b === host) return;
+      var on = b.getAttribute('data-bvp-view') === view;
+      b.classList.toggle('is-on', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+    Array.prototype.forEach.call(host.querySelectorAll('[data-bvp-season]'), function (row) {
+      row.hidden = view !== 'seasons';
+    });
   }
 
   function pitchMatchupPanel(sport, game, side, extra) {
@@ -2855,6 +3106,8 @@
         lineupsBody(sport, game, extra)),
       section('pitch-matchup', 'Lineup Versus Pitch Mix', 'Every Hitter Against Every Pitch He Will See',
         pitchMatchupBody(sport, game, extra)),
+      section('bvp', 'Batter Versus Pitcher', 'Every Meeting With Tonight’s Starter',
+        bvpBody(sport, game, extra)),
       section('club-splits', 'Club Batting Splits', 'The Whole Roster, By Park And By Hand',
         teamSplitsBody(sport, game, extra)),
       section('recent', 'Last Ten Games', 'What Each Club Has Actually Been Doing',
@@ -5337,6 +5590,7 @@ function seasonToggle(game) {
       wireCfbCompare(host);
       wireRadarReadout(host);
       wirePitchMetric(host);
+      wireBvpView(host);
       if (sport === 'nfl') wireNflDesk(host);
       if (global.ResizeObserver) {
         new global.ResizeObserver(function () { fitRadar(host); }).observe(host);
@@ -5395,6 +5649,7 @@ function seasonToggle(game) {
         };
         var repaintPitchMatchup = function () {
           paintSection(host, 'pitch-matchup', pitchMatchupBody(sport, game, extra));
+          paintSection(host, 'bvp', bvpBody(sport, game, extra));
         };
 
         // Stage 1 - everyone named on the card, in one request per group.
@@ -5464,6 +5719,7 @@ function seasonToggle(game) {
           paintSection(host, 'radar', radarBody(sport, game));
           paintSection(host, 'recent', recentBody(sport, game, extra));
           paintSection(host, 'conditions', ballparkBody(game, extra.venue));
+          paintSection(host, 'club-splits', teamSplitsBody(sport, game, extra));
         });
 
         loadStarterSplits().then(function (found) {
@@ -5489,6 +5745,11 @@ function seasonToggle(game) {
           repaintPitchMatchup();
           paintSection(host, 'bullpens', bullpenBody(sport, game, extra));
         }).catch(function () { /* the section keeps its pending note */ });
+
+        loadIndexSplits().then(function (found) {
+          extra.indexSplits = found;
+          paintSection(host, 'club-splits', teamSplitsBody(sport, game, extra));
+        });
 
         loadBatterPitch().then(function (found) {
           extra.batterPitch = found;

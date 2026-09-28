@@ -614,9 +614,11 @@ class AdapterHoleTests(unittest.TestCase):
         detail = (ROOT / "dashboard" / "public_game_detail.js").read_text(encoding="utf-8")
         for text in ("section('pitch-matchup'", "section('series'", "function reliefArmsPanel",
                      "function penMixPanel", "loadPeople(ids, 'pitching', season, 'lc')",
-                     "loadPeople(ids, 'pitching', season, 'risp')", "type=[vsPlayerTotal]",
+                     "loadPeople(ids, 'pitching', season, 'risp')",
                      "hydrate=seriesStatus", "/data/public/batter_pitch_types.json",
-                     "/data/public/bullpen_board.json"):
+                     "/data/public/bullpen_board.json", "section('bvp'", "type=[vsPlayer]",
+                     "gameType=[R,F,D,L,W]", "BVP_PA_VARIANCE", "sitCodes=h,a,vl,vr,sp,rp,risp,risp2,lc",
+                     "/data/public/team_index_splits.json", "function indexSplitTable"):
             self.assertIn(text, detail)
 
     def test_no_formatclock_in_nav(self):

@@ -206,8 +206,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # ballpark section was cut to its weather, which now sits in the
         # banner. Pitch mix leads the lineup it explains.
         check("MLB detail has sport-specific sections",
-              page.locator("#starters, #arsenal, #lineups, #pitch-matchup, #recent, #series, "
-                           "#form, #radar, #bullpens").count() == 9)
+              page.locator("#starters, #arsenal, #lineups, #pitch-matchup, #bvp, #recent, #series, "
+                           "#form, #radar, #bullpens").count() == 10)
         check("MLB detail no longer carries a ballpark or sources section",
               page.locator("#conditions, #sources").count() == 0)
         try:
@@ -231,15 +231,22 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("#bullpens .ca-relief-table").count() == 2)
         check("MLB bullpen mix renders for both clubs",
               page.locator("#bullpens .ca-arsenal-table").count() == 2)
+        check("MLB batter vs pitcher reads for both clubs",
+              page.locator("#bvp .ca-bvp").count() == 2)
+        check("MLB club splits carry RISP, two-out RISP and late & close",
+              all(t in page.locator("#club-splits").inner_text()
+                  for t in ("With RISP", "RISP, 2 Outs", "Late & Close")))
         check("MLB lineup vs pitch mix reads three metrics for both clubs",
-              page.locator("#pitch-matchup .ca-pitch-matchup-table").count() in (0, 6),
+              # Three metric tables per club whose opposing starter is named.
+              page.locator("#pitch-matchup .ca-pitch-matchup-table").count() % 3 == 0,
               f"tables={page.locator('#pitch-matchup .ca-pitch-matchup-table').count()}")
         depth = page.evaluate("""() => {
-          const tds = [...document.querySelectorAll('#pitch-matchup td, #bullpens .ca-relief-table td, '
+          const tds = [...document.querySelectorAll('#pitch-matchup td, #bvp td, #club-splits .ca-index-table td, '
+            + '#bullpens .ca-relief-table td, '
             + '#bullpens .ca-bullpen-split-table td, #bullpens .ca-arsenal-table td')].filter(td => td.offsetParent);
           return {
             dashes: tds.filter(td => td.innerText.trim() === '—').length,
-            unpilled: tds.filter(td => /(^|\s)c-(elite|good|mid|weak|poor)(\s|$)/.test(td.className)
+            unpilled: tds.filter(td => /(^|\\s)c-(elite|good|mid|weak|poor)(\\s|$)/.test(td.className)
               && !td.querySelector('.ca-rank')).length
           }; }""")
         check("MLB depth tables have no empty (dash) cells", depth["dashes"] == 0,

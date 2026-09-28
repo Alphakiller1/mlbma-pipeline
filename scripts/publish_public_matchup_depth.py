@@ -279,6 +279,56 @@ def bullpen_board(data_dir: Path) -> dict | None:
     }
 
 
+# ---------------------------------------------------------------- team indices
+
+TEAM_PROFILE_SOURCE = "team_profiles.csv"
+TEAM_ALIAS = {"ARI": "AZ", "ARZ": "AZ", "CHW": "CWS", "KCR": "KC", "SDP": "SD",
+              "SFG": "SF", "TBR": "TB", "TBD": "TB", "WSN": "WSH", "WAS": "WSH", "OAK": "ATH"}
+INDICES = ("osi", "abq", "rcv", "obr")
+# published split -> (team_profiles column per index, the CSV that split is built from)
+INDEX_SPLITS = {
+    "vs_rhp": ({i: f"{i}_vs_rhp" for i in INDICES}, "metrics_vs_RHP.csv"),
+    "vs_lhp": ({i: f"{i}_vs_lhp" for i in INDICES}, "metrics_vs_LHP.csv"),
+    "home": ({i: f"home_{i}" for i in INDICES}, "batter_splits_home.csv"),
+    "away": ({i: f"away_{i}" for i in INDICES}, "batter_splits_away.csv"),
+    "l30": ({i: f"{i}_l30" for i in INDICES}, "batter_splits_recent.csv"),
+    "l14": ({i: f"{i}_l14" for i in INDICES}, "batter_splits_l14.csv"),
+    "l7": ({i: f"{i}_l7" for i in INDICES}, "batter_splits_l7.csv"),
+}
+# A split is published only when the file it is built from is this fresh. The
+# FanGraphs split scrapes run on the owner's machine, not in CI, and a window
+# scraped weeks ago must never be shown as the last fourteen days.
+MAX_SOURCE_AGE_DAYS = 3
+
+
+def team_index_splits(data_dir: Path) -> tuple[dict, dict]:
+    import time
+    rows = read(data_dir / TEAM_PROFILE_SOURCE)
+    if len(rows) < 30:
+        return {}, {}
+    now = time.time()
+    fresh: dict[str, str] = {}
+    for split, (_, source) in INDEX_SPLITS.items():
+        path = data_dir / source
+        if path.is_file() and now - path.stat().st_mtime <= MAX_SOURCE_AGE_DAYS * 86400:
+            fresh[split] = datetime.fromtimestamp(path.stat().st_mtime, timezone.utc) \
+                .strftime("%Y-%m-%dT%H:%M:%SZ")
+    teams: dict[str, dict] = {}
+    for split in fresh:
+        columns = INDEX_SPLITS[split][0]
+        for index, column in columns.items():
+            values = [(TEAM_ALIAS.get(r["team"].upper(), r["team"].upper()), num(r.get(column)))
+                      for r in rows]
+            values = [(team, v) for team, v in values if v is not None]
+            if len(values) < 30:
+                continue
+            ordered = sorted(values, key=lambda item: -item[1])
+            for place, (team, value) in enumerate(ordered, start=1):
+                teams.setdefault(team, {}).setdefault(split, {})[index] = {
+                    "value": round(value, 1), "rank": place, "of": len(ordered)}
+    return teams, fresh
+
+
 def write(name: str, payload: dict) -> None:
     dest = PUBLIC / name
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -322,6 +372,20 @@ def main(argv: list[str]) -> int:
         written += 1
     else:
         print(f"  skip bullpen board: no usable {RELIEVER_SOURCE} under {data_dir}")
+
+    teams, fresh = team_index_splits(data_dir)
+    if teams:
+        write("team_index_splits.json", {
+            "schema": "chase-public-team-index-splits/1",
+            "sport": "mlb",
+            "generated_at_utc": now,
+            "sources_as_of": fresh,
+            "teams": teams,
+        })
+        print(f"  wrote data/public/team_index_splits.json ({len(teams)} clubs; "
+              f"splits {', '.join(sorted(fresh))})")
+    else:
+        print(f"  skip team index splits: no fresh {TEAM_PROFILE_SOURCE} under {data_dir}")
 
     return 0 if written == 2 else 1
 

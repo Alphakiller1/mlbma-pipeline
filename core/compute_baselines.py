@@ -94,7 +94,9 @@ SP_MIN_IP_PER_OUTING = 4.0
 
 HIT_RATES = ("avg", "obp", "slg", "ops")
 BATTER_SPLITS = ("vl", "vr", "season")
-TEAM_SPLITS = ("h", "a", "vl", "vr", "sp", "rp")
+# risp, risp2 (two outs) and lc (late and close): the club with runners in
+# scoring position, the Club Batting Splits rows added for the postseason.
+TEAM_SPLITS = ("h", "a", "vl", "vr", "sp", "rp", "risp", "risp2", "lc")
 MIN_POOL = 20
 
 

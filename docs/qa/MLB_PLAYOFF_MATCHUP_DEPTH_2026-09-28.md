@@ -1,6 +1,6 @@
 # MLB matchup depth for the postseason (2026-09-28)
 
-Stamp `20260928d`. Branch `mlb/playoff-matchup-depth`.
+Stamp `20260928f`. Branch `mlb/playoff-matchup-depth`.
 
 ## What the MLB matchup page gained
 
@@ -15,6 +15,20 @@ Stamp `20260928d`. Branch `mlb/playoff-matchup-depth`.
 Nothing added here is a verdict: no gap summaries and no "favours" labels
 (see the evidence-not-verdicts rule). Empty cells say what is missing: "No PA",
 "No Swings", "No BIP", "0 BF", "Few Seen". They never show a dash.
+
+## Added in the second pass (same day)
+
+| Section | What it shows | Graded against |
+|---|---|---|
+| **Batter Versus Pitcher** (`#bvp`, new) | Every hitter who has faced tonight's starter: PA, H, 2B, HR, BB, K, AVG/OBP/SLG/OPS, a postseason line, and the seasons met. A Career / By Season switch opens each season's row. Hitters who never faced him are listed on one line, not as empty rows. One request per lineup: `vsPlayer` with `gameType=[R,F,D,L,W]`, summed client-side from the counts. | League batters on the season split (`bat_season_*`), with the sampling noise of the hitter's own PA added to the league spread. An 0-for-3 grades about the 17th percentile, not the 0th. |
+| **Club Batting Splits** (extended) | Adds With RISP, RISP with 2 outs, and Late & Close rows. | New `tm_risp_*`, `tm_risp2_*` and `tm_lc_*` baselines over the 30 clubs. `scrape_league_hitting_splits` and `compute_baselines` now pull these splits every run. |
+| **Offensive Index** (under Club Batting Splits, new) | OSI / ABQ / RCV / OBR for the Season (team_context), Vs RHP and Vs LHP, with the hand the club faces tonight marked. | Rank among the 30 clubs. |
+
+`team_index_splits.json` comes from `team_profiles.csv`, written by `core.compute_team_profile`. That step needs
+the FanGraphs metrics, which only the local (Selenium) pipeline scrapes, so **CI keeps the committed file**.
+Home / Away and L30 / L14 / L7 publish only when their source (`batter_splits_*.csv`) is under 3 days old.
+Those files were last scraped 2026-09-08, so today only the hand splits are published (FanGraphs data through Sept 26).
+A local `run_pipeline.bat` refreshes them all.
 
 ## Data
 

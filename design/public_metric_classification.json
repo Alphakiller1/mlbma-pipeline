@@ -75,7 +75,8 @@
     "minimum_pa",
     "minimum_games",
     "minimum_split_bf",
-    "fip_constant"
+    "fip_constant",
+    "sources_as_of"
   ],
   "identity": [
     "id",
