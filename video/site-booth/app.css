@@ -158,8 +158,14 @@ textarea {
     opacity 0.25s ease;
   z-index: 3;
 }
-.cam.rect {
-  border-radius: 14px;
+/* Box: a solid violet frame plus a thin violet line just outside it. */
+.cam.box {
+  border-radius: 3px;
+  box-shadow:
+    0 0 0 3px var(--b-violet),
+    0 10px 30px rgba(0, 0, 0, 0.55);
+  outline: 1.5px solid var(--b-violet);
+  outline-offset: 5px;
 }
 .cam.dragging {
   transition: none;
