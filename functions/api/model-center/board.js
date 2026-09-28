@@ -57,14 +57,19 @@ async function espnQuotes(sport, board) {
   const out = [];
   const seen = new Set();
   for (const url of urls) {
-    let data;
-    try {
-      const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' }, cf: { cacheTtl: 60 } });
-      if (!res.ok) continue;
-      data = await res.json();
-    } catch (err) {
-      continue;
+    // ESPN's edge refuses some agents some of the time; take the first that answers.
+    let data = null;
+    for (const agent of [null, 'curl/8.5.0', 'Mozilla/5.0']) {
+      try {
+        const res = await fetch(url, { headers: agent ? { 'User-Agent': agent } : {}, cf: { cacheTtl: 60 } });
+        if (!res.ok) continue;
+        data = await res.json();
+        break;
+      } catch (err) {
+        continue;
+      }
     }
+    if (!data) continue;
     const events = (data && data.events) || [];
     // Football boards run a week ahead of the scoreboard late in a week.
     const week = data && data.week && data.week.number;
