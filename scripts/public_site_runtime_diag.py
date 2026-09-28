@@ -31,8 +31,8 @@ PROHIBITED = re.compile(
 
 NFL_GRADING_AUDIT = r"""
 () => {
-  const SECTIONS = ['efficiency','quarterbacks','coverage','looks','rushing','trenches','receivers','tendencies'];
-  const COUNT_HEADS = new Set(['DB','ATT','TD','TGT']);
+  const SECTIONS = ['efficiency','quarterbacks','coverage','looks','rushing','trenches','receivers','redzone','tendencies'];
+  const COUNT_HEADS = new Set(['DB','ATT','TD','TGT','CAR','INT','INSIDE 10','INSIDE 5']);
   const bad = [];
   let checked = 0;
   function headOf(td) {
@@ -434,6 +434,14 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("#trenches .ca-arsenal-table:visible").count() == 2 and
               all(label in trench_text for label in ("line yds", "havoc", "ybc", "run direction",
                                                      "at the guards", "outside the ends")))
+        rz = page.locator("#redzone")
+        rz_text = rz.inner_text().lower()
+        check("NFL red zone pairs each offense with the defense it meets, in both windows",
+              rz.locator("[data-season-view='combined'] .ca-form-panel").count() == 2 and
+              rz.locator("[data-season-view='current'] .ca-form-panel").count() == 2)
+        check("NFL red zone carries trips, conversion, position targets and player shares",
+              all(label in rz_text for label in ("trips / g", "trip rate", "td%", "score%",
+                                                 "targets by position", "tgt share", "car share")))
         rec_text = page.locator("#receivers").inner_text().lower()
         check("NFL receivers carry splits against coverage, shell and pass rush",
               "receivers by coverage" in rec_text and

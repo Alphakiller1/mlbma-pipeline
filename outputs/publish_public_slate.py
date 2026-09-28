@@ -695,6 +695,11 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
     team_stats_prior = context.get("team_stats_prior") or {}
     scheme_current = context.get("scheme_current") or {}
     defenders_current = context.get("defenders_current") or {}
+    red_zone = context.get("red_zone") or {}
+
+    def red_zone_for(club: str) -> dict | None:
+        windows = {window: clubs.get(club) for window, clubs in red_zone.items() if clubs.get(club)}
+        return windows or None
     # Prior lines are matched by player, across every club: a receiver who
     # changed teams keeps his 2025 season.
     prior_by_id = {
@@ -865,6 +870,8 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             "home_line_stats": team_line.get(home_abbr),
             "away_player_stats": starter_stats(away_abbr),
             "home_player_stats": starter_stats(home_abbr),
+            "away_red_zone": red_zone_for(away_abbr),
+            "home_red_zone": red_zone_for(home_abbr),
             "away_defenders_current": defenders_current.get(away_abbr),
             "home_defenders_current": defenders_current.get(home_abbr),
             "away_scheme_current": scheme_current.get(away_abbr),
