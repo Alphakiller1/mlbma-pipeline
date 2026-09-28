@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import csv
 import io
+import re
 import json
 import sys
 import time
@@ -213,7 +214,9 @@ def scrape_reliever_splits(season: int) -> bool:
 
 
 GAME_COLUMNS = ["date", "game_pk", "game_type", "team_id", "opp_id", "home",
-                "runs", "allowed", "won", "opp_starter_id", "opp_starter_hand"]
+                "runs", "allowed", "won", "opp_starter_id", "opp_starter_hand",
+                "risp_h", "risp_ab"]
+RISP_LINE = re.compile(r"(\d+)-for-(\d+)")
 MIN_FINAL_GAMES = 1000
 
 
@@ -221,12 +224,24 @@ def _box_starters(game_pk: int) -> Optional[dict]:
     """The pitcher who actually started for each side, from the box score.
     The schedule's probablePitcher is the announced arm and was wrong on about
     one side in eighty when sampled; the box score's first pitcher is the start."""
-    payload = _json(f"{STATS_API}/game/{game_pk}/boxscore?fields=teams,away,home,pitchers")
+    payload = _json(f"{STATS_API}/game/{game_pk}/boxscore"
+                    "?fields=teams,away,home,pitchers,info,fieldList,label,value")
     teams = (payload or {}).get("teams") or {}
     out = {}
     for side in ("away", "home"):
-        pitchers = (teams.get(side) or {}).get("pitchers") or []
+        team = teams.get(side) or {}
+        pitchers = team.get("pitchers") or []
         out[side] = pitchers[0] if pitchers else None
+        # The box score's "Team RISP: 5-for-9." line; absent means no at-bat
+        # came with a runner in scoring position.
+        risp = (0, 0)
+        for block in team.get("info") or []:
+            for field in block.get("fieldList") or []:
+                if field.get("label") == "Team RISP":
+                    found = RISP_LINE.search(str(field.get("value") or ""))
+                    if found:
+                        risp = (int(found.group(1)), int(found.group(2)))
+        out[side + "_risp"] = risp
     return out if out.get("away") and out.get("home") else None
 
 
@@ -247,7 +262,7 @@ def scrape_team_game_starters(season: int) -> bool:
         return False
     with ThreadPoolExecutor(max_workers=16) as pool:
         starters = list(pool.map(lambda item: _box_starters(item[1]["gamePk"]), finals))
-    ids = sorted({pid for pair in starters if pair for pid in pair.values()})
+    ids = sorted({pair[side] for pair in starters if pair for side in ("away", "home")})
     hands: dict[int, str] = {}
     for i in range(0, len(ids), 150):
         chunk = ",".join(str(pid) for pid in ids[i:i + 150])
@@ -270,6 +285,7 @@ def scrape_team_game_starters(season: int) -> bool:
                 "runs": mine.get("score", ""), "allowed": theirs.get("score", ""),
                 "won": 1 if mine.get("isWinner") else 0,
                 "opp_starter_id": opp_starter, "opp_starter_hand": hands.get(opp_starter, ""),
+                "risp_h": pair[side + "_risp"][0], "risp_ab": pair[side + "_risp"][1],
             })
     if len(rows) < 2 * MIN_FINAL_GAMES:
         print(f"  KEPT team game starters: only {len(rows)} rows resolved a starter")

@@ -5609,8 +5609,7 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-arsenal-panel .ca-arsenal-table th:nth-child(2) { width: 9.5rem; }
 .ca-arsenal-panel .ca-arsenal-table th:nth-child(3) { width: 3.75rem; }
 .ca-arsenal-panel .ca-arsenal-table th:nth-child(4) { width: 6.5rem; }
-.ca-arsenal-panel .ca-arsenal-table th:nth-child(5),
-.ca-arsenal-panel .ca-arsenal-table th:nth-child(6) { width: 6.25rem; }
+.ca-arsenal-panel .ca-arsenal-table th:nth-child(n+5) { width: 7rem; }
 
 /* Matchup audit (2026-09-28). Every away | home pair of tables uses fixed
    layout, so the two clubs' columns sit at the same x. The first-column
@@ -5634,3 +5633,25 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-detail-duo.ca-bullpen-split-grid { grid-template-columns: minmax(0, 1fr); }
 .ca-bullpen-split-table thead th:first-child { width: 11rem; }
 .ca-bullpen-split-table td.num { font-size: inherit; }
+
+/* Season Series (2026-09-28): the three series facts fill the row evenly,
+   the head-to-head reads in two club panels, and the strip carries only the
+   games themselves. */
+.ca-detail-facts.ca-series-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ca-series-duo { margin: var(--space-3) 0; }
+.ca-lineup-table.ca-split-table.ca-h2h-table thead th:first-child { width: 14rem; }
+.ca-series-strip__note {
+  display: block;
+  font-style: normal;
+  font-size: var(--type-meta);
+  color: var(--text-meta);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+@media (max-width: 720px) {
+  .ca-detail-facts.ca-series-facts { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Pitch Mix carries eight columns (K% and the opponent's AVG added): the two
+   starters' tables stack full width rather than cramming half the page. */
+#arsenal .ca-detail-duo { grid-template-columns: minmax(0, 1fr); }

@@ -57,7 +57,7 @@ MIN_PITCHES = 1
 COLUMNS = [
     "player_id", "player_name", "team", "pitch_type", "pitch_name",
     "pitches", "pitch_usage", "run_value", "run_value_per_100",
-    "whiff_percent", "put_away", "est_woba",
+    "whiff_percent", "put_away", "est_woba", "k_percent",
 ]
 
 
@@ -107,6 +107,8 @@ def run() -> None:
             "whiff_percent": num(row.get("whiff_percent")),
             "put_away": num(row.get("put_away")),
             "est_woba": num(row.get("est_woba")),
+            # Strikeouts per plate appearance ending on this pitch.
+            "k_percent": num(row.get("k_percent")),
         })
 
     if not out:

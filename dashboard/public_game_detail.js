@@ -1508,6 +1508,16 @@
       percentileBadge(entry.percentile) + '</td>';
   }
 
+  /* The starter's strikeout rate on this pitch, graded as a percentile of
+     every pitcher throwing the same pitch type (pitch-mix numbers keep their
+     pill). */
+  function kCell(entry) {
+    if (!entry || entry.value == null) return '<td class="num ca-vs-none">No PA</td>';
+    var tone = percentileClass(entry.percentile);
+    return '<td class="num ' + tone + '">' + esc(Number(entry.value).toFixed(1)) + '%' +
+      percentileBadge(entry.percentile) + '</td>';
+  }
+
   function opponentCell(entry, format) {
     if (!entry || entry.value == null) return '<td class="num ca-vs-none">Few Seen</td>';
     var tone = rankTone(entry.rank, entry.of);
@@ -1547,10 +1557,11 @@
         '<td class="num"><span class="ca-usage ' + usageTone(pct) + '">' +
         usageSquares(pct) + '<b>' + pct.toFixed(1) + '%</b></span></td>' +
         '<td class="num">' + (isFinite(row.speed) ? row.speed.toFixed(1) : '\u2014') + '</td>' +
-        rvCell(rv) +
+        rvCell(rv) + kCell(rv && rv.k_percent) +
         // The value takes the same grade as its rank pill, so the colour reads
         // on the figure and not only on the badge beside it.
         opponentCell(opp && opp.xwoba, function (v) { return formatStat(v, 3); }) +
+        opponentCell(opp && opp.batting_avg, function (v) { return formatStat(v, 3); }) +
         opponentCell(opp && opp.contact_rate, function (v) { return v.toFixed(1) + '%'; }) +
         '</tr>';
     }).join('');
@@ -1559,7 +1570,9 @@
       '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-arsenal-table">' +
       '<thead><tr><th>Pitch</th><th class="num">Usage</th>' +
       '<th class="num">MPH</th><th class="num">RV/100</th>' +
+      '<th class="num">K%</th>' +
       '<th class="num">' + esc(oppLabel) + ' xwOBA</th>' +
+      '<th class="num">' + esc(oppLabel) + ' AVG</th>' +
       '<th class="num">Contact</th></tr></thead>' +
       '<tbody>' + body + '</tbody></table></div>' +
       '</section>';
@@ -2446,17 +2459,21 @@
           '<td class="num ca-vs-none">No Games</td><td class="num ca-vs-none">No Games</td>' +
           '<td class="num ca-vs-none">No Games</td></tr>';
       }
-      function rate(entry) {
+      function rate(entry, text) {
         return '<td class="num ' + rankTone(entry.rank, entry.of) + '">' +
-          esc(Number(entry.value).toFixed(2)) + rankBadge(entry) + '</td>';
+          esc(text) + rankBadge(entry) + '</td>';
       }
+      var runs = cell.runs_per_game;
+      var risp = cell.risp_avg;
       return '<tr><td>' + label + '</td><td class="num">' + cell.games + '</td>' +
         '<td class="num">' + cell.wins + '\u2013' + cell.losses + '</td>' +
-        rate(cell.runs_per_game) + rate(cell.allowed_per_game) + '</tr>';
+        rate(runs, Number(runs.value).toFixed(2)) +
+        (risp ? rate(risp, formatStat(risp.value, 3))
+          : '<td class="num ca-vs-none">0 AB</td>') + '</tr>';
     }).join('');
     return '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-runs-hand-table">' +
       '<thead><tr><th>Opposing Starter</th><th class="num">G</th><th class="num">W\u2013L</th>' +
-      '<th class="num">Runs/G</th><th class="num">Allowed/G</th></tr></thead><tbody>' +
+      '<th class="num">Runs/G</th><th class="num">AVG W/ RISP</th></tr></thead><tbody>' +
       rows + '</tbody></table></div>';
   }
 
@@ -2524,41 +2541,72 @@
     });
   }
 
-  /* Head to head: each club's record and runs per game against the other,
-     overall and at each park. Counts and averages of the meetings, no rank -
-     there is no league pool for one pairing. */
-  function headToHead(sport, game, games) {
+  /* Head to head, one panel per club in the Club Batting Splits layout: each
+     club's record, runs and runs allowed per game against the other, overall
+     and at each park. There is no league pool for one pairing, so nothing is
+     ranked (owner rule: player-level and one-off numbers are colour only).
+     The colour compares each figure with the league - runs per game against
+     the thirty clubs' season runs per game, the record against .500 - with
+     the noise of that many games added to the spread, so six meetings can
+     tint a cell but cannot paint it elite. */
+  var RUNS_PER_GAME_VAR = 9;    // one game's runs spread about 3 (sd), squared
+  var WIN_VAR = 0.25;           // one game is a coin flip at .500
+
+  function leagueRunsScale() {
+    var rolling = (window.__caLeagueBoard || {}).rolling || {};
+    var values = Object.keys(rolling).map(function (code) {
+      return Number((((rolling[code] || {}).windows || {}).ytd || {}).runs_per_game);
+    }).filter(function (v) { return isFinite(v) && v > 0; });
+    if (values.length < 20) return { mean: 4.4, std: 0.45 };
+    var mean = values.reduce(function (a, b) { return a + b; }, 0) / values.length;
+    var std = Math.sqrt(values.reduce(function (a, v) { return a + (v - mean) * (v - mean); }, 0) /
+      values.length);
+    return { mean: mean, std: std };
+  }
+
+  function h2hTone(value, mean, std, perGameVar, games, higherBetter) {
+    if (!(games > 0)) return '';
+    var z = (value - mean) / Math.sqrt(std * std + perGameVar / games);
+    return percentileClass(schemeNorm(higherBetter ? z : -z) * 100);
+  }
+
+  function h2hPanel(sport, game, side, games) {
     var away = fullName(sport, game, 'away');
     var home = fullName(sport, game, 'home');
-    function line(list) {
-      if (!list.length) return null;
-      var w = list.filter(function (g) { return g.won; }).length;
-      var rf = list.reduce(function (a, g) { return a + (Number(g.scored) || 0); }, 0);
-      var ra = list.reduce(function (a, g) { return a + (Number(g.allowed) || 0); }, 0);
-      return { g: list.length, w: w, l: list.length - w, rpg: rf / list.length, rapg: ra / list.length };
-    }
-    var rows = [
-      ['Season Series', games],
-      ['At ' + home, games.filter(function (g) { return !g.awayHosted; })],
-      ['At ' + away, games.filter(function (g) { return g.awayHosted; })]
-    ].map(function (row) {
-      var l = line(row[1]);
-      if (!l) {
-        return '<tr><td>' + esc(row[0]) + '</td><td class="num">0</td>' +
+    var label = fullName(sport, game, side);
+    var scale = leagueRunsScale();
+    // Meetings are stored from the away club's side; the home club reads them turned over.
+    var mine = games.map(function (g) {
+      return side === 'away' ? g
+        : { won: !g.won, scored: g.allowed, allowed: g.scored, awayHosted: g.awayHosted };
+    });
+    function row(name, list) {
+      if (!list.length) {
+        return '<tr><td>' + esc(name) + '</td><td class="num">0</td>' +
           '<td class="num ca-vs-none">No Meetings</td><td class="num ca-vs-none">No Meetings</td>' +
-          '<td class="num ca-vs-none">No Meetings</td><td class="num ca-vs-none">No Meetings</td></tr>';
+          '<td class="num ca-vs-none">No Meetings</td></tr>';
       }
-      return '<tr><td>' + esc(row[0]) + '</td><td class="num">' + l.g + '</td>' +
-        '<td class="num">' + l.w + '\u2013' + l.l + '</td>' +
-        '<td class="num">' + l.rpg.toFixed(2) + '</td>' +
-        '<td class="num">' + l.l + '\u2013' + l.w + '</td>' +
-        '<td class="num">' + l.rapg.toFixed(2) + '</td></tr>';
-    }).join('');
-    return '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-h2h-table">' +
-      '<thead><tr><th>Meetings</th><th class="num">G</th>' +
-      '<th class="num">' + esc(away) + ' W\u2013L</th><th class="num">' + esc(away) + ' Runs/G</th>' +
-      '<th class="num">' + esc(home) + ' W\u2013L</th><th class="num">' + esc(home) + ' Runs/G</th>' +
-      '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+      var n = list.length;
+      var w = list.filter(function (g) { return g.won; }).length;
+      var rpg = list.reduce(function (a, g) { return a + (Number(g.scored) || 0); }, 0) / n;
+      var rapg = list.reduce(function (a, g) { return a + (Number(g.allowed) || 0); }, 0) / n;
+      return '<tr><td>' + esc(name) + '</td><td class="num">' + n + '</td>' +
+        '<td class="num ' + h2hTone(w / n, 0.5, 0, WIN_VAR, n, true) + '">' +
+        w + '–' + (n - w) + '</td>' +
+        '<td class="num ' + h2hTone(rpg, scale.mean, scale.std, RUNS_PER_GAME_VAR, n, true) + '">' +
+        rpg.toFixed(2) + '</td>' +
+        '<td class="num ' + h2hTone(rapg, scale.mean, scale.std, RUNS_PER_GAME_VAR, n, false) + '">' +
+        rapg.toFixed(2) + '</td></tr>';
+    }
+    return '<section class="ca-form-panel"><h3 class="ca-lineup-head">' +
+      logo(sport, game, side, 26, 'ca-lineup-head__crest') + '<span>' + esc(label) + '</span></h3>' +
+      '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-h2h-table">' +
+      '<thead><tr><th>Meetings</th><th class="num">G</th><th class="num">W–L</th>' +
+      '<th class="num">Runs/G</th><th class="num">Allowed/G</th></tr></thead><tbody>' +
+      row('Season Series', mine) +
+      row('At ' + home, mine.filter(function (g) { return !g.awayHosted; })) +
+      row('At ' + away, mine.filter(function (g) { return g.awayHosted; })) +
+      '</tbody></table></div></section>';
   }
 
   function seriesBody(sport, game, extra) {
@@ -2572,7 +2620,7 @@
     if (status) {
       var standing = status.isTied ? 'Series Tied ' + status.wins + '–' + status.losses
         : (status.result || '');
-      statusHtml = '<div class="ca-detail-facts">' +
+      statusHtml = '<div class="ca-detail-facts ca-series-facts">' +
         fact('Series', status.description || 'Postseason') +
         fact('Game', status.gameNumber + ' Of ' + status.totalGames) +
         (standing ? fact('Standing', standing) : '') + '</div>';
@@ -2581,9 +2629,7 @@
     if (!games.length) {
       return statusHtml + pending('The clubs did not meet in the regular season.');
     }
-    var wins = games.filter(function (g) { return g.won; }).length;
-    var runsFor = games.reduce(function (sum, g) { return sum + (Number(g.scored) || 0); }, 0);
-    var runsAgainst = games.reduce(function (sum, g) { return sum + (Number(g.allowed) || 0); }, 0);
+    // Game by game, oldest to newest, read from the away club's side.
     var squares = games.map(function (g) {
       var where = g.awayHosted ? 'vs ' + home : 'at ' + home;
       var title = g.date + ' ' + away + ' ' + where + ' ' + g.scored + '-' + g.allowed +
@@ -2593,14 +2639,12 @@
         (g.won ? 'W' : 'L') + '</abbr><i>' + esc(g.scored) + '–' + esc(g.allowed) +
         '</i></span>';
     }).join('');
-    return statusHtml + headToHead(sport, game, games) +
-      '<div class="ca-recent-stack"><div class="ca-recent">' +
+    return statusHtml +
+      '<div class="ca-detail-duo ca-series-duo">' + h2hPanel(sport, game, 'away', games) +
+      h2hPanel(sport, game, 'home', games) + '</div>' +
+      '<div class="ca-recent-stack"><div class="ca-recent ca-series-strip">' +
       '<span class="ca-recent__team">' + logo(sport, game, 'away', 24, 'ca-recent__crest') +
-      esc(away) + '</span>' +
-      '<span class="ca-recent__record">' + wins + '–' + (games.length - wins) +
-      '<i>Regular Season</i></span>' +
-      '<span class="ca-recent__record">' + runsFor + '–' + runsAgainst +
-      '<i>Runs</i></span>' +
+      esc(away) + '<i class="ca-series-strip__note">Game By Game</i></span>' +
       '<span class="ca-recent__games">' + squares + '</span></div></div>';
   }
 
@@ -3350,7 +3394,7 @@
         teamSplitsBody(sport, game, extra)),
       section('recent', 'Last Ten Games', 'What Each Club Has Actually Been Doing',
         recentBody(sport, game, extra)),
-      section('runs-hand', 'Runs Versus Starter Hand', 'Scored And Allowed By The Hand That Started',
+      section('runs-hand', 'Runs Versus Starter Hand', 'Scoring And Hitting With RISP By The Hand That Started',
         runsHandBody(sport, game, extra)),
       section('series', 'Season Series', 'Every Meeting Between These Clubs',
         seriesBody(sport, game, extra)),

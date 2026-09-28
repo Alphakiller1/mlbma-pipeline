@@ -296,9 +296,9 @@ HANDS = (("any", None), ("vs_rhp", "R"), ("vs_lhp", "L"))
 
 
 def team_runs_by_hand(data_dir: Path) -> dict:
-    """Runs scored and allowed per game, by the hand of the pitcher who
-    started against the club, over four windows and three venues, each rate
-    ranked among the clubs with a game in that same cell."""
+    """Runs per game and batting average with runners in scoring position, by
+    the hand of the pitcher who started against the club, over four windows and
+    three venues, each ranked among the clubs with a game in that same cell."""
     rows = read(data_dir / GAMES_SOURCE)
     if len(rows) < 2000:
         return {}
@@ -318,23 +318,29 @@ def team_runs_by_hand(data_dir: Path) -> dict:
                         continue
                     n = len(picked)
                     wins = sum(1 for g in picked if g["won"] == "1")
-                    cells.setdefault(team, {}).setdefault(window, {}).setdefault(venue, {})[hand_key] = {
-                        "games": n, "wins": wins, "losses": n - wins,
+                    risp_h = sum(int(float(g.get("risp_h") or 0)) for g in picked)
+                    risp_ab = sum(int(float(g.get("risp_ab") or 0)) for g in picked)
+                    cell = {
+                        "games": n, "wins": wins, "losses": n - wins, "risp_ab": risp_ab,
                         "runs_per_game": sum(int(float(g["runs"] or 0)) for g in picked) / n,
-                        "allowed_per_game": sum(int(float(g["allowed"] or 0)) for g in picked) / n,
                     }
+                    if risp_ab:
+                        cell["risp_avg"] = risp_h / risp_ab
+                    cells.setdefault(team, {}).setdefault(window, {}).setdefault(venue, {})[hand_key] = cell
     # Rank each rate among the clubs holding that same cell.
     for window, _ in RUN_WINDOWS:
         for venue in VENUES:
             for hand_key, _ in HANDS:
                 held = [(team, data[window][venue][hand_key]) for team, data in cells.items()
                         if hand_key in data.get(window, {}).get(venue, {})]
-                for key, higher in (("runs_per_game", True), ("allowed_per_game", False)):
-                    values = [cell[key] for _, cell in held]
+                for key, digits in (("runs_per_game", 2), ("risp_avg", 3)):
+                    values = [cell[key] for _, cell in held if key in cell]
                     for _, cell in held:
+                        if key not in cell:
+                            continue
                         v = cell[key]
-                        ahead = sum(1 for o in values if (o > v if higher else o < v))
-                        cell[key] = {"value": round(v, 2), "rank": ahead + 1, "of": len(values)}
+                        ahead = sum(1 for o in values if o > v)
+                        cell[key] = {"value": round(v, digits), "rank": ahead + 1, "of": len(values)}
     return cells
 
 

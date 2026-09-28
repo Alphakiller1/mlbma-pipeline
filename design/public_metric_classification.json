@@ -496,7 +496,10 @@
     "pen_pitches",
     "pen_families",
     "hard_hit_percent",
-    "any"
+    "any",
+    "risp_avg",
+    "risp_ab",
+    "k_percent"
   ],
   "derived_descriptive": [
     "depth_rank",
