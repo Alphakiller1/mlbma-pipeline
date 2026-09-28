@@ -266,6 +266,70 @@ def next_mlb_slate(today: str) -> tuple[str, dict | None]:
     return today, schedule
 
 
+def _public_team_code(value: str) -> str:
+    """Normalize Rotowire/model abbreviations to the codes MLB publishes."""
+    return {
+        "CHW": "CWS", "SDP": "SD", "WSN": "WSH", "KCR": "KC",
+        "SFG": "SF", "TBR": "TB", "ARI": "AZ", "OAK": "ATH",
+    }.get(str(value or "").upper(), str(value or "").upper())
+
+
+def fetch_rotowire_starters(slate_date: str, schedule: dict) -> dict[tuple[str, str], dict]:
+    """Return Rotowire's listed arms for missing official probables.
+
+    The official schedule remains authoritative for which games exist and any
+    starter it has named. Rotowire only fills an otherwise empty side, including
+    its ``PRIM`` bulk-pitcher listing.
+    """
+    try:
+        import requests
+        from bs4 import BeautifulSoup
+        from scrapers.scrape_lineups import (
+            HEADERS, _parse_lineup_cards, _rotowire_urls_for_slate,
+        )
+    except Exception as exc:
+        print(f"  WARNING: Rotowire starter fallback unavailable ({exc})")
+        return {}
+
+    schedule_keys = {
+        (
+            _public_team_code(((game.get("teams") or {}).get("away") or {}).get("team", {}).get("abbreviation")),
+            _public_team_code(((game.get("teams") or {}).get("home") or {}).get("team", {}).get("abbreviation")),
+        )
+        for block in schedule.get("dates") or []
+        for game in block.get("games") or []
+    }
+    for url in _rotowire_urls_for_slate(slate_date):
+        try:
+            response = requests.get(url, headers=HEADERS, timeout=30)
+            response.raise_for_status()
+            _, games = _parse_lineup_cards(BeautifulSoup(response.text, "html.parser"), slate_date)
+        except Exception as exc:
+            print(f"  WARNING: Rotowire starter fallback fetch failed ({exc})")
+            continue
+        found = {}
+        for _, row in games.iterrows():
+            key = (_public_team_code(row.get("Away")), _public_team_code(row.get("Home")))
+            if key not in schedule_keys:
+                continue
+            found[key] = {
+                "away": {
+                    "name": str(row.get("Away_SP") or "").strip(),
+                    "hand": str(row.get("Away_SP_Hand") or "").strip(),
+                    "role": str(row.get("Away_SP_Role") or "").strip(),
+                },
+                "home": {
+                    "name": str(row.get("Home_SP") or "").strip(),
+                    "hand": str(row.get("Home_SP_Hand") or "").strip(),
+                    "role": str(row.get("Home_SP_Role") or "").strip(),
+                },
+            }
+        if found:
+            print(f"  mlb: Rotowire supplied listed arms for {len(found)} matchup(s)")
+            return found
+    return {}
+
+
 def _for_day(curated: dict, day: str) -> dict:
     """Curated rows that belong to `day`. The CSVs behind them describe the
     pipeline's own run date; merged by club pair onto another day's fixtures
@@ -428,7 +492,11 @@ def bullpen_load(team_id: int, date_iso: str, cache: dict,
     return summary
 
 
-def mlb_producer_from_statsapi(payload: dict, arms: dict | None = None) -> dict:
+def mlb_producer_from_statsapi(
+    payload: dict,
+    arms: dict | None = None,
+    rotowire_starters: dict[tuple[str, str], dict] | None = None,
+) -> dict:
     """The published slate, built from the official schedule.
 
     The site used to fetch this endpoint itself and prefer it over the
@@ -438,6 +506,7 @@ def mlb_producer_from_statsapi(payload: dict, arms: dict | None = None) -> dict:
     from the same source removes the second reader.
     """
     arms = arms or {}
+    rotowire_starters = rotowire_starters or {}
     games = []
     # One cache across the whole slate: a club appears once, but a doubleheader
     # would otherwise crawl the same three days of box scores twice.
@@ -453,6 +522,11 @@ def mlb_producer_from_statsapi(payload: dict, arms: dict | None = None) -> dict:
                 continue
             away_sp = away_node.get("probablePitcher") or {}
             home_sp = home_node.get("probablePitcher") or {}
+            fallback = rotowire_starters.get(
+                (_public_team_code(away), _public_team_code(home)), {}
+            )
+            away_fallback = fallback.get("away") or {}
+            home_fallback = fallback.get("home") or {}
             venue = game.get("venue") or {}
             location = venue.get("location") or {}
             weather = game.get("weather") or {}
@@ -500,12 +574,22 @@ def mlb_producer_from_statsapi(payload: dict, arms: dict | None = None) -> dict:
                 # Name and hand are separate fields. The CSV producer
                 # concatenated them into "Zebby Matthews · RHP", which no
                 # consumer could split back apart reliably.
-                "away_starter": away_sp.get("fullName") or None,
-                "home_starter": home_sp.get("fullName") or None,
+                "away_starter": (
+                    away_sp.get("fullName") or away_fallback.get("name") or None
+                ),
+                "home_starter": (
+                    home_sp.get("fullName") or home_fallback.get("name") or None
+                ),
                 "away_starter_id": away_sp.get("id") or None,
                 "home_starter_id": home_sp.get("id") or None,
-                "away_hand": (arms.get(away_sp.get("id")) or {}).get("hand"),
-                "home_hand": (arms.get(home_sp.get("id")) or {}).get("hand"),
+                "away_hand": (
+                    (arms.get(away_sp.get("id")) or {}).get("hand")
+                    or away_fallback.get("hand") or None
+                ),
+                "home_hand": (
+                    (arms.get(home_sp.get("id")) or {}).get("hand")
+                    or home_fallback.get("hand") or None
+                ),
                 "away_era": (arms.get(away_sp.get("id")) or {}).get("era"),
                 "home_era": (arms.get(home_sp.get("id")) or {}).get("era"),
                 # The real batting order, not the single word the CSV producer
@@ -1079,7 +1163,10 @@ def run(data_dir: Path | None = None) -> int:
             if node
         ]
         official = mlb_producer_from_statsapi(
-            schedule, fetch_mlb_arms(starter_ids, int(slate_date[:4])))
+            schedule,
+            fetch_mlb_arms(starter_ids, int(slate_date[:4])),
+            fetch_rotowire_starters(slate_date, schedule),
+        )
         mlb = merge_producers(official, curated)
         print(f"  mlb: {len(official['games'])} on the official schedule for {slate_date}, "
               f"{len(curated['games'])} curated rows merged in")

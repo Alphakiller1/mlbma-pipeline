@@ -36,6 +36,17 @@ ABBR_MAP = {
 }
 
 
+def _pitcher_name(anchor):
+    """Expand Rotowire's abbreviated card label from its full player slug."""
+    if anchor is None:
+        return "TBD"
+    href = str(anchor.get("href") or "")
+    match = re.search(r"/player/([^/?#]+?)-\d+(?:[/?#]|$)", href)
+    if match:
+        return " ".join(part.capitalize() for part in match.group(1).split("-") if part)
+    return anchor.get_text(" ", strip=True) or "TBD"
+
+
 def _parse_lineup_cards(soup, slate_date):
     """Parse Rotowire lineup cards into game + batting-order rows."""
     all_lineups = []
@@ -59,25 +70,41 @@ def _parse_lineup_cards(soup, slate_date):
             time_el = div.find("div", class_="lineup__time")
             game_time = time_el.text.strip() if time_el else "TBD"
 
-            away_sp = "TBD"
-            home_sp = "TBD"
-            sp_names = div.select("div.lineup__main .lineup__player-highlight a")
-            if len(sp_names) >= 2:
-                away_sp = sp_names[0].text.strip()
-                home_sp = sp_names[1].text.strip()
-            elif len(sp_names) == 1:
-                away_sp = sp_names[0].text.strip()
+            pitchers = []
+            lists = div.find_all("ul", class_="lineup__list")
+            for ul in lists[:2]:
+                highlight = ul.find("li", class_="lineup__player-highlight")
+                name_box = (
+                    highlight.find("div", class_="lineup__player-highlight-name")
+                    if highlight else None
+                )
+                anchor = name_box.find("a") if name_box else None
+                hand_el = name_box.find("span", class_="lineup__throws") if name_box else None
+                tags = {
+                    tag.get_text(" ", strip=True).upper()
+                    for tag in (highlight.find_all("div", class_="tag") if highlight else [])
+                }
+                pitchers.append({
+                    "name": _pitcher_name(anchor),
+                    "hand": hand_el.get_text(" ", strip=True).upper()[:1] if hand_el else "",
+                    "role": "primary" if "PRIM" in tags else "starter",
+                })
+            while len(pitchers) < 2:
+                pitchers.append({"name": "TBD", "hand": "", "role": ""})
 
             games.append({
                 "Away": away_abbr,
                 "Home": home_abbr,
                 "Time": game_time,
-                "Away_SP": away_sp,
-                "Home_SP": home_sp,
+                "Away_SP": pitchers[0]["name"],
+                "Home_SP": pitchers[1]["name"],
+                "Away_SP_Hand": pitchers[0]["hand"],
+                "Home_SP_Hand": pitchers[1]["hand"],
+                "Away_SP_Role": pitchers[0]["role"],
+                "Home_SP_Role": pitchers[1]["role"],
                 "Slate_Date": slate_date,
             })
 
-            lists = div.find_all("ul", class_="lineup__list")
             for side_idx, ul in enumerate(lists[:2]):
                 side = "AWAY" if side_idx == 0 else "HOME"
                 team = away_abbr if side == "AWAY" else home_abbr
