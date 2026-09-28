@@ -106,6 +106,8 @@ jobs:
             data/public/nfl/slate.json
             data/public/nfl/team_context.json
             data/public/batter_context.json
+            data/public/batter_pitch_types.json
+            data/public/bullpen_board.json
             data/public/league_baselines.json
             data/public/pitch_run_value.json
             data/public/pitch_type_board.json

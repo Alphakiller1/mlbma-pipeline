@@ -71,7 +71,11 @@
     "blocking_scheme",
     "week",
     "format",
-    "generated_at"
+    "generated_at",
+    "minimum_pa",
+    "minimum_games",
+    "minimum_split_bf",
+    "fip_constant"
   ],
   "identity": [
     "id",
@@ -484,7 +488,13 @@
     "pass_rate",
     "epa_per_play",
     "carry_share",
-    "receiving_tds_per_game"
+    "receiving_tds_per_game",
+    "hitters",
+    "relievers",
+    "units",
+    "pen_pitches",
+    "pen_families",
+    "hard_hit_percent"
   ],
   "derived_descriptive": [
     "depth_rank",
@@ -648,7 +658,13 @@
       "$.rolling",
       "$.starters",
       "$.teams",
-      "$.teams.*"
+      "$.teams.*",
+      "$.hitters",
+      "$.hitters.*.pitches",
+      "$.relievers",
+      "$.units",
+      "$.pen_pitches",
+      "$.pen_families"
     ],
     "exact_note": "Whole-path rules, anchored at the artifact root. `note` and `teams` are both named in model_derived_label, where they mean a model's own note and a model's team block. At the root of a published artifact they are the human-readable caveat and the container everything else hangs off, so they resolve by position rather than by name.",
     "exact": {

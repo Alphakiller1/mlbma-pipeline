@@ -206,8 +206,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # ballpark section was cut to its weather, which now sits in the
         # banner. Pitch mix leads the lineup it explains.
         check("MLB detail has sport-specific sections",
-              page.locator("#starters, #arsenal, #lineups, #recent, #form, #radar, #bullpens")
-              .count() == 7)
+              page.locator("#starters, #arsenal, #lineups, #pitch-matchup, #recent, #series, "
+                           "#form, #radar, #bullpens").count() == 9)
         check("MLB detail no longer carries a ballpark or sources section",
               page.locator("#conditions, #sources").count() == 0)
         try:
@@ -217,9 +217,35 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         bullpen_tables = page.locator("#bullpens .ca-bullpen-split-table")
         check("MLB bullpen splits render for both clubs", bullpen_tables.count() == 2,
               f"tables={bullpen_tables.count()}")
-        check("MLB bullpen split table includes season, venue and batter hand",
-              page.locator("#bullpens .ca-bullpen-split-table tbody tr").count() == 8,
+        check("MLB bullpen split table includes season, venue, batter hand and leverage",
+              page.locator("#bullpens .ca-bullpen-split-table tbody tr").count() == 12,
               f"rows={page.locator('#bullpens .ca-bullpen-split-table tbody tr').count()}")
+        # Playoff depth (2026-09-28): every hitter against the opposing
+        # starter's mix, every active reliever graded, and the pen's own mix.
+        try:
+            page.wait_for_selector("#bullpens .ca-relief-table", timeout=timeout_ms)
+            page.wait_for_selector("#pitch-matchup .ca-pitch-matchup-table", timeout=timeout_ms)
+        except Exception:
+            pass
+        check("MLB reliever table renders for both clubs",
+              page.locator("#bullpens .ca-relief-table").count() == 2)
+        check("MLB bullpen mix renders for both clubs",
+              page.locator("#bullpens .ca-arsenal-table").count() == 2)
+        check("MLB lineup vs pitch mix reads three metrics for both clubs",
+              page.locator("#pitch-matchup .ca-pitch-matchup-table").count() in (0, 6),
+              f"tables={page.locator('#pitch-matchup .ca-pitch-matchup-table').count()}")
+        depth = page.evaluate("""() => {
+          const tds = [...document.querySelectorAll('#pitch-matchup td, #bullpens .ca-relief-table td, '
+            + '#bullpens .ca-bullpen-split-table td, #bullpens .ca-arsenal-table td')].filter(td => td.offsetParent);
+          return {
+            dashes: tds.filter(td => td.innerText.trim() === '—').length,
+            unpilled: tds.filter(td => /(^|\s)c-(elite|good|mid|weak|poor)(\s|$)/.test(td.className)
+              && !td.querySelector('.ca-rank')).length
+          }; }""")
+        check("MLB depth tables have no empty (dash) cells", depth["dashes"] == 0,
+              f"{depth['dashes']} dash cells")
+        check("MLB depth tables pill every graded number", depth["unpilled"] == 0,
+              f"{depth['unpilled']} without a pill")
         check("MLB bullpen workload remains available",
               page.locator("#bullpens .ca-pc-table").count() == 2)
         mlb_overflow = page.evaluate(
