@@ -1893,16 +1893,16 @@
       rec.outings.forEach(function (o) { byDay[o.date] = (byDay[o.date] || 0) + o.pitches; });
       var cells = days.map(function (day) {
         var n = byDay[day] || 0;
-        // A day off is drawn as a dash: it is still a cell and still a fact,
-        // but a grid of bold zeros drowns the counts they exist to set off.
+        // A day off prints 0 on the dim p-zero shade: still a fact, and quiet
+        // enough that the days with work stand out (no dash cells, owner rule).
         return '<td class="num ca-pc ' + pitchLoad(n) + '">' +
-          (n ? n : '–') + '</td>';
+          n + '</td>';
       }).join('');
-      // A zero total reads as a dash for the same reason a zero day does, so
-      // the summary columns and the grid speak the same language.
+      // A zero total reads the same way a zero day does, so the summary
+      // columns and the grid speak the same language.
       function totalCell(n, days) {
         return '<td class="num ca-pc-total ' + loadTotal(n, days) + '">' +
-          (n ? n : '–') + '</td>';
+          n + '</td>';
       }
 
       // Named `tail`, not `window` - a local of that name would shadow the
@@ -2019,8 +2019,9 @@
         return '<td class="num ' + (context ? gradeFor(value, context) : '') + '">' +
           esc(value) + (suffix || '') + '</td>';
       }
-      var kPct = pa ? Math.round((Number(st.strikeOuts) / pa) * 1000) / 10 : null;
-      var bbPct = pa ? Math.round((Number(st.baseOnBalls) / pa) * 1000) / 10 : null;
+      // One decimal always, so 9.0% never prints as "9%" beside 9.3%.
+      var kPct = pa ? ((Number(st.strikeOuts) / pa) * 100).toFixed(1) : null;
+      var bbPct = pa ? ((Number(st.baseOnBalls) / pa) * 100).toFixed(1) : null;
       // Each split grades against the thirty clubs on that same split.
       var tm = 'tm_' + spec[0] + '_';
       return '<tr><td>' + esc(spec[1]) + '</td>' +
