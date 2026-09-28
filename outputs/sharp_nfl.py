@@ -26,8 +26,9 @@ from collections import Counter, defaultdict
 COVERAGE_URL = "https://www.sharpfootballanalysis.com/stats-nfl/nfl-coverage-schemes/"
 DATA_URL = "https://rmsummerlin.github.io/SFAStatsPages/data/{name}_{season}.json"
 USER_AGENT = "Mozilla/5.0 (compatible; ChaseAnalytics/1.0; +https://chase-analytics.com)"
-# EPA against a coverage needs a few dropbacks before it means anything.
-MIN_EPA_DROPBACKS = 5
+# Every charted dropback counts: the page grades early-season figures (owner
+# rule) and prints the dropbacks beside them.
+MIN_EPA_DROPBACKS = 1
 PERSONNEL_GROUPS = ("11", "12", "13", "21", "22")
 _TEAM = {"LA": "LAR", "JAC": "JAX", "OAK": "LV", "SD": "LAC", "STL": "LAR"}
 
@@ -148,6 +149,11 @@ def _unit_values(unit: dict) -> tuple[dict, dict]:
     man, n = current("man")
     if man is not None and n:
         coverage["man_rate"] = round(man, 4)
+        # The man rate's sample is every charted coverage snap; the zone EPA's
+        # sample is the zone snaps among them, so their ratio is the zone rate.
+        _, zone_n = current("zone_epa")
+        if zone_n:
+            coverage["zone_rate"] = round(zone_n / n, 4)
     for key in ("man_epa", "zone_epa"):
         value, n = current(key)
         if value is not None and n >= MIN_EPA_DROPBACKS:
@@ -208,6 +214,8 @@ def offense_coverage(season: int) -> dict[str, dict[str, dict]]:
             # [shrunk, current season, sample, league place, prior season]
             if isinstance(entry, list) and len(entry) >= 3 and entry[1] is not None and entry[2]:
                 looks[look] = {"dropbacks": int(entry[2]), "epa_per_dropback": round(float(entry[1]), 4)}
+                if len(entry) >= 4 and entry[3]:
+                    looks[look]["offense_place"] = int(entry[3])
         if looks:
             out[_code(code)] = looks
     if out:

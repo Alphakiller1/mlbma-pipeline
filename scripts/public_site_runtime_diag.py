@@ -408,6 +408,18 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
           .filter(el => el.offsetParent && /(^|\s)c-(elite|good|mid|weak|poor)(\s|$)/.test(el.className)
             && !el.querySelector('.ca-rank')).length""")
         check("NFL every graded number shows its rank pill", unpilled == 0, f"{unpilled} without a pill")
+        # No empty cells, no status lines, no ungraded thin rows (owner rules).
+        gaps = page.evaluate("""() => {
+          const vis = [...document.querySelectorAll('.ca-detail-stack td')].filter(td => td.offsetParent);
+          return {
+            dashes: vis.filter(td => td.innerText.trim() === '—').length,
+            notes: [...document.querySelectorAll('.ca-detail-stack .ca-detail-source-note')]
+              .filter(n => n.offsetParent).map(n => n.innerText.trim()).slice(0, 3),
+            thin: [...document.querySelectorAll('.ca-detail-stack .ca-thin-tag')].filter(e => e.offsetParent).length
+          }; }""")
+        check("NFL desk has no empty (dash) cells", gaps["dashes"] == 0, f"{gaps['dashes']} dash cells")
+        check("NFL desk has no status lines", not gaps["notes"], str(gaps["notes"]))
+        check("NFL desk grades every row (no Low n tags)", gaps["thin"] == 0, f"{gaps['thin']} Low n tags")
         grading = page.evaluate(NFL_GRADING_AUDIT)
         check("NFL every number is graded, marked, tagged thin or a count",
               grading["checked"] > 200 and grading["ungraded"] == 0,

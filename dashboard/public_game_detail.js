@@ -2864,7 +2864,12 @@ function seasonToggle(game) {
     // shell evidence that is charted.
     var shells = NFL_SHELLS.some(function (s) { return cov[s[0] + '_rate'] != null; })
       ? NFL_SHELLS : NFL_MIDDLE;
-    var rows = shells.filter(function (s) { return cov[s[0] + '_rate'] != null; })
+    // A results table: a shell with no EPA on either side reads in Defensive
+    // Tendencies instead.
+    var rows = shells.filter(function (s) {
+      return cov[s[0] + '_rate'] != null &&
+        (allowed['pass_epa_' + s[0]] != null || faced['pass_epa_' + s[0]] != null);
+    })
       .sort(function (a, b) { return cov[b[0] + '_rate'] - cov[a[0] + '_rate']; })
       .map(function (s) {
         var key = 'pass_epa_' + s[0];
@@ -2963,6 +2968,11 @@ function seasonToggle(game) {
     ['Screen Faced', 'personnel', 'screen_rate', 'pass_epa_screen']
   ];
 
+  // A charted look this club has not run a play into has no result to show.
+  function nflLookResult(raw, entry, own) {
+    return raw == null ? '<td class="num is-low-cell">No plays</td>' : nflResultCell(raw, entry, own);
+  }
+
   function nflLooksPanel(sport, game, defSide) {
     var offSide = nflOther(defSide);
     var dScheme = nflScheme(game, defSide);
@@ -2974,11 +2984,12 @@ function seasonToggle(game) {
       esc(nflVs(sport, game, defSide, 'Defense', 'Offense')) + '</h3>';
     var rows = NFL_LOOKS.map(function (spec) {
       var rate = (unit[spec[1]] || {})[spec[2]];
-      if (rate == null && allowed[spec[3]] == null) return '';
+      // Usage alone lives in Defensive Tendencies; this table is results.
+      if (allowed[spec[3]] == null && faced[spec[3]] == null) return '';
       return '<tr><td class="ca-lineup-name">' + esc(spec[0]) + '</td>' +
         nflUsageCell(rate, nflFreqRank(dScheme, 'defense', spec[1], spec[2])) +
-        nflResultCell(allowed[spec[3]], nflResultRank(dScheme, 'defense', spec[3], allowed[spec[3]]), true) +
-        nflResultCell(faced[spec[3]], nflResultRank(oScheme, 'offense', spec[3], faced[spec[3]]), false) +
+        nflLookResult(allowed[spec[3]], nflResultRank(dScheme, 'defense', spec[3], allowed[spec[3]]), true) +
+        nflLookResult(faced[spec[3]], nflResultRank(oScheme, 'offense', spec[3], faced[spec[3]]), false) +
         '</tr>';
     }).filter(Boolean);
     if (!rows.length) return head + pending('Defensive charting is not published for this club.') + '</section>';
@@ -3036,8 +3047,8 @@ function seasonToggle(game) {
     ['Cover 2', 'coverage', 'cover_2_rate'], ['Cover 2 Man', 'coverage', 'cover_2_man_rate'],
     ['Cover 3', 'coverage', 'cover_3_rate'], ['Cover 4', 'coverage', 'cover_4_rate'],
     ['Cover 6', 'coverage', 'cover_6_rate'],
-    ['Blitz', 'pressure', 'blitz_rate'], ['Stacked Box', 'pressure', 'stacked_box_rate'],
-    ['Light Box', 'pressure', 'light_box_rate'],
+    ['Blitz', 'pressure', 'blitz_rate'], ['Pressure', 'pressure', 'pressure_rate'],
+    ['Stacked Box', 'pressure', 'stacked_box_rate'], ['Light Box', 'pressure', 'light_box_rate'],
     ['Base Defense', 'package', 'base_rate'], ['Nickel', 'package', 'nickel_rate'],
     ['Dime', 'package', 'dime_rate'], ['Sub Package', 'package', 'sub_package_rate']
   ];
@@ -3050,18 +3061,26 @@ function seasonToggle(game) {
     var seen = oScheme.offense || {};
     var head = '<section class="ca-arsenal-panel"><h3>' +
       esc(fullName(sport, game, defSide)) + ' Defense</h3>';
-    var rows = NFL_DEF_TENDENCIES.map(function (spec) {
+    var paired = [], solo = [];
+    NFL_DEF_TENDENCIES.forEach(function (spec) {
       var own = (mine[spec[1]] || {})[spec[2]];
-      if (own == null) return '';
-      return '<tr><td class="ca-lineup-name">' + esc(spec[0]) + '</td>' +
-        nflUsageCell(own, nflFreqRank(dScheme, 'defense', spec[1], spec[2])) +
-        nflRateCell((seen[spec[1]] || {})[spec[2]], nflFreqRank(oScheme, 'offense', spec[1], spec[2])) +
-        '</tr>';
-    }).filter(Boolean);
-    if (!rows.length) return head + pending('Defensive tendencies are not published for this club.') + '</section>';
+      if (own == null) return;
+      var faced = (seen[spec[1]] || {})[spec[2]];
+      var cells = '<tr><td class="ca-lineup-name">' + esc(spec[0]) + '</td>' +
+        nflUsageCell(own, nflFreqRank(dScheme, 'defense', spec[1], spec[2]));
+      if (faced == null) {
+        solo.push(cells + '</tr>');
+      } else {
+        paired.push(cells + nflRateCell(faced, nflFreqRank(oScheme, 'offense', spec[1], spec[2])) + '</tr>');
+      }
+    });
+    if (!paired.length && !solo.length) return '';
+    // Looks charted only from the defense's side read without a Faced column.
     return head + '<p class="ca-lineup-context">' +
       esc(nflSampleLabel(dScheme, true) || 'Charted defensive snaps') + '</p>' +
-      nflMixTable('Tendency', [fullName(sport, game, offSide) + ' Faced'], rows) + '</section>';
+      (paired.length ? nflMixTable('Tendency', [fullName(sport, game, offSide) + ' Faced'], paired) : '') +
+      (solo.length ? '<div class="ca-split-block"><h4>Defense Only</h4>' +
+        nflMixTable('Tendency', [], solo) + '</div>' : '') + '</section>';
   }
 
   /* ---- the 2025 + 2026 window ----------------------------------------
@@ -3253,7 +3272,7 @@ function seasonToggle(game) {
     QB: {
       family: 'passing', volume: 'dropbacks', unit: 'Dropbacks', minimum: 10, floor: 10, opponent: true,
       groups: [
-        ['Coverage', ['man', 'zone', 'single_high', 'two_high']],
+        ['Coverage', ['man', 'zone', 'team_man', 'team_zone', 'single_high', 'two_high']],
         ['Pass Rush', ['blitz', 'no_blitz', 'pressure', 'clean']],
         ['Box', ['light_box', 'stacked_box']],
         ['Shells', ['cover_0', 'cover_1', 'cover_2', 'cover_2_man', 'cover_3', 'cover_4', 'cover_6']]
@@ -3279,6 +3298,7 @@ function seasonToggle(game) {
 
   var NFL_LOOK_LABEL = {
     man: 'Vs Man', zone: 'Vs Zone', single_high: 'Single High (MFC)', two_high: 'Two High (MFO)',
+    team_man: 'Offense Vs Man', team_zone: 'Offense Vs Zone',
     blitz: 'Vs Blitz', no_blitz: 'No Blitz', pressure: 'Pressured', clean: 'Clean Pocket',
     light_box: 'Light Box', stacked_box: 'Stacked Box', base: 'Vs Base', nickel: 'Vs Nickel',
     dime: 'Vs Dime', left: 'Run Left', middle: 'Run Middle', right: 'Run Right',
@@ -3309,6 +3329,8 @@ function seasonToggle(game) {
      beside what the other side has done with it - context, never a grade. */
   var NFL_LOOK_RATE = {
     man: ['coverage', 'man_rate'], zone: ['coverage', 'zone_rate'],
+    team_man: ['coverage', 'man_rate'], team_zone: ['coverage', 'zone_rate'],
+    light_box: ['pressure', 'light_box_rate'],
     single_high: ['coverage', 'single_high_rate'], two_high: ['coverage', 'two_high_rate'],
     blitz: ['pressure', 'blitz_rate'], pressure: ['pressure', 'pressure_rate'],
     stacked_box: ['pressure', 'stacked_box_rate'],
@@ -3350,14 +3372,20 @@ function seasonToggle(game) {
     });
     if (!spec.opponent) opp = null;
     var total = ((profile.splits || []).filter(function (s) { return s.look === 'all'; })[0] || {})[spec.volume];
-    var rows = (profile.splits || []).filter(function (s) {
+    function named(s) {
       // Only the looks this table names. The source also publishes
       // middle-field-closed/open, which are single-high/two-high under another
       // name, and a look that holds every snap (a back who never saw a blitz
       // has "No Blitz" equal to his whole line) says nothing a split should.
       return s.look !== 'all' && order.indexOf(s.look) >= 0 &&
-        Number(s[spec.volume]) >= spec.minimum && Number(s[spec.volume]) !== Number(total);
-    }).sort(function (a, b) {
+        Number(s[spec.volume]) > 0 && Number(s[spec.volume]) !== Number(total);
+    }
+    var rows = (profile.splits || []).filter(function (s) {
+      return named(s) && Number(s[spec.volume]) >= spec.minimum;
+    });
+    // Early in a season no look may reach the minimum; show what there is.
+    if (!rows.length) rows = (profile.splits || []).filter(named);
+    rows = rows.sort(function (a, b) {
       var ai = order.indexOf(a.look), bi = order.indexOf(b.look);
       return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
     });
@@ -3365,10 +3393,13 @@ function seasonToggle(game) {
     var season = profile.source_season;
     var title = season + ' Splits' + (all[spec.volume] != null
       ? ' · ' + all[spec.volume] + ' ' + spec.unit : '');
-    if (!rows.length) {
-      return nflSplitWrap(title, pending('No look reaches ' + spec.minimum + ' ' +
-        spec.unit.toLowerCase() + ' yet this season.'), '');
-    }
+    if (!rows.length) return '';
+    // A row that carries only EPA (coverage charted per offense, not per play)
+    // reads in its own table, under just the columns it has.
+    var epaOnly = rows.filter(function (r) {
+      return r.epa_per_dropback != null && r.completion_rate == null && r.success_rate == null;
+    });
+    rows = rows.filter(function (r) { return epaOnly.indexOf(r) < 0; });
     var cols = spec.cols.filter(function (col) {
       return rows.some(function (r) { return r[col[0]] != null; });
     });
@@ -3377,9 +3408,9 @@ function seasonToggle(game) {
     var lastGroup = null;
     var body = rows.map(function (r) {
       var ranks = r.league_ranks || {};
-      // Below the floor a split is printed, tagged, and never graded: three
-      // blitzes is an anecdote, and a green cell would say otherwise.
-      var thin = Number(r[spec.volume]) < spec.floor;
+      // Below the floor a split is still graded when the pipeline placed it
+      // against the players above the floor; only an unplaced one is tagged.
+      var thin = Number(r[spec.volume]) < spec.floor && !Object.keys(ranks).length;
       var shows = opp ? nflOppShows(opp.defense, r.look) : null;
       // The looks come in families; a family row keeps seventeen of them scannable.
       var group = groupOf[r.look];
@@ -3399,20 +3430,38 @@ function seasonToggle(game) {
               ' at his position in this look"' : '') + '>' + esc(nflFormat(r[col[0]], col[3])) +
             nflBadge(rank) + '</td>';
         }).join('') + (showCol ? '<td class="num ca-opp-shows">' +
-          (shows == null ? '&mdash;' : esc(pctText(shows)) + nflOppShowsMark(opp.scheme, r.look)) +
+          (shows == null ? '' : esc(pctText(shows)) + nflOppShowsMark(opp.scheme, r.look)) +
           '</td>' : '') + '</tr>';
     }).join('');
-    // Coverage, shells and pressure come from NFL participation data, which is
-    // published after a season; a current season shows its charted looks only.
-    var hasCoverage = rows.some(function (r) { return groupOf[r.look] === 'Coverage' || groupOf[r.look] === 'Shells'; });
-    var status = spec.opponent && !hasCoverage && typeof season === 'number'
-      ? season + ' coverage splits publish with the ' + season + ' participation data.' : '';
-    return nflSplitWrap(title,
-      '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-nfl-split"><thead><tr><th>Look</th>' +
-      cols.map(function (col) { return '<th class="num">' + esc(col[1]) + '</th>'; }).join('') +
-      (showCol ? '<th class="num ca-opp-shows" title="How often ' + esc(opp.name) +
-        ' shows this look on its charted snaps">' + esc(opp.nick) + ' Show</th>' : '') +
-      '</tr></thead><tbody>' + body + '</tbody></table></div>', status);
+    var showHead = opp ? '<th class="num ca-opp-shows" title="How often ' + esc(opp.name) +
+      ' shows this look on its charted snaps">' + esc(opp.nick) + ' Show</th>' : '';
+    var main = rows.length
+      ? '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-nfl-split"><thead><tr><th>Look</th>' +
+        cols.map(function (col) { return '<th class="num">' + esc(col[1]) + '</th>'; }).join('') +
+        (showCol ? showHead : '') + '</tr></thead><tbody>' + body + '</tbody></table></div>'
+      : '';
+    var coverage = '';
+    if (epaOnly.length) {
+      var epaShow = !!opp && epaOnly.some(function (r) { return nflOppShows(opp.defense, r.look) != null; });
+      coverage = '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-nfl-split ca-nfl-epa-only">' +
+        '<thead><tr><th>Coverage</th><th class="num">DB</th><th class="num">EPA/DB</th>' +
+        (epaShow ? showHead : '') + '</tr></thead><tbody>' +
+        epaOnly.map(function (r) {
+          var rank = (r.league_ranks || {}).epa_per_dropback || null;
+          var shows = opp ? nflOppShows(opp.defense, r.look) : null;
+          var ofOffenses = /^team_/.test(r.look);
+          return '<tr><td>' + esc(NFL_LOOK_LABEL[r.look] || r.look) + '</td>' +
+            '<td class="num">' + esc(String(r.dropbacks)) + '</td>' +
+            '<td class="num' + (rank ? ' ' + nflRankTone(rank) : '') + '"' +
+            (rank ? ' title="' + rank.place + ordinal(rank.place) + ' of ' + rank.of +
+              (ofOffenses ? ' offenses' : ' at his position') + '"' : '') + '>' +
+            esc(nflFormat(r.epa_per_dropback, 'epa')) + nflBadge(rank) + '</td>' +
+            (epaShow ? '<td class="num ca-opp-shows">' + (shows == null ? '' :
+              esc(pctText(shows)) + nflOppShowsMark(opp.scheme, r.look)) + '</td>' : '') + '</tr>';
+        }).join('') + '</tbody></table></div>';
+    }
+    if (!main && !coverage) return '';
+    return nflSplitWrap(title, coverage + main, '');
   }
 
   function nflBackPanel(sport, game, side, position) {
@@ -3893,10 +3942,15 @@ function seasonToggle(game) {
         }).map(read);
       });
     }
+    // Pass catchers are receivers, tight ends and backs; a quarterback's
+    // trick-play catch is not a receiving line.
+    list = (list || []).filter(function (p) { return ['WR', 'TE', 'RB', 'FB'].indexOf(p.position) >= 0; });
     var rows = list.map(function (p) {
       var st = status[playerNameKey(p.player_name)];
       var stText = nflStatusText(st);
-      var thin = Number(p.targets) < MIN_TARGETS;
+      // Every row is graded (owner rule): a player under the target floor is
+      // placed against the players above it; his targets are in the row.
+      var thin = false;
       function placed(value, read, digits) {
         if (value == null) return '<td class="num">—</td>';
         return nflPlacedTd(esc(Number(value).toFixed(digits)),
@@ -3999,7 +4053,11 @@ function seasonToggle(game) {
         present.forEach(function (look) {
           var cells = leaders.map(function (k, i) {
             var sp = looks[look][i];
-            if (!sp || sp.yards_per_target == null) return '<td class="num">—</td>';
+            if (!sp || sp.yards_per_target == null) {
+              var tg = sp && sp.targets ? Number(sp.targets) : 0;
+              return '<td class="num is-low-cell" title="' + tg + ' targets in this look">' + tg +
+                ' <small class="is-low">tgt</small></td>';
+            }
             var thin = Number(sp.targets) < NFL_REC_FLOOR;
             var rank = (sp.league_ranks || {}).yards_per_target;
             var title = pctText(sp.catch_rate) + ' catch · ' + epaText(sp.epa_per_target) + ' EPA/tgt';
