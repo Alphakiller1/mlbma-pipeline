@@ -152,7 +152,9 @@
     "away_scheme_current",
     "away_defenders_current",
     "home_defenders_current",
-    "home_scheme_current"
+    "home_scheme_current",
+    "away_red_zone",
+    "home_red_zone"
   ],
   "notes": {
     "away_availability_list": "Official injury designations: name, position, status, body part. factual-status. No projection, snap share or confidence.",
@@ -169,6 +171,8 @@
     "home_player_scheme": "Observed, season-labelled starting-QB passing and starting-RB rushing outcomes by charted defensive look. Descriptive only; sample size is always carried.",
     "home_player_stats": "Observed regular-season player totals from nflverse/nflfastR for published offensive starters. Descriptive only; no projections or sportsbook lines.",
     "home_team_stats": "Observed regular-season team totals from nflverse/nflfastR. Descriptive only; games played is carried for per-game display.",
-    "roof": "Venue roof state reported by the official schedule feed. identity."
+    "roof": "Venue roof state reported by the official schedule feed. identity.",
+    "away_red_zone": "Observed red zone trips, conversion and usage from nflverse play-by-play, for the current season and 2025 + 2026 pooled. A trip is a drive with a snap at the opponent's 20 or closer; a conversion is a touchdown or made field goal snapped from there.",
+    "home_red_zone": "Observed red zone trips, conversion and usage from nflverse play-by-play, for the current season and 2025 + 2026 pooled. A trip is a drive with a snap at the opponent's 20 or closer; a conversion is a touchdown or made field goal snapped from there."
   }
 }

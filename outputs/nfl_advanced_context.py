@@ -774,6 +774,8 @@ def _ranked_desc(pool: list[tuple[str, float]]) -> dict[str, int]:
 
 def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
     """Return derived observed context; any unavailable feed fails soft."""
+    # Imported here, not at the top: nfl_red_zone reuses this module's loaders.
+    from outputs import nfl_red_zone
     names = {
         str(row.get("player_id")): str(row.get("player_name"))
         for rows in player_stats.values() for row in rows
@@ -814,4 +816,5 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
         "team_scheme_current": team_scheme_current(season),
         "defenders_current": pfr_coverage(season),
         "team_line": _team_line(current, season, pfr_rushing) if current is not None else {},
+        "red_zone": nfl_red_zone.build(season),
     }

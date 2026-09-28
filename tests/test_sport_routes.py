@@ -495,7 +495,7 @@ class AdapterHoleTests(unittest.TestCase):
         # The pairs stack before a table must scroll, keeping the other club's column on screen.
         self.assertRegex(css, r"@media \(max-width: 1379px\) \{\s+\.ca-nfl-duo \{ grid-template-columns: minmax\(0, 1fr\); \}")
         for section_id in ("efficiency", "quarterbacks", "coverage", "looks", "rushing",
-                           "trenches", "receivers", "tendencies", "availability", "radar",
+                           "trenches", "receivers", "redzone", "tendencies", "availability", "radar",
                            "team-context"):
             self.assertIn("section('" + section_id + "'", detail)
         # A mix row is usage squares beside a ranked result, with the other
