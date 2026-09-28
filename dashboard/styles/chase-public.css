@@ -5593,3 +5593,9 @@ body[data-sport="nfl"] .ca-detail-nav {
    whether the starter throws four pitches or five. */
 .ca-pitch-matchup-table th:last-child { width: auto; }
 .ca-bvp-table th:last-child { width: auto; }
+
+/* Runs versus starter hand and the head-to-head table (2026-09-28). */
+.ca-runs-hand-controls { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.ca-runs-hand-table td.num,
+.ca-h2h-table td.num { white-space: nowrap; }
+.ca-h2h-table { margin-bottom: var(--space-3); }

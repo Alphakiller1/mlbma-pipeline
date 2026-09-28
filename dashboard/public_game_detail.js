@@ -95,7 +95,7 @@
      its destination are obviously the same thing. */
   var SECTION_ICON = {
     starters: 'baseball', arsenal: 'target', lineups: 'lineup',
-    'club-splits': 'users', 'pitch-matchup': 'target', bvp: 'lineup', series: 'calendar',
+    'club-splits': 'users', 'pitch-matchup': 'target', bvp: 'lineup', 'runs-hand': 'trend', series: 'calendar',
     recent: 'calendar', form: 'trend', radar: 'gauge', bullpens: 'users',
     availability: 'whistle', scheme: 'football', 'team-context': 'plane', 'run-game': 'football',
     'def-tendencies': 'target',
@@ -197,6 +197,7 @@
     if (id === 'pitch-matchup') applyPitchMetric(host);
     if (id === 'bvp') applyBvpView(host);
     if (id === 'form') applyFormSplit(host);
+    if (id === 'runs-hand') applyRunsHand(host);
   }
 
   function pending(message) {
@@ -766,6 +767,15 @@
 
   /* Every hitter against every pitch type, each placed among the hitters who
      have seen that pitch type (scripts/publish_public_matchup_depth.py). */
+  var RUNS_BY_HAND_URL = '/data/public/team_runs_by_hand.json';
+  var runsByHandPromise = null;
+
+  function loadRunsByHand() {
+    if (runsByHandPromise) return runsByHandPromise;
+    runsByHandPromise = fetchJson(RUNS_BY_HAND_URL).catch(function () { return null; });
+    return runsByHandPromise;
+  }
+
   var INDEX_SPLITS_URL = '/data/public/team_index_splits.json';
   var indexSplitsPromise = null;
 
@@ -2396,6 +2406,142 @@
   /* ---------------------------------------------------------------------
    * The season series, and in October the series being played.
    * ------------------------------------------------------------------ */
+  /* ---------------------------------------------------------------------
+   * Runs versus the starter's hand: what each club has scored and allowed
+   * per game when a right- or left-hander started against it, over the
+   * season or its last 30 / 14 / 7 games, anywhere or at home or on the
+   * road. Every rate is ranked among the clubs in that same cell.
+   * ------------------------------------------------------------------ */
+  var RUN_WINDOWS = [['ytd', 'YTD'], ['l30', 'L30'], ['l14', 'L14'], ['l7', 'L7']];
+  var RUN_VENUES = [['all', 'All'], ['home', 'At Home'], ['away', 'On The Road']];
+  var RUN_HANDS = [['vs_rhp', 'Vs RHP Starters', 'R'], ['vs_lhp', 'Vs LHP Starters', 'L'],
+    ['any', 'All Starters', '']];
+
+  function runsHandTable(game, side, cells, oppHand) {
+    var rows = RUN_HANDS.map(function (hand) {
+      var cell = cells[hand[0]];
+      var label = esc(hand[1]) + (hand[2] && hand[2] === oppHand
+        ? ' <span class="ca-flag">Tonight</span>' : '');
+      if (!cell) {
+        return '<tr><td>' + label + '</td><td class="num">0</td>' +
+          '<td class="num ca-vs-none">No Games</td><td class="num ca-vs-none">No Games</td>' +
+          '<td class="num ca-vs-none">No Games</td></tr>';
+      }
+      function rate(entry) {
+        return '<td class="num ' + rankTone(entry.rank, entry.of) + '">' +
+          esc(Number(entry.value).toFixed(2)) + rankBadge(entry) + '</td>';
+      }
+      return '<tr><td>' + label + '</td><td class="num">' + cell.games + '</td>' +
+        '<td class="num">' + cell.wins + '\u2013' + cell.losses + '</td>' +
+        rate(cell.runs_per_game) + rate(cell.allowed_per_game) + '</tr>';
+    }).join('');
+    return '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-runs-hand-table">' +
+      '<thead><tr><th>Opposing Starter</th><th class="num">G</th><th class="num">W\u2013L</th>' +
+      '<th class="num">Runs/G</th><th class="num">Allowed/G</th></tr></thead><tbody>' +
+      rows + '</tbody></table></div>';
+  }
+
+  function runsHandPanel(sport, game, side, extra) {
+    var label = fullName(sport, game, side);
+    var head = '<section class="ca-form-panel"><h3 class="ca-lineup-head">' +
+      logo(sport, game, side, 26, 'ca-lineup-head__crest') + '<span>' + esc(label) + '</span></h3>';
+    var data = extra.runsByHand;
+    if (data === undefined) return head + pending('Runs by starter hand are loading.') + '</section>';
+    var team = ((data && data.teams) || {})[String(game[side + '_team_id'])];
+    if (!team) return head + pending('Runs by starter hand are not published for this club.') + '</section>';
+    var oppSide = side === 'away' ? 'home' : 'away';
+    var oppHand = ((extra.people || {})[game[oppSide + '_starter_id']] || {}).throws ||
+      String(game[oppSide + '_hand'] || '').toUpperCase();
+    var views = [];
+    RUN_WINDOWS.forEach(function (w) {
+      RUN_VENUES.forEach(function (v) {
+        var cells = ((team[w[0]] || {})[v[0]]) || {};
+        views.push('<div data-runs-view="' + w[0] + '-' + v[0] + '"' +
+          (w[0] === 'ytd' && v[0] === 'all' ? '' : ' hidden') + '>' +
+          runsHandTable(game, side, cells, oppHand) + '</div>');
+      });
+    });
+    return head + views.join('') + '</section>';
+  }
+
+  function runsHandBody(sport, game, extra) {
+    function toggle(name, options) {
+      return '<div class="ca-season-toggle ca-metric-switch" role="group" aria-label="' + name + '">' +
+        options.map(function (opt, i) {
+          return '<button type="button" class="ca-season-toggle__btn' + (i ? '' : ' is-on') +
+            '" data-runs-pick="' + (name === 'Window' ? 'window' : 'venue') + ':' + opt[0] +
+            '" aria-pressed="' + (i === 0) + '">' + esc(opt[1]) + '</button>';
+        }).join('') + '</div>';
+    }
+    return '<div class="ca-runs-hand-controls">' + toggle('Window', RUN_WINDOWS) +
+      toggle('Venue', RUN_VENUES) + '</div><div class="ca-detail-duo">' +
+      runsHandPanel(sport, game, 'away', extra) + runsHandPanel(sport, game, 'home', extra) +
+      '</div>';
+  }
+
+  function wireRunsHand(host) {
+    host.addEventListener('click', function (event) {
+      var btn = event.target.closest && event.target.closest('[data-runs-pick]');
+      if (!btn || !host.contains(btn)) return;
+      var pick = btn.getAttribute('data-runs-pick').split(':');
+      host.setAttribute('data-runs-' + pick[0], pick[1]);
+      applyRunsHand(host);
+    });
+  }
+
+  function applyRunsHand(host) {
+    var chosen = {
+      window: host.getAttribute('data-runs-window') || 'ytd',
+      venue: host.getAttribute('data-runs-venue') || 'all'
+    };
+    Array.prototype.forEach.call(host.querySelectorAll('[data-runs-pick]'), function (b) {
+      var pick = b.getAttribute('data-runs-pick').split(':');
+      var on = chosen[pick[0]] === pick[1];
+      b.classList.toggle('is-on', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+    Array.prototype.forEach.call(host.querySelectorAll('[data-runs-view]'), function (node) {
+      node.hidden = node.getAttribute('data-runs-view') !== chosen.window + '-' + chosen.venue;
+    });
+  }
+
+  /* Head to head: each club's record and runs per game against the other,
+     overall and at each park. Counts and averages of the meetings, no rank -
+     there is no league pool for one pairing. */
+  function headToHead(sport, game, games) {
+    var away = fullName(sport, game, 'away');
+    var home = fullName(sport, game, 'home');
+    function line(list) {
+      if (!list.length) return null;
+      var w = list.filter(function (g) { return g.won; }).length;
+      var rf = list.reduce(function (a, g) { return a + (Number(g.scored) || 0); }, 0);
+      var ra = list.reduce(function (a, g) { return a + (Number(g.allowed) || 0); }, 0);
+      return { g: list.length, w: w, l: list.length - w, rpg: rf / list.length, rapg: ra / list.length };
+    }
+    var rows = [
+      ['Season Series', games],
+      ['At ' + home, games.filter(function (g) { return !g.awayHosted; })],
+      ['At ' + away, games.filter(function (g) { return g.awayHosted; })]
+    ].map(function (row) {
+      var l = line(row[1]);
+      if (!l) {
+        return '<tr><td>' + esc(row[0]) + '</td><td class="num">0</td>' +
+          '<td class="num ca-vs-none">No Meetings</td><td class="num ca-vs-none">No Meetings</td>' +
+          '<td class="num ca-vs-none">No Meetings</td><td class="num ca-vs-none">No Meetings</td></tr>';
+      }
+      return '<tr><td>' + esc(row[0]) + '</td><td class="num">' + l.g + '</td>' +
+        '<td class="num">' + l.w + '\u2013' + l.l + '</td>' +
+        '<td class="num">' + l.rpg.toFixed(2) + '</td>' +
+        '<td class="num">' + l.l + '\u2013' + l.w + '</td>' +
+        '<td class="num">' + l.rapg.toFixed(2) + '</td></tr>';
+    }).join('');
+    return '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-h2h-table">' +
+      '<thead><tr><th>Meetings</th><th class="num">G</th>' +
+      '<th class="num">' + esc(away) + ' W\u2013L</th><th class="num">' + esc(away) + ' Runs/G</th>' +
+      '<th class="num">' + esc(home) + ' W\u2013L</th><th class="num">' + esc(home) + ' Runs/G</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+  }
+
   function seriesBody(sport, game, extra) {
     var data = extra.series;
     if (data === undefined) return pending('Season series is loading.');
@@ -2428,7 +2574,8 @@
         (g.won ? 'W' : 'L') + '</abbr><i>' + esc(g.scored) + '–' + esc(g.allowed) +
         '</i></span>';
     }).join('');
-    return statusHtml + '<div class="ca-recent-stack"><div class="ca-recent">' +
+    return statusHtml + headToHead(sport, game, games) +
+      '<div class="ca-recent-stack"><div class="ca-recent">' +
       '<span class="ca-recent__team">' + logo(sport, game, 'away', 24, 'ca-recent__crest') +
       esc(away) + '</span>' +
       '<span class="ca-recent__record">' + wins + '–' + (games.length - wins) +
@@ -3184,6 +3331,8 @@
         teamSplitsBody(sport, game, extra)),
       section('recent', 'Last Ten Games', 'What Each Club Has Actually Been Doing',
         recentBody(sport, game, extra)),
+      section('runs-hand', 'Runs Versus Starter Hand', 'Scored And Allowed By The Hand That Started',
+        runsHandBody(sport, game, extra)),
       section('series', 'Season Series', 'Every Meeting Between These Clubs',
         seriesBody(sport, game, extra)),
       section('form', 'Offensive Form And League Context', 'Graded Against The 30-Team League Pool',
@@ -5664,6 +5813,7 @@ function seasonToggle(game) {
       wirePitchMetric(host);
       wireBvpView(host);
       wireFormSplit(host);
+      wireRunsHand(host);
       if (sport === 'nfl') wireNflDesk(host);
       if (global.ResizeObserver) {
         new global.ResizeObserver(function () { fitRadar(host); }).observe(host);
@@ -5829,6 +5979,11 @@ function seasonToggle(game) {
         loadBatterPitch().then(function (found) {
           extra.batterPitch = found;
           repaintPitchMatchup();
+        });
+
+        loadRunsByHand().then(function (found) {
+          extra.runsByHand = found;
+          paintSection(host, 'runs-hand', runsHandBody(sport, game, extra));
         });
 
         loadSeries(game, season).then(function (found) {

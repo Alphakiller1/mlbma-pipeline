@@ -95,6 +95,28 @@ class BullpenBoardTests(unittest.TestCase):
             write_csv(Path(tmp) / publisher.RELIEVER_SOURCE, self.reliever_rows()[:70])
             self.assertIsNone(publisher.bullpen_board(Path(tmp)))
 
+    def test_runs_by_hand_windows_are_the_last_n_games(self):
+        publisher = load_publisher()
+        rows = []
+        for team in range(30):
+            for day in range(70):
+                rows.append({"date": f"2026-{6 + day // 28:02d}-{day % 28 + 1:02d}",
+                             "game_pk": 1000 * team + day, "game_type": "R", "team_id": team,
+                             "opp_id": (team + 1) % 30, "home": day % 2, "runs": team % 7,
+                             "allowed": 3, "won": 1 if day % 3 else 0,
+                             "opp_starter_id": 1, "opp_starter_hand": "L" if day % 4 == 0 else "R"})
+        with tempfile.TemporaryDirectory() as tmp:
+            write_csv(Path(tmp) / publisher.GAMES_SOURCE, rows)
+            cells = publisher.team_runs_by_hand(Path(tmp))
+        club = cells["6"]
+        self.assertEqual(club["ytd"]["all"]["any"]["games"], 70)
+        self.assertEqual(club["l7"]["all"]["any"]["games"], 7)
+        split = club["ytd"]["all"]
+        self.assertEqual(split["vs_lhp"]["games"] + split["vs_rhp"]["games"], 70)
+        self.assertEqual(club["ytd"]["home"]["any"]["games"] + club["ytd"]["away"]["any"]["games"], 70)
+        # Club 6 scores the most runs of the thirty (team % 7 peaks at 6, 13, 20, 27).
+        self.assertEqual(club["ytd"]["all"]["any"]["runs_per_game"]["rank"], 1)
+
     def test_published_files_carry_no_forecast(self):
         for name in ("batter_pitch_types.json", "bullpen_board.json"):
             path = ROOT / "data" / "public" / name

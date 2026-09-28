@@ -231,6 +231,14 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("#bullpens .ca-relief-table").count() == 2)
         check("MLB bullpen section carries no pen pitch mix",
               page.locator("#bullpens .ca-arsenal-table").count() == 0)
+        try:
+            page.wait_for_selector("#runs-hand .ca-runs-hand-table", timeout=timeout_ms)
+        except Exception:
+            pass
+        check("MLB runs by starter hand read for both clubs with window and venue filters",
+              page.locator("#runs-hand .ca-form-panel").count() == 2
+              and page.locator("#runs-hand [data-runs-pick]").count() == 7
+              and page.locator("#runs-hand [data-runs-view]:not([hidden])").count() == 2)
         check("MLB batter vs pitcher reads for both clubs",
               page.locator("#bvp .ca-bvp").count() == 2)
         check("MLB club splits carry RISP, two-out RISP and late & close",

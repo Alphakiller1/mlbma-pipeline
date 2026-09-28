@@ -47,6 +47,7 @@ HEADERS = {
 
 BATTER_OUT = Path(DATA_DIR) / "batter_pitch_types.csv"
 RELIEVER_OUT = Path(DATA_DIR) / "reliever_splits.csv"
+GAMES_OUT = Path(DATA_DIR) / "team_game_starters.csv"
 
 BATTER_COLUMNS = ["player_id", "player_name", "team", "pitch_type", "pitch_name",
                   "pitches", "pa", "xwoba", "whiff_percent", "hard_hit_percent",
@@ -211,10 +212,78 @@ def scrape_reliever_splits(season: int) -> bool:
     return True
 
 
+GAME_COLUMNS = ["date", "game_pk", "game_type", "team_id", "opp_id", "home",
+                "runs", "allowed", "won", "opp_starter_id", "opp_starter_hand"]
+MIN_FINAL_GAMES = 1000
+
+
+def _box_starters(game_pk: int) -> Optional[dict]:
+    """The pitcher who actually started for each side, from the box score.
+    The schedule's probablePitcher is the announced arm and was wrong on about
+    one side in eighty when sampled; the box score's first pitcher is the start."""
+    payload = _json(f"{STATS_API}/game/{game_pk}/boxscore?fields=teams,away,home,pitchers")
+    teams = (payload or {}).get("teams") or {}
+    out = {}
+    for side in ("away", "home"):
+        pitchers = (teams.get(side) or {}).get("pitchers") or []
+        out[side] = pitchers[0] if pitchers else None
+    return out if out.get("away") and out.get("home") else None
+
+
+def scrape_team_game_starters(season: int) -> bool:
+    """One row per club per completed game - regular season and postseason -
+    with the hand of the pitcher who started against it. The Runs Vs Starter
+    Hand section is built from this."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    schedule = _json(f"{STATS_API}/schedule?sportId=1&season={season}&gameType=R,F,D,L,W"
+                     "&fields=dates,date,games,gamePk,gameType,status,detailedState,teams,"
+                     "away,home,team,id,score,isWinner") or {}
+    finals = [(block["date"], game) for block in schedule.get("dates") or []
+              for game in block.get("games") or []
+              if (game.get("status") or {}).get("detailedState") == "Final"]
+    if len(finals) < MIN_FINAL_GAMES:
+        print(f"  KEPT team game starters: only {len(finals)} final games")
+        return False
+    with ThreadPoolExecutor(max_workers=16) as pool:
+        starters = list(pool.map(lambda item: _box_starters(item[1]["gamePk"]), finals))
+    ids = sorted({pid for pair in starters if pair for pid in pair.values()})
+    hands: dict[int, str] = {}
+    for i in range(0, len(ids), 150):
+        chunk = ",".join(str(pid) for pid in ids[i:i + 150])
+        for person in (_json(f"{STATS_API}/people?personIds={chunk}&fields=people,id,pitchHand,code")
+                       or {}).get("people") or []:
+            hands[person["id"]] = (person.get("pitchHand") or {}).get("code") or ""
+    rows = []
+    for (date, game), pair in zip(finals, starters):
+        if not pair:
+            continue
+        teams = game.get("teams") or {}
+        for side, other in (("away", "home"), ("home", "away")):
+            mine, theirs = teams.get(side) or {}, teams.get(other) or {}
+            opp_starter = pair[other]
+            rows.append({
+                "date": date, "game_pk": game["gamePk"], "game_type": game.get("gameType", ""),
+                "team_id": (mine.get("team") or {}).get("id"),
+                "opp_id": (theirs.get("team") or {}).get("id"),
+                "home": 1 if side == "home" else 0,
+                "runs": mine.get("score", ""), "allowed": theirs.get("score", ""),
+                "won": 1 if mine.get("isWinner") else 0,
+                "opp_starter_id": opp_starter, "opp_starter_hand": hands.get(opp_starter, ""),
+            })
+    if len(rows) < 2 * MIN_FINAL_GAMES:
+        print(f"  KEPT team game starters: only {len(rows)} rows resolved a starter")
+        return False
+    _write(GAMES_OUT, GAME_COLUMNS, rows)
+    print(f"  Saved {len(rows)} team-game rows -> {GAMES_OUT}")
+    return True
+
+
 def run(season: int = CURRENT_SEASON) -> None:
-    print(f"Fetching batter pitch-type lines and reliever splits for {season}...")
+    print(f"Fetching batter pitch-type lines, reliever splits and starter hands for {season}...")
     scrape_batter_pitch_types(season)
     scrape_reliever_splits(season)
+    scrape_team_game_starters(season)
 
 
 if __name__ == "__main__":

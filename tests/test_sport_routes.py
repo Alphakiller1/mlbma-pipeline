@@ -620,7 +620,8 @@ class AdapterHoleTests(unittest.TestCase):
                      "gameType=[R,F,D,L,W]", "BVP_PA_VARIANCE", "sitCodes=h,a,vl,vr,sp,rp,risp,risp2,lc",
                      "/data/public/team_index_splits.json", "function indexSplitTable",
                      "Likely Starters From The Last 10 Games", "function wireFormSplit",
-                     "sitCodes=h,a,vl,vr,sp,rp&season="):
+                     "sitCodes=h,a,vl,vr,sp,rp&season=", "section('runs-hand'",
+                     "/data/public/team_runs_by_hand.json", "function headToHead"):
             self.assertIn(text, detail)
         # Owner rule: MLB ranks print on team and pitch-mix stats only.
         bvp = detail[detail.index("function bvpRateCells"):detail.index("function bvpCountCells")]

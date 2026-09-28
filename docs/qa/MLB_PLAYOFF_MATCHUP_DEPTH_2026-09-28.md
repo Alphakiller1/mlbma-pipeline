@@ -36,6 +36,8 @@ A local `run_pipeline.bat` refreshes them all.
 - **Starters only:** with no posted order, Lineup Versus Pitch Mix and Batter Versus Pitcher show the likely starting nine. That is the active-roster position players with the most starts in the club's last 10 box scores (a battingOrder slot that is a multiple of 100), in their usual spot. No bench players.
 - **Aligned tables:** the pitch-grid, BvP and reliever tables use fixed layout with set tracks, so the away and home tables line up column for column. The last column takes the slack, so a four-pitch and a five-pitch starter still align.
 - **Offensive Form filters:** Season, Vs Righties, Vs Lefties, At Home, On The Road, Vs Starters, Vs Bullpens. Each split view is the same mirror, fed by one Stats API request for all 30 clubs' split lines. AVG, OBP, SLG, OPS, ISO, K%, BB% and HR% are ranked on that split, and OSI/ABQ/RCV/OBR are added where team_index_splits carries the split.
+- **Runs Versus Starter Hand** (`#runs-hand`, new): each club's runs scored and allowed per game when a RHP or LHP started against it. There is a window toggle (YTD / L30 / L14 / L7, the club's last N games, as in the team-context sparkline) and a venue toggle (All / At Home / On The Road). Each rate is ranked among the clubs with a game in that same cell, and tonight's opposing hand is flagged. Source: `scrape_team_game_starters` reads the pitcher who actually started from each box score (the schedule's probable was wrong on about 1 side in 80 sampled), the regular season plus the postseason, into `team_game_starters.csv`. The publisher writes `team_runs_by_hand.json`.
+- **Season Series head-to-head:** each club's record and runs per game against the other, overall and at each park.
 
 ## Data
 

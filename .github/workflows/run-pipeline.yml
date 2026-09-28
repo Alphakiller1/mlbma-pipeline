@@ -109,6 +109,7 @@ jobs:
             data/public/batter_pitch_types.json
             data/public/bullpen_board.json
             data/public/team_index_splits.json
+            data/public/team_runs_by_hand.json
             data/public/league_baselines.json
             data/public/pitch_run_value.json
             data/public/pitch_type_board.json

@@ -286,6 +286,58 @@ def team_index_splits(data_dir: Path) -> tuple[dict, dict]:
     return teams, fresh
 
 
+# ---------------------------------------------------------------- runs by hand
+
+GAMES_SOURCE = "team_game_starters.csv"
+# The same windows as the team-context sparkline: a club's last N games.
+RUN_WINDOWS = (("ytd", None), ("l30", 30), ("l14", 14), ("l7", 7))
+VENUES = ("all", "home", "away")
+HANDS = (("any", None), ("vs_rhp", "R"), ("vs_lhp", "L"))
+
+
+def team_runs_by_hand(data_dir: Path) -> dict:
+    """Runs scored and allowed per game, by the hand of the pitcher who
+    started against the club, over four windows and three venues, each rate
+    ranked among the clubs with a game in that same cell."""
+    rows = read(data_dir / GAMES_SOURCE)
+    if len(rows) < 2000:
+        return {}
+    by_team: dict[str, list[dict]] = defaultdict(list)
+    for row in rows:
+        by_team[str(row["team_id"])].append(row)
+    cells: dict[str, dict] = {}
+    for team, games in by_team.items():
+        games.sort(key=lambda g: (g["date"], g["game_pk"]))
+        for window, size in RUN_WINDOWS:
+            span = games if size is None else games[-size:]
+            for venue in VENUES:
+                pool = [g for g in span if venue == "all" or (g["home"] == "1") == (venue == "home")]
+                for hand_key, hand in HANDS:
+                    picked = [g for g in pool if hand is None or g["opp_starter_hand"] == hand]
+                    if not picked:
+                        continue
+                    n = len(picked)
+                    wins = sum(1 for g in picked if g["won"] == "1")
+                    cells.setdefault(team, {}).setdefault(window, {}).setdefault(venue, {})[hand_key] = {
+                        "games": n, "wins": wins, "losses": n - wins,
+                        "runs_per_game": sum(int(float(g["runs"] or 0)) for g in picked) / n,
+                        "allowed_per_game": sum(int(float(g["allowed"] or 0)) for g in picked) / n,
+                    }
+    # Rank each rate among the clubs holding that same cell.
+    for window, _ in RUN_WINDOWS:
+        for venue in VENUES:
+            for hand_key, _ in HANDS:
+                held = [(team, data[window][venue][hand_key]) for team, data in cells.items()
+                        if hand_key in data.get(window, {}).get(venue, {})]
+                for key, higher in (("runs_per_game", True), ("allowed_per_game", False)):
+                    values = [cell[key] for _, cell in held]
+                    for _, cell in held:
+                        v = cell[key]
+                        ahead = sum(1 for o in values if (o > v if higher else o < v))
+                        cell[key] = {"value": round(v, 2), "rank": ahead + 1, "of": len(values)}
+    return cells
+
+
 def write(name: str, payload: dict) -> None:
     dest = PUBLIC / name
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -328,6 +380,19 @@ def main(argv: list[str]) -> int:
         written += 1
     else:
         print(f"  skip bullpen board: no usable {RELIEVER_SOURCE} under {data_dir}")
+
+    runs = team_runs_by_hand(data_dir)
+    if runs:
+        write("team_runs_by_hand.json", {
+            "schema": "chase-public-team-runs-by-hand/1",
+            "sport": "mlb",
+            "generated_at_utc": now,
+            "through": max(r["date"] for r in read(data_dir / GAMES_SOURCE)),
+            "teams": runs,
+        })
+        print(f"  wrote data/public/team_runs_by_hand.json ({len(runs)} clubs)")
+    else:
+        print(f"  skip runs by hand: no usable {GAMES_SOURCE} under {data_dir}")
 
     teams, fresh = team_index_splits(data_dir)
     if teams:
