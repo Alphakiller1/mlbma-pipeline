@@ -4004,7 +4004,18 @@ function seasonToggle(game) {
   function nflInitDesk(host) {
     var key = String(global.location.hash || '').slice(1);
     var tab = nflTabOf(key) || 'units';
-    nflSetTab(host, tab, key && key !== tab && nflTabOf(key) ? key : null);
+    var section = key && key !== tab && nflTabOf(key) ? key : null;
+    nflSetTab(host, tab, section);
+    // Logos and fonts landing after the first scroll move the section; anchor
+    // it again once the page has settled.
+    if (section) {
+      var again = function () {
+        var el = document.getElementById(section);
+        if (el) el.scrollIntoView({ block: 'start' });
+      };
+      if (document.readyState === 'complete') global.setTimeout(again, 400);
+      else global.addEventListener('load', function () { global.setTimeout(again, 100); }, { once: true });
+    }
     var narrow = global.matchMedia && global.matchMedia('(max-width: 1379px)').matches;
     nflSetClub(host, narrow ? 'away' : 'both');
   }
