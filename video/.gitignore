@@ -20,6 +20,7 @@ src/site/
 src/site.staging/
 public/brand/
 public/thumbs/
+public/instagram/
 
 # Local speech-to-text binary + model (scripts/lib/whisper.mjs)
 .whisper/

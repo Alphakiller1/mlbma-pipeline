@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from datetime import date
 import re
 import shutil
@@ -40,7 +41,8 @@ DEFAULTS = {
     "nfl": {"section": "overview", "crop": (0.0, 1.0)},
 }
 # The site's logos are ESPN's; a few clubs go by another code there.
-ESPN_ALIAS = {"WAS": "WSH", "CHW": "CWS", "KCR": "KC", "SDP": "SD", "SFG": "SF", "TBR": "TB", "ATH": "OAK"}
+# (the White Sox are "chw" on ESPN: "CWS", MLB's code, maps to it - not the other way round)
+ESPN_ALIAS = {"WAS": "WSH", "CWS": "CHW", "KCR": "KC", "SDP": "SD", "SFG": "SF", "TBR": "TB", "ATH": "OAK"}
 TWO_WORD = ("Red Sox", "White Sox", "Blue Jays")
 
 
@@ -268,6 +270,8 @@ def render(props: dict, slug: str, out_arg: str | None) -> None:
     if r.returncode:
         sys.exit(r.returncode)
     print(f"[video-thumb] thumbnail: {out}")
+    if sys.platform == "win32" and not os.environ.get("THUMB_NO_OPEN"):
+        os.startfile(out)  # show it: a saved file with no window looked like nothing happened
 
 
 if __name__ == "__main__":
