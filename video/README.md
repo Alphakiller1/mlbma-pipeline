@@ -272,6 +272,28 @@ The keys also work while you are clicking around inside the site.
   once). The Remotion build has no `pad` or `fps` filter and rejects positional filter
   options, so the encode uses only `scale` + `format` with named options, plus `-r 30`.
 
+## Playoff bracket predictions (in the site booth)
+
+`bracket-booth.bat` opens the site booth with the **MLB playoff bracket** on stage (also the
+**Bracket** button in the booth, or `/__booth/bracket/`). Record it like any site page:
+camera, markers, chapters and phone mic all work.
+
+- **Live field:** teams, seeds and records come from MLB's stats API
+  (`scripts/lib/bracket-data.mjs`, served at `/__booth/api/bracket`, cached 60 s). Seeds
+  are derived from the final standings, since the API leaves them empty. Series scores
+  fill in as games go final, and each pick is marked **Correct / Missed** (or
+  **Eliminated** when the club is out).
+- **Picking:** click a club to advance it; click it again to cycle the series length
+  ("in 5"); right-click a series to clear it. **Backspace** undoes, **Delete** clears all.
+  Changing a pick removes later picks that depended on it.
+- **Confidence:** five bars on every pick, **Coin flip · Lean · Confident · Strong · Lock**.
+  Click a bar, or hover a series and press **1-5**. The same level again clears it. The
+  champion card shows your title confidence, and the footer shows the average.
+- Picks are saved in the browser per season, so you can fill the bracket in first and
+  walk through it on camera. `?clean` hides the help line.
+- Built for 16:9 at any page size (narrow cards switch to club codes); 9:16 stacks AL,
+  the final, then NL, so scroll to the NL half while you talk.
+
 ## Thumbnails (the series look)
 
 Every video gets the same thumbnail frame, so the channel reads as one product: the

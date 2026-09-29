@@ -30,6 +30,7 @@ import path from "node:path";
 import { Readable } from "node:stream";
 import { fileURLToPath } from "node:url";
 import { createRelay, ensureBoothPfx, ensureFirewall, lanIps } from "./lib/phone-mic.mjs";
+import { loadBracket } from "./lib/bracket-data.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
@@ -186,6 +187,8 @@ const encode = (name, aspect, audioShift = 0) => {
   });
 };
 
+const bracketCache = new Map();
+
 /* ── the proxy ── */
 const HOP = new Set(["connection", "keep-alive", "transfer-encoding", "upgrade", "proxy-connection", "te", "trailer", "host", "accept-encoding", "content-length"]);
 const DROP_RES = new Set([
@@ -249,6 +252,19 @@ const server = http.createServer(async (req, res) => {
       const name = safeName(url.searchParams.get("name"));
       if (api === "info") return json(res, { origin, ffmpeg: Boolean(ffmpeg), footage: path.relative(path.resolve(root, ".."), footage), room: phoneRoom });
       if (api === "takes") return json(res, { takes: listTakes() });
+      if (api === "bracket") {
+        // The playoff bracket page (/__booth/bracket/): live series from MLB's stats API, cached 60 s.
+        const season = Number(url.searchParams.get("season")) || new Date().getFullYear();
+        const hit = bracketCache.get(season);
+        if (!hit || Date.now() - hit.at > 60_000) {
+          try {
+            bracketCache.set(season, { at: Date.now(), data: await loadBracket(season) });
+          } catch (e) {
+            if (!hit) return json(res, { error: `MLB stats API: ${e.message}` }, 502);
+          }
+        }
+        return json(res, bracketCache.get(season).data);
+      }
       if (api === "lan") return json(res, { urls: secureUp ? lanIps().map((ip) => `https://${ip}:${phonePort}/mic`) : [], port: phonePort });
       if (req.method === "POST" && api === "chunk") {
         // Chunks arrive in order (the page sends them one at a time); seq 0 starts the file.
@@ -286,8 +302,11 @@ const server = http.createServer(async (req, res) => {
       return res.writeHead(404).end("unknown api");
     }
     if (p.startsWith("/__booth/")) {
-      const file = path.resolve(pageDir, "." + decodeURIComponent(p.slice("/__booth".length)));
-      return file.startsWith(pageDir + path.sep) ? sendFile(res, file) : res.writeHead(403).end();
+      let file = path.resolve(pageDir, "." + decodeURIComponent(p.slice("/__booth".length)));
+      if (!file.startsWith(pageDir + path.sep)) return res.writeHead(403).end();
+      // A folder (/__booth/bracket/) serves its index.html.
+      if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, "index.html");
+      return sendFile(res, file);
     }
     return await proxy(req, res, url);
   } catch (e) {

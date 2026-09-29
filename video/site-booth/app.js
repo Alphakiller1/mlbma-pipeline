@@ -197,7 +197,8 @@ const go = (p) => {
     /* keep as typed */
   }
   if (!target.startsWith("/")) target = `/${target}`;
-  if (target.startsWith("/__booth")) target = "/";
+  // Booth pages other than the booth itself (the playoff bracket) may go on stage.
+  if (target.startsWith("/__booth") && !target.startsWith("/__booth/bracket")) target = "/";
   frame.src = target;
 };
 const pageLabel = (w) => {
