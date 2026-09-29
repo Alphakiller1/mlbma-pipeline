@@ -2807,17 +2807,17 @@
   };
 
   var CFB_RADARS = [
-    { title: 'Offense', keys: ['off_ppa', 'off_ypg', 'off_successRate',
-                               'off_explosiveness', 'off_stuffRate', 'off_comp'] },
-    { title: 'Defense', keys: ['def_ppa', 'def_ypg', 'def_successRate',
-                               'def_explosiveness', 'def_stuffRate', 'def_comp'] }
+    { title: 'Offense', keys: ['off_ppg', 'off_ypg', 'off_third_down',
+                               'off_ypa', 'off_ypc', 'off_comp'] },
+    { title: 'Defense', keys: ['def_ppg', 'def_ypg', 'def_third_down',
+                               'def_ypa', 'def_ypc', 'def_comp'] }
   ];
 
   var CFB_AXIS = {
-    off_ppa: 'PPG', off_ypg: 'YPG', off_successRate: '3rd Down',
-    off_explosiveness: 'YPA', off_stuffRate: 'YPC', off_comp: 'Comp%',
-    def_ppa: 'PPG', def_ypg: 'YPG', def_successRate: '3rd Down',
-    def_explosiveness: 'YPA', def_stuffRate: 'YPC', def_comp: 'Comp%'
+    off_ppg: 'PPG', off_ypg: 'YPG', off_third_down: '3rd Down',
+    off_ypa: 'YPA', off_ypc: 'YPC', off_comp: 'Comp%',
+    def_ppg: 'PPG', def_ypg: 'YPG', def_third_down: '3rd Down',
+    def_ypa: 'YPA', def_ypc: 'YPC', def_comp: 'Comp%'
   };
 
   /* Every web is laid out in a box RADAR_W units wide and then scaled to the
@@ -5469,11 +5469,11 @@ function seasonToggle(game) {
 
   // [rate suffix shared by off_ / def_, column header]
   var CFB_UNIT_COLUMNS = {
-    units: [['ppa', 'Points/G'], ['ypg', 'Yards/G'], ['successRate', '3rd Down'],
+    units: [['ppg', 'Points/G'], ['ypg', 'Yards/G'], ['third_down', '3rd Down'],
       ['fourth', '4th Down'], ['first_downs', '1st Downs/G']],
-    passing: [['pass_ypg', 'Pass Yds/G'], ['explosiveness', 'Yds/Att'], ['comp', 'Comp%'],
+    passing: [['pass_ypg', 'Pass Yds/G'], ['ypa', 'Yds/Att'], ['comp', 'Comp%'],
       ['qbr', 'Rating'], ['pass_td', 'Pass TD/G'], ['int', 'INT/G'], ['sacks', 'Sacks/G']],
-    rushing: [['rush_ypg', 'Rush Yds/G'], ['stuffRate', 'Yds/Rush'], ['rush_td', 'Rush TD/G']]
+    rushing: [['rush_ypg', 'Rush Yds/G'], ['ypc', 'Yds/Rush'], ['rush_td', 'Rush TD/G']]
   };
   var CFB_UNIT_NAMES = {
     units: ['Offense', 'Defense'],
@@ -5503,7 +5503,10 @@ function seasonToggle(game) {
   // alike (0.7, 1.7, 1.5), never 0.667 beside 1.5.
   function cfbValue(entry) {
     var v = Number(entry.value);
-    return entry.format === 'pct' ? (v * 100).toFixed(1) + '%' : v.toFixed(1);
+    if (entry.format === 'ppa') return (v > 0 ? '+' : '') + v.toFixed(3);
+    if (entry.format === 'pct') return (v * 100).toFixed(1) + '%';
+    return entry.format === 'num' && Math.abs(v) < 10 && entry.label && /explosive/i.test(entry.label)
+      ? v.toFixed(2) : v.toFixed(1);
   }
 
   function cfbCell(entry) {
@@ -5519,8 +5522,9 @@ function seasonToggle(game) {
     var of = null;
     var bits = sides.map(function (side) {
       var rates = cfbRates(game, side);
-      of = of || ((rates.off_ppa || rates.def_ppa) || {}).of;
-      var games = Math.round(Number((game[side + '_form'] || {}).plays));
+      of = of || ((rates.off_ppg || rates.def_ppg) || {}).of;
+      var form = game[side + '_form'] || {};
+      var games = Math.round(Number(form.games != null ? form.games : form.plays));
       return cfbName(sport, game, side) + ' ' + (Object.keys(rates).length && games > 0
         ? games + (games === 1 ? ' Game' : ' Games') : 'Not Rated Yet');
     });
@@ -5555,7 +5559,35 @@ function seasonToggle(game) {
       nflSplitTable(cols.map(function (c) { return c[1]; }), [
         row(offName + ' ' + names[0], off, 'off_'),
         row(defName + ' ' + names[1], def, 'def_')
-      ]) + '</section>';
+      ]) + (group === 'units' ? cfbModelEfficiency(sport, game, offSide) : '') + '</section>';
+  }
+
+  /* The CFB model's own inputs: opponent-adjusted per-play efficiency from
+     CFBD advanced stats (PPA, success rate, explosiveness, stuff rate), kept
+     apart from the box-score rates above. Shown whenever the model publishes
+     it for both clubs. */
+  var CFB_MODEL_COLUMNS = [['ppa', 'PPA/Play', 'ppa'], ['successRate', 'Success', 'pct'],
+    ['explosiveness', 'Explosive', 'num'], ['stuffRate', 'Stuffed', 'pct']];
+
+  function cfbModelRates(game, side) {
+    var form = game[side + '_model_form'] || {};
+    return form.rates || {};
+  }
+
+  function cfbModelEfficiency(sport, game, offSide) {
+    var defSide = offSide === 'away' ? 'home' : 'away';
+    var off = cfbModelRates(game, offSide), def = cfbModelRates(game, defSide);
+    if (!Object.keys(off).length || !Object.keys(def).length) return '';
+    function row(label, rates, prefix) {
+      return cfbRow(label, rates, function () {
+        return CFB_MODEL_COLUMNS.map(function (col) { return cfbCell(rates[prefix + col[0]]); }).join('');
+      }, CFB_MODEL_COLUMNS.length);
+    }
+    return '<div class="ca-split-block"><h4>Model Efficiency</h4>' +
+      nflSplitTable(CFB_MODEL_COLUMNS.map(function (c) { return c[1]; }), [
+        row(cfbName(sport, game, offSide) + ' Offense', off, 'off_'),
+        row(cfbName(sport, game, defSide) + ' Defense', def, 'def_')
+      ]) + '</div>';
   }
 
   function cfbSpecialBody(sport, game) {
