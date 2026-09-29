@@ -420,7 +420,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             check(f"NFL {sid[1:]} is a two-club duo of {component}", n == 2, f"panels={n}")
         # Unit Matchups: each possession is the offense's row directly above the
         # defense it meets, in the same columns.
-        rows = page.locator("#efficiency .ca-form-panel >  .ca-lineup-scroll tbody tr").count()
+        # The form table sits in the evidence-window view (model form / this season).
+        rows = page.locator("#efficiency .ca-form-panel > [data-season-view]:not([hidden]) > .ca-lineup-scroll tbody tr").count()
         check("NFL unit matchups pair each offense with the defense it meets", rows == 4, f"rows={rows}")
         grades = page.locator("#efficiency td[class*='c-']").evaluate_all(
             "nodes => [...new Set(nodes.map(n => getComputedStyle(n).color))].length")
