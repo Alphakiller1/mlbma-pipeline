@@ -101,24 +101,27 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertNotIn("ChaseMatchupCard.cardHtml('cfb', game)", detail)
         js = (ROOT / "dashboard" / "public_game_detail.js").read_text(encoding="utf-8")
         self.assertIn("function cfbSections", js)
-        self.assertIn("function cfbClashBody", js)
-        self.assertIn("function cfbCompareBody", js)
+        # The CFB desk reads in the NFL desk's design layer (2026-09-29).
+        self.assertIn("var CFB_TABS", js)
+        self.assertIn("function cfbUnitPanel", js)
+        self.assertIn("function cfbSpecialBody", js)
+        self.assertIn("host.__deskTabs = sport === 'cfb' ? CFB_TABS : NFL_TABS", js)
         self.assertIn("Matchup Analysis", js)
         self.assertNotIn("function nflScriptLens", js)
         # Evidence, never verdicts: CFB no longer ranks the widest gaps for the reader.
         self.assertNotIn("Largest unit gaps", js)
         self.assertNotIn("Largest Percentile Gaps", js)
         self.assertNotIn("function cfbEdges", js)
-        self.assertIn("function cfbDecisionPaths", js)
-        self.assertIn("function cfbScriptLens", js)
         self.assertIn("Number(form.season) !== season", js)
-        self.assertIn("How The Matchup Can Change Possessions And Play Mix", js)
+        # No research-path menu, dynamics cards, verdict tallies or gap ordering.
+        for gone in ("function cfbDecisionPaths", "function cfbScriptLens", "function cfbClashTally",
+                     "grades ahead of", "return absB - absA", "How The Matchup Can Change Possessions"):
+            self.assertNotIn(gone, js)
         # Section explanations are gone site-wide (owner direction 2026-09-26):
         # no reading key, metric guide, card impact copy or verdict lines.
         for gone in ("function cfbReadingKey", "function cfbMetricGuide", "How To Read The CFB Metrics",
                      "season-to-date results only", "esc(lens.impact)", "esc(verdict)"):
             self.assertNotIn(gone, js)
-        self.assertIn("cfbMirrorHead", js)
         self.assertIn("side + '_logo'", js)
         self.assertIn("ca-arsenal-table", js)
         self.assertIn("usageSquares", js)
