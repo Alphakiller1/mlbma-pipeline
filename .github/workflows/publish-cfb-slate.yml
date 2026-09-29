@@ -1,0 +1,59 @@
+name: Publish CFB Slate
+
+# The CFB matchup desk reads data/public/cfb/slate.json: the cfb-model board's
+# games with each school's ESPN unit rates. Nothing ever scheduled the
+# publisher, so the slate only moved when someone ran it by hand. By
+# 2026-09-29 the desk had rolled to the next week's games while the slate was
+# still the previous week's, and about half the matchups showed one school
+# with no rates. This refreshes it twice a day; the publisher refuses to
+# overwrite a good slate with a short ESPN pull.
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 12:30 and 20:30 UTC: after the overnight model board refresh, and again
+    # before the evening games.
+    - cron: "30 12,20 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-cfb-slate
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install validation dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build the CFB slate
+        run: python scripts/publish_public_cfb_slate.py
+
+      - name: Commit the refreshed slate to master
+        env:
+          TARGET_BRANCH: master
+        run: |
+          set -euo pipefail
+          python scripts/validate_public_fields.py
+          git add -- data/public/cfb/slate.json
+          if git diff --cached --quiet; then
+            echo "CFB slate is already current; no commit needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "data: refresh public CFB slate"
+          git pull --rebase origin "$TARGET_BRANCH"
+          git push origin "HEAD:$TARGET_BRANCH"

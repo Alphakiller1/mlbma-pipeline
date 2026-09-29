@@ -4740,6 +4740,26 @@ function seasonToggle(game) {
   /* One possession: the offense's row directly above the row of the defense
      it meets, under the same columns. The reader compares down one column;
      the page never says which way it points. */
+  /* Units form, per evidence window. "2025 + 2026" is the model's form: prior
+     seasons blended with this one by games played (the share is published).
+     "2026 Only" is this season alone, adjusted for opponents the same way. */
+  function nflFormFor(game, side) {
+    var form = game[side + '_form'] || {};
+    if (nflWindow.pool === 'schemeCurrent') return (form.current || {}).rates || {};
+    return form.rates || {};
+  }
+
+  function nflFormNote(game) {
+    var form = game.away_form || {};
+    var season = (game.scheme_source || {}).season;
+    if (nflWindow.pool === 'schemeCurrent') {
+      return season ? '<p class="ca-lineup-context">' + esc(season + ' form') + '</p>' : '';
+    }
+    var share = form.live_share;
+    return '<p class="ca-lineup-context">' + esc('Model form' +
+      (share != null && season ? ' \u00b7 ' + Math.round(share * 100) + '% ' + season : '')) + '</p>';
+  }
+
   function nflDrivePanel(sport, game, offSide) {
     var defSide = nflOther(offSide);
     var oRates = (game[offSide + '_form'] || {}).rates || {};
@@ -4748,7 +4768,7 @@ function seasonToggle(game) {
     var dScheme = game[defSide + '_scheme'] || {};
     var oNick = nflNick(sport, game, offSide), dNick = nflNick(sport, game, defSide);
     var head = '<section class="ca-form-panel"><h3>' + esc(nflVs(sport, game, offSide, 'Offense', 'Defense')) +
-      '</h3>' + nflSeasonNote(game);
+      '</h3>';
     if (!Object.keys(oRates).length && !Object.keys(dRates).length) {
       return head + pending('Team form is not published yet.') + '</section>';
     }
@@ -4758,10 +4778,15 @@ function seasonToggle(game) {
         nflGradedCell(rates[prefix + 'explosive'], 'pct') + nflGradedCell(rates[prefix + 'sack'], 'pct') +
         nflGradedCell(rates[prefix + 'turnover'], 'pct') + '</tr>';
     }
-    var html = head + nflSplitTable(['EPA/Play', '1st Down', 'Explosive', 'Sack', 'Turnover'], [
-      formRow(oNick + ' Offense', oRates, 'off_'),
-      formRow(dNick + ' Defense', dRates, 'def_')
-    ]);
+    var html = head + nflBothWindows(function () {
+      var o = nflFormFor(game, offSide), d = nflFormFor(game, defSide);
+      if (!Object.keys(o).length && !Object.keys(d).length) return '';
+      return nflFormNote(game) +
+        nflSplitTable(['EPA/Play', '1st Down', 'Explosive', 'Sack', 'Turnover'], [
+          formRow(oNick + ' Offense', o, 'off_'),
+          formRow(dNick + ' Defense', d, 'def_')
+        ]);
+    });
 
     // Pass and run, from the charted scheme sample (its own season window).
     var SPLIT = [['pass_epa', 'epa'], ['pass_success_rate', 'pct'], ['rush_epa', 'epa'],

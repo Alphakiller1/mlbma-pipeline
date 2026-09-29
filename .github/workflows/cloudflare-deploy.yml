@@ -18,8 +18,9 @@ on:
   # push something else. That is why the site served a 2026-09-14 MLB slate and a
   # week-2 NFL slate while master had both current. Deploy when the pipeline
   # finishes rather than waiting for an unrelated commit to carry it.
+  # The CFB slate publisher commits the same way, twice a day.
   workflow_run:
-    workflows: ["Run MLBMA Pipeline"]
+    workflows: ["Run MLBMA Pipeline", "Publish CFB Slate"]
     types: [completed]
     branches: [master]
   workflow_dispatch:

@@ -91,12 +91,6 @@ jobs:
             python -u -m pipeline.main --skip-fangraphs
           fi
 
-      - name: Refresh the CFB box-score slate
-        # ESPN team statistics for the CFB model's current week. Fail-soft: a
-        # provider hiccup keeps the last published CFB slate.
-        continue-on-error: true
-        run: python scripts/publish_public_cfb_slate.py
-
       - name: Publish refreshed public artifacts to master
         env:
           TARGET_BRANCH: master
@@ -111,7 +105,6 @@ jobs:
             # the result away.
             data/public/nfl/slate.json
             data/public/nfl/team_context.json
-            data/public/cfb/slate.json
             data/public/batter_context.json
             data/public/batter_pitch_types.json
             data/public/bullpen_board.json
