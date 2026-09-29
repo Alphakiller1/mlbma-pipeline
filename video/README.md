@@ -272,6 +272,30 @@ The keys also work while you are clicking around inside the site.
   once). The Remotion build has no `pad` or `fps` filter and rejects positional filter
   options, so the encode uses only `scale` + `format` with named options, plus `-r 30`.
 
+## Thumbnails (the series look)
+
+Every video gets the same thumbnail frame, so the channel reads as one product: the
+site's black desk, one violet glow, a headline band, and a **real chase-analytics.com
+component** in a violet-edged card underneath. Only the words and the component change.
+
+```powershell
+.	humbnail.bat --league mlb --game PHI@ATL
+.	humbnail.bat --league mlb --game PHI@ATL --title "Luzardo vs Sale" --badge "Wild Card"
+.	humbnail.bat --league nfl --game ATL@GB --section overview --title "Penix's Road Test"
+```
+
+- `outputs/video_thumb.py` finds the game on the live slate by the two clubs' logos,
+  screenshots one section of its matchup page at 2x (MLB `starters`, top 46%; NFL
+  `overview`), and renders the `ThumbnailDesk` still to `video/out/thumbs/<date>-<AWAY>-<HOME>.png`.
+- **Words default from the page:** the title is the two starters (MLB) or quarterbacks
+  (NFL) by surname; the accent line is "<Nickname> at <Nickname>". Keep a custom title
+  to two to four words; it is sized to stay on one line.
+- **Other components:** `--section` takes any matchup-page section id (`arsenal`,
+  `lineups`, `club-splits`, `bullpens`, `availability`, ...) and `--crop 0,0.5` picks the
+  band of it to show.
+- Colours and faces are the site's semantic tokens (`src/site/`), and club colours only
+  tint the corners, so no matchup pulls it off-brand.
+
 ## Change what happens and when (cue sheets)
 
 Every recording has a cue sheet at `video/footage/<name>.cues.txt`. The booth writes it;

@@ -19,6 +19,7 @@ public/captures/
 src/site/
 src/site.staging/
 public/brand/
+public/thumbs/
 
 # Local speech-to-text binary + model (scripts/lib/whisper.mjs)
 .whisper/
