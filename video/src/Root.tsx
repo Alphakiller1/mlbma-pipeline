@@ -20,6 +20,7 @@ import { AgendaRail, AgendaRailProps } from "./longform/AgendaRail";
 import { SplitFrame, SplitFrameProps } from "./longform/SplitFrame";
 import { EndScreen, EndScreenProps } from "./longform/EndScreen";
 import { Thumbnail, ThumbnailProps } from "./longform/Thumbnail";
+import { ThumbnailDesk, ThumbnailDeskProps } from "./longform/ThumbnailDesk";
 import { Annotate, AnnotateProps, annotateDuration } from "./tools/Annotate";
 import { Telestrator, TelestratorProps } from "./tools/Telestrator";
 import { Callout, CalloutProps } from "./tools/Callout";
@@ -271,6 +272,17 @@ const defaultSplit: SplitFrameProps = {
 };
 
 const defaultEnd: EndScreenProps = { guides: true };
+
+// Render real ones with `python -m outputs.video_thumb` (it captures the component first).
+const defaultThumbDesk: ThumbnailDeskProps = {
+  league: "mlb",
+  away: "PHI",
+  home: "ATL",
+  eyebrow: "MLB · Matchup Analysis",
+  title: "Luzardo vs Sale",
+  sub: "Phillies at Braves",
+  artifact: { src: "thumbs/example-starters.png", width: 2448, height: 1068, cropTop: 0, cropBottom: 0.4 },
+};
 
 const defaultThumb: ThumbnailProps = {
   league: T.league,
@@ -534,6 +546,7 @@ export const RemotionRoot: React.FC = () => {
 
       <Folder name="Snapshots">
         <Still id="Thumbnail" component={Thumbnail} width={1280} height={720} defaultProps={defaultThumb} />
+        <Still id="ThumbnailDesk" component={ThumbnailDesk} width={1280} height={720} defaultProps={defaultThumbDesk} />
         <Still id="ThumbnailVertical" component={Thumbnail} width={1080} height={1920} defaultProps={defaultThumb} />
       </Folder>
 
