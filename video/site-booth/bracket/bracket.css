@@ -1,0 +1,471 @@
+/* Playoff bracket: the site's semantic tokens (chase-semantic.css), fallbacks only for a bare load. */
+:root {
+  --bk-page: var(--surface-page, #050506);
+  --bk-card: var(--surface-card, #0d0d10);
+  --bk-line: var(--border-subtle, rgba(255, 255, 255, 0.08));
+  --bk-text: var(--text-primary, #f5f6fa);
+  --bk-dim: var(--text-secondary, #a4a8b6);
+  --bk-accent: var(--accent, #9a6bff);
+  --bk-accent-text: var(--text-accent, #c4b0ff);
+  --bk-good: var(--ca-green-500, #3ccb7f);
+  --bk-bad: var(--ca-red-500, #f2545b);
+  --bk-display: var(--font-display, "Chase Display", sans-serif);
+  --bk-ui: var(--font-body, "Chase Sans", system-ui, sans-serif);
+  color-scheme: dark;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bk-page);
+  color: var(--bk-text);
+  font: 15px/1.3 var(--bk-ui);
+}
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 32px 18px;
+  gap: 18px;
+  background: radial-gradient(ellipse 55% 45% at 50% 55%, color-mix(in srgb, var(--bk-accent) 10%, transparent), transparent 75%);
+}
+
+/* ── header ── */
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bk-accent-text);
+}
+.eyebrow .rule {
+  width: 28px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--bk-accent);
+}
+h1 {
+  margin: 6px 0 0;
+  font: 800 54px/0.95 var(--bk-display);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+h1 em {
+  font-style: normal;
+  color: var(--bk-accent-text);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: italic 700 24px/1 var(--bk-display);
+  text-transform: uppercase;
+  color: var(--bk-dim);
+}
+.brand b {
+  color: var(--bk-text);
+}
+.brand img {
+  width: 30px;
+  height: 30px;
+}
+
+/* ── bracket ── */
+.bracket {
+  position: relative;
+  flex: 1;
+  display: flex;
+  gap: 14px;
+  min-height: 560px;
+}
+.wires {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.wires path {
+  fill: none;
+  stroke: var(--bk-line);
+  stroke-width: 2;
+}
+.wires path.live {
+  stroke: color-mix(in srgb, var(--bk-accent) 70%, transparent);
+}
+.side {
+  flex: 3;
+  display: flex;
+  gap: 14px;
+}
+/* NL columns are written NLCS, NLDS, Wild Card, so wide they already mirror the AL. */
+.final {
+  flex: 1.15;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 12px;
+  position: relative;
+  padding-top: 34px;
+}
+.col h2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  text-align: center;
+  font: 800 15px/1 var(--bk-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bk-text);
+}
+.col h2 small {
+  display: block;
+  margin-top: 4px;
+  font: 600 11px/1 var(--bk-ui);
+  letter-spacing: 0.1em;
+  color: var(--bk-dim);
+}
+.final .col {
+  flex: 0 0 auto;
+}
+
+/* ── a series ── */
+.series {
+  position: relative;
+  z-index: 1;
+  border-radius: 12px;
+  background: var(--bk-card);
+  border: 1px solid var(--bk-line);
+  overflow: hidden;
+}
+/* A narrow card (a 1280px page, or 9:16) shows the club code instead of cutting the name. */
+.series {
+  container-type: inline-size;
+}
+.team .ab {
+  display: none;
+}
+@container (max-width: 175px) {
+  .team .full {
+    display: none;
+  }
+  .team .ab {
+    display: inline;
+  }
+  .team .nm small {
+    display: none;
+  }
+}
+.series.bye {
+  opacity: 0.9;
+}
+.team {
+  display: grid;
+  grid-template-columns: 34px 22px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px 8px 8px;
+  min-height: 48px;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+  transition:
+    background 0.18s ease,
+    opacity 0.18s ease,
+    border-color 0.18s ease;
+  user-select: none;
+}
+.team + .team {
+  border-top: 1px solid var(--bk-line);
+}
+.team:hover {
+  background: color-mix(in srgb, var(--bk-accent) 8%, transparent);
+}
+.team img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+.team .seed {
+  font: 700 12px/1 var(--bk-ui);
+  color: var(--bk-dim);
+  text-align: center;
+}
+.team .nm {
+  min-width: 0;
+  font: 700 17px/1.05 var(--bk-display);
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.team .nm small {
+  display: block;
+  font: 500 11.5px/1.2 var(--bk-ui);
+  text-transform: none;
+  color: var(--bk-dim);
+}
+.team .score {
+  font: 800 18px/1 var(--bk-display);
+  color: var(--bk-dim);
+  min-width: 14px;
+  text-align: right;
+}
+.team.tbd {
+  cursor: default;
+  color: var(--bk-dim);
+}
+.team.tbd .nm {
+  white-space: normal;
+  font: 600 12px/1.2 var(--bk-ui);
+  text-transform: none;
+  color: var(--bk-dim);
+}
+.team.tbd:hover {
+  background: none;
+}
+.team.picked {
+  border-left-color: var(--bk-accent);
+  background: color-mix(in srgb, var(--bk-accent) 16%, transparent);
+}
+.team.picked .score {
+  color: var(--bk-text);
+}
+.team.out {
+  opacity: 0.38;
+}
+.team.real-win .score {
+  color: var(--bk-good);
+}
+.pickline {
+  display: flex;
+  flex-wrap: wrap; /* the rating drops to its own line before the pick name is cut */
+  row-gap: 5px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-top: 1px solid var(--bk-line);
+  font: 600 12px/1.2 var(--bk-ui);
+  color: var(--bk-accent-text);
+  background: color-mix(in srgb, var(--bk-accent) 6%, transparent);
+}
+.pickline .pk {
+  white-space: nowrap;
+}
+/* confidence meter: five rising bars */
+.conf {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  flex: none;
+}
+.conf i {
+  width: 6px;
+  border-radius: 1.5px;
+  background: color-mix(in srgb, var(--bk-text) 16%, transparent);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.conf i:nth-child(1) { height: 5px; }
+.conf i:nth-child(2) { height: 8px; }
+.conf i:nth-child(3) { height: 11px; }
+.conf i:nth-child(4) { height: 14px; }
+.conf i:nth-child(5) { height: 17px; }
+.conf i.on {
+  background: var(--bk-accent);
+}
+.conf i.on.lock {
+  background: var(--bk-accent-text);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--bk-accent) 70%, transparent);
+}
+.conf.static i {
+  cursor: default;
+}
+.conf b {
+  margin-left: 6px;
+  font: 700 11px/1 var(--bk-ui);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bk-accent-text);
+}
+.champ-conf .conf i {
+  width: 9px;
+}
+.champ-conf .conf i:nth-child(1) { height: 7px; }
+.champ-conf .conf i:nth-child(2) { height: 12px; }
+.champ-conf .conf i:nth-child(3) { height: 17px; }
+.champ-conf .conf i:nth-child(4) { height: 22px; }
+.champ-conf .conf i:nth-child(5) { height: 27px; }
+.champ-conf .conf b {
+  font-size: 13px;
+}
+
+.pickline .verdict {
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+.pickline .verdict.good {
+  color: var(--bk-good);
+}
+.pickline .verdict.bad {
+  color: var(--bk-bad);
+}
+.series.just {
+  animation: just 0.6s ease;
+}
+@keyframes just {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--bk-accent) 70%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 14px transparent;
+  }
+}
+
+/* ── the champion ── */
+.champ {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--bk-accent) 45%, transparent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bk-accent) 14%, transparent), transparent);
+  padding: 18px 12px;
+  margin-top: 34px;
+  min-height: 220px;
+}
+.champ .lbl {
+  font: 700 12px/1 var(--bk-ui);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bk-accent-text);
+}
+.champ img {
+  width: 108px;
+  height: 108px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 22px color-mix(in srgb, var(--bk-accent) 45%, transparent));
+}
+.champ .nm {
+  font: 800 30px/1 var(--bk-display);
+  text-transform: uppercase;
+}
+.champ .sub {
+  font: 600 13px/1.2 var(--bk-ui);
+  color: var(--bk-dim);
+}
+.champ .q {
+  font: 800 84px/1 var(--bk-display);
+  color: color-mix(in srgb, var(--bk-accent) 55%, transparent);
+}
+.champ.crowned {
+  animation: crown 0.9s ease;
+}
+@keyframes crown {
+  0% {
+    transform: scale(0.94);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--bk-accent) 70%, transparent);
+  }
+  60% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 26px transparent;
+  }
+}
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font: 500 12px/1.3 var(--bk-ui);
+  color: var(--bk-dim);
+}
+
+/* ── narrow / vertical (9:16 on the booth): AL on top, the final, NL below ── */
+@media (max-width: 1000px) {
+  .page {
+    padding: 18px 14px;
+  }
+  h1 {
+    font-size: 38px;
+  }
+  .head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .bracket {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .side,
+  .side.nl {
+    flex-direction: row;
+    gap: 8px;
+    min-height: 360px;
+  }
+  /* stacked: both leagues read left to right, Wild Card first */
+  .side.nl {
+    flex-direction: row-reverse;
+  }
+  .final {
+    flex-direction: row;
+    align-items: stretch;
+  }
+  .final .col {
+    flex: 1;
+  }
+  .champ {
+    margin-top: 34px;
+    min-height: 0;
+  }
+  .champ img {
+    width: 70px;
+    height: 70px;
+  }
+  .team {
+    grid-template-columns: 26px 16px 1fr auto;
+    gap: 5px;
+    min-height: 42px;
+  }
+  .team img {
+    width: 26px;
+    height: 26px;
+  }
+  .team .nm {
+    font-size: 14px;
+  }
+  .team .nm small {
+    display: none;
+  }
+  .foot .how {
+    display: none;
+  }
+}
