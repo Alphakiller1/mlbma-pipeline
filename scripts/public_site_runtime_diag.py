@@ -562,21 +562,39 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               cfb_detail_url.startswith("/cfb/matchup.html?game="), cfb_detail_url)
         page.goto(base_url.rstrip("/") + cfb_detail_url,
                   wait_until="domcontentloaded", timeout=timeout_ms)
-        page.wait_for_selector("#clash", timeout=timeout_ms)
-        check("CFB current matchup has both directional unit boards",
-              page.locator(".ca-cfb-matchup-stack > .ca-arsenal-panel").count() == 2)
+        # The CFB desk reads in the NFL desk's design layer (2026-09-29): tabs,
+        # each unit above the unit it meets, a rank pill on every graded number,
+        # no verdict lines, no gap ordering, no dash cells.
+        page.wait_for_selector(".ca-nfl-tabs", timeout=timeout_ms)
+        check("CFB desk carries the five tabs",
+              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 5)
+        check("CFB opens on the Units tab alone",
+              page.evaluate("[...document.querySelectorAll('.ca-detail-section')]"
+                            ".filter(s => s.offsetParent).map(s => s.id).join(',')") == "cfb-units")
+        check("CFB unit matchups read both directions",
+              page.locator("#cfb-units .ca-cfb-panel").count() == 2)
+        cfb_cells = page.evaluate("""() => {
+          const tds = [...document.querySelectorAll('.ca-cfb-panel td')];
+          const graded = td => /(^|\\s)c-(elite|good|mid|weak|poor)(\\s|$)/.test(td.className);
+          return {
+            dashes: tds.filter(td => td.innerText.trim() === '\u2014').length,
+            unpilled: tds.filter(td => graded(td) && !td.querySelector('.ca-rank')).length,
+            graded: tds.filter(graded).length
+          }; }""")
+        check("CFB every graded number carries its rank pill",
+              cfb_cells["unpilled"] == 0 and cfb_cells["graded"] > 0,
+              f"{cfb_cells['graded']} graded, {cfb_cells['unpilled']} without a pill")
+        check("CFB desk has no empty (dash) cells", cfb_cells["dashes"] == 0,
+              f"{cfb_cells['dashes']} dash cells")
+        stack_text = page.locator(".ca-detail-stack").inner_text().lower()
         check("CFB carries no section explanations or verdict lines",
-              page.locator(".ca-cfb-reading-key, .ca-metric-guide").count() == 0 and
-              "carries the stronger" not in page.locator(".ca-detail-stack").inner_text())
-        check("CFB matchup shows six competitive dynamics",
-              page.locator(".ca-cfb-script-dynamics .ca-script-lens").count() == 6)
-        check("CFB names no largest gaps for the reader",
-              page.locator(".ca-cfb-gap-detail").count() == 0 and
-              "largest" not in page.locator(".ca-detail-stack").inner_text().lower())
-        page.locator("[data-cfb-compare='passing']").click()
-        check("CFB stat-family tabs select one visible panel",
-              page.locator("[data-cfb-compare='passing'][aria-selected='true']").count() == 1
-              and page.locator("[data-cfb-compare-panel='passing']:not([hidden])").count() == 1)
+              page.locator(".ca-research-paths, .ca-cfb-reading-key, .ca-metric-guide").count() == 0
+              and "grades ahead of" not in stack_text and "carries the stronger" not in stack_text)
+        check("CFB names no largest gaps for the reader", "largest" not in stack_text)
+        page.locator("a[data-nfl-tab='passing']").click()
+        check("CFB tabs switch to one group",
+              page.locator("#cfb-passing.is-tab-on").count() == 1
+              and page.locator("#cfb-units.is-tab-on").count() == 0)
         cfb_text = page.locator("main").inner_text()
         match = PROHIBITED.search(cfb_text)
         check("CFB detail public copy boundary", match is None, match.group(0) if match else "")
@@ -585,9 +603,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.set_viewport_size({"width": 390, "height": 844})
         check("CFB phone layout has no horizontal overflow",
               page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
-        check("CFB phone dynamics stack to one column",
-              page.locator(".ca-script-lens-grid").evaluate(
-                  "el => getComputedStyle(el).gridTemplateColumns.split(' ').length") == 1)
+        check("CFB phone reads one school at a time",
+              page.locator(".ca-detail-stack").get_attribute("data-club") in ("away", "home"))
         check("CFB phone section navigation hides its scrollbar",
               page.locator(".ca-detail-nav").evaluate(
                   "el => getComputedStyle(el).scrollbarWidth") == "none")
