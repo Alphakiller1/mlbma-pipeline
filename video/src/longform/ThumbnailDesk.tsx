@@ -25,6 +25,10 @@ export type ThumbnailDeskProps = {
   title: string;
   /** One short accent line under it, e.g. "Phillies at Braves". */
   sub?: string;
+  /** The site's own logo files (public/ paths), when the thumbnail script fetched them:
+   *  they use ESPN's dark-background variants, which the kit's logos do not. */
+  awayLogo?: string;
+  homeLogo?: string;
   /** Chip beside the eyebrow, e.g. "Wild Card" or "Week 4". */
   badge?: string;
   artifact: DeskArtifact;
@@ -41,7 +45,7 @@ export type ThumbnailDeskProps = {
  * Colours and faces are the site's semantic tokens. Kept deliberately quiet (owner,
  * 2026-09-29: "cleaner, darker"): pure black, no grid, no club tints, a flat card.
  */
-export const ThumbnailDesk: React.FC<ThumbnailDeskProps> = ({ league, away, home, eyebrow, title, sub, badge, artifact }) => {
+export const ThumbnailDesk: React.FC<ThumbnailDeskProps> = ({ league, away, home, awayLogo, homeLogo, eyebrow, title, sub, badge, artifact }) => {
   const { width, height } = useVideoConfig();
   const u = height / 720; // designed at 1280x720
 
@@ -112,13 +116,13 @@ export const ThumbnailDesk: React.FC<ThumbnailDeskProps> = ({ league, away, home
           {title}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 14 * u, filter: `drop-shadow(0 ${6 * u}px ${12 * u}px rgba(0,0,0,0.6))` }}>
-          <TeamLogo team={away} league={league} size={62 * u} />
+          {awayLogo ? <Img src={staticFile(awayLogo)} style={{ width: 62 * u, height: 62 * u, objectFit: "contain" }} /> : <TeamLogo team={away} league={league} size={62 * u} />}
           {sub ? (
             <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 44 * u, lineHeight: 1, textTransform: "uppercase", color: "var(--text-accent)" }}>
               {sub}
             </span>
           ) : null}
-          <TeamLogo team={home} league={league} size={62 * u} />
+          {homeLogo ? <Img src={staticFile(homeLogo)} style={{ width: 62 * u, height: 62 * u, objectFit: "contain" }} /> : <TeamLogo team={home} league={league} size={62 * u} />}
         </div>
       </div>
 
