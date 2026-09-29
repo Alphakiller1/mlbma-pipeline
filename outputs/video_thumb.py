@@ -24,6 +24,7 @@ import re
 import shutil
 import subprocess
 import sys
+import urllib.request
 from pathlib import Path
 
 from PIL import Image
@@ -73,7 +74,8 @@ def find_game(page, league: str, away: str, home: str, game_id: str | None) -> d
     code = lambda t: ESPN_ALIAS.get(t.upper(), t.upper()).lower()
     for c in cards:
         logos = [i for i in c["imgs"] if "/teamlogos/" in i["src"]]
-        codes = [m.group(1) for i in logos if (m := re.search(r"/teamlogos/\w+/\d+/(\w+)\.png", i["src"]))]
+        # "/500/" or "/500-dark/": the site uses ESPN's dark variant for some clubs (NYY, SD).
+        codes = [m.group(1) for i in logos if (m := re.search(r"/teamlogos/\w+/[\w-]+/(\w+)\.png", i["src"]))]
         hit = c["id"] == game_id if game_id else codes[:2] == [code(away), code(home)]
         if hit:
             people = [i["alt"] for i in c["imgs"] if "/teamlogos/" not in i["src"] and i["alt"]]
@@ -83,9 +85,12 @@ def find_game(page, league: str, away: str, home: str, game_id: str | None) -> d
                 "away_name": logos[0]["alt"] if logos else away,
                 "home_name": logos[1]["alt"] if len(logos) > 1 else home,
                 "people": people[:2],
+                # The site's own logo URLs: ESPN's dark-background variant where the club
+                # needs one (NYY and SD are navy on black otherwise).
+                "logos": [i["src"] for i in logos[:2]],
             }
     seen = ", ".join("@".join(
-        re.findall(r"/teamlogos/\w+/\d+/(\w+)\.png", " ".join(i["src"] for i in c["imgs"]))[:2]).upper() for c in cards)
+        re.findall(r"/teamlogos/\w+/[\w-]+/(\w+)\.png", " ".join(i["src"] for i in c["imgs"]))[:2]).upper() for c in cards)
     fail(f"{away}@{home} is not on the live {league.upper()} slate. On it: {seen or 'nothing'}")
 
 
@@ -143,6 +148,16 @@ def main() -> None:
         w, h = capture(page, SITE + game["href"], section, shot)
         browser.close()
     print(f"[video-thumb] captured #{section} of {away}@{home} ({w}x{h}) -> {shot.relative_to(ROOT)}")
+    logo_files = {}
+    for side, src in zip(("away", "home"), game["logos"]):
+        big = re.sub(r"([?&])w=\d+&h=\d+", lambda m: m.group(1) + "w=500&h=500", src)  # the card asks for 132 px
+        dest = thumbs / f"{slug}-{side}-logo.png"
+        try:
+            with urllib.request.urlopen(urllib.request.Request(big, headers={"User-Agent": "Mozilla/5.0"}), timeout=30) as r:
+                dest.write_bytes(r.read())
+            logo_files[side] = f"thumbs/{dest.name}"
+        except Exception as e:
+            print(f"[video-thumb] NOTE {side} logo not fetched ({e}); using the kit's logo")
 
     people = game["people"]
     props = {
@@ -152,6 +167,8 @@ def main() -> None:
         "eyebrow": a.eyebrow or f"{a.league.upper()} · Matchup Analysis",
         "title": a.title or (f"{surname(people[0])} vs {surname(people[1])}" if len(people) == 2 else f"{away} at {home}"),
         "sub": a.sub if a.sub is not None else f"{nickname(game['away_name'])} at {nickname(game['home_name'])}",
+        **({"awayLogo": logo_files["away"]} if "away" in logo_files else {}),
+        **({"homeLogo": logo_files["home"]} if "home" in logo_files else {}),
         "artifact": {"src": f"thumbs/{shot.name}", "width": w, "height": h, "cropTop": crop[0], "cropBottom": crop[1]},
     }
     if a.badge:
