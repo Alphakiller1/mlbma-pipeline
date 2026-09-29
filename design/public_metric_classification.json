@@ -446,6 +446,7 @@
     "home_player_stats_prior",
     "away_scheme_current",
     "home_scheme_current",
+    "live_share",
     "base_rate",
     "nickel_rate",
     "dime_rate",

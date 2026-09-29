@@ -138,11 +138,25 @@ def _ranked(rows: list[tuple[str, float]], better: str) -> dict[str, int]:
 
 
 def team_form(board: dict) -> dict[str, dict]:
-    teams = board.get("teams") or []
+    """The model's form (blended prior + current season) and, beside it, the
+    current season alone, each ranked across the league."""
+    out = _ranked_form(board.get("teams") or [], "form")
+    current = _ranked_form(board.get("teams") or [], "form_current")
+    for row in board.get("teams") or []:
+        team = canon(row.get("team"))
+        if team in out:
+            if team in current:
+                out[team]["current"] = current[team]
+            if row.get("form_live_share") is not None:
+                out[team]["live_share"] = row.get("form_live_share")
+    return out
+
+
+def _ranked_form(teams: list[dict], field: str) -> dict[str, dict]:
     out: dict[str, dict] = {}
     for row in teams:
         team = canon(row.get("team"))
-        form = row.get("form") or {}
+        form = row.get(field) or {}
         if not team or not form:
             continue
         out[team] = {
@@ -152,9 +166,9 @@ def team_form(board: dict) -> dict[str, dict]:
     pool = len(out)
     for key, better in FORM_METRICS:
         rows = [
-            (canon(row.get("team")), float((row.get("form") or {})[key]))
+            (canon(row.get("team")), float((row.get(field) or {})[key]))
             for row in teams
-            if (row.get("form") or {}).get(key) is not None
+            if (row.get(field) or {}).get(key) is not None
         ]
         if not rows:
             continue
