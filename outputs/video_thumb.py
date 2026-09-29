@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import date
 import re
 import shutil
 import subprocess
@@ -110,10 +111,85 @@ def capture(page, url: str, section: str, out: Path) -> tuple[int, int]:
         return im.size
 
 
+def bracket_thumb(a) -> None:
+    """The playoff-bracket thumbnail: the live bracket from the site booth, empty, so the
+    champion slot is the question mark the video answers."""
+    import socket
+    from playwright.sync_api import sync_playwright
+
+    season = a.season or date.today().year
+    base, server = "http://127.0.0.1:8792", None
+    try:
+        urllib.request.urlopen(base + "/__booth/api/info", timeout=3).read()
+    except Exception:
+        # No booth running: start one quietly for the capture.
+        with socket.socket() as sk:
+            sk.bind(("127.0.0.1", 0))
+            port = sk.getsockname()[1]
+        base = f"http://127.0.0.1:{port}"
+        server = subprocess.Popen(["node", "scripts/site-booth.mjs", "--port", str(port), "--no-open"], cwd=VIDEO,
+                                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    thumbs = VIDEO / "public" / "thumbs"
+    thumbs.mkdir(parents=True, exist_ok=True)
+    shot = thumbs / f"{season}-bracket.png"
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch()
+            # A fresh browser has no saved picks: the bracket is shown as the open question.
+            page = browser.new_page(viewport={"width": 1280, "height": 560}, device_scale_factor=2)
+            for _ in range(20):
+                try:
+                    page.goto(f"{base}/__booth/bracket/?clean&season={season}", wait_until="networkidle", timeout=20000)
+                    break
+                except Exception:
+                    page.wait_for_timeout(1000)
+            page.wait_for_function("document.querySelectorAll('.series').length >= 11", timeout=30000)
+            page.wait_for_timeout(1500)  # logos
+            # Thumbnail height is tight: a 1280 page (bigger cards, club codes) at its natural
+            # height, not stretched, so the whole bracket fits under the headline and reads.
+            page.add_style_tag(content=(
+                ".bracket{min-height:0!important}.champ{flex:0 0 auto!important;min-height:0!important;"
+                "padding:12px!important;gap:4px!important}.champ .q{font-size:72px!important}"))
+            # the bracket lines are drawn from the layout: redraw them for the tightened one
+            page.evaluate("window.dispatchEvent(new Event('resize'))")
+            page.wait_for_timeout(400)
+            # The whole bracket, including the World Series card that runs past the section's box.
+            box = page.evaluate("""() => {
+                const els = [document.getElementById('bracket'), ...document.querySelectorAll('.series, .champ')];
+                const r = els.map(e => e.getBoundingClientRect());
+                const x = Math.min(...r.map(b => b.left)), y = Math.min(...r.map(b => b.top));
+                return { x, y, width: Math.max(...r.map(b => b.right)) - x, height: Math.max(...r.map(b => b.bottom)) - y + 6 };
+            }""")
+            page.screenshot(path=str(shot), clip=box, full_page=True)
+            browser.close()
+    finally:
+        if server:
+            server.terminate()
+    with Image.open(shot) as im:
+        w, h = im.size
+    print(f"[video-thumb] captured the {season} bracket ({w}x{h}) -> {shot.relative_to(ROOT)}")
+    props = {
+        "league": "mlb",
+        # Explicitly no clubs: Remotion merges the composition's example props (PHI/ATL) otherwise.
+        "away": "",
+        "home": "",
+        "eyebrow": a.eyebrow or f"MLB · {season} Postseason",
+        "title": a.title or "Playoff Bracket Predictions",
+        "sub": a.sub if a.sub is not None else "Who wins it all?",
+        "artifact": {"src": f"thumbs/{shot.name}", "width": w, "height": h, "cropTop": 0, "cropBottom": 1},
+    }
+    if a.badge:
+        props["badge"] = a.badge
+    render(props, f"{season}-bracket", a.out)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--league", choices=["mlb", "nfl"], required=True)
-    ap.add_argument("--game", required=True, help="AWAY@HOME, e.g. PHI@ATL")
+    ap.add_argument("--league", choices=["mlb", "nfl"], default="mlb")
+    ap.add_argument("--game", help="AWAY@HOME, e.g. PHI@ATL")
+    ap.add_argument("--bracket", action="store_true",
+                    help="the playoff bracket (the site booth's /__booth/bracket/) instead of one game")
+    ap.add_argument("--season", type=int, help="bracket season (default: this year)")
     ap.add_argument("--game-id", help="the site's game id, when two games share clubs")
     ap.add_argument("--title", help='the hook, e.g. "Luzardo vs Sale" (default: the two starters/QBs)')
     ap.add_argument("--sub", help='accent line (default: "Phillies at Braves")')
@@ -124,7 +200,9 @@ def main() -> None:
     ap.add_argument("--out", help="output PNG (default video/out/thumbs/<date>-<AWAY>-<HOME>.png)")
     a = ap.parse_args()
 
-    if "@" not in a.game:
+    if a.bracket:
+        return bracket_thumb(a)
+    if not a.game or "@" not in a.game:
         fail("--game must be AWAY@HOME")
     away, home = (t.strip().upper() for t in a.game.split("@", 1))
     d = DEFAULTS[a.league]
@@ -173,12 +251,16 @@ def main() -> None:
     }
     if a.badge:
         props["badge"] = a.badge
+    render(props, slug, a.out)
+
+
+def render(props: dict, slug: str, out_arg: str | None) -> None:
     props_dir = VIDEO / "props" / "thumbs"
     props_dir.mkdir(parents=True, exist_ok=True)
     props_file = props_dir / f"{slug}.json"
     props_file.write_text(json.dumps(props, indent=2), encoding="utf-8")
 
-    out = Path(a.out).resolve() if a.out else VIDEO / "out" / "thumbs" / f"{slug}.png"
+    out = Path(out_arg).resolve() if out_arg else VIDEO / "out" / "thumbs" / f"{slug}.png"
     out.parent.mkdir(parents=True, exist_ok=True)
     npx = shutil.which("npx") or fail("npx is not on PATH (install Node)")
     print(f"[video-thumb] rendering: {props['title']} / {props['sub']}")

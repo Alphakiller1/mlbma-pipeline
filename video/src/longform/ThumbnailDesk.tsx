@@ -17,8 +17,9 @@ export type DeskArtifact = {
 
 export type ThumbnailDeskProps = {
   league: League;
-  away: string;
-  home: string;
+  /** The two clubs; leave both out for a thumbnail that is not one game (the bracket). */
+  away?: string;
+  home?: string;
   /** Small caps over the headline, e.g. "MLB · Matchup Analysis". */
   eyebrow: string;
   /** The hook: two to four words, e.g. "Luzardo vs Sale". */
@@ -55,7 +56,7 @@ export const ThumbnailDesk: React.FC<ThumbnailDeskProps> = ({ league, away, home
   // headline, big enough that its numbers still read on a phone's feed tile.
   const cardW = 1230 * u;
   const scale = cardW / artifact.width;
-  const cardH = Math.min(artifact.height * (bottom - top) * scale, 380 * u);
+  const cardH = Math.min(artifact.height * (bottom - top) * scale, 410 * u); // the room under the headline band
   const titleSize = Math.min(138, 1150 / Math.max(1, title.length * 0.5)) * u;
 
   return (
@@ -116,13 +117,13 @@ export const ThumbnailDesk: React.FC<ThumbnailDeskProps> = ({ league, away, home
           {title}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 14 * u, filter: `drop-shadow(0 ${6 * u}px ${12 * u}px rgba(0,0,0,0.6))` }}>
-          {awayLogo ? <Img src={staticFile(awayLogo)} style={{ width: 62 * u, height: 62 * u, objectFit: "contain" }} /> : <TeamLogo team={away} league={league} size={62 * u} />}
+          {awayLogo ? <Img src={staticFile(awayLogo)} style={{ width: 62 * u, height: 62 * u, objectFit: "contain" }} /> : away ? <TeamLogo team={away} league={league} size={62 * u} /> : null}
           {sub ? (
             <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 44 * u, lineHeight: 1, textTransform: "uppercase", color: "var(--text-accent)" }}>
               {sub}
             </span>
           ) : null}
-          {homeLogo ? <Img src={staticFile(homeLogo)} style={{ width: 62 * u, height: 62 * u, objectFit: "contain" }} /> : <TeamLogo team={home} league={league} size={62 * u} />}
+          {homeLogo ? <Img src={staticFile(homeLogo)} style={{ width: 62 * u, height: 62 * u, objectFit: "contain" }} /> : home ? <TeamLogo team={home} league={league} size={62 * u} /> : null}
         </div>
       </div>
 
