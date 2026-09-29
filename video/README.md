@@ -294,6 +294,23 @@ camera, markers, chapters and phone mic all work.
 - Built for 16:9 at any page size (narrow cards switch to club codes); 9:16 stacks AL,
   the final, then NL, so scroll to the NL half while you talk.
 
+## Instagram matchup posts
+
+`.\instagram.bat` (or `python -m outputs.insta_matchup [--games PHI@ATL,...]`) makes two
+1080x1350 posts per game on today's MLB slate, in `video/out/instagram/<date>/`:
+`NN-AWAY-HOME-1-starters.png` (Probable Starters) and `-2-offense.png` (Lineup Vs
+Handedness). Composition `InstaMatchup`: the site's black page, a header band (series,
+game number and ET start from MLB's stats API; both logos) and the real site section
+filling the post. Flat by request: no glow, no tilt, no decorative lines.
+
+- Sections are captured with the two teams stacked, at the page width that fills the
+  4:5 frame; a capture whose table is cut off is widened, and the run fails rather
+  than post clipped data.
+- The offense post notes "Projected orders until lineups are posted" unless MLB's
+  boxscore has both batting orders.
+- Dense by nature: the full splits table is about 14 px at 1080 wide. Re-run after
+  lineups post for the official orders.
+
 ## Thumbnails (the series look)
 
 Every video gets the same thumbnail frame, so the channel reads as one product: the

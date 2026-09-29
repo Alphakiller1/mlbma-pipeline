@@ -21,6 +21,7 @@ import { SplitFrame, SplitFrameProps } from "./longform/SplitFrame";
 import { EndScreen, EndScreenProps } from "./longform/EndScreen";
 import { Thumbnail, ThumbnailProps } from "./longform/Thumbnail";
 import { ThumbnailDesk, ThumbnailDeskProps } from "./longform/ThumbnailDesk";
+import { InstaMatchup, InstaMatchupProps } from "./longform/InstaMatchup";
 import { Annotate, AnnotateProps, annotateDuration } from "./tools/Annotate";
 import { Telestrator, TelestratorProps } from "./tools/Telestrator";
 import { Callout, CalloutProps } from "./tools/Callout";
@@ -272,6 +273,17 @@ const defaultSplit: SplitFrameProps = {
 };
 
 const defaultEnd: EndScreenProps = { guides: true };
+
+// Render real ones with `python -m outputs.insta_matchup` (it captures the sections first).
+const defaultInsta: InstaMatchupProps = {
+  league: "mlb",
+  eyebrow: "NL Wild Card · Game 1 · Tue 2:00 PM ET",
+  awayName: "Phillies",
+  homeName: "Braves",
+  awayLogo: "logos/mlb/phi.png",
+  homeLogo: "logos/mlb/atl.png",
+  artifact: { src: "instagram/example-starters.png", width: 1608, height: 2008 },
+};
 
 // Render real ones with `python -m outputs.video_thumb` (it captures the component first).
 const defaultThumbDesk: ThumbnailDeskProps = {
@@ -547,6 +559,7 @@ export const RemotionRoot: React.FC = () => {
       <Folder name="Snapshots">
         <Still id="Thumbnail" component={Thumbnail} width={1280} height={720} defaultProps={defaultThumb} />
         <Still id="ThumbnailDesk" component={ThumbnailDesk} width={1280} height={720} defaultProps={defaultThumbDesk} />
+        <Still id="InstaMatchup" component={InstaMatchup} width={1080} height={1350} defaultProps={defaultInsta} />
         <Still id="ThumbnailVertical" component={Thumbnail} width={1080} height={1920} defaultProps={defaultThumb} />
       </Folder>
 
