@@ -941,7 +941,13 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 .mc-prop__table thead th:first-child { width: 28%; }
 .mc-prop__table thead th:nth-child(2) { width: 20%; }
 .mc-prop__table thead th:last-child { width: 26%; text-align: right; }
-.mc-prop__table tbody th { color: var(--text-secondary); font-weight: 700; }
+.mc-prop__table tbody th { color: var(--text-secondary); font-weight: 700; white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 480px) {
+  .mc-prop__table thead th:first-child { width: 26%; }
+  .mc-prop__table thead th:nth-child(2) { width: 18%; }
+  .mc-prop__table th, .mc-prop__table td { padding-left: 2px; padding-right: 2px; }
+  .mc-prop__table tbody th { letter-spacing: 0; }
+}
 .mc-prop__proj strong { display: block; font-family: var(--font-display); font-size: var(--type-16); color: var(--text-primary); font-variant-numeric: tabular-nums; }
 .mc-prop__proj small, .mc-prop__price small { display: block; color: var(--text-muted); font-variant-numeric: tabular-nums; }
 .mc-prop__bar {
@@ -956,7 +962,7 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 .mc-prop__line { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--metric-mid); }
 .mc-prop__line.is-model { background: var(--text-muted); }
 .mc-prop__price { text-align: right; font-variant-numeric: tabular-nums; }
-.mc-prop__price span { display: block; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-prop__price span { display: block; color: var(--text-secondary); white-space: nowrap; }
 .mc-prop__price strong { font-family: var(--font-display); font-size: var(--type-16); color: var(--text-primary); }
 .mc-prop__price.is-over strong { color: var(--metric-good); }
 .mc-prop__price.is-under strong { color: var(--metric-poor); }

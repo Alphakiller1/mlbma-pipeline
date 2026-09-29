@@ -420,7 +420,8 @@
       '<td class="mc-prop__proj"><strong>' + esc(fixed(dist.mean, 1)) + '</strong>' +
       '<small>' + esc(dist.p10 + '–' + dist.p90) + '</small></td>' +
       '<td class="mc-prop__viz">' + bar + '</td>' +
-      '<td class="mc-prop__price' + tone + '"><span>' + esc(source + ' O ' + line) + '</span>' +
+      '<td class="mc-prop__price' + tone + '"><span>' + esc(source) + '</span>' +
+      '<span>' + esc('O ' + line) + '</span>' +
       '<strong>' + esc(pctText(modelOver)) + '</strong>' +
       (posted && posted.market_probability != null
         ? '<small>Mkt ' + esc(pctText(Number(posted.market_probability))) + '</small>' : '') +
@@ -443,8 +444,8 @@
       return '<article class="mc-prop">' +
         '<header class="mc-prop__head">' + chip(sport, p.team) +
         '<div><h4>' + esc(p.player_name) + '</h4><p>' + esc(meta) + '</p></div></header>' +
-        '<table class="mc-prop__table"><thead><tr><th>Prop</th><th>Proj · 80%</th>' +
-        '<th>Distribution</th><th>Over</th></tr></thead><tbody>' + body + '</tbody></table>' +
+        '<table class="mc-prop__table"><thead><tr><th>Prop</th><th>Proj</th>' +
+        '<th>Range</th><th>Over</th></tr></thead><tbody>' + body + '</tbody></table>' +
         '</article>';
     }).join('');
     return '<section class="mc-props" aria-labelledby="mcPropsTitle">' +

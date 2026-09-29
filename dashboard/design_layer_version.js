@@ -1,4 +1,4 @@
-/* DESIGN_LAYER_VERSION 20260928j — keep in sync with design/DESIGN_LAYER_VERSION */
+/* DESIGN_LAYER_VERSION 20260928l — keep in sync with design/DESIGN_LAYER_VERSION */
 (function (global) {
-  global.DESIGN_LAYER_VERSION = "20260928j";
+  global.DESIGN_LAYER_VERSION = "20260928l";
 })(typeof window !== "undefined" ? window : this);
