@@ -18,7 +18,7 @@ class CfbCurrentSeasonTests(unittest.TestCase):
                 cfb.load_espn_stats(2026)
 
     def test_team_form_rejects_a_prior_season_row(self):
-        team = {"season": 2025, "own": {}, "opp": {}, "plays": 12}
+        team = {"season": 2025, "own": {}, "opp": {}, "games": 12}
         self.assertIsNone(cfb.form_for(team, {}, 2026))
 
 

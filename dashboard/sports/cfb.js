@@ -116,10 +116,18 @@
     return next == null || next === '' ? prev : next;
   }
 
+  // Box-score rates (this site's ESPN slate) and the CFB model's efficiency
+  // form are different measures; each lands in its own field.
+  function isModelForm(form) { return !!form && form.source !== 'espn'; }
+
   function mergePublic(mapped, pub) {
     if (!pub) return mapped;
-    mapped.away_form = keep(pub.away_form, mapped.away_form);
-    mapped.home_form = keep(pub.home_form, mapped.home_form);
+    ['away', 'home'].forEach(function (side) {
+      var form = pub[side + '_form'];
+      if (!form) return;
+      if (isModelForm(form)) mapped[side + '_model_form'] = form;
+      else mapped[side + '_form'] = form;
+    });
     mapped.away_record = keep(pub.away_record, mapped.away_record);
     mapped.home_record = keep(pub.home_record, mapped.home_record);
     mapped.away_conference = keep(pub.away_conference, mapped.away_conf);
@@ -153,7 +161,7 @@
         [['away', g.away_form], ['home', g.home_form]].forEach(function (pair) {
           var form = pair[1];
           var name = String(g[pair[0] + '_name'] || g[pair[0]] || '').toLowerCase();
-          if (!name || !form || Number(form.season) !== Number(season)) return;
+          if (!name || !form || form.source !== 'espn' || Number(form.season) !== Number(season)) return;
           var prior = forms[name];
           if (!prior || Number(payload.week || 0) >= Number(prior.week || 0)) {
             forms[name] = { form: form, week: payload.week };

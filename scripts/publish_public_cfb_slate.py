@@ -33,18 +33,23 @@ HEADERS = {
     "Referer": "https://www.espn.com/college-football/scoreboard",
 }
 
+# Keys name what they hold. They once reused the CFB model's efficiency names
+# (off_ppa held points per game, off_successRate third-down rate,
+# off_explosiveness yards per pass, off_stuffRate yards per rush), so merging
+# the model's slate would have printed PPA under "Points/G" and a stuff rate,
+# where lower is better, under "Yds/Rush".
 FORM_SPEC = (
-    ("off_ppa", "own", "passing", "totalPointsPerGame",
+    ("off_ppg", "own", "passing", "totalPointsPerGame",
      "Points per game", "high", "num"),
-    ("def_ppa", "opp", "passing", "totalPointsPerGame",
+    ("def_ppg", "opp", "passing", "totalPointsPerGame",
      "Points allowed per game", "low", "num"),
     ("off_ypg", "own", "passing", "yardsPerGame",
      "Yards per game", "high", "num"),
     ("def_ypg", "opp", "passing", "yardsPerGame",
      "Yards allowed per game", "low", "num"),
-    ("off_successRate", "own", "miscellaneous", "thirdDownConvPct",
+    ("off_third_down", "own", "miscellaneous", "thirdDownConvPct",
      "Offense third-down rate", "high", "pct"),
-    ("def_successRate", "opp", "miscellaneous", "thirdDownConvPct",
+    ("def_third_down", "opp", "miscellaneous", "thirdDownConvPct",
      "Third-down rate allowed", "low", "pct"),
     ("off_fourth", "own", "miscellaneous", "fourthDownConvPct",
      "Fourth-down rate", "high", "pct"),
@@ -54,9 +59,9 @@ FORM_SPEC = (
      "First downs per game", "high", "pg"),
     ("def_first_downs", "opp", "miscellaneous", "firstDowns",
      "First downs allowed per game", "low", "pg"),
-    ("off_explosiveness", "own", "passing", "yardsPerPassAttempt",
+    ("off_ypa", "own", "passing", "yardsPerPassAttempt",
      "Yards per pass attempt", "high", "num"),
-    ("def_explosiveness", "opp", "passing", "yardsPerPassAttempt",
+    ("def_ypa", "opp", "passing", "yardsPerPassAttempt",
      "Yards per pass allowed", "low", "num"),
     ("off_pass_ypg", "own", "passing", "passingYardsPerGame",
      "Passing yards per game", "high", "num"),
@@ -82,9 +87,9 @@ FORM_SPEC = (
      "Sacks taken per game", "low", "pg"),
     ("def_sacks", "opp", "passing", "sacks",
      "Sacks per game", "high", "pg"),
-    ("off_stuffRate", "own", "rushing", "yardsPerRushAttempt",
+    ("off_ypc", "own", "rushing", "yardsPerRushAttempt",
      "Yards per rush attempt", "high", "num"),
-    ("def_stuffRate", "opp", "rushing", "yardsPerRushAttempt",
+    ("def_ypc", "opp", "rushing", "yardsPerRushAttempt",
      "Yards per rush allowed", "low", "num"),
     ("off_rush_ypg", "own", "rushing", "rushingYardsPerGame",
      "Rushing yards per game", "high", "num"),
@@ -181,7 +186,7 @@ def load_espn_stats(season: int) -> dict[str, dict]:
             "display": meta.get("displayName") or "",
             "own": own,
             "opp": opp,
-            "plays": games,
+            "games": games,
         }
         for key in filter(None, (
             entry["abbreviation"],
@@ -267,7 +272,7 @@ def lookup_team(stats: dict[str, dict], abbr: str, school: str) -> dict | None:
 def form_for(team: dict | None, pools: dict[str, list[float]], season: int) -> dict | None:
     if not team or int(team.get("season") or 0) != season:
         return None
-    games = team.get("plays")
+    games = team.get("games")
     rates = {}
     for key, split, cat, field, label, better, fmt in FORM_SPEC:
         bucket = team[split].get(cat) or {}
@@ -287,7 +292,7 @@ def form_for(team: dict | None, pools: dict[str, list[float]], season: int) -> d
         return None
     out = {"rates": rates, "source": "espn", "season": season}
     if games:
-        out["plays"] = games
+        out["games"] = games
     return out
 
 
@@ -363,7 +368,7 @@ def main() -> int:
     pools: dict[str, list[float]] = {spec[0]: [] for spec in FORM_SPEC}
     for team in unique:
         for key, split, cat, field, _label, _better, fmt in FORM_SPEC:
-            value = as_rate((team[split].get(cat) or {}).get(field), fmt, team.get("plays"))
+            value = as_rate((team[split].get(cat) or {}).get(field), fmt, team.get("games"))
             if value is not None:
                 pools[key].append(value)
     events = event_index(load_espn_events())

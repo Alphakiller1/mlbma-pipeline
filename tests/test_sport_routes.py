@@ -148,10 +148,15 @@ class SportRouteBuilderTests(unittest.TestCase):
                 form = game[side + "_form"]
                 self.assertEqual(form.get("season"), season)
                 rates = form.get("rates") or {}
-                self.assertIn("off_ppa", rates)
-                self.assertIn("def_ppa", rates)
-                self.assertIn("off_successRate", rates)
-                self.assertIn("def_successRate", rates)
+                # Box-score rates carry names of their own; the CFB model's
+                # efficiency names (off_ppa, off_successRate...) never appear here.
+                self.assertIn("off_ppg", rates)
+                self.assertIn("def_ppg", rates)
+                self.assertIn("off_third_down", rates)
+                self.assertIn("def_third_down", rates)
+                self.assertFalse({"off_ppa", "off_successRate", "off_explosiveness",
+                                  "off_stuffRate"} & set(rates))
+                self.assertEqual(form.get("source"), "espn")
 
     def test_past_results_are_not_a_public_destination(self):
         """Completed games belong inside a matchup breakdown, nowhere else.
