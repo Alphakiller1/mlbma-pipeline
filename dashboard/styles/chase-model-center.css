@@ -911,7 +911,7 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 
 /* —— MLB starter prop projections ——————————————————————————————— */
 .mc-props { display: grid; gap: var(--space-3); margin-top: var(--space-5); }
-.mc-props__grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); }
+.mc-props__grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); align-items: start; }
 .mc-prop {
   display: grid;
   gap: var(--space-3);
@@ -966,3 +966,15 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 .mc-prop__price strong { font-family: var(--font-display); font-size: var(--type-16); color: var(--text-primary); }
 .mc-prop__price.is-over strong { color: var(--metric-good); }
 .mc-prop__price.is-under strong { color: var(--metric-poor); }
+
+.mc-props__pick { display: flex; align-items: center; gap: var(--space-2); font-size: var(--type-meta); color: var(--text-secondary); font-weight: 700; }
+.mc-props__pick select {
+  min-height: 44px;
+  max-width: 100%;
+  padding: 0 var(--space-3);
+  background: var(--surface-board-raised);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  font: inherit;
+}

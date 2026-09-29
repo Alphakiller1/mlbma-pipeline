@@ -385,10 +385,28 @@
 
   function overProbability(dist, line) {
     var pmf = dist && dist.pmf;
-    if (!pmf) return null;
+    if (!pmf) return ladderOver(dist, line);
     var p = 0;
     Object.keys(pmf).forEach(function (k) { if (Number(k) > line) p += Number(pmf[k]); });
     return p;
+  }
+
+  /* CFB yardage and volume carry a quantile ladder (value at each level)
+     instead of a pmf: P(over) is read off it by linear interpolation, flat
+     beyond the outermost levels. */
+  function ladderOver(dist, line) {
+    var q = dist && dist.q, levels = dist && dist.q_levels;
+    if (!q || !levels || q.length !== levels.length) return null;
+    if (line < q[0]) return 1 - levels[0];
+    if (line >= q[q.length - 1]) return 1 - levels[levels.length - 1];
+    for (var i = 0; i < q.length - 1; i++) {
+      if (line >= q[i] && line < q[i + 1]) {
+        var span = q[i + 1] - q[i];
+        var at = span ? levels[i] + (levels[i + 1] - levels[i]) * (line - q[i]) / span : levels[i];
+        return 1 - at;
+      }
+    }
+    return null;
   }
 
   function pctText(v) { return v == null ? '' : Math.round(v * 100) + '%'; }
@@ -410,7 +428,7 @@
       '<span class="mc-prop__median" style="left:' + at(dist.p50).toFixed(1) + '%"></span>' +
       '<span class="mc-prop__line' + (posted ? '' : ' is-model') + '" style="left:' +
       at(line).toFixed(1) + '%"></span></div>';
-    var tone = modelOver == null ? '' : (modelOver >= 0.55 ? ' is-over' : (modelOver <= 0.45 ? ' is-under' : ''));
+    var tone = modelOver == null || (!posted && stat[3]) ? '' : (modelOver >= 0.55 ? ' is-over' : (modelOver <= 0.45 ? ' is-under' : ''));
     var BOOKS = { draftkings: 'DraftKings', fanduel: 'FanDuel', betmgm: 'BetMGM',
       bovada: 'Bovada', caesars: 'Caesars', prizepicks: 'PrizePicks', underdog: 'Underdog',
       sleeper: 'Sleeper', espnbet: 'ESPN BET', betrivers: 'BetRivers' };
@@ -428,7 +446,92 @@
       '</td></tr>';
   }
 
-  function propsSection(sport, board, mapped) {
+  /* ---- CFB player prop projections ----------------------------------
+     cfb-model's player layer: every QB, back and receiver on the week's
+     board, one game at a time. */
+  var CFB_PROPS = [
+    ['pass_yds', 'Pass Yds', 450, 'untoned'], ['pass_att', 'Pass Att', 55, 'untoned'],
+    ['pass_cmp', 'Comp', 40, 'untoned'], ['pass_td', 'Pass TD', 5, 'untoned'],
+    ['pass_int', 'INT', 3, 'untoned'], ['rush_yds', 'Rush Yds', 200, 'untoned'],
+    ['rush_car', 'Carries', 30, 'untoned'], ['rec', 'Rec', 12, 'untoned'], ['rec_yds', 'Rec Yds', 180, 'untoned']
+  ];
+  var CFB_POSITION_ORDER = { QB: 0, RB: 1, WR: 2, TE: 3 };
+
+  function cfbPropRows(board, mapped) {
+    var rows = (mapped && mapped.player_projections) || (board && board.player_projections) || [];
+    return rows.filter(function (p) { return p && p.stats && p.game_key; });
+  }
+
+  function cfbCovered(rows, games) {
+    var keyed = {};
+    rows.forEach(function (p) { keyed[p.game_key] = true; });
+    return games.filter(function (g) { return keyed[g.id || g.key]; });
+  }
+
+  function cfbPropCard(p, g) {
+    var side = p.home ? 'home' : 'away';
+    var body = CFB_PROPS.filter(function (stat) { return p.stats[stat[0]]; })
+      .map(function (stat) { return propRow(stat, p.stats[stat[0]], p.lines); }).join('');
+    var games = Number(p.games) || 0;
+    var meta = [p.team, p.position, games + (games === 1 ? ' game' : ' games'),
+      p.anytime_td != null ? 'Anytime TD ' + pctText(Number(p.anytime_td)) : ''
+    ].filter(Boolean).join(' \u00b7 ');
+    return '<article class="mc-prop">' +
+      '<header class="mc-prop__head">' +
+      chip('cfb', g ? g[side] : p.team, p.team, g && g[side + '_logo'], g && g[side + '_color']) +
+      '<div><h4>' + esc(p.player_name) + '</h4><p>' + esc(meta) + '</p></div></header>' +
+      '<table class="mc-prop__table"><thead><tr><th>Prop</th><th>Proj</th>' +
+      '<th>Range</th><th>Over</th></tr></thead><tbody>' + body + '</tbody></table>' +
+      '</article>';
+  }
+
+  function cfbLead(p) {
+    var s = p.stats.pass_yds || p.stats.rush_yds || p.stats.rec_yds || {};
+    return Number(s.mean) || 0;
+  }
+
+  function cfbGameCards(rows, g) {
+    var mine = rows.filter(function (p) { return p.game_key === (g.id || g.key); });
+    mine.sort(function (a, b) {
+      if (a.home !== b.home) return a.home ? 1 : -1;
+      var pa = CFB_POSITION_ORDER[a.position], pb = CFB_POSITION_ORDER[b.position];
+      if (pa !== pb) return (pa == null ? 9 : pa) - (pb == null ? 9 : pb);
+      return cfbLead(b) - cfbLead(a);
+    });
+    return mine.map(function (p) { return cfbPropCard(p, g); }).join('');
+  }
+
+  function cfbPropsSection(board, mapped, games) {
+    var rows = cfbPropRows(board, mapped);
+    var covered = cfbCovered(rows, games);
+    if (!covered.length) return '';
+    var options = covered.map(function (g, i) {
+      return '<option value="' + i + '">' + esc((g.away_name || g.away) + ' at ' +
+        (g.home_name || g.home)) + '</option>';
+    }).join('');
+    return '<section class="mc-props" aria-labelledby="mcPropsTitle">' +
+      '<header class="mc-board__head"><div><p class="mc-board__eyebrow">CFB</p>' +
+      '<h2 class="mc-board__title" id="mcPropsTitle">Player Prop Projections</h2></div>' +
+      '<div class="mc-board__status"><strong>' + rows.length + '</strong><span>players projected</span></div>' +
+      '</header><label class="mc-props__pick"><span>Game</span>' +
+      '<select id="mcPropsGame">' + options + '</select></label>' +
+      '<div class="mc-grid mc-props__grid" id="mcPropsGrid">' + cfbGameCards(rows, covered[0]) +
+      '</div></section>';
+  }
+
+  function wireCfbProps(board, mapped, games) {
+    var pick = $('mcPropsGame'), grid = $('mcPropsGrid');
+    if (!pick || !grid) return;
+    var rows = cfbPropRows(board, mapped);
+    var covered = cfbCovered(rows, games);
+    pick.addEventListener('change', function () {
+      var g = covered[Number(pick.value)];
+      if (g) grid.innerHTML = cfbGameCards(rows, g);
+    });
+  }
+
+  function propsSection(sport, board, mapped, games) {
+    if (sport === 'cfb') return cfbPropsSection(board, mapped, games || []);
     var rows = (mapped && mapped.player_projections) || (board && board.player_projections) || [];
     rows = rows.filter(function (p) { return p && p.stats; });
     if (sport !== 'mlb' || !rows.length) return '';
@@ -482,7 +585,10 @@
           'The requested game is not in the currently published Model Center rows.');
         return;
       }
-      host.innerHTML = '<div class="mc-board">' + detailView(sport, board, one) + '</div>';
+      var gameProps = sport === 'cfb' ? cfbGameCards(cfbPropRows(board, mapped), one) : '';
+      host.innerHTML = '<div class="mc-board">' + detailView(sport, board, one) +
+        (gameProps ? '<section class="mc-panel"><h2 class="mc-panel__title">Player prop projections</h2>' +
+          '<div class="mc-grid mc-props__grid">' + gameProps + '</div></section>' : '') + '</div>';
       return;
     }
     if (!games.length) {
@@ -509,8 +615,9 @@
       '<h2 class="mc-board__title">' + esc(title) + '</h2></div>' +
       '<div class="mc-board__status"><strong>' + projected + '/' + games.length + '</strong>' +
       '<span>scores published</span></div></header>' +
-      body + propsSection(sport, board, mapped) + '</div>';
+      body + propsSection(sport, board, mapped, games) + '</div>';
     host.innerHTML = html;
+    if (sport === 'cfb') wireCfbProps(board, mapped, games);
   }
 
   function loadBoard(sport) {
