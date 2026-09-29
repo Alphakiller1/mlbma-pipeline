@@ -312,6 +312,10 @@ component** in a violet-edged card underneath. Only the words and the component 
 - **Words default from the page:** the title is the two starters (MLB) or quarterbacks
   (NFL) by surname; the accent line is "<Nickname> at <Nickname>". Keep a custom title
   to two to four words; it is sized to stay on one line.
+- **The playoff bracket:** `.	humbnail.bat --bracket` captures the live bracket (empty, so the
+  champion is the "?") from the site booth, starting one quietly if none is running, and renders
+  `video/out/thumbs/<season>-bracket.png` with "Playoff Bracket Predictions / Who wins it all?"
+  (override with `--title`, `--sub`, `--badge`).
 - **Other components:** `--section` takes any matchup-page section id (`arsenal`,
   `lineups`, `club-splits`, `bullpens`, `availability`, ...) and `--crop 0,0.5` picks the
   band of it to show.
