@@ -1,6 +1,6 @@
 import { AbsoluteFill, Img, staticFile, useVideoConfig } from "remotion";
 import { BrandLockup, TeamLogo } from "../ds/kit";
-import { League, teamColors } from "../teams";
+import { League } from "../teams";
 import "../fonts";
 
 /** A real chase-analytics.com component, captured by `python -m outputs.video_thumb`. */
@@ -32,20 +32,18 @@ export type ThumbnailDeskProps = {
 
 /**
  * THE series thumbnail: the site's desk look at feed-tile size. Every video gets the
- * same frame - black page, one violet glow, the headline column on the left and a real
- * site component on the right in a violet-edged card - so the channel reads as one
+ * same frame - black page, the headline band on top and a real site component in a
+ * thin violet-edged card underneath - so the channel reads as one
  * product. Only the props change per video (teams, words, which component).
  *
  *   python -m outputs.video_thumb --league mlb --game PHI@ATL --title "Luzardo vs Sale"
  *
- * Colours and faces are the site's semantic tokens; club colours appear only as faint
- * corner tints, so no matchup can pull the thumbnail off-brand.
+ * Colours and faces are the site's semantic tokens. Kept deliberately quiet (owner,
+ * 2026-09-29: "cleaner, darker"): pure black, no grid, no club tints, a flat card.
  */
 export const ThumbnailDesk: React.FC<ThumbnailDeskProps> = ({ league, away, home, eyebrow, title, sub, badge, artifact }) => {
   const { width, height } = useVideoConfig();
   const u = height / 720; // designed at 1280x720
-  const a = teamColors(away, league).primary;
-  const h = teamColors(home, league).primary;
 
   const top = artifact.cropTop ?? 0;
   const bottom = artifact.cropBottom ?? 1;
@@ -58,25 +56,9 @@ export const ThumbnailDesk: React.FC<ThumbnailDeskProps> = ({ league, away, home
 
   return (
     <AbsoluteFill style={{ background: "var(--surface-page)", overflow: "hidden", fontFamily: "var(--font-body)" }}>
-      {/* ground: one violet glow behind the card, the two clubs as faint corner tints */}
+      {/* ground: the site's black, one faint violet glow under the component - nothing else */}
       <AbsoluteFill
-        style={{
-          background: [
-            `radial-gradient(ellipse 70% 55% at 55% 78%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 70%)`,
-            `radial-gradient(ellipse 40% 55% at 0% 0%, color-mix(in srgb, ${a} 16%, transparent), transparent 70%)`,
-            `radial-gradient(ellipse 40% 55% at 100% 0%, color-mix(in srgb, ${h} 16%, transparent), transparent 70%)`,
-          ].join(","),
-        }}
-      />
-      {/* the desk's fine grid, only under the component */}
-      <AbsoluteFill
-        style={{
-          backgroundImage:
-            "linear-gradient(var(--border-subtle) 1px, transparent 1px), linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px)",
-          backgroundSize: `${48 * u}px ${48 * u}px`,
-          maskImage: "linear-gradient(180deg, transparent 35%, #000 75%)",
-          opacity: 0.7,
-        }}
+        style={{ background: "radial-gradient(ellipse 60% 45% at 50% 82%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 75%)" }}
       />
 
       {/* headline band */}
@@ -125,7 +107,6 @@ export const ThumbnailDesk: React.FC<ThumbnailDeskProps> = ({ league, away, home
             textTransform: "uppercase",
             whiteSpace: "nowrap",
             color: "var(--text-primary)",
-            textShadow: `0 ${4 * u}px 0 #000, 0 ${10 * u}px ${30 * u}px rgba(0,0,0,0.8)`,
           }}
         >
           {title}
@@ -149,12 +130,10 @@ export const ThumbnailDesk: React.FC<ThumbnailDeskProps> = ({ league, away, home
           bottom: 58 * u,
           width: cardW,
           height: cardH,
-          borderRadius: 18 * u,
+          borderRadius: 14 * u,
           overflow: "hidden",
-          border: `${2 * u}px solid var(--accent)`,
-          boxShadow: `0 0 ${70 * u}px color-mix(in srgb, var(--accent) 45%, transparent), 0 ${24 * u}px ${60 * u}px rgba(0,0,0,0.7)`,
-          transform: "perspective(2200px) rotateX(10deg) rotateZ(-2deg)",
-          transformOrigin: "center bottom",
+          border: `${1.5 * u}px solid color-mix(in srgb, var(--accent) 60%, transparent)`,
+          boxShadow: `0 0 ${40 * u}px color-mix(in srgb, var(--accent) 22%, transparent)`,
           background: "var(--surface-card)",
         }}
       >
