@@ -15,6 +15,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "public" / "cfb" / "slate.json"
+# Share of games that must carry both schools' unit profiles before the slate
+# is written; below it the pull is treated as broken, not as a quiet week.
+MIN_FORM_SHARE = 0.6
 BOARD_URL = "https://alphakiller1.github.io/cfb-model/board.json"
 STATS_URL = (
     "https://site.web.api.espn.com/apis/common/v3/sports/football/"
@@ -376,9 +379,16 @@ def main() -> int:
         "data_through_utc": board.get("generated_at"),
         "games": games,
     }
+    with_form = sum(1 for game in games if game.get("away_form") and game.get("home_form"))
+    # Validate before writing: an ESPN outage or a renamed stats field must
+    # leave the last good slate in place rather than publish a week of blank
+    # unit tables. The scheduled workflow fails loudly instead.
+    if not games or with_form < MIN_FORM_SHARE * len(games):
+        print(f"refusing to write {OUT}: {with_form} of {len(games)} games carry both unit "
+              f"profiles (need {MIN_FORM_SHARE:.0%}); keeping the published slate")
+        return 1
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    with_form = sum(1 for game in games if game.get("away_form") and game.get("home_form"))
     print(f"wrote {OUT} ({len(games)} games, {with_form} with both unit profiles)")
     return 0
 

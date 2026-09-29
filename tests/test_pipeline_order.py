@@ -73,7 +73,11 @@ class DeployReachesTheSiteTests(unittest.TestCase):
         yml = (ROOT / ".github" / "workflows" / "cloudflare-deploy.yml").read_text(
             encoding="utf-8")
         self.assertIn("workflow_run:", yml)
-        self.assertIn('workflows: ["Run MLBMA Pipeline"]', yml)
+        # The CFB slate publisher commits with GITHUB_TOKEN too, so it needs
+        # the same trigger.
+        self.assertIn('workflows: ["Run MLBMA Pipeline", "Publish CFB Slate"]', yml)
+        cfb = (ROOT / ".github" / "workflows" / "publish-cfb-slate.yml").read_text(encoding="utf-8")
+        self.assertIn("name: Publish CFB Slate", cfb)
         # And a failed pipeline must not ship.
         self.assertIn("github.event.workflow_run.conclusion == 'success'", yml)
 
