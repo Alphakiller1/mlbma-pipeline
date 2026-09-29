@@ -106,6 +106,22 @@ const stamp = (s) => {
 
 /* ── takes ── */
 const jobs = new Map(); // name -> { state: "encoding" | "done" | "failed", error?, started }
+
+/*
+ * Which build of the booth this is: a hash of the server code. A second launch compares
+ * it with the booth already on the port, so an old window left open (from before an
+ * update) is replaced instead of silently serving pages it does not know ("not found").
+ */
+const BUILD = (() => {
+  const h = crypto.createHash("sha1");
+  const libs = path.join(root, "scripts", "lib");
+  for (const f of [fileURLToPath(import.meta.url), ...fs.readdirSync(libs).sort().map((n) => path.join(libs, n))]) {
+    if (f.endsWith(".mjs")) h.update(fs.readFileSync(f));
+  }
+  return h.digest("hex").slice(0, 12);
+})();
+let lastChunkAt = 0;
+const busy = () => Date.now() - lastChunkAt < 15_000 || [...jobs.values()].some((j) => j.state === "encoding");
 const listTakes = () =>
   fs
     .readdirSync(footage)
@@ -250,7 +266,7 @@ const server = http.createServer(async (req, res) => {
     if (p.startsWith("/__booth/api/")) {
       const api = p.slice("/__booth/api/".length);
       const name = safeName(url.searchParams.get("name"));
-      if (api === "info") return json(res, { origin, ffmpeg: Boolean(ffmpeg), footage: path.relative(path.resolve(root, ".."), footage), room: phoneRoom });
+      if (api === "info") return json(res, { build: BUILD, pid: process.pid, busy: busy(), origin, ffmpeg: Boolean(ffmpeg), footage: path.relative(path.resolve(root, ".."), footage), room: phoneRoom });
       if (api === "takes") return json(res, { takes: listTakes() });
       if (api === "bracket") {
         // The playoff bracket page (/__booth/bracket/): live series from MLB's stats API, cached 60 s.
@@ -271,6 +287,7 @@ const server = http.createServer(async (req, res) => {
         if (!name) return res.writeHead(400).end("bad name");
         const file = path.join(footage, `${name}.webm`);
         const body = await readBody(req);
+        lastChunkAt = Date.now();
         if (url.searchParams.get("seq") === "0") fs.writeFileSync(file, body);
         else fs.appendFileSync(file, body);
         return res.writeHead(200).end("ok");
@@ -340,7 +357,12 @@ if (pfx) {
     res.writeHead(404).end("not found");
   });
   secure.on("upgrade", onUpgrade);
-  secure.on("error", (e) => console.log(e.code === "EADDRINUSE" ? `  phone mic port ${phonePort} is already in use.` : `  phone mic https: ${e.message}`));
+  let secureTries = 0;
+  secure.on("error", (e) => {
+    // While replacing an older booth, its phone port frees a moment after it exits.
+    if (e.code === "EADDRINUSE" && ++secureTries <= 5) return setTimeout(() => secure.listen(phonePort, "0.0.0.0"), 1500);
+    console.log(e.code === "EADDRINUSE" ? `  phone mic port ${phonePort} is already in use.` : `  phone mic https: ${e.message}`);
+  });
   secure.listen(phonePort, "0.0.0.0", () => {
     secureUp = true;
     const urls = lanIps().map((ip) => `https://${ip}:${phonePort}/mic`);
@@ -351,11 +373,35 @@ if (pfx) {
 }
 
 const boothUrl = `http://localhost:${port}/__booth/${startPage ? `?page=${encodeURIComponent(startPage)}` : ""}`;
-server.on("error", (e) => {
+let replacing = false;
+server.on("error", async (e) => {
   if (e.code !== "EADDRINUSE") throw e;
-  console.log(`The site booth is already running at ${boothUrl} - opening it.`);
-  openBrowser(boothUrl);
-  process.exit(0);
+  let other = null;
+  try {
+    other = await (await fetch(`http://127.0.0.1:${port}/__booth/api/info`, { signal: AbortSignal.timeout(3000) })).json();
+  } catch {
+    /* not a booth, or not answering */
+  }
+  if (other?.build === BUILD) {
+    console.log(`The site booth is already running at ${boothUrl} - opening it.`);
+    openBrowser(boothUrl);
+    process.exit(0);
+  }
+  if (other?.pid && !other.busy && !replacing) {
+    // An older booth, idle: take its place so the latest pages and fixes are served.
+    replacing = true;
+    console.log("An older site booth was still running. Replacing it with this version...");
+    try {
+      process.kill(other.pid);
+    } catch {
+      /* already gone */
+    }
+    setTimeout(() => server.listen(port, "127.0.0.1"), 1500);
+    return;
+  }
+  console.log(`\nAn OLDER site booth is still running on this port${other?.busy ? " and is recording or saving a take." : "."}`);
+  console.log(other?.busy ? "Finish that take, then close its window and run this again." : "Close its window (the black one titled site-booth), then run this again.");
+  process.exit(1);
 });
 server.listen(port, "127.0.0.1", () => {
   const url = boothUrl;
