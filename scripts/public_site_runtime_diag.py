@@ -389,11 +389,18 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.evaluate(shown) == "quarterbacks,coverage,looks" and page.url.endswith("#passing"),
               page.evaluate(shown) + " " + page.url)
         page.locator('a[data-nfl-tab="dvoa"]').click()
-        check("NFL DVOA tab exposes both licensed-feed panels",
+        check("NFL DVOA tab exposes both FTN panels",
               page.evaluate(shown) == "dvoa"
               and page.locator("#dvoa .ca-nfl-dvoa-panel").count() == 2)
-        check("NFL DVOA remains honest without a licensed feed",
-              "licensed ftn dvoa feed required" in page.locator("#dvoa").inner_text().lower())
+        dvoa_text = page.locator("#dvoa").inner_text().lower()
+        check("NFL DVOA publishes all eight team-unit values",
+              page.locator("#dvoa tbody tr").count() == 8
+              and "not published" not in dvoa_text,
+              dvoa_text)
+        check("NFL DVOA includes FTN week and rank provenance",
+              "ftn public team total dvoa" in dvoa_text
+              and "week " in dvoa_text and "of 32" in dvoa_text,
+              dvoa_text)
         page.locator('a[data-nfl-tab="passing"]').click()
         club_panels = "() => [...document.querySelectorAll('#coverage .ca-detail-duo')].filter(d => d.offsetParent).map(d => [...d.children].filter(c => c.offsetParent).length).join(',')"
         check("NFL stacked layout reads one club at a time", page.evaluate(club_panels) == "1",

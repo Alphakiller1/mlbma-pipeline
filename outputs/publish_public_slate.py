@@ -696,6 +696,8 @@ def merge_producers(official: dict, curated: dict) -> dict:
 ESPN_NFL_INJURIES = (
     "https://site.api.espn.com/apis/site/v2/sports/football/nfl/injuries"
 )
+FTN_DVOA = "https://ls.ftnfantasy.com/api/ftn/dvoa/rankings"
+FTN_TEAM_ALIASES = {"WSH": "WAS"}
 
 # Designations that change how a reader should treat availability. "Active" is
 # the default state and is not worth reporting.
@@ -747,6 +749,78 @@ def fetch_nfl_injuries() -> dict:
         notable.sort(key=lambda p: rank.get(p["status"], 3))
         by_team[team] = notable
     return by_team
+
+
+def _dvoa_value(raw) -> float | None:
+    """Convert FTN's displayed percentage to the slate's fractional rate."""
+    if raw in (None, ""):
+        return None
+    try:
+        return round(float(str(raw).strip().removesuffix("%")) / 100, 6)
+    except (TypeError, ValueError):
+        return None
+
+
+def fetch_ftn_dvoa(season: int | None = None) -> dict[str, dict]:
+    """Read the free Team Total DVOA dataset used by FTN's public table.
+
+    The public endpoint exposes total, offense, defense and special-teams DVOA.
+    Pass/run splits remain subscriber-only and are deliberately not inferred.
+    """
+    try:
+        request = urllib.request.Request(
+            FTN_DVOA,
+            headers={"User-Agent": "ChaseAnalytics/1.0 (+https://chase-analytics.com)"},
+        )
+        with urllib.request.urlopen(request, timeout=30) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except Exception as exc:
+        print(f"  WARNING: FTN DVOA fetch failed ({exc})")
+        return {}
+
+    years = [int(year) for year, rows in payload.items() if str(year).isdigit() and rows]
+    selected = season if season in years else (max(years) if years else None)
+    rows = payload.get(str(selected), {}) if selected is not None else {}
+    if not isinstance(rows, dict) or len(rows) < 32:
+        print(f"  WARNING: FTN DVOA returned {len(rows) if isinstance(rows, dict) else 0} teams")
+        return {}
+
+    spec = (
+        ("total_dvoa", "total_dvoa_rank"),
+        ("offense_dvoa", "offense_rank"),
+        ("defense_dvoa", "defense_rank"),
+        ("special_teams_dvoa", "special_teams_rank"),
+    )
+    out: dict[str, dict] = {}
+    for club, row in rows.items():
+        metrics: dict[str, object] = {
+            "source": "FTN public Team Total DVOA",
+            "season": int(row.get("year") or selected),
+            "week": int(row.get("week") or 0),
+        }
+        for metric, rank_key in spec:
+            value = _dvoa_value(row.get(metric))
+            rank = row.get(rank_key)
+            if value is None or rank is None:
+                continue
+            metrics[metric] = {"value": value, "rank": int(rank), "of": len(rows)}
+        if all(metric in metrics for metric, _rank in spec):
+            out[str(club).upper()] = metrics
+    return out
+
+
+def attach_nfl_dvoa(payload: dict, rankings: dict[str, dict]) -> int:
+    """Attach one current FTN DVOA profile to each team on the NFL slate."""
+    attached = 0
+    for game in payload.get("games") or []:
+        for side in ("away", "home"):
+            club = FTN_TEAM_ALIASES.get(str(game.get(side) or "").upper(),
+                                        str(game.get(side) or "").upper())
+            profile = rankings.get(club)
+            if profile:
+                game[f"{side}_dvoa"] = profile
+                attached += 1
+    return attached
 
 
 def availability_summary(entries: list[dict] | None) -> str:
@@ -1158,7 +1232,7 @@ def write_nfl_league_context(context: dict, rest: dict) -> None:
 # only fires on a total loss. Lineups and probable starters are deliberately NOT
 # guarded: they are published late in the day and their absence in the morning is
 # the truth, not a failure.
-GUARDED_EVIDENCE = ("scheme", "form")
+GUARDED_EVIDENCE = ("scheme", "form", "dvoa")
 
 
 def _evidence(payload: dict) -> dict[str, int]:
@@ -1196,7 +1270,7 @@ def _lost_evidence(fresh: dict, published: Path) -> str | None:
 NFL_CLUB_FIELDS = (
     "player_scheme", "player_coverage", "player_stats", "lineups", "scheme",
     "scheme_current", "line_stats", "run_game", "defenders_current", "red_zone",
-    "team_stats", "form",
+    "team_stats", "form", "dvoa",
 )
 
 
@@ -1312,6 +1386,13 @@ def run(data_dir: Path | None = None) -> int:
         context = nfl_public_context.build()
         rest = fetch_nfl_rest({c for c in codes if c})
         nfl = nfl_producer_from_espn(espn, fetch_nfl_injuries(), context, rest)
+        dvoa = fetch_ftn_dvoa(datetime.now(ET).year)
+        attached = attach_nfl_dvoa(nfl, dvoa)
+        expected = len(nfl.get("games") or []) * 2
+        if attached != expected:
+            print(f"  WARNING nfl DVOA: attached {attached} of {expected} team profiles")
+        else:
+            print(f"  nfl DVOA: attached all {attached} team profiles")
         # The whole league, once, so the matchup page can show every club
         # against the two in front of the reader. Each game already carries its
         # own two clubs; this is the board behind them.

@@ -24,20 +24,20 @@ The UI combines these with available PPA, success rate, explosiveness, and stuff
 
 ## DVOA contract
 
-DVOA is proprietary FTN data. The public UI does not calculate a lookalike or substitute a synthetic number.
+DVOA is FTN data. The public UI does not calculate a lookalike or substitute a synthetic number.
 
 - CFB displays an explicit licensed-feed status for offense, defense, and special teams DVOA.
-- NFL accepts optional `away_dvoa` and `home_dvoa` objects from the public slate.
-- Supported NFL fields are total, offense, defense, special teams, pass offense, rush offense, pass defense, and rush defense DVOA.
+- NFL publishes `away_dvoa` and `home_dvoa` objects from FTN's free public Team Total DVOA dataset.
+- The public dataset supplies total, offense, defense, and special teams DVOA. Subscriber-only pass/run detail is shown only when explicitly supplied and is never inferred.
 - Values are fractional percentages and may include `{value, rank, of}` plus source, season, and week provenance.
-- Until a licensed FTN feed is connected, every field renders `Not Published` and `Licensed Feed Required` instead of a fabricated estimate.
+- A failed or incomplete upstream response leaves the last complete published slate in place instead of replacing numeric DVOA with an empty state.
 
 ## Verification
 
 - CFB slate regenerated with 56 of 56 games carrying both team profiles.
 - Public-field classification and restricted-field validation pass.
 - JavaScript and Python syntax checks pass.
-- Design token and cache-stamp checks pass at `20260930a`.
-- Full automated suite: 251 tests and 8 subtests passed.
-- Browser checks confirmed the CFB seven-tab layout, NFL nine-tab layout, DVOA feed states, rank pills, no console errors, and no horizontal overflow at desktop and phone widths.
-- Full public-site runtime diagnostic: 205 checks passed. Feed-dependent assertions now accept only an explicit `not published` state when the current slate lacks that evidence.
+- Design token and cache-stamp checks pass at `20260930b`.
+- Full automated suite: 254 tests and 8 subtests passed.
+- Browser checks confirmed the CFB seven-tab layout, NFL nine-tab layout, populated NFL DVOA values and ranks, no console errors, and no horizontal overflow at desktop and phone widths.
+- Full public-site runtime diagnostic: 206 checks passed. NFL DVOA assertions require all four public metrics for both teams plus source, week, and league-rank provenance.

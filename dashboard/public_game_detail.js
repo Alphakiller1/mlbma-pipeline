@@ -5424,7 +5424,9 @@ function seasonToggle(game) {
 
   var NFL_DVOA_ROWS = [
     ['total_dvoa', 'Total DVOA'], ['offense_dvoa', 'Offense DVOA'],
-    ['defense_dvoa', 'Defense DVOA'], ['special_teams_dvoa', 'Special Teams DVOA'],
+    ['defense_dvoa', 'Defense DVOA'], ['special_teams_dvoa', 'Special Teams DVOA']
+  ];
+  var NFL_DVOA_DETAIL_ROWS = [
     ['pass_offense_dvoa', 'Pass Offense'], ['rush_offense_dvoa', 'Rush Offense'],
     ['pass_defense_dvoa', 'Pass Defense'], ['rush_defense_dvoa', 'Rush Defense']
   ];
@@ -5438,14 +5440,18 @@ function seasonToggle(game) {
 
   function nflDvoaPanel(sport, game, side) {
     var feed = game[side + '_dvoa'] || {};
-    var published = NFL_DVOA_ROWS.some(function (row) {
+    var optional = NFL_DVOA_DETAIL_ROWS.filter(function (row) {
+      return nflDvoaValue(feed[row[0]]) != null;
+    });
+    var displayRows = NFL_DVOA_ROWS.concat(optional);
+    var published = displayRows.some(function (row) {
       return nflDvoaValue(feed[row[0]]) != null;
     });
     var source = feed.source || 'FTN Data';
     var context = published
       ? [feed.season, feed.week != null ? 'Week ' + feed.week : null, source].filter(Boolean).join(' · ')
       : 'Licensed FTN DVOA feed required';
-    var rows = NFL_DVOA_ROWS.map(function (row) {
+    var rows = displayRows.map(function (row) {
       var entry = feed[row[0]];
       var shown = nflDvoaValue(entry);
       var place = entry && typeof entry === 'object' && entry.rank && entry.of
@@ -5468,7 +5474,7 @@ function seasonToggle(game) {
       section('efficiency', 'Unit Matchups', 'Each Offense Above The Defense It Meets',
         nflDuo(nflDrivePanel, sport, game)),
 
-      section('dvoa', 'DVOA', 'Total, Unit And Pass/Run Efficiency From The Licensed FTN Feed',
+      section('dvoa', 'DVOA', 'Total And Unit Efficiency From FTN Team Total DVOA',
         nflDuo(nflDvoaPanel, sport, game)),
 
       section('quarterbacks', 'Quarterbacks', 'Season Line And Splits By Defensive Look',
