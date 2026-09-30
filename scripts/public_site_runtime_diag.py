@@ -379,6 +379,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.goto(base_url.rstrip("/") + detail_url, wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
         check("NFL detail uses team logos", page.locator(".ca-detail-team__logo").count() == 2)
+        check("NFL desk carries the nine evidence tabs",
+              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 9)
         # The desk reads a tab at a time, and where the clubs stack, one club at a time.
         shown = "() => [...document.querySelectorAll('.ca-detail-section')].filter(s => s.offsetParent).map(s => s.id).join(',')"
         check("NFL desk opens on the Units tab alone", page.evaluate(shown) == "efficiency", page.evaluate(shown))
@@ -386,6 +388,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL Passing tab shows quarterbacks, coverage and looks",
               page.evaluate(shown) == "quarterbacks,coverage,looks" and page.url.endswith("#passing"),
               page.evaluate(shown) + " " + page.url)
+        page.locator('a[data-nfl-tab="dvoa"]').click()
+        check("NFL DVOA tab exposes both licensed-feed panels",
+              page.evaluate(shown) == "dvoa"
+              and page.locator("#dvoa .ca-nfl-dvoa-panel").count() == 2)
+        check("NFL DVOA remains honest without a licensed feed",
+              "licensed ftn dvoa feed required" in page.locator("#dvoa").inner_text().lower())
+        page.locator('a[data-nfl-tab="passing"]').click()
         club_panels = "() => [...document.querySelectorAll('#coverage .ca-detail-duo')].filter(d => d.offsetParent).map(d => [...d.children].filter(c => c.offsetParent).length).join(',')"
         check("NFL stacked layout reads one club at a time", page.evaluate(club_panels) == "1",
               page.evaluate(club_panels))
@@ -401,7 +410,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.evaluate("document.querySelector('.ca-detail-stack').setAttribute('data-nfl-tab', 'all')")
         page.evaluate("() => { const r = document.getElementById('radar'); r && r.scrollIntoView(); }")
         page.wait_for_timeout(300)
-        nfl_sections = ("#efficiency", "#quarterbacks", "#coverage", "#looks", "#rushing",
+        nfl_sections = ("#efficiency", "#dvoa", "#quarterbacks", "#coverage", "#looks", "#rushing",
                         "#trenches", "#receivers", "#tendencies", "#availability", "#radar",
                         "#team-context")
         check("NFL detail has factual sections",
@@ -412,7 +421,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL radar draws both phases", nfl_webs == 2, f"webs={nfl_webs}")
         # The NFL desk reads in the MLB table language: every evidence section is
         # an away | home duo of one of the three MLB components.
-        for sid, component in (("#efficiency", ".ca-form-panel"), ("#quarterbacks", ".ca-starter-panel"),
+        for sid, component in (("#efficiency", ".ca-form-panel"), ("#dvoa", ".ca-nfl-dvoa-panel"),
+                               ("#quarterbacks", ".ca-starter-panel"),
                                ("#coverage", ".ca-arsenal-panel"), ("#looks", ".ca-arsenal-panel"),
                                ("#rushing", ".ca-starter-panel"), ("#trenches", ".ca-form-panel"),
                                ("#receivers", ".ca-form-panel"), ("#tendencies", ".ca-arsenal-panel")):
@@ -464,7 +474,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # Every number in the analysis is either graded (tier colour + rank),
         # marked against the league (neutral arrow), tagged as a thin sample, or
         # a plain sample count. A number that is simply grey is a regression.
-        unpilled = page.evaluate("""() => [...document.querySelectorAll('main td.num, main .ca-stat__value')]
+        unpilled = page.evaluate(r"""() => [...document.querySelectorAll('main td.num, main .ca-stat__value')]
           .filter(el => el.offsetParent && /(^|\s)c-(elite|good|mid|weak|poor)(\s|$)/.test(el.className)
             && !el.querySelector('.ca-rank')).length""")
         check("NFL every graded number shows its rank pill", unpilled == 0, f"{unpilled} without a pill")
@@ -507,8 +517,10 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("tr.is-thin").count() == page.locator("tr.is-thin .ca-thin-tag").count())
         check("NFL quarterback looks are read in families",
               page.locator("#quarterbacks tr.ca-split-group").count() >= 4)
+        trench_heads = page.locator("#trenches thead").all_inner_texts()
         check("NFL reads sack rate once, in Unit Matchups",
-              "sack" not in page.locator("#trenches thead").all_inner_texts()[0].lower())
+              bool(trench_heads) and "sack" not in trench_heads[0].lower(),
+              "missing trenches table header" if not trench_heads else trench_heads[0])
         nav_rows = page.locator(".ca-detail-nav").evaluate(
             "el => new Set([...el.children].map(a => Math.round(a.getBoundingClientRect().top))).size")
         check("NFL section nav is a single row", nav_rows == 1, f"rows={nav_rows}")
@@ -567,13 +579,21 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # each unit above the unit it meets, a rank pill on every graded number,
         # no verdict lines, no gap ordering, no dash cells.
         page.wait_for_selector(".ca-nfl-tabs", timeout=timeout_ms)
-        check("CFB desk carries the five tabs",
-              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 5)
-        check("CFB opens on the Units tab alone",
+        check("CFB desk carries the seven evidence tabs",
+              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 7)
+        check("CFB opens on the Units evidence group alone",
               page.evaluate("[...document.querySelectorAll('.ca-detail-section')]"
-                            ".filter(s => s.offsetParent).map(s => s.id).join(',')") == "cfb-units")
+                            ".filter(s => s.offsetParent).map(s => s.id).join(',')") ==
+              "cfb-efficiency,cfb-units,cfb-dvoa")
         check("CFB unit matchups read both directions",
               page.locator("#cfb-units .ca-cfb-panel").count() == 2)
+        check("CFB efficiency carries per-play, pace and play-mix evidence",
+              page.locator("#cfb-efficiency .ca-cfb-panel").count() == 2
+              and "pts/play" in page.locator("#cfb-efficiency").inner_text().lower()
+              and "pass rate" in page.locator("#cfb-efficiency").inner_text().lower())
+        check("CFB DVOA remains honest without a licensed feed",
+              page.locator("#cfb-dvoa .ca-cfb-feed-panel").count() == 2
+              and "Licensed Feed Required" in page.locator("#cfb-dvoa").inner_text())
         cfb_cells = page.evaluate("""() => {
           const tds = [...document.querySelectorAll('.ca-cfb-panel td')];
           const graded = td => /(^|\\s)c-(elite|good|mid|weak|poor)(\\s|$)/.test(td.className);
@@ -596,6 +616,11 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CFB tabs switch to one group",
               page.locator("#cfb-passing.is-tab-on").count() == 1
               and page.locator("#cfb-units.is-tab-on").count() == 0)
+        page.locator("a[data-nfl-tab='trenches']").click()
+        check("CFB trenches pair each line with the front it meets",
+              page.locator("#cfb-trenches.is-tab-on .ca-cfb-panel").count() == 2
+              and "sack%" in page.locator("#cfb-trenches").inner_text().lower()
+              and "rush 1d%" in page.locator("#cfb-trenches").inner_text().lower())
         cfb_text = page.locator("main").inner_text()
         match = PROHIBITED.search(cfb_text)
         check("CFB detail public copy boundary", match is None, match.group(0) if match else "")

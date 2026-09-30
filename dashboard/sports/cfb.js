@@ -175,9 +175,16 @@
   function seasonGames(payload, season) {
     if (!payload || Number(payload.season) !== Number(season)) return [];
     return (payload.games || []).filter(function (game) {
-      return Number(game && game.season) === Number(season) &&
-        (!game.away_form || Number(game.away_form.season) === Number(season)) &&
-        (!game.home_form || Number(game.home_form.season) === Number(season));
+      // chase-analytics' ESPN slate stamps the season on every game/form. The
+      // cfb-model public slate stamps it once at payload level because every
+      // row is built in one point-in-time run. Accept that schema without
+      // weakening the top-level current-season gate.
+      var gameSeason = game && game.season != null ? game.season : payload.season;
+      function formSeason(form) {
+        return !form || form.season == null || Number(form.season) === Number(season);
+      }
+      return Number(gameSeason) === Number(season) &&
+        formSeason(game.away_form) && formSeason(game.home_form);
     });
   }
 
