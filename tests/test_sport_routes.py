@@ -524,6 +524,7 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("['dvoa', 'DVOA', ['dvoa']]", detail)
         self.assertIn("function nflDvoaPanel", detail)
         self.assertIn("special_teams_dvoa", detail)
+        self.assertIn("NFL_DVOA_DETAIL_ROWS.filter", detail)
         self.assertIn("Licensed FTN DVOA feed required", detail)
         # A mix row is usage squares beside a ranked result, with the other
         # club's result in the last column (Pitch Mix's opposing xwOBA).
