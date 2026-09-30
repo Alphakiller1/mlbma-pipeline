@@ -111,6 +111,56 @@ FORM_SPEC = (
      "Penalty yards per game", "low", "pg"),
 )
 
+# Rates ESPN does not publish directly, derived only from the same season and
+# split as FORM_SPEC.  These are the football equivalents the NFL desk uses to
+# describe efficiency, pace and line play.  They are deliberately named for
+# their observable inputs: no derived value is relabelled as DVOA, havoc or
+# another proprietary/charted statistic.
+DERIVED_SPEC = (
+    ("off_points_per_play", "own", "points_per_play",
+     "Points per offensive play", "high", "num"),
+    ("def_points_per_play", "opp", "points_per_play",
+     "Points allowed per defensive play", "low", "num"),
+    ("off_yards_per_play", "own", "yards_per_play",
+     "Yards per offensive play", "high", "num"),
+    ("def_yards_per_play", "opp", "yards_per_play",
+     "Yards allowed per defensive play", "low", "num"),
+    ("off_first_down_rate", "own", "first_down_rate",
+     "First downs per offensive play", "high", "pct"),
+    ("def_first_down_rate", "opp", "first_down_rate",
+     "First downs allowed per defensive play", "low", "pct"),
+    ("off_plays_pg", "own", "plays_per_game",
+     "Offensive plays per game", "neutral", "num"),
+    ("def_plays_pg", "opp", "plays_per_game",
+     "Defensive plays faced per game", "neutral", "num"),
+    ("off_pass_rate", "own", "pass_rate",
+     "Dropback share", "neutral", "pct"),
+    ("def_pass_rate", "opp", "pass_rate",
+     "Opponent dropback share", "neutral", "pct"),
+    ("off_sack_rate", "own", "sack_rate",
+     "Sacks allowed per dropback", "low", "pct"),
+    ("def_sack_rate", "opp", "sack_rate",
+     "Sacks generated per opponent dropback", "high", "pct"),
+    ("off_sack_yards_pg", "own", "sack_yards_per_game",
+     "Sack yards lost per game", "low", "num"),
+    ("def_sack_yards_pg", "opp", "sack_yards_per_game",
+     "Opponent sack yards lost per game", "high", "num"),
+    ("off_rush_attempts_pg", "own", "rush_attempts_per_game",
+     "Rushing attempts per game", "neutral", "num"),
+    ("def_rush_attempts_pg", "opp", "rush_attempts_per_game",
+     "Opponent rushing attempts per game", "neutral", "num"),
+    ("off_rush_first_rate", "own", "rush_first_down_rate",
+     "Rushing first downs per attempt", "high", "pct"),
+    ("def_rush_first_rate", "opp", "rush_first_down_rate",
+     "Rushing first downs allowed per attempt", "low", "pct"),
+    ("off_pass_first_rate", "own", "pass_first_down_rate",
+     "Passing first downs per attempt", "high", "pct"),
+    ("def_pass_first_rate", "opp", "pass_first_down_rate",
+     "Passing first downs allowed per attempt", "low", "pct"),
+    ("def_disruption_rate", "opp", "disruption_rate",
+     "Sacks plus takeaways per defensive play", "high", "pct"),
+)
+
 
 def fetch_json(url: str) -> dict:
     req = urllib.request.Request(url, headers=HEADERS)
@@ -132,6 +182,63 @@ def as_rate(value, fmt: str, games: float | None = None):
             return None
         number = number / games
     return number
+
+
+def _number(team: dict, split: str, category: str, field: str) -> float | None:
+    value = ((team.get(split) or {}).get(category) or {}).get(field)
+    try:
+        return float(value) if value is not None and value != "" else None
+    except (TypeError, ValueError):
+        return None
+
+
+def _ratio(numerator: float | None, denominator: float | None) -> float | None:
+    if numerator is None or denominator is None or denominator <= 0:
+        return None
+    return numerator / denominator
+
+
+def derived_rate(team: dict, split: str, metric: str) -> float | None:
+    """Calculate transparent season-to-date rates from ESPN counting stats."""
+    games = float(team.get("games") or 0)
+    pass_attempts = _number(team, split, "passing", "passingAttempts")
+    sacks = _number(team, split, "passing", "sacks")
+    rush_attempts = _number(team, split, "rushing", "rushingAttempts")
+    dropbacks = None if pass_attempts is None or sacks is None else pass_attempts + sacks
+    plays = None if dropbacks is None or rush_attempts is None else dropbacks + rush_attempts
+
+    if metric == "plays_per_game":
+        return _ratio(plays, games)
+    if metric == "pass_rate":
+        return _ratio(dropbacks, plays)
+    if metric == "sack_rate":
+        return _ratio(sacks, dropbacks)
+    if metric == "sack_yards_per_game":
+        return _ratio(_number(team, split, "passing", "sackYardsLost"), games)
+    if metric == "rush_attempts_per_game":
+        return _ratio(rush_attempts, games)
+    if metric == "yards_per_play":
+        passing = _number(team, split, "passing", "passingYards")
+        rushing = _number(team, split, "rushing", "rushingYards")
+        yards = None if passing is None or rushing is None else passing + rushing
+        return _ratio(yards, plays)
+    if metric == "points_per_play":
+        return _ratio(_number(team, split, "passing", "totalPoints"), plays)
+    if metric == "first_down_rate":
+        return _ratio(_number(team, split, "miscellaneous", "firstDowns"), plays)
+    if metric == "rush_first_down_rate":
+        return _ratio(_number(team, split, "miscellaneous", "firstDownsRushing"), rush_attempts)
+    if metric == "pass_first_down_rate":
+        return _ratio(_number(team, split, "miscellaneous", "firstDownsPassing"), pass_attempts)
+    if metric == "disruption_rate":
+        interceptions = _number(team, split, "passing", "interceptions")
+        # ESPN stores fumble recoveries on the defending team's own/general
+        # line, while sacks and interceptions live in its opponent split.
+        fumbles = _number(team, "own", "general", "fumblesRecovered")
+        if sacks is None or interceptions is None or fumbles is None:
+            return None
+        return _ratio(sacks + interceptions + fumbles, plays)
+    return None
 
 
 def rank(pool: list[float], value: float, better: str) -> int:
@@ -288,6 +395,24 @@ def form_for(team: dict | None, pools: dict[str, list[float]], season: int) -> d
             "of": len(pool),
             "format": "num" if fmt == "pg" else fmt,
         }
+    for key, split, metric, label, better, fmt in DERIVED_SPEC:
+        value = derived_rate(team, split, metric)
+        pool = pools.get(key) or []
+        if value is None:
+            continue
+        entry = {
+            "label": label,
+            "value": round(value, 4),
+            "better": better,
+            "format": fmt,
+        }
+        # Pace and play mix are context, not performance.  Publish them
+        # without a rank so the UI cannot imply that faster or pass-heavier is
+        # inherently better.
+        if better != "neutral" and pool:
+            entry["rank"] = rank(pool, value, better)
+            entry["of"] = len(pool)
+        rates[key] = entry
     if not rates:
         return None
     out = {"rates": rates, "source": "espn", "season": season}
@@ -365,11 +490,17 @@ def main() -> int:
             continue
         seen.add(ident)
         unique.append(entry)
-    pools: dict[str, list[float]] = {spec[0]: [] for spec in FORM_SPEC}
+    pools: dict[str, list[float]] = {
+        spec[0]: [] for spec in FORM_SPEC + DERIVED_SPEC
+    }
     for team in unique:
         for key, split, cat, field, _label, _better, fmt in FORM_SPEC:
             value = as_rate((team[split].get(cat) or {}).get(field), fmt, team.get("games"))
             if value is not None:
+                pools[key].append(value)
+        for key, split, metric, _label, better, _fmt in DERIVED_SPEC:
+            value = derived_rate(team, split, metric)
+            if value is not None and better != "neutral":
                 pools[key].append(value)
     events = event_index(load_espn_events())
     games = [public_game(raw, stats, events, pools, season) for raw in games_in]

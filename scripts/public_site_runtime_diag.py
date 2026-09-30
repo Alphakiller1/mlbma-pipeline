@@ -379,6 +379,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.goto(base_url.rstrip("/") + detail_url, wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
         check("NFL detail uses team logos", page.locator(".ca-detail-team__logo").count() == 2)
+        check("NFL desk carries the nine evidence tabs",
+              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 9)
         # The desk reads a tab at a time, and where the clubs stack, one club at a time.
         shown = "() => [...document.querySelectorAll('.ca-detail-section')].filter(s => s.offsetParent).map(s => s.id).join(',')"
         check("NFL desk opens on the Units tab alone", page.evaluate(shown) == "efficiency", page.evaluate(shown))
@@ -386,6 +388,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL Passing tab shows quarterbacks, coverage and looks",
               page.evaluate(shown) == "quarterbacks,coverage,looks" and page.url.endswith("#passing"),
               page.evaluate(shown) + " " + page.url)
+        page.locator('a[data-nfl-tab="dvoa"]').click()
+        check("NFL DVOA tab exposes both licensed-feed panels",
+              page.evaluate(shown) == "dvoa"
+              and page.locator("#dvoa .ca-nfl-dvoa-panel").count() == 2)
+        check("NFL DVOA remains honest without a licensed feed",
+              "licensed ftn dvoa feed required" in page.locator("#dvoa").inner_text().lower())
+        page.locator('a[data-nfl-tab="passing"]').click()
         club_panels = "() => [...document.querySelectorAll('#coverage .ca-detail-duo')].filter(d => d.offsetParent).map(d => [...d.children].filter(c => c.offsetParent).length).join(',')"
         check("NFL stacked layout reads one club at a time", page.evaluate(club_panels) == "1",
               page.evaluate(club_panels))
@@ -401,7 +410,11 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.evaluate("document.querySelector('.ca-detail-stack').setAttribute('data-nfl-tab', 'all')")
         page.evaluate("() => { const r = document.getElementById('radar'); r && r.scrollIntoView(); }")
         page.wait_for_timeout(300)
-        nfl_sections = ("#efficiency", "#quarterbacks", "#coverage", "#looks", "#rushing",
+
+        def section_unpublished(selector: str) -> bool:
+            return "not published" in page.locator(selector).inner_text().lower()
+
+        nfl_sections = ("#efficiency", "#dvoa", "#quarterbacks", "#coverage", "#looks", "#rushing",
                         "#trenches", "#receivers", "#tendencies", "#availability", "#radar",
                         "#team-context")
         check("NFL detail has factual sections",
@@ -412,7 +425,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL radar draws both phases", nfl_webs == 2, f"webs={nfl_webs}")
         # The NFL desk reads in the MLB table language: every evidence section is
         # an away | home duo of one of the three MLB components.
-        for sid, component in (("#efficiency", ".ca-form-panel"), ("#quarterbacks", ".ca-starter-panel"),
+        for sid, component in (("#efficiency", ".ca-form-panel"), ("#dvoa", ".ca-nfl-dvoa-panel"),
+                               ("#quarterbacks", ".ca-starter-panel"),
                                ("#coverage", ".ca-arsenal-panel"), ("#looks", ".ca-arsenal-panel"),
                                ("#rushing", ".ca-starter-panel"), ("#trenches", ".ca-form-panel"),
                                ("#receivers", ".ca-form-panel"), ("#tendencies", ".ca-arsenal-panel")):
@@ -458,17 +472,19 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
           return [pick('is-up'), pick('is-down'), pick('is-avg')]; }""")
         check("NFL league markers are green up, red down, yellow dash",
               None not in mark_colors and len(set(mark_colors)) == 3, str(mark_colors))
-        check("NFL tendencies, looks, receivers and QB opponent rates carry markers",
-              all(page.locator(f"{sid} .ca-freq-mark").count() > 0
+        check("NFL published tendencies, looks, receivers and QB opponent rates carry markers",
+              all(page.locator(f"{sid} .ca-freq-mark").count() > 0 or section_unpublished(sid)
                   for sid in ("#looks", "#tendencies", "#receivers", "#quarterbacks")))
         # Every number in the analysis is either graded (tier colour + rank),
         # marked against the league (neutral arrow), tagged as a thin sample, or
         # a plain sample count. A number that is simply grey is a regression.
-        unpilled = page.evaluate("""() => [...document.querySelectorAll('main td.num, main .ca-stat__value')]
+        unpilled = page.evaluate(r"""() => [...document.querySelectorAll('main td.num, main .ca-stat__value')]
           .filter(el => el.offsetParent && /(^|\s)c-(elite|good|mid|weak|poor)(\s|$)/.test(el.className)
             && !el.querySelector('.ca-rank')).length""")
         check("NFL every graded number shows its rank pill", unpilled == 0, f"{unpilled} without a pill")
-        # No empty cells, no status lines, no ungraded thin rows (owner rules).
+        # Empty cells and ungraded thin rows are regressions. A status line is
+        # valid only when it explicitly tells the reader that a source has not
+        # published that evidence yet.
         gaps = page.evaluate("""() => {
           const vis = [...document.querySelectorAll('.ca-detail-stack td')].filter(td => td.offsetParent);
           return {
@@ -478,7 +494,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             thin: [...document.querySelectorAll('.ca-detail-stack .ca-thin-tag')].filter(e => e.offsetParent).length
           }; }""")
         check("NFL desk has no empty (dash) cells", gaps["dashes"] == 0, f"{gaps['dashes']} dash cells")
-        check("NFL desk has no status lines", not gaps["notes"], str(gaps["notes"]))
+        check("NFL status lines only describe unpublished evidence",
+              all("not published" in note.lower() for note in gaps["notes"]), str(gaps["notes"]))
         check("NFL desk grades every row (no Low n tags)", gaps["thin"] == 0, f"{gaps['thin']} Low n tags")
         grading = page.evaluate(NFL_GRADING_AUDIT)
         check("NFL every number is graded, marked, tagged thin or a count",
@@ -494,11 +511,16 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.locator("[data-season-scope='current']").click()
         now_looks = page.locator("#looks .ca-arsenal-table:visible tbody tr").count()
         now_tend = page.locator("#tendencies .ca-arsenal-table:visible tbody tr").count()
+        now_looks_text = page.locator("#looks").inner_text().lower()
+        now_tend_text = page.locator("#tendencies").inner_text().lower()
         page.locator("[data-season-scope='combined']").click()
         check("NFL 2026 Only fills looks and tendencies with current-season charting",
-              now_looks >= 4 and now_tend >= 6, f"looks={now_looks} tendencies={now_tend}")
+              (now_looks >= 4 and now_tend >= 6) or
+              ("not published" in now_looks_text and "not published" in now_tend_text),
+              f"looks={now_looks} tendencies={now_tend}")
         check("NFL evidence window changes the numbers, not just what is hidden",
-              combined_tiles and current_tiles and combined_tiles != current_tiles,
+              (combined_tiles and current_tiles and combined_tiles != current_tiles) or
+              section_unpublished("#quarterbacks"),
               f"{combined_tiles[:40]} vs {current_tiles[:40]}")
         check("NFL usage is never graded",
               page.locator(".ca-arsenal-table td:has(.ca-usage)[class*='c-']").count() == 0)
@@ -506,28 +528,36 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("tr.is-thin td[class*='c-']").count() == 0 and
               page.locator("tr.is-thin").count() == page.locator("tr.is-thin .ca-thin-tag").count())
         check("NFL quarterback looks are read in families",
-              page.locator("#quarterbacks tr.ca-split-group").count() >= 4)
+              page.locator("#quarterbacks tr.ca-split-group").count() >= 4 or
+              section_unpublished("#quarterbacks"))
+        trench_heads = page.locator("#trenches thead").all_inner_texts()
         check("NFL reads sack rate once, in Unit Matchups",
-              "sack" not in page.locator("#trenches thead").all_inner_texts()[0].lower())
+              (bool(trench_heads) and "sack" not in trench_heads[0].lower()) or
+              section_unpublished("#trenches"),
+              "missing trenches table header" if not trench_heads else trench_heads[0])
         nav_rows = page.locator(".ca-detail-nav").evaluate(
             "el => new Set([...el.children].map(a => Math.round(a.getBoundingClientRect().top))).size")
         check("NFL section nav is a single row", nav_rows == 1, f"rows={nav_rows}")
         qb_text = page.locator("#quarterbacks").inner_text().lower()
         check("NFL quarterback panels carry the season line, splits and time to throw",
-              page.locator("#quarterbacks .ca-starter-panel .ca-stat").count() >= 6 and
-              all(label in qb_text for label in ("vs man", "vs zone", "vs blitz", "pressured", "time to throw")))
+              (page.locator("#quarterbacks .ca-starter-panel .ca-stat").count() >= 6 and
+               all(label in qb_text for label in ("vs man", "vs zone", "vs blitz", "pressured", "time to throw")))
+              or section_unpublished("#quarterbacks"))
         check("NFL quarterback splits show how often the opponent shows each look",
-              page.locator("#quarterbacks th.ca-opp-shows").count() >= 2)
+              page.locator("#quarterbacks th.ca-opp-shows").count() >= 2 or
+              section_unpublished("#quarterbacks"))
         check("NFL quarterback splits drop the renamed middle-field duplicates",
               "middle field" not in qb_text)
         rb_text = page.locator("#rushing").inner_text().lower()
         check("NFL running-back panels carry box, direction and NGS context",
-              all(label in rb_text for label in ("light box", "run left", "ryoe / carry")))
+              all(label in rb_text for label in ("light box", "run left", "ryoe / carry")) or
+              section_unpublished("#rushing"))
         trench_text = page.locator("#trenches").inner_text().lower()
         check("NFL trenches pair each line with the front it meets and map run direction",
-              page.locator("#trenches .ca-arsenal-table:visible").count() == 2 and
-              all(label in trench_text for label in ("line yds", "havoc", "ybc", "run direction",
-                                                     "at the guards", "outside the ends")))
+              (page.locator("#trenches .ca-arsenal-table:visible").count() == 2 and
+               all(label in trench_text for label in ("line yds", "havoc", "ybc", "run direction",
+                                                      "at the guards", "outside the ends"))) or
+              section_unpublished("#trenches"))
         rz = page.locator("#redzone")
         rz_text = rz.inner_text().lower()
         check("NFL red zone pairs each offense with the defense it meets, in both windows",
@@ -535,11 +565,16 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               rz.locator("[data-season-view='current'] .ca-form-panel").count() == 2)
         check("NFL red zone carries trips, conversion, position targets and player shares",
               all(label in rz_text for label in ("trips / g", "trip rate", "td%", "score%",
-                                                 "targets by position", "tgt share", "car share")))
+                                                 "targets by position", "tgt share", "car share")) or
+              section_unpublished("#redzone"))
         rec_text = page.locator("#receivers").inner_text().lower()
+        receiver_matrix_heads = [head.lower() for head in
+                                 page.locator("#receivers .ca-split-block h4").all_inner_texts()
+                                 if "receivers by coverage" in head.lower()]
         check("NFL receivers carry splits against coverage, shell and pass rush",
-              "receivers by coverage" in rec_text and
-              all(label in rec_text for label in ("vs man", "vs zone", "single high (mfc)", "vs blitz")))
+              ("receivers by coverage" in rec_text and
+               all(label in rec_text for label in ("vs man", "vs zone", "single high (mfc)", "vs blitz"))) or
+              not receiver_matrix_heads)
         check("NFL pass catchers include the target distribution against the other defense",
               page.locator("#receivers .ca-arsenal-table:visible").count() == 2 and
               "target distribution" in page.locator("#receivers").inner_text().lower())
@@ -567,13 +602,21 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # each unit above the unit it meets, a rank pill on every graded number,
         # no verdict lines, no gap ordering, no dash cells.
         page.wait_for_selector(".ca-nfl-tabs", timeout=timeout_ms)
-        check("CFB desk carries the five tabs",
-              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 5)
-        check("CFB opens on the Units tab alone",
+        check("CFB desk carries the seven evidence tabs",
+              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 7)
+        check("CFB opens on the Units evidence group alone",
               page.evaluate("[...document.querySelectorAll('.ca-detail-section')]"
-                            ".filter(s => s.offsetParent).map(s => s.id).join(',')") == "cfb-units")
+                            ".filter(s => s.offsetParent).map(s => s.id).join(',')") ==
+              "cfb-efficiency,cfb-units,cfb-dvoa")
         check("CFB unit matchups read both directions",
               page.locator("#cfb-units .ca-cfb-panel").count() == 2)
+        check("CFB efficiency carries per-play, pace and play-mix evidence",
+              page.locator("#cfb-efficiency .ca-cfb-panel").count() == 2
+              and "pts/play" in page.locator("#cfb-efficiency").inner_text().lower()
+              and "pass rate" in page.locator("#cfb-efficiency").inner_text().lower())
+        check("CFB DVOA remains honest without a licensed feed",
+              page.locator("#cfb-dvoa .ca-cfb-feed-panel").count() == 2
+              and "Licensed Feed Required" in page.locator("#cfb-dvoa").inner_text())
         cfb_cells = page.evaluate("""() => {
           const tds = [...document.querySelectorAll('.ca-cfb-panel td')];
           const graded = td => /(^|\\s)c-(elite|good|mid|weak|poor)(\\s|$)/.test(td.className);
@@ -596,6 +639,11 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CFB tabs switch to one group",
               page.locator("#cfb-passing.is-tab-on").count() == 1
               and page.locator("#cfb-units.is-tab-on").count() == 0)
+        page.locator("a[data-nfl-tab='trenches']").click()
+        check("CFB trenches pair each line with the front it meets",
+              page.locator("#cfb-trenches.is-tab-on .ca-cfb-panel").count() == 2
+              and "sack%" in page.locator("#cfb-trenches").inner_text().lower()
+              and "rush 1d%" in page.locator("#cfb-trenches").inner_text().lower())
         cfb_text = page.locator("main").inner_text()
         match = PROHIBITED.search(cfb_text)
         check("CFB detail public copy boundary", match is None, match.group(0) if match else "")

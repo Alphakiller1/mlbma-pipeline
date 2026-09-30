@@ -105,6 +105,12 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("var CFB_TABS", js)
         self.assertIn("function cfbUnitPanel", js)
         self.assertIn("function cfbSpecialBody", js)
+        self.assertIn("function cfbDvoaBody", js)
+        self.assertIn("'cfb-trenches'", js)
+        self.assertIn("'cfb-situational'", js)
+        self.assertIn("['sack_rate', 'Sack%']", js)
+        self.assertIn("['points_per_play', 'Pts/Play']", js)
+        self.assertIn("Licensed Feed Required", js)
         self.assertIn("host.__deskTabs = sport === 'cfb' ? CFB_TABS : NFL_TABS", js)
         self.assertIn("Matchup Analysis", js)
         self.assertNotIn("function nflScriptLens", js)
@@ -128,7 +134,8 @@ class SportRouteBuilderTests(unittest.TestCase):
         adapter = (ROOT / "dashboard" / "sports" / "cfb.js").read_text(encoding="utf-8")
         self.assertIn("function seasonGames(payload, season)", adapter)
         self.assertIn("boardSeason === currentYear", adapter)
-        self.assertIn("Number(game && game.season) === Number(season)", adapter)
+        self.assertIn("Number(gameSeason) === Number(season)", adapter)
+        self.assertIn("form.season == null", adapter)
         self.assertIn("slate.json", adapter)
         self.assertIn("mergePublic", adapter)
 
@@ -154,6 +161,14 @@ class SportRouteBuilderTests(unittest.TestCase):
                 self.assertIn("def_ppg", rates)
                 self.assertIn("off_third_down", rates)
                 self.assertIn("def_third_down", rates)
+                self.assertIn("off_points_per_play", rates)
+                self.assertIn("def_yards_per_play", rates)
+                self.assertIn("off_sack_rate", rates)
+                self.assertIn("def_sack_rate", rates)
+                self.assertIn("off_rush_first_rate", rates)
+                self.assertIn("def_rush_first_rate", rates)
+                self.assertNotIn("rank", rates["off_plays_pg"])
+                self.assertNotIn("rank", rates["off_pass_rate"])
                 self.assertFalse({"off_ppa", "off_successRate", "off_explosiveness",
                                   "off_stuffRate"} & set(rates))
                 self.assertEqual(form.get("source"), "espn")
@@ -502,10 +517,14 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn('<div class="ca-detail-duo ca-nfl-duo">', nfl)
         # The pairs stack before a table must scroll, keeping the other club's column on screen.
         self.assertRegex(css, r"@media \(max-width: 1379px\) \{\s+\.ca-nfl-duo \{ grid-template-columns: minmax\(0, 1fr\); \}")
-        for section_id in ("efficiency", "quarterbacks", "coverage", "looks", "rushing",
+        for section_id in ("efficiency", "dvoa", "quarterbacks", "coverage", "looks", "rushing",
                            "trenches", "receivers", "redzone", "tendencies", "availability", "radar",
                            "team-context"):
             self.assertIn("section('" + section_id + "'", detail)
+        self.assertIn("['dvoa', 'DVOA', ['dvoa']]", detail)
+        self.assertIn("function nflDvoaPanel", detail)
+        self.assertIn("special_teams_dvoa", detail)
+        self.assertIn("Licensed FTN DVOA feed required", detail)
         # A mix row is usage squares beside a ranked result, with the other
         # club's result in the last column (Pitch Mix's opposing xwOBA).
         self.assertIn("usageSquares(pct)", nfl)
@@ -555,6 +574,8 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("away_lineups", adapter)
         self.assertIn("away_player_scheme", adapter)
         self.assertIn("away_line_stats", adapter)
+        self.assertIn("away_dvoa", adapter)
+        self.assertIn("home_dvoa", adapter)
         self.assertIn("kickoffTime(game.kickoff_utc)", detail)
         self.assertIn("home_lineups", adapter)
         self.assertIn(".ca-lineup-board", css)

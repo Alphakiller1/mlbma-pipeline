@@ -5302,6 +5302,7 @@ function seasonToggle(game) {
      shows; a section id in the address opens the tab that holds it. */
   var NFL_TABS = [
     ['units', 'Units', ['efficiency']],
+    ['dvoa', 'DVOA', ['dvoa']],
     ['passing', 'Passing', ['quarterbacks', 'coverage', 'looks']],
     ['rushing', 'Rushing', ['run-game', 'trenches', 'rushing']],
     ['receiving', 'Receiving', ['receivers']],
@@ -5327,8 +5328,11 @@ function seasonToggle(game) {
   function nflClubSwitch(sport, game) {
     return '<div class="ca-nfl-club" role="group" aria-label="Club in view">' +
       ['away', 'home'].map(function (side) {
+        var full = sport === 'cfb' ? cfbName(sport, game, side) : nflNick(sport, game, side);
+        var short = sport === 'cfb' ? (game[side] || full) : full;
         return '<button type="button" class="ca-nfl-club__btn" data-club="' + side + '" aria-pressed="false">' +
-          esc(sport === 'cfb' ? cfbName(sport, game, side) : nflNick(sport, game, side)) + '</button>';
+          '<span class="ca-club-label-full">' + esc(full) + '</span>' +
+          '<span class="ca-club-label-short">' + esc(short) + '</span></button>';
       }).join('') +
       '<button type="button" class="ca-nfl-club__btn" data-club="both" aria-pressed="false">Both</button></div>';
   }
@@ -5418,11 +5422,54 @@ function seasonToggle(game) {
     nflSetClub(host, narrow ? 'away' : 'both');
   }
 
+  var NFL_DVOA_ROWS = [
+    ['total_dvoa', 'Total DVOA'], ['offense_dvoa', 'Offense DVOA'],
+    ['defense_dvoa', 'Defense DVOA'], ['special_teams_dvoa', 'Special Teams DVOA'],
+    ['pass_offense_dvoa', 'Pass Offense'], ['rush_offense_dvoa', 'Rush Offense'],
+    ['pass_defense_dvoa', 'Pass Defense'], ['rush_defense_dvoa', 'Rush Defense']
+  ];
+
+  function nflDvoaValue(raw) {
+    var value = raw && typeof raw === 'object' ? raw.value : raw;
+    var n = Number(value);
+    if (value == null || !isFinite(n)) return null;
+    return (n > 0 ? '+' : '') + (n * 100).toFixed(1) + '%';
+  }
+
+  function nflDvoaPanel(sport, game, side) {
+    var feed = game[side + '_dvoa'] || {};
+    var published = NFL_DVOA_ROWS.some(function (row) {
+      return nflDvoaValue(feed[row[0]]) != null;
+    });
+    var source = feed.source || 'FTN Data';
+    var context = published
+      ? [feed.season, feed.week != null ? 'Week ' + feed.week : null, source].filter(Boolean).join(' · ')
+      : 'Licensed FTN DVOA feed required';
+    var rows = NFL_DVOA_ROWS.map(function (row) {
+      var entry = feed[row[0]];
+      var shown = nflDvoaValue(entry);
+      var place = entry && typeof entry === 'object' && entry.rank && entry.of
+        ? { rank: entry.rank, of: entry.of } : null;
+      var tone = place ? rankTone(place.rank, place.of) : '';
+      return '<tr><td>' + esc(row[1]) + '</td><td class="num' + (tone ? ' ' + tone : '') + '">' +
+        (shown == null ? '<span class="ca-vs-none">Not Published</span>' : esc(shown)) +
+        (place ? rankBadge(place) : '') + '</td><td class="num ca-vs-none">' +
+        (place ? place.rank + ordinal(place.rank) + ' of ' + place.of :
+          (published ? 'Rank Not Published' : 'Licensed Feed Required')) + '</td></tr>';
+    });
+    return '<section class="ca-form-panel ca-nfl-dvoa-panel"><h3>' +
+      esc(fullName(sport, game, side) + ' DVOA') + '</h3><p class="ca-lineup-context">' +
+      esc(context) + '</p>' + nflSplitTable(['DVOA', 'League Rank'], rows, 'Metric') + '</section>';
+  }
+
   function nflSections(sport, game, games) {
     nflPool = nflLeaguePool(games);
     return [
       section('efficiency', 'Unit Matchups', 'Each Offense Above The Defense It Meets',
         nflDuo(nflDrivePanel, sport, game)),
+
+      section('dvoa', 'DVOA', 'Total, Unit And Pass/Run Efficiency From The Licensed FTN Feed',
+        nflDuo(nflDvoaPanel, sport, game)),
 
       section('quarterbacks', 'Quarterbacks', 'Season Line And Splits By Defensive Look',
         nflDuo(nflBackPanel, sport, game, 'QB')),
@@ -5485,25 +5532,38 @@ function seasonToggle(game) {
    * no explanations (owner rules, 2026-09-26).
    * ------------------------------------------------------------------ */
   var CFB_TABS = [
-    ['units', 'Units', ['cfb-units']],
+    ['units', 'Units', ['cfb-efficiency', 'cfb-units', 'cfb-dvoa']],
     ['passing', 'Passing', ['cfb-passing']],
     ['rushing', 'Rushing', ['cfb-rushing']],
+    ['trenches', 'Trenches', ['cfb-trenches']],
+    ['situational', 'Situational', ['cfb-situational']],
     ['special', 'Special Teams', ['cfb-special']],
     ['profile', 'Profile', ['radar', 'recent', 'team-context']]
   ];
 
   // [rate suffix shared by off_ / def_, column header]
   var CFB_UNIT_COLUMNS = {
+    efficiency: [['points_per_play', 'Pts/Play'], ['yards_per_play', 'Yds/Play'],
+      ['first_down_rate', '1st Down%'], ['plays_pg', 'Plays/G'], ['pass_rate', 'Pass Rate']],
     units: [['ppg', 'Points/G'], ['ypg', 'Yards/G'], ['third_down', '3rd Down'],
       ['fourth', '4th Down'], ['first_downs', '1st Downs/G']],
     passing: [['pass_ypg', 'Pass Yds/G'], ['ypa', 'Yds/Att'], ['comp', 'Comp%'],
       ['qbr', 'Rating'], ['pass_td', 'Pass TD/G'], ['int', 'INT/G'], ['sacks', 'Sacks/G']],
-    rushing: [['rush_ypg', 'Rush Yds/G'], ['ypc', 'Yds/Rush'], ['rush_td', 'Rush TD/G']]
+    rushing: [['rush_ypg', 'Rush Yds/G'], ['ypc', 'Yds/Rush'], ['rush_td', 'Rush TD/G']],
+    trenches: [['sack_rate', 'Sack%'], ['sack_yards_pg', 'Sack Yds/G'],
+      ['sacks', 'Sacks/G'], ['rush_attempts_pg', 'Rush Att/G'], ['ypc', 'Yds/Rush'],
+      ['rush_first_rate', 'Rush 1D%']],
+    situational: [['third_down', '3rd Down'], ['fourth', '4th Down'],
+      ['first_down_rate', '1st Down%'], ['pass_first_rate', 'Pass 1D%'],
+      ['rush_first_rate', 'Rush 1D%'], ['plays_pg', 'Plays/G'], ['pass_rate', 'Pass Rate']]
   };
   var CFB_UNIT_NAMES = {
+    efficiency: ['Offensive Efficiency', 'Defensive Efficiency'],
     units: ['Offense', 'Defense'],
     passing: ['Passing Offense', 'Pass Defense'],
-    rushing: ['Rushing Offense', 'Run Defense']
+    rushing: ['Rushing Offense', 'Run Defense'],
+    trenches: ['Offensive Line', 'Defensive Front'],
+    situational: ['Offense', 'Defense']
   };
   var CFB_SPECIAL = [['off_fg', 'FG%'], ['off_punt', 'Net Punt'], ['off_kr', 'KR Avg'],
     ['off_pr', 'PR Avg'], ['off_pen', 'Pen Yds/G']];
@@ -5584,7 +5644,7 @@ function seasonToggle(game) {
       nflSplitTable(cols.map(function (c) { return c[1]; }), [
         row(offName + ' ' + names[0], off, 'off_'),
         row(defName + ' ' + names[1], def, 'def_')
-      ]) + (group === 'units' ? cfbModelEfficiency(sport, game, offSide) : '') + '</section>';
+      ]) + (group === 'efficiency' ? cfbModelEfficiency(sport, game, offSide) : '') + '</section>';
   }
 
   /* The CFB model's own inputs: opponent-adjusted per-play efficiency from
@@ -5633,14 +5693,40 @@ function seasonToggle(game) {
         [row('away', away), row('home', home)], 'Club') + '</section></div>';
   }
 
+  function cfbDvoaBody(sport, game) {
+    function panel(side) {
+      var name = cfbName(sport, game, side);
+      return '<section class="ca-form-panel ca-cfb-panel ca-cfb-feed-panel"><h3>' +
+        esc(name + ' DVOA') + '</h3>' + nflSplitTable(['Value', 'Feed'], [
+          '<tr><td>Offense DVOA</td><td class="num ca-vs-none">Not Published</td>' +
+            '<td class="ca-vs-none">Licensed Feed Required</td></tr>',
+          '<tr><td>Defense DVOA</td><td class="num ca-vs-none">Not Published</td>' +
+            '<td class="ca-vs-none">Licensed Feed Required</td></tr>',
+          '<tr><td>Special Teams DVOA</td><td class="num ca-vs-none">Not Published</td>' +
+            '<td class="ca-vs-none">Licensed Feed Required</td></tr>'
+        ], 'Unit') + '</section>';
+    }
+    return '<div class="ca-detail-duo ca-nfl-duo">' + panel('away') + panel('home') + '</div>';
+  }
+
   function cfbSections(sport, game) {
     return [
+      section('cfb-efficiency', 'Efficiency And Pace', 'Per-Play Production, Possession Rate And Tempo',
+        nflDuo(cfbUnitPanel, sport, game, 'efficiency')),
       section('cfb-units', 'Unit Matchups', 'Each Offense Above The Defense It Meets',
         nflDuo(cfbUnitPanel, sport, game, 'units')),
+      section('cfb-dvoa', 'DVOA Feed Status', 'Licensed Opponent-Adjusted Efficiency',
+        cfbDvoaBody(sport, game)),
       section('cfb-passing', 'Passing', 'Each Passing Offense Above The Pass Defense It Meets',
         nflDuo(cfbUnitPanel, sport, game, 'passing')),
       section('cfb-rushing', 'Rushing', 'Each Run Game Above The Run Defense It Meets',
         nflDuo(cfbUnitPanel, sport, game, 'rushing')),
+      section('cfb-trenches', 'Offensive Line Vs Defensive Front',
+        'Protection, Sack Cost, Run Volume And Rushing Conversion',
+        nflDuo(cfbUnitPanel, sport, game, 'trenches')),
+      section('cfb-situational', 'Situational Efficiency',
+        'Down Conversion, First Downs, Pace And Play Mix',
+        nflDuo(cfbUnitPanel, sport, game, 'situational')),
       section('cfb-special', 'Special Teams', 'Kicking, Returns And Penalties',
         cfbSpecialBody(sport, game)),
 

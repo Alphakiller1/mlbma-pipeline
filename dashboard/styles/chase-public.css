@@ -5326,6 +5326,7 @@ body[data-sport="nfl"] .ca-detail-nav {
   box-shadow: inset 0 0 0 1px var(--accent-strong);
 }
 .ca-nfl-club__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.ca-club-label-short { display: none; }
 
 /* The two clubs sit side by side from 1380px; narrower, they stack, so the
    switch appears and the chosen club's panel is the one on screen. */
@@ -5355,6 +5356,9 @@ body[data-sport="nfl"] .ca-detail-nav {
 /* Phone tables: the row label stays pinned while the figures scroll, and a
    rank pill sits under its figure. */
 @media (max-width: 560px) {
+  [data-sport="cfb"] .ca-nfl-club__btn { padding-inline: var(--space-2); }
+  [data-sport="cfb"] .ca-club-label-full { display: none; }
+  [data-sport="cfb"] .ca-club-label-short { display: inline; }
   .ca-nfl-split thead th:first-child,
   .ca-nfl-split tbody td:first-child,
   .ca-nfl-mix thead th:first-child,
@@ -5536,12 +5540,17 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-cfb-panel .ca-lineup-table.ca-split-table thead th:first-child { width: 14rem; }
 .ca-cfb-panel .ca-lineup-table td:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ca-cfb-panel td[colspan] { text-align: center; }
-/* Up to seven graded columns with pills: the CFB unit panels stack full width
+/* Up to seven columns with pills: the CFB unit panels stack full width
    below 1700px (the club switch reads one school at a time under 1380px, as
    on the NFL desk) and values never wrap under their pill. */
 .ca-cfb-panel td.num { white-space: nowrap; }
+.ca-cfb-feed-panel .ca-vs-none { color: var(--text-meta); }
 @media (max-width: 1699px) {
+  #cfb-efficiency .ca-detail-duo,
   #cfb-units .ca-detail-duo,
+  #cfb-dvoa .ca-detail-duo,
   #cfb-passing .ca-detail-duo,
-  #cfb-rushing .ca-detail-duo { grid-template-columns: minmax(0, 1fr); }
+  #cfb-rushing .ca-detail-duo,
+  #cfb-trenches .ca-detail-duo,
+  #cfb-situational .ca-detail-duo { grid-template-columns: minmax(0, 1fr); }
 }
