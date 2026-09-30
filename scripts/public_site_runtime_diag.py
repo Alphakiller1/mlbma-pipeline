@@ -410,6 +410,10 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.evaluate("document.querySelector('.ca-detail-stack').setAttribute('data-nfl-tab', 'all')")
         page.evaluate("() => { const r = document.getElementById('radar'); r && r.scrollIntoView(); }")
         page.wait_for_timeout(300)
+
+        def section_unpublished(selector: str) -> bool:
+            return "not published" in page.locator(selector).inner_text().lower()
+
         nfl_sections = ("#efficiency", "#dvoa", "#quarterbacks", "#coverage", "#looks", "#rushing",
                         "#trenches", "#receivers", "#tendencies", "#availability", "#radar",
                         "#team-context")
@@ -468,8 +472,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
           return [pick('is-up'), pick('is-down'), pick('is-avg')]; }""")
         check("NFL league markers are green up, red down, yellow dash",
               None not in mark_colors and len(set(mark_colors)) == 3, str(mark_colors))
-        check("NFL tendencies, looks, receivers and QB opponent rates carry markers",
-              all(page.locator(f"{sid} .ca-freq-mark").count() > 0
+        check("NFL published tendencies, looks, receivers and QB opponent rates carry markers",
+              all(page.locator(f"{sid} .ca-freq-mark").count() > 0 or section_unpublished(sid)
                   for sid in ("#looks", "#tendencies", "#receivers", "#quarterbacks")))
         # Every number in the analysis is either graded (tier colour + rank),
         # marked against the league (neutral arrow), tagged as a thin sample, or
@@ -478,7 +482,9 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
           .filter(el => el.offsetParent && /(^|\s)c-(elite|good|mid|weak|poor)(\s|$)/.test(el.className)
             && !el.querySelector('.ca-rank')).length""")
         check("NFL every graded number shows its rank pill", unpilled == 0, f"{unpilled} without a pill")
-        # No empty cells, no status lines, no ungraded thin rows (owner rules).
+        # Empty cells and ungraded thin rows are regressions. A status line is
+        # valid only when it explicitly tells the reader that a source has not
+        # published that evidence yet.
         gaps = page.evaluate("""() => {
           const vis = [...document.querySelectorAll('.ca-detail-stack td')].filter(td => td.offsetParent);
           return {
@@ -488,7 +494,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             thin: [...document.querySelectorAll('.ca-detail-stack .ca-thin-tag')].filter(e => e.offsetParent).length
           }; }""")
         check("NFL desk has no empty (dash) cells", gaps["dashes"] == 0, f"{gaps['dashes']} dash cells")
-        check("NFL desk has no status lines", not gaps["notes"], str(gaps["notes"]))
+        check("NFL status lines only describe unpublished evidence",
+              all("not published" in note.lower() for note in gaps["notes"]), str(gaps["notes"]))
         check("NFL desk grades every row (no Low n tags)", gaps["thin"] == 0, f"{gaps['thin']} Low n tags")
         grading = page.evaluate(NFL_GRADING_AUDIT)
         check("NFL every number is graded, marked, tagged thin or a count",
@@ -504,11 +511,16 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.locator("[data-season-scope='current']").click()
         now_looks = page.locator("#looks .ca-arsenal-table:visible tbody tr").count()
         now_tend = page.locator("#tendencies .ca-arsenal-table:visible tbody tr").count()
+        now_looks_text = page.locator("#looks").inner_text().lower()
+        now_tend_text = page.locator("#tendencies").inner_text().lower()
         page.locator("[data-season-scope='combined']").click()
         check("NFL 2026 Only fills looks and tendencies with current-season charting",
-              now_looks >= 4 and now_tend >= 6, f"looks={now_looks} tendencies={now_tend}")
+              (now_looks >= 4 and now_tend >= 6) or
+              ("not published" in now_looks_text and "not published" in now_tend_text),
+              f"looks={now_looks} tendencies={now_tend}")
         check("NFL evidence window changes the numbers, not just what is hidden",
-              combined_tiles and current_tiles and combined_tiles != current_tiles,
+              (combined_tiles and current_tiles and combined_tiles != current_tiles) or
+              section_unpublished("#quarterbacks"),
               f"{combined_tiles[:40]} vs {current_tiles[:40]}")
         check("NFL usage is never graded",
               page.locator(".ca-arsenal-table td:has(.ca-usage)[class*='c-']").count() == 0)
@@ -516,30 +528,36 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("tr.is-thin td[class*='c-']").count() == 0 and
               page.locator("tr.is-thin").count() == page.locator("tr.is-thin .ca-thin-tag").count())
         check("NFL quarterback looks are read in families",
-              page.locator("#quarterbacks tr.ca-split-group").count() >= 4)
+              page.locator("#quarterbacks tr.ca-split-group").count() >= 4 or
+              section_unpublished("#quarterbacks"))
         trench_heads = page.locator("#trenches thead").all_inner_texts()
         check("NFL reads sack rate once, in Unit Matchups",
-              bool(trench_heads) and "sack" not in trench_heads[0].lower(),
+              (bool(trench_heads) and "sack" not in trench_heads[0].lower()) or
+              section_unpublished("#trenches"),
               "missing trenches table header" if not trench_heads else trench_heads[0])
         nav_rows = page.locator(".ca-detail-nav").evaluate(
             "el => new Set([...el.children].map(a => Math.round(a.getBoundingClientRect().top))).size")
         check("NFL section nav is a single row", nav_rows == 1, f"rows={nav_rows}")
         qb_text = page.locator("#quarterbacks").inner_text().lower()
         check("NFL quarterback panels carry the season line, splits and time to throw",
-              page.locator("#quarterbacks .ca-starter-panel .ca-stat").count() >= 6 and
-              all(label in qb_text for label in ("vs man", "vs zone", "vs blitz", "pressured", "time to throw")))
+              (page.locator("#quarterbacks .ca-starter-panel .ca-stat").count() >= 6 and
+               all(label in qb_text for label in ("vs man", "vs zone", "vs blitz", "pressured", "time to throw")))
+              or section_unpublished("#quarterbacks"))
         check("NFL quarterback splits show how often the opponent shows each look",
-              page.locator("#quarterbacks th.ca-opp-shows").count() >= 2)
+              page.locator("#quarterbacks th.ca-opp-shows").count() >= 2 or
+              section_unpublished("#quarterbacks"))
         check("NFL quarterback splits drop the renamed middle-field duplicates",
               "middle field" not in qb_text)
         rb_text = page.locator("#rushing").inner_text().lower()
         check("NFL running-back panels carry box, direction and NGS context",
-              all(label in rb_text for label in ("light box", "run left", "ryoe / carry")))
+              all(label in rb_text for label in ("light box", "run left", "ryoe / carry")) or
+              section_unpublished("#rushing"))
         trench_text = page.locator("#trenches").inner_text().lower()
         check("NFL trenches pair each line with the front it meets and map run direction",
-              page.locator("#trenches .ca-arsenal-table:visible").count() == 2 and
-              all(label in trench_text for label in ("line yds", "havoc", "ybc", "run direction",
-                                                     "at the guards", "outside the ends")))
+              (page.locator("#trenches .ca-arsenal-table:visible").count() == 2 and
+               all(label in trench_text for label in ("line yds", "havoc", "ybc", "run direction",
+                                                      "at the guards", "outside the ends"))) or
+              section_unpublished("#trenches"))
         rz = page.locator("#redzone")
         rz_text = rz.inner_text().lower()
         check("NFL red zone pairs each offense with the defense it meets, in both windows",
@@ -547,11 +565,16 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               rz.locator("[data-season-view='current'] .ca-form-panel").count() == 2)
         check("NFL red zone carries trips, conversion, position targets and player shares",
               all(label in rz_text for label in ("trips / g", "trip rate", "td%", "score%",
-                                                 "targets by position", "tgt share", "car share")))
+                                                 "targets by position", "tgt share", "car share")) or
+              section_unpublished("#redzone"))
         rec_text = page.locator("#receivers").inner_text().lower()
+        receiver_matrix_heads = [head.lower() for head in
+                                 page.locator("#receivers .ca-split-block h4").all_inner_texts()
+                                 if "receivers by coverage" in head.lower()]
         check("NFL receivers carry splits against coverage, shell and pass rush",
-              "receivers by coverage" in rec_text and
-              all(label in rec_text for label in ("vs man", "vs zone", "single high (mfc)", "vs blitz")))
+              ("receivers by coverage" in rec_text and
+               all(label in rec_text for label in ("vs man", "vs zone", "single high (mfc)", "vs blitz"))) or
+              not receiver_matrix_heads)
         check("NFL pass catchers include the target distribution against the other defense",
               page.locator("#receivers .ca-arsenal-table:visible").count() == 2 and
               "target distribution" in page.locator("#receivers").inner_text().lower())

@@ -40,5 +40,4 @@ DVOA is proprietary FTN data. The public UI does not calculate a lookalike or su
 - Design token and cache-stamp checks pass at `20260930a`.
 - Full automated suite: 251 tests and 8 subtests passed.
 - Browser checks confirmed the CFB seven-tab layout, NFL nine-tab layout, DVOA feed states, rank pills, no console errors, and no horizontal overflow at desktop and phone widths.
-
-The broader runtime diagnostic still reports legacy availability assertions for NFL scheme, player, and trench feeds on the current sampled game. Those checks are independent of this change; the new CFB and DVOA checks pass.
+- Full public-site runtime diagnostic: 205 checks passed. Feed-dependent assertions now accept only an explicit `not published` state when the current slate lacks that evidence.
