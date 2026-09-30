@@ -86,7 +86,7 @@ class SlatePublishGuardTests(unittest.TestCase):
     """A slate with every fixture listed and no evidence behind it must not
     overwrite one that has it - and a normal day must still publish."""
 
-    def _slate(self, games, scheme=True, form=True, lineup=False):
+    def _slate(self, games, scheme=True, form=True, lineup=False, run_game=True):
         out = {"games": []}
         for i in range(games):
             game = {"id": i}
@@ -95,6 +95,8 @@ class SlatePublishGuardTests(unittest.TestCase):
                 game["home_scheme"] = {"offense": {}}
             if form:
                 game["away_form"] = {"off_epa": {}}
+            if run_game:
+                game["away_run_game"] = {"current": {"offense": {"carries": 10}}}
             if lineup:
                 game["away_lineup"] = [{"id": 1}]
             out["games"].append(game)
@@ -118,6 +120,13 @@ class SlatePublishGuardTests(unittest.TestCase):
         from outputs.publish_public_slate import _lost_evidence
         published = self._write(self._slate(16))
         self.assertIsNone(_lost_evidence(self._slate(13), published))
+
+    def test_a_slate_that_lost_all_run_game_data_is_refused(self):
+        from outputs.publish_public_slate import _lost_evidence
+        published = self._write(self._slate(16))
+        reason = _lost_evidence(self._slate(16, run_game=False), published)
+        self.assertIsNotNone(reason)
+        self.assertIn("run_game", reason)
 
     def test_lineups_arriving_late_are_not_treated_as_a_loss(self):
         """MLB lineups are posted through the afternoon; a morning slate without

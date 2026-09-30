@@ -556,6 +556,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL quarterback splits drop the renamed middle-field duplicates",
               "middle field" not in qb_text)
         rb_text = page.locator("#rushing").inner_text().lower()
+        run_game_text = page.locator("#run-game").inner_text().lower()
+        check("NFL run-game unit profiles and ball carriers are populated",
+              page.locator("#run-game .ca-form-panel").count() >= 2
+              and page.locator("#run-game tbody tr").count() >= 8
+              and "run game figures are not published" not in run_game_text
+              and all(label in run_game_text for label in
+                      ("yds/g", "epa/car", "stuffed", "ball carriers")))
         check("NFL running-back panels carry box, direction and NGS context",
               all(label in rb_text for label in ("light box", "run left", "ryoe / carry")) or
               section_unpublished("#rushing"))
@@ -656,6 +663,16 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("#cfb-passing.is-tab-on").count() == 1
               and page.locator("#cfb-units.is-tab-on").count() == 0)
         page.locator("a[data-nfl-tab='coverage']").click()
+        scheme_text = page.locator("#cfb-scheme").inner_text().lower()
+        check("CFB coverage tab publishes both scheme profiles",
+              page.locator("#cfb-scheme.is-tab-on .ca-cfb-scheme-panel").count() == 2
+              and all(label in scheme_text for label in (
+                  "offensive family", "defensive front", "coverage leaning",
+                  "pressure profile", "attack vs man", "attack vs zone",
+                  "versus pressure")))
+        check("CFB scheme source states the man-zone measurement boundary",
+              "deep metric analytics" in scheme_text
+              and "actual man/zone snap rates unavailable" in scheme_text)
         coverage_text = page.locator("#cfb-coverage").inner_text().lower()
         check("CFB coverage reads both matchup directions",
               page.locator("#cfb-coverage.is-tab-on .ca-cfb-panel").count() == 2)

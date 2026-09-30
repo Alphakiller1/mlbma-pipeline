@@ -5541,7 +5541,7 @@ function seasonToggle(game) {
   var CFB_TABS = [
     ['units', 'Units', ['cfb-efficiency', 'cfb-units', 'cfb-dvoa']],
     ['passing', 'Passing', ['cfb-passing']],
-    ['coverage', 'Coverage', ['cfb-coverage']],
+    ['coverage', 'Coverage', ['cfb-scheme', 'cfb-coverage']],
     ['rushing', 'Rushing', ['cfb-rushing']],
     ['trenches', 'Trenches', ['cfb-trenches']],
     ['situational', 'Situational', ['cfb-situational']],
@@ -5713,6 +5713,46 @@ function seasonToggle(game) {
       cfbUnitPanel(sport, game, 'home', 'coverage') + '</div>';
   }
 
+  function cfbSchemeBody(sport, game) {
+    function textRow(label, value) {
+      return value ? '<tr><td>' + esc(label) + '</td><td>' + esc(value) + '</td></tr>' : '';
+    }
+    function panel(side) {
+      var profile = game[side + '_scheme_profile'] || {};
+      var offense = profile.offense_scheme || {}, defense = profile.defense_scheme || {};
+      var plan = profile.matchup_plan || {};
+      var head = '<section class="ca-form-panel ca-cfb-panel ca-cfb-scheme-panel"><h3>' +
+        esc(cfbName(sport, game, side) + ' Scheme Profile') + '</h3>';
+      if (!Object.keys(profile).length) {
+        return head + pending('Scheme profile is not published for this matchup.') + '</section>';
+      }
+      var context = [profile.season, profile.source,
+        profile.metric_season ? 'Metric Season ' + profile.metric_season : null,
+        profile.method].filter(Boolean).join(' · ');
+      var rows = [
+        textRow('Offensive Family', offense.family),
+        textRow('Pass Tendency', offense.tendency),
+        textRow('Competitive-Down Pass Rate', offense.competitive_down_pass_rate == null ? null :
+          (Number(offense.competitive_down_pass_rate) * 100).toFixed(1) + '%'),
+        textRow('Defensive Front', defense.front),
+        textRow('Coverage Leaning', defense.coverage_leaning),
+        textRow('Pressure Profile', defense.pressure_profile),
+        textRow('Expected Play Caller', plan.expected_play_caller)
+      ].filter(Boolean);
+      var planRows = [
+        textRow('Attack Vs Man', plan.attack_vs_man),
+        textRow('Attack Vs Zone', plan.attack_vs_zone),
+        textRow('Versus Pressure', plan.versus_pressure),
+        textRow('Primary Failure Mode', plan.primary_failure_mode)
+      ].filter(Boolean);
+      return head + '<p class="ca-lineup-context">' + esc(context) + '</p>' +
+        nflSplitTable(['Profile'], rows, 'Layer') +
+        (planRows.length ? '<div class="ca-split-block"><h4>Passing Matchup Plan</h4>' +
+          nflSplitTable(['Read'], planRows, 'Situation') + '</div>' : '') + '</section>';
+    }
+    return '<div class="ca-detail-duo ca-nfl-duo">' + panel('away') + panel('home') + '</div>';
+  }
+
   function cfbDvoaBody(sport, game) {
     var rows = [
       ['overall', 'Overall SP+'], ['offense', 'Offense SP+'],
@@ -5757,6 +5797,9 @@ function seasonToggle(game) {
         cfbDvoaBody(sport, game)),
       section('cfb-passing', 'Passing', 'Each Passing Offense Above The Pass Defense It Meets',
         nflDuo(cfbUnitPanel, sport, game, 'passing')),
+      section('cfb-scheme', 'Coverage And Scheme',
+        'Offensive Family, Defensive Front, Coverage Lean And Pressure Plan',
+        cfbSchemeBody(sport, game)),
       section('cfb-coverage', 'Coverage Outcomes',
         'Completion, Depth, Scoring, Ball Production And Pressure',
         cfbCoverageBody(sport, game)),

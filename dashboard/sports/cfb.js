@@ -130,6 +130,8 @@
       }
       var adjusted = pub[side + '_adjusted_efficiency'];
       if (adjusted) mapped[side + '_adjusted_efficiency'] = adjusted;
+      var scheme = pub[side + '_scheme_profile'];
+      if (scheme) mapped[side + '_scheme_profile'] = scheme;
     });
     mapped.away_record = keep(pub.away_record, mapped.away_record);
     mapped.home_record = keep(pub.home_record, mapped.home_record);

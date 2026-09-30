@@ -10,7 +10,9 @@ from __future__ import annotations
 import json
 import re
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
+from html import unescape
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -26,6 +28,10 @@ STATS_URL = (
 )
 SCOREBOARD_URL = "https://cdn.espn.com/core/college-football/scoreboard?xhr=1&limit=300"
 SP_PLUS_URL = "https://cfbupdate.com/sp-ratings"
+SCHEME_WEEK_URL = (
+    "https://deepmetricanalytics.com/college-football/{season}/scheme-matchups/week-{week}"
+)
+SCHEME_ORIGIN = "https://deepmetricanalytics.com"
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -308,6 +314,109 @@ def adjusted_for(team: dict | None, school: str, ratings: dict[str, dict]) -> di
     return ratings.get("name:" + normalize_school(school))
 
 
+def _clean_markup(value: str) -> str:
+    return " ".join(unescape(re.sub(r"<[^>]+>", " ", value or "")).split())
+
+
+def parse_scheme_matchup(page: str, season: int) -> dict[str, dict]:
+    """Parse one public CFB scheme matchup into two clearly sourced profiles."""
+    metric_hit = re.search(r"metric season\s+(\d{4})", page, re.IGNORECASE)
+    generated_hit = re.search(r"generated\s+([0-9-]+ [0-9:]+Z)", page, re.IGNORECASE)
+    sides: dict[str, dict] = {}
+    side_pattern = re.compile(
+        r'<div class="dm-side(?: [^"]*)?">.*?'
+        r'<div class="name">(.*?)</div>.*?'
+        r'<div class="sub">(.*?)</div>.*?'
+        r'<div class="rate">\s*([0-9.]+)% pass', re.DOTALL,
+    )
+    for school_html, style_html, pass_rate in side_pattern.findall(page):
+        school = _clean_markup(school_html)
+        style = _clean_markup(style_html).split(" · ", 1)
+        sides[normalize_school(school)] = {
+            "school": school,
+            "offense_scheme": {
+                "family": style[0],
+                "tendency": style[1] if len(style) > 1 else "",
+                "competitive_down_pass_rate": round(float(pass_rate) / 100, 4),
+            },
+        }
+
+    card_pattern = re.compile(
+        r'<div class="dm-tier t2">\s*<div.*?<strong>(.*?) offence</strong>.*?'
+        r'<dl class="mb-0">(.*?)</dl>\s*</div>', re.DOTALL,
+    )
+    for school_html, body in card_pattern.findall(page):
+        school = _clean_markup(school_html)
+        key = normalize_school(school)
+        if key not in sides:
+            continue
+        fields = {
+            _clean_markup(label).lower(): _clean_markup(value)
+            for label, value in re.findall(
+                r'<dt[^>]*>(.*?)</dt>\s*<dd[^>]*>(.*?)</dd>', body, re.DOTALL
+            )
+        }
+        facing = fields.get("facing", "")
+        opponent, sep, defense = facing.partition(" — ")
+        defense_parts = [part.strip() for part in defense.split(",", 2)] if sep else []
+        if len(defense_parts) == 3:
+            opp_key = normalize_school(opponent)
+            if opp_key in sides:
+                sides[opp_key]["defense_scheme"] = {
+                    "front": defense_parts[0],
+                    "coverage_leaning": defense_parts[1],
+                    "pressure_profile": defense_parts[2],
+                }
+        sides[key]["matchup_plan"] = {
+            "expected_play_caller": fields.get("expected play caller"),
+            "attack_vs_man": fields.get("attack vs man"),
+            "attack_vs_zone": fields.get("attack vs zone"),
+            "versus_pressure": fields.get("versus pressure"),
+            "primary_failure_mode": fields.get("primary failure mode"),
+            "source_confidence": fields.get("confidence"),
+        }
+
+    out: dict[str, dict] = {}
+    for key, profile in sides.items():
+        if not profile.get("defense_scheme"):
+            continue
+        profile.update({
+            "source": "Deep Metric Analytics",
+            "season": season,
+            "metric_season": int(metric_hit.group(1)) if metric_hit else None,
+            "observed_at_utc": generated_hit.group(1).replace(" ", "T") if generated_hit else None,
+            "method": "Staff-derived scheme expectation; actual man/zone snap rates unavailable",
+        })
+        out["name:" + key] = {
+            field: value for field, value in profile.items() if value not in (None, "")
+        }
+    return out
+
+
+def load_scheme_profiles(season: int, week: int) -> dict[str, dict]:
+    index = fetch_text(SCHEME_WEEK_URL.format(season=season, week=week))
+    paths = sorted(set(re.findall(
+        rf'href="(/college-football/{season}/scheme-matchup/[^"]+-week-{week})"', index
+    )))
+    if len(paths) < 40:
+        raise RuntimeError(f"CFB scheme index is incomplete: found {len(paths)} matchups")
+
+    def load(path: str) -> dict[str, dict]:
+        return parse_scheme_matchup(fetch_text(SCHEME_ORIGIN + path), season)
+
+    profiles: dict[str, dict] = {}
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        for parsed in pool.map(load, paths):
+            profiles.update(parsed)
+    if len(profiles) < 100:
+        raise RuntimeError(f"CFB scheme pull is incomplete: parsed {len(profiles)} team profiles")
+    return profiles
+
+
+def scheme_for(school: str, profiles: dict[str, dict]) -> dict | None:
+    return profiles.get("name:" + normalize_school(school))
+
+
 def as_rate(value, fmt: str, games: float | None = None):
     if value is None:
         return None
@@ -575,7 +684,7 @@ def load_board_games() -> tuple[list[dict], dict]:
 
 
 def public_game(raw: dict, stats: dict, events: dict, pools: dict,
-                adjusted: dict, season: int) -> dict:
+                adjusted: dict, schemes: dict, season: int) -> dict:
     away_meta, home_meta = raw.get("away") or {}, raw.get("home") or {}
     away_abbr = away_meta.get("abbreviation") or away_meta.get("school")
     home_abbr = home_meta.get("abbreviation") or home_meta.get("school")
@@ -620,6 +729,8 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict,
         "home_form": form_for(home_team, pools, season),
         "away_adjusted_efficiency": adjusted_for(away_team, away_school, adjusted),
         "home_adjusted_efficiency": adjusted_for(home_team, home_school, adjusted),
+        "away_scheme_profile": scheme_for(away_school, schemes),
+        "home_scheme_profile": scheme_for(home_school, schemes),
         "home_travel": None if (event.get("neutral") or raw.get("neutral")) else "Home",
     }
     return {key: value for key, value in row.items() if value not in (None, "")}
@@ -657,7 +768,9 @@ def main() -> int:
                 pools[key].append(value)
     events = event_index(load_espn_events())
     adjusted = load_sp_plus(season)
-    games = [public_game(raw, stats, events, pools, adjusted, season) for raw in games_in]
+    week = int(board.get("week") or 0)
+    schemes = load_scheme_profiles(season, week)
+    games = [public_game(raw, stats, events, pools, adjusted, schemes, season) for raw in games_in]
     games.sort(key=lambda row: (row.get("kickoff_utc") or "9999", row.get("id") or ""))
     stamp = datetime.now(timezone.utc).replace(microsecond=0)
     payload = {
@@ -672,6 +785,8 @@ def main() -> int:
     with_form = sum(1 for game in games if game.get("away_form") and game.get("home_form"))
     with_adjusted = sum(1 for game in games if game.get("away_adjusted_efficiency")
                         and game.get("home_adjusted_efficiency"))
+    with_scheme = sum(1 for game in games if game.get("away_scheme_profile")
+                      and game.get("home_scheme_profile"))
     # Validate before writing: an ESPN outage or a renamed stats field must
     # leave the last good slate in place rather than publish a week of blank
     # unit tables. The scheduled workflow fails loudly instead.
@@ -686,10 +801,14 @@ def main() -> int:
         print(f"refusing to write {OUT}: SP+ profiles missing for {missing}; "
               "keeping the published slate")
         return 1
+    if with_scheme < 0.9 * len(games):
+        print(f"refusing to write {OUT}: only {with_scheme} of {len(games)} games carry "
+              "both CFB scheme profiles; keeping the published slate")
+        return 1
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     print(f"wrote {OUT} ({len(games)} games, {with_form} with both unit profiles, "
-          f"{with_adjusted} with both SP+ profiles)")
+          f"{with_adjusted} with both SP+ profiles, {with_scheme} with both scheme profiles)")
     return 0
 
 
