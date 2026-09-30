@@ -3,8 +3,8 @@
   "sport": "cfb",
   "season": 2026,
   "week": 5,
-  "generated_at_utc": "2026-09-29T23:48:36Z",
-  "data_through_utc": "2026-09-29T19:23:16Z",
+  "generated_at_utc": "2026-09-30T18:02:37Z",
+  "data_through_utc": "2026-09-30T00:23:36Z",
   "games": [
     {
       "id": "WKU@NMSU",
@@ -1171,7 +1171,7 @@
             "label": "Punt-return average",
             "value": 5.0,
             "better": "high",
-            "rank": 107,
+            "rank": 108,
             "of": 138,
             "format": "num"
           },
@@ -1476,7 +1476,7 @@
             "label": "Punt-return average",
             "value": 3.0,
             "better": "high",
-            "rank": 119,
+            "rank": 120,
             "of": 138,
             "format": "num"
           },
@@ -1763,7 +1763,7 @@
             "label": "Punt-return average",
             "value": 3.1667,
             "better": "high",
-            "rank": 118,
+            "rank": 119,
             "of": 138,
             "format": "num"
           },
@@ -2947,7 +2947,7 @@
             "label": "Punt-return average",
             "value": 4.5,
             "better": "high",
-            "rank": 111,
+            "rank": 112,
             "of": 138,
             "format": "num"
           },
@@ -3252,7 +3252,7 @@
             "label": "Punt-return average",
             "value": 6.1429,
             "better": "high",
-            "rank": 99,
+            "rank": 100,
             "of": 138,
             "format": "num"
           },
@@ -5620,7 +5620,7 @@
             "label": "Punt-return average",
             "value": 6.8,
             "better": "high",
-            "rank": 93,
+            "rank": 94,
             "of": 138,
             "format": "num"
           },
@@ -6210,9 +6210,9 @@
           },
           "off_pr": {
             "label": "Punt-return average",
-            "value": 2.1667,
+            "value": 6.8333,
             "better": "high",
-            "rank": 128,
+            "rank": 93,
             "of": 138,
             "format": "num"
           },
@@ -7091,7 +7091,7 @@
             "label": "Punt-return average",
             "value": 4.0,
             "better": "high",
-            "rank": 114,
+            "rank": 115,
             "of": 138,
             "format": "num"
           },
@@ -7396,7 +7396,7 @@
             "label": "Punt-return average",
             "value": 6.6667,
             "better": "high",
-            "rank": 94,
+            "rank": 95,
             "of": 138,
             "format": "num"
           },
@@ -7683,7 +7683,7 @@
             "label": "Punt-return average",
             "value": 5.9,
             "better": "high",
-            "rank": 100,
+            "rank": 101,
             "of": 138,
             "format": "num"
           },
@@ -9764,7 +9764,7 @@
             "label": "Punt-return average",
             "value": 9.8,
             "better": "high",
-            "rank": 64,
+            "rank": 65,
             "of": 138,
             "format": "num"
           },
@@ -10948,7 +10948,7 @@
             "label": "Punt-return average",
             "value": 4.2857,
             "better": "high",
-            "rank": 113,
+            "rank": 114,
             "of": 138,
             "format": "num"
           },
@@ -11827,7 +11827,7 @@
             "label": "Punt-return average",
             "value": 9.7273,
             "better": "high",
-            "rank": 65,
+            "rank": 66,
             "of": 138,
             "format": "num"
           },
@@ -12419,7 +12419,7 @@
             "label": "Punt-return average",
             "value": 6.5455,
             "better": "high",
-            "rank": 97,
+            "rank": 98,
             "of": 138,
             "format": "num"
           },
@@ -12724,7 +12724,7 @@
             "label": "Punt-return average",
             "value": 2.6667,
             "better": "high",
-            "rank": 121,
+            "rank": 122,
             "of": 138,
             "format": "num"
           },
@@ -13011,7 +13011,7 @@
             "label": "Punt-return average",
             "value": 2.5,
             "better": "high",
-            "rank": 122,
+            "rank": 123,
             "of": 138,
             "format": "num"
           },
@@ -13908,7 +13908,7 @@
             "label": "Punt-return average",
             "value": 3.6,
             "better": "high",
-            "rank": 117,
+            "rank": 118,
             "of": 138,
             "format": "num"
           },
@@ -16276,7 +16276,7 @@
             "label": "Punt-return average",
             "value": 9.375,
             "better": "high",
-            "rank": 66,
+            "rank": 67,
             "of": 138,
             "format": "num"
           },
@@ -17460,7 +17460,7 @@
             "label": "Punt-return average",
             "value": 2.5,
             "better": "high",
-            "rank": 122,
+            "rank": 123,
             "of": 138,
             "format": "num"
           },
@@ -18052,7 +18052,7 @@
             "label": "Punt-return average",
             "value": 5.0909,
             "better": "high",
-            "rank": 106,
+            "rank": 107,
             "of": 138,
             "format": "num"
           },
@@ -18644,7 +18644,7 @@
             "label": "Punt-return average",
             "value": 4.8571,
             "better": "high",
-            "rank": 109,
+            "rank": 110,
             "of": 138,
             "format": "num"
           },
@@ -21299,7 +21299,7 @@
             "label": "Punt-return average",
             "value": 2.3333,
             "better": "high",
-            "rank": 125,
+            "rank": 126,
             "of": 138,
             "format": "num"
           },
@@ -22196,7 +22196,7 @@
             "label": "Punt-return average",
             "value": 2.4286,
             "better": "high",
-            "rank": 124,
+            "rank": 125,
             "of": 138,
             "format": "num"
           },
@@ -23380,7 +23380,7 @@
             "label": "Punt-return average",
             "value": 5.25,
             "better": "high",
-            "rank": 104,
+            "rank": 105,
             "of": 138,
             "format": "num"
           },
@@ -23972,7 +23972,7 @@
             "label": "Punt-return average",
             "value": 6.6667,
             "better": "high",
-            "rank": 94,
+            "rank": 95,
             "of": 138,
             "format": "num"
           },
@@ -24564,7 +24564,7 @@
             "label": "Punt-return average",
             "value": 6.6,
             "better": "high",
-            "rank": 96,
+            "rank": 97,
             "of": 138,
             "format": "num"
           },
@@ -25748,7 +25748,7 @@
             "label": "Punt-return average",
             "value": 5.8,
             "better": "high",
-            "rank": 102,
+            "rank": 103,
             "of": 138,
             "format": "num"
           },
@@ -27524,7 +27524,7 @@
             "label": "Punt-return average",
             "value": 4.8,
             "better": "high",
-            "rank": 110,
+            "rank": 111,
             "of": 138,
             "format": "num"
           },
@@ -29300,7 +29300,7 @@
             "label": "Punt-return average",
             "value": 5.1667,
             "better": "high",
-            "rank": 105,
+            "rank": 106,
             "of": 138,
             "format": "num"
           },
@@ -32547,7 +32547,7 @@
             "label": "Punt-return average",
             "value": 5.0,
             "better": "high",
-            "rank": 107,
+            "rank": 108,
             "of": 138,
             "format": "num"
           },
@@ -33139,7 +33139,7 @@
             "label": "Punt-return average",
             "value": 3.8,
             "better": "high",
-            "rank": 115,
+            "rank": 116,
             "of": 138,
             "format": "num"
           },
