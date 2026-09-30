@@ -22,9 +22,18 @@ The public CFB publisher derives the following rates from ESPN season totals. Ea
 
 The UI combines these with available PPA, success rate, explosiveness, and stuff-rate fields from the current-season CFB model artifact. The model merge now reads the season stamp from the payload, matching the artifact's actual schema.
 
-## CFB coverage outcomes
+## CFB coverage and scheme
 
-Public CFB feeds do not publish NFL-style man/zone or Cover-1/2/3/4 charting. The Coverage tab therefore uses observed, current-season passing outcomes rather than inventing scheme labels. Each offense is paired with the opposing defense and ranked against the 138-team FBS pool for completion rate, yards per attempt, yards per completion, passer rating, touchdown rate, interception rate, passing first-down rate, and sack rate. Dropbacks per game is included as neutral workload context.
+Actual CFB man/zone snap rates and Cover-1/2/3/4 rates are not publicly available. The Coverage tab now separates two evidence types instead of leaving scheme empty:
+
+- Deep Metric Analytics staff-derived 2026 scheme expectations: offensive family, competitive-down pass rate, defensive front, coverage leaning, pressure profile, expected play caller, and matchup notes versus man, zone, and pressure. Every panel states that actual man/zone snap rates are unavailable and identifies the 2025 metric season.
+- Observed current-season passing outcomes: each offense is paired with the opposing defense and ranked against the 138-team FBS pool for completion rate, yards per attempt, yards per completion, passer rating, touchdown rate, interception rate, passing first-down rate, and sack rate. Dropbacks per game is neutral workload context.
+
+The current slate carries both scheme profiles for 55 of 56 games. Wyoming–North Dakota State remains outcome-only because the scheme source does not rate that FBS–FCS pairing; no scheme is invented for it.
+
+## NFL rushing integrity
+
+The NFL run-game publisher supplies both current-season and prior-plus-current windows for every club: unit yards per game, yards per carry, EPA per carry, success, explosive and stuff rates, league ranks, and every current ball carrier with carry share. `run_game` is now a guarded evidence family, so a failed advanced-data pull cannot replace a complete live slate with empty rushing panels.
 
 ## DVOA contract
 
@@ -41,9 +50,11 @@ DVOA is FTN data. The NFL desk uses FTN's public DVOA dataset. The CFB desk uses
 ## Verification
 
 - CFB slate regenerated with 56 of 56 games carrying both descriptive profiles and both four-unit SP+ profiles.
+- CFB scheme profiles populate both teams on 55 of 56 games; the FBS–FCS pairing is explicitly left outcome-only.
+- NFL slate regenerated with current and combined run-game unit and carrier profiles for both teams on all 16 games.
 - Public-field classification and restricted-field validation pass.
 - JavaScript and Python syntax checks pass.
-- Design token and cache-stamp checks pass at `20260930d`.
-- Full automated suite: 255 tests and 8 subtests passed.
-- Browser checks confirmed the CFB eight-tab layout, populated SP+ DVOA-equivalent panels, populated coverage outcomes and ranks, NFL nine-tab layout, populated NFL DVOA values and ranks, no console errors, and no horizontal overflow at desktop and phone widths.
-- Full public-site runtime diagnostic: 210 checks passed. CFB adjusted-efficiency assertions require eight numeric unit values, source, method and FBS-rank provenance; CFB coverage assertions require both matchup directions, all nine outcome/workload columns, and FBS rank provenance; NFL DVOA assertions require all four public metrics for both teams plus source, week, and league-rank provenance.
+- Design token and cache-stamp checks pass at `20260930e`.
+- Full automated suite: 258 tests and 8 subtests passed.
+- Browser checks confirmed populated CFB scheme and coverage profiles, populated SP+ DVOA-equivalent panels, restored NFL run-game unit and carrier tables, populated NFL DVOA values and ranks, no console errors, and no horizontal overflow at desktop and phone widths.
+- Full public-site runtime diagnostic: 213 checks passed. CFB scheme assertions require both profiles, coverage/front/pressure labels, man/zone matchup notes, and the measurement caveat; NFL rushing assertions require unit tables and ball carriers without an unpublished fallback.

@@ -7,6 +7,35 @@ from scripts import publish_public_cfb_slate as cfb
 
 
 class CfbCurrentSeasonTests(unittest.TestCase):
+    def test_scheme_parser_keeps_coverage_front_pressure_and_matchup_plan(self):
+        page = '''
+        <div class="dm-side"><div><div class="name">Away U</div>
+        <div class="sub">Air Raid · Pass-heavy</div>
+        <div class="rate">56.0% pass on competitive downs</div></div></div>
+        <div class="dm-side"><div><div class="name">Home U</div>
+        <div class="sub">Power Spread · Run-heavy</div>
+        <div class="rate">42.0% pass on competitive downs</div></div></div>
+        <div class="dm-tier t2"><div><strong>Away U offence</strong><dl class="mb-0">
+        <dt>Expected play caller</dt><dd>Coach A</dd>
+        <dt>Facing</dt><dd>Home U — 3-3-5, Two-high zone-match leaning, Simulated pressure</dd>
+        <dt>Attack vs man</dt><dd>Use crossers.</dd><dt>Attack vs zone</dt><dd>Use spacing.</dd>
+        <dt>Versus pressure</dt><dd>Use hot throws.</dd><dt>Primary failure mode</dt><dd>Sacks.</dd>
+        <dt>Confidence</dt><dd>High</dd></dl></div></div>
+        <div class="dm-tier t2"><div><strong>Home U offence</strong><dl class="mb-0">
+        <dt>Expected play caller</dt><dd>Coach B</dd>
+        <dt>Facing</dt><dd>Away U — 4-2-5, Man-match leaning, Balanced pressure menu</dd>
+        </dl></div></div><p>metric season 2025</p>
+        '''
+        profiles = cfb.parse_scheme_matchup(page, 2026)
+        away = profiles["name:awayu"]
+        home = profiles["name:homeu"]
+        self.assertEqual(away["offense_scheme"]["family"], "Air Raid")
+        self.assertEqual(away["defense_scheme"]["coverage_leaning"], "Man-match leaning")
+        self.assertEqual(home["defense_scheme"]["front"], "3-3-5")
+        self.assertEqual(home["defense_scheme"]["pressure_profile"], "Simulated pressure")
+        self.assertEqual(away["matchup_plan"]["attack_vs_zone"], "Use spacing.")
+        self.assertEqual(away["metric_season"], 2025)
+
     def test_sp_plus_parser_publishes_all_four_ranked_units(self):
         rows = []
         for place in range(1, 131):
@@ -101,6 +130,7 @@ def test_publisher_refuses_a_short_pull(tmp_path, monkeypatch):
     monkeypatch.setattr(cfb, "load_espn_stats", lambda season: {})
     monkeypatch.setattr(cfb, "load_espn_events", lambda: [])
     monkeypatch.setattr(cfb, "load_sp_plus", lambda season: {})
+    monkeypatch.setattr(cfb, "load_scheme_profiles", lambda season, week: {})
     monkeypatch.setattr(cfb, "event_index", lambda events: {})
     monkeypatch.setattr(cfb, "public_game", lambda raw, *a: {"id": raw["id"]})
     assert cfb.main() == 1

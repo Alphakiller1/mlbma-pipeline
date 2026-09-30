@@ -1,9 +1,13 @@
 """The team run game: designed runs only, and only current ball carriers."""
+import json
 import unittest
+from pathlib import Path
 
 import pandas as pd
 
 from outputs import nfl_run_game as rg
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def run(game, team, opp, rusher, yards, season=2026, scramble=0, kneel=0, epa=0.1, success=1, td=0):
@@ -14,6 +18,20 @@ def run(game, team, opp, rusher, yards, season=2026, scramble=0, kneel=0, epa=0.
 
 
 class RunGameTests(unittest.TestCase):
+    def test_public_slate_keeps_both_run_game_profiles_for_every_matchup(self):
+        payload = json.loads(
+            (ROOT / "data" / "public" / "nfl" / "slate.json").read_text(encoding="utf-8")
+        )
+        games = payload.get("games") or []
+        self.assertGreater(len(games), 0)
+        for game in games:
+            for side in ("away", "home"):
+                profile = game.get(side + "_run_game") or {}
+                self.assertIn("current", profile, f"{game.get('id')} {side}")
+                self.assertIn("combined", profile, f"{game.get('id')} {side}")
+                self.assertTrue((profile["current"].get("offense") or {}).get("carries"))
+                self.assertTrue(profile["current"].get("carriers"))
+
     def clubs(self):
         # 30 clubs so the unit is placed; AAA and BBB carry the checks.
         rows = []

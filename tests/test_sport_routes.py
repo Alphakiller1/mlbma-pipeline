@@ -106,7 +106,9 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("function cfbUnitPanel", js)
         self.assertIn("function cfbSpecialBody", js)
         self.assertIn("function cfbDvoaBody", js)
-        self.assertIn("['coverage', 'Coverage', ['cfb-coverage']]", js)
+        self.assertIn("['coverage', 'Coverage', ['cfb-scheme', 'cfb-coverage']]", js)
+        self.assertIn("section('cfb-scheme', 'Coverage And Scheme'", js)
+        self.assertIn("function cfbSchemeBody", js)
         self.assertIn("section('cfb-coverage', 'Coverage Outcomes'", js)
         self.assertIn("function cfbCoverageBody", js)
         self.assertIn("ca-cfb-coverage-stack", js)
@@ -147,6 +149,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("slate.json", adapter)
         self.assertIn("mergePublic", adapter)
         self.assertIn("side + '_adjusted_efficiency'", adapter)
+        self.assertIn("side + '_scheme_profile'", adapter)
 
     def test_cfb_public_slate_carries_unit_profiles(self):
         payload = json.loads(
@@ -158,6 +161,16 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertGreater(len(games), 0)
         profiled = [g for g in games if g.get("away_form") and g.get("home_form")]
         self.assertGreaterEqual(len(profiled) / len(games), 0.95)
+        schemed = [g for g in games if g.get("away_scheme_profile") and g.get("home_scheme_profile")]
+        self.assertGreaterEqual(len(schemed) / len(games), 0.9)
+        for game in schemed:
+            for side in ("away", "home"):
+                scheme = game[side + "_scheme_profile"]
+                self.assertTrue(scheme["offense_scheme"]["family"])
+                self.assertTrue(scheme["defense_scheme"]["front"])
+                self.assertTrue(scheme["defense_scheme"]["coverage_leaning"])
+                self.assertTrue(scheme["defense_scheme"]["pressure_profile"])
+                self.assertIn("snap rates unavailable", scheme["method"])
         for game in profiled:
             self.assertEqual(game.get("season"), season)
             for side in ("away", "home"):
