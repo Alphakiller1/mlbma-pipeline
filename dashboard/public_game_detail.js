@@ -103,7 +103,8 @@
     efficiency: 'trend', quarterbacks: 'football', coverage: 'target', looks: 'target',
     rushing: 'football', trenches: 'users', receivers: 'users', redzone: 'target',
     tendencies: 'lineup',
-    'cfb-units': 'football', 'cfb-passing': 'football', 'cfb-rushing': 'football',
+    'cfb-units': 'football', 'cfb-passing': 'football', 'cfb-coverage': 'target',
+    'cfb-rushing': 'football',
     'cfb-special': 'target'
   };
 
@@ -5540,6 +5541,7 @@ function seasonToggle(game) {
   var CFB_TABS = [
     ['units', 'Units', ['cfb-efficiency', 'cfb-units', 'cfb-dvoa']],
     ['passing', 'Passing', ['cfb-passing']],
+    ['coverage', 'Coverage', ['cfb-coverage']],
     ['rushing', 'Rushing', ['cfb-rushing']],
     ['trenches', 'Trenches', ['cfb-trenches']],
     ['situational', 'Situational', ['cfb-situational']],
@@ -5555,6 +5557,11 @@ function seasonToggle(game) {
       ['fourth', '4th Down'], ['first_downs', '1st Downs/G']],
     passing: [['pass_ypg', 'Pass Yds/G'], ['ypa', 'Yds/Att'], ['comp', 'Comp%'],
       ['qbr', 'Rating'], ['pass_td', 'Pass TD/G'], ['int', 'INT/G'], ['sacks', 'Sacks/G']],
+    coverage: [['comp', 'Comp%'], ['ypa', 'Yds/Att'],
+      ['yards_per_completion', 'Yds/Comp'], ['qbr', 'Rating'],
+      ['pass_td_rate', 'TD Rate'], ['interception_rate', 'INT Rate'],
+      ['pass_first_rate', 'Pass 1D%'], ['sack_rate', 'Sack%'],
+      ['dropbacks_pg', 'Dropbacks/G']],
     rushing: [['rush_ypg', 'Rush Yds/G'], ['ypc', 'Yds/Rush'], ['rush_td', 'Rush TD/G']],
     trenches: [['sack_rate', 'Sack%'], ['sack_yards_pg', 'Sack Yds/G'],
       ['sacks', 'Sacks/G'], ['rush_attempts_pg', 'Rush Att/G'], ['ypc', 'Yds/Rush'],
@@ -5567,6 +5574,7 @@ function seasonToggle(game) {
     efficiency: ['Offensive Efficiency', 'Defensive Efficiency'],
     units: ['Offense', 'Defense'],
     passing: ['Passing Offense', 'Pass Defense'],
+    coverage: ['Passing Offense', 'Coverage Defense'],
     rushing: ['Rushing Offense', 'Run Defense'],
     trenches: ['Offensive Line', 'Defensive Front'],
     situational: ['Offense', 'Defense']
@@ -5699,6 +5707,12 @@ function seasonToggle(game) {
         [row('away', away), row('home', home)], 'Club') + '</section></div>';
   }
 
+  function cfbCoverageBody(sport, game) {
+    return '<div class="ca-detail-stack-inner ca-cfb-coverage-stack">' +
+      cfbUnitPanel(sport, game, 'away', 'coverage') +
+      cfbUnitPanel(sport, game, 'home', 'coverage') + '</div>';
+  }
+
   function cfbDvoaBody(sport, game) {
     function panel(side) {
       var name = cfbName(sport, game, side);
@@ -5725,6 +5739,9 @@ function seasonToggle(game) {
         cfbDvoaBody(sport, game)),
       section('cfb-passing', 'Passing', 'Each Passing Offense Above The Pass Defense It Meets',
         nflDuo(cfbUnitPanel, sport, game, 'passing')),
+      section('cfb-coverage', 'Coverage Outcomes',
+        'Completion, Depth, Scoring, Ball Production And Pressure',
+        cfbCoverageBody(sport, game)),
       section('cfb-rushing', 'Rushing', 'Each Run Game Above The Run Defense It Meets',
         nflDuo(cfbUnitPanel, sport, game, 'rushing')),
       section('cfb-trenches', 'Offensive Line Vs Defensive Front',

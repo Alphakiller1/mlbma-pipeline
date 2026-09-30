@@ -29,7 +29,8 @@ class CfbCurrentSeasonTests(unittest.TestCase):
                 "general": {"fumblesRecovered": 1},
                 "passing": {
                     "passingAttempts": 50, "sacks": 5, "sackYardsLost": 35,
-                    "passingYards": 400, "totalPoints": 56, "interceptions": 2,
+                    "completions": 32, "passingYards": 400, "totalPoints": 56,
+                    "passingTouchdowns": 4, "interceptions": 2,
                 },
                 "rushing": {"rushingAttempts": 45, "rushingYards": 225},
                 "miscellaneous": {
@@ -39,7 +40,8 @@ class CfbCurrentSeasonTests(unittest.TestCase):
             "opp": {
                 "passing": {
                     "passingAttempts": 60, "sacks": 6, "sackYardsLost": 42,
-                    "passingYards": 420, "totalPoints": 34, "interceptions": 3,
+                    "completions": 35, "passingYards": 420, "totalPoints": 34,
+                    "passingTouchdowns": 3, "interceptions": 3,
                 },
                 "rushing": {"rushingAttempts": 34, "rushingYards": 136},
                 "miscellaneous": {
@@ -51,6 +53,10 @@ class CfbCurrentSeasonTests(unittest.TestCase):
         self.assertAlmostEqual(cfb.derived_rate(team, "own", "yards_per_play"), 625 / 100)
         self.assertAlmostEqual(cfb.derived_rate(team, "opp", "points_per_play"), 34 / 100)
         self.assertAlmostEqual(cfb.derived_rate(team, "opp", "disruption_rate"), 10 / 100)
+        self.assertAlmostEqual(cfb.derived_rate(team, "own", "yards_per_completion"), 12.5)
+        self.assertAlmostEqual(cfb.derived_rate(team, "opp", "pass_touchdown_rate"), 3 / 60)
+        self.assertAlmostEqual(cfb.derived_rate(team, "opp", "interception_rate"), 3 / 60)
+        self.assertAlmostEqual(cfb.derived_rate(team, "own", "dropbacks_per_game"), 27.5)
 
         pools = {spec[0]: [cfb.derived_rate(team, spec[1], spec[2])]
                  for spec in cfb.DERIVED_SPEC if spec[4] != "neutral"}

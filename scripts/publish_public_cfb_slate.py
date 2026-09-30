@@ -157,6 +157,22 @@ DERIVED_SPEC = (
      "Passing first downs per attempt", "high", "pct"),
     ("def_pass_first_rate", "opp", "pass_first_down_rate",
      "Passing first downs allowed per attempt", "low", "pct"),
+    ("off_yards_per_completion", "own", "yards_per_completion",
+     "Yards per completion", "high", "num"),
+    ("def_yards_per_completion", "opp", "yards_per_completion",
+     "Yards allowed per completion", "low", "num"),
+    ("off_pass_td_rate", "own", "pass_touchdown_rate",
+     "Passing touchdowns per attempt", "high", "pct"),
+    ("def_pass_td_rate", "opp", "pass_touchdown_rate",
+     "Passing touchdowns allowed per attempt", "low", "pct"),
+    ("off_interception_rate", "own", "interception_rate",
+     "Interceptions thrown per attempt", "low", "pct"),
+    ("def_interception_rate", "opp", "interception_rate",
+     "Interceptions forced per opponent attempt", "high", "pct"),
+    ("off_dropbacks_pg", "own", "dropbacks_per_game",
+     "Dropbacks per game", "neutral", "num"),
+    ("def_dropbacks_pg", "opp", "dropbacks_per_game",
+     "Opponent dropbacks per game", "neutral", "num"),
     ("def_disruption_rate", "opp", "disruption_rate",
      "Sacks plus takeaways per defensive play", "high", "pct"),
 )
@@ -230,6 +246,17 @@ def derived_rate(team: dict, split: str, metric: str) -> float | None:
         return _ratio(_number(team, split, "miscellaneous", "firstDownsRushing"), rush_attempts)
     if metric == "pass_first_down_rate":
         return _ratio(_number(team, split, "miscellaneous", "firstDownsPassing"), pass_attempts)
+    if metric == "yards_per_completion":
+        return _ratio(
+            _number(team, split, "passing", "passingYards"),
+            _number(team, split, "passing", "completions"),
+        )
+    if metric == "pass_touchdown_rate":
+        return _ratio(_number(team, split, "passing", "passingTouchdowns"), pass_attempts)
+    if metric == "interception_rate":
+        return _ratio(_number(team, split, "passing", "interceptions"), pass_attempts)
+    if metric == "dropbacks_per_game":
+        return _ratio(dropbacks, games)
     if metric == "disruption_rate":
         interceptions = _number(team, split, "passing", "interceptions")
         # ESPN stores fumble recoveries on the defending team's own/general
