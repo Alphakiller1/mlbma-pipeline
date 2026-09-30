@@ -117,7 +117,8 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("'cfb-situational'", js)
         self.assertIn("['sack_rate', 'Sack%']", js)
         self.assertIn("['points_per_play', 'Pts/Play']", js)
-        self.assertIn("Licensed Feed Required", js)
+        self.assertIn("SP+ Opponent-Adjusted Efficiency By Unit", js)
+        self.assertIn("side + '_adjusted_efficiency'", js)
         self.assertIn("host.__deskTabs = sport === 'cfb' ? CFB_TABS : NFL_TABS", js)
         self.assertIn("Matchup Analysis", js)
         self.assertNotIn("function nflScriptLens", js)
@@ -145,6 +146,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("form.season == null", adapter)
         self.assertIn("slate.json", adapter)
         self.assertIn("mergePublic", adapter)
+        self.assertIn("side + '_adjusted_efficiency'", adapter)
 
     def test_cfb_public_slate_carries_unit_profiles(self):
         payload = json.loads(
@@ -187,6 +189,13 @@ class SportRouteBuilderTests(unittest.TestCase):
                 self.assertFalse({"off_ppa", "off_successRate", "off_explosiveness",
                                   "off_stuffRate"} & set(rates))
                 self.assertEqual(form.get("source"), "espn")
+                adjusted = game[side + "_adjusted_efficiency"]
+                self.assertEqual(adjusted.get("season"), season)
+                self.assertIn("not FTN DVOA", adjusted.get("method", ""))
+                for unit in ("overall", "offense", "defense", "special_teams"):
+                    self.assertIsInstance(adjusted[unit]["value"], (int, float))
+                    self.assertGreaterEqual(adjusted[unit]["rank"], 1)
+                    self.assertGreaterEqual(adjusted[unit]["of"], 130)
 
     def test_past_results_are_not_a_public_destination(self):
         """Completed games belong inside a matchup breakdown, nowhere else.

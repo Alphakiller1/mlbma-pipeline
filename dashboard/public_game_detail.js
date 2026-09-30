@@ -5714,17 +5714,35 @@ function seasonToggle(game) {
   }
 
   function cfbDvoaBody(sport, game) {
+    var rows = [
+      ['overall', 'Overall SP+'], ['offense', 'Offense SP+'],
+      ['defense', 'Defense SP+'], ['special_teams', 'Special Teams SP+']
+    ];
+    function shown(key, entry) {
+      var value = Number(entry && entry.value);
+      if (!isFinite(value)) return null;
+      return ((key === 'overall' || key === 'special_teams') && value > 0 ? '+' : '') +
+        value.toFixed(1);
+    }
     function panel(side) {
       var name = cfbName(sport, game, side);
+      var feed = game[side + '_adjusted_efficiency'] || {};
+      var context = [feed.season, feed.source, feed.method].filter(Boolean).join(' · ');
+      var body = rows.map(function (row) {
+        var entry = feed[row[0]] || {};
+        var value = shown(row[0], entry);
+        var place = entry.rank && entry.of ? { rank: entry.rank, of: entry.of } : null;
+        var tone = place ? rankTone(place.rank, place.of) : '';
+        return '<tr><td>' + esc(row[1]) + '</td><td class="num' + (tone ? ' ' + tone : '') + '">' +
+          (value == null ? '<span class="ca-vs-none">Not Rated</span>' : esc(value)) +
+          (place ? rankBadge(place) : '') + '</td><td class="num ca-vs-none">' +
+          (place ? place.rank + ordinal(place.rank) + ' of ' + place.of : 'Rank Not Published') +
+          '</td></tr>';
+      });
       return '<section class="ca-form-panel ca-cfb-panel ca-cfb-feed-panel"><h3>' +
-        esc(name + ' DVOA') + '</h3>' + nflSplitTable(['Value', 'Feed'], [
-          '<tr><td>Offense DVOA</td><td class="num ca-vs-none">Not Published</td>' +
-            '<td class="ca-vs-none">Licensed Feed Required</td></tr>',
-          '<tr><td>Defense DVOA</td><td class="num ca-vs-none">Not Published</td>' +
-            '<td class="ca-vs-none">Licensed Feed Required</td></tr>',
-          '<tr><td>Special Teams DVOA</td><td class="num ca-vs-none">Not Published</td>' +
-            '<td class="ca-vs-none">Licensed Feed Required</td></tr>'
-        ], 'Unit') + '</section>';
+        esc(name + ' DVOA Equivalent') + '</h3><p class="ca-lineup-context">' +
+        esc(context || 'Opponent-adjusted ratings are not available') + '</p>' +
+        nflSplitTable(['Rating', 'FBS Rank'], body, 'Unit') + '</section>';
     }
     return '<div class="ca-detail-duo ca-nfl-duo">' + panel('away') + panel('home') + '</div>';
   }
@@ -5735,7 +5753,7 @@ function seasonToggle(game) {
         nflDuo(cfbUnitPanel, sport, game, 'efficiency')),
       section('cfb-units', 'Unit Matchups', 'Each Offense Above The Defense It Meets',
         nflDuo(cfbUnitPanel, sport, game, 'units')),
-      section('cfb-dvoa', 'DVOA Feed Status', 'Licensed Opponent-Adjusted Efficiency',
+      section('cfb-dvoa', 'DVOA Equivalent', 'SP+ Opponent-Adjusted Efficiency By Unit',
         cfbDvoaBody(sport, game)),
       section('cfb-passing', 'Passing', 'Each Passing Offense Above The Pass Defense It Meets',
         nflDuo(cfbUnitPanel, sport, game, 'passing')),

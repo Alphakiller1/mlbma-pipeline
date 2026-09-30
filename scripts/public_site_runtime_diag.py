@@ -621,9 +621,18 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("#cfb-efficiency .ca-cfb-panel").count() == 2
               and "pts/play" in page.locator("#cfb-efficiency").inner_text().lower()
               and "pass rate" in page.locator("#cfb-efficiency").inner_text().lower())
-        check("CFB DVOA remains honest without a licensed feed",
+        dvoa_text = page.locator("#cfb-dvoa").inner_text()
+        check("CFB DVOA equivalent publishes both SP+ team profiles",
               page.locator("#cfb-dvoa .ca-cfb-feed-panel").count() == 2
-              and "Licensed Feed Required" in page.locator("#cfb-dvoa").inner_text())
+              and page.locator("#cfb-dvoa tbody tr").count() == 8
+              and "Not Rated" not in dvoa_text
+              and "Not Published" not in dvoa_text)
+        dvoa_lower = dvoa_text.lower()
+        check("CFB adjusted efficiency labels source and methodology",
+              "cfb update sp+" in dvoa_lower
+              and "opponent-adjusted cfb efficiency" in dvoa_lower
+              and "not ftn dvoa" in dvoa_lower
+              and "of 138" in dvoa_lower)
         cfb_cells = page.evaluate("""() => {
           const tds = [...document.querySelectorAll('.ca-cfb-panel td')];
           const graded = td => /(^|\\s)c-(elite|good|mid|weak|poor)(\\s|$)/.test(td.className);

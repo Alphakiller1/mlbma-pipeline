@@ -11,6 +11,7 @@ import json
 import re
 import urllib.request
 from datetime import datetime, timezone
+from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,6 +25,7 @@ STATS_URL = (
     "college-football/statistics/byteam?region=us&lang=en&contentorigin=espn&limit=300"
 )
 SCOREBOARD_URL = "https://cdn.espn.com/core/college-football/scoreboard?xhr=1&limit=300"
+SP_PLUS_URL = "https://cfbupdate.com/sp-ratings"
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -185,6 +187,125 @@ def fetch_json(url: str) -> dict:
     if not raw:
         raise RuntimeError(f"empty response from {url}")
     return json.loads(raw)
+
+
+def fetch_text(url: str) -> str:
+    headers = dict(HEADERS)
+    headers["Accept"] = "text/html,application/xhtml+xml"
+    req = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(req, timeout=45) as response:
+        raw = response.read()
+    if not raw:
+        raise RuntimeError(f"empty response from {url}")
+    return raw.decode("utf-8", errors="replace")
+
+
+class _SpPlusParser(HTMLParser):
+    """Read the public SP+ table without depending on its presentation CSS."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.rows: list[tuple[list[str], str | None]] = []
+        self._active = False
+        self._in_cell = False
+        self._cells: list[list[str]] = []
+        self._team_id: str | None = None
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        values = dict(attrs)
+        if tag == "tr" and str(values.get("wire:key") or "").startswith("sp-rating-"):
+            self._active = True
+            self._cells = []
+            self._team_id = None
+        elif self._active and tag == "td":
+            self._in_cell = True
+            self._cells.append([])
+        elif self._active and tag == "img" and self._team_id is None:
+            hit = re.search(r"/ncaa/(?:500|500-dark)/(\d+)\.png", values.get("src") or "")
+            if hit:
+                self._team_id = hit.group(1)
+
+    def handle_data(self, data: str) -> None:
+        if self._active and self._in_cell and self._cells:
+            self._cells[-1].append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if self._active and tag == "td":
+            self._in_cell = False
+        elif self._active and tag == "tr":
+            cells = [" ".join("".join(parts).split()) for parts in self._cells]
+            self.rows.append((cells, self._team_id))
+            self._active = False
+            self._in_cell = False
+
+
+def normalize_school(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", str(value or "").lower())
+
+
+def _sp_component(text: str) -> tuple[float, int | None]:
+    value = re.search(r"[-+]?\d+(?:\.\d+)?", text)
+    place = re.search(r"\((\d+)\)", text)
+    if not value:
+        raise ValueError(f"missing SP+ value in {text!r}")
+    return float(value.group()), int(place.group(1)) if place else None
+
+
+def parse_sp_plus(html: str, season: int) -> dict[str, dict]:
+    season_hit = re.search(r"Updated for the (\d{4}) season", html, re.IGNORECASE)
+    if not season_hit or int(season_hit.group(1)) != season:
+        raise RuntimeError(
+            f"SP+ season mismatch: requested {season}, page says "
+            f"{season_hit.group(1) if season_hit else 'unknown'}"
+        )
+    parser = _SpPlusParser()
+    parser.feed(html)
+    parsed = []
+    for cells, team_id in parser.rows:
+        if len(cells) < 5:
+            continue
+        identity = re.match(r"^(\d+)\.\s*(.+?)(?:\s+\(\d+-\d+\))?$", cells[0])
+        if not identity:
+            continue
+        overall, offense, defense, special = (
+            _sp_component(cells[1]), _sp_component(cells[2]),
+            _sp_component(cells[3]), _sp_component(cells[4]),
+        )
+        parsed.append((identity.group(2), team_id, int(identity.group(1)),
+                       overall, offense, defense, special))
+    if len(parsed) < 130:
+        raise RuntimeError(f"SP+ pull is incomplete: parsed {len(parsed)} FBS teams")
+    size = len(parsed)
+    ratings: dict[str, dict] = {}
+    for school, team_id, overall_rank, overall, offense, defense, special in parsed:
+        profile = {
+            "source": "CFB Update SP+",
+            "season": season,
+            "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+            "overall": {"value": round(overall[0], 1), "rank": overall_rank, "of": size},
+            "offense": {"value": round(offense[0], 1), "rank": offense[1], "of": size},
+            "defense": {"value": round(defense[0], 1), "rank": defense[1], "of": size},
+            "special_teams": {"value": round(special[0], 1), "rank": special[1], "of": size},
+        }
+        if any(profile[key]["rank"] is None for key in
+               ("offense", "defense", "special_teams")):
+            raise RuntimeError(f"SP+ rank missing for {school}")
+        ratings["name:" + normalize_school(school)] = profile
+        if team_id:
+            ratings["id:" + team_id] = profile
+    return ratings
+
+
+def load_sp_plus(season: int) -> dict[str, dict]:
+    return parse_sp_plus(fetch_text(SP_PLUS_URL), season)
+
+
+def adjusted_for(team: dict | None, school: str, ratings: dict[str, dict]) -> dict | None:
+    if team and team.get("id"):
+        match = ratings.get("id:" + str(team["id"]))
+        if match:
+            return match
+    return ratings.get("name:" + normalize_school(school))
 
 
 def as_rate(value, fmt: str, games: float | None = None):
@@ -453,7 +574,8 @@ def load_board_games() -> tuple[list[dict], dict]:
     return board.get("games") or [], board
 
 
-def public_game(raw: dict, stats: dict, events: dict, pools: dict, season: int) -> dict:
+def public_game(raw: dict, stats: dict, events: dict, pools: dict,
+                adjusted: dict, season: int) -> dict:
     away_meta, home_meta = raw.get("away") or {}, raw.get("home") or {}
     away_abbr = away_meta.get("abbreviation") or away_meta.get("school")
     home_abbr = home_meta.get("abbreviation") or home_meta.get("school")
@@ -464,6 +586,8 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict, season: int) 
     ) or {}
     away_side = (event.get("away") or {})
     home_side = (event.get("home") or {})
+    away_team = lookup_team(stats, away_abbr, away_school)
+    home_team = lookup_team(stats, home_abbr, home_school)
     row = {
         "id": f"{away_abbr}@{home_abbr}",
         "sport": "cfb",
@@ -492,8 +616,10 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict, season: int) 
         "neutral": event.get("neutral") or (True if raw.get("neutral") else None),
         "away_starter": (event.get("qbs") or {}).get(str(away_abbr).upper()),
         "home_starter": (event.get("qbs") or {}).get(str(home_abbr).upper()),
-        "away_form": form_for(lookup_team(stats, away_abbr, away_school), pools, season),
-        "home_form": form_for(lookup_team(stats, home_abbr, home_school), pools, season),
+        "away_form": form_for(away_team, pools, season),
+        "home_form": form_for(home_team, pools, season),
+        "away_adjusted_efficiency": adjusted_for(away_team, away_school, adjusted),
+        "home_adjusted_efficiency": adjusted_for(home_team, home_school, adjusted),
         "home_travel": None if (event.get("neutral") or raw.get("neutral")) else "Home",
     }
     return {key: value for key, value in row.items() if value not in (None, "")}
@@ -530,7 +656,8 @@ def main() -> int:
             if value is not None and better != "neutral":
                 pools[key].append(value)
     events = event_index(load_espn_events())
-    games = [public_game(raw, stats, events, pools, season) for raw in games_in]
+    adjusted = load_sp_plus(season)
+    games = [public_game(raw, stats, events, pools, adjusted, season) for raw in games_in]
     games.sort(key=lambda row: (row.get("kickoff_utc") or "9999", row.get("id") or ""))
     stamp = datetime.now(timezone.utc).replace(microsecond=0)
     payload = {
@@ -543,6 +670,8 @@ def main() -> int:
         "games": games,
     }
     with_form = sum(1 for game in games if game.get("away_form") and game.get("home_form"))
+    with_adjusted = sum(1 for game in games if game.get("away_adjusted_efficiency")
+                        and game.get("home_adjusted_efficiency"))
     # Validate before writing: an ESPN outage or a renamed stats field must
     # leave the last good slate in place rather than publish a week of blank
     # unit tables. The scheduled workflow fails loudly instead.
@@ -550,9 +679,17 @@ def main() -> int:
         print(f"refusing to write {OUT}: {with_form} of {len(games)} games carry both unit "
               f"profiles (need {MIN_FORM_SHARE:.0%}); keeping the published slate")
         return 1
+    if with_adjusted != len(games):
+        missing = [game.get("id") for game in games
+                   if not game.get("away_adjusted_efficiency")
+                   or not game.get("home_adjusted_efficiency")]
+        print(f"refusing to write {OUT}: SP+ profiles missing for {missing}; "
+              "keeping the published slate")
+        return 1
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    print(f"wrote {OUT} ({len(games)} games, {with_form} with both unit profiles)")
+    print(f"wrote {OUT} ({len(games)} games, {with_form} with both unit profiles, "
+          f"{with_adjusted} with both SP+ profiles)")
     return 0
 
 
