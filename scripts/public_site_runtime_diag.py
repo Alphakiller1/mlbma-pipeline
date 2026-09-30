@@ -593,6 +593,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               all(label in combined_rz and label in current_rz for label in
                   ("trips / g", "trip rate", "td%", "score%", "targets by position",
                    "tgt share", "car share")))
+        page.locator("[role='tab'][data-nfl-tab='receiving']").click()
         rec_text = page.locator("#receivers").inner_text().lower()
         receiver_matrix_heads = [head.lower() for head in
                                  page.locator("#receivers .ca-split-block h4").all_inner_texts()
@@ -608,6 +609,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         match = PROHIBITED.search(detail_text)
         check("NFL detail public copy boundary", match is None, match.group(0) if match else "")
         check("NFL detail no horizontal overflow", page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
+        page.locator("[role='tab'][data-nfl-tab='passing']").click()
         page.set_viewport_size({"width": 390, "height": 844})
         check("NFL phone layout has no horizontal overflow",
               page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
