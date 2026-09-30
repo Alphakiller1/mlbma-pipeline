@@ -1,12 +1,35 @@
 from __future__ import annotations
 
+import json
 import unittest
+from pathlib import Path
 
 import pandas as pd
 
 from outputs import nfl_red_zone as rz
 
 POSITIONS = {"qb1": "QB", "wr1": "WR", "wr2": "WR", "te1": "TE", "rb1": "RB", "qb2": "QB"}
+ROOT = Path(__file__).resolve().parents[1]
+
+
+class PublishedRedZoneTests(unittest.TestCase):
+    def test_every_published_team_has_both_complete_red_zone_windows(self):
+        payload = json.loads(
+            (ROOT / "data" / "public" / "nfl" / "slate.json").read_text(encoding="utf-8")
+        )
+        games = payload.get("games") or []
+        self.assertGreater(len(games), 0)
+        for game in games:
+            for side in ("away", "home"):
+                profile = game.get(side + "_red_zone") or {}
+                for window in ("current", "combined"):
+                    view = profile.get(window) or {}
+                    label = f"{game.get('id')} {side} {window}"
+                    self.assertIsNotNone((view.get("offense") or {}).get("trips"), label)
+                    self.assertIsNotNone((view.get("defense") or {}).get("trips"), label)
+                    self.assertTrue(view.get("offense_by_position"), label)
+                    self.assertTrue(view.get("defense_by_position"), label)
+                    self.assertTrue(view.get("players"), label)
 
 
 def play(game, drive, off, deff, yl, kind="run", **kw):
