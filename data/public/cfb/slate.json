@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 5,
-  "generated_at_utc": "2026-09-30T21:07:46Z",
+  "generated_at_utc": "2026-09-30T22:32:59Z",
   "data_through_utc": "2026-09-30T19:14:41Z",
   "games": [
     {
@@ -1027,6 +1027,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -16.4,
+          "rank": 123,
+          "of": 138
+        },
+        "offense": {
+          "value": 20.2,
+          "rank": 107,
+          "of": 138
+        },
+        "defense": {
+          "value": 36.8,
+          "rank": 131,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.2,
+          "rank": 47,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -17.8,
+          "rank": 126,
+          "of": 138
+        },
+        "offense": {
+          "value": 18.1,
+          "rank": 122,
+          "of": 138
+        },
+        "defense": {
+          "value": 35.7,
+          "rank": 126,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.2,
+          "rank": 109,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -2052,6 +2102,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -5.7,
+          "rank": 91,
+          "of": 138
+        },
+        "offense": {
+          "value": 29.7,
+          "rank": 47,
+          "of": 138
+        },
+        "defense": {
+          "value": 35.1,
+          "rank": 120,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.3,
+          "rank": 115,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -3.4,
+          "rank": 83,
+          "of": 138
+        },
+        "offense": {
+          "value": 21.7,
+          "rank": 101,
+          "of": 138
+        },
+        "defense": {
+          "value": 25.3,
+          "rank": 60,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 60,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -3075,6 +3175,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 2.5,
+          "rank": 62,
+          "of": 138
+        },
+        "offense": {
+          "value": 27.4,
+          "rank": 63,
+          "of": 138
+        },
+        "defense": {
+          "value": 24.7,
+          "rank": 54,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.1,
+          "rank": 93,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -10.7,
+          "rank": 110,
+          "of": 138
+        },
+        "offense": {
+          "value": 21.8,
+          "rank": 100,
+          "of": 138
+        },
+        "defense": {
+          "value": 32.2,
+          "rank": 108,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.3,
+          "rank": 118,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -4100,6 +4250,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 14.7,
+          "rank": 20,
+          "of": 138
+        },
+        "offense": {
+          "value": 32.0,
+          "rank": 36,
+          "of": 138
+        },
+        "defense": {
+          "value": 17.4,
+          "rank": 15,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 49,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 12.3,
+          "rank": 28,
+          "of": 138
+        },
+        "offense": {
+          "value": 32.9,
+          "rank": 27,
+          "of": 138
+        },
+        "defense": {
+          "value": 20.6,
+          "rank": 30,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.0,
+          "rank": 70,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -5123,6 +5323,56 @@
         "source": "espn",
         "season": 2026,
         "games": 3.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 16.9,
+          "rank": 15,
+          "of": 138
+        },
+        "offense": {
+          "value": 32.7,
+          "rank": 28,
+          "of": 138
+        },
+        "defense": {
+          "value": 16.1,
+          "rank": 12,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.3,
+          "rank": 18,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 7.3,
+          "rank": 50,
+          "of": 138
+        },
+        "offense": {
+          "value": 28.1,
+          "rank": 59,
+          "of": 138
+        },
+        "defense": {
+          "value": 21.2,
+          "rank": 34,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.4,
+          "rank": 9,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -6148,6 +6398,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -23.1,
+          "rank": 132,
+          "of": 138
+        },
+        "offense": {
+          "value": 14.0,
+          "rank": 130,
+          "of": 138
+        },
+        "defense": {
+          "value": 36.6,
+          "rank": 130,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.5,
+          "rank": 137,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -18.7,
+          "rank": 129,
+          "of": 138
+        },
+        "offense": {
+          "value": 12.7,
+          "rank": 136,
+          "of": 138
+        },
+        "defense": {
+          "value": 31.1,
+          "rank": 100,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.3,
+          "rank": 119,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -7171,6 +7471,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 23.0,
+          "rank": 6,
+          "of": 138
+        },
+        "offense": {
+          "value": 39.6,
+          "rank": 7,
+          "of": 138
+        },
+        "defense": {
+          "value": 16.6,
+          "rank": 13,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.0,
+          "rank": 67,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 15.1,
+          "rank": 18,
+          "of": 138
+        },
+        "offense": {
+          "value": 37.9,
+          "rank": 10,
+          "of": 138
+        },
+        "defense": {
+          "value": 23.1,
+          "rank": 47,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.3,
+          "rank": 20,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -8196,6 +8546,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -0.3,
+          "rank": 70,
+          "of": 138
+        },
+        "offense": {
+          "value": 28.1,
+          "rank": 59,
+          "of": 138
+        },
+        "defense": {
+          "value": 28.7,
+          "rank": 90,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.3,
+          "rank": 26,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 8.9,
+          "rank": 39,
+          "of": 138
+        },
+        "offense": {
+          "value": 31.4,
+          "rank": 38,
+          "of": 138
+        },
+        "defense": {
+          "value": 22.5,
+          "rank": 44,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.0,
+          "rank": 72,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -9219,6 +9619,56 @@
         "source": "espn",
         "season": 2026,
         "games": 3.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -0.8,
+          "rank": 72,
+          "of": 138
+        },
+        "offense": {
+          "value": 26.1,
+          "rank": 75,
+          "of": 138
+        },
+        "defense": {
+          "value": 27.0,
+          "rank": 77,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 58,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -9.8,
+          "rank": 108,
+          "of": 138
+        },
+        "offense": {
+          "value": 21.5,
+          "rank": 104,
+          "of": 138
+        },
+        "defense": {
+          "value": 31.3,
+          "rank": 101,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.0,
+          "rank": 81,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -10244,6 +10694,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -9.5,
+          "rank": 107,
+          "of": 138
+        },
+        "offense": {
+          "value": 23.3,
+          "rank": 93,
+          "of": 138
+        },
+        "defense": {
+          "value": 32.7,
+          "rank": 110,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.1,
+          "rank": 98,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -3.0,
+          "rank": 80,
+          "of": 138
+        },
+        "offense": {
+          "value": 25.1,
+          "rank": 83,
+          "of": 138
+        },
+        "defense": {
+          "value": 27.8,
+          "rank": 82,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.3,
+          "rank": 114,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -11267,6 +11767,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 11.4,
+          "rank": 31,
+          "of": 138
+        },
+        "offense": {
+          "value": 28.7,
+          "rank": 53,
+          "of": 138
+        },
+        "defense": {
+          "value": 17.5,
+          "rank": 16,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.3,
+          "rank": 22,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 17.7,
+          "rank": 14,
+          "of": 138
+        },
+        "offense": {
+          "value": 36.8,
+          "rank": 14,
+          "of": 138
+        },
+        "defense": {
+          "value": 19.3,
+          "rank": 26,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.2,
+          "rank": 34,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -12292,6 +12842,56 @@
         "season": 2026,
         "games": 3.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 8.1,
+          "rank": 43,
+          "of": 138
+        },
+        "offense": {
+          "value": 28.5,
+          "rank": 55,
+          "of": 138
+        },
+        "defense": {
+          "value": 20.8,
+          "rank": 31,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.5,
+          "rank": 4,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 3.0,
+          "rank": 60,
+          "of": 138
+        },
+        "offense": {
+          "value": 26.3,
+          "rank": 73,
+          "of": 138
+        },
+        "defense": {
+          "value": 22.8,
+          "rank": 46,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.5,
+          "rank": 135,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -13315,6 +13915,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -4.6,
+          "rank": 90,
+          "of": 138
+        },
+        "offense": {
+          "value": 20.9,
+          "rank": 106,
+          "of": 138
+        },
+        "defense": {
+          "value": 25.6,
+          "rank": 65,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 63,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 13.0,
+          "rank": 26,
+          "of": 138
+        },
+        "offense": {
+          "value": 35.7,
+          "rank": 16,
+          "of": 138
+        },
+        "defense": {
+          "value": 22.3,
+          "rank": 41,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.4,
+          "rank": 124,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -14340,6 +14990,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -26.4,
+          "rank": 136,
+          "of": 138
+        },
+        "offense": {
+          "value": 9.2,
+          "rank": 138,
+          "of": 138
+        },
+        "defense": {
+          "value": 35.7,
+          "rank": 126,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 66,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -4.3,
+          "rank": 88,
+          "of": 138
+        },
+        "offense": {
+          "value": 24.5,
+          "rank": 86,
+          "of": 138
+        },
+        "defense": {
+          "value": 28.9,
+          "rank": 91,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 62,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -15363,6 +16063,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 16.3,
+          "rank": 17,
+          "of": 138
+        },
+        "offense": {
+          "value": 34.3,
+          "rank": 24,
+          "of": 138
+        },
+        "defense": {
+          "value": 18.2,
+          "rank": 21,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.3,
+          "rank": 19,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 8.2,
+          "rank": 42,
+          "of": 138
+        },
+        "offense": {
+          "value": 28.2,
+          "rank": 58,
+          "of": 138
+        },
+        "defense": {
+          "value": 19.9,
+          "rank": 28,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.1,
+          "rank": 89,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -16388,6 +17138,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 9.2,
+          "rank": 38,
+          "of": 138
+        },
+        "offense": {
+          "value": 34.4,
+          "rank": 23,
+          "of": 138
+        },
+        "defense": {
+          "value": 25.5,
+          "rank": 63,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.2,
+          "rank": 38,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 10.7,
+          "rank": 33,
+          "of": 138
+        },
+        "offense": {
+          "value": 32.3,
+          "rank": 32,
+          "of": 138
+        },
+        "defense": {
+          "value": 21.3,
+          "rank": 38,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.3,
+          "rank": 112,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -17411,6 +18211,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -18.0,
+          "rank": 127,
+          "of": 138
+        },
+        "offense": {
+          "value": 15.0,
+          "rank": 127,
+          "of": 138
+        },
+        "defense": {
+          "value": 32.7,
+          "rank": 110,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.2,
+          "rank": 110,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -6.2,
+          "rank": 93,
+          "of": 138
+        },
+        "offense": {
+          "value": 21.7,
+          "rank": 101,
+          "of": 138
+        },
+        "defense": {
+          "value": 27.8,
+          "rank": 82,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.1,
+          "rank": 96,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -18436,6 +19286,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 18.5,
+          "rank": 12,
+          "of": 138
+        },
+        "offense": {
+          "value": 38.8,
+          "rank": 9,
+          "of": 138
+        },
+        "defense": {
+          "value": 20.8,
+          "rank": 31,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.5,
+          "rank": 2,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 13.7,
+          "rank": 25,
+          "of": 138
+        },
+        "offense": {
+          "value": 31.2,
+          "rank": 40,
+          "of": 138
+        },
+        "defense": {
+          "value": 17.3,
+          "rank": 14,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.2,
+          "rank": 100,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -19459,6 +20359,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -8.6,
+          "rank": 103,
+          "of": 138
+        },
+        "offense": {
+          "value": 23.0,
+          "rank": 95,
+          "of": 138
+        },
+        "defense": {
+          "value": 31.4,
+          "rank": 104,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.2,
+          "rank": 103,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -11.4,
+          "rank": 112,
+          "of": 138
+        },
+        "offense": {
+          "value": 22.8,
+          "rank": 96,
+          "of": 138
+        },
+        "defense": {
+          "value": 34.1,
+          "rank": 119,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.1,
+          "rank": 99,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -20484,6 +21434,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 9.9,
+          "rank": 36,
+          "of": 138
+        },
+        "offense": {
+          "value": 35.4,
+          "rank": 19,
+          "of": 138
+        },
+        "defense": {
+          "value": 25.7,
+          "rank": 66,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 52,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 3.4,
+          "rank": 58,
+          "of": 138
+        },
+        "offense": {
+          "value": 31.5,
+          "rank": 37,
+          "of": 138
+        },
+        "defense": {
+          "value": 28.0,
+          "rank": 84,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.1,
+          "rank": 92,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -21507,6 +22507,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 3.9,
+          "rank": 55,
+          "of": 138
+        },
+        "offense": {
+          "value": 28.4,
+          "rank": 56,
+          "of": 138
+        },
+        "defense": {
+          "value": 24.7,
+          "rank": 54,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 55,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 16.9,
+          "rank": 15,
+          "of": 138
+        },
+        "offense": {
+          "value": 35.2,
+          "rank": 20,
+          "of": 138
+        },
+        "defense": {
+          "value": 18.3,
+          "rank": 22,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.0,
+          "rank": 69,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -22532,6 +23582,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 2.3,
+          "rank": 63,
+          "of": 138
+        },
+        "offense": {
+          "value": 32.2,
+          "rank": 33,
+          "of": 138
+        },
+        "defense": {
+          "value": 30.0,
+          "rank": 97,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.2,
+          "rank": 42,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -27.3,
+          "rank": 137,
+          "of": 138
+        },
+        "offense": {
+          "value": 12.2,
+          "rank": 137,
+          "of": 138
+        },
+        "defense": {
+          "value": 39.2,
+          "rank": 137,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.3,
+          "rank": 123,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -23555,6 +24655,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 25.7,
+          "rank": 5,
+          "of": 138
+        },
+        "offense": {
+          "value": 39.5,
+          "rank": 8,
+          "of": 138
+        },
+        "defense": {
+          "value": 14.0,
+          "rank": 8,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.2,
+          "rank": 33,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 4.9,
+          "rank": 54,
+          "of": 138
+        },
+        "offense": {
+          "value": 23.5,
+          "rank": 91,
+          "of": 138
+        },
+        "defense": {
+          "value": 18.9,
+          "rank": 24,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.3,
+          "rank": 23,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -24580,6 +25730,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 14.3,
+          "rank": 22,
+          "of": 138
+        },
+        "offense": {
+          "value": 28.8,
+          "rank": 52,
+          "of": 138
+        },
+        "defense": {
+          "value": 14.4,
+          "rank": 9,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.1,
+          "rank": 86,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 6.5,
+          "rank": 52,
+          "of": 138
+        },
+        "offense": {
+          "value": 27.7,
+          "rank": 62,
+          "of": 138
+        },
+        "defense": {
+          "value": 21.2,
+          "rank": 34,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.1,
+          "rank": 91,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -25603,6 +26803,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -12.5,
+          "rank": 115,
+          "of": 138
+        },
+        "offense": {
+          "value": 25.2,
+          "rank": 82,
+          "of": 138
+        },
+        "defense": {
+          "value": 37.7,
+          "rank": 134,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.0,
+          "rank": 82,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 9.9,
+          "rank": 36,
+          "of": 138
+        },
+        "offense": {
+          "value": 29.4,
+          "rank": 48,
+          "of": 138
+        },
+        "defense": {
+          "value": 19.5,
+          "rank": 27,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.0,
+          "rank": 71,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -26628,6 +27878,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 0.3,
+          "rank": 67,
+          "of": 138
+        },
+        "offense": {
+          "value": 25.3,
+          "rank": 80,
+          "of": 138
+        },
+        "defense": {
+          "value": 24.9,
+          "rank": 58,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.0,
+          "rank": 76,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 6.9,
+          "rank": 51,
+          "of": 138
+        },
+        "offense": {
+          "value": 24.9,
+          "rank": 84,
+          "of": 138
+        },
+        "defense": {
+          "value": 18.0,
+          "rank": 19,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.0,
+          "rank": 74,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -27651,6 +28951,56 @@
         "source": "espn",
         "season": 2026,
         "games": 3.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -16.0,
+          "rank": 122,
+          "of": 138
+        },
+        "offense": {
+          "value": 18.0,
+          "rank": 123,
+          "of": 138
+        },
+        "defense": {
+          "value": 34.0,
+          "rank": 118,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 65,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 1.0,
+          "rank": 66,
+          "of": 138
+        },
+        "offense": {
+          "value": 26.4,
+          "rank": 70,
+          "of": 138
+        },
+        "defense": {
+          "value": 25.8,
+          "rank": 67,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.4,
+          "rank": 10,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -28676,6 +30026,56 @@
         "season": 2026,
         "games": 3.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 28.1,
+          "rank": 3,
+          "of": 138
+        },
+        "offense": {
+          "value": 40.5,
+          "rank": 4,
+          "of": 138
+        },
+        "defense": {
+          "value": 12.7,
+          "rank": 2,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.2,
+          "rank": 32,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 3.0,
+          "rank": 60,
+          "of": 138
+        },
+        "offense": {
+          "value": 23.9,
+          "rank": 88,
+          "of": 138
+        },
+        "defense": {
+          "value": 21.2,
+          "rank": 34,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.3,
+          "rank": 25,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -29699,6 +31099,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -7.9,
+          "rank": 101,
+          "of": 138
+        },
+        "offense": {
+          "value": 18.8,
+          "rank": 117,
+          "of": 138
+        },
+        "defense": {
+          "value": 26.4,
+          "rank": 73,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.3,
+          "rank": 116,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -11.2,
+          "rank": 111,
+          "of": 138
+        },
+        "offense": {
+          "value": 24.6,
+          "rank": 85,
+          "of": 138
+        },
+        "defense": {
+          "value": 35.6,
+          "rank": 125,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.2,
+          "rank": 105,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -30724,6 +32174,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -10.5,
+          "rank": 109,
+          "of": 138
+        },
+        "offense": {
+          "value": 21.2,
+          "rank": 105,
+          "of": 138
+        },
+        "defense": {
+          "value": 31.3,
+          "rank": 101,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.4,
+          "rank": 128,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -22.4,
+          "rank": 130,
+          "of": 138
+        },
+        "offense": {
+          "value": 13.4,
+          "rank": 132,
+          "of": 138
+        },
+        "defense": {
+          "value": 35.4,
+          "rank": 122,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.3,
+          "rank": 120,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -31747,6 +33247,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 28.8,
+          "rank": 2,
+          "of": 138
+        },
+        "offense": {
+          "value": 41.6,
+          "rank": 1,
+          "of": 138
+        },
+        "defense": {
+          "value": 12.7,
+          "rank": 2,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.1,
+          "rank": 84,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 14.8,
+          "rank": 19,
+          "of": 138
+        },
+        "offense": {
+          "value": 29.0,
+          "rank": 51,
+          "of": 138
+        },
+        "defense": {
+          "value": 14.5,
+          "rank": 10,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.3,
+          "rank": 21,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -32772,6 +34322,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -6.4,
+          "rank": 94,
+          "of": 138
+        },
+        "offense": {
+          "value": 28.3,
+          "rank": 57,
+          "of": 138
+        },
+        "defense": {
+          "value": 35.1,
+          "rank": 120,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.4,
+          "rank": 11,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 8.5,
+          "rank": 41,
+          "of": 138
+        },
+        "offense": {
+          "value": 34.3,
+          "rank": 24,
+          "of": 138
+        },
+        "defense": {
+          "value": 26.2,
+          "rank": 69,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.4,
+          "rank": 6,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -33795,6 +35395,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -8.4,
+          "rank": 102,
+          "of": 138
+        },
+        "offense": {
+          "value": 22.3,
+          "rank": 98,
+          "of": 138
+        },
+        "defense": {
+          "value": 30.3,
+          "rank": 98,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.3,
+          "rank": 117,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 3.7,
+          "rank": 57,
+          "of": 138
+        },
+        "offense": {
+          "value": 29.1,
+          "rank": 50,
+          "of": 138
+        },
+        "defense": {
+          "value": 25.5,
+          "rank": 63,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.2,
+          "rank": 41,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -34820,6 +36470,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -6.1,
+          "rank": 92,
+          "of": 138
+        },
+        "offense": {
+          "value": 26.5,
+          "rank": 67,
+          "of": 138
+        },
+        "defense": {
+          "value": 32.8,
+          "rank": 112,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 64,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 3.9,
+          "rank": 55,
+          "of": 138
+        },
+        "offense": {
+          "value": 29.3,
+          "rank": 49,
+          "of": 138
+        },
+        "defense": {
+          "value": 25.4,
+          "rank": 61,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.0,
+          "rank": 75,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -35843,6 +37543,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 0.3,
+          "rank": 67,
+          "of": 138
+        },
+        "offense": {
+          "value": 26.5,
+          "rank": 67,
+          "of": 138
+        },
+        "defense": {
+          "value": 25.9,
+          "rank": 68,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.3,
+          "rank": 113,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -25.0,
+          "rank": 135,
+          "of": 138
+        },
+        "offense": {
+          "value": 12.8,
+          "rank": 133,
+          "of": 138
+        },
+        "defense": {
+          "value": 37.5,
+          "rank": 133,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.3,
+          "rank": 122,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -36868,6 +38618,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 20.2,
+          "rank": 11,
+          "of": 138
+        },
+        "offense": {
+          "value": 37.5,
+          "rank": 11,
+          "of": 138
+        },
+        "defense": {
+          "value": 17.6,
+          "rank": 17,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.3,
+          "rank": 17,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -3.3,
+          "rank": 82,
+          "of": 138
+        },
+        "offense": {
+          "value": 22.2,
+          "rank": 99,
+          "of": 138
+        },
+        "defense": {
+          "value": 25.1,
+          "rank": 59,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.4,
+          "rank": 126,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -37891,6 +39691,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 8.7,
+          "rank": 40,
+          "of": 138
+        },
+        "offense": {
+          "value": 27.0,
+          "rank": 65,
+          "of": 138
+        },
+        "defense": {
+          "value": 18.4,
+          "rank": 23,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 53,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 12.1,
+          "rank": 29,
+          "of": 138
+        },
+        "offense": {
+          "value": 36.3,
+          "rank": 15,
+          "of": 138
+        },
+        "defense": {
+          "value": 24.2,
+          "rank": 53,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.1,
+          "rank": 87,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -38916,6 +40766,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 8.0,
+          "rank": 44,
+          "of": 138
+        },
+        "offense": {
+          "value": 31.2,
+          "rank": 40,
+          "of": 138
+        },
+        "defense": {
+          "value": 23.1,
+          "rank": 47,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.1,
+          "rank": 90,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 7.5,
+          "rank": 48,
+          "of": 138
+        },
+        "offense": {
+          "value": 31.3,
+          "rank": 39,
+          "of": 138
+        },
+        "defense": {
+          "value": 24.1,
+          "rank": 51,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.4,
+          "rank": 7,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -39939,6 +41839,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -29.0,
+          "rank": 138,
+          "of": 138
+        },
+        "offense": {
+          "value": 13.8,
+          "rank": 131,
+          "of": 138
+        },
+        "defense": {
+          "value": 42.3,
+          "rank": 138,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.5,
+          "rank": 138,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -15.4,
+          "rank": 121,
+          "of": 138
+        },
+        "offense": {
+          "value": 23.9,
+          "rank": 88,
+          "of": 138
+        },
+        "defense": {
+          "value": 38.8,
+          "rank": 136,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.4,
+          "rank": 131,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -40964,6 +42914,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -24.0,
+          "rank": 134,
+          "of": 138
+        },
+        "offense": {
+          "value": 14.7,
+          "rank": 128,
+          "of": 138
+        },
+        "defense": {
+          "value": 38.3,
+          "rank": 135,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.4,
+          "rank": 134,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 7.7,
+          "rank": 46,
+          "of": 138
+        },
+        "offense": {
+          "value": 27.9,
+          "rank": 61,
+          "of": 138
+        },
+        "defense": {
+          "value": 20.4,
+          "rank": 29,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.2,
+          "rank": 40,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -41987,6 +43987,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -1.0,
+          "rank": 73,
+          "of": 138
+        },
+        "offense": {
+          "value": 30.0,
+          "rank": 44,
+          "of": 138
+        },
+        "defense": {
+          "value": 31.0,
+          "rank": 99,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.0,
+          "rank": 77,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -15.1,
+          "rank": 119,
+          "of": 138
+        },
+        "offense": {
+          "value": 18.5,
+          "rank": 119,
+          "of": 138
+        },
+        "defense": {
+          "value": 33.6,
+          "rank": 116,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.0,
+          "rank": 83,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -43012,6 +45062,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 14.4,
+          "rank": 21,
+          "of": 138
+        },
+        "offense": {
+          "value": 32.4,
+          "rank": 29,
+          "of": 138
+        },
+        "defense": {
+          "value": 18.1,
+          "rank": 20,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 50,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 5.7,
+          "rank": 53,
+          "of": 138
+        },
+        "offense": {
+          "value": 32.1,
+          "rank": 35,
+          "of": 138
+        },
+        "defense": {
+          "value": 26.5,
+          "rank": 74,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 54,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -44035,6 +46135,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 7.5,
+          "rank": 48,
+          "of": 138
+        },
+        "offense": {
+          "value": 29.8,
+          "rank": 46,
+          "of": 138
+        },
+        "defense": {
+          "value": 22.6,
+          "rank": 45,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.4,
+          "rank": 8,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 30.2,
+          "rank": 1,
+          "of": 138
+        },
+        "offense": {
+          "value": 41.6,
+          "rank": 1,
+          "of": 138
+        },
+        "defense": {
+          "value": 11.8,
+          "rank": 1,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.5,
+          "rank": 1,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -45060,6 +47210,56 @@
         "season": 2026,
         "games": 5.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 12.1,
+          "rank": 29,
+          "of": 138
+        },
+        "offense": {
+          "value": 29.9,
+          "rank": 45,
+          "of": 138
+        },
+        "defense": {
+          "value": 17.7,
+          "rank": 18,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.1,
+          "rank": 88,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 17.8,
+          "rank": 13,
+          "of": 138
+        },
+        "offense": {
+          "value": 41.5,
+          "rank": 3,
+          "of": 138
+        },
+        "defense": {
+          "value": 23.7,
+          "rank": 49,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.1,
+          "rank": 85,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -46083,6 +48283,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -7.2,
+          "rank": 96,
+          "of": 138
+        },
+        "offense": {
+          "value": 19.1,
+          "rank": 113,
+          "of": 138
+        },
+        "defense": {
+          "value": 26.3,
+          "rank": 72,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.0,
+          "rank": 79,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -17.2,
+          "rank": 124,
+          "of": 138
+        },
+        "offense": {
+          "value": 14.5,
+          "rank": 129,
+          "of": 138
+        },
+        "defense": {
+          "value": 32.1,
+          "rank": 107,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.3,
+          "rank": 31,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -47108,6 +49358,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 1.4,
+          "rank": 64,
+          "of": 138
+        },
+        "offense": {
+          "value": 30.4,
+          "rank": 43,
+          "of": 138
+        },
+        "defense": {
+          "value": 29.1,
+          "rank": 92,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 56,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 3.4,
+          "rank": 58,
+          "of": 138
+        },
+        "offense": {
+          "value": 24.5,
+          "rank": 86,
+          "of": 138
+        },
+        "defense": {
+          "value": 21.4,
+          "rank": 39,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.3,
+          "rank": 24,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -48131,6 +50431,56 @@
         "source": "espn",
         "season": 2026,
         "games": 3.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -3.7,
+          "rank": 85,
+          "of": 138
+        },
+        "offense": {
+          "value": 25.9,
+          "rank": 78,
+          "of": 138
+        },
+        "defense": {
+          "value": 29.8,
+          "rank": 95,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 61,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -3.4,
+          "rank": 83,
+          "of": 138
+        },
+        "offense": {
+          "value": 26.2,
+          "rank": 74,
+          "of": 138
+        },
+        "defense": {
+          "value": 29.7,
+          "rank": 94,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 59,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -49156,6 +51506,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -1.2,
+          "rank": 74,
+          "of": 138
+        },
+        "offense": {
+          "value": 22.6,
+          "rank": 97,
+          "of": 138
+        },
+        "defense": {
+          "value": 24.1,
+          "rank": 51,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.3,
+          "rank": 27,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -3.7,
+          "rank": 85,
+          "of": 138
+        },
+        "offense": {
+          "value": 25.5,
+          "rank": 79,
+          "of": 138
+        },
+        "defense": {
+          "value": 29.6,
+          "rank": 93,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.3,
+          "rank": 28,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -50179,6 +52579,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -3.2,
+          "rank": 81,
+          "of": 138
+        },
+        "offense": {
+          "value": 23.3,
+          "rank": 93,
+          "of": 138
+        },
+        "defense": {
+          "value": 26.2,
+          "rank": 69,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.4,
+          "rank": 125,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -2.4,
+          "rank": 78,
+          "of": 138
+        },
+        "offense": {
+          "value": 26.1,
+          "rank": 75,
+          "of": 138
+        },
+        "defense": {
+          "value": 28.5,
+          "rank": 89,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.0,
+          "rank": 78,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -51204,6 +53654,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -12.7,
+          "rank": 116,
+          "of": 138
+        },
+        "offense": {
+          "value": 15.1,
+          "rank": 126,
+          "of": 138
+        },
+        "defense": {
+          "value": 27.6,
+          "rank": 80,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.2,
+          "rank": 106,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 7.8,
+          "rank": 45,
+          "of": 138
+        },
+        "offense": {
+          "value": 28.6,
+          "rank": 54,
+          "of": 138
+        },
+        "defense": {
+          "value": 20.9,
+          "rank": 33,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.2,
+          "rank": 39,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -52227,6 +54727,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 1.2,
+          "rank": 65,
+          "of": 138
+        },
+        "offense": {
+          "value": 26.5,
+          "rank": 67,
+          "of": 138
+        },
+        "defense": {
+          "value": 24.8,
+          "rank": 56,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.5,
+          "rank": 136,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -7.3,
+          "rank": 97,
+          "of": 138
+        },
+        "offense": {
+          "value": 26.4,
+          "rank": 70,
+          "of": 138
+        },
+        "defense": {
+          "value": 33.6,
+          "rank": 116,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.0,
+          "rank": 80,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -53252,6 +55802,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -9.3,
+          "rank": 105,
+          "of": 138
+        },
+        "offense": {
+          "value": 18.2,
+          "rank": 121,
+          "of": 138
+        },
+        "defense": {
+          "value": 27.1,
+          "rank": 78,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.4,
+          "rank": 127,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 7.6,
+          "rank": 47,
+          "of": 138
+        },
+        "offense": {
+          "value": 32.4,
+          "rank": 29,
+          "of": 138
+        },
+        "defense": {
+          "value": 24.8,
+          "rank": 56,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.0,
+          "rank": 73,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -54275,6 +56875,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": 26.9,
+          "rank": 4,
+          "of": 138
+        },
+        "offense": {
+          "value": 40.3,
+          "rank": 5,
+          "of": 138
+        },
+        "defense": {
+          "value": 13.7,
+          "rank": 7,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.3,
+          "rank": 14,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -1.6,
+          "rank": 75,
+          "of": 138
+        },
+        "offense": {
+          "value": 31.0,
+          "rank": 42,
+          "of": 138
+        },
+        "defense": {
+          "value": 32.8,
+          "rank": 112,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.2,
+          "rank": 44,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     },
@@ -55300,6 +57950,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -0.3,
+          "rank": 70,
+          "of": 138
+        },
+        "offense": {
+          "value": 23.6,
+          "rank": 90,
+          "of": 138
+        },
+        "defense": {
+          "value": 24.0,
+          "rank": 50,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.1,
+          "rank": 57,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -9.3,
+          "rank": 105,
+          "of": 138
+        },
+        "offense": {
+          "value": 18.4,
+          "rank": 120,
+          "of": 138
+        },
+        "defense": {
+          "value": 27.5,
+          "rank": 79,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.2,
+          "rank": 104,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -56324,6 +59024,56 @@
         "season": 2026,
         "games": 4.0
       },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -1.8,
+          "rank": 76,
+          "of": 138
+        },
+        "offense": {
+          "value": 33.7,
+          "rank": 26,
+          "of": 138
+        },
+        "defense": {
+          "value": 35.4,
+          "rank": 122,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.1,
+          "rank": 94,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -7.8,
+          "rank": 100,
+          "of": 138
+        },
+        "offense": {
+          "value": 19.9,
+          "rank": 110,
+          "of": 138
+        },
+        "defense": {
+          "value": 28.1,
+          "rank": 86,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.4,
+          "rank": 13,
+          "of": 138
+        }
+      },
       "home_travel": "Home"
     },
     {
@@ -57347,6 +60097,56 @@
         "source": "espn",
         "season": 2026,
         "games": 4.0
+      },
+      "away_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -15.1,
+          "rank": 119,
+          "of": 138
+        },
+        "offense": {
+          "value": 16.6,
+          "rank": 125,
+          "of": 138
+        },
+        "defense": {
+          "value": 31.5,
+          "rank": 105,
+          "of": 138
+        },
+        "special_teams": {
+          "value": -0.2,
+          "rank": 108,
+          "of": 138
+        }
+      },
+      "home_adjusted_efficiency": {
+        "source": "CFB Update SP+",
+        "season": 2026,
+        "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
+        "overall": {
+          "value": -12.2,
+          "rank": 114,
+          "of": 138
+        },
+        "offense": {
+          "value": 19.8,
+          "rank": 111,
+          "of": 138
+        },
+        "defense": {
+          "value": 32.2,
+          "rank": 108,
+          "of": 138
+        },
+        "special_teams": {
+          "value": 0.2,
+          "rank": 46,
+          "of": 138
+        }
       },
       "home_travel": "Home"
     }

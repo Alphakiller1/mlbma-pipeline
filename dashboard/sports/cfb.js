@@ -124,9 +124,12 @@
     if (!pub) return mapped;
     ['away', 'home'].forEach(function (side) {
       var form = pub[side + '_form'];
-      if (!form) return;
-      if (isModelForm(form)) mapped[side + '_model_form'] = form;
-      else mapped[side + '_form'] = form;
+      if (form) {
+        if (isModelForm(form)) mapped[side + '_model_form'] = form;
+        else mapped[side + '_form'] = form;
+      }
+      var adjusted = pub[side + '_adjusted_efficiency'];
+      if (adjusted) mapped[side + '_adjusted_efficiency'] = adjusted;
     });
     mapped.away_record = keep(pub.away_record, mapped.away_record);
     mapped.home_record = keep(pub.home_record, mapped.home_record);

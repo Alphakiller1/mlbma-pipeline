@@ -7,6 +7,25 @@ from scripts import publish_public_cfb_slate as cfb
 
 
 class CfbCurrentSeasonTests(unittest.TestCase):
+    def test_sp_plus_parser_publishes_all_four_ranked_units(self):
+        rows = []
+        for place in range(1, 131):
+            rows.append(
+                f'<tr wire:key="sp-rating-{place}"><td>{place}. Team {place} (4-0)'
+                f'<img src="http://a.espncdn.com/i/teamlogos/ncaa/500/{place}.png"></td>'
+                f'<td>{30 - place / 10:.1f}</td><td>{40 - place / 10:.1f} ({place})</td>'
+                f'<td>{10 + place / 10:.1f} ({place})</td><td>0.5 ({place})</td></tr>'
+            )
+        ratings = cfb.parse_sp_plus(
+            '<meta content="Updated for the 2026 season">' + "".join(rows), 2026
+        )
+        team = ratings["id:1"]
+        self.assertEqual(team["overall"]["rank"], 1)
+        self.assertEqual(team["offense"]["of"], 130)
+        self.assertEqual(team["defense"]["value"], 10.1)
+        self.assertEqual(team["special_teams"]["rank"], 1)
+        self.assertIn("not FTN DVOA", team["method"])
+
     def test_espn_response_must_match_requested_regular_season(self):
         stale = {
             "requestedSeason": {"year": 2025, "type": {"type": 2}},
@@ -81,6 +100,7 @@ def test_publisher_refuses_a_short_pull(tmp_path, monkeypatch):
                         lambda: ([{"id": 1}, {"id": 2}], {"season": cfb.datetime.now(cfb.timezone.utc).year}))
     monkeypatch.setattr(cfb, "load_espn_stats", lambda season: {})
     monkeypatch.setattr(cfb, "load_espn_events", lambda: [])
+    monkeypatch.setattr(cfb, "load_sp_plus", lambda season: {})
     monkeypatch.setattr(cfb, "event_index", lambda events: {})
     monkeypatch.setattr(cfb, "public_game", lambda raw, *a: {"id": raw["id"]})
     assert cfb.main() == 1

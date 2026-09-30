@@ -28,9 +28,11 @@ Public CFB feeds do not publish NFL-style man/zone or Cover-1/2/3/4 charting. Th
 
 ## DVOA contract
 
-DVOA is FTN data. The public UI does not calculate a lookalike or substitute a synthetic number.
+DVOA is FTN data. The NFL desk uses FTN's public DVOA dataset. The CFB desk uses SP+ as its clearly labelled opponent-adjusted DVOA equivalent and never presents SP+ as FTN DVOA.
 
-- CFB displays an explicit licensed-feed status for offense, defense, and special teams DVOA.
+- CFB publishes overall, offense, defense, and special-teams SP+ ratings and their FBS ranks from CFB Update's public current-season table.
+- Every CFB panel identifies the source and states `Opponent-adjusted CFB efficiency; not FTN DVOA`.
+- The CFB publisher refuses to replace the live slate unless both schools in every matchup have all four SP+ profiles.
 - NFL publishes `away_dvoa` and `home_dvoa` objects from FTN's free public Team Total DVOA dataset.
 - The public dataset supplies total, offense, defense, and special teams DVOA. Subscriber-only pass/run detail is shown only when explicitly supplied and is never inferred.
 - Values are fractional percentages and may include `{value, rank, of}` plus source, season, and week provenance.
@@ -38,10 +40,10 @@ DVOA is FTN data. The public UI does not calculate a lookalike or substitute a s
 
 ## Verification
 
-- CFB slate regenerated with 56 of 56 games carrying both team profiles.
+- CFB slate regenerated with 56 of 56 games carrying both descriptive profiles and both four-unit SP+ profiles.
 - Public-field classification and restricted-field validation pass.
 - JavaScript and Python syntax checks pass.
-- Design token and cache-stamp checks pass at `20260930c`.
-- Full automated suite: 254 tests and 8 subtests passed.
-- Browser checks confirmed the CFB eight-tab layout, populated coverage outcomes and ranks, NFL nine-tab layout, populated NFL DVOA values and ranks, no console errors, and no horizontal overflow at desktop and phone widths.
-- Full public-site runtime diagnostic: 209 checks passed. CFB coverage assertions require both matchup directions, all nine outcome/workload columns, and FBS rank provenance; NFL DVOA assertions require all four public metrics for both teams plus source, week, and league-rank provenance.
+- Design token and cache-stamp checks pass at `20260930d`.
+- Full automated suite: 255 tests and 8 subtests passed.
+- Browser checks confirmed the CFB eight-tab layout, populated SP+ DVOA-equivalent panels, populated coverage outcomes and ranks, NFL nine-tab layout, populated NFL DVOA values and ranks, no console errors, and no horizontal overflow at desktop and phone widths.
+- Full public-site runtime diagnostic: 210 checks passed. CFB adjusted-efficiency assertions require eight numeric unit values, source, method and FBS-rank provenance; CFB coverage assertions require both matchup directions, all nine outcome/workload columns, and FBS rank provenance; NFL DVOA assertions require all four public metrics for both teams plus source, week, and league-rank provenance.
