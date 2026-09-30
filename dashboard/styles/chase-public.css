@@ -5539,6 +5539,7 @@ body[data-sport="nfl"] .ca-detail-nav {
    Defense"), which needs a wider label track than the NFL's nicknames. */
 .ca-cfb-panel .ca-lineup-table.ca-split-table thead th:first-child { width: 14rem; }
 .ca-cfb-panel .ca-lineup-table td:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ca-cfb-coverage-stack .ca-lineup-table.ca-split-table thead th:first-child { width: 18rem; }
 .ca-cfb-panel td[colspan] { text-align: center; }
 /* Up to seven columns with pills: the CFB unit panels stack full width
    below 1700px (the club switch reads one school at a time under 1380px, as

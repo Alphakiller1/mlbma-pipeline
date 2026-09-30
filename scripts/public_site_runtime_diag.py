@@ -609,8 +609,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # each unit above the unit it meets, a rank pill on every graded number,
         # no verdict lines, no gap ordering, no dash cells.
         page.wait_for_selector(".ca-nfl-tabs", timeout=timeout_ms)
-        check("CFB desk carries the seven evidence tabs",
-              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 7)
+        check("CFB desk carries the eight evidence tabs",
+              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 8)
         check("CFB opens on the Units evidence group alone",
               page.evaluate("[...document.querySelectorAll('.ca-detail-section')]"
                             ".filter(s => s.offsetParent).map(s => s.id).join(',')") ==
@@ -646,6 +646,18 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CFB tabs switch to one group",
               page.locator("#cfb-passing.is-tab-on").count() == 1
               and page.locator("#cfb-units.is-tab-on").count() == 0)
+        page.locator("a[data-nfl-tab='coverage']").click()
+        coverage_text = page.locator("#cfb-coverage").inner_text().lower()
+        check("CFB coverage reads both matchup directions",
+              page.locator("#cfb-coverage.is-tab-on .ca-cfb-panel").count() == 2)
+        check("CFB coverage publishes depth, scoring, ball and pressure outcomes",
+              all(label in coverage_text for label in (
+                  "comp%", "yds/att", "yds/comp", "rating", "td rate",
+                  "int rate", "pass 1d%", "sack%", "dropbacks/g")),
+              coverage_text)
+        check("CFB coverage values carry FBS rank pills",
+              page.locator("#cfb-coverage .ca-rank").count() >= 16,
+              str(page.locator("#cfb-coverage .ca-rank").count()))
         page.locator("a[data-nfl-tab='trenches']").click()
         check("CFB trenches pair each line with the front it meets",
               page.locator("#cfb-trenches.is-tab-on .ca-cfb-panel").count() == 2
