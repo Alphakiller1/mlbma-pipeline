@@ -1232,7 +1232,7 @@ def write_nfl_league_context(context: dict, rest: dict) -> None:
 # only fires on a total loss. Lineups and probable starters are deliberately NOT
 # guarded: they are published late in the day and their absence in the morning is
 # the truth, not a failure.
-GUARDED_EVIDENCE = ("scheme", "form", "dvoa", "run_game")
+GUARDED_EVIDENCE = ("scheme", "form", "dvoa", "run_game", "red_zone")
 
 
 def _evidence(payload: dict) -> dict[str, int]:

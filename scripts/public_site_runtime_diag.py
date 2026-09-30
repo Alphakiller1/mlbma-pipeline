@@ -573,14 +573,26 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                                                       "at the guards", "outside the ends"))) or
               section_unpublished("#trenches"))
         rz = page.locator("#redzone")
-        rz_text = rz.inner_text().lower()
+        page.locator("[role='tab'][data-nfl-tab='redzone']").click()
+        combined_rz = rz.locator("[data-season-view='combined']:visible").inner_text().lower()
+        visible_combined_panels = rz.locator(
+            "[data-season-view='combined']:visible .ca-form-panel:visible").count()
+        page.locator("[data-season-scope='current']").click()
+        current_rz = rz.locator("[data-season-view='current']:visible").inner_text().lower()
+        visible_current_panels = rz.locator(
+            "[data-season-view='current']:visible .ca-form-panel:visible").count()
+        page.locator("[data-season-scope='combined']").click()
+        check("NFL red zone tab visibly opens populated data",
+              rz.is_visible() and visible_combined_panels == 2 and visible_current_panels == 2 and
+              "red zone data is not published" not in combined_rz + current_rz,
+              f"combined={visible_combined_panels} current={visible_current_panels}")
         check("NFL red zone pairs each offense with the defense it meets, in both windows",
               rz.locator("[data-season-view='combined'] .ca-form-panel").count() == 2 and
               rz.locator("[data-season-view='current'] .ca-form-panel").count() == 2)
         check("NFL red zone carries trips, conversion, position targets and player shares",
-              all(label in rz_text for label in ("trips / g", "trip rate", "td%", "score%",
-                                                 "targets by position", "tgt share", "car share")) or
-              section_unpublished("#redzone"))
+              all(label in combined_rz and label in current_rz for label in
+                  ("trips / g", "trip rate", "td%", "score%", "targets by position",
+                   "tgt share", "car share")))
         rec_text = page.locator("#receivers").inner_text().lower()
         receiver_matrix_heads = [head.lower() for head in
                                  page.locator("#receivers .ca-split-block h4").all_inner_texts()
