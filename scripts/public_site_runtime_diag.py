@@ -639,6 +639,17 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               ("receivers by coverage" in rec_text and
                all(label in rec_text for label in ("vs man", "vs zone", "single high (mfc)", "vs blitz"))) or
               not receiver_matrix_heads)
+        # Owner 2026-10-01: WR success against specific coverages and schemes.
+        rec_switch = page.locator("#receivers .ca-rec-metric").filter(visible=True).first
+        if receiver_matrix_heads and rec_switch.count():
+            rec_switch.locator("[data-rec-metric='success_rate']").click()
+            shown = rec_switch.locator("[data-rec-metric-view]:not([hidden])")
+            shown_text = shown.inner_text().lower() if shown.count() == 1 else ""
+            check("NFL receiver matrix switches to success rate, with scheme looks",
+                  rec_switch.locator("[data-rec-metric]").count() == 4 and shown.count() == 1 and
+                  "success %" in shown_text and "play action" in shown_text and "with motion" in shown_text,
+                  shown_text[:160])
+            rec_switch.locator("[data-rec-metric='yards_per_target']").click()
         check("NFL pass catchers include the target distribution against the other defense",
               page.locator("#receivers .ca-arsenal-table:visible").count() == 2 and
               "target distribution" in page.locator("#receivers").inner_text().lower())

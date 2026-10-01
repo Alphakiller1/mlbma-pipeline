@@ -386,10 +386,11 @@ PLAYER_COVERAGE_SPLITS = {
     "all", "man", "zone", "cover_0", "cover_1", "cover_2", "cover_3",
     "cover_4", "cover_6", "cover_2_man", "single_high", "two_high",
     "blitz", "no_blitz", "pressure", "clean", "light_box", "stacked_box",
+    "play_action", "no_play_action", "motion", "no_motion",
 }
 PLAYER_COVERAGE_FIELDS = (
     "targets", "receptions", "receiving_yards", "touchdowns", "catch_rate",
-    "yards_per_target", "epa_per_target",
+    "yards_per_target", "epa_per_target", "success_rate",
 )
 
 
@@ -444,7 +445,7 @@ def player_coverage(board: dict) -> dict[str, list[dict]]:
             all_floor = max(3, min(20, round(median / 2)))
             for coverage in coverages:
                 minimum = all_floor if coverage == "all" else 3
-                for metric in ("catch_rate", "yards_per_target", "epa_per_target"):
+                for metric in ("catch_rate", "yards_per_target", "epa_per_target", "success_rate"):
                     pool = []
                     for profile in rows:
                         if profile["position"] != position or profile["source_season"] != season:
