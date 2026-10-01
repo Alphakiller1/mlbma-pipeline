@@ -480,13 +480,69 @@
 
   // The board game a projection belongs to: cfb-model names it; an NFL
   // projection carries its club, opponent and side, and NFL games are AWAY@HOME.
+  // (WNBA rows are grouped by wnbaPlayers, which keys them itself.)
   function propGameKey(sport, p) {
     if (sport === 'cfb') return p.game_key;
     return p.home ? p.opponent + '@' + p.team : p.team + '@' + p.opponent;
   }
 
+  /* WNBA rows are one player-market each (projection, DraftKings line and the
+     model's probability for its side); a card gathers a player's markets. */
+  var WNBA_MARKETS = [['player_points', 'Points'], ['player_rebounds', 'Rebounds'],
+    ['player_assists', 'Assists'], ['player_threes', '3PM']];
+
+  function wnbaPlayers(rows) {
+    var byId = {}, order = [];
+    rows.forEach(function (r) {
+      if (!r || !r.player || r.projection == null || !r.away || !r.home) return;
+      var id = r.player_id || r.player;
+      if (!byId[id]) {
+        byId[id] = {
+          player_name: r.player, team: r.team,
+          game: r.away + '@' + r.home,             // AWAY@HOME, matched on the clubs
+          home: r.team === r.home,                 // which side of that game
+          opponent: r.team === r.home ? r.away : r.home,
+          markets: {}
+        };
+        order.push(id);
+      }
+      byId[id].markets[r.market] = r;
+    });
+    return order.map(function (id) { return byId[id]; });
+  }
+
+  function wnbaOver(row) {
+    if (row.model_prob == null || !row.side) return null;
+    var pr = Number(row.model_prob);
+    return String(row.side).toLowerCase() === 'over' ? pr : 1 - pr;
+  }
+
+  function wnbaPropCard(p, g) {
+    var side = p.home ? 'home' : 'away';
+    // A market projected under a quarter of a unit (a 0.0 3PM) is no role.
+    var body = WNBA_MARKETS.filter(function (m) {
+      return p.markets[m[0]] && Number(p.markets[m[0]].projection) >= 0.25;
+    }).map(function (m) {
+      var r = p.markets[m[0]];
+      var over = wnbaOver(r);
+      var odds = r.odds == null ? '' : ' (' + (Number(r.odds) > 0 ? '+' : '') + r.odds + ')';
+      return '<tr><th scope="row">' + esc(m[1]) + '</th>' +
+        '<td class="mc-prop__proj"><strong>' + esc(fixed(r.projection, 1)) + '</strong></td>' +
+        '<td class="mc-prop__price"><span>' + esc(r.line == null ? 'Model only' : 'DraftKings') + '</span>' +
+        (r.line == null ? '' : '<span>' + esc('O/U ' + r.line + odds) + '</span>') + '</td>' +
+        '<td class="mc-prop__price' + (over == null ? '' : (over >= 0.55 ? ' is-over' : (over <= 0.45 ? ' is-under' : ''))) +
+        '"><span>Over</span><strong>' + esc(over == null ? 'Unpriced' : pctText(over)) + '</strong></td></tr>';
+    }).join('');
+    return '<article class="mc-prop">' +
+      '<header class="mc-prop__head">' + chip('wnba', g ? g[side] : p.team, p.team) +
+      '<div><h4>' + esc(p.player_name) + '</h4><p>' + esc(p.team + ' vs ' + p.opponent) + '</p></div></header>' +
+      '<table class="mc-prop__table"><thead><tr><th>Prop</th><th>Proj</th>' +
+      '<th>Line</th><th>Model</th></tr></thead><tbody>' + body + '</tbody></table></article>';
+  }
+
   function weeklyPropRows(sport, board, mapped) {
     var rows = (mapped && mapped.player_projections) || (board && board.player_projections) || [];
+    if (sport === 'wnba') return wnbaPlayers(rows);
     return rows.filter(function (p) {
       return p && p.stats && Object.keys(p.stats).length && propGameKey(sport, p);
     });
@@ -494,8 +550,13 @@
 
   function weeklyCovered(sport, rows, games) {
     var keyed = {};
-    rows.forEach(function (p) { keyed[propGameKey(sport, p)] = true; });
-    return games.filter(function (g) { return keyed[g.id || g.key]; });
+    rows.forEach(function (p) {
+      keyed[sport === 'wnba' ? p.game : propGameKey(sport, p)] = true;
+    });
+    return games.filter(function (g) {
+      // WNBA board ids read "DAL @ GSV"; its props are matched on the clubs.
+      return keyed[sport === 'wnba' ? g.away + '@' + g.home : (g.id || g.key)];
+    });
   }
 
   function anytimeTd(p) {
@@ -530,6 +591,14 @@
   }
 
   function weeklyGameCards(sport, rows, g) {
+    if (sport === 'wnba') {
+      return rows.filter(function (p) { return p.game === g.away + '@' + g.home; })
+        .sort(function (a, b) {
+          if (a.home !== b.home) return a.home ? 1 : -1;
+          return (Number((b.markets.player_points || {}).projection) || 0) -
+            (Number((a.markets.player_points || {}).projection) || 0);
+        }).map(function (p) { return wnbaPropCard(p, g); }).join('');
+    }
     var mine = rows.filter(function (p) {
       return propGameKey(sport, p) === (g.id || g.key) &&
         WEEKLY_PROPS[sport].some(function (stat) { return propShown(p, stat); });
@@ -573,7 +642,7 @@
   }
 
   function propsSection(sport, board, mapped, games) {
-    if (WEEKLY_PROPS[sport]) return weeklyPropsSection(sport, board, mapped, games || []);
+    if (WEEKLY_PROPS[sport] || sport === 'wnba') return weeklyPropsSection(sport, board, mapped, games || []);
     var rows = (mapped && mapped.player_projections) || (board && board.player_projections) || [];
     rows = rows.filter(function (p) { return p && p.stats; });
     if (sport !== 'mlb' || !rows.length) return '';
@@ -627,7 +696,7 @@
           'The requested game is not in the currently published Model Center rows.');
         return;
       }
-      var gameProps = WEEKLY_PROPS[sport]
+      var gameProps = WEEKLY_PROPS[sport] || sport === 'wnba'
         ? weeklyGameCards(sport, weeklyPropRows(sport, board, mapped), one) : '';
       host.innerHTML = '<div class="mc-board">' + detailView(sport, board, one) +
         (gameProps ? '<section class="mc-panel"><h2 class="mc-panel__title">Player prop projections</h2>' +
@@ -660,7 +729,7 @@
       '<span>scores published</span></div></header>' +
       body + propsSection(sport, board, mapped, games) + '</div>';
     host.innerHTML = html;
-    if (WEEKLY_PROPS[sport]) wireWeeklyProps(sport, board, mapped, games);
+    if (WEEKLY_PROPS[sport] || sport === 'wnba') wireWeeklyProps(sport, board, mapped, games);
   }
 
   function loadBoard(sport) {
