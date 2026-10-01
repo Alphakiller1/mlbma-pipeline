@@ -678,8 +678,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # each unit above the unit it meets, a rank pill on every graded number,
         # no verdict lines, no gap ordering, no dash cells.
         page.wait_for_selector(".ca-nfl-tabs", timeout=timeout_ms)
-        check("CFB desk carries the eight evidence tabs",
-              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 8)
+        check("CFB desk carries the nine evidence tabs (Games added 2026-10-01)",
+              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 9)
         check("CFB opens on the Units evidence group alone",
               page.evaluate("[...document.querySelectorAll('.ca-detail-section')]"
                             ".filter(s => s.offsetParent).map(s => s.id).join(',')") ==
@@ -725,17 +725,36 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CFB tabs switch to one group",
               page.locator("#cfb-passing.is-tab-on").count() == 1
               and page.locator("#cfb-units.is-tab-on").count() == 0)
+        qb_text = page.locator("#cfb-quarterbacks").inner_text().lower()
+        check("CFB passing tab leads with both quarterback rooms beside the defense",
+              page.locator("#cfb-quarterbacks.is-tab-on .ca-cfb-panel").count() == 2
+              and all(label in qb_text for label in (
+                  "season line", "comp%", "yds/att", "dropbacks", "passing downs", "allows")),
+              qb_text[:200])
         page.locator("a[data-nfl-tab='coverage']").click()
         scheme_text = page.locator("#cfb-scheme").inner_text().lower()
-        check("CFB coverage tab publishes both scheme profiles",
+        # Owner 2026-10-01: actual stats, not a staff-derived profile.
+        check("CFB scheme section publishes measured rates for both directions",
               page.locator("#cfb-scheme.is-tab-on .ca-cfb-scheme-panel").count() == 2
               and all(label in scheme_text for label in (
-                  "offensive family", "defensive front", "coverage leaning",
-                  "pressure profile", "attack vs man", "attack vs zone",
-                  "versus pressure")))
-        check("CFB scheme source states the man-zone measurement boundary",
-              "deep metric analytics" in scheme_text
-              and "actual man/zone snap rates unavailable" in scheme_text)
+                  "pass rate", "passing downs", "epa/pass", "standard dn", "havoc", "pts/opp"))
+              and "attack vs man" not in scheme_text,
+              scheme_text[:200])
+        page.locator("a[data-nfl-tab='rushing']").click()
+        run_text = page.locator("#cfb-run-game").inner_text().lower()
+        check("CFB rushing tab carries run game by level, both lines and ball carriers",
+              page.locator("#cfb-run-game.is-tab-on .ca-cfb-panel").count() == 2
+              and page.locator("#cfb-rushers.is-tab-on .ca-cfb-panel").count() == 2
+              and all(label in run_text for label in (
+                  "epa/rush", "line yds", "2nd level", "power", "stuffed", "front-7 havoc",
+                  "offensive line", "defensive line")),
+              run_text[:200])
+        page.locator("a[data-nfl-tab='games']").click()
+        check("CFB game log lists both schools' games with a ranked season row",
+              page.locator("#cfb-game-log.is-tab-on .ca-log-panel").count() == 2
+              and page.locator("#cfb-game-log tbody tr.ca-log-season").count() == 2
+              and page.locator("#cfb-game-log tbody .ca-rank").count() > 10)
+        page.locator("a[data-nfl-tab='coverage']").click()
         coverage_text = page.locator("#cfb-coverage").inner_text().lower()
         check("CFB coverage reads both matchup directions",
               page.locator("#cfb-coverage.is-tab-on .ca-cfb-panel").count() == 2)
