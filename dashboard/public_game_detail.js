@@ -5481,7 +5481,7 @@ function seasonToggle(game) {
       section('quarterbacks', 'Quarterbacks', 'Season Line And Splits By Defensive Look',
         nflDuo(nflBackPanel, sport, game, 'QB')),
 
-      section('coverage', 'Coverage Shells', 'What Each Defense Plays, And How Often',
+      section('coverage', 'Coverage Quality', 'What Each Defense Allows In Coverage',
         nflBothWindows(function () { return nflDuo(nflShellPanel, sport, game); })),
 
       section('looks', 'Defensive Looks', 'Man, Zone, Blitz, Pressure And Box',
