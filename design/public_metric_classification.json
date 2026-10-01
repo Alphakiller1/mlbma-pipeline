@@ -79,7 +79,9 @@
     "metric_season",
     "source_confidence",
     "fip_constant",
-    "sources_as_of"
+    "sources_as_of",
+    "team_games",
+    "through_week"
   ],
   "identity": [
     "id",
@@ -132,7 +134,9 @@
     "display",
     "WR",
     "TE",
-    "RB"
+    "RB",
+    "game_id",
+    "opp"
   ],
   "factual_status": [
     "game_state",
@@ -159,7 +163,9 @@
     "allowed",
     "won",
     "date",
-    "neutral"
+    "neutral",
+    "points",
+    "opp_points"
   ],
   "descriptive": [
     "abq",
@@ -532,7 +538,27 @@
     "any",
     "risp_avg",
     "risp_ab",
-    "k_percent"
+    "k_percent",
+    "adj_points",
+    "opp_adj_points",
+    "off_epa_play",
+    "def_epa_play",
+    "off_success",
+    "def_success",
+    "yards_allowed",
+    "yards_per_play",
+    "yards_per_play_allowed",
+    "giveaways",
+    "takeaways",
+    "turnover_margin",
+    "third_down",
+    "third_down_made",
+    "third_down_att",
+    "luck_rates",
+    "fg_make_rate_by_distance",
+    "xp_make_rate",
+    "fumble_mean_epa",
+    "non_offensive_td_per_team_game"
   ],
   "derived_descriptive": [
     "depth_rank",
@@ -739,7 +765,8 @@
       "$.relievers",
       "$.units",
       "$.pen_pitches",
-      "$.pen_families"
+      "$.pen_families",
+      "$.luck_rates.fg_make_rate_by_distance"
     ],
     "exact_note": "Whole-path rules, anchored at the artifact root. `note` and `teams` are both named in model_derived_label, where they mean a model's own note and a model's team block. At the root of a published artifact they are the human-readable caveat and the container everything else hangs off, so they resolve by position rather than by name.",
     "exact": {

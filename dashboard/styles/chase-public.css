@@ -5553,7 +5553,7 @@ body[data-sport="nfl"] .ca-detail-nav {
   #cfb-situational .ca-detail-duo { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* ===========================================================================
+/* ====================================================================
  * NFL TABLE SPACING + EVEN PILLS - 2026-10-01 (owner: "too bunched up",
  * "not everything is represented the same"). Last in the file so it wins
  * over the tighter 2026-09-27 gutters. A table where any pill would wrap
@@ -5582,3 +5582,29 @@ body[data-sport="nfl"] .ca-detail-nav {
 }
 .ca-rec-metric__btn.is-on { color: var(--text-primary); border-color: var(--accent-strong); background: var(--accent-soft); }
 .ca-rec-metric__btn:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 2px; }
+/* NFL game log (2026-10-01): a margin strip above a game-by-game table.
+   The strip's bars take the grade ramp (up = good, down = poor); the
+   outlined bar is the noise-adjusted margin beside the final one. */
+#game-log .ca-detail-duo { grid-template-columns: minmax(0, 1fr); }
+.ca-log-strip { margin: 0 0 var(--space-3); }
+.ca-log-strip svg { display: block; max-width: 100%; height: auto; overflow: visible; }
+.ca-log-strip line { stroke: var(--border-card); stroke-width: 1; }
+.ca-log-strip text { fill: var(--text-meta); font-size: var(--type-meta); text-anchor: middle; }
+.ca-log-bar.is-up { fill: var(--metric-good); }
+.ca-log-bar.is-down { fill: var(--metric-poor); }
+.ca-log-bar--adj { fill: transparent !important; stroke-width: 1.5; }
+.ca-log-bar--adj.is-up { stroke: var(--metric-good); }
+.ca-log-bar--adj.is-down { stroke: var(--metric-poor); }
+.ca-log-strip figcaption {
+  display: flex; align-items: center; gap: var(--space-2);
+  margin-top: var(--space-1); color: var(--text-meta); font-size: var(--type-meta);
+}
+.ca-log-key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--text-secondary); }
+.ca-log-key--adj { background: transparent; border: 1.5px solid var(--text-secondary); margin-left: var(--space-2); }
+.ca-log-panel .ca-lineup-table.ca-split-table thead th:first-child { width: 8rem; }
+.ca-log-panel td.num { white-space: nowrap; }
+.ca-log-result b { font-weight: 800; margin-right: 2px; }
+.ca-log-result[data-result="W"] b { color: var(--metric-good); }
+.ca-log-result[data-result="L"] b { color: var(--metric-poor); }
+.ca-log-season td { border-top: 1px solid var(--border-card); font-weight: 700; }
+.ca-log-strip text.ca-log-figure { fill: var(--text-secondary); font-weight: 700; }

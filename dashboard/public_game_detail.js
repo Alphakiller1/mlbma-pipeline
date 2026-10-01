@@ -102,7 +102,7 @@
     projection: 'target', clash: 'football', players: 'users',
     efficiency: 'trend', quarterbacks: 'football', coverage: 'target', looks: 'target',
     rushing: 'football', trenches: 'users', receivers: 'users', redzone: 'target',
-    tendencies: 'lineup',
+    tendencies: 'lineup', 'game-log': 'calendar',
     'cfb-units': 'football', 'cfb-passing': 'football', 'cfb-coverage': 'target',
     'cfb-rushing': 'football',
     'cfb-special': 'target'
@@ -5342,9 +5342,164 @@ function seasonToggle(game) {
 
   /* The NFL desk is read a group at a time. Each tab names the sections it
      shows; a section id in the address opens the tab that holds it. */
+  /* ---------------------------------------------------------------------
+   * Game log: every game a club has played - the final, the noise-adjusted
+   * score (outputs/nfl_game_log.py: kicks at league make rates, fumbles at
+   * the league's average outcome, return and defensive scores at the league
+   * rate), and the surface and advanced numbers behind it. Each game's rates
+   * carry their percentile among all team-games this season; the season row
+   * carries the club's place among the 32.
+   * ------------------------------------------------------------------ */
+  var NFL_GAME_LOG_URL = '/data/public/nfl/game_logs.json';
+  var nflGameLogPromise = null;
+
+  function loadNflGameLogs() {
+    if (nflGameLogPromise) return nflGameLogPromise;
+    nflGameLogPromise = fetchJson(NFL_GAME_LOG_URL).catch(function () { return null; });
+    return nflGameLogPromise;
+  }
+
+  // The definition rides on the column header's tooltip, not as page copy.
+  var NFL_NOISE_NOTE = 'Final score with the luck taken out: field goals and extra points at the ' +
+    'league make rate for their distance, fumbles at the league’s average fumble outcome, and ' +
+    'return and defensive touchdowns at the league rate per game.';
+
+  // [key, header, kind, higher is better]
+  var NFL_LOG_RATES = [
+    ['off_epa_play', 'Off EPA/Play', 'epa', true],
+    ['def_epa_play', 'Def EPA/Play', 'epa', false],
+    ['off_success', 'Off Success', 'pct', true],
+    ['def_success', 'Def Success', 'pct', false],
+    ['yards_per_play', 'Yds/Play', 'num1', true],
+    ['yards_per_play_allowed', 'Allowed/Play', 'num1', false],
+    ['turnover_margin', 'TO ±', 'signed', true],
+    ['third_down', '3rd Down', 'pct', true]
+  ];
+
+  function nflLogValue(v, kind) {
+    if (kind === 'signed') return (v > 0 ? '+' : '') + Math.round(v);
+    return nflFormat(v, kind);
+  }
+
+  function nflLogResult(points, oppPoints, digits) {
+    var letter = points > oppPoints ? 'W' : (points < oppPoints ? 'L' : 'T');
+    return '<span class="ca-log-result" data-result="' + letter + '"><b>' + letter + '</b> ' +
+      esc(Number(points).toFixed(digits)) + '–' + esc(Number(oppPoints).toFixed(digits)) + '</span>';
+  }
+
+  /* Margin by game: the actual margin as a solid bar and the noise-adjusted
+     margin as an outlined bar beside it, on one shared scale. */
+  function nflMarginStrip(games) {
+    var top = Math.max(7, Math.max.apply(null, games.map(function (g) {
+      return Math.max(Math.abs(g.points - g.opp_points), Math.abs(g.adj_points - g.opp_adj_points));
+    })));
+    // Room above and below the bars for each bar's own figure.
+    var H = 132, mid = H / 2, reach = mid - 22, step = 84, W = games.length * step;
+    function bar(x, margin, cls, digits) {
+      var h = Math.max(2, Math.abs(margin) / top * reach);
+      var y = margin >= 0 ? mid - h : mid;
+      var label = (margin > 0 ? '+' : '') + margin.toFixed(digits);
+      var ty = margin >= 0 ? y - 5 : y + h + 14;
+      return '<rect class="' + cls + (margin >= 0 ? ' is-up' : ' is-down') + '" x="' + x +
+        '" y="' + y.toFixed(1) + '" width="22" height="' + h.toFixed(1) + '" rx="3"/>' +
+        '<text class="ca-log-figure" x="' + (x + 11) + '" y="' + ty.toFixed(1) + '">' + label + '</text>';
+    }
+    var body = games.map(function (g, i) {
+      var x = i * step + 14;
+      var actual = g.points - g.opp_points, adjusted = g.adj_points - g.opp_adj_points;
+      return '<g><title>Week ' + g.week + ' ' + (g.home ? 'vs ' : '@ ') + g.opp + ': final ' +
+        (actual > 0 ? '+' : '') + actual + ', noise-adjusted ' + (adjusted > 0 ? '+' : '') +
+        adjusted.toFixed(1) + '</title>' +
+        bar(x, actual, 'ca-log-bar', 0) + bar(x + 28, adjusted, 'ca-log-bar ca-log-bar--adj', 1) +
+        '<text x="' + (x + 25) + '" y="' + (H + 16) + '">W' + g.week + ' ' + (g.home ? 'vs' : '@') +
+        ' ' + esc(g.opp) + '</text></g>';
+    }).join('');
+    return '<figure class="ca-log-strip"><svg viewBox="0 0 ' + W + ' ' + (H + 22) + '" width="' + W +
+      '" height="' + (H + 22) + '" role="img" aria-label="Final and noise-adjusted margin by game">' +
+      '<line x1="0" x2="' + W + '" y1="' + mid + '" y2="' + mid + '"/>' + body + '</svg>' +
+      '<figcaption><span class="ca-log-key"></span>Final Margin' +
+      '<span class="ca-log-key ca-log-key--adj"></span>Noise-Adjusted Margin</figcaption></figure>';
+  }
+
+  // The club's season row: game rates averaged, then placed among the 32.
+  function nflLogSeason(logs) {
+    var teams = (logs && logs.teams) || {};
+    var avg = {};
+    Object.keys(teams).forEach(function (code) {
+      var games = teams[code];
+      var row = { points: 0, opp_points: 0, adj: 0, opp_adj: 0 };
+      games.forEach(function (g) {
+        row.points += g.points / games.length; row.opp_points += g.opp_points / games.length;
+        row.adj += g.adj_points / games.length; row.opp_adj += g.opp_adj_points / games.length;
+      });
+      NFL_LOG_RATES.forEach(function (spec) {
+        var vals = games.map(function (g) { return g[spec[0]] && g[spec[0]].value; })
+          .filter(function (v) { return v != null; });
+        row[spec[0]] = vals.length ? vals.reduce(function (a, b) { return a + b; }, 0) / vals.length : null;
+      });
+      avg[code] = row;
+    });
+    NFL_LOG_RATES.forEach(function (spec) {
+      var pool = Object.keys(avg).map(function (c) { return avg[c][spec[0]]; })
+        .filter(function (v) { return v != null; });
+      Object.keys(avg).forEach(function (c) {
+        var v = avg[c][spec[0]];
+        if (v == null) return;
+        var ahead = pool.filter(function (o) { return spec[3] ? o > v : o < v; }).length;
+        avg[c][spec[0]] = { value: v, rank: ahead + 1, of: pool.length };
+      });
+    });
+    return avg;
+  }
+
+  function nflGameLogPanel(sport, game, side, logs) {
+    var head = '<section class="ca-form-panel ca-log-panel"><h3>' +
+      esc(nflNick(sport, game, side) + ' Game Log') + '</h3>';
+    if (logs === undefined) return head + pending('Game logs are loading.') + '</section>';
+    var games = (((logs || {}).teams) || {})[game[side]];
+    if (!games || !games.length) {
+      return head + pending('No completed games are published for this club yet.') + '</section>';
+    }
+    var season = nflLogSeason(logs)[game[side]];
+    var heads = ['Final', 'Noise-Adj'].concat(NFL_LOG_RATES.map(function (s) { return s[1]; }));
+    var rows = games.map(function (g) {
+      return '<tr><td>W' + g.week + ' ' + (g.home ? 'vs ' : '@ ') + esc(g.opp) + '</td>' +
+        '<td class="num">' + nflLogResult(g.points, g.opp_points, 0) + '</td>' +
+        '<td class="num">' + nflLogResult(g.adj_points, g.opp_adj_points, 1) + '</td>' +
+        NFL_LOG_RATES.map(function (spec) {
+          var e = g[spec[0]];
+          if (!e || e.value == null) return '<td class="num ca-vs-none">No Plays</td>';
+          var tone = percentileClass(e.percentile);
+          var extra = spec[0] === 'third_down' ? ' (' + g.third_down_made + '/' + g.third_down_att + ')' : '';
+          return '<td class="num ' + tone + '" title="' + esc(spec[1] + ' · ' +
+            Math.round(e.percentile) + ordinal(Math.round(e.percentile)) +
+            ' percentile of team-games' + extra) + '">' + esc(nflLogValue(e.value, spec[2])) +
+            percentileBadge(e.percentile) + '</td>';
+        }).join('') + '</tr>';
+    }).join('');
+    var seasonRow = season ? '<tr class="ca-log-season"><td>Season Avg</td>' +
+      '<td class="num">' + esc(season.points.toFixed(1) + '–' + season.opp_points.toFixed(1)) + '</td>' +
+      '<td class="num">' + esc(season.adj.toFixed(1) + '–' + season.opp_adj.toFixed(1)) + '</td>' +
+      NFL_LOG_RATES.map(function (spec) {
+        var e = season[spec[0]];
+        if (!e) return '<td class="num ca-vs-none">No Plays</td>';
+        return '<td class="num ' + rankTone(e.rank, e.of) + '">' +
+          esc(spec[2] === 'signed' ? (e.value > 0 ? '+' : '') + e.value.toFixed(1)
+            : nflLogValue(e.value, spec[2])) + rankBadge(e) + '</td>';
+      }).join('') + '</tr>' : '';
+    var table = nflSplitTable(heads, [rows + seasonRow], 'Game').replace('<th class="num">Noise-Adj</th>',
+      '<th class="num" title="' + esc(NFL_NOISE_NOTE) + '">Noise-Adj</th>');
+    return head + nflMarginStrip(games) + table + '</section>';
+  }
+
+  function nflGameLogBody(sport, game, logs) {
+    return nflDuo(nflGameLogPanel, sport, game, logs);
+  }
+
   var NFL_TABS = [
     ['units', 'Units', ['efficiency']],
     ['dvoa', 'DVOA', ['dvoa']],
+    ['games', 'Games', ['game-log']],
     ['passing', 'Passing', ['quarterbacks', 'coverage', 'looks']],
     ['rushing', 'Rushing', ['run-game', 'trenches', 'rushing']],
     ['receiving', 'Receiving', ['receivers']],
@@ -5571,6 +5726,9 @@ function seasonToggle(game) {
 
       section('dvoa', 'DVOA', 'Total And Unit Efficiency From FTN Team Total DVOA',
         nflDuo(nflDvoaPanel, sport, game)),
+
+      section('game-log', 'Game Log', 'Every Game, Final And Noise-Adjusted',
+        nflGameLogBody(sport, game, undefined)),
 
       section('quarterbacks', 'Quarterbacks', 'Season Line And Splits By Defensive Look',
         nflDuo(nflBackPanel, sport, game, 'QB')),
@@ -6237,6 +6395,11 @@ function seasonToggle(game) {
           });
           paintSection(host, 'bullpens', bullpenBody(sport, game, extra));
         }).catch(function () { /* the section keeps its pending note */ });
+      }
+      if (sport === 'nfl') {
+        loadNflGameLogs().then(function (logs) {
+          paintSection(host, 'game-log', nflGameLogBody(sport, game, logs));
+        });
       }
       if (global.ChaseShell && ChaseShell.setContext) {
         ChaseShell.setContext({ sport: sport, state: 'ok', publishedAt: result.generatedAt,

@@ -704,6 +704,9 @@ def run_public_slate_publish():
             # previous CSVs on a bad pull and the page keeps yesterday's pools.
             ([sys.executable, "-m", "scrapers.scrape_matchup_depth"], False),
             (publisher("publish_public_matchup_depth.py"), False),
+            # NFL game logs: final and noise-adjusted scores with the game's
+            # numbers, from nflverse play-by-play. Non-fatal; keeps the last file.
+            (publisher("publish_public_nfl_game_logs.py"), False),
         )
         for command, required in steps:
             result = subprocess.run(command, check=required, cwd=str(ROOT))

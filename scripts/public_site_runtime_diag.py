@@ -175,12 +175,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             check(f"{width}px no page errors", not page_errors, " | ".join(page_errors[:3]))
             check(f"{width}px no console errors", not console_errors, " | ".join(console_errors[:3]))
 
+            # Every card carries its expand control. A count of two failed the
+            # gate on days with one game on the board (2026-10-01: one Wild
+            # Card game), which is a property of the schedule, not the desk.
             expanders = page.locator("#openingMlbSlate .ca-matchup-card__expand-btn")
-            # One control per card; a one-game day (late in a playoff slate)
-            # has one, which is the schedule, not a missing control.
             slate_cards = page.locator("#openingMlbSlate .ca-matchup-card").count()
             check(f"{width}px expand controls",
-                  slate_cards > 0 and expanders.count() >= min(2, slate_cards),
+                  slate_cards >= 1 and expanders.count() == slate_cards,
                   f"{expanders.count()} controls on {slate_cards} cards")
             if expanders.count() >= 2:
                 expanders.nth(0).focus()
@@ -203,18 +204,14 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         target = (page.locator(".ca-matchup-card__name").first.inner_text() or "").strip()
         search.fill(target)
         filtered_count = page.locator(".ca-matchup-card").count()
-        if initial_count > 1:
-            check("MLB team search filters the slate",
-                  1 <= filtered_count < initial_count,
-                  f"query={target!r} before={initial_count} after={filtered_count}")
-        else:
-            # A one-game slate cannot get smaller by matching its own club; it
-            # must keep its game for that club and drop it for a club not on it.
-            search.fill("zzzz-no-such-club")
-            emptied = page.locator(".ca-matchup-card").count()
-            check("MLB team search filters the slate",
-                  initial_count == 1 and filtered_count == 1 and emptied == 0,
-                  f"one-game slate: query={target!r} kept {filtered_count}, unknown club kept {emptied}")
+        # And a name no club carries empties the desk - so the filter is proven
+        # even when only one game is on the board.
+        search.fill("zzzz-no-such-club")
+        none_count = page.locator(".ca-matchup-card").count()
+        check("MLB team search filters the slate",
+              1 <= filtered_count <= initial_count and none_count == 0
+              and (initial_count == 1 or filtered_count < initial_count),
+              f"query={target!r} before={initial_count} after={filtered_count} nonsense={none_count}")
         search.fill("")
         mlb_detail = page.locator(".ca-matchup-card__detail-link").first.get_attribute("href") or ""
         page.goto(base_url.rstrip("/") + mlb_detail, wait_until="domcontentloaded", timeout=timeout_ms)
@@ -397,11 +394,31 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.goto(base_url.rstrip("/") + detail_url, wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
         check("NFL detail uses team logos", page.locator(".ca-detail-team__logo").count() == 2)
-        check("NFL desk carries the nine evidence tabs",
-              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 9)
+        check("NFL desk carries the ten evidence tabs",
+              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 10)
         # The desk reads a tab at a time, and where the clubs stack, one club at a time.
         shown = "() => [...document.querySelectorAll('.ca-detail-section')].filter(s => s.offsetParent).map(s => s.id).join(',')"
         check("NFL desk opens on the Units tab alone", page.evaluate(shown) == "efficiency", page.evaluate(shown))
+        page.locator('a[data-nfl-tab="games"]').click()
+        try:
+            page.wait_for_selector("#game-log .ca-log-panel table", timeout=timeout_ms)
+        except Exception:
+            pass
+        log_cells = page.evaluate("""() => {
+          const tds = [...document.querySelectorAll('#game-log td')].filter(td => td.offsetParent);
+          return {
+            panels: document.querySelectorAll('#game-log .ca-log-panel').length,
+            strips: document.querySelectorAll('#game-log .ca-log-strip svg').length,
+            rows: document.querySelectorAll('#game-log tbody tr').length,
+            dashes: tds.filter(td => td.innerText.trim() === '—').length,
+            unpilled: tds.filter(td => /(^|\\s)c-(elite|good|mid|weak|poor)(\\s|$)/.test(td.className)
+              && !td.querySelector('.ca-rank')).length
+          }; }""")
+        check("NFL Games tab logs both clubs with a margin strip",
+              page.evaluate(shown) == "game-log" and log_cells["panels"] == 2
+              and log_cells["strips"] == 2 and log_cells["rows"] >= 4, str(log_cells))
+        check("NFL game log grades every rate with a pill and no dash cells",
+              log_cells["unpilled"] == 0 and log_cells["dashes"] == 0, str(log_cells))
         page.locator('a[data-nfl-tab="passing"]').click()
         check("NFL Passing tab shows quarterbacks, coverage and looks",
               page.evaluate(shown) == "quarterbacks,coverage,looks" and page.url.endswith("#passing"),

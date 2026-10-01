@@ -22,6 +22,7 @@ import { EndScreen, EndScreenProps } from "./longform/EndScreen";
 import { Thumbnail, ThumbnailProps } from "./longform/Thumbnail";
 import { ThumbnailDesk, ThumbnailDeskProps } from "./longform/ThumbnailDesk";
 import { InstaMatchup, InstaMatchupProps } from "./longform/InstaMatchup";
+import { InstaCover, InstaCoverProps } from "./longform/InstaCover";
 import { Annotate, AnnotateProps, annotateDuration } from "./tools/Annotate";
 import { Telestrator, TelestratorProps } from "./tools/Telestrator";
 import { Callout, CalloutProps } from "./tools/Callout";
@@ -275,6 +276,14 @@ const defaultSplit: SplitFrameProps = {
 const defaultEnd: EndScreenProps = { guides: true };
 
 // Render real ones with `python -m outputs.insta_matchup` (it captures the sections first).
+const defaultCover: InstaCoverProps = {
+  league: "nfl",
+  eyebrow: "NFL · Week 4 · Thu 8:15 PM ET · Prime Video",
+  away: { abbr: "PIT", name: "Steelers", record: "2-1", logo: "logos/nfl/pit.png", player: "Aaron Rodgers", role: "QB" },
+  home: { abbr: "CLE", name: "Browns", record: "2-1", logo: "logos/nfl/cle.png", player: "Deshaun Watson", role: "QB" },
+  rows: [{ label: "Offense EPA / Play", away: { value: "-0.050", rank: "23rd" }, home: { value: "-0.126", rank: "29th" } }],
+  cta: "Swipe for the breakdown",
+};
 const defaultInsta: InstaMatchupProps = {
   league: "mlb",
   eyebrow: "NL Wild Card · Game 1 · Tue 2:00 PM ET",
@@ -560,6 +569,7 @@ export const RemotionRoot: React.FC = () => {
         <Still id="Thumbnail" component={Thumbnail} width={1280} height={720} defaultProps={defaultThumb} />
         <Still id="ThumbnailDesk" component={ThumbnailDesk} width={1280} height={720} defaultProps={defaultThumbDesk} />
         <Still id="InstaMatchup" component={InstaMatchup} width={1080} height={1350} defaultProps={defaultInsta} />
+        <Still id="InstaCover" component={InstaCover} width={1080} height={1350} defaultProps={defaultCover} />
         <Still id="ThumbnailVertical" component={Thumbnail} width={1080} height={1920} defaultProps={defaultThumb} />
       </Folder>
 
