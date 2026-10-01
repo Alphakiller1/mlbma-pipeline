@@ -109,6 +109,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               return {
                 overflow: document.documentElement.scrollWidth - innerWidth,
                 columns,
+                cards: cards.length,
                 minHeight: cards.length ? Math.min(...cards.map(x => Math.round(x.getBoundingClientRect().height))) : 0,
                 maxHeight: cards.length ? Math.max(...cards.map(x => Math.round(x.getBoundingClientRect().height))) : 0,
                 crests: document.querySelectorAll('#openingMlbSlate .ca-matchup-card__club img').length,
@@ -129,7 +130,10 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               };
             }""")
             check(f"{width}px no horizontal overflow", metrics["overflow"] <= 1, str(metrics))
-            check(f"{width}px grid columns", metrics["columns"] == expected_columns, str(metrics))
+            # chase-public.css narrows the grid to the card count on a short slate (one or two
+            # games never sit in a half-empty row), so a 2-game day is 2 columns at 1440px.
+            want_columns = min(expected_columns, metrics["cards"]) if metrics["cards"] else expected_columns
+            check(f"{width}px grid columns", metrics["columns"] == want_columns, str(metrics))
             # 2026-09-10 (owner decision, and what the matchup IA asks for):
             # club identity is the official crest plus the full team name. The
             # crest must actually load, and must be served at enough density to
