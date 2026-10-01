@@ -175,8 +175,14 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             check(f"{width}px no page errors", not page_errors, " | ".join(page_errors[:3]))
             check(f"{width}px no console errors", not console_errors, " | ".join(console_errors[:3]))
 
+            # Every card carries its expand control. A count of two failed the
+            # gate on days with one game on the board (2026-10-01: one Wild
+            # Card game), which is a property of the schedule, not the desk.
             expanders = page.locator("#openingMlbSlate .ca-matchup-card__expand-btn")
-            check(f"{width}px expand controls", expanders.count() >= 2)
+            slate_cards = page.locator("#openingMlbSlate .ca-matchup-card").count()
+            check(f"{width}px expand controls",
+                  slate_cards >= 1 and expanders.count() == slate_cards,
+                  f"{expanders.count()} controls on {slate_cards} cards")
             if expanders.count() >= 2:
                 expanders.nth(0).focus()
                 expanders.nth(0).press("Enter")
@@ -198,9 +204,14 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         target = (page.locator(".ca-matchup-card__name").first.inner_text() or "").strip()
         search.fill(target)
         filtered_count = page.locator(".ca-matchup-card").count()
+        # And a name no club carries empties the desk - so the filter is proven
+        # even when only one game is on the board.
+        search.fill("zzzz-no-such-club")
+        none_count = page.locator(".ca-matchup-card").count()
         check("MLB team search filters the slate",
-              initial_count > 1 and 1 <= filtered_count < initial_count,
-              f"query={target!r} before={initial_count} after={filtered_count}")
+              1 <= filtered_count <= initial_count and none_count == 0
+              and (initial_count == 1 or filtered_count < initial_count),
+              f"query={target!r} before={initial_count} after={filtered_count} nonsense={none_count}")
         search.fill("")
         mlb_detail = page.locator(".ca-matchup-card__detail-link").first.get_attribute("href") or ""
         page.goto(base_url.rstrip("/") + mlb_detail, wait_until="domcontentloaded", timeout=timeout_ms)
