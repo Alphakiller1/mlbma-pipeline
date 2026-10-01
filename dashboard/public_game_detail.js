@@ -5452,6 +5452,31 @@ function seasonToggle(game) {
     return avg;
   }
 
+  /* Each game's rates placed among the clubs that played that week, so a
+     game cell reads as a rank of the 32, the same scale as the season row. */
+  function nflLogWeekRanks(logs) {
+    var teams = (logs && logs.teams) || {};
+    var weeks = {};
+    Object.keys(teams).forEach(function (code) {
+      teams[code].forEach(function (g) { (weeks[g.week] = weeks[g.week] || []).push(g); });
+    });
+    var ranks = {};
+    Object.keys(weeks).forEach(function (wk) {
+      NFL_LOG_RATES.forEach(function (spec) {
+        var pool = weeks[wk].map(function (g) { return g[spec[0]] && g[spec[0]].value; })
+          .filter(function (v) { return v != null; });
+        weeks[wk].forEach(function (g) {
+          var e = g[spec[0]];
+          if (!e || e.value == null) return;
+          var ahead = pool.filter(function (o) { return spec[3] ? o > e.value : o < e.value; }).length;
+          (ranks[g.game_id + '|' + g.opp] = ranks[g.game_id + '|' + g.opp] || {})[spec[0]] =
+            { rank: ahead + 1, of: pool.length };
+        });
+      });
+    });
+    return ranks;
+  }
+
   function nflGameLogPanel(sport, game, side, logs) {
     var head = '<section class="ca-form-panel ca-log-panel"><h3>' +
       esc(nflNick(sport, game, side) + ' Game Log') + '</h3>';
@@ -5461,6 +5486,7 @@ function seasonToggle(game) {
       return head + pending('No completed games are published for this club yet.') + '</section>';
     }
     var season = nflLogSeason(logs)[game[side]];
+    var weekRanks = nflLogWeekRanks(logs);
     var heads = ['Final', 'Noise-Adj'].concat(NFL_LOG_RATES.map(function (s) { return s[1]; }));
     var rows = games.map(function (g) {
       return '<tr><td>W' + g.week + ' ' + (g.home ? 'vs ' : '@ ') + esc(g.opp) + '</td>' +
@@ -5469,12 +5495,11 @@ function seasonToggle(game) {
         NFL_LOG_RATES.map(function (spec) {
           var e = g[spec[0]];
           if (!e || e.value == null) return '<td class="num ca-vs-none">No Plays</td>';
-          var tone = percentileClass(e.percentile);
+          var r = (weekRanks[g.game_id + '|' + g.opp] || {})[spec[0]];
           var extra = spec[0] === 'third_down' ? ' (' + g.third_down_made + '/' + g.third_down_att + ')' : '';
-          return '<td class="num ' + tone + '" title="' + esc(spec[1] + ' · ' +
-            Math.round(e.percentile) + ordinal(Math.round(e.percentile)) +
-            ' percentile of team-games' + extra) + '">' + esc(nflLogValue(e.value, spec[2])) +
-            percentileBadge(e.percentile) + '</td>';
+          return '<td class="num ' + (r ? rankTone(r.rank, r.of) : '') + '" title="' + esc(spec[1] + ' · ' +
+            (r ? r.rank + ordinal(r.rank) + ' of ' + r.of + ' clubs in Week ' + g.week : '') + extra) + '">' +
+            esc(nflLogValue(e.value, spec[2])) + rankBadge(r) + '</td>';
         }).join('') + '</tr>';
     }).join('');
     var seasonRow = season ? '<tr class="ca-log-season"><td>Season Avg</td>' +
