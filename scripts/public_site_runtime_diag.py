@@ -397,9 +397,10 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("#dvoa tbody tr").count() == 8
               and "not published" not in dvoa_text,
               dvoa_text)
-        check("NFL DVOA includes FTN week and rank provenance",
+        check("NFL DVOA includes FTN week provenance and rank pills, no League Rank column",
               "ftn public team total dvoa" in dvoa_text
-              and "week " in dvoa_text and "of 32" in dvoa_text,
+              and "week " in dvoa_text and "league rank" not in dvoa_text
+              and page.locator("#dvoa tbody .ca-rank").count() == 8,
               dvoa_text)
         page.locator('a[data-nfl-tab="passing"]').click()
         club_panels = "() => [...document.querySelectorAll('#coverage .ca-detail-duo')].filter(d => d.offsetParent).map(d => [...d.children].filter(c => c.offsetParent).length).join(',')"

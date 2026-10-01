@@ -5460,13 +5460,11 @@ function seasonToggle(game) {
       var tone = place ? rankTone(place.rank, place.of) : '';
       return '<tr><td>' + esc(row[1]) + '</td><td class="num' + (tone ? ' ' + tone : '') + '">' +
         (shown == null ? '<span class="ca-vs-none">Not Published</span>' : esc(shown)) +
-        (place ? rankBadge(place) : '') + '</td><td class="num ca-vs-none">' +
-        (place ? place.rank + ordinal(place.rank) + ' of ' + place.of :
-          (published ? 'Rank Not Published' : 'Licensed Feed Required')) + '</td></tr>';
+        (place ? rankBadge(place) : '') + '</td></tr>';
     });
     return '<section class="ca-form-panel ca-nfl-dvoa-panel"><h3>' +
       esc(fullName(sport, game, side) + ' DVOA') + '</h3><p class="ca-lineup-context">' +
-      esc(context) + '</p>' + nflSplitTable(['DVOA', 'League Rank'], rows, 'Metric') + '</section>';
+      esc(context) + '</p>' + nflSplitTable(['DVOA'], rows, 'Metric') + '</section>';
   }
 
   function nflSections(sport, game, games) {
