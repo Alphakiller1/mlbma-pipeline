@@ -58,16 +58,21 @@
     var home = teamName(homeRaw);
     var priced = g.priced === true || g.has_price === true;
     var book = g.book || {};
-    var awayProj = pickScore(g.away_projected, g.away_proj, g.projected_away, g.projected_away_score);
-    var homeProj = pickScore(g.home_projected, g.home_proj, g.projected_home, g.projected_home_score);
+    // wnba-edge-model names them projected_*_pts.
+    var awayProj = pickScore(g.away_projected, g.away_proj, g.projected_away, g.projected_away_score,
+      g.projected_away_pts);
+    var homeProj = pickScore(g.home_projected, g.home_proj, g.projected_home, g.projected_home_score,
+      g.projected_home_pts);
     // A board that publishes a projected score but no margin (MLB) still has a
     // model margin: the home projection less the away one.
     var modelMargin = g.model_margin != null ? g.model_margin
       : (g.model != null ? g.model : (awayProj != null && homeProj != null
         ? Math.round((homeProj - awayProj) * 100) / 100 : null));
     // The consensus market line when the board has one, else its own book's.
+    // A book that quotes only the home spread (WNBA) implies margin = -spread.
     var marketMargin = g.market_margin != null ? g.market_margin
-      : (g.market != null ? g.market : (book.margin != null ? book.margin : null));
+      : (g.market != null ? g.market : (book.margin != null ? book.margin
+        : (book.spread != null && isFinite(Number(book.spread)) ? -Number(book.spread) : null)));
     return {
       id: g.id || g.game_id || g.key || (away + '@' + home),
       kickoff_utc: kickoffUtc(g),
@@ -108,7 +113,8 @@
       home_projected: homeProj,
       total_projected: pickScore(g.total_projected, g.total_proj, g.projected_total),
       market_total: pickScore(g.market_total, g.book && g.book.total),
-      win_probability: g.win_probability != null ? g.win_probability : g.win_prob,
+      win_probability: g.win_probability != null ? g.win_probability
+        : (g.win_prob != null ? g.win_prob : g.home_win_prob),
       lean: g.lean || g.model_lean || g.headline || null
     };
   }
