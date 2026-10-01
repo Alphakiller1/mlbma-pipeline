@@ -211,30 +211,44 @@
     });
   }
 
-  /* Account chip. Shows the signed-in initials when a session is present and
-     "Sign in" otherwise, so the control always states what it does rather than
-     sitting on a placeholder. Auth is optional on most routes, so this reads
-     whatever MLBMA_AUTH exposes and degrades quietly. */
-  function paintAccount() {
+  /* Account menu. The header chip reads "Sign in" (or the signed-in initials)
+     and opens a dropdown holding the account panel; the mobile menu carries the
+     same panel inline because the chip is hidden at <=768px. The auth scripts
+     load on first open, on a sign-in redirect, or when a stored session needs
+     checking -- never on a signed-out cold boot. */
+  function initAccount() {
     var btn = document.getElementById('chaseAccount');
     var badge = document.getElementById('chaseAccountBadge');
     if (!btn || !badge) return;
 
-    function signedOut() {
-      badge.textContent = '';
-      badge.hidden = true;
-      btn.classList.add('is-signed-out');
-      btn.setAttribute('aria-label', 'Sign in to Chase Analytics');
-      if (!btn.querySelector('.chase-account__label')) {
-        var span = document.createElement('span');
-        span.className = 'chase-account__label';
-        span.textContent = 'Sign in';
-        btn.insertBefore(span, btn.firstChild);
-      }
+    var STAMP = window.DESIGN_LAYER_VERSION ? '?v=' + window.DESIGN_LAYER_VERSION : '';
+    var authReady = null;
+    var pop = null;
+
+    function storedUser() {
+      try {
+        var saved = JSON.parse(localStorage.getItem('mlbma-auth') || 'null');
+        return (saved && saved.user) || null;
+      } catch (err) { return null; }
     }
 
-    function signedIn(email, name) {
-      var source = String(name || email || '').trim();
+    function paint(user) {
+      var meta = (user && user.user_metadata) || {};
+      var source = String(meta.full_name || meta.name || (user && user.email) || '').trim();
+      var label = btn.querySelector('.chase-account__label');
+      if (!user) {
+        badge.textContent = '';
+        badge.hidden = true;
+        btn.classList.add('is-signed-out');
+        btn.setAttribute('aria-label', 'Sign in or create an account');
+        if (!label) {
+          label = document.createElement('span');
+          label.className = 'chase-account__label';
+          btn.insertBefore(label, btn.firstChild);
+        }
+        label.textContent = 'Sign in';
+        return;
+      }
       var initials = source.indexOf('@') > 0
         ? source.slice(0, 2).toUpperCase()
         : source.split(/\s+/).slice(0, 2).map(function (w) { return w.charAt(0); }).join('').toUpperCase();
@@ -242,24 +256,114 @@
       badge.hidden = false;
       btn.classList.remove('is-signed-out');
       btn.setAttribute('aria-label', 'Account: ' + (source || 'signed in'));
-      var label = btn.querySelector('.chase-account__label');
       if (label) label.remove();
     }
 
-    signedOut();
-    btn.addEventListener('click', function () { location.href = '/model-center/'; });
+    function loadScript(src) {
+      return new Promise(function (resolve, reject) {
+        var s = document.createElement('script');
+        s.src = src + STAMP;
+        s.onload = resolve;
+        s.onerror = function () { reject(new Error(src)); };
+        document.head.appendChild(s);
+      });
+    }
 
-    if (!window.MLBMA_AUTH || !window.MLBMA_AUTH.getUser) return;
-    try {
-      window.MLBMA_AUTH.getUser().then(function (user) {
-        if (user && (user.email || user.user_metadata)) {
-          signedIn(user.email, user.user_metadata && user.user_metadata.full_name);
-        }
-      }).catch(function () {});
-    } catch (err) { /* auth not configured on this route */ }
+    function loadAuth() {
+      if (authReady) return authReady;
+      var core = window.MLBMA_AUTH ? Promise.resolve() : loadScript('/dashboard/mlbma_auth.js');
+      authReady = core.then(function () {
+        window.MLBMA_AUTH.onAuthStateChange(function (_event, session) {
+          paint(session && session.user);
+        });
+        return window.MLBMA_AUTH_UI ? window.MLBMA_AUTH_UI.mount() : loadScript('/dashboard/mlbma_auth_ui.js');
+      }).catch(function () {
+        authReady = null;
+        document.querySelectorAll('[data-mlbma-auth-panel]').forEach(function (panel) {
+          panel.innerHTML = '<p class="ca-auth__status ca-auth__status--err">Sign-in could not load. Check your connection and try again.</p>';
+        });
+      });
+      return authReady;
+    }
+
+    function mountPoint() {
+      var panel = document.createElement('div');
+      panel.setAttribute('data-mlbma-auth-panel', '');
+      panel.innerHTML = '<p class="ca-auth__status ca-auth__status--muted">Loading…</p>';
+      return panel;
+    }
+
+    pop = document.createElement('div');
+    pop.className = 'chase-account-pop';
+    pop.id = 'chaseAccountPanel';
+    pop.setAttribute('role', 'dialog');
+    pop.setAttribute('aria-label', 'Account');
+    pop.hidden = true;
+    pop.appendChild(mountPoint());
+    document.body.appendChild(pop);
+    btn.setAttribute('aria-haspopup', 'dialog');
+    btn.setAttribute('aria-controls', 'chaseAccountPanel');
+
+    var mobileMenu = document.getElementById('mobileMenu');
+    if (mobileMenu) {
+      var section = document.createElement('section');
+      section.className = 'chase-mobile-account';
+      section.setAttribute('aria-label', 'Account');
+      section.appendChild(mountPoint());
+      var mobileStatus = mobileMenu.querySelector('.chase-mobile-status');
+      mobileMenu.insertBefore(section, mobileStatus || null);
+      var burger = document.getElementById('hamburgerBtn');
+      if (burger) burger.addEventListener('click', loadAuth);
+    }
+
+    function place() {
+      var r = btn.getBoundingClientRect();
+      pop.style.top = Math.round(r.bottom + 8) + 'px';
+      pop.style.right = Math.max(12, Math.round(window.innerWidth - r.right)) + 'px';
+    }
+
+    function setOpen(open) {
+      if (open === !pop.hidden) return;
+      pop.hidden = !open;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (!open) return;
+      place();
+      loadAuth().then(function () {
+        var first = pop.querySelector('input:not([type="hidden"]), button');
+        if (first && !pop.hidden) first.focus();
+      });
+    }
+
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      setOpen(pop.hidden);
+    });
+    pop.addEventListener('click', function (e) { e.stopPropagation(); });
+    document.addEventListener('click', function () { setOpen(false); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !pop.hidden) {
+        setOpen(false);
+        btn.focus();
+      }
+    });
+    window.addEventListener('resize', function () { if (!pop.hidden) place(); });
+
+    paint(storedUser());
+
+    // Landing back from Google / the email link / Discord: load now so the SDK
+    // completes the session from the URL, and open the panel to show the result.
+    var url = location.hash + location.search;
+    if (/access_token=|refresh_token=|error_description=|[?&]code=|[?&]discord=/.test(url)) {
+      loadAuth().then(function () {
+        if (window.matchMedia('(min-width: 769px)').matches) setOpen(true);
+      });
+    } else if (storedUser()) {
+      // Refresh or retire the stored session off the critical path.
+      setTimeout(loadAuth, 1500);
+    }
   }
 
-  paintAccount();
+  initAccount();
 
   setActivePage();
   window.addEventListener('hashchange', setActivePage);
