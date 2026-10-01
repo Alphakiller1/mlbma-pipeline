@@ -223,8 +223,26 @@ notes and the toast messages never show up in the video.
 | **U / Ctrl+Z, C** | Undo, clear |
 | **W E [ ]** | Camera on/off, next corner, smaller/bigger (or drag the bubble anywhere) |
 | **B / N** | Site mark / name strap |
+| **+** | New tab on the page you are on |
+| **1 – 9** | Go to that tab |
+| **K** | Compare: two tabs on stage together; again for one tab |
 
 The keys also work while you are clicking around inside the site.
+
+- **Tabs and compare:** the tab strip under **Site** works like browser tabs, all on
+  chase-analytics.com. Each tab keeps its own page, scroll position and marks, so you
+  can flip between, say, two teams' pages with **1** and **2** and pick up where you
+  left off. **+** opens a new tab on the page you are on, ready to send somewhere else.
+  **Compare** (or **K**) puts two tabs on stage together, side by side in 16:9 and
+  stacked in 9:16, with a thin violet rule between them. Both are recorded. While
+  comparing, a violet bar just outside the stage marks the side that gets the keys,
+  the address bar and the markers. Click into the other side (or press its number) to
+  switch. Picking a tab that is not on stage puts it on the active side, and **⇄** swaps
+  the sides. Comparing has its own **Page size** (960 by default, so each half still shows
+  the desktop layout). Changing the page size clears that tab's drawn marks, because the
+  page reflows. With **Chapter on every new page**, switching tabs or turning compare on
+  or off also drops a chapter, labelled "A vs B" while comparing. The booth reopens your
+  tabs, and the comparison, next time.
 
 - **How it works:** the booth server proxies the site (`localhost:8792/nfl/` is
   `chase-analytics.com/nfl/`), so the page on stage is same-origin with the booth. That

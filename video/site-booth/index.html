@@ -20,17 +20,17 @@
              stage itself counts as part of its box and gets captured. -->
         <div class="ring" id="ring">
         <div class="stage" id="stage">
+          <!-- One pane per tab on stage (two when comparing), built by app.js. -->
           <div class="zoom" id="zoom">
-            <div class="viewport" id="viewport">
-              <iframe id="site" title="chase-analytics.com"></iframe>
-              <canvas id="ink"></canvas>
-            </div>
+            <div class="divider" id="divider"></div>
           </div>
           <div class="bug" id="bug"><img src="/dashboard/assets/chase-icon-outline.png" alt="" /><span>chase-analytics.com</span></div>
           <div class="lower" id="lower"><b id="lowerName"></b><span id="lowerHandle"></span></div>
           <div class="cam" id="cam"><canvas id="camCanvas"></canvas></div>
           <div class="countdown" id="countdown"></div>
         </div>
+        <!-- Which side has the keys while comparing. In the ring, so it is never recorded. -->
+        <div class="focus" id="focus"></div>
         </div>
         <p class="deck-note" id="deckNote">Only the framed stage is recorded. Everything on the right stays off camera.</p>
       </main>
@@ -50,6 +50,11 @@
 
         <section>
           <h2>Site</h2>
+          <div class="tabs" id="tabs"></div>
+          <div class="row">
+            <button class="grow" id="compareBtn" title="Two tabs on stage together (K)">Compare side by side (K)</button>
+            <button id="swapBtn" title="Swap the two sides">&#8644;</button>
+          </div>
           <div class="nav">
             <button id="backBtn" title="Back">&#8592;</button>
             <button id="fwdBtn" title="Forward">&#8594;</button>
@@ -76,7 +81,8 @@
             <input type="range" id="siteWidth" min="360" max="1920" step="10" />
             <output id="siteWidthOut"></output>
           </label>
-          <p class="hint">Narrower page = bigger type on stage. Around 430 is the phone layout.</p>
+          <p class="hint">Narrower page = bigger type on stage. Around 430 is the phone layout. Comparing has its own page size.</p>
+          <p class="hint">Each tab keeps its page, scroll and marks. + opens a new tab on the page you are on; 1-9 jump to a tab. Comparing puts two tabs on stage (side by side in 16:9, stacked in 9:16) and both are recorded.</p>
         </section>
 
         <section>
@@ -176,6 +182,9 @@
             <dt>R</dt><dd>record / stop</dd>
             <dt>Q</dt><dd>pause / resume</dd>
             <dt>M</dt><dd>chapter marker</dd>
+            <dt>1-9</dt><dd>go to that tab</dd>
+            <dt>+</dt><dd>new tab on this page</dd>
+            <dt>K</dt><dd>compare two tabs on stage / back to one</dd>
             <dt>V D H A X O</dt><dd>browse, pen, highlight, arrow, box, circle</dd>
             <dt>S / Z</dt><dd>spotlight / zoom (click = that row or card, again = its parent)</dd>
             <dt>Esc</dt><dd>zoom out, clear spotlight, back to browse</dd>
