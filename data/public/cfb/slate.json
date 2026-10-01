@@ -3,8 +3,8 @@
   "sport": "cfb",
   "season": 2026,
   "week": 5,
-  "generated_at_utc": "2026-10-01T18:30:50Z",
-  "data_through_utc": "2026-10-01T00:32:02Z",
+  "generated_at_utc": "2026-10-01T23:59:23Z",
+  "data_through_utc": "2026-10-01T19:30:32Z",
   "games": [
     {
       "id": "WKU@NMSU",
