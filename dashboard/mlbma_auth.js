@@ -32,10 +32,18 @@
   var _readyPromise = null;
   var _listeners = [];
 
+  // Public routes do not load mlbma_config.js (it would switch chase_datastatus onto the
+  // sheet path), so the header account menu falls back to this copy. The publishable key
+  // is public by design; tests/test_auth_config.py pins it to core/config.py.
+  var DEFAULT_SUPABASE = {
+    url: 'https://mvxjcfriirguhjujurhf.supabase.co',
+    publishable_key: 'sb_publishable_o5EJOhmdxbUPLMHZGKpv1g_Jk8by5v2'
+  };
+
   function supaConfig() {
     var c = global.MLBMA_CONFIG && global.MLBMA_CONFIG.SUPABASE;
     if (c && c.url && c.publishable_key) return c;
-    return null;
+    return DEFAULT_SUPABASE;
   }
 
   function isConfigured() {
