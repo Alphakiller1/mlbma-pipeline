@@ -12,6 +12,7 @@ Per NFL game (the page is tabbed, one club's side at a time):
   1. Away quarterback   (#quarterbacks, away side) - season line and splits by defensive look
   2. Home quarterback   (#quarterbacks, home side)
   3. Unit Matchups      (#efficiency, both sides)   - each offense above the defense it meets
+  4. Injury Report      (#availability, both clubs) - the official designations
 
 How it stays honest and legible:
   - the sections are screenshots of chase-analytics.com itself (the design contract),
@@ -59,6 +60,14 @@ SECTIONS = {
         {"section": "quarterbacks", "tag": "1-qb-away", "tab": "Passing", "club": "away"},
         {"section": "quarterbacks", "tag": "2-qb-home", "tab": "Passing", "club": "home"},
         {"section": "efficiency", "tag": "3-units", "tab": "Units", "both": True},
+        # Injury report: both clubs' boards, header + the opened official report only (the
+        # starter grid is all ACTIVE; the report is what the post is for). Short, so it may
+        # use a narrower page = bigger type.
+        {"section": "availability", "tag": "4-injuries", "tab": "Lineups", "open": True, "min_width": 600,
+         "title": ("Injury Report", "Official Designations"),
+         "css": ("#availability .ca-lineup-board{display:block!important}"
+                 "#availability .ca-lineup-board + .ca-lineup-board{margin-top:18px}"
+                 "#availability .ca-lineup-tabs,#availability .ca-lineup-unit{display:none!important}")},
     ],
 }
 ESPN_NFL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event="
@@ -118,7 +127,15 @@ def capture(page, url: str, spec: dict, out: Path) -> tuple[int, int]:
             f"#{section} .ca-detail-duo{{grid-template-columns:1fr!important}}"
             ".ca-detail-source-note{display:none!important}"
             # both clubs' panels at once (NFL shows one side at a time)
-            + (f"#{section} .ca-nfl-duo > .ca-form-panel{{display:block!important}}" if spec.get("both") else "")))
+            + (f"#{section} .ca-nfl-duo > .ca-form-panel{{display:block!important}}" if spec.get("both") else "")
+            + spec.get("css", "")))
+        if spec.get("open"):
+            page.evaluate(f"document.querySelectorAll('#{section} details').forEach(d => d.open = true)")
+        if spec.get("title"):
+            # the post shows part of the section: name what is actually on it
+            page.evaluate("""([id, t, sub]) => { const h = document.querySelector('#' + id + ' h2');
+                if (!h) return; const small = h.parentElement.querySelector('p, .ca-section-sub, small');
+                h.firstChild.textContent = t; if (small) small.textContent = sub; }""", [section, *spec["title"]])
         el = page.locator(f"#{section}").first
         el.scroll_into_view_if_needed()
         page.wait_for_timeout(2500)  # headshots, logos, late data
@@ -128,7 +145,7 @@ def capture(page, url: str, spec: dict, out: Path) -> tuple[int, int]:
         want = round(box["height"] / BODY_ASPECT) + PAGE_PAD
         if clipped:
             want = max(want, width + 80)
-        want = max(760, min(1200, want))
+        want = max(spec.get("min_width", 760), min(1200, want))
         if not clipped and abs(want - width) <= 12:
             break
         width = want
@@ -160,6 +177,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--league", choices=["mlb", "nfl"], default="mlb")
     ap.add_argument("--games", help="AWAY@HOME,AWAY@HOME (default: every game on today's slate)")
+    ap.add_argument("--only", help="make just these posts, by tag word: e.g. injuries, or qb,units")
     a = ap.parse_args()
 
     from playwright.sync_api import sync_playwright
@@ -175,6 +193,10 @@ def main() -> None:
         if not games:
             fail(f"no games on the {a.league.upper()} slate")
         sections = SECTIONS[a.league]
+        total = len(sections)
+        if a.only:
+            want = [w.strip() for w in a.only.split(",") if w.strip()]
+            sections = [sp for sp in sections if any(w in sp["tag"] for w in want)] or fail(f"no post matches --only {a.only}")
         for n, (away, home) in enumerate(games, 1):
             game = find_game(page, a.league, away, home, None)
             meta = game_meta(game["id"]) if a.league == "mlb" else nfl_meta(game["id"])
@@ -184,7 +206,8 @@ def main() -> None:
                      for side, src in zip(("away", "home"), game["logos"])}
             out_dir = VIDEO / "out" / "instagram" / meta["date"]
             out_dir.mkdir(parents=True, exist_ok=True)
-            for i, spec in enumerate(sections, 1):
+            for spec in sections:
+                i = SECTIONS[a.league].index(spec) + 1  # carousel position in the full set
                 section, tag = spec["section"], spec["tag"]
                 shot = pub / f"{meta['date']}-{away}-{home}-{tag}.png"
                 w, h = capture(page, SITE + game["href"], spec, shot)
@@ -196,7 +219,7 @@ def main() -> None:
                     "awayLogo": logos["away"],
                     "homeLogo": logos["home"],
                     "artifact": {"src": f"instagram/{shot.name}", "width": w, "height": h},
-                    "page": f"{i}/{len(sections)}",
+                    "page": f"{i}/{total}",
                 }
                 if section == "lineups" and not meta["lineups_posted"]:
                     props["note"] = "Projected orders until lineups are posted"
