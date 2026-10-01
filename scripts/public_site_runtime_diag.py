@@ -701,7 +701,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               "cfb update sp+" in dvoa_lower
               and "opponent-adjusted cfb efficiency" in dvoa_lower
               and "not ftn dvoa" in dvoa_lower
-              and "of 138" in dvoa_lower)
+              and "fbs rank" not in dvoa_lower
+              and page.locator("#cfb-dvoa tbody .ca-rank").count() == 8)
         cfb_cells = page.evaluate("""() => {
           const tds = [...document.querySelectorAll('.ca-cfb-panel td')];
           const graded = td => /(^|\\s)c-(elite|good|mid|weak|poor)(\\s|$)/.test(td.className);
