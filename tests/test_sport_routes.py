@@ -197,8 +197,9 @@ class SportRouteBuilderTests(unittest.TestCase):
                 self.assertIn("def_interception_rate", rates)
                 self.assertIn("off_dropbacks_pg", rates)
                 self.assertIn("def_dropbacks_pg", rates)
-                self.assertNotIn("rank", rates["off_plays_pg"])
-                self.assertNotIn("rank", rates["off_pass_rate"])
+                # Owner 2026-10-01: pace and play mix are ranked too, by "most".
+                self.assertIn("rank", rates["off_plays_pg"])
+                self.assertIn("rank", rates["off_pass_rate"])
                 self.assertFalse({"off_ppa", "off_successRate", "off_explosiveness",
                                   "off_stuffRate"} & set(rates))
                 self.assertEqual(form.get("source"), "espn")
@@ -328,11 +329,15 @@ class SportRouteBuilderTests(unittest.TestCase):
             else:
                 self.assertIn("noindex", text, path)
 
-    def test_cfb_win_probability_matches_margin_side(self):
+    def test_cfb_card_states_facts_not_the_model_read(self):
+        # Owner 2026-10-01: the CFB matchup card drops model margin, win
+        # probability and projected total; those live in Model Center.
         card = (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8")
-        favored = card.split("function cfbFavored", 1)[1].split("function cfbTone", 1)[0]
-        self.assertIn("side === 'home' ? wpHome : 1 - wpHome", favored)
-        self.assertNotIn("Math.max(wpHome, 1 - wpHome)", favored)
+        summary = card.split("function summaryRow", 1)[1].split("function cfbAnalysis", 1)[0]
+        for gone in ("Model margin", "Win probability", "Projected total"):
+            self.assertNotIn(gone, summary)
+        for fact in ("'Records'", "'Conference'", "'Site'"):
+            self.assertIn(fact, summary)
 
     def test_scope_bar_omits_defaults(self):
         js = (ROOT / "dashboard" / "chase_scope.js").read_text(encoding="utf-8")

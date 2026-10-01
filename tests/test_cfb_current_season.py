@@ -107,11 +107,14 @@ class CfbCurrentSeasonTests(unittest.TestCase):
         self.assertAlmostEqual(cfb.derived_rate(team, "own", "dropbacks_per_game"), 27.5)
 
         pools = {spec[0]: [cfb.derived_rate(team, spec[1], spec[2])]
-                 for spec in cfb.DERIVED_SPEC if spec[4] != "neutral"}
+                 for spec in cfb.DERIVED_SPEC}
         form = cfb.form_for(team, pools, 2026)
         self.assertIn("off_points_per_play", form["rates"])
         self.assertIn("def_sack_rate", form["rates"])
-        self.assertNotIn("rank", form["rates"]["off_plays_pg"])
+        # Owner 2026-10-01: pace and play mix carry their place too, ranked
+        # by "most" (1st = most plays per game).
+        self.assertEqual(form["rates"]["off_plays_pg"]["rank"], 1)
+        self.assertEqual(form["rates"]["off_plays_pg"]["better"], "neutral")
         self.assertEqual(form["rates"]["def_sack_rate"]["rank"], 1)
 
 

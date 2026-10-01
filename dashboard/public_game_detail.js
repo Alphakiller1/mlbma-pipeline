@@ -5890,7 +5890,8 @@ function seasonToggle(game) {
     var place = entry.rank ? { rank: entry.rank, of: entry.of } : null;
     return '<td class="num ' + (place ? rankTone(place.rank, place.of) : '') + '" title="' +
       esc(titleCase(entry.label || '') + (place ? ' · ' + place.rank + ordinal(place.rank) +
-        ' of ' + place.of : '')) + '">' + esc(cfbValue(entry)) +
+        (entry.better === 'neutral' ? ' most' : '') + ' of ' + place.of : '')) + '">' +
+      esc(cfbValue(entry)) +
       (place ? rankBadge(place) : '') + '</td>';
   }
 
@@ -6052,14 +6053,12 @@ function seasonToggle(game) {
         var tone = place ? rankTone(place.rank, place.of) : '';
         return '<tr><td>' + esc(row[1]) + '</td><td class="num' + (tone ? ' ' + tone : '') + '">' +
           (value == null ? '<span class="ca-vs-none">Not Rated</span>' : esc(value)) +
-          (place ? rankBadge(place) : '') + '</td><td class="num ca-vs-none">' +
-          (place ? place.rank + ordinal(place.rank) + ' of ' + place.of : 'Rank Not Published') +
-          '</td></tr>';
+          (place ? rankBadge(place) : '') + '</td></tr>';
       });
       return '<section class="ca-form-panel ca-cfb-panel ca-cfb-feed-panel"><h3>' +
         esc(name + ' DVOA Equivalent') + '</h3><p class="ca-lineup-context">' +
         esc(context || 'Opponent-adjusted ratings are not available') + '</p>' +
-        nflSplitTable(['Rating', 'FBS Rank'], body, 'Unit') + '</section>';
+        nflSplitTable(['Rating'], body, 'Unit') + '</section>';
     }
     return '<div class="ca-detail-duo ca-nfl-duo">' + panel('away') + panel('home') + '</div>';
   }

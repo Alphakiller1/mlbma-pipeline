@@ -476,37 +476,14 @@
   }
 
   /* CFB middle band + facts. The producer publishes a model board, not an ops
-     slate, so the pitcher/QB arms become a per-team projected-points line and
-     the three summary facts carry the model's margin, win probability, and
-     total. Every cell reuses the shared card structure so the CFB card is the
+     slate, so the pitcher/QB arms become a per-team projected-points line;
+     the three summary facts are records, conference and site. Every cell reuses the shared card structure so the CFB card is the
      same object as the MLB and NFL cards, only fed different facts. */
   function fmt1(v) { return (typeof v === 'number' && isFinite(v)) ? v.toFixed(1) : null; }
   function cfbSigned(v) { return (typeof v === 'number' && isFinite(v)) ? (v > 0 ? '+' : '') + v.toFixed(1) : 'Not published'; }
   function cfbPct(v) { return (typeof v === 'number' && isFinite(v)) ? Math.round(v * 100) + '%' : 'Not published'; }
   function cfbText(v) { return v ? String(v).replace(/_/g, ' ') : 'Not published'; }
 
-  function cfbFavored(game) {
-    var m = game.model_margin;
-    var wpHome = game.win_probability;
-    var side = null;
-    if (typeof m === 'number' && isFinite(m) && m !== 0) side = m > 0 ? 'home' : 'away';
-    else if (typeof wpHome === 'number' && isFinite(wpHome)) side = wpHome >= 0.5 ? 'home' : 'away';
-    var pFav = (side && typeof wpHome === 'number' && isFinite(wpHome))
-      ? (side === 'home' ? wpHome : 1 - wpHome)
-      : null;
-    return {
-      side: side,
-      abbr: side ? game[side] : null,
-      margin: (typeof m === 'number' && isFinite(m)) ? Math.abs(m) : null,
-      pFav: pFav
-    };
-  }
-  function cfbTone(pFav) {
-    if (typeof pFav !== 'number') return '';
-    if (pFav >= 0.65) return 'is-ok';
-    if (pFav < 0.57) return 'is-watch';
-    return '';
-  }
   function cfbArm(game, side) {
     var name = teamName('cfb', game[side], game[side + '_name']);
     var proj = side === 'away' ? game.proj_away : game.proj_home;
@@ -531,14 +508,20 @@
   }
   function summaryRow(sport, game, statusLine) {
     if (sport === 'cfb') {
-      var fav = cfbFavored(game);
-      var tone = cfbTone(fav.pFav);
-      var marginVal = (fav.abbr && fav.margin != null) ? fav.abbr + ' +' + fav.margin.toFixed(1) : 'Not published';
-      var wpVal = (fav.abbr && fav.pFav != null) ? fav.abbr + ' ' + Math.round(fav.pFav * 100) + '%' : 'Not published';
+      // Owner 2026-10-01: the card states facts, not the model's read - the
+      // margin, win probability and total live in Model Center.
+      var aCode = game.away || '', hCode = game.home || '';
+      var records = (game.away_record || game.home_record)
+        ? aCode + ' ' + (game.away_record || 'Not Published') + ' · ' + hCode + ' ' +
+          (game.home_record || 'Not Published')
+        : 'Not Published';
+      var ac = game.away_conference, hc = game.home_conference;
+      var conf = ac && hc ? (ac === hc ? ac : ac + ' vs ' + hc) : (ac || hc || 'Not Published');
       return '<div class="ca-matchup-card__summary">' +
-        miniFact('Model margin', marginVal, tone) +
-        miniFact('Win probability', wpVal, tone) +
-        miniFact('Projected total', fmt1(game.proj_total) || 'Not published', '') +
+        miniFact('Records', records, '', 'users') +
+        miniFact('Conference', conf, '', 'whistle') +
+        miniFact('Site', game.neutral ? 'Neutral site' : (game.stadium || game.venue || 'Not Published'),
+          '', 'plane') +
         '</div>';
     }
     return '<div class="ca-matchup-card__summary">' +

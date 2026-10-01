@@ -663,11 +663,12 @@ def form_for(team: dict | None, pools: dict[str, list[float]], season: int) -> d
             "better": better,
             "format": fmt,
         }
-        # Pace and play mix are context, not performance.  Publish them
-        # without a rank so the UI cannot imply that faster or pass-heavier is
-        # inherently better.
-        if better != "neutral" and pool:
-            entry["rank"] = rank(pool, value, better)
+        # Pace and play mix are context, not performance, but the owner asked
+        # for their place too (2026-10-01): a neutral rate is ranked by "most"
+        # (1st = most plays per game, the highest pass rate), the same reading
+        # as the NFL desk's frequency pills.
+        if pool:
+            entry["rank"] = rank(pool, value, "high" if better == "neutral" else better)
             entry["of"] = len(pool)
         rates[key] = entry
     if not rates:
@@ -764,7 +765,7 @@ def main() -> int:
                 pools[key].append(value)
         for key, split, metric, _label, better, _fmt in DERIVED_SPEC:
             value = derived_rate(team, split, metric)
-            if value is not None and better != "neutral":
+            if value is not None:
                 pools[key].append(value)
     events = event_index(load_espn_events())
     adjusted = load_sp_plus(season)
