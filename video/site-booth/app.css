@@ -103,6 +103,9 @@ textarea {
   border-radius: 4px;
   transition: border-color 0.2s;
 }
+.ring {
+  position: relative;
+}
 .ring.live {
   border-color: var(--b-red);
 }
@@ -111,6 +114,34 @@ textarea {
   inset: 0;
   transform-origin: 0 0;
   transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+/* One per tab on stage; a hidden tab keeps its page alive (scroll, state) but is not drawn. */
+.pane {
+  position: absolute;
+  overflow: hidden;
+}
+.pane.hidden {
+  visibility: hidden;
+}
+.divider {
+  position: absolute;
+  display: none;
+  background: var(--b-violet);
+}
+.divider.show {
+  display: block;
+}
+.focus {
+  position: absolute;
+  display: none;
+  border-radius: 2px;
+  background: var(--b-violet);
+  transition:
+    left 0.2s ease,
+    top 0.2s ease;
+}
+.focus.show {
+  display: block;
 }
 .viewport {
   position: absolute;
@@ -313,6 +344,69 @@ textarea {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
+}
+.grow {
+  flex: 1;
+}
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.tab {
+  display: flex;
+  flex: 1 1 128px;
+  min-width: 0;
+  border: 1px solid var(--b-line);
+  border-radius: 6px;
+  background: var(--b-raise);
+  overflow: hidden;
+}
+.tab.on {
+  border-color: var(--b-violet);
+  background: var(--b-violet-strong);
+  color: #fff;
+}
+/* On stage beside the active one while comparing. */
+.tab.shown {
+  border-color: var(--b-violet);
+}
+.tab button {
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+.tab-go {
+  display: flex;
+  flex: 1;
+  gap: 6px;
+  min-width: 0;
+  text-align: left;
+}
+.tab-go b {
+  flex: none;
+  color: var(--b-violet);
+}
+.tab.on .tab-go b {
+  color: inherit;
+}
+.tab-go span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tab-x {
+  flex: none;
+  padding: 5px 8px;
+  color: var(--b-dim);
+}
+.tab.on .tab-x {
+  color: inherit;
+}
+.tab-add {
+  flex: none;
+  width: 34px;
+  font-weight: 700;
 }
 .nav {
   display: flex;

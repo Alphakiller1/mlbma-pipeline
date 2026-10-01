@@ -7,10 +7,6 @@
 const $ = (id) => document.getElementById(id);
 const stage = $("stage");
 const zoomEl = $("zoom");
-const viewport = $("viewport");
-const frame = $("site");
-const ink = $("ink");
-const ctx = ink.getContext("2d");
 const cam = $("cam");
 const camVideo = $("camVideo");
 
@@ -19,7 +15,7 @@ const PREF_KEY = "siteBooth.prefs.v1";
 const prefs = Object.assign(
   {
     aspect: "wide",
-    siteWidth: { wide: 1280, vertical: 430 },
+    siteWidth: { wide: 1280, vertical: 430, wideCompare: 960, verticalCompare: 430 },
     camOn: true,
     corner: "br",
     camSize: 1,
@@ -38,6 +34,9 @@ const prefs = Object.assign(
     camId: "",
     micId: "",
     path: "/nfl/",
+    tabs: null, // the open tabs' pages, restored next time
+    tab: 0, // the active one
+    pair: null, // [i, j] while comparing
     notes: "",
   },
   (() => {
@@ -81,35 +80,97 @@ const TONES = [
 ];
 const tone = () => TONES[prefs.tone % TONES.length][1];
 
-/* ── layout ── */
-const geo = { sw: 0, sh: 0, k: 1, W: 1280, H: 720, zoom: { z: 1, tx: 0, ty: 0 } };
+/* ── layout ──
+ * The stage holds one tab, or two side by side (16:9) / stacked (9:16) when comparing.
+ * Each visible tab gets a pane: a clip box at its spot on the stage, holding a viewport
+ * that renders the site at `W` CSS px wide and is scaled by `k` to fit the pane. */
+const geo = { sw: 0, sh: 0, zoom: { z: 1, tx: 0, ty: 0 } };
 const CAM_SIZES = [0.22, 0.3, 0.4];
+// The page width the site renders at, per format, alone and when comparing (each tab gets
+// half the stage there, so a narrower page keeps the type readable).
+const SITE_WIDTHS = { wide: 1280, vertical: 430, wideCompare: 960, verticalCompare: 430 };
+const widthKey = () => `${prefs.aspect}${pair ? "Compare" : ""}`;
+const siteWidth = () => Number(prefs.siteWidth?.[widthKey()]) || SITE_WIDTHS[widthKey()];
+const divider = $("divider");
+const focusBar = $("focus");
 
 function layout() {
   const deck = $("deck");
   const note = $("deckNote").offsetHeight + 8;
   const aw = deck.clientWidth - 28 - 10; // 10 = the recording ring around the stage
   const ah = deck.clientHeight - 28 - 10 - note;
-  const a = prefs.aspect === "vertical" ? 9 / 16 : 16 / 9;
+  const vertical = prefs.aspect === "vertical";
+  const a = vertical ? 9 / 16 : 16 / 9;
   const sw = Math.floor(Math.min(aw, ah * a));
   const sh = Math.floor(sw / a);
   Object.assign(geo, { sw, sh });
   stage.style.width = `${sw}px`;
   stage.style.height = `${sh}px`;
-  const W = prefs.siteWidth[prefs.aspect];
-  geo.W = W;
-  geo.k = sw / W;
-  geo.H = Math.round(sh / geo.k);
-  viewport.style.width = `${W}px`;
-  viewport.style.height = `${geo.H}px`;
-  viewport.style.transform = `scale(${geo.k})`;
-  // Backing store at the zoomed-in resolution, so marks stay sharp at 2x zoom.
-  const dpr = Math.min(4, (window.devicePixelRatio || 1) * geo.k * 2);
-  ink.width = Math.min(8192, Math.round(W * dpr));
-  ink.height = Math.min(8192, Math.round(geo.H * dpr));
+  const W = siteWidth();
+  // Comparing: two panes with a thin violet rule between them (recorded, so viewers see the split).
+  const gap = pair ? Math.max(2, Math.round(Math.min(sw, sh) * 0.005)) : 0;
+  const rects = !pair
+    ? [[0, 0, sw, sh]]
+    : vertical
+      ? [
+          [0, 0, sw, Math.floor((sh - gap) / 2)],
+          [0, Math.floor((sh - gap) / 2) + gap, sw, sh - Math.floor((sh - gap) / 2) - gap],
+        ]
+      : [
+          [0, 0, Math.floor((sw - gap) / 2), sh],
+          [Math.floor((sw - gap) / 2) + gap, 0, sw - Math.floor((sw - gap) / 2) - gap, sh],
+        ];
+  const vis = shown();
+  for (const t of tabs) t.pane.classList.toggle("hidden", !vis.includes(t));
+  vis.forEach((t, i) => placeTab(t, rects[i], W));
+  divider.classList.toggle("show", Boolean(pair));
+  if (pair) {
+    const [x, y, w, h] = vertical ? [0, rects[0][3], sw, gap] : [rects[0][2], 0, gap, sh];
+    Object.assign(divider.style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px` });
+  }
+  paintFocus();
   applyZoom();
   placeOverlays();
 }
+
+function placeTab(t, [x, y, pw, ph], W) {
+  // A new page width reflows the site, so marks drawn on the old layout would land on the
+  // wrong things. A spotlight pinned to an element follows it; an area one cannot.
+  if (t.W && t.W !== W) {
+    t.strokes.length = 0;
+    if (t.spot && !t.spot.el) t.spot = null;
+  }
+  const k = pw / W;
+  Object.assign(t, { x, y, pw, ph, W, k, H: Math.ceil(ph / k) });
+  Object.assign(t.pane.style, { left: `${x}px`, top: `${y}px`, width: `${pw}px`, height: `${ph}px` });
+  t.view.style.width = `${W}px`;
+  t.view.style.height = `${t.H}px`;
+  t.view.style.transform = `scale(${k})`;
+  // Backing store at the zoomed-in resolution, so marks stay sharp at 2x zoom.
+  const dpr = Math.min(4, (window.devicePixelRatio || 1) * k * 2);
+  const iw = Math.min(8192, Math.round(W * dpr));
+  const ih = Math.min(8192, Math.round(t.H * dpr));
+  if (t.ink.width !== iw || t.ink.height !== ih) Object.assign(t.ink, { width: iw, height: ih });
+}
+
+/** Which tab has the keys and markers, shown OFF the recorded stage: a bar in the ring under (or beside) its pane. */
+function paintFocus() {
+  const on = Boolean(pair) && pair.includes(active);
+  focusBar.classList.toggle("show", on);
+  if (on) {
+    const vertical = prefs.aspect === "vertical";
+    const ring = 3; // the ring's padding: the bar sits in it, outside the stage
+    Object.assign(
+      focusBar.style,
+      vertical
+        ? { left: "0px", top: `${ring + active.y}px`, width: `${ring}px`, height: `${active.ph}px` }
+        : { left: `${ring + active.x}px`, top: `${ring + geo.sh}px`, width: `${active.pw}px`, height: `${ring}px` },
+    );
+    const side = pair.indexOf(active) === 0 ? (vertical ? "top" : "left") : vertical ? "bottom" : "right";
+    $("deckNote").textContent = `Comparing tabs ${tabs.indexOf(pair[0]) + 1} and ${tabs.indexOf(pair[1]) + 1}. Keys and markers go to the ${side} one (the violet bar); click the other side to switch.`;
+  } else $("deckNote").textContent = DECK_NOTE;
+}
+const DECK_NOTE = $("deckNote").textContent;
 
 function placeOverlays() {
   const { sw, sh } = geo;
@@ -154,17 +215,17 @@ function placeOverlays() {
   lower.classList.toggle("off", !prefs.lower);
 }
 
-/* ── zoom ── */
+/* ── zoom (the whole stage, so it works the same alone or comparing) ── */
 function applyZoom() {
   const { z, tx, ty } = geo.zoom;
   zoomEl.style.transform = `translate(${tx}px, ${ty}px) scale(${z})`;
 }
-/** Zoom so a rect in viewport (site CSS px) coordinates fills the stage. */
-function zoomTo(r) {
-  const k = geo.k;
+/** Zoom so a rect in tab `t`'s viewport (site CSS px) coordinates fills the stage. */
+function zoomTo(r, t) {
+  const k = t.k;
   const pad = 16;
-  const rx = (r.x - pad) * k;
-  const ry = (r.y - pad) * k;
+  const rx = t.x + (r.x - pad) * k;
+  const ry = t.y + (r.y - pad) * k;
   const rw = (r.w + pad * 2) * k;
   const rh = (r.h + pad * 2) * k;
   const z = Math.max(1, Math.min(3, Math.min(geo.sw / rw, geo.sh / rh)));
@@ -180,15 +241,26 @@ const zoomOut = () => {
   applyZoom();
 };
 
-/* ── the site frame ── */
-const win = () => {
+/* ── tabs: each one is a live page of the site that keeps its place, scroll and marks ── */
+const MAX_TABS = 9; // keys 1-9
+const tabs = [];
+let active = null; // the tab the address bar, keys and markers work on
+let pair = null; // [left/top, right/bottom] while comparing, else null
+let previous = null; // the tab before `active`: compare's natural partner
+let tabSeq = 0;
+/** The tabs on stage right now, in screen order. */
+const shown = () => (pair ? pair : active ? [active] : []);
+const shownKey = () => shown().map((t) => t.id).join(",");
+
+const win = (t = active) => {
   try {
-    return frame.contentWindow && frame.contentWindow.document ? frame.contentWindow : null;
+    return t?.frame.contentWindow && t.frame.contentWindow.document ? t.frame.contentWindow : null;
   } catch {
     return null; // left the proxy somehow (cross-origin)
   }
 };
-const go = (p) => {
+const here = (w) => w.location.pathname + w.location.search + w.location.hash;
+const go = (p, t = active) => {
   let target = String(p || "/").trim();
   try {
     const u = new URL(target, location.origin);
@@ -199,7 +271,9 @@ const go = (p) => {
   if (!target.startsWith("/")) target = `/${target}`;
   // Booth pages other than the booth itself (the playoff bracket) may go on stage.
   if (target.startsWith("/__booth") && !target.startsWith("/__booth/bracket")) target = "/";
-  frame.src = target;
+  t.path = target;
+  t.frame.src = target;
+  if (t === active) $("address").value = target;
 };
 const pageLabel = (w) => {
   const doc = w.document;
@@ -207,73 +281,310 @@ const pageLabel = (w) => {
   const h1 = doc.querySelector("h1")?.innerText?.trim();
   return (h1 && h1.length < 70 && !/chase analytics/i.test(h1) ? h1 : t) || w.location.pathname;
 };
-let lastPage = "";
+const tabLabel = (t) => t.label || t.path || "Loading...";
+/** What is on stage, for chapter markers: one page, or "A vs B" when comparing. */
+const stageLabel = () => shown().map(tabLabel).join(" vs ");
+const stagePath = () => shown().map((t) => t.path).join(" | ");
 
-frame.addEventListener("load", () => {
-  const w = win();
-  if (!w) {
-    status("That page is off the site. Use the address bar to come back.", true);
+function makeTab(path) {
+  const pane = document.createElement("div");
+  pane.className = "pane";
+  const view = document.createElement("div");
+  view.className = "viewport";
+  const frame = document.createElement("iframe");
+  frame.title = "chase-analytics.com";
+  const ink = document.createElement("canvas");
+  ink.classList.toggle("tool", tool !== "browse");
+  view.append(frame, ink);
+  pane.append(view);
+  zoomEl.insertBefore(pane, divider);
+  const t = { id: ++tabSeq, pane, view, frame, ink, ctx: ink.getContext("2d"), strokes: [], spot: null, lastPick: null, lastPage: "", path: "", label: "" };
+  Object.assign(t, { x: 0, y: 0, pw: 0, ph: 0, W: 0, H: 0, k: 1 });
+  tabs.push(t);
+  wireTab(t);
+  go(path, t);
+  return t;
+}
+
+function wireTab(t) {
+  t.frame.addEventListener("load", () => {
+    const w = win(t);
+    if (!w) {
+      if (t === active) status("That page is off the site. Use the address bar to come back.", true);
+      return;
+    }
+    t.path = here(w);
+    if (t === active) $("address").value = t.path;
+    w.addEventListener("keydown", onKey, true);
+    // Clicking into a page while comparing aims the keys and markers at it.
+    w.addEventListener("pointerdown", () => setActive(t, { focus: false }), true);
+    w.addEventListener("scroll", () => (dirty = true), { passive: true });
+    t.label = pageLabel(w);
+    // A new page: marks and spotlight belonged to the old one.
+    const page = w.location.pathname + w.location.search;
+    if (page !== t.lastPage) {
+      t.strokes.length = 0;
+      t.spot = null;
+      t.lastPick = null;
+      const onStage = shown().includes(t);
+      if (onStage) zoomOut();
+      if (onStage && t.lastPage) autoChapter();
+      t.lastPage = page;
+    }
+    saveTabs();
+    paintTabs();
+    dirty = true;
+  });
+
+  t.ink.addEventListener("pointerdown", (e) => {
+    if (tool === "browse") return;
+    e.preventDefault();
+    setActive(t, { focus: false });
+    t.ink.setPointerCapture(e.pointerId);
+    const [vx, vy] = toView(e, t);
+    const [sx, sy] = scroll(t);
+    drawing = { t, kind: tool, tone: tone(), pts: [[vx + sx, vy + sy]], born: performance.now(), v0: [vx, vy], moved: false };
+  });
+  t.ink.addEventListener("pointermove", (e) => {
+    if (!drawing || drawing.t !== t) return;
+    const [vx, vy] = toView(e, t);
+    const [sx, sy] = scroll(t);
+    const p = [vx + sx, vy + sy];
+    if (Math.hypot(vx - drawing.v0[0], vy - drawing.v0[1]) > 4) drawing.moved = true;
+    if (drawing.kind === "pen" || drawing.kind === "highlight") drawing.pts.push(p);
+    else drawing.pts[1] = p;
+    dirty = true;
+  });
+  t.ink.addEventListener("pointerup", (e) => {
+    const d = drawing;
+    drawing = null;
+    if (!d || d.t !== t) return;
+    dirty = true;
+    const [vx, vy] = toView(e, t);
+    if ((d.kind === "spot" || d.kind === "zoom") && !d.moved) {
+      // A click: that row or card. Clicking inside the same one again takes its parent.
+      const el = pick(t, vx, vy, true);
+      if (!el) return;
+      if (d.kind === "spot") t.spot = { el, path: cssPath(el), rect: null };
+      else {
+        const r = el.getBoundingClientRect();
+        zoomTo({ x: r.left, y: r.top, w: r.width, h: r.height }, t);
+      }
+      return;
+    }
+    if (!d.moved && d.kind !== "pen" && d.kind !== "highlight") return;
+    const [a, b] = [d.pts[0], d.pts[1] ?? d.pts[0]];
+    const rect = { x: Math.min(a[0], b[0]), y: Math.min(a[1], b[1]), w: Math.abs(a[0] - b[0]), h: Math.abs(a[1] - b[1]) };
+    if (d.kind === "spot") t.spot = { rect };
+    else if (d.kind === "zoom") {
+      const [sx, sy] = scroll(t);
+      zoomTo({ ...rect, x: rect.x - sx, y: rect.y - sy }, t);
+    } else {
+      d.born = performance.now();
+      t.strokes.push(d);
+    }
+    t.lastPick = null;
+  });
+  // Scroll the site with the wheel while a marker tool has the pointer.
+  t.ink.addEventListener(
+    "wheel",
+    (e) => {
+      const w = win(t);
+      if (!w) return;
+      e.preventDefault();
+      w.scrollBy({ left: e.deltaX, top: e.deltaY, behavior: "instant" });
+    },
+    { passive: false },
+  );
+}
+
+/** After the active tab or the compare pair changed: re-lay the stage, and chapter it if what is on it changed. */
+function afterSwitch(before, { focus = true } = {}) {
+  const changed = shownKey() !== before;
+  if (changed) zoomOut();
+  layout();
+  $("address").value = active.path;
+  paintTabs();
+  saveTabs();
+  dirty = true;
+  if (changed) autoChapter();
+  // Keys like the arrows and Page Down should scroll the page now in front of you.
+  if (focus) {
+    try {
+      active.frame.contentWindow?.focus();
+    } catch {
+      /* off the site */
+    }
+  }
+}
+function setActive(t, opts) {
+  if (!t || t === active) return;
+  const before = shownKey();
+  // Comparing and picking a tab that is not on stage: it takes the active side's place.
+  if (pair && !pair.includes(t)) pair[pair.indexOf(active)] = t;
+  previous = active;
+  active = t;
+  afterSwitch(before, opts);
+}
+function newTab(path = active?.path || "/") {
+  if (tabs.length >= MAX_TABS) {
+    toast(`${MAX_TABS} tabs is the most (keys 1-9). Close one first.`);
     return;
   }
-  const here = w.location.pathname + w.location.search + w.location.hash;
-  $("address").value = here;
-  prefs.path = here;
-  save();
-  w.addEventListener("keydown", onKey, true);
-  w.addEventListener("scroll", () => (dirty = true), { passive: true });
-  // A new page: marks and spotlight belonged to the old one.
-  const page = w.location.pathname + w.location.search;
-  if (page !== lastPage) {
-    strokes.length = 0;
-    spot = null;
-    zoomOut();
-    if (rec.state === "recording" && prefs.autoChapters && lastPage) addChapter(pageLabel(w), true);
-    lastPage = page;
+  const before = shownKey();
+  const t = makeTab(path);
+  if (pair) pair[pair.indexOf(active)] = t;
+  previous = active;
+  active = t;
+  afterSwitch(before);
+  toast(`Tab ${tabs.length} opened on this page. Go anywhere in it; ${pair ? "the other side stays put" : "K compares it with the tab you came from"}.`, 4000);
+}
+function closeTab(t) {
+  if (tabs.length < 2) return;
+  const before = shownKey();
+  const i = tabs.indexOf(t);
+  tabs.splice(i, 1);
+  t.pane.remove();
+  if (previous === t) previous = null;
+  if (pair?.includes(t)) {
+    const slot = pair.indexOf(t);
+    const spare = (previous && !pair.includes(previous) && previous) || tabs.find((x) => !pair.includes(x));
+    if (spare) pair[slot] = spare;
+    else pair = null;
+    if (active === t) active = pair ? pair[slot] : tabs[0];
+  } else if (active === t) active = (previous && tabs.includes(previous) && previous) || tabs[Math.min(i, tabs.length - 1)];
+  afterSwitch(before);
+}
+function toggleCompare() {
+  const before = shownKey();
+  if (pair) {
+    pair = null;
+    toast("One tab on stage.");
+  } else {
+    let other = previous && previous !== active && tabs.includes(previous) ? previous : null;
+    if (!other && tabs.length > 1) other = tabs[tabs.indexOf(active) + 1] || tabs[tabs.indexOf(active) - 1];
+    if (!other) {
+      // Only one tab: open a second on the same page, and aim the keys at it.
+      other = active;
+      active = makeTab(active.path);
+      previous = other;
+    }
+    pair = [active, other].sort((a, b) => tabs.indexOf(a) - tabs.indexOf(b));
+    toast(`Comparing tabs ${tabs.indexOf(pair[0]) + 1} and ${tabs.indexOf(pair[1]) + 1}. Click a side (or press its number) to use it.`, 4000);
   }
-  dirty = true;
-});
-// Hash / pushState changes do not fire load: keep the address bar honest.
+  // The page width differs alone vs comparing; the slider shows the one in use.
+  paintRail();
+  afterSwitch(before);
+}
+/** Swap the two sides of the comparison. */
+function swapSides() {
+  if (!pair) return;
+  pair.reverse();
+  zoomOut();
+  afterSwitch(shownKey(), { focus: false }); // the same pages in new places: no chapter
+}
+
+function saveTabs() {
+  prefs.tabs = tabs.map((t) => t.path);
+  prefs.tab = Math.max(0, tabs.indexOf(active));
+  prefs.pair = pair ? pair.map((t) => tabs.indexOf(t)) : null;
+  prefs.path = active?.path || prefs.path;
+  save();
+}
+function paintTabs() {
+  const box = $("tabs");
+  box.innerHTML = "";
+  const vis = shown();
+  tabs.forEach((t, i) => {
+    const el = document.createElement("div");
+    el.className = "tab";
+    el.classList.toggle("on", t === active);
+    el.classList.toggle("shown", vis.includes(t) && t !== active);
+    const pick = document.createElement("button");
+    pick.className = "tab-go";
+    pick.title = `${t.path} (${i + 1})`;
+    const num = document.createElement("b");
+    num.textContent = i + 1;
+    const name = document.createElement("span");
+    name.textContent = tabLabel(t);
+    pick.append(num, name);
+    pick.onclick = () => setActive(t);
+    el.append(pick);
+    if (tabs.length > 1) {
+      const x = document.createElement("button");
+      x.className = "tab-x";
+      x.title = "Close tab";
+      x.setAttribute("aria-label", `Close tab ${i + 1}`);
+      x.textContent = "×";
+      x.onclick = () => closeTab(t);
+      el.append(x);
+    }
+    box.append(el);
+  });
+  const add = document.createElement("button");
+  add.className = "tab-add";
+  add.title = "New tab on this page (+)";
+  add.textContent = "+";
+  add.disabled = tabs.length >= MAX_TABS;
+  add.onclick = () => newTab();
+  box.append(add);
+  $("compareBtn").classList.toggle("on", Boolean(pair));
+  $("compareBtn").textContent = pair ? "Back to one tab (K)" : "Compare side by side (K)";
+  $("swapBtn").disabled = !pair;
+}
+
+// Hash / pushState changes do not fire load: keep the address bar, the tab names and the saved tabs honest.
 setInterval(() => {
-  const w = win();
-  if (!w || document.activeElement === $("address")) return;
-  const here = w.location.pathname + w.location.search + w.location.hash;
-  if ($("address").value !== here) $("address").value = here;
+  let changed = false;
+  for (const t of tabs) {
+    const w = win(t);
+    if (!w) continue;
+    const now = here(w);
+    const label = pageLabel(w);
+    if (now !== t.path || label !== t.label) {
+      t.path = now;
+      t.label = label;
+      changed = true;
+    }
+  }
+  if (changed) {
+    saveTabs();
+    paintTabs();
+  }
+  if (active && document.activeElement !== $("address") && $("address").value !== active.path) $("address").value = active.path;
 }, 700);
 window.addEventListener("message", (e) => {
   if (e.origin !== location.origin || !e.data?.booth) return;
   if (e.data.type === "external") toast(`Stayed on the site (that link goes to ${new URL(e.data.href).hostname}).`);
 });
 
-/* ── markers ── */
+/* ── markers (each tab keeps its own, pinned to its page) ── */
 let tool = "browse";
-const strokes = []; // {kind, tone, pts:[[x,y]] in document coords, born}
-let spot = null; // {el} | {rect:{x,y,w,h} in document coords}
-let drawing = null;
+let drawing = null; // {t, kind, tone, pts:[[x,y]] in document coords, born}
 let dirty = true;
-let lastPick = null;
 
-const setTool = (t) => {
-  tool = t;
-  ink.classList.toggle("tool", t !== "browse");
-  document.querySelectorAll("#tools button").forEach((b) => b.classList.toggle("on", b.dataset.tool === t));
+const setTool = (name) => {
+  tool = name;
+  for (const t of tabs) t.ink.classList.toggle("tool", name !== "browse");
+  document.querySelectorAll("#tools button").forEach((b) => b.classList.toggle("on", b.dataset.tool === name));
 };
-const scroll = () => {
-  const w = win();
+const scroll = (t) => {
+  const w = win(t);
   return w ? [w.scrollX, w.scrollY] : [0, 0];
 };
-/** Pointer -> viewport (site CSS px). Works through the stage scale and the zoom. */
-const toView = (e) => {
-  const r = viewport.getBoundingClientRect();
-  return [((e.clientX - r.left) * geo.W) / r.width, ((e.clientY - r.top) * geo.H) / r.height];
+/** Pointer -> tab `t`'s viewport (site CSS px). Works through the stage scale and the zoom. */
+const toView = (e, t) => {
+  const r = t.view.getBoundingClientRect();
+  return [((e.clientX - r.left) * t.W) / r.width, ((e.clientY - r.top) * t.H) / r.height];
 };
 /** The block under a point: a table row, a card, or the smallest box big enough to read as one. */
-function pick(vx, vy, again) {
-  const w = win();
+function pick(t, vx, vy, again) {
+  const w = win(t);
   if (!w) return null;
   let el = w.document.elementFromPoint(vx, vy);
   if (!el) return null;
-  if (again && lastPick && lastPick.contains(el)) {
-    el = lastPick.parentElement || lastPick;
+  if (again && t.lastPick && t.lastPick.contains(el)) {
+    el = t.lastPick.parentElement || t.lastPick;
   } else {
     const row = el.closest("tr, li");
     if (row) el = row;
@@ -284,7 +595,7 @@ function pick(vx, vy, again) {
     }
   }
   if (el === w.document.body || el === w.document.documentElement) return null;
-  lastPick = el;
+  t.lastPick = el;
   return el;
 }
 
@@ -302,75 +613,16 @@ function cssPath(el) {
   return parts.join(" > ");
 }
 
-ink.addEventListener("pointerdown", (e) => {
-  if (tool === "browse") return;
-  e.preventDefault();
-  ink.setPointerCapture(e.pointerId);
-  const [vx, vy] = toView(e);
-  const [sx, sy] = scroll();
-  drawing = { kind: tool, tone: tone(), pts: [[vx + sx, vy + sy]], born: performance.now(), v0: [vx, vy], moved: false };
-});
-ink.addEventListener("pointermove", (e) => {
-  if (!drawing) return;
-  const [vx, vy] = toView(e);
-  const [sx, sy] = scroll();
-  const p = [vx + sx, vy + sy];
-  if (Math.hypot(vx - drawing.v0[0], vy - drawing.v0[1]) > 4) drawing.moved = true;
-  if (drawing.kind === "pen" || drawing.kind === "highlight") drawing.pts.push(p);
-  else drawing.pts[1] = p;
-  dirty = true;
-});
-ink.addEventListener("pointerup", (e) => {
-  const d = drawing;
-  drawing = null;
-  if (!d) return;
-  const [vx, vy] = toView(e);
-  if ((d.kind === "spot" || d.kind === "zoom") && !d.moved) {
-    // A click: that row or card. Clicking inside the same one again takes its parent.
-    const el = pick(vx, vy, true);
-    if (!el) return;
-    if (d.kind === "spot") spot = { el, path: cssPath(el), rect: null };
-    else {
-      const r = el.getBoundingClientRect();
-      zoomTo({ x: r.left, y: r.top, w: r.width, h: r.height });
-    }
-    dirty = true;
-    return;
-  }
-  if (!d.moved && d.kind !== "pen" && d.kind !== "highlight") return;
-  const [a, b] = [d.pts[0], d.pts[1] ?? d.pts[0]];
-  const rect = { x: Math.min(a[0], b[0]), y: Math.min(a[1], b[1]), w: Math.abs(a[0] - b[0]), h: Math.abs(a[1] - b[1]) };
-  if (d.kind === "spot") spot = { rect };
-  else if (d.kind === "zoom") {
-    const [sx, sy] = scroll();
-    zoomTo({ ...rect, x: rect.x - sx, y: rect.y - sy });
-  } else {
-    d.born = performance.now();
-    strokes.push(d);
-  }
-  lastPick = null;
-  dirty = true;
-});
-// Scroll the site with the wheel while a marker tool has the pointer.
-ink.addEventListener(
-  "wheel",
-  (e) => {
-    const w = win();
-    if (!w) return;
-    e.preventDefault();
-    w.scrollBy({ left: e.deltaX, top: e.deltaY, behavior: "instant" });
-  },
-  { passive: false },
-);
-
 const undo = () => {
-  if (spot) spot = null;
-  else strokes.pop();
+  if (!active) return;
+  if (active.spot) active.spot = null;
+  else active.strokes.pop();
   dirty = true;
 };
 const clearMarks = () => {
-  strokes.length = 0;
-  spot = null;
+  if (!active) return;
+  active.strokes.length = 0;
+  active.spot = null;
   dirty = true;
 };
 
@@ -446,32 +698,29 @@ function drawStroke(c, s, u, alpha) {
   c.restore();
 }
 
-function render(now) {
-  requestAnimationFrame(render);
-  if (prefs.fade && strokes.some((s) => now - s.born > 3000)) dirty = true;
-  if (spot?.el) dirty = true; // the element can move (late data, layout)
-  if (!dirty) return;
-  dirty = false;
-  const sc = ink.width / geo.W;
+function paintInk(t, now) {
+  const ctx = t.ctx;
+  const sc = t.ink.width / t.W;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, ink.width, ink.height);
-  const [sx, sy] = scroll();
-  // One unit = 1/1000 of the stage width, so marks look the same at any page size.
-  const u = geo.sw / 1000 / geo.k;
+  ctx.clearRect(0, 0, t.ink.width, t.ink.height);
+  const [sx, sy] = scroll(t);
+  // One unit = 1/1000 of the stage width, so marks look the same at any page size and on either side.
+  const u = geo.sw / 1000 / t.k;
   ctx.setTransform(sc, 0, 0, sc, -sx * sc, -sy * sc); // document coords from here
 
+  const spot = t.spot;
   if (spot) {
     let r = spot.rect;
     if (spot.el) {
       // The site re-renders its cards on a timer, swapping the picked row for a new one
       // (the old node can stay in the document, hidden, at 0x0). Find the same spot in the
       // new markup; failing that, hold the last good position.
-      const shown = (el) => el?.isConnected && el.getBoundingClientRect().width > 0;
-      if (!shown(spot.el)) {
-        const again = spot.path && win()?.document.querySelector(spot.path);
-        if (shown(again)) spot.el = again;
+      const shownEl = (el) => el?.isConnected && el.getBoundingClientRect().width > 0;
+      if (!shownEl(spot.el)) {
+        const again = spot.path && win(t)?.document.querySelector(spot.path);
+        if (shownEl(again)) spot.el = again;
       }
-      if (shown(spot.el)) {
+      if (shownEl(spot.el)) {
         const b = spot.el.getBoundingClientRect();
         spot.rect = { x: b.left + sx, y: b.top + sy, w: b.width, h: b.height };
       }
@@ -482,7 +731,7 @@ function render(now) {
       ctx.save();
       ctx.fillStyle = "rgba(0,0,0,0.62)";
       ctx.beginPath();
-      ctx.rect(sx - 10, sy - 10, geo.W + 20, geo.H + 20);
+      ctx.rect(sx - 10, sy - 10, t.W + 20, t.H + 20);
       roundRect(ctx, r.x - pad, r.y - pad, r.w + pad * 2, r.h + pad * 2, 10 * u, true); // the hole
       ctx.fill("evenodd");
       ctx.strokeStyle = tone();
@@ -492,6 +741,7 @@ function render(now) {
       ctx.restore();
     }
   }
+  const strokes = t.strokes;
   for (let i = strokes.length - 1; i >= 0; i--) {
     const age = now - strokes[i].born;
     if (prefs.fade && age > 4000) strokes.splice(i, 1);
@@ -500,7 +750,17 @@ function render(now) {
     const age = now - s.born;
     drawStroke(ctx, s, u, prefs.fade && age > 3000 ? Math.max(0, 1 - (age - 3000) / 1000) : 1);
   }
-  if (drawing && drawing.pts.length) drawStroke(ctx, drawing, u, 1);
+  if (drawing && drawing.t === t && drawing.pts.length) drawStroke(ctx, drawing, u, 1);
+}
+
+function render(now) {
+  requestAnimationFrame(render);
+  const vis = shown();
+  if (prefs.fade && vis.some((t) => t.strokes.some((s) => now - s.born > 3000))) dirty = true;
+  if (vis.some((t) => t.spot?.el)) dirty = true; // the element can move (late data, layout)
+  if (!dirty) return;
+  dirty = false;
+  for (const t of vis) paintInk(t, now);
 }
 requestAnimationFrame(render);
 
@@ -927,8 +1187,7 @@ async function startRecording() {
   rec.chapters = [];
   rec.pages = [];
   rec.failed = false;
-  const w = win();
-  if (w) rec.chapters.push({ t: 0, label: pageLabel(w), path: w.location.pathname + w.location.search });
+  if (shown().length) rec.chapters.push({ t: 0, label: stageLabel(), path: stagePath() });
   rec.recorder = new MediaRecorder(new MediaStream(tracks), { mimeType: pickType(), videoBitsPerSecond: 12_000_000, audioBitsPerSecond: 192_000 });
   rec.recorder.ondataavailable = (e) => {
     if (!e.data.size) return;
@@ -966,7 +1225,7 @@ async function stopRecording() {
   if (rec.failed) return;
   const res = await fetch(`/__booth/api/finish?name=${rec.name}`, {
     method: "POST",
-    body: JSON.stringify({ duration, chapters: rec.chapters, aspect: prefs.aspect, siteWidth: geo.W, capture: captureMode, audioDelay: rec.audioDelay || 0 }),
+    body: JSON.stringify({ duration, chapters: rec.chapters, aspect: prefs.aspect, siteWidth: active?.W, compare: Boolean(pair), capture: captureMode, audioDelay: rec.audioDelay || 0 }),
   });
   status(res.ok ? `Saved ${rec.name}. Making the mp4...` : `Finishing failed (${res.status}).`, !res.ok);
   refreshTakes();
@@ -986,17 +1245,20 @@ function togglePause() {
   paintRec();
 }
 
+/** A chapter when what is on stage changes (a new page, another tab, compare on or off). */
+function autoChapter() {
+  if (rec.state === "recording" && prefs.autoChapters) addChapter(stageLabel(), true);
+}
 function addChapter(label, auto = false) {
   if (rec.state === "idle" || rec.state === "arming") {
     toast("Chapter markers are dropped while recording.");
     return;
   }
-  const w = win();
   const t = Math.round(elapsed() * 10) / 10;
-  const text = label || (w ? pageLabel(w) : "Chapter");
-  rec.chapters.push({ t, label: text, path: w ? w.location.pathname + w.location.search : "" });
+  const text = label || stageLabel() || "Chapter";
+  rec.chapters.push({ t, label: text, path: stagePath() });
   $("chapterCount").textContent = rec.chapters.length;
-  toast(`${auto ? "Chapter (new page)" : "Chapter"} at ${clock(t)}: ${text}`);
+  toast(`${auto ? "Chapter (on stage now)" : "Chapter"} at ${clock(t)}: ${text}`);
 }
 
 function paintRec() {
@@ -1075,7 +1337,7 @@ function onKey(e) {
   else if (tools[k]) setTool(tool === tools[k] && k !== "v" ? "browse" : tools[k]);
   else if (k === "Escape") {
     zoomOut();
-    spot = null;
+    if (active) active.spot = null;
     dirty = true;
     setTool("browse");
   } else if (k === "t") setTone(prefs.tone + 1);
@@ -1090,6 +1352,9 @@ function onKey(e) {
   else if (k === "]") setPref("camSize", Math.min(2, prefs.camSize + 1));
   else if (k === "b") setPref("bug", !prefs.bug);
   else if (k === "n") setPref("lower", !prefs.lower);
+  else if (/^[1-9]$/.test(k) && tabs[Number(k) - 1]) setActive(tabs[Number(k) - 1]);
+  else if (k === "k") toggleCompare();
+  else if (k === "+" || k === "=") newTab();
   else hit = false;
   if (hit) e.preventDefault();
 }
@@ -1114,8 +1379,8 @@ function paintRail() {
   document.querySelectorAll("#sizeSeg button").forEach((b) => b.classList.toggle("on", Number(b.dataset.size) === prefs.camSize));
   document.querySelectorAll("#shapeSeg button").forEach((b) => b.classList.toggle("on", b.dataset.shape === prefs.camShape));
   document.querySelectorAll("#tones button").forEach((b, i) => b.classList.toggle("on", i === prefs.tone % TONES.length));
-  $("siteWidth").value = prefs.siteWidth[prefs.aspect];
-  $("siteWidthOut").textContent = `${prefs.siteWidth[prefs.aspect]}px`;
+  $("siteWidth").value = siteWidth();
+  $("siteWidthOut").textContent = `${siteWidth()}px${pair ? " each" : ""}`;
   $("camOn").checked = prefs.camOn;
   $("mirror").checked = prefs.mirror;
   $("bugOn").checked = prefs.bug;
@@ -1137,7 +1402,8 @@ document.querySelectorAll("#aspectSeg button").forEach(
   (b) =>
     (b.onclick = () => {
       prefs.aspect = b.dataset.aspect;
-      strokes.length = 0; // the site reflows, so drawn marks would land on the wrong things
+      // The site reflows, so drawn marks would land on the wrong things.
+      for (const t of tabs) t.strokes.length = 0;
       save();
       paintRail();
       layout();
@@ -1155,8 +1421,8 @@ document.querySelectorAll("#sizeSeg button").forEach((b) => (b.onclick = () => s
 document.querySelectorAll("#shapeSeg button").forEach((b) => (b.onclick = () => setPref("camShape", b.dataset.shape)));
 document.querySelectorAll("#quick button").forEach((b) => (b.onclick = () => go(b.dataset.go)));
 $("siteWidth").oninput = (e) => {
-  prefs.siteWidth[prefs.aspect] = Number(e.target.value);
-  strokes.length = 0;
+  // layout() clears the marks of a tab whose page width changes.
+  prefs.siteWidth = { ...prefs.siteWidth, [widthKey()]: Number(e.target.value) };
   save();
   paintRail();
   layout();
@@ -1205,13 +1471,15 @@ $("pauseBtn").onclick = togglePause;
 $("chapterBtn").onclick = () => addChapter();
 $("undoBtn").onclick = undo;
 $("clearBtn").onclick = clearMarks;
+$("compareBtn").onclick = () => toggleCompare();
+$("swapBtn").onclick = () => swapSides();
 $("backBtn").onclick = () => win()?.history.back();
 $("fwdBtn").onclick = () => win()?.history.forward();
 $("reloadBtn").onclick = () => win()?.location.reload();
 $("folderBtn").onclick = () => fetch("/__booth/api/reveal", { method: "POST" });
 $("address").addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
-    go(e.target.value);
+    go(e.target.value, active);
     e.target.blur();
   }
 });
@@ -1222,11 +1490,26 @@ new ResizeObserver(() => {
   dirty = true;
 }).observe($("deck"));
 
+// Reopen the tabs from last time. ?page=/nfl/ (from --page) wins for the tab in front.
+{
+  const saved = (Array.isArray(prefs.tabs) ? prefs.tabs : []).filter((p) => typeof p === "string" && p).slice(0, MAX_TABS);
+  const paths = saved.length ? saved : [prefs.path];
+  const front = Number.isInteger(prefs.tab) && paths[prefs.tab] ? prefs.tab : 0;
+  const asked = new URLSearchParams(location.search).get("page");
+  if (asked) paths[front] = asked;
+  paths.forEach((p) => makeTab(p));
+  active = tabs[front];
+  const [i, j] = Array.isArray(prefs.pair) ? prefs.pair : [];
+  if (tabs[i] && tabs[j] && i !== j) {
+    pair = [tabs[i], tabs[j]];
+    if (!pair.includes(active)) active = pair[0];
+    previous = pair.find((t) => t !== active);
+  }
+}
 paintRail();
+paintTabs();
 setTool("browse");
 layout();
-// ?page=/nfl/ (from --page) wins over the page you were last on.
-go(new URLSearchParams(location.search).get("page") || prefs.path);
 startDevices();
 connectPhoneRelay();
 refreshTakes();
