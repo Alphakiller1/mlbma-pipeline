@@ -3691,6 +3691,9 @@ body[data-ca-product="research"] {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+/* A sample count in pill form: same shape as a rank, no tier colour, so an
+   ungraded thin split reads in the same rhythm as a graded one. */
+.ca-rank.is-sample { color: var(--text-muted); border-color: var(--border-default); }
 
 /* ===========================================================================
  * LAST TEN GAMES
@@ -5082,23 +5085,10 @@ body[data-sport="nfl"] .ca-detail-nav {
   .ca-nfl-duo { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* League marker beside a frequency: up, down, or a dash for the middle band.
-   Owner direction 2026-09-27: up is green, down is red, the dash yellow, from
-   the grade tokens so they match the rest of the desk. Fixed width keeps the
-   percentages above and below aligned. */
-.ca-freq-mark {
-  display: inline-block;
-  width: 1.1em;
-  margin-left: 4px;
-  text-align: center;
-  font-size: var(--type-meta);
-  line-height: 1;
-  color: var(--text-2);
-  font-variant-numeric: tabular-nums;
-}
-.ca-freq-mark.is-up { color: var(--metric-good); }
-.ca-freq-mark.is-down { color: var(--metric-poor); }
-.ca-freq-mark.is-avg { color: var(--metric-mid); font-weight: 700; }
+/* League marker beside a frequency: the club's league rank as a rank pill
+   (.ca-rank, tier-coloured). Owner direction 2026-10-01 replaced the up/down
+   arrows with it. */
+.ca-freq-mark { margin-left: 4px; }
 /* A marked figure keeps its marker on the same line (phones stack it instead). */
 @media (min-width: 561px) {
   .ca-nfl-split td.num,
@@ -5106,9 +5096,8 @@ body[data-sport="nfl"] .ca-detail-nav {
 }
 .ca-stat__label .ca-thin-tag { margin-left: 4px; }
 @media (max-width: 560px) {
-  .ca-freq-mark { width: auto; margin-left: 2px; }
   /* In a phone mix table the marker sits under its percentage, like the rank chips. */
-  .ca-nfl-mix td.num .ca-freq-mark { display: block; margin: 2px 0 0 auto; }
+  .ca-nfl-mix td.num .ca-freq-mark { display: block; margin: 2px 0 0 auto; width: max-content; }
 }
 
 /* ===========================================================================
@@ -5211,7 +5200,7 @@ body[data-sport="nfl"] .ca-detail-nav {
   .ca-nfl-split tbody td:first-child { width: 26%; }
   .ca-nfl-mix thead th:first-child,
   .ca-nfl-mix tbody td:first-child { width: 22%; }
-  .ca-nfl-mix thead th:nth-child(2) { width: 30%; }
+  .ca-nfl-mix thead th:nth-child(2) { width: 24%; }
   .ca-nfl-mix .ca-usage { min-width: 0; }
   /* Figures share what the label leaves, evenly; nothing is ever clipped. */
   .ca-nfl-split th.num, .ca-nfl-split td.num,
@@ -5219,6 +5208,8 @@ body[data-sport="nfl"] .ca-detail-nav {
   .ca-nfl-split thead th, .ca-nfl-mix thead th { white-space: normal; }
   .ca-nfl-split tbody td:first-child,
   .ca-nfl-mix tbody td:first-child { white-space: normal; overflow-wrap: anywhere; }
+  /* Owner 2026-10-01: the figure columns read crowded. A wider gutter between
+     them; the value and its rank pill keep one line where the column allows. */
 }
 
 /* The usage squares need room the percentage does not: they show where the
@@ -5489,6 +5480,12 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-arsenal-panel .ca-arsenal-table th:nth-child(3) { width: 3.75rem; }
 .ca-arsenal-panel .ca-arsenal-table th:nth-child(4) { width: 6.5rem; }
 .ca-arsenal-panel .ca-arsenal-table th:nth-child(n+5) { width: 7rem; }
+/* NFL mix tables (usage, results, "faced") are not pitch-mix tables: the
+   fixed 3.75rem third column above crushed their last figure column and
+   clipped its header (owner 2026-10-01: "too bunched up"). The label takes a
+   fixed share and every figure column splits the rest evenly. */
+.ca-arsenal-panel .ca-arsenal-table.ca-nfl-mix th:nth-child(1) { width: 34%; }
+.ca-arsenal-panel .ca-arsenal-table.ca-nfl-mix th:nth-child(n+2) { width: auto; }
 
 /* Matchup audit (2026-09-28). Every away | home pair of tables uses fixed
    layout, so the two clubs' columns sit at the same x. The first-column
@@ -5556,6 +5553,19 @@ body[data-sport="nfl"] .ca-detail-nav {
   #cfb-situational .ca-detail-duo { grid-template-columns: minmax(0, 1fr); }
 }
 
+/* ===========================================================================
+ * NFL TABLE SPACING + EVEN PILLS - 2026-10-01 (owner: "too bunched up",
+ * "not everything is represented the same"). Last in the file so it wins
+ * over the tighter 2026-09-27 gutters. A table where any pill would wrap
+ * gets .is-stacked (nflEvenPills) and every pill in it sits under its figure.
+ * ======================================================================== */
+@media (min-width: 561px) {
+  .ca-nfl-mix th.num, .ca-nfl-mix td.num { padding-left: var(--space-5); padding-right: var(--space-2); }
+  .ca-nfl-split th.num, .ca-nfl-split td.num { padding-left: var(--space-3); padding-right: var(--space-2); }
+  .ca-nfl-split td.num .ca-rank, .ca-nfl-mix td.num .ca-rank { margin-left: var(--space-1); }
+}
+.ca-nfl-split.is-stacked td.num .ca-rank,
+.ca-nfl-mix.is-stacked td.num .ca-rank { display: block; margin: 2px 0 0 auto; width: max-content; }
 /* Receiver stat switch (2026-10-01): one look matrix per stat. */
 .ca-rec-metric__bar { display: flex; flex-wrap: wrap; gap: var(--space-1); margin: 0 0 var(--space-2); }
 .ca-rec-metric__btn {

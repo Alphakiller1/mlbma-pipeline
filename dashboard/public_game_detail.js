@@ -3806,28 +3806,21 @@ function seasonToggle(game) {
     return est && est.rank ? { rank: est.rank, of: est.of } : null;
   }
 
-  /* How often, against the league: an up arrow when this club does it more
-     than most clubs, a down arrow when less, a dash in the middle band. The
-     band is the site's own middle tier (|percentile - 0.5| < 0.13, about 13th
-     to 20th of 32), so an arrow means the same distance from average as a
-     coloured grade does: up green, down red, the middle band a yellow dash.
-     Read from the published league_frequency_ranks (place 1 = most). */
+  /* How often, against the league: the club's league rank as a colour-coded
+     pill, from the published league_frequency_ranks (place 1 = most). Owner
+     direction 2026-10-01 replaced the up/down arrows with the rank itself.
+     The pill reads in the direction the colour does: for a rate where less is
+     better (invert), 1st is the club that does it least. */
   function nflFreqRank(scheme, phase, group, key) {
     return (((((scheme || {}).league_frequency_ranks || {})[phase] || {})[group] || {})[key]) || null;
   }
 
   function nflFreqMark(rank, invert) {
     if (!rank || !(rank.of > 1) || !(rank.place >= 1)) return '';
-    var p = (rank.of - rank.place) / (rank.of - 1);
-    if (invert) p = 1 - p;
-    var d = p - 0.5;
-    var cls = Math.abs(d) < 0.13 ? 'is-avg' : (d > 0 ? 'is-up' : 'is-down');
-    var glyph = cls === 'is-up' ? '\u25b2' : (cls === 'is-down' ? '\u25bc' : '\u2013');
-    var place = invert ? rank.of + 1 - rank.place : rank.place;
-    var words = (cls === 'is-up' ? 'Above' : (cls === 'is-down' ? 'Below' : 'Near')) +
-      ' league average ' + '\u00b7' + ' ' + place + ordinal(place) + ' most of ' + rank.of;
-    return '<span class="ca-freq-mark ' + cls + '" title="' + esc(words) + '" aria-label="' +
-      esc(words) + '">' + glyph + '</span>';
+    var shown = invert ? rank.of + 1 - rank.place : rank.place;
+    var words = rank.place + ordinal(rank.place) + ' most of ' + rank.of;
+    return '<span class="ca-rank ca-freq-mark ' + rankTone(shown, rank.of) + '" title="' + esc(words) +
+      '" aria-label="' + esc(words) + '">' + shown + ordinal(shown) + '</span>';
   }
 
   function nflUsageCell(rate, rank, invert) {
@@ -5037,7 +5030,7 @@ function seasonToggle(game) {
         placed(yPerT(p), yPerT, 1) +
         marked(p.target_share == null ? '—' : pctText(p.target_share), p.target_share,
           function (x) { return x.target_share; }) +
-        '<td class="num">' + esc(p.receiving_tds == null ? '—' : p.receiving_tds) + '</td></tr>';
+        placed(p.receiving_tds, function (x) { return x.receiving_tds; }, 0) + '</tr>';
     });
     return '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-nfl-split">' +
       '<thead><tr><th>Player</th><th class="num">Tgt/G</th><th class="num">Rec/G</th>' +
@@ -5090,6 +5083,13 @@ function seasonToggle(game) {
     ['catch_rate', 'Catch %', 'pct'], ['epa_per_target', 'EPA / Tgt', 'epa']
   ];
 
+  // "Marvin Mims Jr." -> "Mims": a generational suffix is never the surname.
+  function nflSurname(name) {
+    var parts = String(name || '').trim().split(/\s+/);
+    while (parts.length > 1 && /^(jr|sr|ii|iii|iv|v)\.?$/i.test(parts[parts.length - 1])) parts.pop();
+    return parts[parts.length - 1] || '';
+  }
+
   function nflReceiverMatrices(sport, game, side, statRows) {
     var profiles = game[side + '_player_coverage'] || [];
     if (!profiles.length) return '';
@@ -5132,10 +5132,13 @@ function seasonToggle(game) {
         present.forEach(function (look) {
           var cells = leaders.map(function (k, i) {
             var sp = looks[look][i];
+            // Every cell reads the same way: a figure and a pill beside it.
+            // Graded cells carry the tier-coloured rank; a split under the
+            // target floor carries a neutral pill with its target count.
             if (!sp || sp[key] == null) {
               var tg = sp && sp.targets ? Number(sp.targets) : 0;
-              return '<td class="num is-low-cell" title="' + tg + ' targets in this look">' + tg +
-                ' <small class="is-low">tgt</small></td>';
+              return '<td class="num is-low-cell" title="' + tg + ' targets in this look">' +
+                '<span class="ca-rank is-sample">' + tg + ' tgt</span></td>';
             }
             var thin = Number(sp.targets) < NFL_REC_FLOOR;
             var rank = (sp.league_ranks || {})[key];
@@ -5148,7 +5151,8 @@ function seasonToggle(game) {
               ' · ' + sp.targets + ' targets' +
               (thin ? ' · under ' + NFL_REC_FLOOR + ' targets, not graded' : '')) + '">' +
               esc(metricText(sp[key], metric[2])) +
-              (thin ? ' <small class="is-low">' + esc(sp.targets) + '</small>' : nflBadge(rank)) + '</td>';
+              (thin ? '<span class="ca-rank is-sample">' + esc(sp.targets) + ' tgt</span>'
+                : nflBadge(rank)) + '</td>';
           }).join('');
           var shows = oppDef ? nflOppShows(oppDef, look) : null;
           body += '<tr><td>' + esc(NFL_LOOK_LABEL[look] || look) + '</td>' + cells +
@@ -5159,7 +5163,7 @@ function seasonToggle(game) {
       if (!body) return pending('No receiver splits are published for this window yet.');
       var heads = leaders.map(function (k) {
         var p = byName[k][0];
-        return '<th class="num">' + esc(String(p.player_name).split(' ').slice(-1)[0]) + ' ' +
+        return '<th class="num">' + esc(nflSurname(p.player_name)) + ' ' +
           '<span class="ca-lineup-player__position">' + esc(p.position) + '</span></th>';
       }).join('');
       return '<div class="ca-split-block"><h4>' + esc(title) + '</h4>' +
@@ -5416,7 +5420,47 @@ function seasonToggle(game) {
     });
   }
 
+  /* One table, one rhythm (owner 2026-10-01: "not everything is represented
+     the same"). Whether a rank pill fits beside its figure depends on that
+     figure's width, so a narrow column used to put some pills beside and some
+     under. Each visible table is measured: if any pill would wrap, every pill
+     in it stacks under its figure; otherwise all sit inline. */
+  function nflPillWrapped(pill) {
+    var cell = pill.parentNode, first = cell && cell.firstChild;
+    if (!first || first === pill) return false;
+    var box;
+    if (first.nodeType === 3) {
+      var range = document.createRange();
+      range.selectNodeContents(first);
+      box = range.getBoundingClientRect();
+    } else {
+      box = first.getBoundingClientRect();
+    }
+    return pill.getBoundingClientRect().top > box.top + box.height / 2;
+  }
+
+  function nflEvenPills(host) {
+    Array.prototype.forEach.call(host.querySelectorAll('table.ca-nfl-split, table.ca-nfl-mix'), function (table) {
+      if (!table.offsetParent) return;
+      table.classList.remove('is-stacked');
+      var pills = table.querySelectorAll('td.num > .ca-rank');
+      for (var i = 0; i < pills.length; i++) {
+        if (nflPillWrapped(pills[i])) { table.classList.add('is-stacked'); return; }
+      }
+    });
+  }
+
   function wireNflDesk(host) {
+    var pending = 0;
+    function even() {
+      if (pending) global.cancelAnimationFrame(pending);
+      pending = global.requestAnimationFrame(function () { pending = 0; nflEvenPills(host); });
+    }
+    // Any tab, club or season switch can reveal tables; so can a resize.
+    host.addEventListener('click', even);
+    global.addEventListener('resize', even);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(even);
+    even();
     host.addEventListener('click', function (event) {
       var tab = event.target.closest && event.target.closest('a[data-nfl-tab]');
       if (tab && host.contains(tab)) {
@@ -5451,6 +5495,7 @@ function seasonToggle(game) {
       var key = String(global.location.hash || '').slice(1);
       var tab = nflTabOf(key, deskTabs(host));
       if (tab) nflSetTab(host, tab, key === tab ? 'stack' : key);
+      even();
     });
   }
 
@@ -5511,13 +5556,11 @@ function seasonToggle(game) {
       var tone = place ? rankTone(place.rank, place.of) : '';
       return '<tr><td>' + esc(row[1]) + '</td><td class="num' + (tone ? ' ' + tone : '') + '">' +
         (shown == null ? '<span class="ca-vs-none">Not Published</span>' : esc(shown)) +
-        (place ? rankBadge(place) : '') + '</td><td class="num ca-vs-none">' +
-        (place ? place.rank + ordinal(place.rank) + ' of ' + place.of :
-          (published ? 'Rank Not Published' : 'Licensed Feed Required')) + '</td></tr>';
+        (place ? rankBadge(place) : '') + '</td></tr>';
     });
     return '<section class="ca-form-panel ca-nfl-dvoa-panel"><h3>' +
       esc(fullName(sport, game, side) + ' DVOA') + '</h3><p class="ca-lineup-context">' +
-      esc(context) + '</p>' + nflSplitTable(['DVOA', 'League Rank'], rows, 'Metric') + '</section>';
+      esc(context) + '</p>' + nflSplitTable(['DVOA'], rows, 'Metric') + '</section>';
   }
 
   function nflSections(sport, game, games) {

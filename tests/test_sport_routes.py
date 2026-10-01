@@ -580,17 +580,15 @@ class AdapterHoleTests(unittest.TestCase):
         tendency = nfl[nfl.index("function nflTendencyPanel"):nfl.index("function nflStarter")]
         self.assertNotIn("rankTone", tendency)
         self.assertNotIn("nflResultCell", tendency)
-        # Frequencies carry a league marker (up / down / dash in the middle tier
-        # band), read from the published frequency ranks.
+        # Frequencies carry their league rank as a tier-coloured pill (owner
+        # 2026-10-01: rank, not arrows), read from the published frequency ranks.
         self.assertIn("function nflFreqMark(rank, invert)", nfl)
-        self.assertIn("Math.abs(d) < 0.13 ? 'is-avg'", nfl)
+        mark = nfl[nfl.index("function nflFreqMark"):nfl.index("function nflUsageCell")]
+        self.assertIn("'<span class=\"ca-rank ca-freq-mark ' + rankTone(shown, rank.of)", mark)
+        self.assertNotIn("\u25b2", mark)
+        self.assertNotIn("\u25bc", mark)
         self.assertIn("nflFreqRank(oScheme, 'offense', 'personnel', spec[1])", tendency)
-        mark_css = css[css.index(".ca-freq-mark {"):]
-        mark_css = mark_css[:mark_css.index("}", mark_css.index(".ca-freq-mark.is-up"))]
-        # Owner direction 2026-09-27: up green, down red, dash yellow.
-        self.assertIn(".ca-freq-mark.is-up { color: var(--metric-good); }", css)
-        self.assertIn(".ca-freq-mark.is-down { color: var(--metric-poor); }", css)
-        self.assertIn(".ca-freq-mark.is-avg { color: var(--metric-mid);", css)
+        self.assertNotIn(".ca-freq-mark.is-up", css)
         # A split under its sample floor is printed, dimmed, and never graded.
         self.assertIn("floor: 10", nfl)
         self.assertIn("floor: 5", nfl)
