@@ -383,11 +383,31 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.goto(base_url.rstrip("/") + detail_url, wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
         check("NFL detail uses team logos", page.locator(".ca-detail-team__logo").count() == 2)
-        check("NFL desk carries the nine evidence tabs",
-              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 9)
+        check("NFL desk carries the ten evidence tabs",
+              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 10)
         # The desk reads a tab at a time, and where the clubs stack, one club at a time.
         shown = "() => [...document.querySelectorAll('.ca-detail-section')].filter(s => s.offsetParent).map(s => s.id).join(',')"
         check("NFL desk opens on the Units tab alone", page.evaluate(shown) == "efficiency", page.evaluate(shown))
+        page.locator('a[data-nfl-tab="games"]').click()
+        try:
+            page.wait_for_selector("#game-log .ca-log-panel table", timeout=timeout_ms)
+        except Exception:
+            pass
+        log_cells = page.evaluate("""() => {
+          const tds = [...document.querySelectorAll('#game-log td')].filter(td => td.offsetParent);
+          return {
+            panels: document.querySelectorAll('#game-log .ca-log-panel').length,
+            strips: document.querySelectorAll('#game-log .ca-log-strip svg').length,
+            rows: document.querySelectorAll('#game-log tbody tr').length,
+            dashes: tds.filter(td => td.innerText.trim() === '—').length,
+            unpilled: tds.filter(td => /(^|\\s)c-(elite|good|mid|weak|poor)(\\s|$)/.test(td.className)
+              && !td.querySelector('.ca-rank')).length
+          }; }""")
+        check("NFL Games tab logs both clubs with a margin strip",
+              page.evaluate(shown) == "game-log" and log_cells["panels"] == 2
+              and log_cells["strips"] == 2 and log_cells["rows"] >= 4, str(log_cells))
+        check("NFL game log grades every rate with a pill and no dash cells",
+              log_cells["unpilled"] == 0 and log_cells["dashes"] == 0, str(log_cells))
         page.locator('a[data-nfl-tab="passing"]').click()
         check("NFL Passing tab shows quarterbacks, coverage and looks",
               page.evaluate(shown) == "quarterbacks,coverage,looks" and page.url.endswith("#passing"),

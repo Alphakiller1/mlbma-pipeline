@@ -105,6 +105,7 @@ jobs:
             # the result away.
             data/public/nfl/slate.json
             data/public/nfl/team_context.json
+            data/public/nfl/game_logs.json
             data/public/batter_context.json
             data/public/batter_pitch_types.json
             data/public/bullpen_board.json
