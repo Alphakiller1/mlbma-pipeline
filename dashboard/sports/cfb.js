@@ -132,6 +132,12 @@
       if (adjusted) mapped[side + '_adjusted_efficiency'] = adjusted;
       var scheme = pub[side + '_scheme_profile'];
       if (scheme) mapped[side + '_scheme_profile'] = scheme;
+      // CFBD depth (scripts/cfb_depth.py): run game and lines, scheme rates,
+      // quarterbacks with the defense's splits, ball carriers, game logs.
+      ['_run_game', '_scheme_stats', '_qbs', '_defense_splits', '_rushers', '_game_log']
+        .forEach(function (key) {
+          if (pub[side + key]) mapped[side + key] = pub[side + key];
+        });
     });
     mapped.away_record = keep(pub.away_record, mapped.away_record);
     mapped.home_record = keep(pub.home_record, mapped.home_record);

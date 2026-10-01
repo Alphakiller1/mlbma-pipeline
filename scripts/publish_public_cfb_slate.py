@@ -16,6 +16,11 @@ from html import unescape
 from html.parser import HTMLParser
 from pathlib import Path
 
+try:  # run as a script (scripts/ on the path) or imported as scripts.*
+    import cfb_depth
+except ImportError:  # pragma: no cover - package import in tests
+    from scripts import cfb_depth
+
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "public" / "cfb" / "slate.json"
 # Share of games that must carry both schools' unit profiles before the slate
@@ -684,8 +689,29 @@ def load_board_games() -> tuple[list[dict], dict]:
     return board.get("games") or [], board
 
 
+def _record(log: list[dict] | None) -> str | None:
+    """W-L (and T) from a team's completed games."""
+    if not log:
+        return None
+    wins = sum(1 for g in log if g.get("result") == "W")
+    losses = sum(1 for g in log if g.get("result") == "L")
+    ties = sum(1 for g in log if g.get("result") == "T")
+    return f"{wins}-{losses}" + (f"-{ties}" if ties else "")
+
+
+def _starter_first(qbs: list[dict] | None, starter: str | None) -> list[dict] | None:
+    """The listed starter (ESPN's passing leader) first, then by attempts;
+    at most two passers."""
+    if not qbs:
+        return None
+    key = cfb_depth._norm(starter) if starter else None
+    ordered = sorted(qbs, key=lambda q: (cfb_depth._norm(q.get("player_name")) != key,
+                                         -q["line"]["attempts"]))
+    return ordered[:2]
+
+
 def public_game(raw: dict, stats: dict, events: dict, pools: dict,
-                adjusted: dict, schemes: dict, season: int) -> dict:
+                adjusted: dict, schemes: dict, season: int, depth: dict | None = None) -> dict:
     away_meta, home_meta = raw.get("away") or {}, raw.get("home") or {}
     away_abbr = away_meta.get("abbreviation") or away_meta.get("school")
     home_abbr = home_meta.get("abbreviation") or home_meta.get("school")
@@ -734,7 +760,75 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict,
         "home_scheme_profile": scheme_for(home_school, schemes),
         "home_travel": None if (event.get("neutral") or raw.get("neutral")) else "Home",
     }
-    return {key: value for key, value in row.items() if value not in (None, "")}
+    depth = depth or {}
+    for side, abbr, school in (("away", away_abbr, away_school), ("home", home_abbr, home_school)):
+        key = cfb_depth._norm(school)
+        team = (depth.get("advanced") or {}).get(key) or {}
+        log = (depth.get("logs") or {}).get(abbr)
+        row[side + "_run_game"] = team.get("run_game")
+        row[side + "_scheme_stats"] = team.get("scheme")
+        row[side + "_qbs"] = _starter_first((depth.get("qbs") or {}).get(key), row.get(side + "_starter"))
+        row[side + "_defense_splits"] = (depth.get("defense_splits") or {}).get(key)
+        row[side + "_rushers"] = (depth.get("rushers") or {}).get(key)
+        row[side + "_game_log"] = log
+        if not row.get(side + "_record"):
+            row[side + "_record"] = _record((log or {}).get("games"))
+    return {key: value for key, value in row.items() if value not in (None, "", [], {})}
+
+
+def load_depth(season: int, week: int, games_in: list[dict]) -> dict:
+    """Run game, scheme stats, QBs, ball carriers and game logs (cfb_depth)."""
+    rows = cfb_depth.advanced_rows(season)
+    advanced = cfb_depth.team_advanced(rows)
+    fbs = set(advanced)
+    wanted: dict[str, str] = {}
+    for raw in games_in:
+        for side in ("away", "home"):
+            meta = raw.get(side) or {}
+            abbr = meta.get("abbreviation") or meta.get("school")
+            if not abbr:
+                continue
+            wanted[str(abbr).upper()] = abbr
+            wanted[cfb_depth._norm(meta.get("school"))] = abbr
+    depth = {
+        "advanced": advanced,
+        "qbs": cfb_depth.quarterbacks(season, fbs) if fbs else {},
+        "defense_splits": cfb_depth.defense_splits(rows),
+        "rushers": cfb_depth.rushers(season, fbs) if fbs else {},
+        "logs": cfb_depth.game_logs(season, week, wanted, fbs),
+    }
+    print(f"  depth: {len(advanced)} CFBD team profiles, {len(depth['qbs'])} QB rooms, "
+          f"{len(depth['logs'])} game logs")
+    return depth
+
+
+DEPTH_KEYS = ("_run_game", "_scheme_stats", "_qbs", "_defense_splits", "_rushers")
+
+
+def carry_forward_depth(games: list[dict], season: int) -> int:
+    """A CFBD outage (no key, a spent allowance) must not blank the desk:
+    a school whose CFBD blocks are missing this run keeps the ones last
+    published for it this season. Returns how many blocks were carried."""
+    try:
+        previous = json.loads(OUT.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return 0
+    if int(previous.get("season") or 0) != season:
+        return 0
+    last: dict[tuple[str, str], object] = {}
+    for game in previous.get("games") or []:
+        for side in ("away", "home"):
+            for key in DEPTH_KEYS:
+                if game.get(side + key) and game.get(side):
+                    last[(str(game[side]), key)] = game[side + key]
+    carried = 0
+    for game in games:
+        for side in ("away", "home"):
+            for key in DEPTH_KEYS:
+                if not game.get(side + key) and (str(game.get(side)), key) in last:
+                    game[side + key] = last[(str(game.get(side)), key)]
+                    carried += 1
+    return carried
 
 
 def main() -> int:
@@ -771,7 +865,12 @@ def main() -> int:
     adjusted = load_sp_plus(season)
     week = int(board.get("week") or 0)
     schemes = load_scheme_profiles(season, week)
-    games = [public_game(raw, stats, events, pools, adjusted, schemes, season) for raw in games_in]
+    depth = load_depth(season, week, games_in)
+    games = [public_game(raw, stats, events, pools, adjusted, schemes, season, depth)
+             for raw in games_in]
+    carried = carry_forward_depth(games, season)
+    if carried:
+        print(f"  depth: carried {carried} school blocks forward from the published slate")
     games.sort(key=lambda row: (row.get("kickoff_utc") or "9999", row.get("id") or ""))
     stamp = datetime.now(timezone.utc).replace(microsecond=0)
     payload = {

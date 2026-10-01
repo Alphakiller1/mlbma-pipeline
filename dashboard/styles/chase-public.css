@@ -5608,3 +5608,6 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-log-result[data-result="L"] b { color: var(--metric-poor); }
 .ca-log-season td { border-top: 1px solid var(--border-card); font-weight: 700; }
 .ca-log-strip text.ca-log-figure { fill: var(--text-secondary); font-weight: 700; }
+
+/* CFB QB and ball-carrier rows: the volume behind the line, under the name. */
+.ca-qb-volume { display: block; color: var(--text-muted); font-size: var(--type-meta); font-variant-numeric: tabular-nums; }

@@ -107,8 +107,14 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("function cfbSpecialBody", js)
         self.assertIn("function cfbDvoaBody", js)
         self.assertIn("['coverage', 'Coverage', ['cfb-scheme', 'cfb-coverage']]", js)
-        self.assertIn("section('cfb-scheme', 'Coverage And Scheme'", js)
-        self.assertIn("function cfbSchemeBody", js)
+        # Owner 2026-10-01: measured scheme rates replaced the prose profile.
+        self.assertIn("section('cfb-scheme', 'Scheme And Tendencies'", js)
+        self.assertIn("function cfbSchemeStatsPanel", js)
+        self.assertNotIn("function cfbSchemeBody", js)
+        for fn in ("cfbQbPanel", "cfbRunGamePanel", "cfbRushersPanel", "cfbGameLogPanel"):
+            self.assertIn("function " + fn, js)
+        self.assertIn("['games', 'Games', ['cfb-game-log']]", js)
+        self.assertIn("['rushing', 'Rushing', ['cfb-rushing', 'cfb-run-game', 'cfb-rushers']]", js)
         self.assertIn("section('cfb-coverage', 'Coverage Outcomes'", js)
         self.assertIn("function cfbCoverageBody", js)
         self.assertIn("ca-cfb-coverage-stack", js)

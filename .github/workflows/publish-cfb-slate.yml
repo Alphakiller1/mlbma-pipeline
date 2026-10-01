@@ -38,8 +38,29 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # Completed games' box scores never change: keep them between runs so
+      # each is fetched from ESPN once (scripts/cfb_depth.py game logs).
+      - name: Restore the CFB box-score cache
+        uses: actions/cache/restore@v4
+        with:
+          path: data/cache/cfb_depth
+          key: cfb-depth-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            cfb-depth-${{ runner.os }}-
+
       - name: Build the CFB slate
+        env:
+          # Run game, line play, scheme rates, QBs and ball carriers (four
+          # calls a run). Without it those blocks are absent, never estimated.
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
         run: python scripts/publish_public_cfb_slate.py
+
+      - name: Save the CFB box-score cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/cache/cfb_depth
+          key: cfb-depth-${{ runner.os }}-${{ github.run_id }}
 
       - name: Commit the refreshed slate to master
         env:
