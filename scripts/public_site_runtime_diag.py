@@ -109,6 +109,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               return {
                 overflow: document.documentElement.scrollWidth - innerWidth,
                 columns,
+                cards: cards.length,
                 minHeight: cards.length ? Math.min(...cards.map(x => Math.round(x.getBoundingClientRect().height))) : 0,
                 maxHeight: cards.length ? Math.max(...cards.map(x => Math.round(x.getBoundingClientRect().height))) : 0,
                 crests: document.querySelectorAll('#openingMlbSlate .ca-matchup-card__club img').length,
@@ -129,7 +130,10 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               };
             }""")
             check(f"{width}px no horizontal overflow", metrics["overflow"] <= 1, str(metrics))
-            check(f"{width}px grid columns", metrics["columns"] == expected_columns, str(metrics))
+            # A short slate (two playoff games) lays out one column per game,
+            # never an empty column, so the target caps at the card count.
+            check(f"{width}px grid columns",
+                  metrics["columns"] == min(expected_columns, max(1, metrics["cards"])), str(metrics))
             # 2026-09-10 (owner decision, and what the matchup IA asks for):
             # club identity is the official crest plus the full team name. The
             # crest must actually load, and must be served at enough density to
@@ -472,14 +476,15 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         cov_marks = page.locator("#coverage .ca-arsenal-table td:has(.ca-usage) .ca-freq-mark").count()
         check("NFL coverage usage carries a league marker on every row",
               cov_usage > 0 and cov_marks == cov_usage, f"{cov_marks} marks on {cov_usage} usage cells")
-        glyphs = page.locator(".ca-freq-mark").evaluate_all("ns => [...new Set(ns.map(n => n.textContent))].sort().join('')")
-        check("NFL league markers are up, down and dash only", set(glyphs) <= set("▲▼–") and len(glyphs) >= 2, glyphs)
-        mark_colors = page.evaluate("""() => {
-          const pick = c => { const e = document.querySelector('.ca-freq-mark.' + c);
-            return e ? getComputedStyle(e).color : null; };
-          return [pick('is-up'), pick('is-down'), pick('is-avg')]; }""")
-        check("NFL league markers are green up, red down, yellow dash",
-              None not in mark_colors and len(set(mark_colors)) == 3, str(mark_colors))
+        # Owner 2026-10-01: frequencies carry their league rank as a coloured
+        # pill, never an arrow.
+        bad_marks = page.locator(".ca-freq-mark").evaluate_all(
+            r"ns => ns.filter(n => !/^\d+(st|nd|rd|th)$/.test(n.textContent.trim())"
+            r" || !/(^|\s)c-(elite|good|mid|weak|poor)(\s|$)/.test(n.className)).map(n => n.textContent)")
+        check("NFL league markers are colour-coded rank pills",
+              page.locator(".ca-freq-mark").count() > 0 and not bad_marks, str(bad_marks[:5]))
+        check("NFL shows no frequency arrows",
+              not any(g in page.locator("main").inner_text() for g in "▲▼"))
         check("NFL published tendencies, looks, receivers and QB opponent rates carry markers",
               all(page.locator(f"{sid} .ca-freq-mark").count() > 0 or section_unpublished(sid)
                   for sid in ("#looks", "#tendencies", "#receivers", "#quarterbacks")))
