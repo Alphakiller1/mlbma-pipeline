@@ -176,7 +176,12 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             check(f"{width}px no console errors", not console_errors, " | ".join(console_errors[:3]))
 
             expanders = page.locator("#openingMlbSlate .ca-matchup-card__expand-btn")
-            check(f"{width}px expand controls", expanders.count() >= 2)
+            # One control per card; a one-game day (late in a playoff slate)
+            # has one, which is the schedule, not a missing control.
+            slate_cards = page.locator("#openingMlbSlate .ca-matchup-card").count()
+            check(f"{width}px expand controls",
+                  slate_cards > 0 and expanders.count() >= min(2, slate_cards),
+                  f"{expanders.count()} controls on {slate_cards} cards")
             if expanders.count() >= 2:
                 expanders.nth(0).focus()
                 expanders.nth(0).press("Enter")
@@ -198,9 +203,18 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         target = (page.locator(".ca-matchup-card__name").first.inner_text() or "").strip()
         search.fill(target)
         filtered_count = page.locator(".ca-matchup-card").count()
-        check("MLB team search filters the slate",
-              initial_count > 1 and 1 <= filtered_count < initial_count,
-              f"query={target!r} before={initial_count} after={filtered_count}")
+        if initial_count > 1:
+            check("MLB team search filters the slate",
+                  1 <= filtered_count < initial_count,
+                  f"query={target!r} before={initial_count} after={filtered_count}")
+        else:
+            # A one-game slate cannot get smaller by matching its own club; it
+            # must keep its game for that club and drop it for a club not on it.
+            search.fill("zzzz-no-such-club")
+            emptied = page.locator(".ca-matchup-card").count()
+            check("MLB team search filters the slate",
+                  initial_count == 1 and filtered_count == 1 and emptied == 0,
+                  f"one-game slate: query={target!r} kept {filtered_count}, unknown club kept {emptied}")
         search.fill("")
         mlb_detail = page.locator(".ca-matchup-card__detail-link").first.get_attribute("href") or ""
         page.goto(base_url.rstrip("/") + mlb_detail, wait_until="domcontentloaded", timeout=timeout_ms)

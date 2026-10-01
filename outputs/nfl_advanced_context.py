@@ -67,6 +67,7 @@ def _joined(season: int, participation: bool):
     ftn = _frame(FTN_URL.format(season=season), (
         "nflverse_game_id", "nflverse_play_id", "n_defense_box",
         "n_blitzers", "n_pass_rushers", "date_pulled",
+        "is_play_action", "is_motion",
     ))
     if ftn is not None:
         ftn = ftn.rename(columns={
@@ -249,6 +250,9 @@ def _receiver_stats(rows) -> dict[str, Any] | None:
         "catch_rate": _safe_ratio(receptions, targets),
         "yards_per_target": round(yards / targets, 4),
         "epa_per_target": round(float(rows["epa"].fillna(0).sum()) / targets, 4),
+        # nflfastR success: the target gained positive EPA for the offense.
+        "success_rate": (round(float(rows["success"].fillna(0).mean()), 4)
+                         if "success" in rows else None),
     }
 
 
@@ -308,6 +312,15 @@ def _split_masks(rows, position: str) -> dict[str, Any]:
         known = rows[box_col].notna()
         masks.update({"stacked_box": known & rows[box_col].ge(8),
                       "light_box": known & rows[box_col].le(6)})
+    # Scheme looks a receiver is targeted out of (FTN charting, current
+    # season included): play action and pre-snap motion, each with its
+    # complement so the two halves of the receiver's targets sit together.
+    if position == "REC":
+        for col, look in (("is_play_action", "play_action"), ("is_motion", "motion")):
+            if col in rows:
+                known = rows[col].notna()
+                flag = rows[col].fillna(False).astype(bool)
+                masks.update({look: known & flag, "no_" + look: known & ~flag})
     if position in ("QB", "REC") and "defense_coverage_type" in rows:
         coverage = rows["defense_coverage_type"].fillna("").astype(str).str.upper()
         man_zone = rows["defense_man_zone_type"].fillna("").astype(str).str.upper()

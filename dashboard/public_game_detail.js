@@ -4144,12 +4144,13 @@ function seasonToggle(game) {
       minimum: 5, allFloor: 50 },
     REC: { volume: 'targets', key: 'coverage',
       sums: ['targets', 'receptions', 'receiving_yards', 'touchdowns'],
-      weighted: [['epa_per_target', 'targets']],
+      weighted: [['epa_per_target', 'targets'], ['success_rate', 'targets']],
       derive: function (t) {
         t.catch_rate = t.targets ? t.receptions / t.targets : null;
         t.yards_per_target = t.targets ? t.receiving_yards / t.targets : null;
       },
-      metrics: [['catch_rate', true], ['yards_per_target', true], ['epa_per_target', true]],
+      metrics: [['catch_rate', true], ['yards_per_target', true], ['epa_per_target', true],
+        ['success_rate', true]],
       minimum: 3, allFloor: 20 }
   };
 
@@ -4335,7 +4336,9 @@ function seasonToggle(game) {
     dime: 'Vs Dime', left: 'Run Left', middle: 'Run Middle', right: 'Run Right',
     gap_guard: 'At The Guards', gap_tackle: 'At The Tackles', gap_end: 'Outside The Ends',
     cover_0: 'Cover 0', cover_1: 'Cover 1', cover_2: 'Cover 2', cover_2_man: 'Cover 2 Man',
-    cover_3: 'Cover 3', cover_4: 'Cover 4', cover_6: 'Cover 6'
+    cover_3: 'Cover 3', cover_4: 'Cover 4', cover_6: 'Cover 6',
+    play_action: 'Play Action', no_play_action: 'No Play Action',
+    motion: 'With Motion', no_motion: 'No Motion'
   };
 
   function nflFormat(raw, kind) {
@@ -4368,11 +4371,15 @@ function seasonToggle(game) {
     cover_0: ['coverage', 'cover_0_rate'], cover_1: ['coverage', 'cover_1_rate'],
     cover_2: ['coverage', 'cover_2_rate'], cover_2_man: ['coverage', 'cover_2_man_rate'],
     cover_3: ['coverage', 'cover_3_rate'], cover_4: ['coverage', 'cover_4_rate'],
-    cover_6: ['coverage', 'cover_6_rate']
+    cover_6: ['coverage', 'cover_6_rate'],
+    play_action: ['personnel', 'play_action_rate'], motion: ['personnel', 'motion_rate']
   };
+  // A complement look reads its source rate turned over.
+  var NFL_LOOK_INVERSE = { no_blitz: 'blitz', clean: 'pressure',
+    no_play_action: 'play_action', no_motion: 'motion' };
 
   function nflOppShows(oppDefense, look) {
-    var inverse = { no_blitz: 'blitz', clean: 'pressure' }[look];
+    var inverse = NFL_LOOK_INVERSE[look];
     var spec = NFL_LOOK_RATE[inverse || look];
     if (!spec || !oppDefense) return null;
     var v = (oppDefense[spec[0]] || {})[spec[1]];
@@ -4383,7 +4390,7 @@ function seasonToggle(game) {
   // The same look's league place for the opponent; a complement (no blitz,
   // clean pocket) reads its source rate's place turned over.
   function nflOppShowsMark(oppScheme, look) {
-    var inverse = { no_blitz: 'blitz', clean: 'pressure' }[look];
+    var inverse = NFL_LOOK_INVERSE[look];
     var spec = NFL_LOOK_RATE[inverse || look];
     if (!spec) return '';
     return nflFreqMark(nflFreqRank(oppScheme, 'defense', spec[0], spec[1]), !!inverse);
@@ -5071,9 +5078,17 @@ function seasonToggle(game) {
     ['Coverage', ['man', 'zone', 'single_high', 'two_high']],
     ['Pass Rush', ['blitz', 'no_blitz', 'pressure', 'clean']],
     ['Box', ['light_box', 'stacked_box']],
+    ['Scheme', ['play_action', 'no_play_action', 'motion', 'no_motion']],
     ['Shells', ['cover_0', 'cover_1', 'cover_2', 'cover_2_man', 'cover_3', 'cover_4', 'cover_6']]
   ];
   var NFL_REC_FLOOR = 3;
+  /* What "success" means against a look, one stat at a time (owner
+     2026-10-01: WR success against specific coverages and schemes). Success
+     is nflfastR's: the target gained the offense positive EPA. */
+  var NFL_REC_METRICS = [
+    ['yards_per_target', 'Yds / Tgt', 'yds'], ['success_rate', 'Success %', 'pct'],
+    ['catch_rate', 'Catch %', 'pct'], ['epa_per_target', 'EPA / Tgt', 'epa']
+  ];
 
   function nflReceiverMatrices(sport, game, side, statRows) {
     var profiles = game[side + '_player_coverage'] || [];
@@ -5094,7 +5109,15 @@ function seasonToggle(game) {
     var seasons = profiles.map(function (p) { return p.source_season; });
     var now = Math.max.apply(null, seasons);
 
-    function matrix(cols, title, oppScheme) {
+    function metricText(value, kind) {
+      if (kind === 'pct') return pctText(value);
+      if (kind === 'epa') return epaText(value);
+      return Number(value).toFixed(1);
+    }
+
+    function matrix(cols, title, oppScheme, metric) {
+      metric = metric || NFL_REC_METRICS[0];
+      var key = metric[0];
       var oppDef = (oppScheme || {}).defense || null;
       var looks = {};
       cols.forEach(function (p, i) {
@@ -5109,20 +5132,22 @@ function seasonToggle(game) {
         present.forEach(function (look) {
           var cells = leaders.map(function (k, i) {
             var sp = looks[look][i];
-            if (!sp || sp.yards_per_target == null) {
+            if (!sp || sp[key] == null) {
               var tg = sp && sp.targets ? Number(sp.targets) : 0;
               return '<td class="num is-low-cell" title="' + tg + ' targets in this look">' + tg +
                 ' <small class="is-low">tgt</small></td>';
             }
             var thin = Number(sp.targets) < NFL_REC_FLOOR;
-            var rank = (sp.league_ranks || {}).yards_per_target;
-            var title = pctText(sp.catch_rate) + ' catch · ' + epaText(sp.epa_per_target) + ' EPA/tgt';
+            var rank = (sp.league_ranks || {})[key];
+            var title = Number(sp.yards_per_target).toFixed(1) + ' yds/tgt · ' +
+              pctText(sp.catch_rate) + ' catch · ' + epaText(sp.epa_per_target) + ' EPA/tgt' +
+              (sp.success_rate != null ? ' · ' + pctText(sp.success_rate) + ' success' : '');
             return '<td class="num' + (rank && !thin ? ' ' + rankTone(rank.place, rank.of) : '') +
               (thin ? ' is-low-cell' : '') + '" title="' + esc(title +
               (rank && !thin ? ' · ' + rank.place + ordinal(rank.place) + ' of ' + rank.of : '') +
               ' · ' + sp.targets + ' targets' +
               (thin ? ' · under ' + NFL_REC_FLOOR + ' targets, not graded' : '')) + '">' +
-              esc(Number(sp.yards_per_target).toFixed(1)) +
+              esc(metricText(sp[key], metric[2])) +
               (thin ? ' <small class="is-low">' + esc(sp.targets) + '</small>' : nflBadge(rank)) + '</td>';
           }).join('');
           var shows = oppDef ? nflOppShows(oppDef, look) : null;
@@ -5152,10 +5177,22 @@ function seasonToggle(game) {
       return byName[k].filter(function (p) { return p.source_season === now; })[0] || null;
     });
     var allSeasons = seasons.filter(function (y, i, a) { return a.indexOf(y) === i; }).sort();
+    function switchable(cols, label, scheme) {
+      var buttons = NFL_REC_METRICS.map(function (m, i) {
+        return '<button type="button" class="ca-rec-metric__btn' + (i ? '' : ' is-on') +
+          '" data-rec-metric="' + m[0] + '" aria-pressed="' + (i ? 'false' : 'true') + '">' +
+          esc(m[1]) + '</button>';
+      }).join('');
+      var views = NFL_REC_METRICS.map(function (m, i) {
+        return '<div data-rec-metric-view="' + m[0] + '"' + (i ? ' hidden' : '') + '>' +
+          matrix(cols, label + ' Receivers By Coverage And Scheme · ' + m[1], scheme, m) + '</div>';
+      }).join('');
+      return '<div class="ca-rec-metric"><div class="ca-rec-metric__bar" role="group" ' +
+        'aria-label="Receiver stat">' + buttons + '</div>' + views + '</div>';
+    }
     return nflSeasonViews(
-      matrix(combinedCols, allSeasons.join(' + ') + ' Receivers By Coverage · Yards Per Target', oppScheme),
-      matrix(currentCols, now + ' Receivers By Coverage · Yards Per Target',
-        game[oppSide + '_scheme_current'] || {}));
+      switchable(combinedCols, allSeasons.join(' + '), oppScheme),
+      switchable(currentCols, String(now), game[oppSide + '_scheme_current'] || {}));
   }
 
   /* ---- red zone: trips, conversion and who gets the ball inside the 20 ----
@@ -5389,6 +5426,20 @@ function seasonToggle(game) {
         if (global.history && global.history.replaceState) {
           global.history.replaceState(null, '', '#' + key);
         }
+        return;
+      }
+      var metricBtn = event.target.closest && event.target.closest('[data-rec-metric]');
+      if (metricBtn && host.contains(metricBtn)) {
+        var box = metricBtn.closest('.ca-rec-metric');
+        var want = metricBtn.getAttribute('data-rec-metric');
+        Array.prototype.forEach.call(box.querySelectorAll('[data-rec-metric]'), function (b) {
+          var on = b.getAttribute('data-rec-metric') === want;
+          b.classList.toggle('is-on', on);
+          b.setAttribute('aria-pressed', String(on));
+        });
+        Array.prototype.forEach.call(box.querySelectorAll('[data-rec-metric-view]'), function (v) {
+          v.hidden = v.getAttribute('data-rec-metric-view') !== want;
+        });
         return;
       }
       var club = event.target.closest && event.target.closest('[data-club]');
