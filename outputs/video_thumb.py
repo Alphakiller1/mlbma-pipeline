@@ -38,7 +38,8 @@ SITE = "https://chase-analytics.com"
 # Section to capture, and which band of it reads at thumbnail size (fractions of its height).
 DEFAULTS = {
     "mlb": {"section": "starters", "crop": (0.0, 0.46)},
-    "nfl": {"section": "overview", "crop": (0.0, 1.0)},
+    # Both QBs side by side (desktop width), cut to headshots + headline tiles.
+    "nfl": {"section": "quarterbacks", "crop": "tiles"},
 }
 # The site's logos are ESPN's; a few clubs go by another code there.
 # (the White Sox are "chw" on ESPN: "CWS", MLB's code, maps to it - not the other way round)
@@ -97,11 +98,23 @@ def find_game(page, league: str, away: str, home: str, game_id: str | None) -> d
     fail(f"{away}@{home} is not on the live {league.upper()} slate. On it: {seen or 'nothing'}")
 
 
+# NFL matchup pages are tabbed: the tab that shows each section.
+NFL_TABS = {
+    "efficiency": "Units", "dvoa": "DVOA", "quarterbacks": "Passing", "coverage": "Passing", "looks": "Passing",
+    "run-game": "Rushing", "trenches": "Rushing", "rushing": "Rushing", "receivers": "Receiving",
+    "redzone": "Red Zone", "tendencies": "Tendencies", "def-tendencies": "Tendencies",
+    "availability": "Lineups", "radar": "Profile", "team-context": "Profile",
+}
+
+
 def capture(page, url: str, section: str, out: Path) -> tuple[int, int]:
     page.goto(url, wait_until="networkidle", timeout=60000)
     sel = f"#{section}"
     try:
-        page.wait_for_selector(sel, timeout=30000)
+        page.wait_for_selector(sel, state="attached", timeout=30000)
+        if "/nfl/" in url and section in NFL_TABS:
+            page.get_by_text(NFL_TABS[section], exact=True).first.click()
+        page.wait_for_selector(sel, timeout=15000)
     except Exception:
         ids = page.evaluate("[...document.querySelectorAll('section[id]')].map(s => s.id)")
         fail(f"no #{section} on {url}. Sections there: {', '.join(ids)}")
@@ -111,6 +124,15 @@ def capture(page, url: str, section: str, out: Path) -> tuple[int, int]:
     page.locator(sel).first.screenshot(path=str(out))
     with Image.open(out) as im:
         return im.size
+
+
+def tiles_crop(page, section: str) -> tuple[float, float]:
+    """Crop band ending just under the section's headline stat tiles (headshots + numbers)."""
+    frac = page.evaluate(r"""(id) => { const s = document.getElementById(id); const r = s.getBoundingClientRect();
+        const tiles = [...s.querySelectorAll('.ca-stat')].filter(t => t.offsetParent);
+        if (!tiles.length) return 1; const bottom = Math.max(...tiles.map(t => t.getBoundingClientRect().bottom));
+        return Math.min(1, (bottom - r.top + 18) / r.height); }""", section)
+    return (0.0, float(frac))
 
 
 def bracket_thumb(a) -> None:
@@ -225,7 +247,11 @@ def main() -> None:
         day = m.group(1) if m else "undated"
         slug = f"{day}-{away}-{home}"
         shot = thumbs / f"{slug}-{section}.png"
+        if a.league == "nfl":
+            page.set_viewport_size({"width": 1440, "height": 1000})  # both clubs side by side
         w, h = capture(page, SITE + game["href"], section, shot)
+        if crop == "tiles":
+            crop = tiles_crop(page, section)
         browser.close()
     print(f"[video-thumb] captured #{section} of {away}@{home} ({w}x{h}) -> {shot.relative_to(ROOT)}")
     logo_files = {}

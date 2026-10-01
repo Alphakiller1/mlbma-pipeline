@@ -132,7 +132,9 @@ export const ThumbnailDesk: React.FC<ThumbnailDeskProps> = ({ league, away, home
         style={{
           position: "absolute",
           left: (width - cardW) / 2,
-          bottom: 58 * u,
+          // Centred in the room under the headline band (y 300..662): a tall component fills
+          // it, a short band (two QBs' headline tiles) no longer sinks to the bottom edge.
+          top: (cardH / u > 362 ? 662 - cardH / u : 300 + (362 - cardH / u) / 2) * u,
           width: cardW,
           height: cardH,
           borderRadius: 14 * u,
