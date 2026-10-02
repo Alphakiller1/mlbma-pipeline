@@ -18,8 +18,9 @@ from pathlib import Path
 
 try:  # run as a script (scripts/ on the path) or imported as scripts.*
     import cfb_depth
+    import cfb_injuries
 except ImportError:  # pragma: no cover - package import in tests
-    from scripts import cfb_depth
+    from scripts import cfb_depth, cfb_injuries
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "public" / "cfb" / "slate.json"
@@ -771,12 +772,18 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict,
         row[side + "_defense_splits"] = (depth.get("defense_splits") or {}).get(key)
         row[side + "_rushers"] = (depth.get("rushers") or {}).get(key)
         row[side + "_game_log"] = log
+        row[side + "_schedule_strength"] = (depth.get("schedule") or {}).get(key)
+        # An empty list is a published report with nobody listed; None is no report.
+        injuries = depth.get("injuries") or {}
+        if injuries:
+            row[side + "_injuries"] = {"players": injuries.get(key, []),
+                                       "sources": "Covers, RotoWire"}
         if not row.get(side + "_record"):
             row[side + "_record"] = _record((log or {}).get("games"))
     return {key: value for key, value in row.items() if value not in (None, "", [], {})}
 
 
-def load_depth(season: int, week: int, games_in: list[dict]) -> dict:
+def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | None = None) -> dict:
     """Run game, scheme stats, QBs, ball carriers and game logs (cfb_depth)."""
     rows = cfb_depth.advanced_rows(season)
     advanced = cfb_depth.team_advanced(rows)
@@ -796,13 +803,18 @@ def load_depth(season: int, week: int, games_in: list[dict]) -> dict:
         "defense_splits": cfb_depth.defense_splits(rows),
         "rushers": cfb_depth.rushers(season, fbs) if fbs else {},
         "logs": cfb_depth.game_logs(season, week, wanted, fbs),
+        "schedule": cfb_depth.schedule_strength(season, {
+            key[5:]: profile["overall"]["value"] for key, profile in (adjusted or {}).items()
+            if key.startswith("name:") and (profile.get("overall") or {}).get("value") is not None}),
+        "injuries": cfb_injuries.load(),
     }
     print(f"  depth: {len(advanced)} CFBD team profiles, {len(depth['qbs'])} QB rooms, "
           f"{len(depth['logs'])} game logs")
     return depth
 
 
-DEPTH_KEYS = ("_run_game", "_scheme_stats", "_qbs", "_defense_splits", "_rushers")
+DEPTH_KEYS = ("_run_game", "_scheme_stats", "_qbs", "_defense_splits", "_rushers",
+              "_schedule_strength")
 
 
 def carry_forward_depth(games: list[dict], season: int) -> int:
@@ -865,7 +877,7 @@ def main() -> int:
     adjusted = load_sp_plus(season)
     week = int(board.get("week") or 0)
     schemes = load_scheme_profiles(season, week)
-    depth = load_depth(season, week, games_in)
+    depth = load_depth(season, week, games_in, adjusted)
     games = [public_game(raw, stats, events, pools, adjusted, schemes, season, depth)
              for raw in games_in]
     carried = carry_forward_depth(games, season)
