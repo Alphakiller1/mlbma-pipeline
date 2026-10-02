@@ -113,7 +113,8 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertNotIn("function cfbSchemeBody", js)
         for fn in ("cfbQbPanel", "cfbRunGamePanel", "cfbRushersPanel", "cfbGameLogPanel"):
             self.assertIn("function " + fn, js)
-        self.assertIn("['games', 'Games', ['cfb-game-log']]", js)
+        self.assertIn("['games', 'Games', ['cfb-game-log', 'cfb-schedule']]", js)
+        self.assertIn("['availability', 'Availability', ['cfb-availability']]", js)
         self.assertIn("['rushing', 'Rushing', ['cfb-rushing', 'cfb-run-game', 'cfb-rushers']]", js)
         self.assertIn("section('cfb-coverage', 'Coverage Outcomes'", js)
         self.assertIn("function cfbCoverageBody", js)
