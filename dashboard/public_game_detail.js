@@ -1239,6 +1239,9 @@
     var stat = (person && person.stat) || {};
     var hand = (person && person.throws) || String(game[side + '_hand'] || '').toUpperCase();
     var handLabel = hand === 'L' ? 'LHP' : (hand === 'R' ? 'RHP' : '');
+    // No official probable: the slate named RotoWire's listed arm instead.
+    var role = String(game[side + '_starter_role'] || '').toLowerCase();
+    var roleLabel = role === 'primary' ? 'Primary' : (role === 'projected' ? 'Projected' : '');
     // The season line, kept as the one anchor the splits below are read
     // against - a .620 OPS allowed to left-handers means nothing without the
     // number the same arm posts overall.
@@ -1349,7 +1352,8 @@
     }
     return '<section class="ca-starter-panel">' +
       '<header class="ca-starter-head">' + shot +
-      '<div><p class="ca-starter-team">' + esc(label) + (handLabel ? ' \u00b7 ' + handLabel : '') + '</p>' +
+      '<div><p class="ca-starter-team">' + esc(label) + (handLabel ? ' \u00b7 ' + handLabel : '') +
+        (roleLabel ? ' \u00b7 ' + roleLabel : '') + '</p>' +
       '<h3 class="ca-starter-name">' + esc(name) + '</h3></div></header>' +
       (headline ? '<div class="ca-stat-row">' + headline + '</div>' : '') +
       lastHtml + splitHtml + '</section>';

@@ -156,6 +156,16 @@
     return sideValue(game, side, 'starter', 'Probable Starter Not Published');
   }
 
+  /* MLB had not posted a probable, so the slate named the arm RotoWire lists:
+     "primary" is its PRIM tag - the bulk-innings arm behind an opener - and
+     "projected" any other arm listed ahead of the announcement. */
+  function starterRole(game, side) {
+    var role = String(sideValue(game, side, 'starter_role', '')).toLowerCase();
+    if (role === 'primary') return 'Primary';
+    if (role === 'projected') return 'Projected';
+    return '';
+  }
+
   function starterMeta(game, side, sport) {
     if (sport === 'nfl') {
       var qb = quarterback(game, side);
@@ -165,6 +175,8 @@
       return 'QB1';
     }
     var bits = [];
+    var role = starterRole(game, side);
+    if (role) bits.push(role);
     var hand = String(sideValue(game, side, 'hand', '')).toUpperCase();
     if (hand === 'R' || hand === 'RHP') bits.push('RHP');
     if (hand === 'L' || hand === 'LHP') bits.push('LHP');
@@ -286,7 +298,8 @@
     var id = sideValue(game, side, 'starter_id', '');
     return '<div class="ca-matchup-card__starter">' +
       headshot(id, name) + '<div><span class="ca-matchup-card__starter-label">' +
-      (sport === 'nfl' ? 'Quarterback' : 'Probable starter') + '</span>' +
+      (sport === 'nfl' ? 'Quarterback'
+        : starterRole(game, side) === 'Primary' ? 'Primary pitcher' : 'Probable starter') + '</span>' +
       '<strong>' + esc(name) + '</strong><span>' + esc(starterMeta(game, side, sport)) + '</span></div></div>';
   }
 
@@ -700,6 +713,15 @@
       var merged = Object.assign({}, game);
       Object.keys(extra).forEach(function (key) {
         if (extra[key] != null && extra[key] !== '') merged[key] = extra[key];
+      });
+      // Once MLB names a probable it is the arm, whatever RotoWire listed
+      // when the slate was published.
+      ['away', 'home'].forEach(function (side) {
+        if (!game[side + '_starter']) return;
+        ['starter', 'starter_id', 'hand', 'era'].forEach(function (field) {
+          if (game[side + '_' + field]) merged[side + '_' + field] = game[side + '_' + field];
+        });
+        merged[side + '_starter_role'] = null;
       });
       merged.id = String(game.id);
       merged.game_pk = game.game_pk;
