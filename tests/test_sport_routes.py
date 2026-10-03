@@ -103,30 +103,34 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("function cfbSections", js)
         # The CFB desk reads in the NFL desk's design layer (2026-09-29).
         self.assertIn("var CFB_TABS", js)
-        self.assertIn("function cfbUnitPanel", js)
+        # Owner 2026-10-03: every unit comparison is one matchup ledger (stat,
+        # offense + rank, centre rank bars, defense + rank), the two directions
+        # side by side with the same rows, and each stat appears once.
+        self.assertIn("function cfbLedgerPanel", js)
+        self.assertIn("function cfbLedgerRow", js)
+        self.assertIn("function cfbHeadToHead", js)
+        self.assertIn("ca-cfb-ledger-table", js)
         self.assertIn("function cfbSpecialBody", js)
         self.assertIn("function cfbDvoaBody", js)
-        self.assertIn("['coverage', 'Coverage', ['cfb-scheme', 'cfb-coverage']]", js)
-        # Owner 2026-10-01: measured scheme rates replaced the prose profile.
-        self.assertIn("section('cfb-scheme', 'Scheme And Tendencies'", js)
-        self.assertIn("function cfbSchemeStatsPanel", js)
-        self.assertNotIn("function cfbSchemeBody", js)
-        for fn in ("cfbQbPanel", "cfbRunGamePanel", "cfbRushersPanel", "cfbGameLogPanel"):
-            self.assertIn("function " + fn, js)
+        self.assertIn("['units', 'Units', ['cfb-efficiency', 'cfb-dvoa']]", js)
+        self.assertIn("['passing', 'Passing', ['cfb-quarterbacks', 'cfb-passing']]", js)
+        self.assertIn("['rushing', 'Rushing', ['cfb-rushing', 'cfb-rushers']]", js)
         self.assertIn("['games', 'Games', ['cfb-game-log']]", js)
-        self.assertIn("['rushing', 'Rushing', ['cfb-rushing', 'cfb-run-game', 'cfb-rushers']]", js)
-        self.assertIn("section('cfb-coverage', 'Coverage Outcomes'", js)
-        self.assertIn("function cfbCoverageBody", js)
-        self.assertIn("ca-cfb-coverage-stack", js)
-        self.assertIn("['yards_per_completion', 'Yds/Comp']", js)
-        self.assertIn("['pass_td_rate', 'TD Rate']", js)
-        self.assertIn("['interception_rate', 'INT Rate']", js)
-        self.assertIn("'cfb-trenches'", js)
-        self.assertIn("'cfb-situational'", js)
-        self.assertIn("['sack_rate', 'Sack%']", js)
-        self.assertIn("['points_per_play', 'Pts/Play']", js)
+        for fn in ("cfbQbPanel", "cfbRushersPanel", "cfbGameLogPanel"):
+            self.assertIn("function " + fn, js)
+        for gone in ("function cfbUnitPanel", "function cfbCoverageBody", "function cfbSchemeStatsPanel",
+                     "function cfbRunGamePanel", "function cfbSchemeBody", "'cfb-trenches'",
+                     "'cfb-coverage'", "'cfb-units'", "CFB_UNIT_COLUMNS"):
+            self.assertNotIn(gone, js)
+        ledger = js[js.index("var CFB_LEDGER = {"):js.index("var CFB_LEDGER_UNITS")]
+        import re
+        specs = re.findall(r"\['(form|scheme|run|model)', '([a-z_A-Z]+)', '([^']+)'\]", ledger)
+        self.assertGreater(len(specs), 40)
+        self.assertEqual(len(specs), len({(f, k) for f, k, _ in specs}), "a stat repeats on the desk")
+        for label in ("Yds/Comp", "TD Rate", "INT Rate", "Sack%", "Pts/Play", "Line Yds", "Havoc"):
+            self.assertIn("'" + label + "'", ledger)
         self.assertIn("SP+ Opponent-Adjusted Efficiency By Unit", js)
-        self.assertIn("side + '_adjusted_efficiency'", js)
+        self.assertIn("game.away_adjusted_efficiency", js)
         self.assertIn("host.__deskTabs = sport === 'cfb' ? CFB_TABS : NFL_TABS", js)
         self.assertIn("Matchup Analysis", js)
         self.assertNotIn("function nflScriptLens", js)
