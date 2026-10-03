@@ -5679,3 +5679,41 @@ body[data-sport="nfl"] .ca-detail-nav {
 
 /* CFB QB and ball-carrier rows: the volume behind the line, under the name. */
 .ca-qb-volume { display: block; color: var(--text-muted); font-size: var(--type-meta); font-variant-numeric: tabular-nums; }
+
+/* ====================================================================
+ * CFB PLAYER HEADSHOTS - 2026-10-03. Quarterback and ball-carrier rows
+ * lead with the player's ESPN portrait (initials where ESPN has none).
+ * ================================================================== */
+.ca-cfb-player {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.ca-cfb-player__shot {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-raised);
+  object-fit: cover;
+  object-position: center top;
+}
+.ca-cfb-player__shot.is-initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: var(--type-caps);
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+.ca-cfb-player__id {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ca-cfb-panel .ca-lineup-table.ca-split-table thead th:first-child { width: 16.5rem; }
+@media (max-width: 720px) {
+  .ca-cfb-player__shot { width: 32px; height: 32px; }
+}

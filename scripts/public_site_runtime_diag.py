@@ -761,6 +761,10 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                   "comp%", "yds/att", "yds/comp", "rating", "epa/pass", "td rate",
                   "int rate", "pass 1d%", "sack%", "dropbacks/g", "db havoc")),
               passing_text[:200])
+        check("CFB quarterback rows lead with a headshot or initials",
+              page.locator("#cfb-quarterbacks tbody td:first-child .ca-cfb-player__shot").count() > 0
+              and page.locator("#cfb-quarterbacks tbody td:first-child .ca-cfb-player__shot").count()
+              == page.locator("#cfb-quarterbacks tbody td:first-child .ca-cfb-player").count())
         page.locator("a[data-nfl-tab='rushing']").click()
         run_text = page.locator("#cfb-rushing").inner_text().lower()
         check("CFB rushing tab carries run game, line play and ball carriers",
