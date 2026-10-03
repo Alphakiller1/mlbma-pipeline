@@ -250,6 +250,8 @@ def capture(page, url: str, spec: dict, out: Path) -> tuple[int, int]:
 
 def fetch_logo(src: str, dest: Path) -> str:
     big = re.sub(r"([?&])w=\d+&h=\d+", lambda m: m.group(1) + "w=500&h=500", src)
+    # Always the dark-background logo: these posts are black (the standard Rays mark is navy).
+    big = re.sub(r"/teamlogos/(\w+)/500/", r"/teamlogos/\1/500-dark/", big)
     with urllib.request.urlopen(urllib.request.Request(big, headers={"User-Agent": "Mozilla/5.0"}), timeout=30) as r:
         dest.write_bytes(r.read())
     return f"instagram/{dest.name}"
