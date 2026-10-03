@@ -6,6 +6,9 @@ Instagram matchup posts: two 1080x1350 images per game, built from the live site
     python -m outputs.insta_matchup --league nfl --games PIT@CLE
 
 Per MLB game:
+  0. Cover (InstaCover, cutout faces) - both probable starters standing on their clubs'
+     colours, the matchup and a tale of the tape: ERA, Pitch Score, QS% and each lineup's
+     OSI against tonight's hand, in the site's own values and grade colours
   1. Probable Starters  (#starters)  - both pitchers, stacked so the full splits table fits
   2. Offense            (#lineups)   - each order against the hand it faces tonight
 Per NFL game (the page is tabbed, one club's side at a time):
@@ -202,6 +205,125 @@ def nfl_cover(page, url: str, game: dict, meta: dict, logos: dict, away: str, ho
     }
 
 
+# The MLB cover's tale of the tape, off the live page: each probable starter's panel
+# (name, club line, MLB id from the headshot, the graded tiles) and each lineup's index
+# against the hand it faces tonight (club splits, with its rank pill).
+MLB_COVER_JS = r"""() => {
+  const color = el => el ? getComputedStyle(el).color : '';
+  const starters = [...document.querySelectorAll('#starters .ca-starter-panel')].map(p => {
+    const tile = label => {
+      const st = [...p.querySelectorAll('.ca-stat')].find(x =>
+        ((x.querySelector('.ca-stat__label') || {}).innerText || '').trim().toUpperCase() === label);
+      if (!st) return null;
+      const v = st.querySelector('.ca-stat__value');
+      return { value: (v || {}).innerText ? v.innerText.trim() : '', color: color(v) };
+    };
+    const src = (p.querySelector('img') || {}).src || '';
+    const id = (src.match(/people\/(\d+)\//) || [])[1] || '';
+    return { name: ((p.querySelector('h3') || {}).innerText || '').trim(),
+             team: ((p.querySelector('.ca-starter-team') || {}).innerText || '').trim(), id,
+             era: tile('ERA'), score: tile('PITCH SCORE'), qs: tile('QS%') };
+  });
+  const clubs = [...document.querySelectorAll('#club-splits h3')].map(h => {
+    const panel = h.closest('section, .ca-form-panel, article') || h.parentElement;
+    const row = [...panel.querySelectorAll('tbody tr')].find(r =>
+      /tonight/i.test((r.children[0] || {}).innerText || ''));
+    if (!row) return { club: h.innerText.trim(), osi: null };
+    const cell = row.children[1];
+    const pill = cell.querySelector('[class*=rank]');
+    const rank = pill ? pill.innerText.trim() : '';
+    let value = cell.innerText.trim(); if (rank && value.endsWith(rank)) value = value.slice(0, -rank.length).trim();
+    return { club: h.innerText.trim(), split: row.children[0].innerText.trim(),
+             osi: { value, rank, color: color(pill || cell) } };
+  });
+  return { starters, clubs };
+}"""
+SERIES_SHORT = {"Division Series": "DS", "Championship Series": "CS"}
+
+
+def mlb_cover_meta(game_pk: str) -> dict:
+    """Eyebrow (round, game, ET start, national TV), regular-season records and venue."""
+    g = get_json(f"{API}/schedule?sportId=1&gamePk={game_pk}&hydrate=broadcasts(all),venue(location)")
+    g = g["dates"][0]["games"][0]
+    start = datetime.fromisoformat(g["gameDate"].replace("Z", "+00:00")).astimezone(ZoneInfo("America/New_York"))
+    desc = g.get("seriesDescription") or ""
+    for long, short in SERIES_SHORT.items():
+        if desc.endswith(long):
+            desc = desc[: -len(long)].strip() + short  # "AL Division Series" -> "ALDS"
+    round_ = desc if g.get("gameType") != "R" else "Regular Season"
+    if g.get("gameType") != "R" and g.get("seriesGameNumber"):
+        round_ += f" · Game {g['seriesGameNumber']}"
+    tv = next((b.get("name") for b in g.get("broadcasts", [])
+               if b.get("type") == "TV" and b.get("isNational")), "")
+    eyebrow = f"{round_} · {start:%a} {start:%I:%M %p}".replace(" 0", " ") + " ET" + (f" · {tv}" if tv else "")
+    records = {}
+    try:
+        st = get_json(f"{API}/standings?leagueId=103,104&season={start.year}&standingsTypes=regularSeason")
+        wl = {t["team"]["id"]: f"{t['wins']}-{t['losses']}" for rec in st["records"] for t in rec["teamRecords"]}
+        records = {s: wl.get(g["teams"][s]["team"]["id"], "") for s in ("away", "home")}
+    except Exception:
+        pass
+    v = g.get("venue") or {}
+    loc = v.get("location") or {}
+    place = ", ".join(x for x in [loc.get("city"), loc.get("stateAbbrev")] if x)
+    return {"eyebrow": eyebrow, "records": records,
+            "venue": " · ".join(x for x in [v.get("name"), place] if x)}
+
+
+def mlb_cover(page, url: str, game: dict, meta: dict, logos: dict, away: str, home: str, pub: Path) -> dict:
+    page.set_viewport_size({"width": 1400, "height": 1000})
+    page.goto(url, wait_until="networkidle", timeout=60000)
+    page.wait_for_selector("#starters .ca-starter-panel", state="attached", timeout=30000)
+    page.wait_for_timeout(2500)
+    data = page.evaluate(MLB_COVER_JS)
+    sp, clubs = data["starters"], data["clubs"]
+    if len(sp) < 2 or not all(s["name"] and s["id"] and s["era"] and s["score"] and s["qs"] for s in sp):
+        fail(f"cover: the page did not give both probable starters with ERA, Pitch Score and QS% ({sp})")
+    if len(clubs) < 2 or not all(c["osi"] and c["osi"]["value"] for c in clubs):
+        fail(f"cover: the page did not give both lineups' index against tonight's hand ({clubs})")
+    an, hn = nickname(game["away_name"]), nickname(game["home_name"])
+    cm = mlb_cover_meta(game["id"])
+
+    def portrait(pid: str, side: str) -> tuple[str, bool]:
+        """MLB's transparent cutout (silo) at 800px; the studio headshot if there is none."""
+        for kind, cut in (("headshot/silo/current", True), ("headshot/67/current", False)):
+            src = f"https://img.mlbstatic.com/mlb-photos/image/upload/w_800,q_auto:best/v1/people/{pid}/{kind}"
+            try:
+                with urllib.request.urlopen(urllib.request.Request(src, headers={"User-Agent": "Mozilla/5.0"}), timeout=30) as r:
+                    body = r.read()
+            except Exception:
+                continue
+            dest = pub / f"{meta['date']}-{away}-{home}-{side}-sp.png"
+            dest.write_bytes(body)
+            return f"instagram/{dest.name}", cut
+        return "", False
+
+    shots = [portrait(s["id"], k) for s, k in zip(sp, ("away", "home"))]
+    hands = [(s["team"].rsplit("·", 1)[-1].strip().upper() or "SP") for s in sp]
+
+    def side(k: str, name: str, s: dict, shot: str, hand: str) -> dict:
+        return {"abbr": {"away": away, "home": home}[k], "name": name, "record": cm["records"].get(k, ""),
+                "logo": logos[k], "player": s["name"], "headshot": shot, "role": hand}
+
+    # Each lineup faces the other club's starter.
+    faced = hands[1] if hands[0] == hands[1] else None
+    osi_label = f"Lineup OSI vs {faced}" if faced else "Lineup OSI vs Tonight's Hand"
+    return {
+        "league": "mlb",
+        "faces": "cutout" if all(cut for _, cut in shots) else "circle",
+        "eyebrow": cm["eyebrow"],
+        "away": side("away", an, sp[0], shots[0][0], hands[0]),
+        "home": side("home", hn, sp[1], shots[1][0], hands[1]),
+        "rows": [
+            {"label": "ERA", "away": sp[0]["era"], "home": sp[1]["era"]},
+            {"label": "Pitch Score", "away": sp[0]["score"], "home": sp[1]["score"]},
+            {"label": "Quality Start %", "away": sp[0]["qs"], "home": sp[1]["qs"]},
+            {"label": osi_label, "away": clubs[0]["osi"], "home": clubs[1]["osi"]},
+        ],
+        "venue": cm["venue"],
+        "cta": "Swipe for the breakdown",
+    }
+
 def capture(page, url: str, spec: dict, out: Path) -> tuple[int, int]:
     """Screenshot one section, stacked, at the page width that fills the post body."""
     section = spec["section"]
@@ -302,8 +424,9 @@ def main() -> None:
                      for side, src in zip(("away", "home"), game["logos"])}
             out_dir = VIDEO / "out" / "instagram" / meta["date"]
             out_dir.mkdir(parents=True, exist_ok=True)
-            if a.league == "nfl" and (not a.only or "cover" in a.only):
-                cover = nfl_cover(page, SITE + game["href"], game, meta, logos, away, home, pub)
+            if not a.only or "cover" in a.only:
+                make = nfl_cover if a.league == "nfl" else mlb_cover
+                cover = make(page, SITE + game["href"], game, meta, logos, away, home, pub)
                 props_file = VIDEO / "props" / "instagram" / f"{meta['date']}-{slug}-0-cover.json"
                 props_file.parent.mkdir(parents=True, exist_ok=True)
                 props_file.write_text(json.dumps(cover, indent=2), encoding="utf-8")
