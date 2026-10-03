@@ -488,31 +488,73 @@
     return [away || '—', home || '—'].join(' · ');
   }
 
-  /* CFB middle band + facts. The producer publishes a model board, not an ops
-     slate, so the pitcher/QB arms become a per-team projected-points line;
-     the three summary facts are records, conference and site. Every cell reuses the shared card structure so the CFB card is the
-     same object as the MLB and NFL cards, only fed different facts. */
-  function fmt1(v) { return (typeof v === 'number' && isFinite(v)) ? v.toFixed(1) : null; }
-  function cfbSigned(v) { return (typeof v === 'number' && isFinite(v)) ? (v > 0 ? '+' : '') + v.toFixed(1) : 'Not published'; }
-  function cfbPct(v) { return (typeof v === 'number' && isFinite(v)) ? Math.round(v * 100) + '%' : 'Not published'; }
-  function cfbText(v) { return v ? String(v).replace(/_/g, ' ') : 'Not published'; }
+  /* CFB middle band + facts. The middle band is each school's lead
+     quarterback, as on the NFL card: his ESPN college headshot, his name and
+     a season line, with yards per attempt as the graded chip (its FBS rank's
+     tier colour). Owner 2026-10-01: the card states facts, never the model's
+     read, so no projected points here; the three summary facts are records,
+     conference and site. */
+  function cfbHeadshotUrl(id) {
+    return id ? 'https://a.espncdn.com/combiner/i?img=/i/headshots/college-football/players/full/' +
+      encodeURIComponent(id) + '.png&w=96&h=96' : '';
+  }
+
+  function cfbInitials(name) {
+    return String(name || '').split(/\s+/).filter(Boolean).slice(0, 2)
+      .map(function (w) { return w.charAt(0); }).join('').toUpperCase();
+  }
 
   function cfbArm(game, side) {
-    var name = teamName('cfb', game[side], game[side + '_name']);
-    var proj = side === 'away' ? game.proj_away : game.proj_home;
-    var chip = fmt1(proj) != null
-      ? '<span class="ca-matchup-card__arm-era">' + esc(fmt1(proj)) + '<i>PTS</i></span>'
+    var qb = (game[side + '_qbs'] || [])[0];
+    if (!qb || !qb.player_name) {
+      return '<div class="ca-matchup-card__arm">' +
+        '<span class="ca-matchup-card__shot ca-matchup-card__shot--empty" aria-hidden="true"></span>' +
+        '<div class="ca-matchup-card__arm-copy">' +
+        '<span class="ca-matchup-card__arm-name">' + esc(teamName('cfb', game[side], game[side + '_name'])) +
+        '</span><span class="ca-matchup-card__arm-meta is-absent">Quarterback Not Published</span></div></div>';
+    }
+    var line = qb.line || {};
+    var url = cfbHeadshotUrl(qb.player_id);
+    var shot = url
+      ? '<img class="ca-matchup-card__shot" src="' + esc(url) + '" width="40" height="40" alt="' +
+        esc(qb.player_name) + '" loading="lazy" decoding="async" data-initials="' +
+        esc(cfbInitials(qb.player_name)) + '">'
+      : '<span class="ca-matchup-card__shot ca-matchup-card__shot--empty" aria-hidden="true">' +
+        esc(cfbInitials(qb.player_name)) + '</span>';
+    var pct = line.completion_pct && line.completion_pct.value != null
+      ? (Number(line.completion_pct.value) * 100).toFixed(1) + '%' : null;
+    var tds = line.touchdowns && line.touchdowns.value != null ? Math.round(Number(line.touchdowns.value)) + ' TD' : null;
+    var meta = ['QB'].concat([pct, tds].filter(Boolean)).join(' · ');
+    var ypa = line.yards_per_attempt;
+    var tone = ypa && ypa.rank && ypa.of && global.MLBMAAssets && MLBMAAssets.rankChipClass
+      ? MLBMAAssets.rankChipClass(ypa.rank, ypa.of) : '';
+    var chip = ypa && ypa.value != null
+      ? '<span class="ca-matchup-card__arm-era ' + esc(tone) + '">' + esc(Number(ypa.value).toFixed(1)) +
+        '<i>YPA</i></span>'
       : '';
-    return '<div class="ca-matchup-card__arm">' +
-      '<span class="ca-matchup-card__shot ca-matchup-card__shot--empty" aria-hidden="true"></span>' +
+    return '<div class="ca-matchup-card__arm">' + shot +
       '<div class="ca-matchup-card__arm-copy">' +
-      '<span class="ca-matchup-card__arm-name">' + esc(name) + '</span>' +
-      '<span class="ca-matchup-card__arm-meta' + (chip ? '' : ' is-absent') + '">' +
-      (chip ? 'Projected points' : 'Projection Not Published') + '</span></div>' + chip + '</div>';
+      '<span class="ca-matchup-card__arm-name">' + esc(qb.player_name) + '</span>' +
+      '<span class="ca-matchup-card__arm-meta">' + esc(meta) + '</span></div>' + chip + '</div>';
+  }
+
+  // A portrait ESPN does not have (404) becomes the player's initials.
+  if (global.document && !global.__caCardShotFallback) {
+    global.__caCardShotFallback = true;
+    global.document.addEventListener('error', function (event) {
+      var img = event.target;
+      if (!img || img.tagName !== 'IMG' || !img.classList.contains('ca-matchup-card__shot') ||
+          !img.hasAttribute('data-initials')) return;
+      var span = global.document.createElement('span');
+      span.className = 'ca-matchup-card__shot ca-matchup-card__shot--empty';
+      span.setAttribute('aria-hidden', 'true');
+      span.textContent = img.getAttribute('data-initials');
+      img.replaceWith(span);
+    }, true);
   }
   function armsRow(sport, game) {
     if (sport === 'cfb') {
-      return '<div class="ca-matchup-card__arms" role="group" aria-label="Model projection">' +
+      return '<div class="ca-matchup-card__arms" role="group" aria-label="Quarterbacks">' +
         cfbArm(game, 'away') + cfbArm(game, 'home') + '</div>';
     }
     return '<div class="ca-matchup-card__arms" role="group" aria-label="' +
@@ -546,22 +588,35 @@
       miniFact('Broadcast', game.broadcast || 'Not Published', '', 'tv') +
       '</div>';
   }
+  /* Expanded CFB card: facts only (owner 2026-10-01 - the model's margins,
+     totals and edges live in Model Center). Each school's SP+ and season
+     rates, each with its FBS rank. */
+  function cfbFact(entry, signed) {
+    if (!entry || entry.value == null || !isFinite(Number(entry.value))) return 'Not published';
+    var v = Number(entry.value);
+    var text = (signed && v > 0 ? '+' : '') + v.toFixed(1);
+    if (entry.rank && entry.of) {
+      var r = entry.rank, mod = r % 100;
+      var ord = mod >= 11 && mod <= 13 ? 'th' : (['th', 'st', 'nd', 'rd'][r % 10] || 'th');
+      text += ' · ' + r + ord + ' of ' + entry.of;
+    }
+    return text;
+  }
+
   function cfbAnalysis(game, awayName, homeName) {
-    var grid = '<div class="ca-matchup-card__detail-grid">' +
-      miniFact(awayName + ' projected', fmt1(game.proj_away) || 'Not published') +
-      miniFact(homeName + ' projected', fmt1(game.proj_home) || 'Not published') +
-      miniFact('Model regime', cfbText(game.model_regime)) +
-      miniFact('Forecast source', cfbText(game.forecast_source)) +
-      miniFact('Ratings margin', cfbSigned(game.raw_model_margin)) +
-      miniFact('Preseason margin', cfbSigned(game.preseason_margin)) +
-      miniFact('Efficiency margin', cfbSigned(game.efficiency_margin)) +
-      miniFact('Efficiency reliability', cfbPct(game.efficiency_reliability)) +
-      miniFact('Total basis', cfbText(game.total_basis)) +
-      miniFact('Total model weight', cfbPct(game.total_model_weight)) +
-      miniFact('Market margin', cfbSigned(game.market_margin)) +
-      miniFact('Edge points', game.edge_points != null ? cfbSigned(game.edge_points) : (game.edge_withheld_reason || 'Withheld')) +
-      '</div>';
-    return grid;
+    function rates(side) {
+      var form = game[side + '_form'] || {};
+      return form.rates || {};
+    }
+    function facts(side, name) {
+      var r = rates(side), sp = game[side + '_adjusted_efficiency'] || {};
+      return miniFact(name + ' SP+', cfbFact(sp.overall, true)) +
+        miniFact(name + ' points/G', cfbFact(r.off_ppg)) +
+        miniFact(name + ' allowed/G', cfbFact(r.def_ppg)) +
+        miniFact(name + ' yds/play', cfbFact(r.off_yards_per_play));
+    }
+    return '<div class="ca-matchup-card__detail-grid">' +
+      facts('away', awayName) + facts('home', homeName) + '</div>';
   }
 
   function cardHtml(sport, game) {

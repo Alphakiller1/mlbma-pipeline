@@ -5717,3 +5717,15 @@ body[data-sport="nfl"] .ca-detail-nav {
 @media (max-width: 720px) {
   .ca-cfb-player__shot { width: 32px; height: 32px; }
 }
+
+/* CFB card quarterbacks (2026-10-03): a portrait ESPN does not have reads as
+   the player's initials in the same circle. */
+.ca-matchup-card__shot--empty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: var(--type-caps);
+  font-weight: 800;
+  color: var(--text-secondary);
+}
