@@ -1,13 +1,13 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-03T16:23:57Z",
-  "data_through_utc": "2026-10-03T16:23:57Z",
+  "generated_at_utc": "2026-10-03T18:00:58Z",
+  "data_through_utc": "2026-10-03T17:00:00Z",
   "games": [
     {
       "id": "849829",
       "sport": "mlb",
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-03T17:00:00Z",
       "game_pk": 849829,
       "away": "CWS",
@@ -16,13 +16,15 @@
       "home_name": "Cleveland Guardians",
       "away_record": "0-0",
       "home_record": "0-0",
+      "away_score": 0,
+      "home_score": 0,
       "venue": "Progressive Field",
       "venue_city": "Cleveland, OH",
       "broadcast": "TBS/HBO MAX, TruTV",
-      "conditions": "61\u00b0 \u00b7 Partly Cloudy \u00b7 9 mph, Out To LF",
-      "weather_temp": "61",
+      "conditions": "63\u00b0 \u00b7 Partly Cloudy \u00b7 9 mph, R To L",
+      "weather_temp": "63",
       "weather_cond": "Partly Cloudy",
-      "weather_wind": "9 mph, Out To LF",
+      "weather_wind": "9 mph, R To L",
       "away_starter": "Hagen Smith",
       "home_starter": "Parker Messick",
       "away_starter_id": 696146,
@@ -155,7 +157,6 @@
       "sport": "mlb",
       "game_state": "scheduled",
       "kickoff_utc": "2026-10-03T20:00:00Z",
-      "kickoff_display": "4:00 PM ET",
       "game_pk": 849828,
       "away": "ATL",
       "home": "LAD",
@@ -166,21 +167,80 @@
       "venue": "UNIQLO Field at Dodger Stadium",
       "venue_city": "Los Angeles, CA",
       "broadcast": "FOX/ FOX ONE, Fox Deportes / FOX ONE",
-      "away_starter": "JR Ritchie",
+      "conditions": "94\u00b0 \u00b7 Sunny \u00b7 2 mph, Varies",
+      "weather_temp": "94",
+      "weather_cond": "Sunny",
+      "weather_wind": "2 mph, Varies",
+      "away_starter": "Dylan Dodd",
       "home_starter": "Tarik Skubal",
-      "away_starter_id": 702275,
+      "away_starter_id": 689266,
       "home_starter_id": 669373,
-      "away_starter_role": "primary",
-      "away_hand": "R",
+      "away_hand": "L",
       "home_hand": "L",
-      "away_era": "4.91",
+      "away_era": "2.54",
       "home_era": "2.72",
       "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
+      "home_lineup_state": "Confirmed",
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 605141,
+          "name": "Mookie Betts",
+          "position": "SS"
+        },
+        {
+          "slot": 2,
+          "person_id": 660271,
+          "name": "Shohei Ohtani",
+          "position": "DH"
+        },
+        {
+          "slot": 3,
+          "person_id": 669257,
+          "name": "Will Smith",
+          "position": "C"
+        },
+        {
+          "slot": 4,
+          "person_id": 518692,
+          "name": "Freddie Freeman",
+          "position": "1B"
+        },
+        {
+          "slot": 5,
+          "person_id": 606192,
+          "name": "Teoscar Hern\u00e1ndez",
+          "position": "LF"
+        },
+        {
+          "slot": 6,
+          "person_id": 663656,
+          "name": "Kyle Tucker",
+          "position": "RF"
+        },
+        {
+          "slot": 7,
+          "person_id": 681624,
+          "name": "Andy Pages",
+          "position": "CF"
+        },
+        {
+          "slot": 8,
+          "person_id": 571970,
+          "name": "Max Muncy",
+          "position": "3B"
+        },
+        {
+          "slot": 9,
+          "person_id": 669242,
+          "name": "Tommy Edman",
+          "position": "2B"
+        }
+      ],
       "away_team_id": 144,
       "home_team_id": 119,
       "venue_id": 22,
-      "away_bullpen": "7/132"
+      "away_bullpen": "6/118"
     },
     {
       "id": "849835",
