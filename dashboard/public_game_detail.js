@@ -6067,6 +6067,42 @@ function seasonToggle(game) {
       CFB_SP_PLUS.map(function (row) { return [row[1], entry(away, row[0]), entry(home, row[0])]; }));
   }
 
+  /* College headshots (2026-10-03): ESPN publishes a portrait for most FBS
+     players under the athlete id the slate already carries. A missing one
+     answers 404, so the image falls back to the player's initials. */
+  function cfbHeadshotUrl(id) {
+    return id ? 'https://a.espncdn.com/combiner/i?img=/i/headshots/college-football/players/full/' +
+      encodeURIComponent(id) + '.png&w=96&h=96' : '';
+  }
+
+  function cfbInitials(name) {
+    return '<span class="ca-cfb-player__shot is-initials" aria-hidden="true">' +
+      esc(initials(name)) + '</span>';
+  }
+
+  function cfbPlayerCell(player, position, volume) {
+    var url = cfbHeadshotUrl(player.player_id);
+    var shot = url
+      ? '<img class="ca-cfb-player__shot" src="' + esc(url) + '" alt="" width="40" height="40" ' +
+        'loading="lazy" decoding="async" data-initials="' + esc(initials(player.player_name)) + '">'
+      : cfbInitials(player.player_name);
+    return '<td><span class="ca-cfb-player">' + shot + '<span class="ca-cfb-player__id">' +
+      esc(player.player_name) + ' <span class="ca-lineup-player__position">' + esc(position) +
+      '</span><small class="ca-qb-volume">' + esc(volume) + '</small></span></span></td>';
+  }
+
+  // A portrait ESPN does not have swaps for the initials in place.
+  function cfbHeadshotFallback(event) {
+    var img = event.target;
+    if (!img || img.tagName !== 'IMG' || !img.classList.contains('ca-cfb-player__shot')) return;
+    var span = document.createElement('span');
+    span.className = 'ca-cfb-player__shot is-initials';
+    span.setAttribute('aria-hidden', 'true');
+    span.textContent = img.getAttribute('data-initials') || '';
+    img.replaceWith(span);
+  }
+  document.addEventListener('error', cfbHeadshotFallback, true);
+
   // One passer against the defense he meets: his season line, then EPA per
   // play on each split beside what that defense allows on the same split.
   var CFB_QB_LINE = [['completion_pct', 'Comp%'], ['yards_per_attempt', 'Yds/Att'],
@@ -6086,8 +6122,7 @@ function seasonToggle(game) {
     if (!qbs.length) return head + pending('Quarterback lines are not published yet.') + '</section>';
     var lineRows = qbs.map(function (q) {
       var line = q.line || {};
-      return '<tr><td>' + esc(q.player_name) + ' <span class="ca-lineup-player__position">QB</span>' +
-        '<small class="ca-qb-volume">' + esc(line.completions + '/' + line.attempts) + '</small></td>' +
+      return '<tr>' + cfbPlayerCell(q, 'QB', line.completions + '/' + line.attempts) +
         CFB_QB_LINE.map(function (c) {
           return line[c[0]] ? cfbCell(line[c[0]]) : '<td class="num ca-vs-none">Not Rated</td>';
         }).join('') + '</tr>';
@@ -6116,9 +6151,8 @@ function seasonToggle(game) {
       esc(cfbName(sport, game, side) + ' Ball Carriers') + '</h3>';
     if (!list.length) return head + pending('Rushing lines are not published yet.') + '</section>';
     var rows = list.map(function (r) {
-      return '<tr><td>' + esc(r.player_name) + ' <span class="ca-lineup-player__position">' +
-        esc(r.position || '') + '</span><small class="ca-qb-volume">' + esc(r.carries + ' car') +
-        '</small></td>' + CFB_RUSHER_COLS.map(function (c) {
+      return '<tr>' + cfbPlayerCell(r, r.position || '', r.carries + ' car') +
+        CFB_RUSHER_COLS.map(function (c) {
           return r[c[0]] ? cfbCell(r[c[0]]) : '<td class="num ca-vs-none">Not Rated</td>';
         }).join('') + '</tr>';
     });
