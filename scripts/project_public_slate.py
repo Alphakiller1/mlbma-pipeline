@@ -67,6 +67,8 @@ def project_game(sport: str, game: dict) -> dict:
         "home_starter": game.get("home_starter") or game.get("home_qb"),
         "away_starter_id": game.get("away_starter_id"),
         "home_starter_id": game.get("home_starter_id"),
+        "away_starter_role": game.get("away_starter_role"),
+        "home_starter_role": game.get("home_starter_role"),
         "away_hand": game.get("away_hand"),
         "home_hand": game.get("home_hand"),
         "away_era": game.get("away_era"),

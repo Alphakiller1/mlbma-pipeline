@@ -276,6 +276,51 @@ def _public_team_code(value: str) -> str:
     }.get(str(value or "").upper(), str(value or "").upper())
 
 
+# What RotoWire prints when it has no arm for a side. Publishing it would put
+# "TBD" where the desk says no probable has been named.
+_ROTOWIRE_NO_ARM = {"", "TBD", "UNDECIDED"}
+_ROTOWIRE_BOX_DAY = re.compile(r"/box-score/.*-(\d{4}-\d{2}-\d{2})-\d+")
+
+
+def _rotowire_arm(row, prefix: str) -> dict:
+    name = str(row.get(f"{prefix}_SP") or "").strip()
+    if name.upper() in _ROTOWIRE_NO_ARM:
+        return {}
+    return {
+        "name": name,
+        "hand": str(row.get(f"{prefix}_SP_Hand") or "").strip(),
+        "role": str(row.get(f"{prefix}_SP_Role") or "").strip(),
+    }
+
+
+def _rotowire_card_days(html: str) -> dict[tuple[str, str], set[str]]:
+    """Game days each RotoWire card's box-score link names, by club pair."""
+    from bs4 import BeautifulSoup
+
+    days: dict[tuple[str, str], set[str]] = {}
+    for card in BeautifulSoup(html, "html.parser").select("div.lineup.is-mlb"):
+        abbrs = [el.get_text(strip=True) for el in card.select(".lineup__abbr")]
+        link = card.select_one("a.lineup__matchup[href]")
+        match = _ROTOWIRE_BOX_DAY.search(link["href"]) if link else None
+        if len(abbrs) >= 2 and match:
+            key = (_public_team_code(abbrs[0]), _public_team_code(abbrs[1]))
+            days.setdefault(key, set()).add(match.group(1))
+    return days
+
+
+def starter_role(official: dict, fallback: dict) -> str | None:
+    """How a published arm was named when MLB has not posted a probable.
+
+    None means the official probable. "primary" is RotoWire's PRIM listing:
+    the arm expected to cover the bulk innings behind an opener, which is the
+    pitcher the matchup should be read against. "projected" is any other arm
+    RotoWire lists ahead of the official announcement.
+    """
+    if official.get("fullName") or not fallback.get("name"):
+        return None
+    return "primary" if fallback.get("role") == "primary" else "projected"
+
+
 def fetch_rotowire_starters(slate_date: str, schedule: dict) -> dict[tuple[str, str], dict]:
     """Return Rotowire's listed arms for missing official probables.
 
@@ -309,22 +354,19 @@ def fetch_rotowire_starters(slate_date: str, schedule: dict) -> dict[tuple[str, 
         except Exception as exc:
             print(f"  WARNING: Rotowire starter fallback fetch failed ({exc})")
             continue
+        card_days = _rotowire_card_days(response.text)
         found = {}
         for _, row in games.iterrows():
             key = (_public_team_code(row.get("Away")), _public_team_code(row.get("Home")))
             if key not in schedule_keys:
                 continue
+            # Every game of a series shares this key. A card dated for another
+            # day names that day's arm, not this one's.
+            if card_days.get(key) and slate_date not in card_days[key]:
+                continue
             found[key] = {
-                "away": {
-                    "name": str(row.get("Away_SP") or "").strip(),
-                    "hand": str(row.get("Away_SP_Hand") or "").strip(),
-                    "role": str(row.get("Away_SP_Role") or "").strip(),
-                },
-                "home": {
-                    "name": str(row.get("Home_SP") or "").strip(),
-                    "hand": str(row.get("Home_SP_Hand") or "").strip(),
-                    "role": str(row.get("Home_SP_Role") or "").strip(),
-                },
+                side: _rotowire_arm(row, prefix)
+                for side, prefix in (("away", "Away"), ("home", "Home"))
             }
         if found:
             print(f"  mlb: Rotowire supplied listed arms for {len(found)} matchup(s)")
@@ -426,6 +468,7 @@ def fetch_mlb_arms(ids: list[int], season: int) -> dict:
             if splits and splits[0].get("stat"):
                 stat = splits[0]["stat"]
         out[person["id"]] = {
+            "name": person.get("fullName") or None,
             "hand": ((person.get("pitchHand") or {}).get("code")) or None,
             "era": stat.get("era"),
             "whip": stat.get("whip"),
@@ -632,13 +675,23 @@ def mlb_producer_from_statsapi(
                 # concatenated them into "Zebby Matthews · RHP", which no
                 # consumer could split back apart reliably.
                 "away_starter": (
-                    away_sp.get("fullName") or away_fallback.get("name") or None
+                    away_sp.get("fullName")
+                    # MLB's spelling once the RotoWire name resolves to an ID:
+                    # RotoWire's expansion title-cases "JR" to "Jr".
+                    or (arms.get(away_starter_id) or {}).get("name")
+                    or away_fallback.get("name") or None
                 ),
                 "home_starter": (
-                    home_sp.get("fullName") or home_fallback.get("name") or None
+                    home_sp.get("fullName")
+                    # MLB's spelling once the RotoWire name resolves to an ID:
+                    # RotoWire's expansion title-cases "JR" to "Jr".
+                    or (arms.get(home_starter_id) or {}).get("name")
+                    or home_fallback.get("name") or None
                 ),
                 "away_starter_id": away_starter_id,
                 "home_starter_id": home_starter_id,
+                "away_starter_role": starter_role(away_sp, away_fallback),
+                "home_starter_role": starter_role(home_sp, home_fallback),
                 "away_hand": (
                     (arms.get(away_starter_id) or {}).get("hand")
                     or away_fallback.get("hand") or None
@@ -1340,7 +1393,7 @@ def write_if_better(sport: str, producer: dict, dest: Path) -> bool:
     return True
 
 
-def run(data_dir: Path | None = None) -> int:
+def run(data_dir: Path | None = None, mlb_only: bool = False) -> int:
     data_dir = Path(data_dir or DATA_DIR)
     ok = False
     slate_date, schedule = next_mlb_slate(datetime.now(ET).strftime("%Y-%m-%d"))
@@ -1375,6 +1428,8 @@ def run(data_dir: Path | None = None) -> int:
         mlb = curated
         print("  mlb: schedule unreachable; falling back to the curated rows only")
     ok = write_if_better("mlb", mlb, PUBLIC_DIR / "mlb" / "slate.json") or ok
+    if mlb_only:
+        return 0 if (PUBLIC_DIR / "mlb" / "slate.json").is_file() else 1
     espn = fetch_nfl_scoreboard()
     if espn:
         codes = {
@@ -1404,4 +1459,4 @@ def run(data_dir: Path | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(run())
+    raise SystemExit(run(mlb_only="--mlb-only" in sys.argv[1:]))

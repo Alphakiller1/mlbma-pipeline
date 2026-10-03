@@ -1,0 +1,61 @@
+name: Publish MLB Slate
+
+# The MLB desk reads data/public/mlb/slate.json, and only the daily pipeline
+# wrote it - at the END of an 80-90 minute run, under a 90 minute timeout. On
+# 2026-10-02 the run was cancelled at the limit, nothing was committed, and on
+# 2026-10-03 the desk still served the 10-01 slate. With no slate row for a
+# game the page falls back to MLB's own schedule, which had no Braves probable,
+# so it read "Probable Starter Not Published" while RotoWire listed JR Ritchie
+# as the primary pitcher. This publishes the slate on its own every two hours:
+# the official schedule, plus RotoWire's listed arm (and its role) for any side
+# MLB has not named. The publisher refuses to overwrite a richer slate.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */2 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-mlb-slate
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build the MLB slate
+        run: python -m outputs.publish_public_slate --mlb-only
+
+      - name: Commit the refreshed slate to master
+        env:
+          TARGET_BRANCH: master
+        run: |
+          set -euo pipefail
+          python scripts/validate_public_fields.py
+          git add -- data/public/mlb/slate.json
+          if git diff --cached --quiet; then
+            echo "MLB slate is already current; no commit needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "data: refresh public MLB slate"
+          # The daily pipeline commits the same file; this run's copy is the
+          # newer one.
+          git pull --rebase -X theirs origin "$TARGET_BRANCH"
+          git push origin "HEAD:$TARGET_BRANCH"

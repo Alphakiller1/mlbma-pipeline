@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 
 from outputs.publish_public_slate import (
     _person_name_key,
+    _rotowire_arm,
+    _rotowire_card_days,
     add_rotowire_starter_ids,
     mlb_producer_from_statsapi,
 )
@@ -115,3 +117,73 @@ def test_rotowire_ids_are_attached_and_accent_matching_is_stable(monkeypatch):
     assert enriched[("CHC", "SD")]["away"]["id"] == 571510
     assert enriched[("CHC", "SD")]["home"]["id"] == 650911
     assert _person_name_key("Cristopher Sánchez") == _person_name_key("Cristopher Sanchez")
+
+
+def _schedule(away_probable=None):
+    away = {"team": {"abbreviation": "ATL", "name": "Atlanta Braves"}}
+    if away_probable:
+        away["probablePitcher"] = away_probable
+    return {"dates": [{"games": [{
+        "gamePk": 849828,
+        "gameDate": "2026-10-03T20:08:00Z",
+        "status": {"abstractGameState": "Preview", "detailedState": "Scheduled"},
+        "teams": {
+            "away": away,
+            "home": {
+                "team": {"abbreviation": "LAD", "name": "Los Angeles Dodgers"},
+                "probablePitcher": {"id": 669373, "fullName": "Tarik Skubal"},
+            },
+        },
+    }]}]}
+
+
+def test_primary_pitcher_is_published_with_its_role_and_mlb_spelling():
+    rotowire = {("ATL", "LAD"): {
+        "away": {"name": "Jr Ritchie", "hand": "R", "role": "primary", "id": 702275},
+        "home": {"name": "Tarik Skubal", "hand": "L", "role": "starter"},
+    }}
+    game = mlb_producer_from_statsapi(
+        _schedule(),
+        arms={702275: {"name": "JR Ritchie", "hand": "R", "era": "4.91"}},
+        rotowire_starters=rotowire,
+    )["games"][0]
+
+    assert game["away_starter"] == "JR Ritchie"
+    assert game["away_starter_role"] == "primary"
+    assert game["away_era"] == "4.91"
+    # The official probable carries no role, whatever RotoWire said.
+    assert game["home_starter"] == "Tarik Skubal"
+    assert game["home_starter_role"] is None
+
+
+def test_listed_non_primary_arm_is_marked_projected_and_tbd_is_dropped():
+    rotowire = {("ATL", "LAD"): {
+        "away": {"name": "Spencer Strider", "hand": "R", "role": "starter"},
+        "home": {},
+    }}
+    game = mlb_producer_from_statsapi(_schedule(), rotowire_starters=rotowire)["games"][0]
+    assert game["away_starter"] == "Spencer Strider"
+    assert game["away_starter_role"] == "projected"
+
+    assert _rotowire_arm({"Away_SP": "TBD"}, "Away") == {}
+    assert _rotowire_arm({"Away_SP": "Undecided"}, "Away") == {}
+
+
+def test_official_probable_clears_the_role():
+    rotowire = {("ATL", "LAD"): {
+        "away": {"name": "JR Ritchie", "hand": "R", "role": "primary"},
+    }}
+    game = mlb_producer_from_statsapi(
+        _schedule({"id": 1, "fullName": "Chris Sale"}), rotowire_starters=rotowire,
+    )["games"][0]
+    assert game["away_starter"] == "Chris Sale"
+    assert game["away_starter_role"] is None
+
+
+def test_card_days_keep_one_series_game_off_the_next():
+    html = """
+    <div class="lineup is-mlb">
+      <div class="lineup__abbr">ATL</div><div class="lineup__abbr">LAD</div>
+      <a class="lineup__matchup" href="/baseball/box-score/dodgers-vs-braves-2026-10-03-3015165"></a>
+    </div>"""
+    assert _rotowire_card_days(html) == {("ATL", "LAD"): {"2026-10-03"}}

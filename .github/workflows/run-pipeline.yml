@@ -135,5 +135,7 @@ jobs:
           # newer master commits and replay only this generated-data commit.
           # Non-public working files stay runner-local and are never pushed.
           git stash push -m "runner-only pipeline outputs" || true
-          git pull --rebase origin "$TARGET_BRANCH"
+          # publish-mlb-slate.yml commits slate.json between runs; this run's
+          # copy is the newer one, so a conflict there must not drop the rest.
+          git pull --rebase -X theirs origin "$TARGET_BRANCH"
           git push origin "HEAD:$TARGET_BRANCH"
