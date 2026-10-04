@@ -115,7 +115,6 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("['units', 'Units', ['cfb-efficiency', 'cfb-dvoa']]", js)
         self.assertIn("['passing', 'Passing', ['cfb-quarterbacks', 'cfb-passing']]", js)
         self.assertIn("['rushing', 'Rushing', ['cfb-rushing', 'cfb-rushers']]", js)
-        self.assertIn("['games', 'Games', ['cfb-game-log']]", js)
         for fn in ("cfbQbPanel", "cfbRushersPanel", "cfbGameLogPanel"):
             self.assertIn("function " + fn, js)
         for gone in ("function cfbUnitPanel", "function cfbCoverageBody", "function cfbSchemeStatsPanel",
@@ -129,6 +128,11 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertEqual(len(specs), len({(f, k) for f, k, _ in specs}), "a stat repeats on the desk")
         for label in ("Yds/Comp", "TD Rate", "INT Rate", "Sack%", "Pts/Play", "Line Yds", "Havoc"):
             self.assertIn("'" + label + "'", ledger)
+        # 2026-10-01: schedule strength under Games, the injury report tab.
+        self.assertIn("['games', 'Games', ['cfb-game-log', 'cfb-schedule']]", js)
+        self.assertIn("['availability', 'Availability', ['cfb-availability']]", js)
+        self.assertIn("function cfbScheduleBody", js)
+        self.assertIn("function cfbInjuryPanel", js)
         self.assertIn("SP+ Opponent-Adjusted Efficiency By Unit", js)
         self.assertIn("game.away_adjusted_efficiency", js)
         self.assertIn("host.__deskTabs = sport === 'cfb' ? CFB_TABS : NFL_TABS", js)

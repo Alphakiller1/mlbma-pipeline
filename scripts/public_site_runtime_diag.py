@@ -678,8 +678,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # each unit above the unit it meets, a rank pill on every graded number,
         # no verdict lines, no gap ordering, no dash cells.
         page.wait_for_selector(".ca-nfl-tabs", timeout=timeout_ms)
-        check("CFB desk carries the seven evidence tabs (ledger restructure 2026-10-03)",
-              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 7)
+        check("CFB desk carries the eight evidence tabs (ledger restructure 2026-10-03, Availability)",
+              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 8)
         check("CFB opens on the Units evidence group alone",
               page.evaluate("[...document.querySelectorAll('.ca-detail-section')]"
                             ".filter(s => s.offsetParent).map(s => s.id).join(',')") ==
@@ -779,10 +779,22 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                   "3rd down", "standard dn", "plays/g", "pass rate", "havoc")),
               situational_text[:200])
         page.locator("a[data-nfl-tab='games']").click()
+        sos_text = page.locator("#cfb-schedule").inner_text().lower()
+        check("CFB schedule strength ranks played and remaining opponents for both schools",
+              "games played" in sos_text and "games remaining" in sos_text
+              and all(label in sos_text for label in ("opp sp+", "opp fpi", "opp win%"))
+              and page.locator("#cfb-schedule tbody .ca-rank").count() >= 6,
+              sos_text[:160])
         check("CFB game log lists both schools' games with a ranked season row",
               page.locator("#cfb-game-log.is-tab-on .ca-log-panel").count() == 2
               and page.locator("#cfb-game-log tbody tr.ca-log-season").count() == 2
               and page.locator("#cfb-game-log tbody .ca-rank").count() > 10)
+        page.locator("a[data-nfl-tab='availability']").click()
+        injury_text = page.locator("#cfb-availability").inner_text().lower()
+        check("CFB availability tab carries both schools' injury reports",
+              page.locator("#cfb-availability.is-tab-on .ca-cfb-injury-panel").count() == 2
+              and "injury report" in injury_text and ("covers" in injury_text or "not published" in injury_text),
+              injury_text[:160])
         cfb_text = page.locator("main").inner_text()
         match = PROHIBITED.search(cfb_text)
         check("CFB detail public copy boundary", match is None, match.group(0) if match else "")

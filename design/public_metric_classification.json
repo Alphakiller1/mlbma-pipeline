@@ -82,7 +82,8 @@
     "sources_as_of",
     "team_games",
     "through_week",
-    "ranked"
+    "ranked",
+    "updated"
   ],
   "identity": [
     "id",
@@ -173,7 +174,12 @@
     "opponent_points",
     "result",
     "total_yards",
-    "turnovers"
+    "turnovers",
+    "away_injuries",
+    "home_injuries",
+    "injury",
+    "player",
+    "return"
   ],
   "descriptive": [
     "abq",
@@ -627,7 +633,12 @@
     "secondDown",
     "standardDowns",
     "thirdDown",
-    "third_down_rate"
+    "third_down_rate",
+    "fpi",
+    "sp",
+    "win_rate",
+    "played",
+    "remaining"
   ],
   "derived_descriptive": [
     "depth_rank",
@@ -689,7 +700,9 @@
     "pass_offense_dvoa",
     "rush_offense_dvoa",
     "pass_defense_dvoa",
-    "rush_defense_dvoa"
+    "rush_defense_dvoa",
+    "away_schedule_strength",
+    "home_schedule_strength"
   ],
   "contextual_environment": [
     "conditions",

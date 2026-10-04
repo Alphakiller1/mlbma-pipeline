@@ -105,7 +105,8 @@
     tendencies: 'lineup', 'game-log': 'calendar',
     'cfb-efficiency': 'trend', 'cfb-passing': 'football', 'cfb-rushing': 'football',
     'cfb-rushers': 'users', 'cfb-quarterbacks': 'football', 'cfb-situational': 'target',
-    'cfb-game-log': 'calendar', 'cfb-special': 'target'
+    'cfb-game-log': 'calendar', 'cfb-schedule': 'calendar', 'cfb-availability': 'whistle',
+    'cfb-special': 'target'
   };
 
   function ico(name, cls, px) {
@@ -5827,11 +5828,12 @@ function seasonToggle(game) {
    * ------------------------------------------------------------------ */
   var CFB_TABS = [
     ['units', 'Units', ['cfb-efficiency', 'cfb-dvoa']],
-    ['games', 'Games', ['cfb-game-log']],
+    ['games', 'Games', ['cfb-game-log', 'cfb-schedule']],
     ['passing', 'Passing', ['cfb-quarterbacks', 'cfb-passing']],
     ['rushing', 'Rushing', ['cfb-rushing', 'cfb-rushers']],
     ['situational', 'Situational', ['cfb-situational']],
     ['special', 'Special Teams', ['cfb-special']],
+    ['availability', 'Availability', ['cfb-availability']],
     ['profile', 'Profile', ['radar', 'recent', 'team-context']]
   ];
 
@@ -6200,6 +6202,70 @@ function seasonToggle(game) {
       [rows + seasonRow], 'Game') + '</section>';
   }
 
+  /* Schedule strength (scripts/cfb_depth.py schedule_strength): each school's
+     FBS opponents - average SP+, average ESPN FPI and combined win rate - over
+     games played and games remaining, each ranked of FBS (1st = hardest). */
+  var CFB_SOS_COLS = [['sp', 'Opp SP+'], ['fpi', 'Opp FPI'], ['win_rate', 'Opp Win%']];
+
+  function cfbScheduleBody(sport, game) {
+    function table(window, title) {
+      var rows = ['away', 'home'].map(function (side) {
+        var block = ((game[side + '_schedule_strength'] || {})[window]) || {};
+        var games = (block.sp || block.fpi || block.win_rate || {}).games;
+        return '<tr><td>' + esc(cfbName(sport, game, side)) +
+          (games ? '<small class="ca-qb-volume">' + esc(games + (games === 1 ? ' FBS game' : ' FBS games')) +
+            '</small>' : '') + '</td>' +
+          (Object.keys(block).length
+            ? CFB_SOS_COLS.map(function (c) { return cfbCell(block[c[0]]); }).join('')
+            : '<td class="num ca-vs-none" colspan="' + CFB_SOS_COLS.length + '">' +
+              (window === 'remaining' ? 'No FBS Games Remaining' : 'No FBS Games Played') + '</td>') +
+          '</tr>';
+      });
+      return '<div class="ca-split-block"><h4>' + esc(title) + '</h4>' +
+        nflSplitTable(CFB_SOS_COLS.map(function (c) { return c[1]; }), rows, 'School') + '</div>';
+    }
+    var any = ['away', 'home'].some(function (side) { return game[side + '_schedule_strength']; });
+    var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' +
+      esc(cfbName(sport, game, 'away') + ' vs ' + cfbName(sport, game, 'home') + ' Schedule Strength') +
+      '</h3>';
+    if (!any) return head + pending('Schedule strength is not published for this matchup yet.') + '</section>';
+    return '<div class="ca-detail-stack-inner">' + head + table('played', 'Games Played') +
+      table('remaining', 'Games Remaining') + '</section></div>';
+  }
+
+  /* Injury reports (scripts/cfb_injuries.py: Covers, upgraded by RotoWire):
+     every listed player, Out first. The report's own words ride in the
+     tooltip; the table states status, injury and when it was last updated. */
+  var CFB_STATUS_TONE = { Out: 'c-poor', IR: 'c-poor', Doubtful: 'c-weak', Questionable: 'c-mid',
+    Probable: 'c-good' };
+
+  function cfbInjuryPanel(sport, game, side) {
+    var report = game[side + '_injuries'];
+    var head = '<section class="ca-form-panel ca-cfb-panel ca-cfb-injury-panel"><h3>' +
+      esc(cfbName(sport, game, side) + ' Injury Report') + '</h3>';
+    if (!report) return head + pending('The injury report is not published for this school yet.') + '</section>';
+    var players = report.players || [];
+    if (!players.length) {
+      return head + '<p class="ca-lineup-context">' + esc(report.sources || '') + '</p>' +
+        pending('No players are listed on the current report.') + '</section>';
+    }
+    var counts = {};
+    players.forEach(function (pl) { counts[pl.status] = (counts[pl.status] || 0) + 1; });
+    var summary = ['Out', 'IR', 'Doubtful', 'Questionable', 'Probable'].filter(function (k) {
+      return counts[k];
+    }).map(function (k) { return counts[k] + ' ' + k; }).join(' · ');
+    var rows = players.map(function (pl) {
+      var tone = CFB_STATUS_TONE[pl.status] || '';
+      return '<tr' + (pl.detail ? ' title="' + esc(pl.detail) + '"' : '') + '><td>' + esc(pl.player) +
+        (pl.position ? ' <span class="ca-lineup-player__position">' + esc(pl.position) + '</span>' : '') +
+        '</td><td><span class="ca-rank ' + tone + '">' + esc(pl.status) + '</span></td>' +
+        '<td>' + esc(pl.injury || 'Undisclosed') + '</td>' +
+        '<td>' + esc(pl['return'] ? 'Return ' + pl['return'] : (pl.updated || 'Date Not Listed')) + '</td></tr>';
+    });
+    return head + '<p class="ca-lineup-context">' + esc(summary + ' · ' + (report.sources || '')) + '</p>' +
+      nflSplitTable(['Status', 'Injury', 'Updated'], rows, 'Player') + '</section>';
+  }
+
   function cfbSections(sport, game) {
     return [
       section('cfb-efficiency', 'Efficiency', 'Scoring, Yardage And Per-Play Production',
@@ -6208,6 +6274,10 @@ function seasonToggle(game) {
         cfbDvoaBody(sport, game)),
       section('cfb-game-log', 'Game Log', 'Every Game, Ranked Against That Week',
         nflDuo(cfbGameLogPanel, sport, game)),
+      section('cfb-schedule', 'Schedule Strength', 'FBS Opponents Played And Remaining, Ranked Of FBS',
+        cfbScheduleBody(sport, game)),
+      section('cfb-availability', 'Injury Report', 'Every Listed Player, Out First',
+        nflDuo(cfbInjuryPanel, sport, game)),
       section('cfb-quarterbacks', 'Quarterbacks', 'Season Line And EPA By Situation, Beside The Defense',
         nflDuo(cfbQbPanel, sport, game)),
       section('cfb-passing', 'Pass Game', 'Efficiency, Volume, Scoring And Protection',
