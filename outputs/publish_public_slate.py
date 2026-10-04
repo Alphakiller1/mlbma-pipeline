@@ -1358,8 +1358,17 @@ def patch_club_gaps(fresh: dict, published: Path) -> list[str]:
     notes: list[str] = []
     for field in NFL_CLUB_FIELDS:
         have = sum(1 for g, side in sides if _present(g.get(f"{side}_{field}")))
-        if have == len(sides) or have < 0.9 * len(sides):
+        # A field nobody has this run, while the published slate has it for
+        # most of these clubs, is a board-wide source outage (2026-10-03: no
+        # Parquet engine on the runner emptied every nflverse family). Carrying
+        # it forward keeps the rest of the slate - injuries, starters, scores -
+        # publishing instead of the guard freezing the whole slate for days.
+        outage = have == 0 and sum(1 for g, side in sides
+                                   if _present(previous.get((g[side], field)))) >= 0.9 * len(sides)
+        if have == len(sides) or (have < 0.9 * len(sides) and not outage):
             continue
+        if outage:
+            notes.append(f"{field} absent from every club this run; carried from the published slate")
         for g, side in sides:
             key = f"{side}_{field}"
             if _present(g.get(key)):
