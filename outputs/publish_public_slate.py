@@ -1402,6 +1402,38 @@ def write_if_better(sport: str, producer: dict, dest: Path) -> bool:
     return True
 
 
+def publish_nfl() -> bool:
+    """Rebuild and publish the NFL slate (injuries, depth charts, starters,
+    scores and the scheme context). True when the public slate was written."""
+    ok = False
+    espn = fetch_nfl_scoreboard()
+    if espn:
+        codes = {
+            (c.get("team") or {}).get("abbreviation")
+            for event in (espn.get("events") or [])
+            for comp in (event.get("competitions") or [])
+            for c in (comp.get("competitors") or [])
+        }
+        context = nfl_public_context.build()
+        rest = fetch_nfl_rest({c for c in codes if c})
+        nfl = nfl_producer_from_espn(espn, fetch_nfl_injuries(), context, rest)
+        dvoa = fetch_ftn_dvoa(datetime.now(ET).year)
+        attached = attach_nfl_dvoa(nfl, dvoa)
+        expected = len(nfl.get("games") or []) * 2
+        if attached != expected:
+            print(f"  WARNING nfl DVOA: attached {attached} of {expected} team profiles")
+        else:
+            print(f"  nfl DVOA: attached all {attached} team profiles")
+        # The whole league, once, so the matchup page can show every club
+        # against the two in front of the reader. Each game already carries its
+        # own two clubs; this is the board behind them.
+        write_nfl_league_context(context, rest)
+        ok = write_if_better("nfl", nfl, PUBLIC_DIR / "nfl" / "slate.json") or ok
+    else:
+        print("  skip nfl: scoreboard unreachable; keeping existing public slate")
+    return ok
+
+
 def run(data_dir: Path | None = None, mlb_only: bool = False) -> int:
     data_dir = Path(data_dir or DATA_DIR)
     ok = False
@@ -1439,33 +1471,13 @@ def run(data_dir: Path | None = None, mlb_only: bool = False) -> int:
     ok = write_if_better("mlb", mlb, PUBLIC_DIR / "mlb" / "slate.json") or ok
     if mlb_only:
         return 0 if (PUBLIC_DIR / "mlb" / "slate.json").is_file() else 1
-    espn = fetch_nfl_scoreboard()
-    if espn:
-        codes = {
-            (c.get("team") or {}).get("abbreviation")
-            for event in (espn.get("events") or [])
-            for comp in (event.get("competitions") or [])
-            for c in (comp.get("competitors") or [])
-        }
-        context = nfl_public_context.build()
-        rest = fetch_nfl_rest({c for c in codes if c})
-        nfl = nfl_producer_from_espn(espn, fetch_nfl_injuries(), context, rest)
-        dvoa = fetch_ftn_dvoa(datetime.now(ET).year)
-        attached = attach_nfl_dvoa(nfl, dvoa)
-        expected = len(nfl.get("games") or []) * 2
-        if attached != expected:
-            print(f"  WARNING nfl DVOA: attached {attached} of {expected} team profiles")
-        else:
-            print(f"  nfl DVOA: attached all {attached} team profiles")
-        # The whole league, once, so the matchup page can show every club
-        # against the two in front of the reader. Each game already carries its
-        # own two clubs; this is the board behind them.
-        write_nfl_league_context(context, rest)
-        ok = write_if_better("nfl", nfl, PUBLIC_DIR / "nfl" / "slate.json") or ok
-    else:
-        print("  skip nfl: scoreboard unreachable; keeping existing public slate")
+    ok = publish_nfl() or ok
     return 0 if (PUBLIC_DIR / "mlb" / "slate.json").is_file() else 1
 
 
 if __name__ == "__main__":
+    if "--nfl-only" in sys.argv[1:]:
+        # The NFL desk's own refresh (publish-nfl-slate.yml): injury reports
+        # move through the week and inactives post 90 minutes before kickoff.
+        raise SystemExit(0 if publish_nfl() or (PUBLIC_DIR / "nfl" / "slate.json").is_file() else 1)
     raise SystemExit(run(mlb_only="--mlb-only" in sys.argv[1:]))

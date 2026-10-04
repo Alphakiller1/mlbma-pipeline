@@ -1,0 +1,66 @@
+name: Publish NFL Slate
+
+# The NFL desk reads data/public/nfl/slate.json, and only the daily pipeline
+# wrote it. On 2026-10-04 the desk still showed Jayden Daniels Questionable and
+# Keenan Allen Active from a 10-01 slate while ESPN had Daniels Out (Marcus
+# Mariota starting) and Allen ruled out. Injury designations move through the
+# week and inactives post about 90 minutes before kickoff, so the NFL slate is
+# published on its own: every two hours, and every 30 minutes through the
+# Sunday, Monday and Thursday game windows. The publisher refuses to overwrite
+# a richer slate, and a board-wide stat outage is carried forward rather than
+# freezing the injury report.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "41 */2 * * *"
+    # Sunday 15:00-04:41 UTC (11 AM - 12:41 AM ET), and the Monday and Thursday
+    # night windows (22:00-03:41 UTC).
+    - cron: "11,41 15-23 * * 0"
+    - cron: "11,41 0-4 * * 1"
+    - cron: "11,41 22-23 * * 1,4"
+    - cron: "11,41 0-3 * * 2,5"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-nfl-slate
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build the NFL slate
+        run: python -m outputs.publish_public_slate --nfl-only
+
+      - name: Commit the refreshed slate to master
+        env:
+          TARGET_BRANCH: master
+        run: |
+          set -euo pipefail
+          python scripts/validate_public_fields.py
+          git add -- data/public/nfl/slate.json data/public/nfl/team_context.json
+          if git diff --cached --quiet; then
+            echo "NFL slate is already current; no commit needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "data: refresh public NFL slate"
+          # The daily pipeline commits the same files; this run's copy is newer.
+          git pull --rebase -X theirs origin "$TARGET_BRANCH"
+          git push origin "HEAD:$TARGET_BRANCH"
