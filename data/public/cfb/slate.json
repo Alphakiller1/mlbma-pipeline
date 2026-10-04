@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 6,
-  "generated_at_utc": "2026-10-04T18:49:28Z",
+  "generated_at_utc": "2026-10-04T23:20:37Z",
   "data_through_utc": "2026-10-04T18:46:03Z",
   "games": [
     {
@@ -2265,14 +2265,13 @@
             "source": "Covers"
           },
           {
-            "player": "Jaylen Himes",
+            "player": "J. Himes",
             "position": "WR",
             "status": "Out",
             "injury": "Foot",
-            "updated": "Oct 6 8:00 PM",
+            "updated": "Fri, Sep 25",
             "detail": "Himes is out of commission due to a foot injury, and he will miss an extended period.",
-            "source": "RotoWire + Covers",
-            "return": "Oct 24th"
+            "source": "Covers"
           },
           {
             "player": "Robert Briggs",
@@ -20096,8 +20095,8 @@
             "position": "RB",
             "status": "Questionable",
             "injury": "Ankle",
-            "updated": "Sun, Sep 27",
-            "detail": "Clay is dealing with an ankle injury, and it is yet to be established if he will suit up against Louisiana on Saturday, October 3th.",
+            "updated": "Sun, Oct 4",
+            "detail": "Clay is dealing with an ankle injury, and it is yet to be established if he will suit up against Jaguars on Friday, October 9th.",
             "source": "Covers"
           }
         ],
@@ -42615,6 +42614,15 @@
             "injury": "Lower Body",
             "updated": "Mon, Sep 14",
             "detail": "Richardson is nursing with a lower body injury, and he will miss an extended period.",
+            "source": "Covers"
+          },
+          {
+            "player": "T. Spivey",
+            "position": "WR",
+            "status": "Out",
+            "injury": "Ankle",
+            "updated": "Sun, Oct 4",
+            "detail": "Spivey has been out of commission due to ankle injury, and he has been shut down for the remainder of the season.",
             "source": "Covers"
           },
           {
@@ -67319,6 +67327,15 @@
             "source": "Covers"
           },
           {
+            "player": "N. Moss",
+            "position": "RB",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "updated": "Sun, Oct 4",
+            "detail": "Moss is battling with an undisclosed injury, and it has yet to be determined if he will be active against the Panthers on Saturday.",
+            "source": "Covers"
+          },
+          {
             "player": "G. Ritchey",
             "position": "TE",
             "status": "Questionable",
@@ -86705,8 +86722,8 @@
             "position": "WR",
             "status": "Questionable",
             "injury": "Undisclosed",
-            "updated": "Sat, Oct 3",
-            "detail": "Hoffman is dealing with an undisclosed injury, and it is unclear if he will suit up against Memphis on Saturday, October 3rd.",
+            "updated": "Sun, Oct 4",
+            "detail": "Hoffman is dealing with an undisclosed injury, and it is unclear if he will suit up against 49ers on Sunday, October 11th.",
             "source": "Covers"
           }
         ],
@@ -132148,8 +132165,8 @@
             "position": "QB",
             "status": "Questionable",
             "injury": "Foot",
-            "updated": "Fri, Sep 25",
-            "detail": "Smolik is suffering with a foot injury, and it is undetermined if he will face South Florida on Saturday, October 3rd.",
+            "updated": "Sun, Oct 4",
+            "detail": "Smolik is suffering with a foot injury, and it is undetermined if he will face Huskies on Sunday.",
             "source": "Covers"
           },
           {
@@ -144764,8 +144781,8 @@
             "position": "RB",
             "status": "Questionable",
             "injury": "Knee",
-            "updated": "Tue, Sep 29",
-            "detail": "Kinnard is dealing with a knee injury, and it is unclear if he will play against the Bobcats on Saturday.",
+            "updated": "Sun, Oct 4",
+            "detail": "Kinnard is dealing with a knee injury, and it is unclear if he will play against the Beavers on Sunday",
             "source": "Covers"
           },
           {
@@ -148179,8 +148196,8 @@
             "position": "WR",
             "status": "Questionable",
             "injury": "Undisclosed",
-            "updated": "Thu, Oct 1",
-            "detail": "Hinton is bothred by an undisclosed injury, and it is unknown if he will play Saturday versus the Southern Eagles.",
+            "updated": "Sun, Oct 4",
+            "detail": "Hinton is bothered by an undisclosed injury, and it is unknown if he will play against Thundering Herd on Sunday.",
             "source": "Covers"
           },
           {
@@ -155978,6 +155995,15 @@
             "updated": "Sat, Sep 26",
             "detail": "McGee is dealing with an undisclosed injury, and it is to be seen if he will play against California on Saturday, October 3rd.",
             "source": "Covers"
+          },
+          {
+            "player": "T. Lyons",
+            "position": "WR",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "updated": "Sun, Oct 4",
+            "detail": "Lyons is dealing with an undisclosed injury, and it remains to be seen if he will be available against Bison on Sunday, October 11th.",
+            "source": "Covers"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -161672,7 +161698,17 @@
         }
       },
       "away_injuries": {
-        "players": [],
+        "players": [
+          {
+            "player": "A. Ferguson",
+            "position": "TE",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "updated": "Sun, Oct 4",
+            "detail": "Ferguson is dealing with an undisclosed injury, and it is uncertain if he will play against Tigers on Sunday, October 11th.",
+            "source": "Covers"
+          }
+        ],
         "sources": "Covers, RotoWire"
       },
       "home_run_game": {
@@ -171769,8 +171805,8 @@
             "position": "RB",
             "status": "Questionable",
             "injury": "Hand",
-            "updated": "Fri, Sep 18",
-            "detail": "Johnson is battling with an hand injury, and it remains to be seen if he will be active against UConn on Saturday, 03rd October.",
+            "updated": "Sun, Oct 4",
+            "detail": "Johnson is battling with an hand injury, and it remains to be seen if he will be active against Eagles on Sunday, October 11th.",
             "source": "Covers"
           },
           {
@@ -179690,6 +179726,15 @@
             "injury": "Hand",
             "updated": "Mon, Sep 14",
             "detail": "Baker fractured his hand, and he will miss an undetermined length of time.",
+            "source": "Covers"
+          },
+          {
+            "player": "J. Miller",
+            "position": "RB",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "updated": "Sun, Oct 4",
+            "detail": "Miller is nursing an undisclosed injury, and is left out for Sunday's game against the Ragin Cajuns.",
             "source": "Covers"
           },
           {
@@ -195518,6 +195563,15 @@
             "position": "TE",
             "status": "Questionable",
             "injury": "Undisclosed",
+            "return": "Oct 10th",
+            "updated": "Oct 4 12:00 AM",
+            "source": "RotoWire"
+          },
+          {
+            "player": "Carson Brown",
+            "position": "WR",
+            "status": "Questionable",
+            "injury": "Shoulder",
             "return": "Oct 10th",
             "updated": "Oct 4 12:00 AM",
             "source": "RotoWire"
