@@ -20,7 +20,7 @@ on:
   # finishes rather than waiting for an unrelated commit to carry it.
   # The CFB and MLB slate publishers commit the same way.
   workflow_run:
-    workflows: ["Run MLBMA Pipeline", "Publish CFB Slate", "Publish MLB Slate"]
+    workflows: ["Run MLBMA Pipeline", "Publish CFB Slate", "Publish MLB Slate", "Publish NFL Slate"]
     types: [completed]
     branches: [master]
   workflow_dispatch:
