@@ -1,13 +1,13 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-04T19:42:12Z",
-  "data_through_utc": "2026-10-04T19:42:12Z",
+  "generated_at_utc": "2026-10-04T23:17:00Z",
+  "data_through_utc": "2026-10-04T20:00:00Z",
   "games": [
     {
       "id": "849825",
       "sport": "mlb",
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-04T20:00:00Z",
       "game_pk": 849825,
       "away": "SD",
@@ -16,12 +16,14 @@
       "home_name": "Milwaukee Brewers",
       "away_record": "0-1",
       "home_record": "1-0",
+      "away_score": 3,
+      "home_score": 2,
       "venue": "American Family Field",
       "venue_city": "Milwaukee, WI",
       "broadcast": "FS1 / FOX ONE, Fox Deportes / FOX ONE",
-      "conditions": "68\u00b0 \u00b7 Roof Closed \u00b7 11 mph, Out To CF",
+      "conditions": "68\u00b0 \u00b7 Sunny \u00b7 11 mph, Out To CF",
       "weather_temp": "68",
-      "weather_cond": "Roof Closed",
+      "weather_cond": "Sunny",
       "weather_wind": "11 mph, Out To CF",
       "away_starter": "Michael King",
       "home_starter": "Logan Henderson",
@@ -37,7 +39,7 @@
         {
           "slot": 1,
           "person_id": 665487,
-          "name": "Fernando Tatis",
+          "name": "Fernando Tatis Jr.",
           "position": "RF"
         },
         {
@@ -166,6 +168,10 @@
       "venue": "UNIQLO Field at Dodger Stadium",
       "venue_city": "Los Angeles, CA",
       "broadcast": "FS1 / FOX ONE, Fox Deportes / FOX ONE",
+      "conditions": "88\u00b0 \u00b7 Partly Cloudy \u00b7 4 mph, Varies",
+      "weather_temp": "88",
+      "weather_cond": "Partly Cloudy",
+      "weather_wind": "4 mph, Varies",
       "away_starter": "Ray Kerr",
       "home_starter": "Blake Snell",
       "away_starter_id": 678061,
@@ -174,8 +180,120 @@
       "home_hand": "L",
       "away_era": "1.47",
       "home_era": "1.90",
-      "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
+      "away_lineup_state": "Confirmed",
+      "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 686948,
+          "name": "Drake Baldwin",
+          "position": "C"
+        },
+        {
+          "slot": 2,
+          "person_id": 660670,
+          "name": "Ronald Acu\u00f1a Jr.",
+          "position": "RF"
+        },
+        {
+          "slot": 3,
+          "person_id": 621566,
+          "name": "Matt Olson",
+          "position": "1B"
+        },
+        {
+          "slot": 4,
+          "person_id": 645277,
+          "name": "Ozzie Albies",
+          "position": "2B"
+        },
+        {
+          "slot": 5,
+          "person_id": 671739,
+          "name": "Michael Harris II",
+          "position": "CF"
+        },
+        {
+          "slot": 6,
+          "person_id": 643289,
+          "name": "Mauricio Dub\u00f3n",
+          "position": "SS"
+        },
+        {
+          "slot": 7,
+          "person_id": 669221,
+          "name": "Sean Murphy",
+          "position": "DH"
+        },
+        {
+          "slot": 8,
+          "person_id": 663586,
+          "name": "Austin Riley",
+          "position": "3B"
+        },
+        {
+          "slot": 9,
+          "person_id": 657041,
+          "name": "Lane Thomas",
+          "position": "LF"
+        }
+      ],
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 605141,
+          "name": "Mookie Betts",
+          "position": "SS"
+        },
+        {
+          "slot": 2,
+          "person_id": 660271,
+          "name": "Shohei Ohtani",
+          "position": "DH"
+        },
+        {
+          "slot": 3,
+          "person_id": 669257,
+          "name": "Will Smith",
+          "position": "C"
+        },
+        {
+          "slot": 4,
+          "person_id": 518692,
+          "name": "Freddie Freeman",
+          "position": "1B"
+        },
+        {
+          "slot": 5,
+          "person_id": 606192,
+          "name": "Teoscar Hern\u00e1ndez",
+          "position": "LF"
+        },
+        {
+          "slot": 6,
+          "person_id": 663656,
+          "name": "Kyle Tucker",
+          "position": "RF"
+        },
+        {
+          "slot": 7,
+          "person_id": 681624,
+          "name": "Andy Pages",
+          "position": "CF"
+        },
+        {
+          "slot": 8,
+          "person_id": 500743,
+          "name": "Miguel Rojas",
+          "position": "3B"
+        },
+        {
+          "slot": 9,
+          "person_id": 669242,
+          "name": "Tommy Edman",
+          "position": "2B"
+        }
+      ],
       "away_team_id": 144,
       "home_team_id": 119,
       "venue_id": 22,
