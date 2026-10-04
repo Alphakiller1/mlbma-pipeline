@@ -14,6 +14,10 @@ on:
     # 12:30 and 20:30 UTC: after the overnight model board refresh, and again
     # before the evening games.
     - cron: "30 12,20 * * *"
+    # cfb-model rolls its board to the next week at 15:40 UTC on Sundays and
+    # Mondays; until this slate follows, the desk shows the new week's games
+    # with no rates (2026-10-04: a five-hour gap). Refresh right after.
+    - cron: "5,35 16-18 * * 0,1"
 
 permissions:
   contents: write

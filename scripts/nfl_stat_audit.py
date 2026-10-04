@@ -17,6 +17,7 @@ SEASON = 2026
 PBP = f"https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_{SEASON}.parquet"
 FTN = f"https://github.com/nflverse/nflverse-data/releases/download/ftn_charting/ftn_charting_{SEASON}.parquet"
 TEAM = f"https://github.com/nflverse/nflverse-data/releases/download/stats_team/stats_team_week_{SEASON}.parquet"
+PLAYER = f"https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_{SEASON}.parquet"
 ALIAS = {"LA": "LAR", "WAS": "WSH", "JAC": "JAX", "OAK": "LV", "SD": "LAC"}
 
 # Usage: python scripts/nfl_stat_audit.py [out.csv] [slate.json]
@@ -132,23 +133,33 @@ for club, data in clubs.items():
     check("scheme_current", "offense.pass_epa", club, resp.get("pass_epa"), o[o["pass"] == 1]["epa"].mean(), 0.02)
     check("scheme_current", "offense.rush_epa", club, resp.get("rush_epa"), o[o["rush"] == 1]["epa"].mean(), 0.02)
 
-# ---- 5. QB season line (current window, look = all) ----
+# ---- 5. QB season line (current window, look = all) vs the OFFICIAL line ----
+# nflverse's weekly player stats are the official counting stats: attempts
+# exclude sacks and two-point tries and include spikes. (The 2026-09-29 audit
+# derived attempts from pass_attempt, which counts sacks, and so agreed with a
+# pipeline that understated every completion rate.)
+official = pd.read_parquet(PLAYER)
+official = official[official["season_type"] == "REG"].groupby("player_id")[
+    ["attempts", "completions", "passing_yards", "passing_tds", "passing_interceptions"]].sum()
+plays = pbp[(pbp["two_point_attempt"].fillna(0) != 1)]
 for club, data in clubs.items():
     for prof in data.get("player_scheme") or []:
         if prof.get("position") != "QB" or prof.get("source_season") != SEASON:
             continue
         allsplit = next((s for s in prof["splits"] if s["look"] == "all"), None)
-        q = dropbacks[dropbacks["passer_player_id"] == prof["player_id"]]
-        if not allsplit or not len(q):
+        if not allsplit or prof["player_id"] not in official.index:
             continue
-        att = q["pass_attempt"].fillna(0).sum()
-        check("qb_line", "dropbacks", f"{club} {prof['player_name']}", allsplit.get("dropbacks"), len(q), 0)
-        check("qb_line", "epa_per_dropback", f"{club} {prof['player_name']}", allsplit.get("epa_per_dropback"),
-              q["epa"].fillna(0).sum() / len(q), 0.003)
-        check("qb_line", "completion_rate", f"{club} {prof['player_name']}", allsplit.get("completion_rate"),
-              q["complete_pass"].fillna(0).sum() / att if att else None, 0.003)
-        check("qb_line", "yards_per_attempt", f"{club} {prof['player_name']}", allsplit.get("yards_per_attempt"),
-              q["passing_yards"].fillna(0).sum() / att if att else None, 0.02)
+        o = official.loc[prof["player_id"]]
+        who = f"{club} {prof['player_name']}"
+        check("qb_line", "attempts", who, allsplit.get("attempts"), o["attempts"], 0)
+        check("qb_line", "completions", who, allsplit.get("completions"), o["completions"], 0)
+        check("qb_line", "passing_yards", who, allsplit.get("passing_yards"), o["passing_yards"], 0)
+        check("qb_line", "completion_rate", who, allsplit.get("completion_rate"),
+              o["completions"] / o["attempts"] if o["attempts"] else None, 0.002)
+        check("qb_line", "yards_per_attempt", who, allsplit.get("yards_per_attempt"),
+              o["passing_yards"] / o["attempts"] if o["attempts"] else None, 0.01)
+        q = plays[(plays["passer_player_id"] == prof["player_id"]) & (plays["qb_dropback"] == 1)]
+        check("qb_line", "dropbacks", who, allsplit.get("dropbacks"), len(q), 0)
 
 # ---- 6. Red zone trips (a snap at the 20 or closer, per drive) ----
 rz = pbp[(pbp["yardline_100"] <= 20) & pbp["play_type"].isin(["pass", "run", "field_goal", "punt", "qb_spike"])
