@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-04T16:54:45Z",
-  "data_through_utc": "2026-10-04T16:54:45Z",
+  "generated_at_utc": "2026-10-04T19:42:12Z",
+  "data_through_utc": "2026-10-04T19:42:12Z",
   "games": [
     {
       "id": "849825",
@@ -19,10 +19,10 @@
       "venue": "American Family Field",
       "venue_city": "Milwaukee, WI",
       "broadcast": "FS1 / FOX ONE, Fox Deportes / FOX ONE",
-      "conditions": "69\u00b0 \u00b7 Roof Closed \u00b7 0 mph, None",
-      "weather_temp": "69",
+      "conditions": "68\u00b0 \u00b7 Roof Closed \u00b7 11 mph, Out To CF",
+      "weather_temp": "68",
       "weather_cond": "Roof Closed",
-      "weather_wind": "0 mph, None",
+      "weather_wind": "11 mph, Out To CF",
       "away_starter": "Michael King",
       "home_starter": "Logan Henderson",
       "away_starter_id": 650633,
@@ -37,7 +37,7 @@
         {
           "slot": 1,
           "person_id": 665487,
-          "name": "Fernando Tatis Jr.",
+          "name": "Fernando Tatis",
           "position": "RF"
         },
         {
@@ -66,8 +66,8 @@
         },
         {
           "slot": 6,
-          "person_id": 806956,
-          "name": "Ethan Salas",
+          "person_id": 657757,
+          "name": "Gavin Sheets",
           "position": "DH"
         },
         {
@@ -156,7 +156,6 @@
       "sport": "mlb",
       "game_state": "scheduled",
       "kickoff_utc": "2026-10-05T00:00:00Z",
-      "kickoff_display": "8:00 PM ET",
       "game_pk": 849823,
       "away": "ATL",
       "home": "LAD",
@@ -167,21 +166,20 @@
       "venue": "UNIQLO Field at Dodger Stadium",
       "venue_city": "Los Angeles, CA",
       "broadcast": "FS1 / FOX ONE, Fox Deportes / FOX ONE",
-      "away_starter": "Chris Sale",
+      "away_starter": "Ray Kerr",
       "home_starter": "Blake Snell",
-      "away_starter_id": 519242,
+      "away_starter_id": 678061,
       "home_starter_id": 605483,
-      "away_starter_role": "projected",
       "away_hand": "L",
       "home_hand": "L",
-      "away_era": "2.16",
+      "away_era": "1.47",
       "home_era": "1.90",
       "away_lineup_state": "Expected",
       "home_lineup_state": "Expected",
       "away_team_id": 144,
       "home_team_id": 119,
       "venue_id": 22,
-      "away_bullpen": "7/163",
+      "away_bullpen": "8/184",
       "home_bullpen": "4/52"
     }
   ]
