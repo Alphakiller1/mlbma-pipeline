@@ -102,7 +102,7 @@
     projection: 'target', clash: 'football', players: 'users',
     efficiency: 'trend', quarterbacks: 'football', coverage: 'target', looks: 'target',
     rushing: 'football', trenches: 'users', receivers: 'users', redzone: 'target',
-    tendencies: 'lineup', 'game-log': 'calendar',
+    tendencies: 'lineup', 'game-log': 'calendar', pace: 'trend',
     'cfb-efficiency': 'trend', 'cfb-passing': 'football', 'cfb-rushing': 'football',
     'cfb-rushers': 'users', 'cfb-quarterbacks': 'football', 'cfb-situational': 'target',
     'cfb-game-log': 'calendar', 'cfb-schedule': 'calendar', 'cfb-availability': 'whistle',
@@ -4066,6 +4066,71 @@ function seasonToggle(game) {
   }
 
 
+  /* Pace (owner 2026-10-04): each offense's tempo by situation - full game,
+     each half, leading, trailing and neutral - as game-clock seconds between
+     snaps of a drive and snaps per game, beside the same for the plays run
+     against the defense it meets; then time of possession, full game and by
+     half. A league place on every figure; for seconds per snap 1st is the
+     fastest. Leading/trailing is the possession team's score. */
+  var NFL_PACE_SITUATIONS = [['', 'Full Game'], ['_h1', '1st Half'], ['_h2', '2nd Half'],
+    ['_leading', 'Leading'], ['_trailing', 'Trailing'], ['_neutral', 'Neutral']];
+  var NFL_TOP_ROWS = [['', 'Full Game'], ['_h1', '1st Half'], ['_h2', '2nd Half']];
+
+  function nflPaceCell(value, rank, kind, invert) {
+    var n = Number(value);
+    if (value == null || !isFinite(n)) return '<td class="num ca-vs-none">Not Charted</td>';
+    var secs = Math.round(n * 60);
+    var text = kind === 'sec' ? n.toFixed(1) + 's'
+      : (kind === 'clock' ? Math.floor(secs / 60) + ':' + ('0' + (secs % 60)).slice(-2) : n.toFixed(1));
+    return '<td class="num">' + esc(text) + nflFreqMark(rank, invert) + '</td>';
+  }
+
+  function nflPacePanel(sport, game, offSide) {
+    var defSide = nflOther(offSide);
+    var oScheme = nflScheme(game, offSide), dScheme = nflScheme(game, defSide);
+    var mine = ((oScheme.offense || {}).pace) || {};
+    var seen = ((dScheme.defense || {}).pace) || {};
+    var head = '<section class="ca-arsenal-panel ca-nfl-pace-panel"><h3>' +
+      esc(nflVs(sport, game, offSide, 'Offense', 'Defense')) + '</h3>';
+    function cell(side, scheme, key, kind, invert) {
+      return nflPaceCell((side === 'offense' ? mine : seen)[key],
+        nflFreqRank(scheme, side, 'pace', key), kind, invert);
+    }
+    var tempo = NFL_PACE_SITUATIONS.filter(function (sit) {
+      return mine['seconds_per_play' + sit[0]] != null || seen['seconds_per_play' + sit[0]] != null;
+    }).map(function (sit) {
+      return '<tr><td class="ca-lineup-name">' + esc(sit[1]) + '</td>' +
+        cell('offense', oScheme, 'seconds_per_play' + sit[0], 'sec', true) +
+        cell('offense', oScheme, 'plays_per_game' + sit[0], 'num1', false) +
+        cell('defense', dScheme, 'seconds_per_play' + sit[0], 'sec', true) +
+        cell('defense', dScheme, 'plays_per_game' + sit[0], 'num1', false) + '</tr>';
+    });
+    var top = NFL_TOP_ROWS.filter(function (row) {
+      return mine['time_of_possession' + row[0]] != null || seen['time_of_possession' + row[0]] != null;
+    }).map(function (row) {
+      return '<tr><td class="ca-lineup-name">' + esc(row[1]) + '</td>' +
+        cell('offense', oScheme, 'time_of_possession' + row[0], 'clock', false) +
+        cell('defense', dScheme, 'time_of_possession' + row[0], 'clock', false) + '</tr>';
+    });
+    if (!tempo.length && !top.length) {
+      return head + pending('Pace is not published for this pairing yet.') + '</section>';
+    }
+    var off = nflNick(sport, game, offSide), def = nflNick(sport, game, defSide);
+    function table(first, heads, rows) {
+      return '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-arsenal-table ca-nfl-mix">' +
+        '<thead><tr><th>' + esc(first) + '</th>' + heads.map(function (h) {
+          return '<th class="num">' + esc(h) + '</th>';
+        }).join('') + '</tr></thead><tbody>' + rows.join('') + '</tbody></table></div>';
+    }
+    return head +
+      (tempo.length ? '<div class="ca-split-block"><h4>Tempo By Situation</h4>' +
+        table('Situation', [off + ' Sec/Snap', off + ' Snaps/G', def + ' Faced Sec/Snap',
+          def + ' Faced Snaps/G'], tempo) + '</div>' : '') +
+      (top.length ? '<div class="ca-split-block"><h4>Time Of Possession Per Game</h4>' +
+        table('Window', [off + ' Offense', def + ' Defense Faced'], top) + '</div>' : '') +
+      '</section>';
+  }
+
   /* Defensive tendencies: how often each defense plays each coverage, shell,
      pressure look and personnel package, beside how often the other offense
      has faced the same thing. Frequencies, so marked, never graded. */
@@ -4127,8 +4192,10 @@ function seasonToggle(game) {
         t.yards_per_attempt = t.attempts ? t.passing_yards / t.attempts : null;
         t.dropbacks_per_game = t.games ? t.dropbacks / t.games : null;
         t.passing_yards_per_game = t.games ? t.passing_yards / t.games : null;
+        t.attempts_per_game = t.games ? t.attempts / t.games : null;
       },
-      metrics: [['completion_rate', true], ['yards_per_attempt', true], ['epa_per_dropback', true], ['success_rate', true]],
+      metrics: [['completion_rate', true], ['yards_per_attempt', true], ['epa_per_dropback', true],
+        ['success_rate', true], ['attempts_per_game', true]],
       minimum: 10, allFloor: 100 },
     RB: { volume: 'carries', key: 'look',
       sums: ['carries', 'rushing_yards', 'rushing_tds', 'games'],
@@ -4307,7 +4374,9 @@ function seasonToggle(game) {
         ['Box', ['light_box', 'stacked_box']],
         ['Shells', ['cover_0', 'cover_1', 'cover_2', 'cover_2_man', 'cover_3', 'cover_4', 'cover_6']]
       ],
-      cols: [['dropbacks', 'DB', null, 'int'], ['completion_rate', 'Cmp%', 'completion_rate', 'pct'],
+      cols: [['dropbacks', 'DB', null, 'int'], ['attempts', 'Att', null, 'int'],
+        ['attempts_per_game', 'Att/G', 'attempts_per_game', 'num1'],
+        ['completion_rate', 'Cmp%', 'completion_rate', 'pct'],
         ['yards_per_attempt', 'Y/A', 'yards_per_attempt', 'num1'],
         ['epa_per_dropback', 'EPA/DB', 'epa_per_dropback', 'epa'],
         ['success_rate', 'Succ%', 'success_rate', 'pct']]
@@ -5534,7 +5603,7 @@ function seasonToggle(game) {
     ['rushing', 'Rushing', ['run-game', 'trenches', 'rushing']],
     ['receiving', 'Receiving', ['receivers']],
     ['redzone', 'Red Zone', ['redzone']],
-    ['tendencies', 'Tendencies', ['tendencies', 'def-tendencies']],
+    ['tendencies', 'Tendencies', ['pace', 'tendencies', 'def-tendencies']],
     ['lineups', 'Lineups', ['availability']],
     ['profile', 'Profile', ['radar', 'team-context']]
   ];
@@ -5789,6 +5858,9 @@ function seasonToggle(game) {
 
       section('redzone', 'Red Zone', 'Trips, Conversion And Who Gets The Ball Inside The 20',
         nflRedZone(sport, game)),
+
+      section('pace', 'Pace And Possession', 'Tempo By Situation And Time Of Possession',
+        nflBothWindows(function () { return nflDuo(nflPacePanel, sport, game); })),
 
       section('tendencies', 'Offensive Tendencies', 'Personnel, Formation And Play Type',
         nflBothWindows(function () { return nflDuo(nflTendencyPanel, sport, game); })),

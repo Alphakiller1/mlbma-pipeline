@@ -46,7 +46,7 @@ PBP_COLUMNS = (
     "pass_touchdown", "interception", "sack", "qb_hit", "epa", "success",
     "yards_gained", "tackled_for_loss", "fumble_forced", "fumble_lost",
     "down", "ydstogo", "yardline_100", "run_location", "run_gap",
-    "qb_kneel", "qb_scramble", "first_down_rush", "touchdown",
+    "qb_kneel", "qb_scramble", "first_down_rush", "touchdown", "qb_spike", "two_point_attempt",
 )
 
 
@@ -198,7 +198,13 @@ def _player_stats(rows, position: str) -> dict[str, Any] | None:
     games = int(rows["game_id"].nunique()) if "game_id" in rows else 0
     if position == "QB":
         dropbacks = int(rows["qb_dropback"].fillna(0).sum())
-        attempts = int(rows["pass_attempt"].fillna(0).sum())
+        # nflfastR flags a sack as a pass attempt; an official attempt is not
+        # a sack. Counting sacks understated every completion rate and Y/A
+        # (2026-10-04: Hurts 59.0% published vs 64.4% official).
+        attempt = rows["pass_attempt"].fillna(0).eq(1)
+        if "sack" in rows:
+            attempt = attempt & rows["sack"].fillna(0).eq(0)
+        attempts = int(attempt.sum())
         if not dropbacks:
             return None
         completions = int(rows["complete_pass"].fillna(0).sum())
@@ -363,7 +369,14 @@ def _player_profiles(frame, season: int, names: dict[str, str],
         ("QB", "passer_player_id", "passer_player_name", "passing", "qb_dropback"),
         ("RB", "rusher_player_id", "rusher_player_name", "rushing", "rush_attempt"),
     ):
-        subset = frame[frame[flag].fillna(0).eq(1) & frame[id_col].notna()].copy()
+        # Official lines count a spike as an attempt and leave out two-point
+        # tries; a spike is not a dropback, so it is added to the passer's rows.
+        chosen = frame[flag].fillna(0).eq(1)
+        if position == "QB" and "qb_spike" in frame:
+            chosen = chosen | frame["qb_spike"].fillna(0).eq(1)
+        if "two_point_attempt" in frame:
+            chosen = chosen & frame["two_point_attempt"].fillna(0).eq(0)
+        subset = frame[chosen & frame[id_col].notna()].copy()
         for (team, player_id), rows in subset.groupby(["posteam", id_col], dropna=True):
             # A rusher ID can be a scrambling quarterback or a receiver on a
             # jet sweep. Publish the RB table only for players whose official
@@ -536,7 +549,8 @@ def _team_line(frame, season: int, pfr_rushing=None) -> dict[str, dict]:
 SCHEME_PBP_COLUMNS = (
     "game_id", "play_id", "season_type", "posteam", "defteam", "play_type",
     "qb_dropback", "pass", "rush", "shotgun", "no_huddle", "down", "wp",
-    "half_seconds_remaining", "epa", "success",
+    "half_seconds_remaining", "epa", "success", "game_seconds_remaining", "fixed_drive",
+    "game_half", "score_differential", "drive_time_of_possession",
 )
 SCHEME_FTN_COLUMNS = (
     "nflverse_game_id", "nflverse_play_id", "n_defense_box", "n_blitzers",
@@ -621,7 +635,76 @@ def _unit_scheme(rows) -> dict:
         "rush_epa_light_box": _mean(epa[rush & light]),
     }
     strip = lambda d: {k: v for k, v in d.items() if v is not None}
-    return {"pressure": strip(pressure), "personnel": strip(personnel), "response": strip(response)}
+    return {"pressure": strip(pressure), "personnel": strip(personnel), "response": strip(response),
+            "pace": strip(_pace(rows, neutral_clock=rows["wp"].between(0.2, 0.8)
+                                & rows["half_seconds_remaining"].gt(120)))}
+
+
+# A gap longer than this between two snaps of one drive is a stoppage (a
+# timeout, an injury, the two-minute warning, a review), not tempo.
+MAX_SNAP_GAP = 60
+
+
+# Situations the pace table reads, each a mask over one club's plays. Score
+# is the offense's: leading/trailing is the possession team's margin before
+# the snap, so for a defense's plays "leading" means the offense facing it led.
+PACE_SITUATIONS = ("", "_h1", "_h2", "_leading", "_trailing", "_neutral")
+
+
+def _clock(text) -> float | None:
+    """'2:35' -> 155 seconds."""
+    try:
+        minutes, seconds = str(text).split(":")
+        return int(minutes) * 60 + int(seconds)
+    except (ValueError, AttributeError):
+        return None
+
+
+def _pace(rows, neutral_clock) -> dict:
+    """Tempo and possession from one club's plays.
+
+    For each situation - the full game, each half, while leading, while
+    trailing, and neutral (win probability 20-80%, not the last two minutes of
+    a half) - snaps per game and the game-clock seconds between consecutive
+    snaps of a drive (stoppages over a minute dropped). Time of possession is
+    the sum of the drives' clock, per game, overall and by half. From an
+    offense's plays this is its own pace; from the plays run against a defense,
+    the pace and possession that defense has faced.
+    """
+    games = int(rows["game_id"].nunique()) if "game_id" in rows else 0
+    if not games:
+        return {}
+    out: dict = {}
+    has_clock = "game_seconds_remaining" in rows and "fixed_drive" in rows
+    if has_clock:
+        ordered = rows.sort_values(["game_id", "play_id"])
+        gap = -ordered.groupby(["game_id", "fixed_drive"])["game_seconds_remaining"].diff()
+        clean = gap.gt(0) & gap.le(MAX_SNAP_GAP)
+    else:
+        ordered = rows
+    half = ordered["game_half"] if "game_half" in ordered else None
+    margin = ordered["score_differential"] if "score_differential" in ordered else None
+    masks = {"": ordered.index == ordered.index}
+    if half is not None:
+        masks["_h1"] = half.eq("Half1").to_numpy()
+        masks["_h2"] = half.eq("Half2").to_numpy()
+    if margin is not None:
+        masks["_leading"] = margin.gt(0).to_numpy()
+        masks["_trailing"] = margin.lt(0).to_numpy()
+    masks["_neutral"] = neutral_clock.reindex(ordered.index).fillna(False).to_numpy()
+    for suffix, mask in masks.items():
+        out["plays_per_game" + suffix] = round(int(mask.sum()) / games, 2)
+        if has_clock:
+            out["seconds_per_play" + suffix] = _mean(gap[clean & mask])
+    if "drive_time_of_possession" in ordered and "fixed_drive" in ordered:
+        drives = ordered.drop_duplicates(["game_id", "fixed_drive"])
+        seconds = drives["drive_time_of_possession"].map(_clock)
+        out["time_of_possession"] = round(float(seconds.sum()) / games / 60, 2)
+        if half is not None:
+            for suffix, label in (("_h1", "Half1"), ("_h2", "Half2")):
+                out["time_of_possession" + suffix] = round(
+                    float(seconds[drives["game_half"].eq(label)].sum()) / games / 60, 2)
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -738,7 +821,7 @@ def _rank_scheme(out: dict[str, dict]) -> dict[str, dict]:
     # League places for every rate (1st = most often) and the league mean and
     # spread for every response, per phase, over the same clubs.
     for phase in ("offense", "defense"):
-        for group in ("coverage", "pressure", "personnel", "package"):
+        for group in ("coverage", "pressure", "personnel", "package", "pace"):
             keys = {k for club in out.values() for k in (club.get(phase) or {}).get(group, {})}
             for key in keys:
                 pool = [(team, club[phase][group][key]) for team, club in out.items()

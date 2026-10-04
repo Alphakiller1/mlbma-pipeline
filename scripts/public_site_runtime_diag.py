@@ -501,6 +501,15 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL names no gaps for the reader",
               "largest matchup gaps" not in detail_lower and "quick read" not in detail_lower and
               page.locator(".ca-nfl-signal, .is-off, .is-def, [data-matchup-side]").count() == 0)
+        # Owner 2026-10-04: pace by situation and time of possession.
+        pace_text = page.locator("#pace").inner_text().lower()
+        check("NFL pace reads every situation and time of possession, ranked",
+              page.locator("#pace .ca-nfl-pace-panel").filter(visible=True).count() >= 1
+              and all(label in pace_text for label in (
+                  "full game", "1st half", "2nd half", "leading", "trailing", "neutral",
+                  "time of possession", "sec/snap", "snaps/g"))
+              and page.locator("#pace .ca-freq-mark").filter(visible=True).count() >= 10,
+              pace_text[:200])
         check("NFL tendencies are never graded",
               page.locator("#tendencies td[class*='c-']").count() == 0)
         cov_usage = page.locator("#coverage .ca-arsenal-table td:has(.ca-usage)").count()

@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-10-04T04:58:17Z",
-  "data_through_utc": "2026-10-04T04:31:26+00:00",
+  "generated_at_utc": "2026-10-04T18:45:21Z",
+  "data_through_utc": "2026-10-04T08:32:05+00:00",
   "season": 2026,
   "week": 4,
   "note": "Ten observed rates per club with ranks recomputed from each rate against the 32-team pool. No power rating, projected win total or playoff probability is present.",
@@ -4958,8 +4958,8 @@
       "through": "2026-09-27"
     },
     "IND": {
-      "games": 3,
-      "through": "2026-09-27"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "JAX": {
       "games": 3,
@@ -5030,8 +5030,8 @@
       "through": "2026-09-27"
     },
     "WSH": {
-      "games": 3,
-      "through": "2026-09-27"
+      "games": 4,
+      "through": "2026-10-04"
     }
   }
 }

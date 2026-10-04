@@ -97,6 +97,13 @@ SCHEME_GROUPS = {
         "pass_epa_cover_6", "pass_epa_cover_2_man", "rush_epa_stacked_box",
     ),
     "target_share": ("target_share_rb_all", "target_share_wr_all", "target_share_te_all"),
+    # Tempo by situation and time of possession (offense: its own; defense:
+    # what it has faced).
+    "pace": tuple(
+        f"{metric}{suffix}"
+        for metric in ("plays_per_game", "seconds_per_play")
+        for suffix in ("", "_h1", "_h2", "_leading", "_trailing", "_neutral")
+    ) + ("time_of_possession", "time_of_possession_h1", "time_of_possession_h2"),
 }
 
 # Board team codes against the abbreviations the public schedule uses.
@@ -521,6 +528,10 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
                      if values.get(key) is not None}
             if not stats.get(volume):
                 continue
+            # Pass volume against each look: attempts per game in which the
+            # passer saw it (owner 2026-10-04: QB attempts against tendencies).
+            if position == "QB" and stats.get("attempts") is not None and stats.get("games"):
+                stats["attempts_per_game"] = round(float(stats["attempts"]) / float(stats["games"]), 2)
             # An offense-level row carries its own league place (among offenses).
             if look.startswith("team_") and isinstance(values.get("league_ranks"), dict):
                 stats["league_ranks"] = values["league_ranks"]
@@ -540,7 +551,8 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
     rows = [profile for profiles in out.values() for profile in profiles]
     for position in ("QB", "RB"):
         volume = "dropbacks" if position == "QB" else "carries"
-        metrics = (("completion_rate", "yards_per_attempt", "epa_per_dropback", "success_rate")
+        metrics = (("completion_rate", "yards_per_attempt", "epa_per_dropback", "success_rate",
+                    "attempts_per_game")
                    if position == "QB" else
                    ("yards_per_carry", "epa_per_carry", "success_rate"))
         seasons = {profile["source_season"] for profile in rows
