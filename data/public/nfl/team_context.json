@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-10-04T18:51:42Z",
-  "data_through_utc": "2026-10-04T08:32:05+00:00",
+  "generated_at_utc": "2026-10-04T21:53:25Z",
+  "data_through_utc": "2026-10-04T19:35:01+00:00",
   "season": 2026,
   "week": 4,
   "note": "Ten observed rates per club with ranks recomputed from each rate against the 32-team pool. No power rating, projected win total or playoff probability is present.",
@@ -4906,40 +4906,40 @@
   },
   "recent": {
     "ARI": {
-      "games": 3,
-      "through": "2026-09-27"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "ATL": {
       "games": 3,
       "through": "2026-09-25"
     },
     "BAL": {
-      "games": 3,
-      "through": "2026-09-27"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "BUF": {
-      "games": 3,
-      "through": "2026-09-27"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "CAR": {
       "games": 3,
       "through": "2026-09-27"
     },
     "CHI": {
-      "games": 3,
-      "through": "2026-09-29"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "CIN": {
-      "games": 3,
-      "through": "2026-09-27"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "CLE": {
       "games": 4,
       "through": "2026-10-02"
     },
     "DAL": {
-      "games": 3,
-      "through": "2026-09-27"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "DEN": {
       "games": 3,
@@ -4950,20 +4950,20 @@
       "through": "2026-09-27"
     },
     "GB": {
-      "games": 3,
-      "through": "2026-09-25"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "HOU": {
-      "games": 3,
-      "through": "2026-09-27"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "IND": {
       "games": 4,
       "through": "2026-10-04"
     },
     "JAX": {
-      "games": 3,
-      "through": "2026-09-27"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "KC": {
       "games": 3,
@@ -4974,8 +4974,8 @@
       "through": "2026-09-27"
     },
     "LAR": {
-      "games": 3,
-      "through": "2026-09-28"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "LV": {
       "games": 3,
@@ -4990,24 +4990,24 @@
       "through": "2026-09-27"
     },
     "NE": {
-      "games": 3,
-      "through": "2026-09-27"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "NO": {
       "games": 3,
       "through": "2026-09-27"
     },
     "NYG": {
-      "games": 3,
-      "through": "2026-09-27"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "NYJ": {
-      "games": 3,
-      "through": "2026-09-27"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "PHI": {
-      "games": 3,
-      "through": "2026-09-29"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "PIT": {
       "games": 4,
@@ -5022,12 +5022,12 @@
       "through": "2026-09-27"
     },
     "TB": {
-      "games": 3,
-      "through": "2026-09-27"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "TEN": {
-      "games": 3,
-      "through": "2026-09-27"
+      "games": 4,
+      "through": "2026-10-04"
     },
     "WSH": {
       "games": 4,
