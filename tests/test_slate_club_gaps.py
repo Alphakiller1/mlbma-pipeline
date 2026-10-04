@@ -48,3 +48,20 @@ class ClubGapTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class BoardWideOutageTest(unittest.TestCase):
+    def test_a_field_every_club_lost_is_carried_so_the_rest_publishes(self):
+        # 2026-10-03: no Parquet engine emptied every nflverse family for every club; the
+        # guard then froze the whole slate (injuries, starters) for days.
+        published = slate()
+        fresh = slate()
+        for g in fresh["games"]:
+            for side in ("away", "home"):
+                g.pop(f"{side}_player_scheme", None)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "slate.json"
+            path.write_text(json.dumps(published), encoding="utf-8")
+            notes = patch_club_gaps(fresh, path)
+        self.assertTrue(all(g["away_player_scheme"] and g["home_player_scheme"] for g in fresh["games"]))
+        self.assertTrue(any("absent from every club" in n for n in notes))

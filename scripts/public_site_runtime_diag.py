@@ -678,22 +678,46 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # each unit above the unit it meets, a rank pill on every graded number,
         # no verdict lines, no gap ordering, no dash cells.
         page.wait_for_selector(".ca-nfl-tabs", timeout=timeout_ms)
-        check("CFB desk carries the ten evidence tabs (Games, Availability added 2026-10-01)",
-              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 10)
+        check("CFB desk carries the eight evidence tabs (ledger restructure 2026-10-03, Availability)",
+              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 8)
         check("CFB opens on the Units evidence group alone",
               page.evaluate("[...document.querySelectorAll('.ca-detail-section')]"
                             ".filter(s => s.offsetParent).map(s => s.id).join(',')") ==
-              "cfb-efficiency,cfb-units,cfb-dvoa")
-        check("CFB unit matchups read both directions",
-              page.locator("#cfb-units .ca-cfb-panel").count() == 2)
-        check("CFB efficiency carries per-play, pace and play-mix evidence",
-              page.locator("#cfb-efficiency .ca-cfb-panel").count() == 2
-              and "pts/play" in page.locator("#cfb-efficiency").inner_text().lower()
-              and "pass rate" in page.locator("#cfb-efficiency").inner_text().lower())
+              "cfb-efficiency,cfb-dvoa")
+        # Owner 2026-10-03: one matchup ledger for every unit comparison - both
+        # directions side by side, the same rows in the same order, each stat
+        # once on the desk, a rank bar beside every ranked figure.
+        ledger = page.evaluate("""() => {
+          const out = {};
+          for (const id of ['cfb-efficiency', 'cfb-passing', 'cfb-rushing', 'cfb-situational']) {
+            const panels = [...document.querySelectorAll('#' + id + ' .ca-cfb-ledger')];
+            const labels = panels.map(p => [...p.querySelectorAll('tbody tr:not(.ca-ledger-group) td:first-child')]
+              .map(td => td.textContent.trim()).join('|'));
+            out[id] = { panels: panels.length, same: labels.length === 2 && labels[0] === labels[1],
+                        rows: labels.length ? labels[0].split('|').filter(Boolean) : [] };
+          }
+          const ranked = [...document.querySelectorAll('.ca-cfb-ledger-table td.num .ca-rank')].length;
+          const bars = [...document.querySelectorAll('.ca-cfb-ledger-table .ca-ledger-bar i')]
+            .filter(i => parseFloat(i.style.width) > 0).length;
+          return { sections: out, ranked, bars }; }""")
+        for sid, info in ledger["sections"].items():
+            check(f"CFB {sid} reads both directions on identical ledger rows",
+                  info["panels"] == 2 and info["same"] and len(info["rows"]) >= 6,
+                  f"{info['panels']} panels, {len(info['rows'])} rows")
+        all_rows = [r for info in ledger["sections"].values() for r in info["rows"]]
+        repeated = sorted({r for r in all_rows if all_rows.count(r) > 1} - {"Success", "Explosive"})
+        check("CFB ledger lists each stat once across the desk", not repeated, ", ".join(repeated))
+        check("CFB every ranked ledger figure carries its rank bar",
+              ledger["ranked"] > 40 and ledger["bars"] == ledger["ranked"],
+              f"{ledger['ranked']} ranked, {ledger['bars']} bars")
+        efficiency_text = page.locator("#cfb-efficiency").inner_text().lower()
+        check("CFB efficiency carries scoring, yardage and per-play evidence",
+              all(label in efficiency_text for label in ("points/g", "pts/play", "yds/play", "success")))
         dvoa_text = page.locator("#cfb-dvoa").inner_text()
-        check("CFB DVOA equivalent publishes both SP+ team profiles",
-              page.locator("#cfb-dvoa .ca-cfb-feed-panel").count() == 2
-              and page.locator("#cfb-dvoa tbody tr").count() == 8
+        check("CFB DVOA equivalent sets both SP+ profiles school against school",
+              page.locator("#cfb-dvoa .ca-cfb-h2h").count() == 1
+              and page.locator("#cfb-dvoa tbody tr").count() == 4
+              and page.locator("#cfb-dvoa tbody .ca-rank").count() == 8
               and "Not Rated" not in dvoa_text
               and "Not Published" not in dvoa_text)
         dvoa_lower = dvoa_text.lower()
@@ -701,13 +725,12 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               "cfb update sp+" in dvoa_lower
               and "opponent-adjusted cfb efficiency" in dvoa_lower
               and "not ftn dvoa" in dvoa_lower
-              and "fbs rank" not in dvoa_lower
-              and page.locator("#cfb-dvoa tbody .ca-rank").count() == 8)
+              and "fbs rank" not in dvoa_lower)
         cfb_cells = page.evaluate("""() => {
           const tds = [...document.querySelectorAll('.ca-cfb-panel td')];
           const graded = td => /(^|\\s)c-(elite|good|mid|weak|poor)(\\s|$)/.test(td.className);
           return {
-            dashes: tds.filter(td => td.innerText.trim() === '\u2014').length,
+            dashes: tds.filter(td => td.innerText.trim() === '—').length,
             unpilled: tds.filter(td => graded(td) && !td.querySelector('.ca-rank')).length,
             graded: tds.filter(graded).length
           }; }""")
@@ -724,31 +747,37 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.locator("a[data-nfl-tab='passing']").click()
         check("CFB tabs switch to one group",
               page.locator("#cfb-passing.is-tab-on").count() == 1
-              and page.locator("#cfb-units.is-tab-on").count() == 0)
+              and page.locator("#cfb-efficiency.is-tab-on").count() == 0)
         qb_text = page.locator("#cfb-quarterbacks").inner_text().lower()
         check("CFB passing tab leads with both quarterback rooms beside the defense",
               page.locator("#cfb-quarterbacks.is-tab-on .ca-cfb-panel").count() == 2
+              and page.locator("#cfb-quarterbacks .ca-cfb-ledger-table").count() >= 1
               and all(label in qb_text for label in (
                   "season line", "comp%", "yds/att", "dropbacks", "passing downs", "allows")),
               qb_text[:200])
-        page.locator("a[data-nfl-tab='coverage']").click()
-        scheme_text = page.locator("#cfb-scheme").inner_text().lower()
-        # Owner 2026-10-01: actual stats, not a staff-derived profile.
-        check("CFB scheme section publishes measured rates for both directions",
-              page.locator("#cfb-scheme.is-tab-on .ca-cfb-scheme-panel").count() == 2
-              and all(label in scheme_text for label in (
-                  "pass rate", "passing downs", "epa/pass", "standard dn", "havoc", "pts/opp"))
-              and "attack vs man" not in scheme_text,
-              scheme_text[:200])
+        passing_text = page.locator("#cfb-passing").inner_text().lower()
+        check("CFB pass game carries coverage outcomes, scheme rates and protection",
+              all(label in passing_text for label in (
+                  "comp%", "yds/att", "yds/comp", "rating", "epa/pass", "td rate",
+                  "int rate", "pass 1d%", "sack%", "dropbacks/g", "db havoc")),
+              passing_text[:200])
+        check("CFB quarterback rows lead with a headshot or initials",
+              page.locator("#cfb-quarterbacks tbody td:first-child .ca-cfb-player__shot").count() > 0
+              and page.locator("#cfb-quarterbacks tbody td:first-child .ca-cfb-player__shot").count()
+              == page.locator("#cfb-quarterbacks tbody td:first-child .ca-cfb-player").count())
         page.locator("a[data-nfl-tab='rushing']").click()
-        run_text = page.locator("#cfb-run-game").inner_text().lower()
-        check("CFB rushing tab carries run game by level, both lines and ball carriers",
-              page.locator("#cfb-run-game.is-tab-on .ca-cfb-panel").count() == 2
-              and page.locator("#cfb-rushers.is-tab-on .ca-cfb-panel").count() == 2
+        run_text = page.locator("#cfb-rushing").inner_text().lower()
+        check("CFB rushing tab carries run game, line play and ball carriers",
+              page.locator("#cfb-rushers.is-tab-on .ca-cfb-panel").count() == 2
               and all(label in run_text for label in (
-                  "epa/rush", "line yds", "2nd level", "power", "stuffed", "front-7 havoc",
-                  "offensive line", "defensive line")),
+                  "epa/rush", "rush 1d%", "line yds", "2nd level", "power", "stuffed", "front-7 havoc")),
               run_text[:200])
+        page.locator("a[data-nfl-tab='situational']").click()
+        situational_text = page.locator("#cfb-situational").inner_text().lower()
+        check("CFB situational carries downs, tempo, play mix and havoc",
+              all(label in situational_text for label in (
+                  "3rd down", "standard dn", "plays/g", "pass rate", "havoc")),
+              situational_text[:200])
         page.locator("a[data-nfl-tab='games']").click()
         sos_text = page.locator("#cfb-schedule").inner_text().lower()
         check("CFB schedule strength ranks played and remaining opponents for both schools",
@@ -766,23 +795,6 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("#cfb-availability.is-tab-on .ca-cfb-injury-panel").count() == 2
               and "injury report" in injury_text and ("covers" in injury_text or "not published" in injury_text),
               injury_text[:160])
-        page.locator("a[data-nfl-tab='coverage']").click()
-        coverage_text = page.locator("#cfb-coverage").inner_text().lower()
-        check("CFB coverage reads both matchup directions",
-              page.locator("#cfb-coverage.is-tab-on .ca-cfb-panel").count() == 2)
-        check("CFB coverage publishes depth, scoring, ball and pressure outcomes",
-              all(label in coverage_text for label in (
-                  "comp%", "yds/att", "yds/comp", "rating", "td rate",
-                  "int rate", "pass 1d%", "sack%", "dropbacks/g")),
-              coverage_text)
-        check("CFB coverage values carry FBS rank pills",
-              page.locator("#cfb-coverage .ca-rank").count() >= 16,
-              str(page.locator("#cfb-coverage .ca-rank").count()))
-        page.locator("a[data-nfl-tab='trenches']").click()
-        check("CFB trenches pair each line with the front it meets",
-              page.locator("#cfb-trenches.is-tab-on .ca-cfb-panel").count() == 2
-              and "sack%" in page.locator("#cfb-trenches").inner_text().lower()
-              and "rush 1d%" in page.locator("#cfb-trenches").inner_text().lower())
         cfb_text = page.locator("main").inner_text()
         match = PROHIBITED.search(cfb_text)
         check("CFB detail public copy boundary", match is None, match.group(0) if match else "")

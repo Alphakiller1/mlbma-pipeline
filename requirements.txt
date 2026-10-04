@@ -1,4 +1,7 @@
 pandas
+# Parquet engine for every nflverse download (pbp, NGS, advstats). It used to
+# arrive transitively; without it the NFL slate froze from 2026-10-01.
+pyarrow
 numpy
 requests
 gspread

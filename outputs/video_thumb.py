@@ -257,6 +257,9 @@ def main() -> None:
     logo_files = {}
     for side, src in zip(("away", "home"), game["logos"]):
         big = re.sub(r"([?&])w=\d+&h=\d+", lambda m: m.group(1) + "w=500&h=500", src)  # the card asks for 132 px
+        # Our frames are always black: use ESPN's dark-background logo for every club, not only
+        # where the site does (the standard Rays mark is navy on black).
+        big = re.sub(r"/teamlogos/(\w+)/500/", r"/teamlogos/\1/500-dark/", big)
         dest = thumbs / f"{slug}-{side}-logo.png"
         try:
             with urllib.request.urlopen(urllib.request.Request(big, headers={"User-Agent": "Mozilla/5.0"}), timeout=30) as r:

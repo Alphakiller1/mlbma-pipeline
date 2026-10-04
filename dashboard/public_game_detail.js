@@ -103,10 +103,9 @@
     efficiency: 'trend', quarterbacks: 'football', coverage: 'target', looks: 'target',
     rushing: 'football', trenches: 'users', receivers: 'users', redzone: 'target',
     tendencies: 'lineup', 'game-log': 'calendar',
-    'cfb-units': 'football', 'cfb-passing': 'football', 'cfb-coverage': 'target',
-    'cfb-rushing': 'football', 'cfb-run-game': 'football', 'cfb-rushers': 'users',
-    'cfb-quarterbacks': 'football', 'cfb-scheme': 'football', 'cfb-game-log': 'calendar',
-    'cfb-schedule': 'calendar', 'cfb-availability': 'whistle',
+    'cfb-efficiency': 'trend', 'cfb-passing': 'football', 'cfb-rushing': 'football',
+    'cfb-rushers': 'users', 'cfb-quarterbacks': 'football', 'cfb-situational': 'target',
+    'cfb-game-log': 'calendar', 'cfb-schedule': 'calendar', 'cfb-availability': 'whistle',
     'cfb-special': 'target'
   };
 
@@ -1241,6 +1240,9 @@
     var stat = (person && person.stat) || {};
     var hand = (person && person.throws) || String(game[side + '_hand'] || '').toUpperCase();
     var handLabel = hand === 'L' ? 'LHP' : (hand === 'R' ? 'RHP' : '');
+    // No official probable: the slate named RotoWire's listed arm instead.
+    var role = String(game[side + '_starter_role'] || '').toLowerCase();
+    var roleLabel = role === 'primary' ? 'Primary' : (role === 'projected' ? 'Projected' : '');
     // The season line, kept as the one anchor the splits below are read
     // against - a .620 OPS allowed to left-handers means nothing without the
     // number the same arm posts overall.
@@ -1351,7 +1353,8 @@
     }
     return '<section class="ca-starter-panel">' +
       '<header class="ca-starter-head">' + shot +
-      '<div><p class="ca-starter-team">' + esc(label) + (handLabel ? ' \u00b7 ' + handLabel : '') + '</p>' +
+      '<div><p class="ca-starter-team">' + esc(label) + (handLabel ? ' \u00b7 ' + handLabel : '') +
+        (roleLabel ? ' \u00b7 ' + roleLabel : '') + '</p>' +
       '<h3 class="ca-starter-name">' + esc(name) + '</h3></div></header>' +
       (headline ? '<div class="ca-stat-row">' + headline + '</div>' : '') +
       lastHtml + splitHtml + '</section>';
@@ -5824,50 +5827,73 @@ function seasonToggle(game) {
    * no explanations (owner rules, 2026-09-26).
    * ------------------------------------------------------------------ */
   var CFB_TABS = [
-    ['units', 'Units', ['cfb-efficiency', 'cfb-units', 'cfb-dvoa']],
+    ['units', 'Units', ['cfb-efficiency', 'cfb-dvoa']],
     ['games', 'Games', ['cfb-game-log', 'cfb-schedule']],
     ['passing', 'Passing', ['cfb-quarterbacks', 'cfb-passing']],
-    ['coverage', 'Coverage', ['cfb-scheme', 'cfb-coverage']],
-    ['rushing', 'Rushing', ['cfb-rushing', 'cfb-run-game', 'cfb-rushers']],
-    ['trenches', 'Trenches', ['cfb-trenches']],
+    ['rushing', 'Rushing', ['cfb-rushing', 'cfb-rushers']],
     ['situational', 'Situational', ['cfb-situational']],
     ['special', 'Special Teams', ['cfb-special']],
     ['availability', 'Availability', ['cfb-availability']],
     ['profile', 'Profile', ['radar', 'recent', 'team-context']]
   ];
 
-  // [rate suffix shared by off_ / def_, column header]
-  var CFB_UNIT_COLUMNS = {
-    efficiency: [['points_per_play', 'Pts/Play'], ['yards_per_play', 'Yds/Play'],
-      ['first_down_rate', '1st Down%'], ['plays_pg', 'Plays/G'], ['pass_rate', 'Pass Rate']],
-    units: [['ppg', 'Points/G'], ['ypg', 'Yards/G'], ['third_down', '3rd Down'],
-      ['fourth', '4th Down'], ['first_downs', '1st Downs/G']],
-    passing: [['pass_ypg', 'Pass Yds/G'], ['ypa', 'Yds/Att'], ['comp', 'Comp%'],
-      ['qbr', 'Rating'], ['pass_td', 'Pass TD/G'], ['int', 'INT/G'], ['sacks', 'Sacks/G']],
-    coverage: [['comp', 'Comp%'], ['ypa', 'Yds/Att'],
-      ['yards_per_completion', 'Yds/Comp'], ['qbr', 'Rating'],
-      ['pass_td_rate', 'TD Rate'], ['interception_rate', 'INT Rate'],
-      ['pass_first_rate', 'Pass 1D%'], ['sack_rate', 'Sack%'],
-      ['dropbacks_pg', 'Dropbacks/G']],
-    rushing: [['rush_ypg', 'Rush Yds/G'], ['ypc', 'Yds/Rush'], ['rush_td', 'Rush TD/G']],
-    trenches: [['sack_rate', 'Sack%'], ['sack_yards_pg', 'Sack Yds/G'],
-      ['sacks', 'Sacks/G'], ['rush_attempts_pg', 'Rush Att/G'], ['ypc', 'Yds/Rush'],
-      ['rush_first_rate', 'Rush 1D%']],
-    situational: [['third_down', '3rd Down'], ['fourth', '4th Down'],
-      ['first_down_rate', '1st Down%'], ['pass_first_rate', 'Pass 1D%'],
-      ['rush_first_rate', 'Rush 1D%'], ['plays_pg', 'Plays/G'], ['pass_rate', 'Pass Rate']]
+  /* The matchup ledger (2026-10-03). One shape for every unit comparison: a
+     row per stat, the offense's figure and FBS rank on the left, the defense
+     it meets on the right, and between them two bars drawn out from the
+     centre to each side's place among FBS schools. The two directions sit
+     side by side with the same rows in the same order, and each stat appears
+     once on the desk. [feed, rate suffix shared by off_ / def_, label]; the
+     feeds are form (ESPN box-score rates), scheme and run (CFBD) and model
+     (the CFB model's opponent-adjusted inputs). */
+  var CFB_LEDGER = {
+    efficiency: [
+      ['Scoring', [['form', 'ppg', 'Points/G'], ['form', 'points_per_play', 'Pts/Play'],
+        ['scheme', 'points_per_opportunity', 'Pts/Opp']]],
+      ['Yardage', [['form', 'ypg', 'Yards/G'], ['form', 'yards_per_play', 'Yds/Play'],
+        ['form', 'first_downs', '1st Downs/G'], ['form', 'first_down_rate', '1st Down%']]],
+      ['Per Play', [['model', 'ppa', 'Adj EPA/Play'], ['scheme', 'success_rate', 'Success'],
+        ['scheme', 'explosiveness', 'Explosive']]]
+    ],
+    passing: [
+      ['Efficiency', [['form', 'ypa', 'Yds/Att'], ['form', 'comp', 'Comp%'],
+        ['form', 'yards_per_completion', 'Yds/Comp'], ['form', 'qbr', 'Rating'],
+        ['scheme', 'pass_ppa', 'EPA/Pass'], ['scheme', 'pass_success', 'Pass Success'],
+        ['form', 'pass_first_rate', 'Pass 1D%']]],
+      ['Volume', [['form', 'pass_ypg', 'Pass Yds/G'], ['form', 'dropbacks_pg', 'Dropbacks/G']]],
+      ['Scoring And Ball', [['form', 'pass_td_rate', 'TD Rate'],
+        ['form', 'interception_rate', 'INT Rate']]],
+      ['Protection And Havoc', [['form', 'sack_rate', 'Sack%'], ['form', 'sack_yards_pg', 'Sack Yds/G'],
+        ['scheme', 'havoc_db', 'DB Havoc']]]
+    ],
+    rushing: [
+      ['Efficiency', [['form', 'ypc', 'Yds/Rush'], ['run', 'rush_ppa', 'EPA/Rush'],
+        ['run', 'rush_success', 'Success'], ['run', 'rush_explosiveness', 'Explosive'],
+        ['form', 'rush_first_rate', 'Rush 1D%']]],
+      ['Volume', [['form', 'rush_ypg', 'Rush Yds/G'], ['form', 'rush_attempts_pg', 'Rush Att/G'],
+        ['form', 'rush_td', 'Rush TD/G']]],
+      ['Line Play', [['run', 'line_yards', 'Line Yds'], ['run', 'second_level_yards', '2nd Level'],
+        ['run', 'open_field_yards', 'Open Field'], ['run', 'power_success', 'Power'],
+        ['run', 'stuff_rate', 'Stuffed'], ['run', 'havoc_front_seven', 'Front-7 Havoc']]]
+    ],
+    situational: [
+      ['Downs', [['form', 'third_down', '3rd Down'], ['form', 'fourth', '4th Down'],
+        ['scheme', 'standard_down_success', 'Standard Dn'],
+        ['scheme', 'passing_down_success', 'Passing Dn']]],
+      ['Tempo And Mix', [['form', 'plays_pg', 'Plays/G'], ['form', 'pass_rate', 'Pass Rate'],
+        ['scheme', 'passing_down_rate', 'Passing Downs'], ['scheme', 'field_position', 'Start (Own)']]],
+      ['Havoc', [['scheme', 'havoc_total', 'Havoc']]]
+    ]
   };
-  var CFB_UNIT_NAMES = {
-    efficiency: ['Offensive Efficiency', 'Defensive Efficiency'],
-    units: ['Offense', 'Defense'],
+  var CFB_LEDGER_UNITS = {
+    efficiency: ['Offense', 'Defense'],
     passing: ['Passing Offense', 'Pass Defense'],
-    coverage: ['Passing Offense', 'Coverage Defense'],
     rushing: ['Rushing Offense', 'Run Defense'],
-    trenches: ['Offensive Line', 'Defensive Front'],
     situational: ['Offense', 'Defense']
   };
   var CFB_SPECIAL = [['off_fg', 'FG%'], ['off_punt', 'Net Punt'], ['off_kr', 'KR Avg'],
     ['off_pr', 'PR Avg'], ['off_pen', 'Pen Yds/G']];
+  var CFB_SP_PLUS = [['overall', 'Overall SP+'], ['offense', 'Offense SP+'],
+    ['defense', 'Defense SP+'], ['special_teams', 'Special Teams SP+']];
 
   function cfbRates(game, side) {
     var currentYear = new Date().getUTCFullYear();
@@ -5877,19 +5903,24 @@ function seasonToggle(game) {
     return form.rates || {};
   }
 
+  var CFB_FEED_KEY = { scheme: '_scheme_stats', run: '_run_game', model: '_model_form' };
+
+  function cfbFeed(game, side, feed) {
+    if (feed === 'form') return cfbRates(game, side);
+    return ((game[side + CFB_FEED_KEY[feed]] || {}).rates) || {};
+  }
+
   // The school, not the mascot: "Coastal Carolina Offense", never "Chanticleers".
   function cfbName(sport, game, side) {
     return game[side + '_name'] || fullName(sport, game, side);
   }
 
-  // A rate with its FBS place. The label rides in the tooltip, because one
-  // column can mean "sacks taken" on the offense row and "sacks made" on the
-  // defense row beneath it.
   // One decimal throughout: per-game counts and averages side by side read
   // alike (0.7, 1.7, 1.5), never 0.667 beside 1.5.
   function cfbValue(entry) {
     var v = Number(entry.value);
     if (entry.format === 'ppa') return (v > 0 ? '+' : '') + v.toFixed(3);
+    if (entry.format === 'signed') return (v > 0 ? '+' : '') + v.toFixed(1);
     if (entry.format === 'pct') return (v * 100).toFixed(1) + '%';
     if (entry.format === 'num2') return v.toFixed(2);
     if (entry.format === 'int') return String(Math.round(v));
@@ -5897,10 +5928,14 @@ function seasonToggle(game) {
       ? v.toFixed(2) : v.toFixed(1);
   }
 
-  function cfbCell(entry) {
-    if (!entry || entry.value == null) return '<td class="num ca-vs-none">Not Rated</td>';
+  // A rate with its FBS place. The label rides in the tooltip, because one
+  // column can mean "sacks taken" for an offense and "sacks made" for the
+  // defense beside it.
+  function cfbCell(entry, extraClass) {
+    var cls = extraClass ? ' ' + extraClass : '';
+    if (!entry || entry.value == null) return '<td class="num ca-vs-none' + cls + '">Not Rated</td>';
     var place = entry.rank ? { rank: entry.rank, of: entry.of } : null;
-    return '<td class="num ' + (place ? rankTone(place.rank, place.of) : '') + '" title="' +
+    return '<td class="num' + cls + (place ? ' ' + rankTone(place.rank, place.of) : '') + '" title="' +
       esc(titleCase(entry.label || '') + (place ? ' · ' + place.rank + ordinal(place.rank) +
         (entry.better === 'neutral' ? ' most' : '') + ' of ' + place.of : '')) + '">' +
       esc(cfbValue(entry)) +
@@ -5921,183 +5956,154 @@ function seasonToggle(game) {
       .join(' · ')) + '</p>';
   }
 
-  // A club with no rates at all reads as one statement across the row, not a
-  // row of repeated cells.
-  function cfbRow(label, rates, cells, width) {
-    return '<tr><td>' + esc(label) + '</td>' + (Object.keys(rates).length ? cells()
-      : '<td class="num ca-vs-none" colspan="' + width + '">Rates Not Published</td>') + '</tr>';
+  // A side's place among FBS schools as a bar length: 1st fills it.
+  function cfbBar(entry, side) {
+    var ranked = entry && entry.value != null && entry.rank && entry.of > 1;
+    var pct = ranked ? Math.max(4, Math.round(((entry.of - entry.rank) / (entry.of - 1)) * 100)) : 0;
+    return '<span class="ca-ledger-bar ' + side + (ranked ? ' ' + rankTone(entry.rank, entry.of) : '') +
+      '"><i style="width:' + pct + '%"></i></span>';
   }
 
-  function cfbUnitPanel(sport, game, offSide, group) {
+  function cfbLedgerRow(label, left, right) {
+    return '<tr><td>' + esc(label) + '</td>' + cfbCell(left) +
+      '<td class="ca-ledger-bars" aria-hidden="true"><span class="ca-ledger-pair">' +
+      cfbBar(left, 'is-left') + cfbBar(right, 'is-right') + '</span></td>' +
+      cfbCell(right, 'ca-ledger-right') + '</tr>';
+  }
+
+  function cfbLedgerTable(left, right, groups) {
+    function head(name, unit, cls) {
+      return '<th class="num' + cls + '"><span class="ca-ledger-school">' + esc(name) + '</span>' +
+        esc(unit) + '</th>';
+    }
+    return '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-cfb-ledger-table">' +
+      '<colgroup><col class="ca-ledger-col-stat"><col class="ca-ledger-col-val">' +
+      '<col class="ca-ledger-col-bars"><col class="ca-ledger-col-val"></colgroup>' +
+      '<thead><tr><th>Stat</th>' + head(left[0], left[1], '') +
+      '<th class="ca-ledger-bars" aria-hidden="true"></th>' +
+      head(right[0], right[1], ' ca-ledger-right') + '</tr></thead><tbody>' +
+      groups.map(function (g) {
+        if (!g.rows.length) return '';
+        return (g.title ? '<tr class="ca-ledger-group"><th colspan="4">' + esc(g.title) + '</th></tr>' : '') +
+          g.rows.join('');
+      }).join('') + '</tbody></table></div>';
+  }
+
+  // A row prints in both directions when either has it, so the two panels
+  // keep the same rows and line up; the side without it reads "Not Rated".
+  function cfbLedgerShown(game, spec) {
+    return ['away', 'home'].some(function (side) {
+      var rates = cfbFeed(game, side, spec[0]);
+      return ['off_', 'def_'].some(function (p) {
+        return rates[p + spec[1]] && rates[p + spec[1]].value != null;
+      });
+    });
+  }
+
+  function cfbSchemeLine(sport, game, offSide, defSide) {
+    var off = (game[offSide + '_scheme_profile'] || {}).offense_scheme || {};
+    var def = (game[defSide + '_scheme_profile'] || {}).defense_scheme || {};
+    var line = [off.family ? cfbName(sport, game, offSide) + ' ' + off.family : null,
+      def.front ? cfbName(sport, game, defSide) + ' ' + def.front : null].filter(Boolean).join(' vs ');
+    return line ? '<p class="ca-lineup-context">' + esc(line) + '</p>' : '';
+  }
+
+  function cfbLedgerPanel(sport, game, offSide, area) {
     var defSide = offSide === 'away' ? 'home' : 'away';
     var offName = cfbName(sport, game, offSide), defName = cfbName(sport, game, defSide);
-    var names = CFB_UNIT_NAMES[group];
-    var off = cfbRates(game, offSide), def = cfbRates(game, defSide);
-    var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' +
-      esc(offName + ' ' + names[0] + ' vs ' + defName + ' ' + names[1]) + '</h3>';
-    if (!Object.keys(off).length && !Object.keys(def).length) {
+    var units = CFB_LEDGER_UNITS[area];
+    var head = '<section class="ca-form-panel ca-cfb-panel ca-cfb-ledger"><h3>' +
+      esc(offName + ' ' + units[0] + ' vs ' + defName + ' ' + units[1]) + '</h3>';
+    var groups = CFB_LEDGER[area].map(function (group) {
+      return {
+        title: group[0],
+        rows: group[1].filter(function (spec) { return cfbLedgerShown(game, spec); }).map(function (spec) {
+          return cfbLedgerRow(spec[2], cfbFeed(game, offSide, spec[0])['off_' + spec[1]],
+            cfbFeed(game, defSide, spec[0])['def_' + spec[1]]);
+        })
+      };
+    });
+    if (!groups.some(function (g) { return g.rows.length; })) {
       return head + pending('Unit rates are not published for this pairing yet.') + '</section>';
     }
-    var cols = CFB_UNIT_COLUMNS[group];
-    function row(label, rates, prefix) {
-      return cfbRow(label, rates, function () {
-        return cols.map(function (col) { return cfbCell(rates[prefix + col[0]]); }).join('');
-      }, cols.length);
-    }
     return head + cfbSample(sport, game, [offSide, defSide]) +
-      nflSplitTable(cols.map(function (c) { return c[1]; }), [
-        row(offName + ' ' + names[0], off, 'off_'),
-        row(defName + ' ' + names[1], def, 'def_')
-      ]) + (group === 'efficiency' ? cfbModelEfficiency(sport, game, offSide) : '') + '</section>';
+      (area === 'passing' ? cfbSchemeLine(sport, game, offSide, defSide) : '') +
+      cfbLedgerTable([offName, 'Offense'], [defName, 'Defense'], groups) + '</section>';
   }
 
-  /* The CFB model's own inputs: opponent-adjusted per-play efficiency from
-     CFBD advanced stats (PPA, success rate, explosiveness, stuff rate), kept
-     apart from the box-score rates above. Shown whenever the model publishes
-     it for both clubs. */
-  var CFB_MODEL_COLUMNS = [['ppa', 'PPA/Play', 'ppa'], ['successRate', 'Success', 'pct'],
-    ['explosiveness', 'Explosive', 'num'], ['stuffRate', 'Stuffed', 'pct']];
-
-  function cfbModelRates(game, side) {
-    var form = game[side + '_model_form'] || {};
-    return form.rates || {};
-  }
-
-  function cfbModelEfficiency(sport, game, offSide) {
-    var defSide = offSide === 'away' ? 'home' : 'away';
-    var off = cfbModelRates(game, offSide), def = cfbModelRates(game, defSide);
-    if (!Object.keys(off).length || !Object.keys(def).length) return '';
-    function row(label, rates, prefix) {
-      return cfbRow(label, rates, function () {
-        return CFB_MODEL_COLUMNS.map(function (col) { return cfbCell(rates[prefix + col[0]]); }).join('');
-      }, CFB_MODEL_COLUMNS.length);
-    }
-    return '<div class="ca-split-block"><h4>Model Efficiency</h4>' +
-      nflSplitTable(CFB_MODEL_COLUMNS.map(function (c) { return c[1]; }), [
-        row(cfbName(sport, game, offSide) + ' Offense', off, 'off_'),
-        row(cfbName(sport, game, defSide) + ' Defense', def, 'def_')
-      ]) + '</div>';
+  /* School against school on the same figure (SP+, special teams): the same
+     ledger, the away school on the left and the home school on the right. */
+  function cfbHeadToHead(sport, game, title, context, rows) {
+    var head = '<section class="ca-form-panel ca-cfb-panel ca-cfb-ledger ca-cfb-h2h"><h3>' +
+      esc(title) + '</h3>' + context;
+    var shown = rows.filter(function (r) { return r[1] || r[2]; });
+    if (!shown.length) return head + pending('Ratings are not published for this pairing yet.') + '</section>';
+    return head + cfbLedgerTable([cfbName(sport, game, 'away'), 'Away'],
+      [cfbName(sport, game, 'home'), 'Home'],
+      [{ title: '', rows: shown.map(function (r) { return cfbLedgerRow(r[0], r[1], r[2]); }) }]) +
+      '</section>';
   }
 
   function cfbSpecialBody(sport, game) {
     var away = cfbRates(game, 'away'), home = cfbRates(game, 'home');
-    var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' +
-      esc(cfbName(sport, game, 'away') + ' vs ' + cfbName(sport, game, 'home') + ' Special Teams') +
-      '</h3>';
-    if (!Object.keys(away).length && !Object.keys(home).length) {
-      return head + pending('Unit rates are not published for this pairing yet.') + '</section>';
-    }
-    function row(side, rates) {
-      return cfbRow(cfbName(sport, game, side), rates, function () {
-        return CFB_SPECIAL.map(function (col) { return cfbCell(rates[col[0]]); }).join('');
-      }, CFB_SPECIAL.length);
-    }
-    return '<div class="ca-detail-stack-inner">' + head + cfbSample(sport, game, ['away', 'home']) +
-      nflSplitTable(CFB_SPECIAL.map(function (c) { return c[1]; }),
-        [row('away', away), row('home', home)], 'Club') + '</section></div>';
-  }
-
-  function cfbCoverageBody(sport, game) {
-    return '<div class="ca-detail-stack-inner ca-cfb-coverage-stack">' +
-      cfbUnitPanel(sport, game, 'away', 'coverage') +
-      cfbUnitPanel(sport, game, 'home', 'coverage') + '</div>';
+    return cfbHeadToHead(sport, game,
+      cfbName(sport, game, 'away') + ' vs ' + cfbName(sport, game, 'home') + ' Special Teams',
+      cfbSample(sport, game, ['away', 'home']),
+      CFB_SPECIAL.map(function (col) { return [col[1], away[col[0]], home[col[0]]]; }));
   }
 
   function cfbDvoaBody(sport, game) {
-    var rows = [
-      ['overall', 'Overall SP+'], ['offense', 'Offense SP+'],
-      ['defense', 'Defense SP+'], ['special_teams', 'Special Teams SP+']
-    ];
-    function shown(key, entry) {
-      var value = Number(entry && entry.value);
-      if (!isFinite(value)) return null;
-      return ((key === 'overall' || key === 'special_teams') && value > 0 ? '+' : '') +
-        value.toFixed(1);
+    var away = game.away_adjusted_efficiency || {}, home = game.home_adjusted_efficiency || {};
+    var feed = away.source ? away : home;
+    var context = [feed.season, feed.source, feed.method].filter(Boolean).join(' · ');
+    function entry(f, key) {
+      var e = f[key];
+      if (!e || !isFinite(Number(e.value))) return null;
+      return { value: e.value, rank: e.rank, of: e.of, label: e.label || key,
+        format: key === 'overall' || key === 'special_teams' ? 'signed' : 'num' };
     }
-    function panel(side) {
-      var name = cfbName(sport, game, side);
-      var feed = game[side + '_adjusted_efficiency'] || {};
-      var context = [feed.season, feed.source, feed.method].filter(Boolean).join(' · ');
-      var body = rows.map(function (row) {
-        var entry = feed[row[0]] || {};
-        var value = shown(row[0], entry);
-        var place = entry.rank && entry.of ? { rank: entry.rank, of: entry.of } : null;
-        var tone = place ? rankTone(place.rank, place.of) : '';
-        return '<tr><td>' + esc(row[1]) + '</td><td class="num' + (tone ? ' ' + tone : '') + '">' +
-          (value == null ? '<span class="ca-vs-none">Not Rated</span>' : esc(value)) +
-          (place ? rankBadge(place) : '') + '</td></tr>';
-      });
-      return '<section class="ca-form-panel ca-cfb-panel ca-cfb-feed-panel"><h3>' +
-        esc(name + ' DVOA Equivalent') + '</h3><p class="ca-lineup-context">' +
-        esc(context || 'Opponent-adjusted ratings are not available') + '</p>' +
-        nflSplitTable(['Rating'], body, 'Unit') + '</section>';
-    }
-    return '<div class="ca-detail-duo ca-nfl-duo">' + panel('away') + panel('home') + '</div>';
+    return cfbHeadToHead(sport, game,
+      cfbName(sport, game, 'away') + ' vs ' + cfbName(sport, game, 'home') + ' SP+',
+      '<p class="ca-lineup-context">' + esc(context || 'Opponent-adjusted ratings are not available') +
+        '</p>',
+      CFB_SP_PLUS.map(function (row) { return [row[1], entry(away, row[0]), entry(home, row[0])]; }));
   }
 
-  /* ---- CFBD depth (scripts/cfb_depth.py), 2026-10-01 ------------------
-     Run game by level and both lines, scheme tendencies as measured rates,
-     quarterbacks beside the defense they meet, ball carriers and game logs.
-     Every figure is ranked of FBS. */
-  var CFB_RUN_LEVEL = [['rush_ppa', 'EPA/Rush'], ['rush_success', 'Success'],
-    ['rush_explosiveness', 'Explosive'], ['open_field_yards', 'Open Field']];
-  var CFB_LINE_PLAY = [['line_yards', 'Line Yds'], ['second_level_yards', '2nd Level'],
-    ['power_success', 'Power'], ['stuff_rate', 'Stuffed'], ['havoc_front_seven', 'Front-7 Havoc']];
-  var CFB_TENDENCY = [['pass_rate', 'Pass Rate'], ['passing_down_rate', 'Passing Downs'],
-    ['pass_ppa', 'EPA/Pass'], ['pass_success', 'Pass Success'], ['field_position', 'Start (Own)']];
-  var CFB_DOWNS = [['success_rate', 'Success'], ['standard_down_success', 'Standard Dn'],
-    ['passing_down_success', 'Passing Dn'], ['explosiveness', 'Explosive']];
-  var CFB_HAVOC = [['havoc_total', 'Havoc'], ['havoc_db', 'DB Havoc'],
-    ['points_per_opportunity', 'Pts/Opp']];
-
-  function cfbRateTable(sport, game, offSide, key, cols, names, title) {
-    var defSide = offSide === 'away' ? 'home' : 'away';
-    var off = ((game[offSide + key] || {}).rates) || {}, def = ((game[defSide + key] || {}).rates) || {};
-    if (!Object.keys(off).length && !Object.keys(def).length) return '';
-    function row(label, rates, prefix) {
-      return cfbRow(label, rates, function () {
-        return cols.map(function (col) { return cfbCell(rates[prefix + col[0]]); }).join('');
-      }, cols.length);
-    }
-    return '<div class="ca-split-block"><h4>' + esc(title) + '</h4>' +
-      nflSplitTable(cols.map(function (c) { return c[1]; }), [
-        row(cfbName(sport, game, offSide) + ' ' + names[0], off, 'off_'),
-        row(cfbName(sport, game, defSide) + ' ' + names[1], def, 'def_')
-      ]) + '</div>';
+  /* College headshots (2026-10-03): ESPN publishes a portrait for most FBS
+     players under the athlete id the slate already carries. A missing one
+     answers 404, so the image falls back to the player's initials. */
+  function cfbHeadshotUrl(id) {
+    return id ? 'https://a.espncdn.com/combiner/i?img=/i/headshots/college-football/players/full/' +
+      encodeURIComponent(id) + '.png&w=96&h=96' : '';
   }
 
-  function cfbRunGamePanel(sport, game, offSide) {
-    var defSide = offSide === 'away' ? 'home' : 'away';
-    var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' +
-      esc(cfbName(sport, game, offSide) + ' Run Game vs ' + cfbName(sport, game, defSide) +
-        ' Front') + '</h3>';
-    var body = cfbRateTable(sport, game, offSide, '_run_game', CFB_RUN_LEVEL,
-        ['Offense', 'Defense'], 'Run Game By Level') +
-      cfbRateTable(sport, game, offSide, '_run_game', CFB_LINE_PLAY,
-        ['OL', 'DL'], 'Offensive Line Vs Defensive Line');
-    return head + (body || pending('Run game charting is not published for this pairing yet.')) +
-      '</section>';
+  function cfbInitials(name) {
+    return '<span class="ca-cfb-player__shot is-initials" aria-hidden="true">' +
+      esc(initials(name)) + '</span>';
   }
 
-  function cfbSchemeStatsPanel(sport, game, offSide) {
-    var defSide = offSide === 'away' ? 'home' : 'away';
-    var profile = game[offSide + '_scheme_profile'] || {};
-    var defProfile = game[defSide + '_scheme_profile'] || {};
-    var family = [(profile.offense_scheme || {}).family, (defProfile.defense_scheme || {}).front ?
-      cfbName(sport, game, defSide) + ' ' + defProfile.defense_scheme.front : null]
-      .filter(Boolean).join(' vs ');
-    var head = '<section class="ca-form-panel ca-cfb-panel ca-cfb-scheme-panel"><h3>' +
-      esc(cfbName(sport, game, offSide) + ' Offense vs ' + cfbName(sport, game, defSide) +
-        ' Defense') + '</h3>' + (family ? '<p class="ca-lineup-context">' + esc(family) + '</p>' : '');
-    var body = cfbRateTable(sport, game, offSide, '_scheme_stats', CFB_TENDENCY,
-        ['Offense', 'Defense'], 'Tendencies And Pass Game') +
-      cfbRateTable(sport, game, offSide, '_scheme_stats', CFB_DOWNS,
-        ['Offense', 'Defense'], 'Success By Down') +
-      cfbRateTable(sport, game, offSide, '_scheme_stats', CFB_HAVOC,
-        ['Offense', 'Defense'], 'Havoc And Finishing');
-    return head + (body || pending('Scheme rates are not published for this pairing yet.')) +
-      '</section>';
+  function cfbPlayerCell(player, position, volume) {
+    var url = cfbHeadshotUrl(player.player_id);
+    var shot = url
+      ? '<img class="ca-cfb-player__shot" src="' + esc(url) + '" alt="" width="40" height="40" ' +
+        'loading="lazy" decoding="async" data-initials="' + esc(initials(player.player_name)) + '">'
+      : cfbInitials(player.player_name);
+    return '<td><span class="ca-cfb-player">' + shot + '<span class="ca-cfb-player__id">' +
+      esc(player.player_name) + ' <span class="ca-lineup-player__position">' + esc(position) +
+      '</span><small class="ca-qb-volume">' + esc(volume) + '</small></span></span></td>';
   }
+
+  // A portrait ESPN does not have swaps for the initials in place.
+  function cfbHeadshotFallback(event) {
+    var img = event.target;
+    if (!img || img.tagName !== 'IMG' || !img.classList.contains('ca-cfb-player__shot')) return;
+    var span = document.createElement('span');
+    span.className = 'ca-cfb-player__shot is-initials';
+    span.setAttribute('aria-hidden', 'true');
+    span.textContent = img.getAttribute('data-initials') || '';
+    img.replaceWith(span);
+  }
+  document.addEventListener('error', cfbHeadshotFallback, true);
 
   // One passer against the defense he meets: his season line, then EPA per
   // play on each split beside what that defense allows on the same split.
@@ -6118,8 +6124,7 @@ function seasonToggle(game) {
     if (!qbs.length) return head + pending('Quarterback lines are not published yet.') + '</section>';
     var lineRows = qbs.map(function (q) {
       var line = q.line || {};
-      return '<tr><td>' + esc(q.player_name) + ' <span class="ca-lineup-player__position">QB</span>' +
-        '<small class="ca-qb-volume">' + esc(line.completions + '/' + line.attempts) + '</small></td>' +
+      return '<tr>' + cfbPlayerCell(q, 'QB', line.completions + '/' + line.attempts) +
         CFB_QB_LINE.map(function (c) {
           return line[c[0]] ? cfbCell(line[c[0]]) : '<td class="num ca-vs-none">Not Rated</td>';
         }).join('') + '</tr>';
@@ -6128,16 +6133,14 @@ function seasonToggle(game) {
     var splitRows = CFB_QB_SPLITS.filter(function (sp) {
       return (lead.epa_splits || {})[sp[0]] && defense[sp[0]];
     }).map(function (sp) {
-      var own = (lead.epa_splits || {})[sp[0]], opp = defense[sp[0]];
-      return '<tr><td>' + esc(sp[1]) + '</td>' +
-        (own ? cfbCell(own) : '<td class="num ca-vs-none">Not Rated</td>') +
-        (opp ? cfbCell(opp) : '<td class="num ca-vs-none">Not Charted</td>') + '</tr>';
+      return cfbLedgerRow(sp[1], (lead.epa_splits || {})[sp[0]], defense[sp[0]]);
     });
     return head + '<div class="ca-split-block"><h4>Season Line</h4>' +
       nflSplitTable(CFB_QB_LINE.map(function (c) { return c[1]; }), lineRows, 'Passer') + '</div>' +
       (splitRows.length ? '<div class="ca-split-block"><h4>' + esc(lead.player_name +
         ' EPA Per Play vs ' + defName + ' Allowed') + '</h4>' +
-        nflSplitTable([lead.player_name, defName + ' Allows'], splitRows, 'Situation') + '</div>' : '') +
+        cfbLedgerTable([lead.player_name, 'EPA/Play'], [defName, 'Allows'],
+          [{ title: '', rows: splitRows }]) + '</div>' : '') +
       '</section>';
   }
 
@@ -6150,9 +6153,8 @@ function seasonToggle(game) {
       esc(cfbName(sport, game, side) + ' Ball Carriers') + '</h3>';
     if (!list.length) return head + pending('Rushing lines are not published yet.') + '</section>';
     var rows = list.map(function (r) {
-      return '<tr><td>' + esc(r.player_name) + ' <span class="ca-lineup-player__position">' +
-        esc(r.position || '') + '</span><small class="ca-qb-volume">' + esc(r.carries + ' car') +
-        '</small></td>' + CFB_RUSHER_COLS.map(function (c) {
+      return '<tr>' + cfbPlayerCell(r, r.position || '', r.carries + ' car') +
+        CFB_RUSHER_COLS.map(function (c) {
           return r[c[0]] ? cfbCell(r[c[0]]) : '<td class="num ca-vs-none">Not Rated</td>';
         }).join('') + '</tr>';
     });
@@ -6266,10 +6268,8 @@ function seasonToggle(game) {
 
   function cfbSections(sport, game) {
     return [
-      section('cfb-efficiency', 'Efficiency And Pace', 'Per-Play Production, Possession Rate And Tempo',
-        nflDuo(cfbUnitPanel, sport, game, 'efficiency')),
-      section('cfb-units', 'Unit Matchups', 'Each Offense Above The Defense It Meets',
-        nflDuo(cfbUnitPanel, sport, game, 'units')),
+      section('cfb-efficiency', 'Efficiency', 'Scoring, Yardage And Per-Play Production',
+        nflDuo(cfbLedgerPanel, sport, game, 'efficiency')),
       section('cfb-dvoa', 'DVOA Equivalent', 'SP+ Opponent-Adjusted Efficiency By Unit',
         cfbDvoaBody(sport, game)),
       section('cfb-game-log', 'Game Log', 'Every Game, Ranked Against That Week',
@@ -6280,27 +6280,14 @@ function seasonToggle(game) {
         nflDuo(cfbInjuryPanel, sport, game)),
       section('cfb-quarterbacks', 'Quarterbacks', 'Season Line And EPA By Situation, Beside The Defense',
         nflDuo(cfbQbPanel, sport, game)),
-      section('cfb-passing', 'Passing', 'Each Passing Offense Above The Pass Defense It Meets',
-        nflDuo(cfbUnitPanel, sport, game, 'passing')),
-      section('cfb-scheme', 'Scheme And Tendencies',
-        'Play Mix, Down Success And Havoc, Each Offense Above The Defense It Meets',
-        nflDuo(cfbSchemeStatsPanel, sport, game)),
-      section('cfb-coverage', 'Coverage Outcomes',
-        'Completion, Depth, Scoring, Ball Production And Pressure',
-        cfbCoverageBody(sport, game)),
-      section('cfb-rushing', 'Rushing', 'Each Run Game Above The Run Defense It Meets',
-        nflDuo(cfbUnitPanel, sport, game, 'rushing')),
-      section('cfb-run-game', 'Run Game And Line Play',
-        'By Level, And Each Offensive Line Against The Front It Meets',
-        nflDuo(cfbRunGamePanel, sport, game)),
+      section('cfb-passing', 'Pass Game', 'Efficiency, Volume, Scoring And Protection',
+        nflDuo(cfbLedgerPanel, sport, game, 'passing')),
+      section('cfb-rushing', 'Run Game', 'Efficiency, Volume And Line Play',
+        nflDuo(cfbLedgerPanel, sport, game, 'rushing')),
       section('cfb-rushers', 'Ball Carriers', 'Season Rushing Lines, Ranked Of FBS Rushers',
         nflDuo(cfbRushersPanel, sport, game)),
-      section('cfb-trenches', 'Offensive Line Vs Defensive Front',
-        'Protection, Sack Cost, Run Volume And Rushing Conversion',
-        nflDuo(cfbUnitPanel, sport, game, 'trenches')),
-      section('cfb-situational', 'Situational Efficiency',
-        'Down Conversion, First Downs, Pace And Play Mix',
-        nflDuo(cfbUnitPanel, sport, game, 'situational')),
+      section('cfb-situational', 'Situational', 'Downs, Tempo, Play Mix And Havoc',
+        nflDuo(cfbLedgerPanel, sport, game, 'situational')),
       section('cfb-special', 'Special Teams', 'Kicking, Returns And Penalties',
         cfbSpecialBody(sport, game)),
 

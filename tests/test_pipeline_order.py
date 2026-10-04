@@ -57,7 +57,7 @@ class PipelineOrderTests(unittest.TestCase):
         publisher = (ROOT / "outputs" / "publish_public_slate.py").read_text(encoding="utf-8")
         self.assertIn("GUARDED_EVIDENCE", publisher)
         self.assertIn("_lost_evidence", publisher)
-        self.assertIn('git pull --rebase origin "$TARGET_BRANCH"', yml)
+        self.assertIn('git pull --rebase -X theirs origin "$TARGET_BRANCH"', yml)
         self.assertIn('git push origin "HEAD:$TARGET_BRANCH"', yml)
 
 
@@ -75,7 +75,11 @@ class DeployReachesTheSiteTests(unittest.TestCase):
         self.assertIn("workflow_run:", yml)
         # The CFB slate publisher commits with GITHUB_TOKEN too, so it needs
         # the same trigger.
-        self.assertIn('workflows: ["Run MLBMA Pipeline", "Publish CFB Slate"]', yml)
+        self.assertIn('workflows: ["Run MLBMA Pipeline", "Publish CFB Slate", "Publish MLB Slate", '
+                      '"Publish NFL Slate"]', yml)
+        nfl = (ROOT / ".github" / "workflows" / "publish-nfl-slate.yml").read_text(encoding="utf-8")
+        self.assertIn("name: Publish NFL Slate", nfl)
+        self.assertIn("--nfl-only", nfl)
         cfb = (ROOT / ".github" / "workflows" / "publish-cfb-slate.yml").read_text(encoding="utf-8")
         self.assertIn("name: Publish CFB Slate", cfb)
         # And a failed pipeline must not ship.

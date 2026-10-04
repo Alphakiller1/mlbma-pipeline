@@ -120,6 +120,17 @@ class PublicModelBoundaryTests(unittest.TestCase):
             self.assertIn(f"{sport}:", board_api)
         self.assertIn("github.io", board_api)
 
+    def test_cfb_cards_state_facts_not_the_model(self):
+        # Owner 2026-10-01: CFB cards carry records, conference, site and each school's
+        # lead QB; the model's projections, margins and edges live in Model Center.
+        js = (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8")
+        cfb = js[js.index("function cfbHeadshotUrl"):js.index("function cardHtml")]
+        for leak in ("proj_away", "proj_home", "edge_points", "raw_model_margin", "market_margin",
+                     "Projected points", "model_regime"):
+            self.assertNotIn(leak, cfb)
+        self.assertIn("_qbs'", cfb)
+        self.assertIn("college-football/players/full/", cfb)
+
     def test_research_lab_has_no_public_compare_tab(self):
         opening = (ROOT / "index.html").read_text(encoding="utf-8")
         self.assertNotIn("Research Lab", opening)

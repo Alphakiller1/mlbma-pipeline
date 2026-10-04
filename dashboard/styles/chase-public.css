@@ -5536,21 +5536,89 @@ body[data-sport="nfl"] .ca-detail-nav {
    Defense"), which needs a wider label track than the NFL's nicknames. */
 .ca-cfb-panel .ca-lineup-table.ca-split-table thead th:first-child { width: 14rem; }
 .ca-cfb-panel .ca-lineup-table td:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ca-cfb-coverage-stack .ca-lineup-table.ca-split-table thead th:first-child { width: 18rem; }
 .ca-cfb-panel td[colspan] { text-align: center; }
-/* Up to seven columns with pills: the CFB unit panels stack full width
-   below 1700px (the club switch reads one school at a time under 1380px, as
-   on the NFL desk) and values never wrap under their pill. */
+/* Values never wrap under their pill. */
 .ca-cfb-panel td.num { white-space: nowrap; }
-.ca-cfb-feed-panel .ca-vs-none { color: var(--text-meta); }
-@media (max-width: 1699px) {
-  #cfb-efficiency .ca-detail-duo,
-  #cfb-units .ca-detail-duo,
-  #cfb-dvoa .ca-detail-duo,
-  #cfb-passing .ca-detail-duo,
-  #cfb-rushing .ca-detail-duo,
-  #cfb-trenches .ca-detail-duo,
-  #cfb-situational .ca-detail-duo { grid-template-columns: minmax(0, 1fr); }
+
+/* ====================================================================
+ * CFB MATCHUP LEDGER - 2026-10-03 (owner: compare stats better and more
+ * congruently). Every unit comparison is one four-column table: stat, the
+ * offense (or away school) with its FBS rank, two bars drawn out from the
+ * centre to each side's FBS place, the defense (or home school). The two
+ * directions sit side by side with identical rows, so a stat reads across
+ * both panels on one line. Bars take the grade colour of their figure.
+ * ================================================================== */
+/* Fixed columns that fit the panel: the generic lineup table's 560px floor
+   would push a phone panel into a side scroll. */
+.ca-cfb-ledger-table { table-layout: fixed; width: 100%; min-width: 0; }
+.ca-cfb-ledger-table .ca-ledger-col-stat { width: 28%; }
+.ca-cfb-ledger-table .ca-ledger-col-val { width: 24%; }
+.ca-cfb-ledger-table .ca-ledger-col-bars { width: 24%; }
+.ca-cfb-panel .ca-cfb-ledger-table thead th:first-child { width: auto; }
+.ca-cfb-ledger-table thead th { vertical-align: bottom; }
+.ca-cfb-ledger-table tbody tr,
+.ca-cfb-ledger-table tbody tr:nth-child(even) { background: none; }
+.ca-cfb-ledger-table tbody tr:not(.ca-ledger-group):hover { background: var(--surface-raised); }
+.ca-cfb-ledger-table th.num.ca-ledger-right,
+.ca-cfb-ledger-table td.num.ca-ledger-right { text-align: left; }
+.ca-cfb-ledger-table td.num.ca-ledger-right .ca-rank { margin-left: 3px; }
+.ca-ledger-school {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+.ca-cfb-ledger-table tr.ca-ledger-group th {
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--border-subtle);
+  background: none;
+  text-align: left;
+  font-family: var(--font-display);
+  font-size: var(--type-caps);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-meta);
+}
+.ca-cfb-ledger-table tbody tr.ca-ledger-group:first-child th { padding-top: var(--space-2); }
+.ca-cfb-ledger-table .ca-ledger-bars { padding-left: var(--space-2); padding-right: var(--space-2); }
+.ca-ledger-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  align-items: center;
+}
+.ca-ledger-bar {
+  display: flex;
+  height: 8px;
+  overflow: hidden;
+  background: var(--surface-well);
+  border-color: transparent;
+}
+.ca-ledger-bar.is-left { justify-content: flex-end; border-radius: var(--radius-pill) 0 0 var(--radius-pill); }
+.ca-ledger-bar.is-right { border-radius: 0 var(--radius-pill) var(--radius-pill) 0; }
+.ca-ledger-bar i {
+  display: block;
+  height: 100%;
+  background: var(--grade, var(--text-muted));
+}
+/* A school-against-school ledger (SP+, special teams) is one table, set at
+   the width of one side of a pair so it reads like the panels around it. */
+@media (min-width: 1380px) {
+  .ca-cfb-h2h { width: calc(50% - var(--space-2)); margin-left: auto; margin-right: auto; }
+}
+@media (max-width: 720px) {
+  .ca-cfb-ledger-table .ca-ledger-col-stat { width: 32%; }
+  .ca-cfb-ledger-table .ca-ledger-col-val { width: 25%; }
+  .ca-cfb-ledger-table .ca-ledger-col-bars { width: 18%; }
+  .ca-cfb-panel .ca-cfb-ledger-table tbody td:first-child { white-space: normal; overflow: visible; }
+  /* The panel title names both schools; the column heads keep the unit. */
+  .ca-ledger-school { display: none; }
+  .ca-cfb-ledger-table th,
+  .ca-cfb-ledger-table td { padding-left: var(--space-1); padding-right: var(--space-1); }
+  .ca-cfb-ledger-table td.num .ca-rank { display: block; width: max-content; margin: 2px 0 0 auto; }
+  .ca-cfb-ledger-table td.num.ca-ledger-right .ca-rank { margin: 2px 0 0; }
 }
 
 /* ====================================================================
@@ -5611,3 +5679,53 @@ body[data-sport="nfl"] .ca-detail-nav {
 
 /* CFB QB and ball-carrier rows: the volume behind the line, under the name. */
 .ca-qb-volume { display: block; color: var(--text-muted); font-size: var(--type-meta); font-variant-numeric: tabular-nums; }
+
+/* ====================================================================
+ * CFB PLAYER HEADSHOTS - 2026-10-03. Quarterback and ball-carrier rows
+ * lead with the player's ESPN portrait (initials where ESPN has none).
+ * ================================================================== */
+.ca-cfb-player {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.ca-cfb-player__shot {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-raised);
+  object-fit: cover;
+  object-position: center top;
+}
+.ca-cfb-player__shot.is-initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: var(--type-caps);
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+.ca-cfb-player__id {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ca-cfb-panel .ca-lineup-table.ca-split-table thead th:first-child { width: 16.5rem; }
+@media (max-width: 720px) {
+  .ca-cfb-player__shot { width: 32px; height: 32px; }
+}
+
+/* CFB card quarterbacks (2026-10-03): a portrait ESPN does not have reads as
+   the player's initials in the same circle. */
+.ca-matchup-card__shot--empty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: var(--type-caps);
+  font-weight: 800;
+  color: var(--text-secondary);
+}
