@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-04T15:25:08Z",
-  "data_through_utc": "2026-10-04T15:25:08Z",
+  "generated_at_utc": "2026-10-04T16:54:45Z",
+  "data_through_utc": "2026-10-04T16:54:45Z",
   "games": [
     {
       "id": "849825",
@@ -19,6 +19,10 @@
       "venue": "American Family Field",
       "venue_city": "Milwaukee, WI",
       "broadcast": "FS1 / FOX ONE, Fox Deportes / FOX ONE",
+      "conditions": "69\u00b0 \u00b7 Roof Closed \u00b7 0 mph, None",
+      "weather_temp": "69",
+      "weather_cond": "Roof Closed",
+      "weather_wind": "0 mph, None",
       "away_starter": "Michael King",
       "home_starter": "Logan Henderson",
       "away_starter_id": 650633,
@@ -27,8 +31,120 @@
       "home_hand": "R",
       "away_era": "3.21",
       "home_era": "2.47",
-      "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
+      "away_lineup_state": "Confirmed",
+      "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 665487,
+          "name": "Fernando Tatis Jr.",
+          "position": "RF"
+        },
+        {
+          "slot": 2,
+          "person_id": 687957,
+          "name": "Dustin Harris",
+          "position": "LF"
+        },
+        {
+          "slot": 3,
+          "person_id": 592518,
+          "name": "Manny Machado",
+          "position": "3B"
+        },
+        {
+          "slot": 4,
+          "person_id": 664034,
+          "name": "Ty France",
+          "position": "1B"
+        },
+        {
+          "slot": 5,
+          "person_id": 701538,
+          "name": "Jackson Merrill",
+          "position": "CF"
+        },
+        {
+          "slot": 6,
+          "person_id": 806956,
+          "name": "Ethan Salas",
+          "position": "DH"
+        },
+        {
+          "slot": 7,
+          "person_id": 593428,
+          "name": "Xander Bogaerts",
+          "position": "SS"
+        },
+        {
+          "slot": 8,
+          "person_id": 669134,
+          "name": "Luis Campusano",
+          "position": "C"
+        },
+        {
+          "slot": 9,
+          "person_id": 630105,
+          "name": "Jake Cronenworth",
+          "position": "2B"
+        }
+      ],
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 694192,
+          "name": "Jackson Chourio",
+          "position": "LF"
+        },
+        {
+          "slot": 2,
+          "person_id": 668930,
+          "name": "Brice Turang",
+          "position": "2B"
+        },
+        {
+          "slot": 3,
+          "person_id": 641343,
+          "name": "Jake Bauers",
+          "position": "1B"
+        },
+        {
+          "slot": 4,
+          "person_id": 661388,
+          "name": "William Contreras",
+          "position": "C"
+        },
+        {
+          "slot": 5,
+          "person_id": 669003,
+          "name": "Garrett Mitchell",
+          "position": "CF"
+        },
+        {
+          "slot": 6,
+          "person_id": 592885,
+          "name": "Christian Yelich",
+          "position": "DH"
+        },
+        {
+          "slot": 7,
+          "person_id": 686217,
+          "name": "Sal Frelick",
+          "position": "RF"
+        },
+        {
+          "slot": 8,
+          "person_id": 806198,
+          "name": "Cooper Pratt",
+          "position": "SS"
+        },
+        {
+          "slot": 9,
+          "person_id": 666152,
+          "name": "David Hamilton",
+          "position": "3B"
+        }
+      ],
       "away_team_id": 135,
       "home_team_id": 158,
       "venue_id": 32,
@@ -40,6 +156,7 @@
       "sport": "mlb",
       "game_state": "scheduled",
       "kickoff_utc": "2026-10-05T00:00:00Z",
+      "kickoff_display": "8:00 PM ET",
       "game_pk": 849823,
       "away": "ATL",
       "home": "LAD",
