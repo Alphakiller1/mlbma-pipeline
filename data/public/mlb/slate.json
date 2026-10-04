@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-04T08:31:28Z",
-  "data_through_utc": "2026-10-04T08:31:28Z",
+  "generated_at_utc": "2026-10-04T15:25:08Z",
+  "data_through_utc": "2026-10-04T15:25:08Z",
   "games": [
     {
       "id": "849825",
@@ -18,7 +18,7 @@
       "home_record": "1-0",
       "venue": "American Family Field",
       "venue_city": "Milwaukee, WI",
-      "broadcast": "FS1/ FOX ONE, Fox Deportes / FOX ONE",
+      "broadcast": "FS1 / FOX ONE, Fox Deportes / FOX ONE",
       "away_starter": "Michael King",
       "home_starter": "Logan Henderson",
       "away_starter_id": 650633,
@@ -49,7 +49,7 @@
       "home_record": "1-0",
       "venue": "UNIQLO Field at Dodger Stadium",
       "venue_city": "Los Angeles, CA",
-      "broadcast": "FS1/ FOX ONE, Fox Deportes / FOX ONE",
+      "broadcast": "FS1 / FOX ONE, Fox Deportes / FOX ONE",
       "away_starter": "Chris Sale",
       "home_starter": "Blake Snell",
       "away_starter_id": 519242,
