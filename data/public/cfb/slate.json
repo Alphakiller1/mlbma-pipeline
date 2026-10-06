@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 6,
-  "generated_at_utc": "2026-10-05T22:35:01Z",
+  "generated_at_utc": "2026-10-06T18:31:09Z",
   "data_through_utc": "2026-10-05T22:09:20Z",
   "games": [
     {
@@ -206,7 +206,7 @@
             "label": "Sacks taken per game",
             "value": 2.25,
             "better": "low",
-            "rank": 95,
+            "rank": 96,
             "of": 138,
             "format": "num"
           },
@@ -693,7 +693,7 @@
             "label": "Passing TDs per game",
             "value": 1.75,
             "better": "high",
-            "rank": 59,
+            "rank": 60,
             "of": 138,
             "format": "num"
           },
@@ -725,7 +725,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 82,
+            "rank": 81,
             "of": 138,
             "format": "num"
           },
@@ -733,7 +733,7 @@
             "label": "Sacks per game",
             "value": 2.25,
             "better": "high",
-            "rank": 54,
+            "rank": 55,
             "of": 138,
             "format": "num"
           },
@@ -870,7 +870,7 @@
             "value": 0.2857,
             "better": "low",
             "format": "pct",
-            "rank": 77,
+            "rank": 76,
             "of": 138
           },
           "off_plays_pg": {
@@ -1006,7 +1006,7 @@
             "value": 0.0522,
             "better": "high",
             "format": "pct",
-            "rank": 76,
+            "rank": 77,
             "of": 138
           },
           "def_pass_td_rate": {
@@ -1054,7 +1054,7 @@
             "value": 0.0612,
             "better": "high",
             "format": "pct",
-            "rank": 44,
+            "rank": 43,
             "of": 138
           }
         },
@@ -2276,14 +2276,13 @@
             "return": "Oct 24th"
           },
           {
-            "player": "Robert Briggs",
+            "player": "R. Briggs",
             "position": "RB",
-            "status": "Probable",
+            "status": "Questionable",
             "injury": "Undisclosed",
-            "updated": "Oct 6 8:00 PM",
+            "updated": "Sun, Sep 27",
             "detail": "Briggs is dealing with an undisclosed injury, and it is yet to be established if he will suit up against Troy on Tuesday, October 6th.",
-            "source": "RotoWire + Covers",
-            "return": "Oct 6th"
+            "source": "Covers"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -4192,7 +4191,7 @@
             "value": 0.3184,
             "better": "high",
             "format": "pct",
-            "rank": 55,
+            "rank": 54,
             "of": 138
           },
           "def_first_down_rate": {
@@ -4368,7 +4367,7 @@
             "value": 32.75,
             "better": "neutral",
             "format": "num",
-            "rank": 62,
+            "rank": 61,
             "of": 138
           },
           "def_dropbacks_pg": {
@@ -6590,6 +6589,15 @@
             "updated": "Sun, Sep 27",
             "detail": "Bullock Jr. is nursing with an undisclosed injury, and it remains to be seen if he will be active against Jax State on Wednesday, October 7th.",
             "source": "Covers"
+          },
+          {
+            "player": "Zion Booker",
+            "position": "WR",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "return": "Oct 7th",
+            "updated": "Oct 7 7:00 PM",
+            "source": "RotoWire"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -6795,7 +6803,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 82,
+            "rank": 81,
             "of": 138,
             "format": "num"
           },
@@ -6916,7 +6924,7 @@
             "value": 5.9821,
             "better": "high",
             "format": "num",
-            "rank": 61,
+            "rank": 60,
             "of": 138
           },
           "def_yards_per_play": {
@@ -6996,7 +7004,7 @@
             "value": 13.6,
             "better": "low",
             "format": "num",
-            "rank": 92,
+            "rank": 93,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -7076,7 +7084,7 @@
             "value": 0.0545,
             "better": "high",
             "format": "pct",
-            "rank": 70,
+            "rank": 71,
             "of": 138
           },
           "def_pass_td_rate": {
@@ -7643,7 +7651,7 @@
             "value": 0.063,
             "better": "high",
             "format": "pct",
-            "rank": 39,
+            "rank": 38,
             "of": 138
           }
         },
@@ -10183,7 +10191,7 @@
             "label": "Sacks taken per game",
             "value": 2.25,
             "better": "low",
-            "rank": 95,
+            "rank": 96,
             "of": 138,
             "format": "num"
           },
@@ -10472,7 +10480,7 @@
             "value": 0.0732,
             "better": "low",
             "format": "pct",
-            "rank": 122,
+            "rank": 121,
             "of": 138
           },
           "off_interception_rate": {
@@ -10622,7 +10630,7 @@
             "label": "Passing yards per game",
             "value": 232.0,
             "better": "high",
-            "rank": 68,
+            "rank": 69,
             "of": 138,
             "format": "num"
           },
@@ -10678,7 +10686,7 @@
             "label": "Passing TDs allowed per game",
             "value": 2.2,
             "better": "low",
-            "rank": 123,
+            "rank": 122,
             "of": 138,
             "format": "num"
           },
@@ -13590,7 +13598,7 @@
             "label": "Sacks per game",
             "value": 2.25,
             "better": "high",
-            "rank": 54,
+            "rank": 55,
             "of": 138,
             "format": "num"
           },
@@ -13767,7 +13775,7 @@
             "value": 0.0679,
             "better": "low",
             "format": "pct",
-            "rank": 92,
+            "rank": 93,
             "of": 138
           },
           "def_sack_rate": {
@@ -13911,7 +13919,7 @@
             "value": 0.0586,
             "better": "high",
             "format": "pct",
-            "rank": 53,
+            "rank": 54,
             "of": 138
           }
         },
@@ -13947,9 +13955,9 @@
           },
           "def_ypg": {
             "label": "Yards allowed per game",
-            "value": 299.0,
+            "value": 301.4,
             "better": "low",
-            "rank": 31,
+            "rank": 32,
             "of": 138,
             "format": "num"
           },
@@ -14107,9 +14115,9 @@
           },
           "def_sacks": {
             "label": "Sacks per game",
-            "value": 2.0,
+            "value": 1.8,
             "better": "high",
-            "rank": 64,
+            "rank": 79,
             "of": 138,
             "format": "num"
           },
@@ -14123,9 +14131,9 @@
           },
           "def_ypc": {
             "label": "Yards per rush allowed",
-            "value": 4.052,
+            "value": 4.129,
             "better": "low",
-            "rank": 73,
+            "rank": 77,
             "of": 138,
             "format": "num"
           },
@@ -14139,9 +14147,9 @@
           },
           "def_rush_ypg": {
             "label": "Rushing yards allowed per game",
-            "value": 125.6,
+            "value": 128.0,
             "better": "low",
-            "rank": 53,
+            "rank": 56,
             "of": 138,
             "format": "num"
           },
@@ -14211,10 +14219,10 @@
           },
           "def_points_per_play": {
             "label": "Points allowed per defensive play",
-            "value": 0.2853,
+            "value": 0.2862,
             "better": "low",
             "format": "num",
-            "rank": 39,
+            "rank": 40,
             "of": 138
           },
           "off_yards_per_play": {
@@ -14227,10 +14235,10 @@
           },
           "def_yards_per_play": {
             "label": "Yards allowed per defensive play",
-            "value": 4.7917,
+            "value": 4.8457,
             "better": "low",
             "format": "num",
-            "rank": 47,
+            "rank": 49,
             "of": 138
           },
           "off_first_down_rate": {
@@ -14243,10 +14251,10 @@
           },
           "def_first_down_rate": {
             "label": "First downs allowed per defensive play",
-            "value": 0.2853,
+            "value": 0.2862,
             "better": "low",
             "format": "pct",
-            "rank": 76,
+            "rank": 77,
             "of": 138
           },
           "off_plays_pg": {
@@ -14259,10 +14267,10 @@
           },
           "def_plays_pg": {
             "label": "Defensive plays faced per game",
-            "value": 62.4,
+            "value": 62.2,
             "better": "neutral",
             "format": "num",
-            "rank": 108,
+            "rank": 109,
             "of": 138
           },
           "off_pass_rate": {
@@ -14275,7 +14283,7 @@
           },
           "def_pass_rate": {
             "label": "Opponent dropback share",
-            "value": 0.5032,
+            "value": 0.5016,
             "better": "neutral",
             "format": "pct",
             "rank": 47,
@@ -14291,10 +14299,10 @@
           },
           "def_sack_rate": {
             "label": "Sacks generated per opponent dropback",
-            "value": 0.0637,
+            "value": 0.0577,
             "better": "high",
             "format": "pct",
-            "rank": 68,
+            "rank": 81,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -14307,10 +14315,10 @@
           },
           "def_sack_yards_pg": {
             "label": "Opponent sack yards lost per game",
-            "value": 21.2,
+            "value": 20.0,
             "better": "high",
             "format": "num",
-            "rank": 15,
+            "rank": 22,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -14419,18 +14427,18 @@
           },
           "def_dropbacks_pg": {
             "label": "Opponent dropbacks per game",
-            "value": 31.4,
+            "value": 31.2,
             "better": "neutral",
             "format": "num",
-            "rank": 72,
+            "rank": 74,
             "of": 138
           },
           "def_disruption_rate": {
             "label": "Sacks plus takeaways per defensive play",
-            "value": 0.0641,
+            "value": 0.0611,
             "better": "high",
             "format": "pct",
-            "rank": 33,
+            "rank": 45,
             "of": 138
           }
         },
@@ -16818,7 +16826,7 @@
           },
           "def_ypg": {
             "label": "Yards allowed per game",
-            "value": 410.2,
+            "value": 411.6,
             "better": "low",
             "rank": 121,
             "of": 138,
@@ -16882,7 +16890,7 @@
           },
           "def_ypa": {
             "label": "Yards per pass allowed",
-            "value": 8.314,
+            "value": 8.364,
             "better": "low",
             "rank": 126,
             "of": 138,
@@ -16898,9 +16906,9 @@
           },
           "def_pass_ypg": {
             "label": "Passing yards allowed per game",
-            "value": 232.8,
+            "value": 234.2,
             "better": "low",
-            "rank": 105,
+            "rank": 106,
             "of": 138,
             "format": "num"
           },
@@ -16914,9 +16922,9 @@
           },
           "def_comp": {
             "label": "Completion rate allowed",
-            "value": 0.65,
+            "value": 0.6571,
             "better": "low",
-            "rank": 111,
+            "rank": 114,
             "of": 138,
             "format": "pct"
           },
@@ -16930,9 +16938,9 @@
           },
           "def_qbr": {
             "label": "Passer rating allowed",
-            "value": 152.695,
+            "value": 156.1862,
             "better": "low",
-            "rank": 122,
+            "rank": 126,
             "of": 138,
             "format": "num"
           },
@@ -16946,9 +16954,9 @@
           },
           "def_pass_td": {
             "label": "Passing TDs allowed per game",
-            "value": 2.0,
+            "value": 2.2,
             "better": "low",
-            "rank": 114,
+            "rank": 122,
             "of": 138,
             "format": "num"
           },
@@ -17098,7 +17106,7 @@
           },
           "def_yards_per_play": {
             "label": "Yards allowed per defensive play",
-            "value": 7.024,
+            "value": 7.0479,
             "better": "low",
             "format": "num",
             "rank": 135,
@@ -17157,7 +17165,7 @@
             "value": 0.0473,
             "better": "low",
             "format": "pct",
-            "rank": 59,
+            "rank": 58,
             "of": 138
           },
           "def_sack_rate": {
@@ -17242,10 +17250,10 @@
           },
           "def_yards_per_completion": {
             "label": "Yards allowed per completion",
-            "value": 12.7912,
+            "value": 12.7283,
             "better": "low",
             "format": "num",
-            "rank": 114,
+            "rank": 110,
             "of": 138
           },
           "off_pass_td_rate": {
@@ -17258,10 +17266,10 @@
           },
           "def_pass_td_rate": {
             "label": "Passing touchdowns allowed per attempt",
-            "value": 0.0714,
+            "value": 0.0786,
             "better": "low",
             "format": "pct",
-            "rank": 119,
+            "rank": 126,
             "of": 138
           },
           "off_interception_rate": {
@@ -20325,7 +20333,7 @@
             "label": "Sacks per game",
             "value": 1.8,
             "better": "high",
-            "rank": 80,
+            "rank": 79,
             "of": 138,
             "format": "num"
           },
@@ -20510,7 +20518,7 @@
             "value": 0.0647,
             "better": "high",
             "format": "pct",
-            "rank": 66,
+            "rank": 67,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -20804,7 +20812,7 @@
             "label": "Passing TDs per game",
             "value": 1.6,
             "better": "high",
-            "rank": 64,
+            "rank": 65,
             "of": 138,
             "format": "num"
           },
@@ -21117,7 +21125,7 @@
             "value": 0.0519,
             "better": "high",
             "format": "pct",
-            "rank": 77,
+            "rank": 78,
             "of": 138
           },
           "def_pass_td_rate": {
@@ -23620,7 +23628,7 @@
             "label": "Sacks taken per game",
             "value": 2.4,
             "better": "low",
-            "rank": 103,
+            "rank": 104,
             "of": 138,
             "format": "num"
           },
@@ -23893,7 +23901,7 @@
             "value": 12.7692,
             "better": "low",
             "format": "num",
-            "rank": 112,
+            "rank": 113,
             "of": 138
           },
           "off_pass_td_rate": {
@@ -23901,7 +23909,7 @@
             "value": 0.0508,
             "better": "high",
             "format": "pct",
-            "rank": 81,
+            "rank": 82,
             "of": 138
           },
           "def_pass_td_rate": {
@@ -24139,7 +24147,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 82,
+            "rank": 81,
             "of": 138,
             "format": "num"
           },
@@ -27370,7 +27378,7 @@
             "value": 0.0592,
             "better": "high",
             "format": "pct",
-            "rank": 50,
+            "rank": 51,
             "of": 138
           }
         },
@@ -27753,7 +27761,7 @@
             "value": 0.0641,
             "better": "high",
             "format": "pct",
-            "rank": 67,
+            "rank": 68,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -27881,7 +27889,7 @@
             "value": 31.2,
             "better": "neutral",
             "format": "num",
-            "rank": 75,
+            "rank": 74,
             "of": 138
           },
           "def_disruption_rate": {
@@ -27889,7 +27897,7 @@
             "value": 0.0576,
             "better": "high",
             "format": "pct",
-            "rank": 57,
+            "rank": 58,
             "of": 138
           }
         },
@@ -30435,7 +30443,7 @@
             "label": "Yards per rush attempt",
             "value": 4.1,
             "better": "high",
-            "rank": 93,
+            "rank": 94,
             "of": 138,
             "format": "num"
           },
@@ -30906,7 +30914,7 @@
             "label": "Passing TDs per game",
             "value": 1.6,
             "better": "high",
-            "rank": 64,
+            "rank": 65,
             "of": 138,
             "format": "num"
           },
@@ -31219,7 +31227,7 @@
             "value": 0.0516,
             "better": "high",
             "format": "pct",
-            "rank": 78,
+            "rank": 79,
             "of": 138
           },
           "def_pass_td_rate": {
@@ -34391,7 +34399,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 82,
+            "rank": 81,
             "of": 138,
             "format": "num"
           },
@@ -34528,7 +34536,7 @@
             "value": 0.2663,
             "better": "high",
             "format": "pct",
-            "rank": 121,
+            "rank": 122,
             "of": 138
           },
           "def_first_down_rate": {
@@ -37170,7 +37178,7 @@
             "label": "Passing TDs per game",
             "value": 1.6,
             "better": "high",
-            "rank": 64,
+            "rank": 65,
             "of": 138,
             "format": "num"
           },
@@ -37210,7 +37218,7 @@
             "label": "Sacks per game",
             "value": 1.8,
             "better": "high",
-            "rank": 80,
+            "rank": 79,
             "of": 138,
             "format": "num"
           },
@@ -37307,7 +37315,7 @@
             "value": 0.525,
             "better": "high",
             "format": "num",
-            "rank": 32,
+            "rank": 31,
             "of": 138
           },
           "def_points_per_play": {
@@ -37387,7 +37395,7 @@
             "value": 0.0465,
             "better": "low",
             "format": "pct",
-            "rank": 57,
+            "rank": 56,
             "of": 138
           },
           "def_sack_rate": {
@@ -37657,7 +37665,7 @@
             "label": "Completion rate",
             "value": 0.629,
             "better": "high",
-            "rank": 72,
+            "rank": 73,
             "of": 138,
             "format": "pct"
           },
@@ -37914,7 +37922,7 @@
             "value": 0.0588,
             "better": "high",
             "format": "pct",
-            "rank": 78,
+            "rank": 77,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -41056,7 +41064,7 @@
             "label": "Passing TDs per game",
             "value": 1.6,
             "better": "high",
-            "rank": 64,
+            "rank": 65,
             "of": 138,
             "format": "num"
           },
@@ -41064,7 +41072,7 @@
             "label": "Passing TDs allowed per game",
             "value": 2.2,
             "better": "low",
-            "rank": 123,
+            "rank": 122,
             "of": 138,
             "format": "num"
           },
@@ -47782,7 +47790,7 @@
             "label": "Completion rate",
             "value": 0.632,
             "better": "high",
-            "rank": 70,
+            "rank": 71,
             "of": 138,
             "format": "pct"
           },
@@ -48175,7 +48183,7 @@
             "value": 0.0637,
             "better": "high",
             "format": "pct",
-            "rank": 34,
+            "rank": 33,
             "of": 138
           }
         },
@@ -50731,7 +50739,7 @@
             "label": "Yards per rush allowed",
             "value": 4.088,
             "better": "low",
-            "rank": 75,
+            "rank": 74,
             "of": 138,
             "format": "num"
           },
@@ -51555,7 +51563,7 @@
             "value": 0.063,
             "better": "high",
             "format": "pct",
-            "rank": 38,
+            "rank": 37,
             "of": 138
           }
         },
@@ -54566,7 +54574,7 @@
             "label": "Passer rating",
             "value": 135.1533,
             "better": "high",
-            "rank": 85,
+            "rank": 86,
             "of": 138,
             "format": "num"
           },
@@ -57409,7 +57417,7 @@
             "label": "Sacks per game",
             "value": 2.2,
             "better": "high",
-            "rank": 57,
+            "rank": 58,
             "of": 138,
             "format": "num"
           },
@@ -57594,7 +57602,7 @@
             "value": 0.0604,
             "better": "high",
             "format": "pct",
-            "rank": 75,
+            "rank": 74,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -57730,7 +57738,7 @@
             "value": 0.0566,
             "better": "high",
             "format": "pct",
-            "rank": 59,
+            "rank": 60,
             "of": 138
           }
         },
@@ -60779,7 +60787,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 82,
+            "rank": 81,
             "of": 138,
             "format": "num"
           },
@@ -61060,7 +61068,7 @@
             "value": 0.0536,
             "better": "high",
             "format": "pct",
-            "rank": 71,
+            "rank": 72,
             "of": 138
           },
           "def_pass_td_rate": {
@@ -61304,9 +61312,9 @@
           },
           "def_sacks": {
             "label": "Sacks per game",
-            "value": 2.2,
+            "value": 2.4,
             "better": "high",
-            "rank": 57,
+            "rank": 45,
             "of": 138,
             "format": "num"
           },
@@ -61408,7 +61416,7 @@
           },
           "def_points_per_play": {
             "label": "Points allowed per defensive play",
-            "value": 0.2107,
+            "value": 0.21,
             "better": "low",
             "format": "num",
             "rank": 14,
@@ -61424,10 +61432,10 @@
           },
           "def_yards_per_play": {
             "label": "Yards allowed per defensive play",
-            "value": 4.6447,
+            "value": 4.6301,
             "better": "low",
             "format": "num",
-            "rank": 40,
+            "rank": 39,
             "of": 138
           },
           "off_first_down_rate": {
@@ -61440,7 +61448,7 @@
           },
           "def_first_down_rate": {
             "label": "First downs allowed per defensive play",
-            "value": 0.2421,
+            "value": 0.2414,
             "better": "low",
             "format": "pct",
             "rank": 18,
@@ -61456,10 +61464,10 @@
           },
           "def_plays_pg": {
             "label": "Defensive plays faced per game",
-            "value": 63.6,
+            "value": 63.8,
             "better": "neutral",
             "format": "num",
-            "rank": 93,
+            "rank": 92,
             "of": 138
           },
           "off_pass_rate": {
@@ -61472,7 +61480,7 @@
           },
           "def_pass_rate": {
             "label": "Opponent dropback share",
-            "value": 0.5692,
+            "value": 0.5705,
             "better": "neutral",
             "format": "pct",
             "rank": 7,
@@ -61488,10 +61496,10 @@
           },
           "def_sack_rate": {
             "label": "Sacks generated per opponent dropback",
-            "value": 0.0608,
+            "value": 0.0659,
             "better": "high",
             "format": "pct",
-            "rank": 73,
+            "rank": 66,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -61504,10 +61512,10 @@
           },
           "def_sack_yards_pg": {
             "label": "Opponent sack yards lost per game",
-            "value": 16.4,
+            "value": 16.6,
             "better": "high",
             "format": "num",
-            "rank": 45,
+            "rank": 44,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -61616,18 +61624,18 @@
           },
           "def_dropbacks_pg": {
             "label": "Opponent dropbacks per game",
-            "value": 36.2,
+            "value": 36.4,
             "better": "neutral",
             "format": "num",
-            "rank": 25,
+            "rank": 24,
             "of": 138
           },
           "def_disruption_rate": {
             "label": "Sacks plus takeaways per defensive play",
-            "value": 0.0566,
+            "value": 0.0596,
             "better": "high",
             "format": "pct",
-            "rank": 59,
+            "rank": 50,
             "of": 138
           }
         },
@@ -64248,7 +64256,7 @@
             "value": 4.6364,
             "better": "low",
             "format": "num",
-            "rank": 39,
+            "rank": 40,
             "of": 138
           },
           "off_first_down_rate": {
@@ -64823,7 +64831,7 @@
             "value": 0.0468,
             "better": "low",
             "format": "pct",
-            "rank": 58,
+            "rank": 57,
             "of": 138
           },
           "def_sack_rate": {
@@ -67436,7 +67444,7 @@
           },
           "off_ypg": {
             "label": "Yards per game",
-            "value": 295.2,
+            "value": 297.6,
             "better": "high",
             "rank": 130,
             "of": 138,
@@ -67558,7 +67566,7 @@
             "label": "Passer rating allowed",
             "value": 152.8605,
             "better": "low",
-            "rank": 123,
+            "rank": 122,
             "of": 138,
             "format": "num"
           },
@@ -67596,9 +67604,9 @@
           },
           "off_sacks": {
             "label": "Sacks taken per game",
-            "value": 2.4,
+            "value": 2.2,
             "better": "low",
-            "rank": 103,
+            "rank": 91,
             "of": 138,
             "format": "num"
           },
@@ -67612,9 +67620,9 @@
           },
           "off_ypc": {
             "label": "Yards per rush attempt",
-            "value": 4.1,
+            "value": 4.2,
             "better": "high",
-            "rank": 93,
+            "rank": 86,
             "of": 138,
             "format": "num"
           },
@@ -67628,9 +67636,9 @@
           },
           "off_rush_ypg": {
             "label": "Rushing yards per game",
-            "value": 121.0,
+            "value": 123.4,
             "better": "high",
-            "rank": 115,
+            "rank": 114,
             "of": 138,
             "format": "num"
           },
@@ -67700,7 +67708,7 @@
           },
           "off_points_per_play": {
             "label": "Points per offensive play",
-            "value": 0.3077,
+            "value": 0.3087,
             "better": "high",
             "format": "num",
             "rank": 113,
@@ -67716,10 +67724,10 @@
           },
           "off_yards_per_play": {
             "label": "Yards per offensive play",
-            "value": 4.7308,
+            "value": 4.7846,
             "better": "high",
             "format": "num",
-            "rank": 125,
+            "rank": 123,
             "of": 138
           },
           "def_yards_per_play": {
@@ -67732,10 +67740,10 @@
           },
           "off_first_down_rate": {
             "label": "First downs per offensive play",
-            "value": 0.266,
+            "value": 0.2669,
             "better": "high",
             "format": "pct",
-            "rank": 122,
+            "rank": 121,
             "of": 138
           },
           "def_first_down_rate": {
@@ -67748,7 +67756,7 @@
           },
           "off_plays_pg": {
             "label": "Offensive plays per game",
-            "value": 62.4,
+            "value": 62.2,
             "better": "neutral",
             "format": "num",
             "rank": 118,
@@ -67764,7 +67772,7 @@
           },
           "off_pass_rate": {
             "label": "Dropback share",
-            "value": 0.5256,
+            "value": 0.5241,
             "better": "neutral",
             "format": "pct",
             "rank": 23,
@@ -67780,10 +67788,10 @@
           },
           "off_sack_rate": {
             "label": "Sacks allowed per dropback",
-            "value": 0.0732,
+            "value": 0.0675,
             "better": "low",
             "format": "pct",
-            "rank": 102,
+            "rank": 92,
             "of": 138
           },
           "def_sack_rate": {
@@ -67796,10 +67804,10 @@
           },
           "off_sack_yards_pg": {
             "label": "Sack yards lost per game",
-            "value": 13.6,
+            "value": 12.4,
             "better": "low",
             "format": "num",
-            "rank": 92,
+            "rank": 86,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -67887,7 +67895,7 @@
             "value": 0.0764,
             "better": "low",
             "format": "pct",
-            "rank": 126,
+            "rank": 125,
             "of": 138
           },
           "off_interception_rate": {
@@ -67908,10 +67916,10 @@
           },
           "off_dropbacks_pg": {
             "label": "Dropbacks per game",
-            "value": 32.8,
+            "value": 32.6,
             "better": "neutral",
             "format": "num",
-            "rank": 59,
+            "rank": 62,
             "of": 138
           },
           "def_dropbacks_pg": {
@@ -68117,7 +68125,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 82,
+            "rank": 81,
             "of": 138,
             "format": "num"
           },
@@ -70921,7 +70929,7 @@
             "label": "Passer rating allowed",
             "value": 155.2627,
             "better": "low",
-            "rank": 125,
+            "rank": 124,
             "of": 138,
             "format": "num"
           },
@@ -71242,7 +71250,7 @@
             "value": 0.0533,
             "better": "high",
             "format": "pct",
-            "rank": 72,
+            "rank": 73,
             "of": 138
           },
           "def_pass_td_rate": {
@@ -71520,7 +71528,7 @@
             "label": "Rushing yards allowed per game",
             "value": 126.4,
             "better": "low",
-            "rank": 54,
+            "rank": 53,
             "of": 138,
             "format": "num"
           },
@@ -71809,7 +71817,7 @@
             "value": 0.0611,
             "better": "high",
             "format": "pct",
-            "rank": 45,
+            "rank": 44,
             "of": 138
           }
         },
@@ -74931,7 +74939,7 @@
             "label": "Passing TDs per game",
             "value": 1.75,
             "better": "high",
-            "rank": 59,
+            "rank": 60,
             "of": 138,
             "format": "num"
           },
@@ -75244,7 +75252,7 @@
             "value": 0.049,
             "better": "high",
             "format": "pct",
-            "rank": 86,
+            "rank": 87,
             "of": 138
           },
           "def_pass_td_rate": {
@@ -77716,7 +77724,7 @@
             "label": "Passing TDs per game",
             "value": 1.6,
             "better": "high",
-            "rank": 64,
+            "rank": 65,
             "of": 138,
             "format": "num"
           },
@@ -77748,7 +77756,7 @@
             "label": "Sacks taken per game",
             "value": 2.4,
             "better": "low",
-            "rank": 103,
+            "rank": 104,
             "of": 138,
             "format": "num"
           },
@@ -78037,7 +78045,7 @@
             "value": 0.0718,
             "better": "low",
             "format": "pct",
-            "rank": 120,
+            "rank": 119,
             "of": 138
           },
           "off_interception_rate": {
@@ -78275,7 +78283,7 @@
             "label": "Sacks per game",
             "value": 2.2,
             "better": "high",
-            "rank": 57,
+            "rank": 58,
             "of": 138,
             "format": "num"
           },
@@ -78596,7 +78604,7 @@
             "value": 0.0636,
             "better": "high",
             "format": "pct",
-            "rank": 35,
+            "rank": 34,
             "of": 138
           }
         },
@@ -81188,7 +81196,7 @@
             "label": "Sacks taken per game",
             "value": 2.4,
             "better": "low",
-            "rank": 103,
+            "rank": 104,
             "of": 138,
             "format": "num"
           },
@@ -81373,7 +81381,7 @@
             "value": 0.0702,
             "better": "low",
             "format": "pct",
-            "rank": 95,
+            "rank": 96,
             "of": 138
           },
           "def_sack_rate": {
@@ -81643,7 +81651,7 @@
             "label": "Completion rate",
             "value": 0.631,
             "better": "high",
-            "rank": 71,
+            "rank": 72,
             "of": 138,
             "format": "pct"
           },
@@ -81900,7 +81908,7 @@
             "value": 0.0578,
             "better": "high",
             "format": "pct",
-            "rank": 80,
+            "rank": 79,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -84632,7 +84640,7 @@
             "label": "Passing TDs allowed per game",
             "value": 2.2,
             "better": "low",
-            "rank": 123,
+            "rank": 122,
             "of": 138,
             "format": "num"
           },
@@ -84945,7 +84953,7 @@
             "value": 0.0733,
             "better": "low",
             "format": "pct",
-            "rank": 123,
+            "rank": 122,
             "of": 138
           },
           "off_interception_rate": {
@@ -85183,7 +85191,7 @@
             "label": "Sacks per game",
             "value": 1.8,
             "better": "high",
-            "rank": 80,
+            "rank": 79,
             "of": 138,
             "format": "num"
           },
@@ -85368,7 +85376,7 @@
             "value": 0.0604,
             "better": "high",
             "format": "pct",
-            "rank": 76,
+            "rank": 75,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -88135,7 +88143,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 82,
+            "rank": 81,
             "of": 138,
             "format": "num"
           },
@@ -88256,7 +88264,7 @@
             "value": 4.7833,
             "better": "high",
             "format": "num",
-            "rank": 123,
+            "rank": 124,
             "of": 138
           },
           "def_yards_per_play": {
@@ -88839,7 +88847,7 @@
             "value": 0.0709,
             "better": "low",
             "format": "pct",
-            "rank": 97,
+            "rank": 98,
             "of": 138
           },
           "def_sack_rate": {
@@ -91934,7 +91942,7 @@
             "value": 0.0617,
             "better": "high",
             "format": "pct",
-            "rank": 42,
+            "rank": 41,
             "of": 138
           }
         },
@@ -92124,7 +92132,7 @@
             "label": "Sacks taken per game",
             "value": 2.25,
             "better": "low",
-            "rank": 95,
+            "rank": 96,
             "of": 138,
             "format": "num"
           },
@@ -92317,7 +92325,7 @@
             "value": 0.0577,
             "better": "high",
             "format": "pct",
-            "rank": 82,
+            "rank": 81,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -94901,7 +94909,7 @@
             "label": "Completion rate",
             "value": 0.629,
             "better": "high",
-            "rank": 72,
+            "rank": 73,
             "of": 138,
             "format": "pct"
           },
@@ -95086,7 +95094,7 @@
             "value": 4.7487,
             "better": "high",
             "format": "num",
-            "rank": 124,
+            "rank": 125,
             "of": 138
           },
           "def_yards_per_play": {
@@ -95444,7 +95452,7 @@
             "label": "Passer rating allowed",
             "value": 155.3795,
             "better": "low",
-            "rank": 126,
+            "rank": 125,
             "of": 138,
             "format": "num"
           },
@@ -98843,7 +98851,7 @@
             "value": 0.0583,
             "better": "high",
             "format": "pct",
-            "rank": 55,
+            "rank": 56,
             "of": 138
           }
         },
@@ -99001,7 +99009,7 @@
             "label": "Passing TDs per game",
             "value": 1.75,
             "better": "high",
-            "rank": 59,
+            "rank": 60,
             "of": 138,
             "format": "num"
           },
@@ -99314,7 +99322,7 @@
             "value": 0.0504,
             "better": "high",
             "format": "pct",
-            "rank": 83,
+            "rank": 84,
             "of": 138
           },
           "def_pass_td_rate": {
@@ -101961,7 +101969,7 @@
             "label": "Rushing yards allowed per game",
             "value": 126.8,
             "better": "low",
-            "rank": 55,
+            "rank": 54,
             "of": 138,
             "format": "num"
           },
@@ -102194,7 +102202,7 @@
             "value": 12.75,
             "better": "low",
             "format": "num",
-            "rank": 111,
+            "rank": 112,
             "of": 138
           },
           "off_pass_td_rate": {
@@ -102234,7 +102242,7 @@
             "value": 32.6,
             "better": "neutral",
             "format": "num",
-            "rank": 63,
+            "rank": 62,
             "of": 138
           },
           "def_dropbacks_pg": {
@@ -102376,7 +102384,7 @@
             "label": "Completion rate",
             "value": 0.629,
             "better": "high",
-            "rank": 72,
+            "rank": 73,
             "of": 138,
             "format": "pct"
           },
@@ -105508,7 +105516,7 @@
             "value": 62.2,
             "better": "neutral",
             "format": "num",
-            "rank": 110,
+            "rank": 109,
             "of": 138
           },
           "off_pass_rate": {
@@ -105620,7 +105628,7 @@
             "value": 12.7907,
             "better": "low",
             "format": "num",
-            "rank": 113,
+            "rank": 114,
             "of": 138
           },
           "off_pass_td_rate": {
@@ -105676,7 +105684,7 @@
             "value": 0.0579,
             "better": "high",
             "format": "pct",
-            "rank": 56,
+            "rank": 57,
             "of": 138
           }
         },
@@ -105818,7 +105826,7 @@
             "label": "Passer rating",
             "value": 135.09,
             "better": "high",
-            "rank": 86,
+            "rank": 87,
             "of": 138,
             "format": "num"
           },
@@ -105882,7 +105890,7 @@
             "label": "Yards per rush attempt",
             "value": 4.1,
             "better": "high",
-            "rank": 93,
+            "rank": 94,
             "of": 138,
             "format": "num"
           },
@@ -106059,7 +106067,7 @@
             "value": 0.0588,
             "better": "high",
             "format": "pct",
-            "rank": 78,
+            "rank": 77,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -108729,7 +108737,7 @@
             "label": "Completion rate allowed",
             "value": 0.6542,
             "better": "low",
-            "rank": 112,
+            "rank": 111,
             "of": 138,
             "format": "pct"
           },
@@ -109066,7 +109074,7 @@
             "value": 0.0523,
             "better": "high",
             "format": "pct",
-            "rank": 75,
+            "rank": 76,
             "of": 138
           },
           "def_pass_td_rate": {
@@ -109336,7 +109344,7 @@
             "label": "Rushing yards per game",
             "value": 123.0,
             "better": "high",
-            "rank": 114,
+            "rank": 115,
             "of": 138,
             "format": "num"
           },
@@ -109513,7 +109521,7 @@
             "value": 20.0,
             "better": "high",
             "format": "num",
-            "rank": 23,
+            "rank": 22,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -115453,7 +115461,7 @@
             "label": "Passing TDs per game",
             "value": 1.75,
             "better": "high",
-            "rank": 59,
+            "rank": 60,
             "of": 138,
             "format": "num"
           },
@@ -116004,7 +116012,7 @@
             "label": "Sacks taken per game",
             "value": 2.25,
             "better": "low",
-            "rank": 95,
+            "rank": 96,
             "of": 138,
             "format": "num"
           },
@@ -116213,7 +116221,7 @@
             "value": 20.25,
             "better": "high",
             "format": "num",
-            "rank": 22,
+            "rank": 21,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -119280,7 +119288,7 @@
             "label": "Sacks taken per game",
             "value": 2.25,
             "better": "low",
-            "rank": 95,
+            "rank": 96,
             "of": 138,
             "format": "num"
           },
@@ -119489,7 +119497,7 @@
             "value": 20.0,
             "better": "high",
             "format": "num",
-            "rank": 23,
+            "rank": 22,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -119561,7 +119569,7 @@
             "value": 0.05,
             "better": "high",
             "format": "pct",
-            "rank": 84,
+            "rank": 85,
             "of": 138
           },
           "def_pass_td_rate": {
@@ -122185,7 +122193,7 @@
             "label": "Sacks per game",
             "value": 2.25,
             "better": "high",
-            "rank": 54,
+            "rank": 55,
             "of": 138,
             "format": "num"
           },
@@ -122881,7 +122889,7 @@
             "value": 0.0461,
             "better": "low",
             "format": "pct",
-            "rank": 56,
+            "rank": 55,
             "of": 138
           },
           "def_sack_rate": {
@@ -125596,9 +125604,9 @@
           },
           "off_sacks": {
             "label": "Sacks taken per game",
-            "value": 1.8,
+            "value": 2.0,
             "better": "low",
-            "rank": 72,
+            "rank": 81,
             "of": 138,
             "format": "num"
           },
@@ -125700,10 +125708,10 @@
           },
           "off_points_per_play": {
             "label": "Points per offensive play",
-            "value": 0.5255,
+            "value": 0.5242,
             "better": "high",
             "format": "num",
-            "rank": 31,
+            "rank": 32,
             "of": 138
           },
           "def_points_per_play": {
@@ -125716,10 +125724,10 @@
           },
           "off_yards_per_play": {
             "label": "Yards per offensive play",
-            "value": 5.9923,
+            "value": 5.9771,
             "better": "high",
             "format": "num",
-            "rank": 58,
+            "rank": 61,
             "of": 138
           },
           "def_yards_per_play": {
@@ -125732,10 +125740,10 @@
           },
           "off_first_down_rate": {
             "label": "First downs per offensive play",
-            "value": 0.3189,
+            "value": 0.3181,
             "better": "high",
             "format": "pct",
-            "rank": 52,
+            "rank": 55,
             "of": 138
           },
           "def_first_down_rate": {
@@ -125748,7 +125756,7 @@
           },
           "off_plays_pg": {
             "label": "Offensive plays per game",
-            "value": 78.4,
+            "value": 78.6,
             "better": "neutral",
             "format": "num",
             "rank": 5,
@@ -125764,7 +125772,7 @@
           },
           "off_pass_rate": {
             "label": "Dropback share",
-            "value": 0.5102,
+            "value": 0.5115,
             "better": "neutral",
             "format": "pct",
             "rank": 37,
@@ -125780,10 +125788,10 @@
           },
           "off_sack_rate": {
             "label": "Sacks allowed per dropback",
-            "value": 0.045,
+            "value": 0.0498,
             "better": "low",
             "format": "pct",
-            "rank": 52,
+            "rank": 60,
             "of": 138
           },
           "def_sack_rate": {
@@ -125796,10 +125804,10 @@
           },
           "off_sack_yards_pg": {
             "label": "Sack yards lost per game",
-            "value": 13.6,
+            "value": 13.8,
             "better": "low",
             "format": "num",
-            "rank": 92,
+            "rank": 94,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -125908,7 +125916,7 @@
           },
           "off_dropbacks_pg": {
             "label": "Dropbacks per game",
-            "value": 40.0,
+            "value": 40.2,
             "better": "neutral",
             "format": "num",
             "rank": 10,
@@ -126069,7 +126077,7 @@
             "label": "Passer rating",
             "value": 134.833,
             "better": "high",
-            "rank": 87,
+            "rank": 88,
             "of": 138,
             "format": "num"
           },
@@ -126117,7 +126125,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 82,
+            "rank": 81,
             "of": 138,
             "format": "num"
           },
@@ -126318,7 +126326,7 @@
             "value": 13.4,
             "better": "low",
             "format": "num",
-            "rank": 90,
+            "rank": 91,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -126446,7 +126454,7 @@
             "value": 0.0587,
             "better": "high",
             "format": "pct",
-            "rank": 52,
+            "rank": 53,
             "of": 138
           }
         },
@@ -128974,7 +128982,7 @@
             "label": "Completion rate allowed",
             "value": 0.6569,
             "better": "low",
-            "rank": 114,
+            "rank": 113,
             "of": 138,
             "format": "pct"
           },
@@ -129167,7 +129175,7 @@
             "value": 0.3188,
             "better": "high",
             "format": "pct",
-            "rank": 53,
+            "rank": 52,
             "of": 138
           },
           "def_first_down_rate": {
@@ -132751,7 +132759,7 @@
             "value": 11.2368,
             "better": "high",
             "format": "num",
-            "rank": 98,
+            "rank": 97,
             "of": 138
           },
           "def_yards_per_completion": {
@@ -132957,7 +132965,7 @@
             "label": "Passer rating",
             "value": 136.207,
             "better": "high",
-            "rank": 83,
+            "rank": 84,
             "of": 138,
             "format": "num"
           },
@@ -132973,7 +132981,7 @@
             "label": "Passing TDs per game",
             "value": 1.75,
             "better": "high",
-            "rank": 59,
+            "rank": 60,
             "of": 138,
             "format": "num"
           },
@@ -133005,7 +133013,7 @@
             "label": "Sacks taken per game",
             "value": 2.25,
             "better": "low",
-            "rank": 95,
+            "rank": 96,
             "of": 138,
             "format": "num"
           },
@@ -133190,7 +133198,7 @@
             "value": 0.0726,
             "better": "low",
             "format": "pct",
-            "rank": 101,
+            "rank": 102,
             "of": 138
           },
           "def_sack_rate": {
@@ -133206,7 +133214,7 @@
             "value": 13.25,
             "better": "low",
             "format": "num",
-            "rank": 89,
+            "rank": 90,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -133334,7 +133342,7 @@
             "value": 0.057,
             "better": "high",
             "format": "pct",
-            "rank": 58,
+            "rank": 59,
             "of": 138
           }
         },
@@ -135897,7 +135905,7 @@
             "label": "Passing TDs per game",
             "value": 1.6,
             "better": "high",
-            "rank": 64,
+            "rank": 65,
             "of": 138,
             "format": "num"
           },
@@ -136250,7 +136258,7 @@
             "value": 31.2,
             "better": "neutral",
             "format": "num",
-            "rank": 75,
+            "rank": 74,
             "of": 138
           },
           "def_disruption_rate": {
@@ -136456,7 +136464,7 @@
             "label": "Sacks per game",
             "value": 1.8,
             "better": "high",
-            "rank": 80,
+            "rank": 79,
             "of": 138,
             "format": "num"
           },
@@ -139273,7 +139281,7 @@
             "label": "Completion rate",
             "value": 0.629,
             "better": "high",
-            "rank": 72,
+            "rank": 73,
             "of": 138,
             "format": "pct"
           },
@@ -139305,7 +139313,7 @@
             "label": "Passing TDs per game",
             "value": 1.6,
             "better": "high",
-            "rank": 64,
+            "rank": 65,
             "of": 138,
             "format": "num"
           },
@@ -140041,7 +140049,7 @@
             "value": 0.07,
             "better": "low",
             "format": "pct",
-            "rank": 94,
+            "rank": 95,
             "of": 138
           },
           "def_sack_rate": {
@@ -140049,7 +140057,7 @@
             "value": 0.0606,
             "better": "high",
             "format": "pct",
-            "rank": 74,
+            "rank": 73,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -140169,7 +140177,7 @@
             "value": 40.0,
             "better": "neutral",
             "format": "num",
-            "rank": 10,
+            "rank": 11,
             "of": 138
           },
           "def_dropbacks_pg": {
@@ -142824,7 +142832,7 @@
             "label": "Sacks per game",
             "value": 1.8,
             "better": "high",
-            "rank": 80,
+            "rank": 79,
             "of": 138,
             "format": "num"
           },
@@ -142832,7 +142840,7 @@
             "label": "Yards per rush attempt",
             "value": 4.1,
             "better": "high",
-            "rank": 93,
+            "rank": 94,
             "of": 138,
             "format": "num"
           },
@@ -143359,7 +143367,7 @@
             "label": "Yards per rush allowed",
             "value": 4.103,
             "better": "low",
-            "rank": 76,
+            "rank": 75,
             "of": 138,
             "format": "num"
           },
@@ -146905,7 +146913,7 @@
             "value": 0.0455,
             "better": "low",
             "format": "pct",
-            "rank": 54,
+            "rank": 53,
             "of": 138
           },
           "def_sack_rate": {
@@ -146985,7 +146993,7 @@
             "value": 11.243,
             "better": "high",
             "format": "num",
-            "rank": 97,
+            "rank": 96,
             "of": 138
           },
           "def_yards_per_completion": {
@@ -149540,7 +149548,7 @@
             "label": "Completion rate",
             "value": 0.628,
             "better": "high",
-            "rank": 77,
+            "rank": 78,
             "of": 138,
             "format": "pct"
           },
@@ -149885,7 +149893,7 @@
             "value": 0.05,
             "better": "high",
             "format": "pct",
-            "rank": 84,
+            "rank": 85,
             "of": 138
           },
           "def_pass_td_rate": {
@@ -150260,7 +150268,7 @@
             "value": 0.3185,
             "better": "high",
             "format": "pct",
-            "rank": 54,
+            "rank": 53,
             "of": 138
           },
           "def_first_down_rate": {
@@ -150308,7 +150316,7 @@
             "value": 0.071,
             "better": "low",
             "format": "pct",
-            "rank": 98,
+            "rank": 99,
             "of": 138
           },
           "def_sack_rate": {
@@ -153011,7 +153019,7 @@
             "label": "Sacks per game",
             "value": 1.8,
             "better": "high",
-            "rank": 80,
+            "rank": 79,
             "of": 138,
             "format": "num"
           },
@@ -153490,7 +153498,7 @@
             "label": "Passing TDs per game",
             "value": 1.6,
             "better": "high",
-            "rank": 64,
+            "rank": 65,
             "of": 138,
             "format": "num"
           },
@@ -159558,7 +159566,7 @@
             "label": "Yards allowed per game",
             "value": 301.4,
             "better": "low",
-            "rank": 33,
+            "rank": 32,
             "of": 138,
             "format": "num"
           },
@@ -160039,7 +160047,7 @@
             "value": 0.0635,
             "better": "high",
             "format": "pct",
-            "rank": 37,
+            "rank": 36,
             "of": 138
           }
         },
@@ -160558,7 +160566,7 @@
             "value": 0.0621,
             "better": "high",
             "format": "pct",
-            "rank": 41,
+            "rank": 40,
             "of": 138
           }
         },
@@ -163311,7 +163319,7 @@
             "value": 0.06,
             "better": "high",
             "format": "pct",
-            "rank": 77,
+            "rank": 76,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -163597,7 +163605,7 @@
             "label": "Passer rating allowed",
             "value": 153.2401,
             "better": "low",
-            "rank": 124,
+            "rank": 123,
             "of": 138,
             "format": "num"
           },
@@ -166781,7 +166789,7 @@
             "value": 0.0617,
             "better": "high",
             "format": "pct",
-            "rank": 43,
+            "rank": 42,
             "of": 138
           }
         },
@@ -166939,7 +166947,7 @@
             "label": "Passing TDs per game",
             "value": 1.6,
             "better": "high",
-            "rank": 64,
+            "rank": 65,
             "of": 138,
             "format": "num"
           },
@@ -166979,7 +166987,7 @@
             "label": "Sacks per game",
             "value": 2.2,
             "better": "high",
-            "rank": 57,
+            "rank": 58,
             "of": 138,
             "format": "num"
           },
@@ -167100,7 +167108,7 @@
             "value": 4.8374,
             "better": "low",
             "format": "num",
-            "rank": 49,
+            "rank": 48,
             "of": 138
           },
           "off_first_down_rate": {
@@ -167300,7 +167308,7 @@
             "value": 0.0583,
             "better": "high",
             "format": "pct",
-            "rank": 54,
+            "rank": 55,
             "of": 138
           }
         },
@@ -169818,7 +169826,7 @@
             "label": "Passer rating",
             "value": 135.7503,
             "better": "high",
-            "rank": 84,
+            "rank": 85,
             "of": 138,
             "format": "num"
           },
@@ -169866,7 +169874,7 @@
             "label": "Sacks taken per game",
             "value": 2.25,
             "better": "low",
-            "rank": 95,
+            "rank": 96,
             "of": 138,
             "format": "num"
           },
@@ -169995,7 +170003,7 @@
             "value": 4.8113,
             "better": "low",
             "format": "num",
-            "rank": 48,
+            "rank": 47,
             "of": 138
           },
           "off_first_down_rate": {
@@ -170409,7 +170417,7 @@
             "label": "Yards per rush allowed",
             "value": 4.11,
             "better": "low",
-            "rank": 77,
+            "rank": 76,
             "of": 138,
             "format": "num"
           },
@@ -170546,7 +170554,7 @@
             "value": 63.6,
             "better": "neutral",
             "format": "num",
-            "rank": 93,
+            "rank": 94,
             "of": 138
           },
           "off_pass_rate": {
@@ -170698,7 +170706,7 @@
             "value": 32.6,
             "better": "neutral",
             "format": "num",
-            "rank": 63,
+            "rank": 62,
             "of": 138
           },
           "def_dropbacks_pg": {
@@ -173486,7 +173494,7 @@
             "value": 20.4,
             "better": "high",
             "format": "num",
-            "rank": 21,
+            "rank": 20,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -173724,7 +173732,7 @@
             "label": "Passing yards allowed per game",
             "value": 234.0,
             "better": "low",
-            "rank": 106,
+            "rank": 105,
             "of": 138,
             "format": "num"
           },
@@ -173796,7 +173804,7 @@
             "label": "Sacks taken per game",
             "value": 2.4,
             "better": "low",
-            "rank": 103,
+            "rank": 104,
             "of": 138,
             "format": "num"
           },
@@ -177175,7 +177183,7 @@
             "label": "Sacks taken per game",
             "value": 2.25,
             "better": "low",
-            "rank": 95,
+            "rank": 96,
             "of": 138,
             "format": "num"
           },
@@ -177360,7 +177368,7 @@
             "value": 0.0732,
             "better": "low",
             "format": "pct",
-            "rank": 102,
+            "rank": 103,
             "of": 138
           },
           "def_sack_rate": {
@@ -177448,7 +177456,7 @@
             "value": 12.7385,
             "better": "low",
             "format": "num",
-            "rank": 110,
+            "rank": 111,
             "of": 138
           },
           "off_pass_td_rate": {
@@ -180713,7 +180721,7 @@
             "value": 5.988,
             "better": "high",
             "format": "num",
-            "rank": 59,
+            "rank": 58,
             "of": 138
           },
           "def_yards_per_play": {
@@ -183564,7 +183572,7 @@
             "label": "Passing TDs per game",
             "value": 1.6,
             "better": "high",
-            "rank": 64,
+            "rank": 65,
             "of": 138,
             "format": "num"
           },
@@ -184091,7 +184099,7 @@
             "label": "Passing TDs allowed per game",
             "value": 2.2,
             "better": "low",
-            "rank": 123,
+            "rank": 122,
             "of": 138,
             "format": "num"
           },
@@ -184300,7 +184308,7 @@
             "value": 0.0707,
             "better": "low",
             "format": "pct",
-            "rank": 96,
+            "rank": 97,
             "of": 138
           },
           "def_sack_rate": {
@@ -184396,7 +184404,7 @@
             "value": 0.0526,
             "better": "high",
             "format": "pct",
-            "rank": 73,
+            "rank": 74,
             "of": 138
           },
           "def_pass_td_rate": {
@@ -184404,7 +184412,7 @@
             "value": 0.0764,
             "better": "low",
             "format": "pct",
-            "rank": 125,
+            "rank": 124,
             "of": 138
           },
           "off_interception_rate": {
@@ -186944,7 +186952,7 @@
             "label": "Sacks per game",
             "value": 1.8,
             "better": "high",
-            "rank": 80,
+            "rank": 79,
             "of": 138,
             "format": "num"
           },
@@ -187455,7 +187463,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 82,
+            "rank": 81,
             "of": 138,
             "format": "num"
           },
@@ -187576,7 +187584,7 @@
             "value": 5.9823,
             "better": "high",
             "format": "num",
-            "rank": 60,
+            "rank": 59,
             "of": 138
           },
           "def_yards_per_play": {
@@ -190399,7 +190407,7 @@
             "value": 0.2857,
             "better": "low",
             "format": "num",
-            "rank": 40,
+            "rank": 39,
             "of": 138
           },
           "off_yards_per_play": {
@@ -190567,7 +190575,7 @@
             "value": 0.0526,
             "better": "high",
             "format": "pct",
-            "rank": 73,
+            "rank": 74,
             "of": 138
           },
           "def_pass_td_rate": {
@@ -194374,7 +194382,7 @@
             "value": 0.0473,
             "better": "low",
             "format": "pct",
-            "rank": 59,
+            "rank": 58,
             "of": 138
           },
           "def_sack_rate": {
