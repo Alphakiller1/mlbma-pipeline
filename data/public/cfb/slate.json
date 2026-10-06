@@ -3,8 +3,8 @@
   "sport": "cfb",
   "season": 2026,
   "week": 6,
-  "generated_at_utc": "2026-10-06T18:31:09Z",
-  "data_through_utc": "2026-10-05T22:09:20Z",
+  "generated_at_utc": "2026-10-06T23:55:18Z",
+  "data_through_utc": "2026-10-06T19:30:04Z",
   "games": [
     {
       "id": "USM@TROY",
@@ -29124,7 +29124,17 @@
         }
       },
       "away_injuries": {
-        "players": [],
+        "players": [
+          {
+            "player": "H. Brown",
+            "position": "QB",
+            "status": "Questionable",
+            "injury": "Shoulder",
+            "updated": "Tue, Oct 6",
+            "detail": "Brown is nursing with a shoulder injury, and it has yet to be established if he will play against Washington on Friday.",
+            "source": "Covers"
+          }
+        ],
         "sources": "Covers, RotoWire"
       },
       "home_run_game": {
@@ -83294,8 +83304,8 @@
             "position": "QB",
             "status": "Out",
             "injury": "Knee",
-            "updated": "Sat, Sep 26",
-            "detail": "Holmes is nursing with an undisclosed injury, and he is not projected to face against Robert Morris on Saturday.",
+            "updated": "Tue, Oct 6",
+            "detail": "Holmes is battling with a knee injury, and he has been shut down for the remainder of the season.",
             "source": "Covers"
           },
           {
@@ -128808,6 +128818,15 @@
             "source": "Covers"
           },
           {
+            "player": "J. Sagapolutele",
+            "position": "QB",
+            "status": "Questionable",
+            "injury": "Head",
+            "updated": "Tue, Oct 6",
+            "detail": "Sagapolutele is dealing with a head injury, and it has yet to be determined if he will face Virginia Tech on Saturday.",
+            "source": "Covers"
+          },
+          {
             "player": "R. Walker",
             "position": "TE",
             "status": "Questionable",
@@ -159494,6 +159513,15 @@
             "injury": "Undisclosed",
             "updated": "Thu, Oct 1",
             "detail": "Ferguson is battling with an undisclosed injury, and a timetable for return has yet to be established.",
+            "source": "Covers"
+          },
+          {
+            "player": "E. Colson Jr.",
+            "position": "QB",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "updated": "Tue, Oct 6",
+            "detail": "Colson Jr. is battling with an undisclosed injury, and it remains to be seen if he will play against Nevada on Saturday.",
             "source": "Covers"
           },
           {
