@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-06T15:17:21Z",
-  "data_through_utc": "2026-10-06T15:17:21Z",
+  "generated_at_utc": "2026-10-06T21:02:44Z",
+  "data_through_utc": "2026-10-06T21:02:44Z",
   "games": [
     {
       "id": "849819",
@@ -19,6 +19,10 @@
       "venue": "Truist Park",
       "venue_city": "Atlanta, GA",
       "broadcast": "FS1 / FOX ONE, Fox Deportes / FOX ONE",
+      "conditions": "77\u00b0 \u00b7 Clear \u00b7 8 mph, L To R",
+      "weather_temp": "77",
+      "weather_cond": "Clear",
+      "weather_wind": "8 mph, L To R",
       "away_starter": "Yoshinobu Yamamoto",
       "home_starter": "Chris Sale",
       "away_starter_id": 808967,
@@ -27,8 +31,120 @@
       "home_hand": "L",
       "away_era": "2.53",
       "home_era": "2.16",
-      "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
+      "away_lineup_state": "Confirmed",
+      "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 605141,
+          "name": "Mookie Betts",
+          "position": "SS"
+        },
+        {
+          "slot": 2,
+          "person_id": 518692,
+          "name": "Freddie Freeman",
+          "position": "1B"
+        },
+        {
+          "slot": 3,
+          "person_id": 606192,
+          "name": "Teoscar Hern\u00e1ndez",
+          "position": "LF"
+        },
+        {
+          "slot": 4,
+          "person_id": 669257,
+          "name": "Will Smith",
+          "position": "C"
+        },
+        {
+          "slot": 5,
+          "person_id": 660271,
+          "name": "Shohei Ohtani",
+          "position": "DH"
+        },
+        {
+          "slot": 6,
+          "person_id": 500743,
+          "name": "Miguel Rojas",
+          "position": "2B"
+        },
+        {
+          "slot": 7,
+          "person_id": 681624,
+          "name": "Andy Pages",
+          "position": "CF"
+        },
+        {
+          "slot": 8,
+          "person_id": 663656,
+          "name": "Kyle Tucker",
+          "position": "RF"
+        },
+        {
+          "slot": 9,
+          "person_id": 571771,
+          "name": "Enrique Hern\u00e1ndez",
+          "position": "3B"
+        }
+      ],
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 686948,
+          "name": "Drake Baldwin",
+          "position": "C"
+        },
+        {
+          "slot": 2,
+          "person_id": 660670,
+          "name": "Ronald Acu\u00f1a Jr.",
+          "position": "DH"
+        },
+        {
+          "slot": 3,
+          "person_id": 621566,
+          "name": "Matt Olson",
+          "position": "1B"
+        },
+        {
+          "slot": 4,
+          "person_id": 645277,
+          "name": "Ozzie Albies",
+          "position": "2B"
+        },
+        {
+          "slot": 5,
+          "person_id": 671739,
+          "name": "Michael Harris II",
+          "position": "CF"
+        },
+        {
+          "slot": 6,
+          "person_id": 643289,
+          "name": "Mauricio Dub\u00f3n",
+          "position": "LF"
+        },
+        {
+          "slot": 7,
+          "person_id": 657041,
+          "name": "Lane Thomas",
+          "position": "RF"
+        },
+        {
+          "slot": 8,
+          "person_id": 663586,
+          "name": "Austin Riley",
+          "position": "3B"
+        },
+        {
+          "slot": 9,
+          "person_id": 673490,
+          "name": "Ha-Seong Kim",
+          "position": "SS"
+        }
+      ],
       "away_team_id": 119,
       "home_team_id": 144,
       "venue_id": 4705,
@@ -50,6 +166,10 @@
       "venue": "Petco Park",
       "venue_city": "San Diego, CA",
       "broadcast": "FS1 / FOX ONE, Fox Deportes / FOX ONE",
+      "conditions": "83\u00b0 \u00b7 Clear \u00b7 9 mph, In From LF",
+      "weather_temp": "83",
+      "weather_cond": "Clear",
+      "weather_wind": "9 mph, In From LF",
       "away_starter": "Dustin May",
       "home_starter": "Nick Pivetta",
       "away_starter_id": 669160,
@@ -59,7 +179,63 @@
       "away_era": "4.70",
       "home_era": "2.86",
       "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
+      "home_lineup_state": "Confirmed",
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 665487,
+          "name": "Fernando Tatis Jr.",
+          "position": "RF"
+        },
+        {
+          "slot": 2,
+          "person_id": 701538,
+          "name": "Jackson Merrill",
+          "position": "CF"
+        },
+        {
+          "slot": 3,
+          "person_id": 592518,
+          "name": "Manny Machado",
+          "position": "3B"
+        },
+        {
+          "slot": 4,
+          "person_id": 664034,
+          "name": "Ty France",
+          "position": "1B"
+        },
+        {
+          "slot": 5,
+          "person_id": 806956,
+          "name": "Ethan Salas",
+          "position": "C"
+        },
+        {
+          "slot": 6,
+          "person_id": 657757,
+          "name": "Gavin Sheets",
+          "position": "DH"
+        },
+        {
+          "slot": 7,
+          "person_id": 593428,
+          "name": "Xander Bogaerts",
+          "position": "SS"
+        },
+        {
+          "slot": 8,
+          "person_id": 687957,
+          "name": "Dustin Harris",
+          "position": "LF"
+        },
+        {
+          "slot": 9,
+          "person_id": 630105,
+          "name": "Jake Cronenworth",
+          "position": "2B"
+        }
+      ],
       "away_team_id": 158,
       "home_team_id": 135,
       "venue_id": 2680,
