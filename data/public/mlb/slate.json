@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-07T08:49:14Z",
-  "data_through_utc": "2026-10-07T08:49:14Z",
+  "generated_at_utc": "2026-10-07T17:27:57Z",
+  "data_through_utc": "2026-10-07T17:27:57Z",
   "games": [
     {
       "id": "849833",
@@ -19,6 +19,10 @@
       "venue": "Rate Field",
       "venue_city": "Chicago, IL",
       "broadcast": "TBS/HBO MAX, TruTV",
+      "conditions": "75\u00b0 \u00b7 Sunny \u00b7 8 mph, L To R",
+      "weather_temp": "75",
+      "weather_cond": "Sunny",
+      "weather_wind": "8 mph, L To R",
       "away_starter": "Daniel Espino",
       "home_starter": "Sean Newcomb",
       "away_starter_id": 682982,
@@ -27,8 +31,120 @@
       "home_hand": "L",
       "away_era": "4.11",
       "home_era": "3.09",
-      "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
+      "away_lineup_state": "Confirmed",
+      "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 680757,
+          "name": "Steven Kwan",
+          "position": "CF"
+        },
+        {
+          "slot": 2,
+          "person_id": 608070,
+          "name": "Jos\u00e9 Ram\u00edrez",
+          "position": "3B"
+        },
+        {
+          "slot": 3,
+          "person_id": 800050,
+          "name": "Chase DeLauter",
+          "position": "RF"
+        },
+        {
+          "slot": 4,
+          "person_id": 666176,
+          "name": "Jo Adell",
+          "position": "DH"
+        },
+        {
+          "slot": 5,
+          "person_id": 663993,
+          "name": "Nathaniel Lowe",
+          "position": "1B"
+        },
+        {
+          "slot": 6,
+          "person_id": 682657,
+          "name": "Angel Mart\u00ednez",
+          "position": "LF"
+        },
+        {
+          "slot": 7,
+          "person_id": 683953,
+          "name": "Travis Bazzana",
+          "position": "2B"
+        },
+        {
+          "slot": 8,
+          "person_id": 672275,
+          "name": "Patrick Bailey",
+          "position": "C"
+        },
+        {
+          "slot": 9,
+          "person_id": 677587,
+          "name": "Brayan Rocchio",
+          "position": "SS"
+        }
+      ],
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 803011,
+          "name": "Sam Antonacci",
+          "position": "DH"
+        },
+        {
+          "slot": 2,
+          "person_id": 678246,
+          "name": "Miguel Vargas",
+          "position": "3B"
+        },
+        {
+          "slot": 3,
+          "person_id": 808959,
+          "name": "Munetaka Murakami",
+          "position": "1B"
+        },
+        {
+          "slot": 4,
+          "person_id": 691019,
+          "name": "Kyle Teel",
+          "position": "C"
+        },
+        {
+          "slot": 5,
+          "person_id": 805367,
+          "name": "Chase Meidroth",
+          "position": "2B"
+        },
+        {
+          "slot": 6,
+          "person_id": 671976,
+          "name": "Tristan Peters",
+          "position": "CF"
+        },
+        {
+          "slot": 7,
+          "person_id": 695731,
+          "name": "Braden Montgomery",
+          "position": "RF"
+        },
+        {
+          "slot": 8,
+          "person_id": 545341,
+          "name": "Randal Grichuk",
+          "position": "LF"
+        },
+        {
+          "slot": 9,
+          "person_id": 695657,
+          "name": "Colson Montgomery",
+          "position": "SS"
+        }
+      ],
       "away_team_id": 114,
       "home_team_id": 145,
       "venue_id": 4,
@@ -116,7 +232,7 @@
       "home_starter": "Walker Buehler",
       "away_starter_id": 688107,
       "home_starter_id": 621111,
-      "away_starter_role": "projected",
+      "away_starter_role": "primary",
       "away_hand": "L",
       "home_hand": "R",
       "away_era": "3.87",
