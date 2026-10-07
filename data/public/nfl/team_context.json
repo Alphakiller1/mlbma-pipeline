@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-10-07T19:03:30Z",
+  "generated_at_utc": "2026-10-07T20:08:31Z",
   "data_through_utc": "2026-10-04T19:35:01+00:00",
   "season": 2026,
   "week": 4,
@@ -4944,10 +4944,6 @@
     "DET": {
       "games": 4,
       "through": "2026-10-05"
-    },
-    "GB": {
-      "games": 4,
-      "through": "2026-10-04"
     },
     "HOU": {
       "games": 4,
