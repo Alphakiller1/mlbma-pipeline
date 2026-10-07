@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-07T17:27:57Z",
-  "data_through_utc": "2026-10-07T17:27:57Z",
+  "generated_at_utc": "2026-10-07T19:02:48Z",
+  "data_through_utc": "2026-10-07T19:02:48Z",
   "games": [
     {
       "id": "849833",
@@ -19,10 +19,10 @@
       "venue": "Rate Field",
       "venue_city": "Chicago, IL",
       "broadcast": "TBS/HBO MAX, TruTV",
-      "conditions": "75\u00b0 \u00b7 Sunny \u00b7 8 mph, L To R",
+      "conditions": "75\u00b0 \u00b7 Sunny \u00b7 6 mph, L To R",
       "weather_temp": "75",
       "weather_cond": "Sunny",
-      "weather_wind": "8 mph, L To R",
+      "weather_wind": "6 mph, L To R",
       "away_starter": "Daniel Espino",
       "home_starter": "Sean Newcomb",
       "away_starter_id": 682982,
@@ -156,6 +156,7 @@
       "sport": "mlb",
       "game_state": "scheduled",
       "kickoff_utc": "2026-10-07T22:00:00Z",
+      "kickoff_display": "6:00 PM ET",
       "game_pk": 849822,
       "away": "LAD",
       "home": "ATL",
@@ -166,6 +167,10 @@
       "venue": "Truist Park",
       "venue_city": "Atlanta, GA",
       "broadcast": "FS1 / FOX ONE, Fox Deportes / FOX ONE",
+      "conditions": "77\u00b0 \u00b7 Clear \u00b7 2 mph, L To R",
+      "weather_temp": "77",
+      "weather_cond": "Clear",
+      "weather_wind": "2 mph, L To R",
       "away_starter": "Tyler Glasnow",
       "home_starter": "Tyler Mahle",
       "away_starter_id": 607192,
@@ -174,8 +179,64 @@
       "home_hand": "R",
       "away_era": "3.53",
       "home_era": "3.99",
-      "away_lineup_state": "Expected",
+      "away_lineup_state": "Confirmed",
       "home_lineup_state": "Expected",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 605141,
+          "name": "Mookie Betts",
+          "position": "SS"
+        },
+        {
+          "slot": 2,
+          "person_id": 518692,
+          "name": "Freddie Freeman",
+          "position": "1B"
+        },
+        {
+          "slot": 3,
+          "person_id": 669257,
+          "name": "Will Smith",
+          "position": "C"
+        },
+        {
+          "slot": 4,
+          "person_id": 660271,
+          "name": "Shohei Ohtani",
+          "position": "DH"
+        },
+        {
+          "slot": 5,
+          "person_id": 606192,
+          "name": "Teoscar Hern\u00e1ndez",
+          "position": "LF"
+        },
+        {
+          "slot": 6,
+          "person_id": 571970,
+          "name": "Max Muncy",
+          "position": "3B"
+        },
+        {
+          "slot": 7,
+          "person_id": 571771,
+          "name": "Enrique Hern\u00e1ndez",
+          "position": "2B"
+        },
+        {
+          "slot": 8,
+          "person_id": 663656,
+          "name": "Kyle Tucker",
+          "position": "RF"
+        },
+        {
+          "slot": 9,
+          "person_id": 681624,
+          "name": "Andy Pages",
+          "position": "CF"
+        }
+      ],
       "away_team_id": 119,
       "home_team_id": 144,
       "venue_id": 4705,
@@ -232,7 +293,7 @@
       "home_starter": "Walker Buehler",
       "away_starter_id": 688107,
       "home_starter_id": 621111,
-      "away_starter_role": "primary",
+      "away_starter_role": "projected",
       "away_hand": "L",
       "home_hand": "R",
       "away_era": "3.87",
