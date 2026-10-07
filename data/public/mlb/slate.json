@@ -1,28 +1,30 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-06T21:02:44Z",
-  "data_through_utc": "2026-10-06T21:02:44Z",
+  "generated_at_utc": "2026-10-07T01:38:13Z",
+  "data_through_utc": "2026-10-07T01:30:00Z",
   "games": [
     {
       "id": "849819",
       "sport": "mlb",
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-10-06T22:00:00Z",
       "game_pk": 849819,
       "away": "LAD",
       "home": "ATL",
       "away_name": "Los Angeles Dodgers",
       "home_name": "Atlanta Braves",
-      "away_record": "1-1",
-      "home_record": "1-1",
+      "away_record": "2-1",
+      "home_record": "1-2",
+      "away_score": 3,
+      "home_score": 1,
       "venue": "Truist Park",
       "venue_city": "Atlanta, GA",
       "broadcast": "FS1 / FOX ONE, Fox Deportes / FOX ONE",
-      "conditions": "77\u00b0 \u00b7 Clear \u00b7 8 mph, L To R",
-      "weather_temp": "77",
+      "conditions": "75\u00b0 \u00b7 Clear \u00b7 6 mph, L To R",
+      "weather_temp": "75",
       "weather_cond": "Clear",
-      "weather_wind": "8 mph, L To R",
+      "weather_wind": "6 mph, L To R",
       "away_starter": "Yoshinobu Yamamoto",
       "home_starter": "Chris Sale",
       "away_starter_id": 808967,
@@ -154,7 +156,7 @@
     {
       "id": "849826",
       "sport": "mlb",
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-07T01:30:00Z",
       "game_pk": 849826,
       "away": "MIL",
@@ -163,11 +165,13 @@
       "home_name": "San Diego Padres",
       "away_record": "2-0",
       "home_record": "0-2",
+      "away_score": 0,
+      "home_score": 0,
       "venue": "Petco Park",
       "venue_city": "San Diego, CA",
       "broadcast": "FS1 / FOX ONE, Fox Deportes / FOX ONE",
-      "conditions": "83\u00b0 \u00b7 Clear \u00b7 9 mph, In From LF",
-      "weather_temp": "83",
+      "conditions": "82\u00b0 \u00b7 Clear \u00b7 9 mph, In From LF",
+      "weather_temp": "82",
       "weather_cond": "Clear",
       "weather_wind": "9 mph, In From LF",
       "away_starter": "Dustin May",
@@ -178,8 +182,64 @@
       "home_hand": "R",
       "away_era": "4.70",
       "home_era": "2.86",
-      "away_lineup_state": "Expected",
+      "away_lineup_state": "Confirmed",
       "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 694192,
+          "name": "Jackson Chourio",
+          "position": "LF"
+        },
+        {
+          "slot": 2,
+          "person_id": 641343,
+          "name": "Jake Bauers",
+          "position": "1B"
+        },
+        {
+          "slot": 3,
+          "person_id": 661388,
+          "name": "William Contreras",
+          "position": "C"
+        },
+        {
+          "slot": 4,
+          "person_id": 668930,
+          "name": "Brice Turang",
+          "position": "2B"
+        },
+        {
+          "slot": 5,
+          "person_id": 592885,
+          "name": "Christian Yelich",
+          "position": "DH"
+        },
+        {
+          "slot": 6,
+          "person_id": 669003,
+          "name": "Garrett Mitchell",
+          "position": "CF"
+        },
+        {
+          "slot": 7,
+          "person_id": 806198,
+          "name": "Cooper Pratt",
+          "position": "SS"
+        },
+        {
+          "slot": 8,
+          "person_id": 686217,
+          "name": "Sal Frelick",
+          "position": "RF"
+        },
+        {
+          "slot": 9,
+          "person_id": 687401,
+          "name": "Joey Ortiz",
+          "position": "3B"
+        }
+      ],
       "home_lineup": [
         {
           "slot": 1,
@@ -213,21 +273,21 @@
         },
         {
           "slot": 6,
-          "person_id": 657757,
-          "name": "Gavin Sheets",
-          "position": "DH"
-        },
-        {
-          "slot": 7,
           "person_id": 593428,
           "name": "Xander Bogaerts",
           "position": "SS"
         },
         {
-          "slot": 8,
+          "slot": 7,
           "person_id": 687957,
           "name": "Dustin Harris",
           "position": "LF"
+        },
+        {
+          "slot": 8,
+          "person_id": 669392,
+          "name": "Samad Taylor",
+          "position": "DH"
         },
         {
           "slot": 9,
