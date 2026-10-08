@@ -3,8 +3,8 @@
   "sport": "cfb",
   "season": 2026,
   "week": 6,
-  "generated_at_utc": "2026-10-07T19:01:24Z",
-  "data_through_utc": "2026-10-07T00:39:05Z",
+  "generated_at_utc": "2026-10-08T00:17:17Z",
+  "data_through_utc": "2026-10-07T19:57:28Z",
   "games": [
     {
       "id": "USM@TROY",
@@ -5532,25 +5532,43 @@
       "away_injuries": {
         "players": [
           {
-            "player": "Andrew Paul",
+            "player": "Landon Watkins",
             "position": "RB",
-            "status": "Questionable",
+            "status": "Out",
             "injury": "Undisclosed",
-            "return": "Oct 7th",
+            "return": "Oct 13th",
             "updated": "Oct 7 7:00 PM",
             "source": "RotoWire"
           },
           {
-            "player": "Justus Savage",
-            "position": "RB",
-            "status": "Questionable",
+            "player": "Franklin Baret",
+            "position": "WR",
+            "status": "Out",
             "injury": "Undisclosed",
-            "return": "Oct 7th",
+            "return": "Oct 13th",
             "updated": "Oct 7 7:00 PM",
             "source": "RotoWire"
           },
           {
-            "player": "Alex Moore",
+            "player": "Gabe Glover",
+            "position": "WR",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "return": "Oct 13th",
+            "updated": "Oct 7 7:00 PM",
+            "source": "RotoWire"
+          },
+          {
+            "player": "Rollie Pinto",
+            "position": "WR",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "return": "Oct 13th",
+            "updated": "Oct 7 7:00 PM",
+            "source": "RotoWire"
+          },
+          {
+            "player": "Luka Gilbert",
             "position": "TE",
             "status": "Questionable",
             "injury": "Undisclosed",
@@ -5559,20 +5577,11 @@
             "source": "RotoWire"
           },
           {
-            "player": "Franklin Baret",
-            "position": "WR",
-            "status": "Questionable",
+            "player": "Andrew Paul",
+            "position": "RB",
+            "status": "OFS",
             "injury": "Undisclosed",
-            "return": "Oct 7th",
-            "updated": "Oct 7 7:00 PM",
-            "source": "RotoWire"
-          },
-          {
-            "player": "Gabe Glover",
-            "position": "WR",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "return": "Oct 7th",
+            "return": "Mar 1st",
             "updated": "Oct 7 7:00 PM",
             "source": "RotoWire"
           }
@@ -6595,23 +6604,22 @@
       "home_injuries": {
         "players": [
           {
-            "player": "Gerard Bullock",
+            "player": "Zion Booker",
+            "position": "WR",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "return": "Oct 14th",
+            "updated": "Oct 7 7:00 PM",
+            "source": "RotoWire"
+          },
+          {
+            "player": "G. Bullock Jr.",
             "position": "TE",
             "status": "Questionable",
             "injury": "Undisclosed",
-            "updated": "Oct 7 7:00 PM",
+            "updated": "Sun, Sep 27",
             "detail": "Bullock Jr. is nursing with an undisclosed injury, and it remains to be seen if he will be active against Jax State on Wednesday, October 7th.",
-            "source": "RotoWire + Covers",
-            "return": "Oct 7th"
-          },
-          {
-            "player": "Zion Booker",
-            "position": "WR",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "return": "Oct 7th",
-            "updated": "Oct 7 7:00 PM",
-            "source": "RotoWire"
+            "source": "Covers"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -190114,6 +190122,15 @@
       },
       "home_injuries": {
         "players": [
+          {
+            "player": "L. Rawls",
+            "position": "CB",
+            "status": "Out",
+            "injury": "Leg",
+            "updated": "Wed, Oct 7",
+            "detail": "Rawls is managing with a leg injury, and he will miss an undetermined length of time.",
+            "source": "Covers"
+          },
           {
             "player": "Z. Fiaseu",
             "position": "LB",
