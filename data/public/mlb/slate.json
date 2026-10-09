@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-09T17:02:58Z",
-  "data_through_utc": "2026-10-09T17:02:58Z",
+  "generated_at_utc": "2026-10-09T22:44:08Z",
+  "data_through_utc": "2026-10-09T22:44:08Z",
   "games": [
     {
       "id": "849831",
@@ -23,8 +23,6 @@
       "home_starter": "Gavin Williams",
       "away_starter_id": 680732,
       "home_starter_id": 668909,
-      "away_starter_role": "projected",
-      "home_starter_role": "projected",
       "away_hand": "R",
       "home_hand": "R",
       "away_era": "3.34",
