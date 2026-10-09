@@ -1,13 +1,13 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-08T19:59:50Z",
-  "data_through_utc": "2026-10-08T19:59:50Z",
+  "generated_at_utc": "2026-10-09T00:27:29Z",
+  "data_through_utc": "2026-10-09T00:00:00Z",
   "games": [
     {
       "id": "849832",
       "sport": "mlb",
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-09T00:00:00Z",
       "game_pk": 849832,
       "away": "CLE",
@@ -16,9 +16,15 @@
       "home_name": "Chicago White Sox",
       "away_record": "1-2",
       "home_record": "2-1",
+      "away_score": 0,
+      "home_score": 0,
       "venue": "Rate Field",
       "venue_city": "Chicago, IL",
       "broadcast": "TBS/HBO MAX, TruTV",
+      "conditions": "65\u00b0 \u00b7 Clear \u00b7 3 mph, In From CF",
+      "weather_temp": "65",
+      "weather_cond": "Clear",
+      "weather_wind": "3 mph, In From CF",
       "away_starter": "Parker Messick",
       "home_starter": "Hagen Smith",
       "away_starter_id": 800048,
@@ -27,8 +33,120 @@
       "home_hand": "L",
       "away_era": "2.56",
       "home_era": "1.29",
-      "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
+      "away_lineup_state": "Confirmed",
+      "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 680757,
+          "name": "Steven Kwan",
+          "position": "CF"
+        },
+        {
+          "slot": 2,
+          "person_id": 608070,
+          "name": "Jos\u00e9 Ram\u00edrez",
+          "position": "3B"
+        },
+        {
+          "slot": 3,
+          "person_id": 800050,
+          "name": "Chase DeLauter",
+          "position": "RF"
+        },
+        {
+          "slot": 4,
+          "person_id": 666176,
+          "name": "Jo Adell",
+          "position": "DH"
+        },
+        {
+          "slot": 5,
+          "person_id": 663993,
+          "name": "Nathaniel Lowe",
+          "position": "1B"
+        },
+        {
+          "slot": 6,
+          "person_id": 682657,
+          "name": "Angel Mart\u00ednez",
+          "position": "LF"
+        },
+        {
+          "slot": 7,
+          "person_id": 683953,
+          "name": "Travis Bazzana",
+          "position": "2B"
+        },
+        {
+          "slot": 8,
+          "person_id": 595978,
+          "name": "Austin Hedges",
+          "position": "C"
+        },
+        {
+          "slot": 9,
+          "person_id": 677587,
+          "name": "Brayan Rocchio",
+          "position": "SS"
+        }
+      ],
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 805367,
+          "name": "Chase Meidroth",
+          "position": "2B"
+        },
+        {
+          "slot": 2,
+          "person_id": 545341,
+          "name": "Randal Grichuk",
+          "position": "LF"
+        },
+        {
+          "slot": 3,
+          "person_id": 678246,
+          "name": "Miguel Vargas",
+          "position": "3B"
+        },
+        {
+          "slot": 4,
+          "person_id": 808959,
+          "name": "Munetaka Murakami",
+          "position": "1B"
+        },
+        {
+          "slot": 5,
+          "person_id": 502054,
+          "name": "Tommy Pham",
+          "position": "DH"
+        },
+        {
+          "slot": 6,
+          "person_id": 686668,
+          "name": "Brenton Doyle",
+          "position": "CF"
+        },
+        {
+          "slot": 7,
+          "person_id": 691019,
+          "name": "Kyle Teel",
+          "position": "C"
+        },
+        {
+          "slot": 8,
+          "person_id": 695731,
+          "name": "Braden Montgomery",
+          "position": "RF"
+        },
+        {
+          "slot": 9,
+          "person_id": 695657,
+          "name": "Colson Montgomery",
+          "position": "SS"
+        }
+      ],
       "away_team_id": 114,
       "home_team_id": 145,
       "venue_id": 4,
