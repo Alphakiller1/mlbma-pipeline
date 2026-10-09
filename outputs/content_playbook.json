@@ -1,0 +1,475 @@
+{
+  "version": "2026-10-09",
+  "about": "The content-intelligence playbook: platforms, pillars, segments and the sports calendar. `priors` are STARTING HYPOTHESES (1 = poor fit, 5 = strong fit) from how each platform distributes video, not measurements. outputs/content_intel.py replaces them with your own results as posts are logged (content intel log / import). Edit freely; run `content intel segments` to check it parses.",
+
+  "disclaimer": "21+ · Gamble responsibly",
+  "site": "chase-analytics.com",
+
+  "platforms": {
+    "tiktok": {
+      "label": "TikTok",
+      "formats": ["vertical"],
+      "ideal_s": [30, 75],
+      "max_s": 600,
+      "hook_s": 2,
+      "weight": 1.0,
+      "drivers": "Completion and rewatches decide distribution; shares and saves are the strongest signals after that. The first 2 seconds decide whether anyone sees the rest.",
+      "metric_weights": {"watch_pct": 0.40, "share_rate": 0.25, "save_rate": 0.15, "comment_rate": 0.10, "follow_rate": 0.10},
+      "base": "views",
+      "caption_chars": 150,
+      "hashtags": 4,
+      "post_windows_et": ["12:00-13:00", "19:00-22:00"],
+      "packaging": "Burn in captions. Put the claim on screen in the first frame. Keep the bottom 420 px and right 180 px clear (the booth's TikTok guide shows them).",
+      "policy": "TikTok does not allow promoting gambling services: no sportsbook logos, promo codes, odds-boost screens or links to books. Analysis and education are fine, but gambling-adjacent videos can be held out of For You, so lead with the sport, not the bet."
+    },
+    "shorts": {
+      "label": "YouTube Shorts",
+      "formats": ["vertical"],
+      "ideal_s": [20, 58],
+      "max_s": 180,
+      "hook_s": 2,
+      "weight": 0.8,
+      "drivers": "Viewed-versus-swiped-away and average percentage viewed. Loops count, so a clean ending that flows into the start helps. Subscribers from Shorts feed the long-form channel.",
+      "metric_weights": {"watch_pct": 0.45, "follow_rate": 0.20, "like_rate": 0.15, "comment_rate": 0.10, "share_rate": 0.10},
+      "base": "views",
+      "caption_chars": 100,
+      "title_chars": 60,
+      "hashtags": 3,
+      "post_windows_et": ["14:00-16:00", "19:00-21:00"],
+      "packaging": "Title is the hook in under 60 characters. Keep the bottom 400 px clear. Link the related long-form video.",
+      "policy": "YouTube limits content that promises returns or points viewers to unapproved gambling sites, and gambling content can earn limited ads. Never promise winnings; do not say or show sportsbook URLs or promo codes."
+    },
+    "x": {
+      "label": "X",
+      "formats": ["vertical", "wide"],
+      "ideal_s": [20, 90],
+      "max_s": 140,
+      "hook_s": 3,
+      "weight": 0.9,
+      "drivers": "Replies, reposts and quote posts, bookmarks, then dwell. Video autoplays muted, so captions carry it. The betting community lives here and argues about lines, so takes and line moves travel.",
+      "metric_weights": {"share_rate": 0.30, "comment_rate": 0.30, "save_rate": 0.20, "like_rate": 0.10, "follow_rate": 0.10},
+      "base": "impressions",
+      "caption_chars": 280,
+      "hashtags": 1,
+      "post_windows_et": ["60-120 min before the first game", "21:00-23:00 after games"],
+      "packaging": "Write the post text so it stands alone without the video. Put links in a reply, not the main post. A 3-post thread (video, the key number, the link) works for longer breakdowns.",
+      "policy": "Paid promotion of gambling is restricted. Organic analysis is fine. Same rule as everywhere: no guarantees."
+    },
+    "youtube": {
+      "label": "YouTube",
+      "formats": ["wide"],
+      "ideal_s": [480, 1500],
+      "max_s": 7200,
+      "hook_s": 30,
+      "weight": 1.0,
+      "drivers": "Click-through on the thumbnail and title, then average view duration. Chapters help search and retention. Series and playlists bring viewers back.",
+      "metric_weights": {"watch_pct": 0.45, "ctr": 0.25, "follow_rate": 0.20, "comment_rate": 0.10},
+      "base": "views",
+      "caption_chars": 5000,
+      "title_chars": 70,
+      "hashtags": 3,
+      "post_windows_et": ["the evening before the slate (Fri for CFB, Sat for NFL)"],
+      "packaging": "Title under 70 characters, front-load the game or topic. Make the thumbnail with thumbnail.bat. Paste the booth's chapters.txt into the description. Cut 2-3 Shorts from the strongest chapters.",
+      "policy": "Same as Shorts. Keep a responsible-gambling line in the description."
+    }
+  },
+
+  "pillars": {
+    "timely": {"label": "Game breakdowns", "target": 0.35, "tags": [], "why": "Game-week content is what people search for and share before kickoff. It also shows off the site."},
+    "education": {"label": "Betting education", "target": 0.25, "tags": ["#SportsBetting"], "why": "Evergreen, saved and shared, and it builds trust. It keeps working after the week ends."},
+    "trading": {"label": "Sports trading", "target": 0.15, "tags": ["#SportsTrading"], "why": "Lines as prices: movement, timing and hedging. A fresh angle most betting accounts do not cover well."},
+    "modeling": {"label": "Matchup modeling", "target": 0.15, "tags": ["#SportsAnalytics"], "why": "How the numbers are built. This sets Chase Analytics apart from accounts that just post picks."},
+    "community": {"label": "Results & community", "target": 0.10, "tags": [], "why": "Report cards and answering comments keep the audience coming back and make the account accountable."}
+  },
+
+  "sports": {
+    "nfl": {"label": "NFL", "season": ["09-08", "02-15"], "days": ["Thu", "Sun", "Mon"], "weight": 1.0, "site": true, "tags": ["#NFL"], "tentpoles": [["01-09", "02-15", "NFL Playoffs"]]},
+    "cfb": {"label": "College Football", "season": ["08-27", "01-20"], "days": ["Sat"], "weight": 0.85, "site": true, "tags": ["#CFB", "#CollegeFootball"], "tentpoles": [["11-24", "11-29", "Rivalry Week"], ["12-01", "01-20", "Bowls & CFP"]]},
+    "mlb": {"label": "MLB", "season": ["03-25", "11-05"], "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], "weight": 0.7, "site": true, "tags": ["#MLB"], "tentpoles": [["09-29", "11-05", "MLB Postseason"]]},
+    "ncaab": {"label": "College Basketball", "season": ["11-02", "04-07"], "days": ["Tue", "Wed", "Thu", "Sat"], "weight": 0.75, "site": false, "tags": ["#CBB", "#CollegeBasketball"], "tentpoles": [["03-08", "03-15", "Championship Week"], ["03-16", "04-07", "March Madness"]]},
+    "nba": {"label": "NBA", "season": ["10-20", "06-20"], "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], "weight": 0.6, "site": false, "tags": ["#NBA"], "tentpoles": [["04-18", "06-20", "NBA Playoffs"]]},
+    "wnba": {"label": "WNBA", "season": ["05-15", "10-15"], "days": ["Tue", "Thu", "Fri", "Sun"], "weight": 0.3, "site": false, "tags": ["#WNBA"], "tentpoles": []}
+  },
+
+  "cadence": {
+    "about": "Recordings per weekday. One vertical take is cut for TikTok, Shorts and X; one wide take is the YouTube long-form video. Start here, then raise what the results reward.",
+    "vertical": {"Mon": 1, "Tue": 1, "Wed": 1, "Thu": 2, "Fri": 1, "Sat": 2, "Sun": 2},
+    "wide": {"Tue": 1, "Fri": 1, "Sat": 1}
+  },
+
+  "learning": {
+    "prior_strength": 4,
+    "prior_step": 0.2,
+    "explore": 0.25,
+    "drop_below": -0.25,
+    "drop_after": 3,
+    "about": "A post's score is its lift over your typical post on that platform (log ratio, weighted by the platform's metric_weights). Each segment starts at its prior, worth `prior_strength` posts, and moves toward your real results as they arrive. Segments with few posts get an `explore` bonus so everything gets tried. A segment stops being planned for a platform once it has `drop_after` posts there and still scores below `drop_below`."
+  },
+
+  "compliance": {
+    "never": ["guaranteed", "guarantee", "lock of the", "locks", "lock it in", "sure thing", "free money", "can't lose", "cant lose", "risk-free", "risk free", "100% win", "easy money"],
+    "platform_risk": ["promo code", "sign up bonus", "sign-up bonus", "deposit match", "use my code", "link in bio to bet", "odds boost"],
+    "about": "`never` phrases are false promises and must not appear. `platform_risk` phrases read as promoting a gambling service, which TikTok and YouTube suppress or remove."
+  },
+
+  "segments": {
+    "matchup_lab": {
+      "name": "Matchup Lab",
+      "tag": "#MatchupLab",
+      "pillar": "timely",
+      "formats": ["vertical"],
+      "timing": "pregame",
+      "sports": ["nfl", "cfb", "mlb"],
+      "gap_days": 0,
+      "priors": {"tiktok": 4, "shorts": 4, "x": 4},
+      "length_s": {"vertical": 55},
+      "why": "One game, one or two stats from the site that decide it. Timely, shareable before kickoff, and every one points at a real page.",
+      "pages": ["{matchup}"],
+      "hooks": [
+        "{away} at {home}: one number decides this game.",
+        "Everyone's talking about {home}. Look at this first.",
+        "The {away}-{home} matchup nobody's breaking down."
+      ],
+      "beats": {
+        "vertical": [
+          {"label": "Hook", "s": 3, "cue": "Say the claim. The number on screen is the first frame."},
+          {"label": "The setup", "s": 8, "cue": "Who, records, what the market expects.", "action": "Matchup banner"},
+          {"label": "Stat one", "s": 16, "cue": "The unit-vs-unit edge. Spotlight the row.", "action": "Spotlight (S) the row"},
+          {"label": "Stat two", "s": 14, "cue": "The stat that confirms or contradicts it.", "action": "Zoom (Z) the card"},
+          {"label": "The read", "s": 10, "cue": "What it means for the game. Evidence, not a verdict."},
+          {"label": "Outro", "s": 4, "cue": "Full matchup on chase-analytics.com. Which side are you on?"}
+        ]
+      },
+      "caption": "{away} at {home}: the matchup in one stat.",
+      "x_text": "{away} at {home}. The number that matters: [fill in]. Full matchup in the reply."
+    },
+
+    "one_stat": {
+      "name": "One Stat",
+      "tag": "#OneStat",
+      "pillar": "timely",
+      "formats": ["vertical"],
+      "timing": "pregame",
+      "sports": ["nfl", "cfb", "mlb"],
+      "gap_days": 1,
+      "priors": {"tiktok": 4, "shorts": 5, "x": 4},
+      "length_s": {"vertical": 20},
+      "why": "Very short loops do well on Shorts and stop the scroll on TikTok. Fastest thing to record.",
+      "pages": ["{matchup}"],
+      "hooks": [
+        "{home} have done this all season. Here's why it matters today.",
+        "One stat for {away} at {home}.",
+        "This {sport} stat should change how you see {away}-{home}."
+      ],
+      "beats": {
+        "vertical": [
+          {"label": "The stat", "s": 4, "cue": "Say the number. It is the hook."},
+          {"label": "Context", "s": 8, "cue": "Rank it against the league.", "action": "Spotlight (S) the row"},
+          {"label": "Why it matters", "s": 6, "cue": "Tie it to tonight's opponent."},
+          {"label": "Loop", "s": 2, "cue": "End on a line that leads back into the start."}
+        ]
+      },
+      "caption": "One stat: {away} at {home}.",
+      "x_text": "One stat for {away} at {home}: [fill in]."
+    },
+
+    "line_move": {
+      "name": "Why It Moved",
+      "tag": "#WhyItMoved",
+      "pillar": "trading",
+      "formats": ["vertical"],
+      "timing": "pregame",
+      "sports": ["nfl", "cfb", "mlb", "ncaab"],
+      "gap_days": 1,
+      "priors": {"tiktok": 3, "shorts": 3, "x": 5},
+      "length_s": {"vertical": 45},
+      "why": "Betting X argues about line moves all day. Explaining the why (injury, weather, buyback) shows market literacy without making a pick.",
+      "pages": ["{matchup}", "/model-center/"],
+      "hooks": [
+        "{away}-{home} moved. Here's what the market knows.",
+        "This line moved overnight. It wasn't random.",
+        "Open versus now on {away} at {home}, and why."
+      ],
+      "beats": {
+        "vertical": [
+          {"label": "Hook", "s": 3, "cue": "Open number, current number."},
+          {"label": "The move", "s": 8, "cue": "How far, how fast, through a key number or not."},
+          {"label": "Why", "s": 18, "cue": "Injury, weather, starter news, or one-sided money. Show it.", "action": "Availability / starters section"},
+          {"label": "Price now", "s": 10, "cue": "Is the new number fair? What would you need to believe?"},
+          {"label": "Outro", "s": 4, "cue": "Follow for the move before the next one."}
+        ]
+      },
+      "caption": "Why {away} at {home} moved.",
+      "x_text": "{away} at {home} moved from [open] to [now]. Here's why. Thread:"
+    },
+
+    "sharp_school": {
+      "name": "Sharp School",
+      "tag": "#SharpSchool",
+      "pillar": "education",
+      "formats": ["vertical", "wide"],
+      "timing": "evergreen",
+      "sports": [],
+      "gap_days": 2,
+      "priors": {"tiktok": 5, "shorts": 4, "x": 3, "youtube": 4},
+      "length_s": {"vertical": 50, "wide": 600},
+      "why": "Short betting-math lessons get saved and shared. The long version ranks in YouTube search for years.",
+      "pages": ["/model-center/"],
+      "topics": [
+        {"id": "implied_prob", "title": "Odds are probabilities", "hook": "Minus 150 means the book thinks this happens 60% of the time. Here's the math."},
+        {"id": "vig", "title": "The vig and break-even", "hook": "At minus 110 you need to win 52.4% just to break even."},
+        {"id": "clv", "title": "Closing line value", "hook": "The best way to know if you're good at this isn't your record."},
+        {"id": "line_shopping", "title": "Line shopping", "hook": "Same bet, different price. Over a season that's the whole difference."},
+        {"id": "bankroll", "title": "Units and bankroll", "hook": "How much should one bet be? Less than you think."},
+        {"id": "kelly", "title": "Kelly, and why to use a fraction", "hook": "There's a formula for bet size. Using all of it will hurt you."},
+        {"id": "parlay_math", "title": "Parlay math", "hook": "A 4-leg parlay at minus 110 each needs every leg. Here's what that really pays versus what it should."},
+        {"id": "key_numbers", "title": "Key numbers", "hook": "3 and 7 decide more NFL games than any other margins. That's why half a point costs so much."},
+        {"id": "sgp_correlation", "title": "Same-game parlay pricing", "hook": "Books know the legs in a same-game parlay are linked, and they price it in."},
+        {"id": "totals_weather", "title": "Totals and weather", "hook": "Wind moves totals more than rain does. Here's how much."},
+        {"id": "middles", "title": "Middles", "hook": "Two bets, both can win. How middles work."},
+        {"id": "variance", "title": "Variance and sample size", "hook": "A 60% bettor can lose for a month. Here's the math."}
+      ],
+      "hooks": ["{topic_hook}"],
+      "beats": {
+        "vertical": [
+          {"label": "Hook", "s": 3, "cue": "The surprising number or claim."},
+          {"label": "The idea", "s": 15, "cue": "One concept, plain words."},
+          {"label": "Worked example", "s": 20, "cue": "Real numbers from this week's slate.", "action": "Open a matchup or Model Center"},
+          {"label": "Takeaway", "s": 8, "cue": "The rule of thumb to remember."},
+          {"label": "Outro", "s": 4, "cue": "Save this. Part of the Sharp School series."}
+        ],
+        "wide": [
+          {"label": "Cold open", "s": 30, "cue": "The question this answers and why it costs people money."},
+          {"label": "The concept", "s": 120, "cue": "Plain-language definition with one picture."},
+          {"label": "The math", "s": 180, "cue": "Step through it with real numbers."},
+          {"label": "On this week's slate", "s": 180, "cue": "Apply it to real games on the site.", "action": "Matchup pages"},
+          {"label": "Common mistakes", "s": 60, "cue": "Two or three ways people get it wrong."},
+          {"label": "Wrap", "s": 30, "cue": "Recap and the next lesson in the playlist."}
+        ]
+      },
+      "caption": "Sharp School: {topic}.",
+      "x_text": "{topic_hook}"
+    },
+
+    "myth_vs_math": {
+      "name": "Myth vs Math",
+      "tag": "#MythVsMath",
+      "pillar": "education",
+      "formats": ["vertical"],
+      "timing": "evergreen",
+      "sports": [],
+      "gap_days": 3,
+      "priors": {"tiktok": 5, "shorts": 4, "x": 5},
+      "length_s": {"vertical": 45},
+      "why": "A common belief tested against data. Debate drives comments on TikTok and quote posts on X.",
+      "pages": ["/model-center/"],
+      "topics": [
+        {"id": "fade_public", "title": "Fade the public", "hook": "'Just fade the public.' Does it actually work?"},
+        {"id": "home_dogs", "title": "Home underdogs", "hook": "Home underdogs always cash. Do they?"},
+        {"id": "primetime_overs", "title": "Primetime overs", "hook": "Bet the over in primetime. Here's what the numbers say."},
+        {"id": "ats_trends", "title": "ATS trends", "hook": "'8 and 1 against the spread after a bye.' Why that stat means less than it sounds."},
+        {"id": "hot_streaks", "title": "Hot streaks", "hook": "A team covers five straight. Is it a real trend?"},
+        {"id": "revenge_games", "title": "Revenge games", "hook": "Revenge game narrative: real edge or story?"},
+        {"id": "teasers", "title": "Teasers", "hook": "Teasers look free. Only a few actually are."},
+        {"id": "chasing", "title": "Chasing losses", "hook": "Doubling up to win it back. The math on why it fails."},
+        {"id": "home_field", "title": "Home field is 3 points", "hook": "Home field is worth 3 points. It isn't anymore."}
+      ],
+      "hooks": ["{topic_hook}"],
+      "beats": {
+        "vertical": [
+          {"label": "The myth", "s": 4, "cue": "State it like people say it."},
+          {"label": "Why people believe it", "s": 8, "cue": "The story that makes it stick."},
+          {"label": "The math", "s": 20, "cue": "What the data shows."},
+          {"label": "Verdict", "s": 8, "cue": "Myth, half-true or true."},
+          {"label": "Your turn", "s": 4, "cue": "Ask which myth to test next."}
+        ]
+      },
+      "caption": "Myth vs Math: {topic}.",
+      "x_text": "{topic_hook} We ran the numbers:"
+    },
+
+    "trading_desk": {
+      "name": "Trading Desk",
+      "tag": "#TradingDesk",
+      "pillar": "trading",
+      "formats": ["vertical", "wide"],
+      "timing": "evergreen",
+      "sports": [],
+      "gap_days": 3,
+      "priors": {"tiktok": 3, "shorts": 3, "x": 4, "youtube": 4},
+      "length_s": {"vertical": 55, "wide": 720},
+      "why": "Treats bets as positions with a price: when to buy, when to sell, how to hedge. Fits X and long-form audiences who want more than picks.",
+      "pages": ["/model-center/"],
+      "topics": [
+        {"id": "price_not_pick", "title": "Bet a price, not a team", "hook": "Every bet has a price where it's good and a price where it's bad."},
+        {"id": "hedge_math", "title": "When hedging makes sense", "hook": "Hedging feels safe. Most of the time it costs you money."},
+        {"id": "buying_points", "title": "Buying half a point", "hook": "When paying for half a point is worth it, and when it isn't."},
+        {"id": "live_overreaction", "title": "Live betting overreactions", "hook": "Live lines swing on one play. Sometimes that's the opportunity."},
+        {"id": "timing", "title": "When to bet: open vs close", "hook": "Bet early or bet late? It depends what you're betting."},
+        {"id": "exchanges", "title": "Exchanges and prediction markets", "hook": "On an exchange you can sell a bet back. Here's how that works."},
+        {"id": "exposure", "title": "Correlated exposure", "hook": "Five bets that all need the same thing to happen is really one bet."},
+        {"id": "steam", "title": "Steam and stale lines", "hook": "When every book moves at once, here's what's happening."}
+      ],
+      "hooks": ["{topic_hook}"],
+      "beats": {
+        "vertical": [
+          {"label": "Hook", "s": 3, "cue": "The trading idea in one line."},
+          {"label": "The concept", "s": 15, "cue": "Explain it like a market, not a pick."},
+          {"label": "Example", "s": 22, "cue": "Walk it through with a real line.", "action": "Matchup or Model Center"},
+          {"label": "Rule", "s": 10, "cue": "When to use it, when not to."},
+          {"label": "Outro", "s": 5, "cue": "Follow the Trading Desk series."}
+        ],
+        "wide": [
+          {"label": "Cold open", "s": 30, "cue": "The trade and the mistake most people make."},
+          {"label": "Market basics", "s": 120, "cue": "Price, probability, liquidity."},
+          {"label": "The idea in depth", "s": 240, "cue": "Step by step with numbers."},
+          {"label": "Live examples", "s": 240, "cue": "This week's lines on the site.", "action": "Matchup pages"},
+          {"label": "Risk", "s": 60, "cue": "What goes wrong, how to size it."},
+          {"label": "Wrap", "s": 30, "cue": "Recap and next episode."}
+        ]
+      },
+      "caption": "Trading Desk: {topic}.",
+      "x_text": "{topic_hook}"
+    },
+
+    "model_room": {
+      "name": "Model Room",
+      "tag": "#ModelRoom",
+      "pillar": "modeling",
+      "formats": ["vertical", "wide"],
+      "timing": "evergreen",
+      "sports": [],
+      "gap_days": 3,
+      "priors": {"tiktok": 3, "shorts": 3, "x": 4, "youtube": 5},
+      "length_s": {"vertical": 55, "wide": 900},
+      "why": "How a matchup model is actually built, including where it fails. Long-form explainers are YouTube's best format for this, and honesty about limits builds trust.",
+      "pages": ["/model-center/", "{sport_home}"],
+      "topics": [
+        {"id": "power_ratings", "title": "What a power rating is", "hook": "Every model starts with one number per team. Here's how it's built."},
+        {"id": "opponent_adjust", "title": "Adjusting for opponents", "hook": "Gaining 400 yards against the worst defense in football doesn't mean much."},
+        {"id": "regression", "title": "Early-season regression", "hook": "Week 3 stats lie. How a model knows how much to trust them."},
+        {"id": "market_beats_models", "title": "Why the market usually wins", "hook": "Most models can't beat the closing line. Here's why, and what that means."},
+        {"id": "backtest_traps", "title": "Backtesting traps", "hook": "A model that's 70% in testing is usually lying. Here's how."},
+        {"id": "qb_value", "title": "What a QB injury is worth", "hook": "How many points is a starting quarterback worth? It depends."},
+        {"id": "pace", "title": "Pace and play volume", "hook": "Totals are pace times efficiency. Most people skip the pace part."},
+        {"id": "unit_vs_unit", "title": "Unit vs unit matchups", "hook": "A great offense against a great defense: which one wins?"},
+        {"id": "calibration", "title": "Calibration", "hook": "When a model says 60%, does it happen 60% of the time? That's the test."}
+      ],
+      "hooks": ["{topic_hook}"],
+      "beats": {
+        "vertical": [
+          {"label": "Hook", "s": 3, "cue": "The question."},
+          {"label": "How it works", "s": 20, "cue": "The idea with one picture from the site.", "action": "Model Center"},
+          {"label": "Where it breaks", "s": 15, "cue": "The honest limit."},
+          {"label": "Takeaway", "s": 12, "cue": "How to use it yourself."},
+          {"label": "Outro", "s": 5, "cue": "Full episode on YouTube."}
+        ],
+        "wide": [
+          {"label": "Cold open", "s": 30, "cue": "The question and why it matters."},
+          {"label": "The building block", "s": 180, "cue": "Explain the piece of the model."},
+          {"label": "On the site", "s": 240, "cue": "Show it working on real matchups.", "action": "Matchup pages"},
+          {"label": "Where it fails", "s": 180, "cue": "Limits, sample size, what the market knows."},
+          {"label": "What to do with it", "s": 120, "cue": "How a viewer should use it."},
+          {"label": "Wrap", "s": 30, "cue": "Recap and next episode."}
+        ]
+      },
+      "caption": "Model Room: {topic}.",
+      "x_text": "{topic_hook}"
+    },
+
+    "slate_rundown": {
+      "name": "The Rundown",
+      "tag": "#TheRundown",
+      "pillar": "timely",
+      "formats": ["wide"],
+      "timing": "pregame",
+      "sports": ["nfl", "cfb", "mlb"],
+      "gap_days": 2,
+      "priors": {"youtube": 5, "x": 3},
+      "length_s": {"wide": 1200},
+      "why": "The full slate walked through on the site, with chapters. The main long-form show, and the source for that week's Shorts.",
+      "pages": ["{sport_home}", "{matchups}"],
+      "hooks": [
+        "{sport} {when}: every game that matters, on the numbers.",
+        "The full {sport} slate, broken down."
+      ],
+      "beats": {
+        "wide": [
+          {"label": "Cold open", "s": 30, "cue": "The biggest storyline of the slate."},
+          {"label": "Slate overview", "s": 90, "cue": "Every game at a glance.", "action": "Sport home page"},
+          {"label": "Game 1", "s": 210, "cue": "The best matchup. Chapter per game (M).", "action": "Matchup page"},
+          {"label": "Game 2", "s": 180, "cue": "Next matchup.", "action": "Matchup page"},
+          {"label": "Game 3", "s": 180, "cue": "Next matchup.", "action": "Matchup page"},
+          {"label": "Game 4", "s": 180, "cue": "Next matchup.", "action": "Matchup page"},
+          {"label": "Lightning round", "s": 150, "cue": "One line on every other game."},
+          {"label": "Wrap", "s": 30, "cue": "Ask for comments. Point to the Shorts."}
+        ]
+      },
+      "caption": "{sport} {when}: the full slate breakdown.",
+      "x_text": "The full {sport} {when} breakdown is up. Every game, on the numbers."
+    },
+
+    "report_card": {
+      "name": "Report Card",
+      "tag": "#ReportCard",
+      "pillar": "community",
+      "formats": ["vertical", "wide"],
+      "timing": "postgame",
+      "sports": ["nfl", "cfb", "mlb"],
+      "days": ["Sun", "Mon", "Tue"],
+      "gap_days": 5,
+      "priors": {"tiktok": 2, "shorts": 2, "x": 5, "youtube": 3},
+      "length_s": {"vertical": 50, "wide": 600},
+      "why": "What the numbers said versus what happened, misses included. Owning the misses is what makes people trust the hits. It works best on X.",
+      "pages": ["{sport_home}"],
+      "hooks": [
+        "{sport} report card: what the numbers got right and wrong.",
+        "We missed on this one. Here's why."
+      ],
+      "beats": {
+        "vertical": [
+          {"label": "Headline", "s": 4, "cue": "The biggest hit or miss."},
+          {"label": "What hit", "s": 14, "cue": "Where the numbers were right."},
+          {"label": "What missed", "s": 14, "cue": "Own it. What the data didn't see."},
+          {"label": "Lesson", "s": 12, "cue": "What changes this week."},
+          {"label": "Outro", "s": 4, "cue": "Next week's slate is up on the site."}
+        ],
+        "wide": [
+          {"label": "Cold open", "s": 30, "cue": "The result everyone's talking about."},
+          {"label": "Scoreboard", "s": 120, "cue": "Game by game, what the numbers showed.", "action": "Sport home page"},
+          {"label": "Deep dive: the miss", "s": 180, "cue": "Why it happened."},
+          {"label": "What the market said", "s": 120, "cue": "Closing lines versus results."},
+          {"label": "Next week", "s": 90, "cue": "What to watch."},
+          {"label": "Wrap", "s": 30, "cue": "Comments: what should we look at?"}
+        ]
+      },
+      "caption": "{sport} report card: hits, misses and what we learned.",
+      "x_text": "{sport} report card. Hits, misses, and what we learned:"
+    },
+
+    "ask_the_desk": {
+      "name": "Ask the Desk",
+      "tag": "#AskTheDesk",
+      "pillar": "community",
+      "formats": ["vertical"],
+      "timing": "evergreen",
+      "sports": [],
+      "gap_days": 2,
+      "priors": {"tiktok": 5, "shorts": 3, "x": 3},
+      "length_s": {"vertical": 45},
+      "why": "Answer a real comment on video. TikTok's reply-to-comment format brings back the people who asked and shows a real community.",
+      "pages": ["{sport_home}"],
+      "hooks": ["Replying to your question about {topic_or_sport}."],
+      "beats": {
+        "vertical": [
+          {"label": "The question", "s": 4, "cue": "Read the comment. Use TikTok's reply sticker."},
+          {"label": "The answer", "s": 25, "cue": "Answer it on the site.", "action": "Whatever page answers it"},
+          {"label": "Bonus", "s": 10, "cue": "One thing they didn't ask but should know."},
+          {"label": "Next", "s": 4, "cue": "Drop your question, I'll answer the best one."}
+        ]
+      },
+      "caption": "Answering your questions.",
+      "x_text": "You asked, here's the answer:"
+    }
+  }
+}

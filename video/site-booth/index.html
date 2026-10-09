@@ -28,6 +28,8 @@
           <div class="lower" id="lower"><b id="lowerName"></b><span id="lowerHandle"></span></div>
           <div class="cam" id="cam"><canvas id="camCanvas"></canvas></div>
           <div class="countdown" id="countdown"></div>
+          <!-- Where the app's own UI will sit. Hidden from the moment recording arms, so it is never in a take. -->
+          <div class="guide" id="guide" hidden><i class="g-top"></i><i class="g-right"></i><i class="g-bottom"></i><b id="guideLabel"></b></div>
         </div>
         <!-- Which side has the keys while comparing. In the ring, so it is never recorded. -->
         <div class="focus" id="focus"></div>
@@ -46,6 +48,32 @@
             </div>
           </div>
           <div class="status" id="status">Camera and mic starting...</div>
+        </section>
+
+        <section class="plan" id="planSec">
+          <h2>Show plan <button class="link" id="planRefresh" title="Rebuild the plan from the playbook, your logged results and today's slates">Refresh</button></h2>
+          <select id="epSel" title="Planned episodes (content intel roadmap)"><option>Loading the plan...</option></select>
+          <div class="ep" id="ep" hidden>
+            <div class="ep-meta" id="epMeta"></div>
+            <button class="ep-hook" id="epHook" title="Click for the next hook"></button>
+            <ol class="beats" id="epBeats"></ol>
+            <div class="fit" id="epFit"></div>
+            <div class="row">
+              <button class="grow" id="epSetup" title="Switch to this episode's format and open its pages as the tabs">Set up stage</button>
+              <button id="beatBtn" title="Next beat (G). While recording it also drops a chapter.">Next beat (G)</button>
+            </div>
+            <p class="hint" id="epWhy"></p>
+          </div>
+          <div class="row">
+            <span class="lbl">Guide</span>
+            <div class="seg" id="guideSeg">
+              <button data-guide="off">Off</button>
+              <button data-guide="tiktok">TikTok</button>
+              <button data-guide="shorts">Shorts</button>
+              <button data-guide="reels">Reels</button>
+            </div>
+          </div>
+          <p class="hint">The guide shades where the app's captions and buttons will cover a 9:16 video. It is never recorded.</p>
         </section>
 
         <section>
@@ -182,6 +210,7 @@
             <dt>R</dt><dd>record / stop</dd>
             <dt>Q</dt><dd>pause / resume</dd>
             <dt>M</dt><dd>chapter marker</dd>
+            <dt>G</dt><dd>next beat of the show plan (a chapter too, while recording)</dd>
             <dt>1-9</dt><dd>go to that tab</dd>
             <dt>+</dt><dd>new tab on this page</dd>
             <dt>K</dt><dd>compare two tabs on stage / back to one</dd>

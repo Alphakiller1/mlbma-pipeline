@@ -1371,6 +1371,10 @@ COMMANDS = {
 
 
 def main() -> None:
+    # `content intel ...` is the content-intelligence planner (its own subcommands).
+    if len(sys.argv) > 1 and sys.argv[1] == "intel":
+        from outputs import content_intel
+        sys.exit(content_intel.main(sys.argv[2:]))
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("command", choices=sorted(COMMANDS))

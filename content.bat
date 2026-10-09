@@ -6,6 +6,8 @@ REM   content breakdown --games PHI@MIA
 REM   content full-card
 REM   content rankings --type team --family winning --window L30
 REM   content booth --sport nfl --games IND@KC --show "Sunday Night Football"
+REM   content intel roadmap        plan the next 2 weeks of videos (TikTok, X, YouTube)
+REM   content intel today          today's briefs     content intel scores   what's working
 setlocal
 set "REPO=%~dp0"
 set "PY=%REPO%crawl_env\Scripts\python.exe"

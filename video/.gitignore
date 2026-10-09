@@ -37,3 +37,6 @@ booth/dist/
 
 # Player headshots downloaded by outputs/video_studio.py
 public/players/
+
+# Content intelligence state (outputs/content_intel.py): your post results + the generated plan
+intel/

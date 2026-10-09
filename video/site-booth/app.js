@@ -38,6 +38,8 @@ const prefs = Object.assign(
     tab: 0, // the active one
     pair: null, // [i, j] while comparing
     notes: "",
+    guide: "tiktok", // the platform UI guide on a 9:16 stage: off | tiktok | shorts | reels
+    episode: "", // the show-plan episode picked last
   },
   (() => {
     try {
@@ -1162,11 +1164,13 @@ async function startRecording() {
     return;
   }
   rec.state = "arming";
+  paintGuide(); // off the stage before the capture can see it
   let track;
   try {
     track = await ensureCapture();
   } catch (e) {
     rec.state = "idle";
+    paintGuide();
     status(e.name === "NotAllowedError" ? "Sharing was cancelled. R to try again." : e.message, true);
     return;
   }
@@ -1187,7 +1191,14 @@ async function startRecording() {
   rec.chapters = [];
   rec.pages = [];
   rec.failed = false;
-  if (shown().length) rec.chapters.push({ t: 0, label: stageLabel(), path: stagePath() });
+  rec.beats = [];
+  if (plan.ep) {
+    plan.beat = 0;
+    plan.beatAt = 0;
+    rec.beats.push({ label: plan.ep.beats[0].label, t: 0 });
+    rec.chapters.push({ t: 0, label: plan.ep.beats[0].label, path: stagePath() });
+    paintEpisode();
+  } else if (shown().length) rec.chapters.push({ t: 0, label: stageLabel(), path: stagePath() });
   rec.recorder = new MediaRecorder(new MediaStream(tracks), { mimeType: pickType(), videoBitsPerSecond: 12_000_000, audioBitsPerSecond: 192_000 });
   rec.recorder.ondataavailable = (e) => {
     if (!e.data.size) return;
@@ -1218,6 +1229,7 @@ async function stopRecording() {
   if (r.state !== "inactive") r.stop();
   rec.state = "idle";
   paintRec();
+  paintGuide();
   setAspectLocked(false);
   await stopped;
   status("Saving the take...");
@@ -1225,7 +1237,18 @@ async function stopRecording() {
   if (rec.failed) return;
   const res = await fetch(`/__booth/api/finish?name=${rec.name}`, {
     method: "POST",
-    body: JSON.stringify({ duration, chapters: rec.chapters, aspect: prefs.aspect, siteWidth: active?.W, compare: Boolean(pair), capture: captureMode, audioDelay: rec.audioDelay || 0 }),
+    body: JSON.stringify({
+      duration,
+      chapters: rec.chapters,
+      aspect: prefs.aspect,
+      siteWidth: active?.W,
+      compare: Boolean(pair),
+      capture: captureMode,
+      audioDelay: rec.audioDelay || 0,
+      episode: plan.ep
+        ? { id: plan.ep.id, segment: plan.ep.segment, topic: plan.ep.topic?.id ?? null, sport: plan.ep.sport, name: plan.ep.name, title: plan.ep.title, hook: plan.ep.hooks[plan.hook] ?? "", beats: rec.beats }
+        : null,
+    }),
   });
   status(res.ok ? `Saved ${rec.name}. Making the mp4...` : `Finishing failed (${res.status}).`, !res.ok);
   refreshTakes();
@@ -1274,6 +1297,7 @@ function paintRec() {
 }
 setInterval(() => {
   if (rec.state === "recording" || rec.state === "paused") $("timer").textContent = clock(elapsed());
+  paintPlanLive();
 }, 250);
 window.addEventListener("beforeunload", (e) => {
   if (rec.state !== "idle") e.preventDefault();
@@ -1287,13 +1311,20 @@ async function refreshTakes() {
   clearTimeout(takesTimer);
   const { takes } = await fetch("/__booth/api/takes").then((r) => r.json()).catch(() => ({ takes: [] }));
   const ul = $("takes");
+  // Typing results into a take's form: do not rebuild the list under it.
+  if (ul.querySelector("form")) {
+    if (takes.some((t) => t.state === "encoding")) takesTimer = setTimeout(refreshTakes, 2500);
+    return;
+  }
   ul.innerHTML = "";
   if (!takes.length) ul.innerHTML = `<li><small>No takes yet.</small></li>`;
   for (const t of takes.slice(0, 12)) {
     const li = document.createElement("li");
     const state =
       t.state === "encoding" ? "making mp4..." : t.state === "failed" ? `<span class="bad">mp4 failed: ${t.error}</span>` : t.mp4 ? "mp4 ready" : "webm";
-    li.innerHTML = `<div>${t.name}<small>${t.mb} MB · ${state}${t.chapters ? " · chapters" : ""}</small></div><button data-show>Show</button><button data-del>Delete</button>`;
+    const ep = t.episode?.title ? ` · ${escapeHtml(t.episode.title)}` : "";
+    li.innerHTML = `<div>${t.name}<small>${t.mb} MB · ${state}${t.chapters ? " · chapters" : ""}${t.post ? " · post kit" : ""}${ep}</small></div><button data-res title="Log how this did on each app, so the plan learns">Results</button><button data-show>Show</button><button data-del>Delete</button>`;
+    li.querySelector("[data-res]").onclick = () => toggleResults(li, t);
     li.querySelector("[data-show]").onclick = () => fetch(`/__booth/api/reveal?name=${t.name}`, { method: "POST" });
     li.querySelector("[data-del]").onclick = async () => {
       if (!confirm(`Delete ${t.name} (the recording, mp4 and chapters)?`)) return;
@@ -1308,6 +1339,255 @@ async function refreshTakes() {
     if (t?.state === "done") status(`${t.name}.mp4 is ready. Show opens the folder.`);
     else if (t?.state === "failed") status(`mp4 failed; the .webm is saved. ${t.error}`, true);
   }
+}
+
+/* ── show plan: the roadmap from outputs/content_intel.py (content intel roadmap) ── */
+const plan = { episodes: [], segments: {}, platforms: {}, safe: {}, ep: null, hook: 0, beat: -1, beatAt: 0 };
+const escapeHtml = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const el = (tag, text, cls) => {
+  const n = document.createElement(tag);
+  if (text != null) n.textContent = text;
+  if (cls) n.className = cls;
+  return n;
+};
+/** The site drops ".html" (matchup.html?game= is served as matchup?game=), so compare without it. */
+const samePage = (a, b) => String(a).replace(/\.html(?=[?#]|$)/, "") === String(b).replace(/\.html(?=[?#]|$)/, "");
+const todayIso = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+
+async function loadPlan(message) {
+  const r = await fetch("/__booth/api/intel")
+    .then((x) => x.json())
+    .catch(() => null);
+  plan.safe = r?.safe ?? {};
+  plan.segments = r?.segments ?? {};
+  plan.platforms = r?.platforms ?? {};
+  plan.episodes = r?.roadmap?.episodes ?? [];
+  const sel = $("epSel");
+  sel.innerHTML = "";
+  sel.append(new Option(plan.episodes.length ? "No plan: free recording" : `No plan (${r?.error || "booth offline"})`, ""));
+  const from = todayIso();
+  let group = null;
+  for (const e of plan.episodes) {
+    if (e.date < from) continue;
+    if (group?.dataset.date !== e.date) {
+      group = document.createElement("optgroup");
+      group.dataset.date = e.date;
+      group.label = `${e.date === from ? "Today" : e.weekday} ${e.date.slice(5)}`;
+      sel.append(group);
+    }
+    group.append(new Option(`${e.format === "vertical" ? "9:16" : "16:9"} · ${e.title}`, e.id));
+  }
+  const keep = plan.episodes.find((e) => e.id === prefs.episode && e.date >= from);
+  const first = plan.episodes.find((e) => e.date === from);
+  selectEpisode((keep ?? first)?.id ?? "");
+  paintGuide();
+  if (message) toast(message, 4000);
+}
+
+function selectEpisode(id) {
+  if (rec.state !== "idle" && plan.ep) {
+    toast("Finish the take before switching episodes.");
+    $("epSel").value = plan.ep.id;
+    return;
+  }
+  plan.ep = plan.episodes.find((e) => e.id === id) ?? null;
+  plan.hook = 0;
+  plan.beat = -1;
+  $("epSel").value = plan.ep ? plan.ep.id : "";
+  prefs.episode = plan.ep?.id ?? "";
+  save();
+  paintEpisode();
+}
+
+function paintEpisode() {
+  const ep = plan.ep;
+  $("ep").hidden = !ep;
+  if (!ep) return;
+  const meta = $("epMeta");
+  meta.innerHTML = "";
+  meta.append(el("b", ep.name), el("span", [ep.sport_label, ep.format === "vertical" ? "9:16" : "16:9", `~${clock(ep.target_s)}`].filter(Boolean).join(" · ")));
+  for (const k of Object.values(ep.platforms)) meta.append(el("em", k.label));
+  if (ep.tentpole) meta.append(el("em", ep.tentpole));
+  $("epHook").textContent = ep.hooks[plan.hook] ?? ep.title;
+  $("epHook").title = ep.hooks.length > 1 ? `Hook ${plan.hook + 1} of ${ep.hooks.length}. Click for the next.` : "The hook";
+  const ol = $("epBeats");
+  ol.innerHTML = "";
+  ep.beats.forEach((b, i) => {
+    const li = document.createElement("li");
+    li.classList.toggle("done", plan.beat > i);
+    li.classList.toggle("now", plan.beat === i);
+    const cue = [b.cue, b.action, b.page].filter(Boolean).join(" · ");
+    li.append(el("span", clock(b.at_s)), el("b", b.label), el("em", `${b.s}s`), el("small", cue));
+    li.onclick = () => goBeat(i);
+    ol.append(li);
+  });
+  const scores = Object.entries(ep.why?.scores ?? {})
+    .map(([p, s]) => `${plan.platforms[p]?.label ?? p} ${s.score >= 0 ? "+" : ""}${s.score.toFixed(2)}${s.n ? ` (${s.n} posts)` : " (prior)"}`)
+    .join(", ");
+  $("epWhy").textContent = `${ep.why?.segment ?? ""} Score: ${scores}.${ep.todo?.length ? ` To do: ${ep.todo.join("; ")}.` : ""}`;
+  paintPlanLive();
+}
+
+/** Every 250 ms: where the take is against the run of show and each app's length. */
+function paintPlanLive() {
+  const ep = plan.ep;
+  if (!ep) return;
+  const live = rec.state === "recording" || rec.state === "paused";
+  const now = live ? elapsed() : 0;
+  const li = $("epBeats").children[plan.beat];
+  if (live && li && ep.beats[plan.beat]) {
+    const inBeat = now - plan.beatAt;
+    const target = ep.beats[plan.beat].s;
+    li.querySelector("em").textContent = `${clock(inBeat)} / ${clock(target)}`;
+    li.classList.toggle("over", inBeat > target + 1);
+  }
+  const fit = $("epFit");
+  fit.innerHTML = "";
+  if (!live) {
+    fit.append(`Target ~${clock(ep.target_s)}. Best length: `);
+    Object.values(ep.platforms).forEach((k, i) => {
+      if (i) fit.append(", ");
+      fit.append(el("b", `${k.label} ${clock(k.length_s[0])}-${clock(k.length_s[1])}`));
+    });
+    return;
+  }
+  fit.append(`${clock(now)} of ~${clock(ep.target_s)}: `);
+  Object.values(ep.platforms).forEach((k, i) => {
+    if (i) fit.append(", ");
+    const over = now > k.length_s[1];
+    fit.append(el("b", over ? `over for ${k.label}` : `${k.label} fits`, over ? "over" : ""));
+  });
+  const hookBy = Math.min(...Object.values(ep.platforms).map((k) => k.hook_s));
+  if (plan.beat === 0 && now > hookBy && ep.format === "vertical") fit.append(el("b", " · land the hook", "over"));
+}
+
+/** Move to beat i. Recording: it is a chapter, and a beat with its own page puts that page on stage. */
+function goBeat(i) {
+  const ep = plan.ep;
+  if (!ep || i < 0 || i >= ep.beats.length || i === plan.beat) return;
+  plan.beat = i;
+  const b = ep.beats[i];
+  if (rec.state === "recording" || rec.state === "paused") {
+    plan.beatAt = elapsed();
+    rec.beats.push({ label: b.label, t: Math.round(plan.beatAt * 10) / 10 });
+    addChapter(b.label);
+  }
+  if (b.page) {
+    const t = tabs.find((x) => samePage(x.path, b.page));
+    if (t) setActive(t);
+    else go(b.page);
+  }
+  paintEpisode();
+}
+function nextBeat() {
+  if (!plan.ep) {
+    toast("Pick an episode under Show plan first.");
+    return;
+  }
+  if (plan.beat >= plan.ep.beats.length - 1) {
+    toast(rec.state === "idle" ? "That is the last beat." : "That was the last beat. R stops the take.");
+    return;
+  }
+  goBeat(plan.beat + 1);
+}
+
+/** The episode's format, and its pages as the tabs (the first one in front). */
+function setupStage() {
+  const ep = plan.ep;
+  if (!ep) return;
+  if (rec.state !== "idle") {
+    toast("Set up the stage before recording.");
+    return;
+  }
+  if (prefs.aspect !== ep.aspect) {
+    prefs.aspect = ep.aspect;
+    for (const t of tabs) t.strokes.length = 0; // the site reflows
+  }
+  const pages = ep.pages.slice(0, MAX_TABS);
+  if (pages.length) {
+    const before = shownKey();
+    const keep = [];
+    for (const p of pages) keep.push(tabs.find((t) => samePage(t.path, p) && !keep.includes(t)) ?? makeTab(p));
+    for (const t of tabs.filter((x) => !keep.includes(x))) t.pane.remove();
+    tabs.splice(0, tabs.length, ...keep);
+    pair = null;
+    previous = null;
+    active = keep[0];
+    afterSwitch(before);
+  }
+  plan.beat = -1;
+  save();
+  paintRail();
+  layout();
+  dirty = true;
+  paintEpisode();
+  toast(`Stage set: ${ep.aspect === "vertical" ? "9:16" : "16:9"}${pages.length ? `, ${pages.length} page${pages.length > 1 ? "s" : ""} in tabs` : ""}. R to record, G for the next beat.`, 4000);
+}
+
+/** Shade where the chosen app paints its own UI. Only on an idle 9:16 stage, so never in a take. */
+function paintGuide() {
+  const g = $("guide");
+  const z = plan.safe[prefs.guide];
+  const show = Boolean(z) && prefs.aspect === "vertical" && rec.state === "idle";
+  g.hidden = !show;
+  if (!show) return;
+  const pct = (v, of) => `${((v / of) * 100).toFixed(2)}%`;
+  g.querySelector(".g-top").style.height = pct(z.top, 1920);
+  g.querySelector(".g-bottom").style.height = pct(z.bottom, 1920);
+  const r = g.querySelector(".g-right");
+  r.style.width = pct(z.right, 1080);
+  r.style.top = pct(z.top, 1920);
+  r.style.bottom = pct(z.bottom, 1920);
+  const names = { tiktok: "TikTok", shorts: "Shorts", reels: "Reels" };
+  $("guideLabel").textContent = `${names[prefs.guide] ?? prefs.guide} UI: keep text out of the shaded areas`;
+}
+
+/** Results for a take: one platform at a time, logged through content_intel so the plan learns. */
+function toggleResults(li, t) {
+  const open = li.querySelector("form");
+  if (open) {
+    open.remove();
+    return;
+  }
+  const f = document.createElement("form");
+  const segs = t.episode?.segment
+    ? ""
+    : `<label class="wide">Segment<select name="segment">${Object.entries(plan.segments)
+        .map(([id, n]) => `<option value="${id}">${escapeHtml(n)}</option>`)
+        .join("")}</select></label>`;
+  const plats = Object.entries(plan.platforms);
+  f.innerHTML = `
+    <label class="wide">Platform<select name="platform">${plats.map(([id, p]) => `<option value="${id}">${escapeHtml(p.label)}</option>`).join("")}</select></label>
+    ${segs}
+    <label>Views<input name="views" inputmode="numeric" placeholder="5400" /></label>
+    <label>Impressions (X)<input name="impressions" inputmode="numeric" /></label>
+    <label>Avg watched %<input name="watch_pct" inputmode="decimal" placeholder="42" /></label>
+    <label>Likes<input name="likes" inputmode="numeric" /></label>
+    <label>Comments / replies<input name="comments" inputmode="numeric" /></label>
+    <label>Shares / reposts<input name="shares" inputmode="numeric" /></label>
+    <label>Saves / bookmarks<input name="saves" inputmode="numeric" /></label>
+    <label>New follows / subs<input name="follows" inputmode="numeric" /></label>
+    <label>CTR % (YouTube)<input name="ctr" inputmode="decimal" /></label>
+    <label>Posted (date)<input name="posted_at" type="date" /></label>
+    <label class="wide">Post link<input name="url" placeholder="https://..." /></label>
+    <div class="row wide"><button class="grow" type="submit">Log results</button><button type="button" data-cancel>Close</button></div>`;
+  f.querySelector("[data-cancel]").onclick = () => f.remove();
+  f.onsubmit = async (e) => {
+    e.preventDefault();
+    const body = { take: t.name };
+    for (const [k, v] of new FormData(f)) if (String(v).trim()) body[k] = String(v).trim();
+    const r = await fetch("/__booth/api/perf", { method: "POST", body: JSON.stringify(body) })
+      .then((x) => x.json())
+      .catch(() => ({ ok: false, message: "the booth window is closed" }));
+    toast(r.message || (r.ok ? "Logged." : "Not logged."), 5000);
+    // Logged: clear the numbers for the next platform; the form stays open.
+    if (r.ok) for (const i of f.querySelectorAll("input")) i.value = "";
+  };
+  li.append(f);
+  f.querySelector("input[name=views]").focus();
 }
 
 /* ── hotkeys (heard from the booth AND from the site frame) ── */
@@ -1334,6 +1614,7 @@ function onKey(e) {
   if (k === "r") (rec.state === "idle" ? startRecording : stopRecording)();
   else if (k === "q") togglePause();
   else if (k === "m") addChapter();
+  else if (k === "g") nextBeat();
   else if (tools[k]) setTool(tool === tools[k] && k !== "v" ? "browse" : tools[k]);
   else if (k === "Escape") {
     zoomOut();
@@ -1388,6 +1669,8 @@ function paintRail() {
   $("countOn").checked = prefs.countdown;
   $("autoCh").checked = prefs.autoChapters;
   $("fade").checked = prefs.fade;
+  document.querySelectorAll("#guideSeg button").forEach((b) => b.classList.toggle("on", b.dataset.guide === prefs.guide));
+  paintGuide();
 }
 
 for (const [i, [label, color]] of TONES.entries()) {
@@ -1466,6 +1749,25 @@ $("micSel").onchange = (e) => {
   save();
   startDevices();
 };
+$("epSel").onchange = (e) => selectEpisode(e.target.value);
+$("epHook").onclick = () => {
+  if (!plan.ep?.hooks.length) return;
+  plan.hook = (plan.hook + 1) % plan.ep.hooks.length;
+  paintEpisode();
+};
+$("epSetup").onclick = setupStage;
+$("beatBtn").onclick = nextBeat;
+$("planRefresh").onclick = async () => {
+  $("planRefresh").disabled = true;
+  status("Rebuilding the show plan (live slates + your logged results)...");
+  const r = await fetch("/__booth/api/intel-refresh", { method: "POST" })
+    .then((x) => x.json())
+    .catch(() => ({ ok: false, message: "booth offline" }));
+  $("planRefresh").disabled = false;
+  status(r.ok ? "Show plan rebuilt." : `Plan rebuild failed: ${r.message}`, !r.ok);
+  await loadPlan(r.ok ? r.message : "");
+};
+document.querySelectorAll("#guideSeg button").forEach((b) => (b.onclick = () => setPref("guide", b.dataset.guide)));
 $("recBtn").onclick = () => (rec.state === "idle" ? startRecording() : stopRecording());
 $("pauseBtn").onclick = togglePause;
 $("chapterBtn").onclick = () => addChapter();
@@ -1513,6 +1815,7 @@ layout();
 startDevices();
 connectPhoneRelay();
 refreshTakes();
+loadPlan();
 fetch("/__booth/api/info")
   .then((r) => r.json())
   .then((i) => {

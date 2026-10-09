@@ -7,6 +7,10 @@ rem  Click around the site as normal, draw markers over it, spotlight
 rem  a row, zoom into a card, drop chapter markers - press R to record.
 rem  Only the stage is recorded (use Chrome or Edge). Takes land in
 rem  video\footage\site\ as an .mp4 plus NAME.chapters.txt for YouTube.
+rem  Show plan: pick a planned episode (content intel roadmap), Set up
+rem  stage, G for each beat. Each take gets NAME.post.md (captions per
+rem  app); Results on a take logs its numbers so the plan learns.
+rem  See docs\CONTENT_INTELLIGENCE.md.
 rem
 rem  Options:  --origin http://localhost:8788   record a local build
 rem            --port 8792                      another port

@@ -77,6 +77,83 @@ const findFfmpeg = () => {
 };
 const ffmpeg = findFfmpeg();
 
+/* ── content intelligence: the show plan (outputs/content_intel.py) ── */
+const repo = path.resolve(root, "..");
+const intelDir = path.join(root, "intel");
+const roadmapFile = path.join(intelDir, "roadmap.json");
+const findPython = () => {
+  const home = process.env.USERPROFILE || process.env.HOME || "";
+  const win = process.platform === "win32";
+  const venv = (dir) => path.join(dir, "crawl_env", win ? "Scripts" : "bin", win ? "python.exe" : "python");
+  return [process.env.PYTHON, venv(repo), home && venv(home)].filter(Boolean).find((c) => fs.existsSync(c)) || (win ? "python" : "python3");
+};
+const python = findPython();
+/** Run `python -m outputs.content_intel ...` from the repo root. Never throws. */
+const runIntel = (argv, timeoutMs = 90_000) =>
+  new Promise((resolve) => {
+    const p = spawn(python, ["-m", "outputs.content_intel", ...argv], { cwd: repo, windowsHide: true, env: { ...process.env, PYTHONIOENCODING: "utf-8" } });
+    let out = "";
+    let err = "";
+    const timer = setTimeout(() => p.kill(), timeoutMs);
+    p.stdout.on("data", (d) => (out += d));
+    p.stderr.on("data", (d) => (err += d));
+    p.on("error", (e) => {
+      clearTimeout(timer);
+      resolve({ code: -1, out, err: `could not start ${python}: ${e.message}` });
+    });
+    p.on("close", (code) => {
+      clearTimeout(timer);
+      resolve({ code, out: out.trim(), err: err.trim() });
+    });
+  });
+const readJson = (file) => {
+  try {
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch {
+    return null;
+  }
+};
+/**
+ * The platforms' UI-safe areas, read from the one place they are defined
+ * (src/ds/safe.ts) rather than restated here. Missing or unparseable: no guide.
+ */
+const safeZones = () => {
+  try {
+    const src = fs.readFileSync(path.join(root, "src", "ds", "safe.ts"), "utf8");
+    const body = src.slice(src.indexOf("export const SAFE"), src.indexOf("};", src.indexOf("export const SAFE")));
+    const out = {};
+    for (const m of body.matchAll(/"?([\w-]+)"?\s*:\s*\{\s*top:\s*(\d+),\s*right:\s*(\d+),\s*bottom:\s*(\d+)\s*\}/g)) {
+      out[m[1]] = { top: +m[2], right: +m[3], bottom: +m[4] };
+    }
+    return out;
+  } catch {
+    return {};
+  }
+};
+const playbookSegments = () => {
+  const pb = readJson(path.join(repo, "outputs", "content_playbook.json"));
+  const segs = Object.fromEntries(Object.entries(pb?.segments ?? {}).map(([id, g]) => [id, g.name]));
+  const plats = Object.fromEntries(Object.entries(pb?.platforms ?? {}).map(([id, p]) => [id, { label: p.label, base: p.base }]));
+  return { segments: segs, platforms: plats };
+};
+/** Everything a take needs to be posted: per-platform title, caption, post text and length. */
+const postKit = (name, body, episode) => {
+  const L = [`# ${episode.title}`, "", `Take ${name} · ${stamp(body.duration || 0)} · ${episode.aspect === "vertical" ? "9:16" : "16:9"} · ${episode.name}`, ""];
+  if (body.episode?.hook) L.push(`Hook used: ${body.episode.hook}`, "");
+  for (const [id, k] of Object.entries(episode.platforms ?? {})) {
+    const [lo, hi] = k.length_s;
+    const d = body.duration || 0;
+    const verdict = d > hi ? `OVER - cut to ${stamp(hi)} or less` : d < lo ? "short of the best range (fine if it loops)" : "fits";
+    L.push(`## ${k.label}`, `- Length ${stamp(d)}: ${verdict} (best ${stamp(lo)}-${stamp(hi)})`);
+    if (k.title) L.push(`- Title: ${k.title}`);
+    L.push(`- Caption: ${k.caption}`);
+    if (k.post_text) L.push(`- Post text: ${k.post_text}`);
+    L.push(`- Post: ${k.post_window_et.join(", ")} ET`, `- ${k.packaging}`, `- After it's up a few days: log its numbers with Results on this take in the booth (${id}).`, "");
+  }
+  if (episode.compliance?.length) L.push("## Compliance", ...episode.compliance.map((c) => `- ${c}`), "");
+  return L.join("\n");
+};
+
 /* ── helpers ── */
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".png": "image/png", ".svg": "image/svg+xml" };
 const sendFile = (res, file) => {
@@ -137,6 +214,8 @@ const listTakes = () =>
         state: job?.state ?? (fs.existsSync(mp4) ? "done" : "raw"),
         error: job?.error ?? "",
         chapters: fs.existsSync(path.join(footage, `${name}.chapters.txt`)),
+        post: fs.existsSync(path.join(footage, `${name}.post.md`)),
+        episode: readJson(path.join(footage, `${name}.json`))?.episode ?? null,
       };
     })
     .sort((a, b) => (a.name < b.name ? 1 : -1));
@@ -281,6 +360,30 @@ const server = http.createServer(async (req, res) => {
         }
         return json(res, bracketCache.get(season).data);
       }
+      if (api === "intel") {
+        // The show plan. Built on first use; Refresh rebuilds it (live slates + logged results).
+        let built = null;
+        if (!fs.existsSync(roadmapFile)) built = await runIntel(["roadmap", "--quiet"]);
+        const roadmap = readJson(roadmapFile);
+        return json(res, { roadmap, safe: safeZones(), ...playbookSegments(), error: roadmap ? "" : built?.err || built?.out || "no roadmap" });
+      }
+      if (req.method === "POST" && api === "intel-refresh") {
+        const r = await runIntel(["roadmap", "--quiet"]);
+        return json(res, { ok: r.code === 0, message: r.code === 0 ? r.out.split("\n").pop() : r.err || r.out }, r.code === 0 ? 200 : 500);
+      }
+      if (req.method === "POST" && api === "perf") {
+        // One post's results, logged through the intelligence module so validation lives in one place.
+        let body;
+        try {
+          body = JSON.parse((await readBody(req)).toString("utf8") || "{}");
+        } catch {
+          return json(res, { ok: false, message: "bad JSON" }, 400);
+        }
+        if (body.take && !safeName(body.take)) return json(res, { ok: false, message: "bad take name" }, 400);
+        const r = await runIntel(["log", "--json", JSON.stringify(body)], 30_000);
+        const message = (r.code === 0 ? r.out : r.err || r.out).replace(/^content intel:\s*/, "");
+        return json(res, { ok: r.code === 0, message }, r.code === 0 ? 200 : 400);
+      }
       if (api === "lan") return json(res, { urls: secureUp ? lanIps().map((ip) => `https://${ip}:${phonePort}/mic`) : [], port: phonePort });
       if (req.method === "POST" && api === "chunk") {
         // Chunks arrive in order (the page sends them one at a time); seq 0 starts the file.
@@ -298,6 +401,8 @@ const server = http.createServer(async (req, res) => {
         const duration = Number(body.duration) || 0;
         fs.writeFileSync(path.join(footage, `${name}.chapters.txt`), chapterSheet(body.chapters ?? [], duration));
         fs.writeFileSync(path.join(footage, `${name}.json`), JSON.stringify({ ...body, origin }, null, 2));
+        const planned = body.episode?.id && readJson(roadmapFile)?.episodes?.find((e) => e.id === body.episode.id);
+        if (planned) fs.writeFileSync(path.join(footage, `${name}.post.md`), postKit(name, body, planned));
         const mb = (fs.statSync(path.join(footage, `${name}.webm`)).size / 1e6).toFixed(1);
         console.log(`  saved ${name}.webm (${mb} MB, ${stamp(duration)}, ${(body.chapters ?? []).length} markers)`);
         encode(name, body.aspect === "vertical" ? "vertical" : "wide", body.audioDelay);
@@ -312,7 +417,7 @@ const server = http.createServer(async (req, res) => {
       }
       if (req.method === "POST" && api === "delete") {
         if (!name) return res.writeHead(400).end("bad name");
-        for (const e of [".webm", ".mp4", ".chapters.txt", ".json"]) fs.rmSync(path.join(footage, name + e), { force: true });
+        for (const e of [".webm", ".mp4", ".chapters.txt", ".json", ".post.md"]) fs.rmSync(path.join(footage, name + e), { force: true });
         jobs.delete(name);
         return res.writeHead(200).end("ok");
       }
