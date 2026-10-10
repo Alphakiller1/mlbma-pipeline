@@ -109,6 +109,10 @@ textarea {
 .ring.live {
   border-color: var(--b-red);
 }
+.clip {
+  position: absolute;
+  inset: 0;
+}
 .zoom {
   position: absolute;
   inset: 0;
@@ -347,6 +351,16 @@ textarea {
 }
 .grow {
   flex: 1;
+}
+/* Build a show: sport, show, game, then the format that builds it. */
+.pick {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--b-line);
+}
+.pick select {
+  min-width: 0;
 }
 .tabs {
   display: flex;
@@ -649,4 +663,154 @@ textarea {
 }
 select[hidden] {
   display: none;
+}
+
+/* ── show plan (content intelligence) ── */
+.ep {
+  display: grid;
+  gap: 8px;
+}
+.ep-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  align-items: center;
+  color: var(--b-dim);
+  font-size: 12px;
+}
+.ep-meta b {
+  color: var(--b-text);
+}
+.ep-meta em {
+  font-style: normal;
+  font-size: 11px;
+  padding: 1px 6px;
+  border: 1px solid var(--b-line);
+  border-radius: 999px;
+}
+.ep-hook {
+  text-align: left;
+  font: 700 14px/1.3 var(--ca-font-display, sans-serif);
+  background: var(--b-bg);
+  border-left: 3px solid var(--b-violet);
+  padding: 8px 10px;
+}
+.beats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+.beats li {
+  display: grid;
+  grid-template-columns: 38px 1fr auto;
+  gap: 2px 8px;
+  padding: 5px 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.beats li span {
+  color: var(--b-dim);
+  font-variant-numeric: tabular-nums;
+}
+.beats li small {
+  grid-column: 2 / -1;
+  color: var(--b-dim);
+}
+.beats li em {
+  font-style: normal;
+  color: var(--b-dim);
+  font-variant-numeric: tabular-nums;
+}
+.beats li.done {
+  opacity: 0.45;
+}
+.beats li.now {
+  background: var(--b-raise);
+  outline: 1px solid var(--b-violet);
+}
+.beats li.now em {
+  color: var(--b-text);
+}
+.beats li.over em {
+  color: var(--ca-amber-500, #e8c24a);
+}
+.fit {
+  font-size: 12px;
+  color: var(--b-dim);
+}
+.fit b {
+  color: var(--b-green);
+  font-weight: 600;
+}
+.fit b.over {
+  color: var(--ca-amber-500, #e8c24a);
+}
+
+/* The platform guide: shaded where the app paints its UI over a 9:16 video (src/ds/safe.ts). */
+.guide {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 6;
+}
+.guide i {
+  position: absolute;
+  background: color-mix(in srgb, var(--b-red) 22%, transparent);
+  outline: 1px dashed color-mix(in srgb, var(--b-red) 70%, transparent);
+  outline-offset: -1px;
+}
+.guide .g-top {
+  left: 0;
+  right: 0;
+  top: 0;
+}
+.guide .g-bottom {
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.guide .g-right {
+  right: 0;
+}
+.guide b {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  font: 700 11px/1 var(--ca-font-display, sans-serif);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+/* Results form under a take */
+.takes li {
+  grid-template-columns: 1fr auto auto auto;
+}
+.takes form {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  padding: 8px;
+  border: 1px solid var(--b-line);
+  border-radius: 6px;
+  background: var(--b-bg);
+}
+.takes form label {
+  display: grid;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--b-dim);
+}
+.takes form .wide {
+  grid-column: 1 / -1;
+}
+.takes form input,
+.takes form select {
+  padding: 4px 6px;
 }

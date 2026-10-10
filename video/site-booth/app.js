@@ -38,6 +38,9 @@ const prefs = Object.assign(
     tab: 0, // the active one
     pair: null, // [i, j] while comparing
     notes: "",
+    guide: "tiktok", // the platform UI guide on a 9:16 stage: off | tiktok | shorts | reels
+    safeFit: true, // on a 9:16 stage, keep the site inside the guide's safe area
+    episode: "", // the show-plan episode picked last
   },
   (() => {
     try {
@@ -84,7 +87,18 @@ const tone = () => TONES[prefs.tone % TONES.length][1];
  * The stage holds one tab, or two side by side (16:9) / stacked (9:16) when comparing.
  * Each visible tab gets a pane: a clip box at its spot on the stage, holding a viewport
  * that renders the site at `W` CSS px wide and is scaled by `k` to fit the pane. */
-const geo = { sw: 0, sh: 0, zoom: { z: 1, tx: 0, ty: 0 } };
+const geo = { sw: 0, sh: 0, safe: {}, zoom: { z: 1, tx: 0, ty: 0 } };
+/**
+ * Where the app's own UI covers a 9:16 video (from src/ds/safe.ts, in 1080x1920 px), in
+ * stage px. With Fit on and a guide picked, the site and the camera's corners stay inside
+ * it; the margins are bare stage, under the app's buttons and captions anyway.
+ */
+function safeInset() {
+  const z = geo.safe[prefs.guide];
+  if (!z || prefs.aspect !== "vertical" || !prefs.safeFit) return { top: 0, right: 0, bottom: 0 };
+  const k = geo.sw / 1080;
+  return { top: Math.round(z.top * k), right: Math.round(z.right * k), bottom: Math.round(z.bottom * k) };
+}
 const CAM_SIZES = [0.22, 0.3, 0.4];
 // The page width the site renders at, per format, alone and when comparing (each tab gets
 // half the stage there, so a narrower page keeps the type readable).
@@ -107,25 +121,30 @@ function layout() {
   stage.style.width = `${sw}px`;
   stage.style.height = `${sh}px`;
   const W = siteWidth();
+  // The content box: the whole stage, or the platform's safe area when fitted.
+  const ins = safeInset();
+  const [bx, by, bw, bh] = [0, ins.top, sw - ins.right, sh - ins.top - ins.bottom];
+  $("clip").style.clipPath = ins.top || ins.right || ins.bottom ? `inset(${ins.top}px ${ins.right}px ${ins.bottom}px 0)` : "";
   // Comparing: two panes with a thin violet rule between them (recorded, so viewers see the split).
   const gap = pair ? Math.max(2, Math.round(Math.min(sw, sh) * 0.005)) : 0;
   const rects = !pair
-    ? [[0, 0, sw, sh]]
+    ? [[bx, by, bw, bh]]
     : vertical
       ? [
-          [0, 0, sw, Math.floor((sh - gap) / 2)],
-          [0, Math.floor((sh - gap) / 2) + gap, sw, sh - Math.floor((sh - gap) / 2) - gap],
+          [bx, by, bw, Math.floor((bh - gap) / 2)],
+          [bx, by + Math.floor((bh - gap) / 2) + gap, bw, bh - Math.floor((bh - gap) / 2) - gap],
         ]
       : [
-          [0, 0, Math.floor((sw - gap) / 2), sh],
-          [Math.floor((sw - gap) / 2) + gap, 0, sw - Math.floor((sw - gap) / 2) - gap, sh],
+          [bx, by, Math.floor((bw - gap) / 2), bh],
+          [bx + Math.floor((bw - gap) / 2) + gap, by, bw - Math.floor((bw - gap) / 2) - gap, bh],
         ];
   const vis = shown();
   for (const t of tabs) t.pane.classList.toggle("hidden", !vis.includes(t));
   vis.forEach((t, i) => placeTab(t, rects[i], W));
   divider.classList.toggle("show", Boolean(pair));
   if (pair) {
-    const [x, y, w, h] = vertical ? [0, rects[0][3], sw, gap] : [rects[0][2], 0, gap, sh];
+    const [x0, y0, w0, h0] = rects[0];
+    const [x, y, w, h] = vertical ? [x0, y0 + h0, w0, gap] : [x0 + w0, y0, gap, h0];
     Object.assign(divider.style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px` });
   }
   paintFocus();
@@ -182,12 +201,13 @@ function placeOverlays() {
   const w = box ? Math.round(size * 1.2) : size;
   const h = box ? Math.round(size * 0.9) : size;
   let x, y;
+  const ins = safeInset();
   if (prefs.camFree) {
     x = prefs.camFree.x * sw;
     y = prefs.camFree.y * sh;
   } else {
-    x = prefs.corner.includes("l") ? m : sw - w - m;
-    y = prefs.corner.includes("t") ? m : sh - h - m;
+    x = prefs.corner.includes("l") ? m : sw - ins.right - w - m;
+    y = prefs.corner.includes("t") ? ins.top + m : sh - ins.bottom - h - m;
   }
   x = Math.max(0, Math.min(sw - w, x));
   y = Math.max(0, Math.min(sh - h, y));
@@ -201,7 +221,7 @@ function placeOverlays() {
   const camTop = y < sh / 2;
   const camLeft = x < sw / 2;
   const bugLeft = prefs.camOn && camTop && !camLeft;
-  Object.assign(bug.style, { top: `${m}px`, left: bugLeft ? `${m}px` : "auto", right: bugLeft ? "auto" : `${m}px` });
+  Object.assign(bug.style, { top: `${ins.top + m}px`, left: bugLeft ? `${m}px` : "auto", right: bugLeft ? "auto" : `${ins.right + m}px` });
   bug.classList.toggle("off", !prefs.bug);
 
   // Name strap: bottom-left, beside the camera when the camera is down there.
@@ -211,7 +231,7 @@ function placeOverlays() {
   $("lowerHandle").textContent = prefs.handle;
   const beside = prefs.camOn && !camTop && camLeft;
   lower.style.left = `${beside ? x + w + m * 0.6 : 0}px`;
-  lower.style.bottom = `${beside ? sh - (y + h) + h * 0.12 : m * 1.4}px`;
+  lower.style.bottom = `${beside ? sh - (y + h) + h * 0.12 : ins.bottom + m * 1.4}px`;
   lower.classList.toggle("off", !prefs.lower);
 }
 
@@ -220,7 +240,7 @@ function applyZoom() {
   const { z, tx, ty } = geo.zoom;
   zoomEl.style.transform = `translate(${tx}px, ${ty}px) scale(${z})`;
 }
-/** Zoom so a rect in tab `t`'s viewport (site CSS px) coordinates fills the stage. */
+/** Zoom so a rect in tab `t`'s viewport (site CSS px) coordinates fills the stage (its safe area, when fitted). */
 function zoomTo(r, t) {
   const k = t.k;
   const pad = 16;
@@ -228,11 +248,14 @@ function zoomTo(r, t) {
   const ry = t.y + (r.y - pad) * k;
   const rw = (r.w + pad * 2) * k;
   const rh = (r.h + pad * 2) * k;
-  const z = Math.max(1, Math.min(3, Math.min(geo.sw / rw, geo.sh / rh)));
-  let tx = geo.sw / 2 - z * (rx + rw / 2);
-  let ty = geo.sh / 2 - z * (ry + rh / 2);
-  tx = Math.min(0, Math.max(geo.sw - z * geo.sw, tx));
-  ty = Math.min(0, Math.max(geo.sh - z * geo.sh, ty));
+  const ins = safeInset();
+  const [bx, by, bw, bh] = [0, ins.top, geo.sw - ins.right, geo.sh - ins.top - ins.bottom];
+  const z = Math.max(1, Math.min(3, Math.min(bw / rw, bh / rh)));
+  let tx = bx + bw / 2 - z * (rx + rw / 2);
+  let ty = by + bh / 2 - z * (ry + rh / 2);
+  // Keep the zoomed content box covering the box: no bare stage creeps in at an edge.
+  tx = Math.min(bx - z * bx, Math.max(bx + bw - z * (bx + bw), tx));
+  ty = Math.min(by - z * by, Math.max(by + bh - z * (by + bh), ty));
   geo.zoom = { z, tx, ty };
   applyZoom();
 }
@@ -1162,11 +1185,13 @@ async function startRecording() {
     return;
   }
   rec.state = "arming";
+  paintGuide(); // off the stage before the capture can see it
   let track;
   try {
     track = await ensureCapture();
   } catch (e) {
     rec.state = "idle";
+    paintGuide();
     status(e.name === "NotAllowedError" ? "Sharing was cancelled. R to try again." : e.message, true);
     return;
   }
@@ -1187,7 +1212,14 @@ async function startRecording() {
   rec.chapters = [];
   rec.pages = [];
   rec.failed = false;
-  if (shown().length) rec.chapters.push({ t: 0, label: stageLabel(), path: stagePath() });
+  rec.beats = [];
+  if (plan.ep) {
+    plan.beat = 0;
+    plan.beatAt = 0;
+    rec.beats.push({ label: plan.ep.beats[0].label, t: 0 });
+    rec.chapters.push({ t: 0, label: plan.ep.beats[0].label, path: stagePath() });
+    paintEpisode();
+  } else if (shown().length) rec.chapters.push({ t: 0, label: stageLabel(), path: stagePath() });
   rec.recorder = new MediaRecorder(new MediaStream(tracks), { mimeType: pickType(), videoBitsPerSecond: 12_000_000, audioBitsPerSecond: 192_000 });
   rec.recorder.ondataavailable = (e) => {
     if (!e.data.size) return;
@@ -1218,6 +1250,7 @@ async function stopRecording() {
   if (r.state !== "inactive") r.stop();
   rec.state = "idle";
   paintRec();
+  paintGuide();
   setAspectLocked(false);
   await stopped;
   status("Saving the take...");
@@ -1225,7 +1258,18 @@ async function stopRecording() {
   if (rec.failed) return;
   const res = await fetch(`/__booth/api/finish?name=${rec.name}`, {
     method: "POST",
-    body: JSON.stringify({ duration, chapters: rec.chapters, aspect: prefs.aspect, siteWidth: active?.W, compare: Boolean(pair), capture: captureMode, audioDelay: rec.audioDelay || 0 }),
+    body: JSON.stringify({
+      duration,
+      chapters: rec.chapters,
+      aspect: prefs.aspect,
+      siteWidth: active?.W,
+      compare: Boolean(pair),
+      capture: captureMode,
+      audioDelay: rec.audioDelay || 0,
+      episode: plan.ep
+        ? { id: plan.ep.id, segment: plan.ep.segment, topic: plan.ep.topic?.id ?? null, sport: plan.ep.sport, name: plan.ep.name, title: plan.ep.title, hook: plan.ep.hooks[plan.hook] ?? "", beats: rec.beats }
+        : null,
+    }),
   });
   status(res.ok ? `Saved ${rec.name}. Making the mp4...` : `Finishing failed (${res.status}).`, !res.ok);
   refreshTakes();
@@ -1274,12 +1318,16 @@ function paintRec() {
 }
 setInterval(() => {
   if (rec.state === "recording" || rec.state === "paused") $("timer").textContent = clock(elapsed());
+  paintPlanLive();
 }, 250);
 window.addEventListener("beforeunload", (e) => {
   if (rec.state !== "idle") e.preventDefault();
 });
 
-const setAspectLocked = (locked) => document.querySelectorAll("#aspectSeg button, #siteWidth, #camSel, #micSel").forEach((b) => (b.disabled = locked));
+const setAspectLocked = (locked) => {
+  document.querySelectorAll("#aspectSeg button, #siteWidth, #camSel, #micSel, #guideSeg button, #safeFit").forEach((b) => (b.disabled = locked));
+  paintPick();
+};
 
 /* ── takes ── */
 let takesTimer = 0;
@@ -1287,13 +1335,20 @@ async function refreshTakes() {
   clearTimeout(takesTimer);
   const { takes } = await fetch("/__booth/api/takes").then((r) => r.json()).catch(() => ({ takes: [] }));
   const ul = $("takes");
+  // Typing results into a take's form: do not rebuild the list under it.
+  if (ul.querySelector("form")) {
+    if (takes.some((t) => t.state === "encoding")) takesTimer = setTimeout(refreshTakes, 2500);
+    return;
+  }
   ul.innerHTML = "";
   if (!takes.length) ul.innerHTML = `<li><small>No takes yet.</small></li>`;
   for (const t of takes.slice(0, 12)) {
     const li = document.createElement("li");
     const state =
       t.state === "encoding" ? "making mp4..." : t.state === "failed" ? `<span class="bad">mp4 failed: ${t.error}</span>` : t.mp4 ? "mp4 ready" : "webm";
-    li.innerHTML = `<div>${t.name}<small>${t.mb} MB · ${state}${t.chapters ? " · chapters" : ""}</small></div><button data-show>Show</button><button data-del>Delete</button>`;
+    const ep = t.episode?.title ? ` · ${escapeHtml(t.episode.title)}` : "";
+    li.innerHTML = `<div>${t.name}<small>${t.mb} MB · ${state}${t.chapters ? " · chapters" : ""}${t.post ? " · post kit" : ""}${ep}</small></div><button data-res title="Log how this did on each app, so the plan learns">Results</button><button data-show>Show</button><button data-del>Delete</button>`;
+    li.querySelector("[data-res]").onclick = () => toggleResults(li, t);
     li.querySelector("[data-show]").onclick = () => fetch(`/__booth/api/reveal?name=${t.name}`, { method: "POST" });
     li.querySelector("[data-del]").onclick = async () => {
       if (!confirm(`Delete ${t.name} (the recording, mp4 and chapters)?`)) return;
@@ -1308,6 +1363,355 @@ async function refreshTakes() {
     if (t?.state === "done") status(`${t.name}.mp4 is ready. Show opens the folder.`);
     else if (t?.state === "failed") status(`mp4 failed; the .webm is saved. ${t.error}`, true);
   }
+}
+
+/* ── show plan: the roadmap from outputs/content_intel.py (content intel roadmap) ── */
+const plan = { episodes: [], segments: {}, platforms: {}, pickable: {}, safe: {}, ep: null, hook: 0, beat: -1, beatAt: 0 };
+const escapeHtml = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const el = (tag, text, cls) => {
+  const n = document.createElement(tag);
+  if (text != null) n.textContent = text;
+  if (cls) n.className = cls;
+  return n;
+};
+/** The site drops ".html" (matchup.html?game= is served as matchup?game=), so compare without it,
+ * and without the #tab: a matchup page's tabs are hash routes on the same page. */
+const pageOnly = (p) => String(p).split("#")[0].replace(/\.html(?=[?]|$)/, "");
+const samePage = (a, b) => pageOnly(a) === pageOnly(b);
+const todayIso = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+
+async function loadPlan(message) {
+  const r = await fetch("/__booth/api/intel")
+    .then((x) => x.json())
+    .catch(() => null);
+  plan.safe = r?.safe ?? {};
+  geo.safe = plan.safe;
+  layout();
+  plan.segments = r?.segments ?? {};
+  plan.platforms = r?.platforms ?? {};
+  plan.pickable = r?.pickable ?? {};
+  plan.episodes = r?.roadmap?.episodes ?? [];
+  const sel = $("epSel");
+  sel.innerHTML = "";
+  sel.append(new Option(plan.episodes.length ? "No plan: free recording" : `No plan (${r?.error || "booth offline"})`, ""));
+  const from = todayIso();
+  let group = null;
+  for (const e of plan.episodes) {
+    if (e.date < from) continue;
+    if (group?.dataset.date !== e.date) {
+      group = document.createElement("optgroup");
+      group.dataset.date = e.date;
+      group.label = `${e.date === from ? "Today" : e.weekday} ${e.date.slice(5)}`;
+      sel.append(group);
+    }
+    group.append(new Option(`${e.format === "vertical" ? "9:16" : "16:9"} · ${e.title}`, e.id));
+  }
+  const keep = plan.episodes.find((e) => e.id === prefs.episode && e.date >= from);
+  const first = plan.episodes.find((e) => e.date === from);
+  selectEpisode((keep ?? first)?.id ?? "");
+  paintGuide();
+  paintPick();
+  if (message) toast(message, 4000);
+}
+
+function selectEpisode(id) {
+  if (rec.state !== "idle" && plan.ep) {
+    toast("Finish the take before switching episodes.");
+    $("epSel").value = plan.ep.id;
+    return;
+  }
+  plan.ep = plan.episodes.find((e) => e.id === id) ?? null;
+  plan.hook = 0;
+  plan.beat = -1;
+  $("epSel").value = plan.ep ? plan.ep.id : "";
+  prefs.episode = plan.ep?.id ?? "";
+  save();
+  paintEpisode();
+}
+
+function paintEpisode() {
+  const ep = plan.ep;
+  $("ep").hidden = !ep;
+  if (!ep) return;
+  const meta = $("epMeta");
+  meta.innerHTML = "";
+  meta.append(el("b", ep.name), el("span", [ep.sport_label, ep.format === "vertical" ? "9:16" : "16:9", `~${clock(ep.target_s)}`].filter(Boolean).join(" · ")));
+  for (const k of Object.values(ep.platforms)) meta.append(el("em", k.label));
+  if (ep.tentpole) meta.append(el("em", ep.tentpole));
+  $("epHook").textContent = ep.hooks[plan.hook] ?? ep.title;
+  $("epHook").title = ep.hooks.length > 1 ? `Hook ${plan.hook + 1} of ${ep.hooks.length}. Click for the next.` : "The hook";
+  const ol = $("epBeats");
+  ol.innerHTML = "";
+  ep.beats.forEach((b, i) => {
+    const li = document.createElement("li");
+    li.classList.toggle("done", plan.beat > i);
+    li.classList.toggle("now", plan.beat === i);
+    const cue = [b.cue, b.action, b.page].filter(Boolean).join(" · ");
+    li.append(el("span", clock(b.at_s)), el("b", b.label), el("em", `${b.s}s`), el("small", cue));
+    li.onclick = () => goBeat(i);
+    ol.append(li);
+  });
+  const scores = Object.entries(ep.why?.scores ?? {})
+    .map(([p, s]) => `${plan.platforms[p]?.label ?? p} ${s.score >= 0 ? "+" : ""}${s.score.toFixed(2)}${s.n ? ` (${s.n} posts)` : " (prior)"}`)
+    .join(", ");
+  $("epWhy").textContent = `${ep.why?.segment ?? ""} Score: ${scores}.${ep.todo?.length ? ` To do: ${ep.todo.join("; ")}.` : ""}`;
+  paintPlanLive();
+}
+
+/** Every 250 ms: where the take is against the run of show and each app's length. */
+function paintPlanLive() {
+  const ep = plan.ep;
+  if (!ep) return;
+  const live = rec.state === "recording" || rec.state === "paused";
+  const now = live ? elapsed() : 0;
+  const li = $("epBeats").children[plan.beat];
+  if (live && li && ep.beats[plan.beat]) {
+    const inBeat = now - plan.beatAt;
+    const target = ep.beats[plan.beat].s;
+    li.querySelector("em").textContent = `${clock(inBeat)} / ${clock(target)}`;
+    li.classList.toggle("over", inBeat > target + 1);
+  }
+  const fit = $("epFit");
+  fit.innerHTML = "";
+  if (!live) {
+    fit.append(`Target ~${clock(ep.target_s)}. Best length: `);
+    Object.values(ep.platforms).forEach((k, i) => {
+      if (i) fit.append(", ");
+      fit.append(el("b", `${k.label} ${clock(k.length_s[0])}-${clock(k.length_s[1])}`));
+    });
+    return;
+  }
+  fit.append(`${clock(now)} of ~${clock(ep.target_s)}: `);
+  Object.values(ep.platforms).forEach((k, i) => {
+    if (i) fit.append(", ");
+    const over = now > k.length_s[1];
+    fit.append(el("b", over ? `over for ${k.label}` : `${k.label} fits`, over ? "over" : ""));
+  });
+  const hookBy = Math.min(...Object.values(ep.platforms).map((k) => k.hook_s));
+  if (plan.beat === 0 && now > hookBy && ep.format === "vertical") fit.append(el("b", " · land the hook", "over"));
+}
+
+/** Move to beat i. Recording: it is a chapter, and a beat with its own page puts that page on stage. */
+function goBeat(i) {
+  const ep = plan.ep;
+  if (!ep || i < 0 || i >= ep.beats.length || i === plan.beat) return;
+  plan.beat = i;
+  const b = ep.beats[i];
+  if (rec.state === "recording" || rec.state === "paused") {
+    plan.beatAt = elapsed();
+    rec.beats.push({ label: b.label, t: Math.round(plan.beatAt * 10) / 10 });
+    addChapter(b.label);
+  }
+  if (b.page) {
+    const t = tabs.find((x) => samePage(x.path, b.page));
+    if (t) {
+      setActive(t);
+      showTab(t, b.page.split("#")[1]);
+    } else go(b.page);
+  }
+  paintEpisode();
+}
+
+/** A matchup page tab is a hash route: switch it in place (no reload). The marks were drawn on the old tab. */
+function showTab(t, hash) {
+  const w = win(t);
+  if (!hash || !w || w.location.hash === `#${hash}`) return;
+  t.strokes.length = 0;
+  t.spot = null;
+  t.lastPick = null;
+  if (shown().includes(t)) zoomOut();
+  w.location.hash = hash;
+  t.path = here(w);
+  if (t === active) $("address").value = t.path;
+  saveTabs();
+  dirty = true;
+}
+
+/* ── build a show: any game on a published slate, in either format ── */
+const builder = { sport: ["cfb", "nfl", "mlb"].includes(prefs.pickSport) ? prefs.pickSport : "cfb" };
+const dayLabel = (iso) =>
+  iso === todayIso() ? "Today" : new Date(`${iso}T12:00:00`).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+
+async function loadPickGames() {
+  const sel = $("pickGame");
+  const sport = builder.sport;
+  sel.innerHTML = "";
+  sel.append(new Option("Loading games...", ""));
+  paintPick();
+  const r = await fetch(`/__booth/api/intel-games?sport=${sport}`)
+    .then((x) => x.json())
+    .catch(() => null);
+  if (sport !== builder.sport) return; // switched sport while loading
+  const games = r?.games ?? [];
+  sel.innerHTML = "";
+  if (!games.length) sel.append(new Option(r?.error ? `No games (${r.error.split("\n").pop()})` : "No upcoming games on the slate", ""));
+  let group = null;
+  for (const g of games) {
+    if (group?.dataset.date !== g.et_date) {
+      group = document.createElement("optgroup");
+      group.dataset.date = g.et_date;
+      group.label = dayLabel(g.et_date);
+      sel.append(group);
+    }
+    const kick = new Date(g.kickoff_utc).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    group.append(new Option(`${g.away_name} at ${g.home_name} · ${kick}`, g.id));
+  }
+  if (games.some((g) => g.id === prefs.pickGame)) sel.value = prefs.pickGame;
+  paintPick();
+}
+
+function paintPick() {
+  document.querySelectorAll("#pickSport button").forEach((b) => b.classList.toggle("on", b.dataset.sport === builder.sport));
+  const segSel = $("pickSeg");
+  const want = segSel.value || prefs.pickSeg || "matchup_lab";
+  const segs = Object.entries(plan.pickable).filter(([, g]) => g.sports.includes(builder.sport));
+  segSel.innerHTML = "";
+  for (const [id, g] of segs) segSel.append(new Option(g.name, id));
+  if (segs.some(([id]) => id === want)) segSel.value = want;
+  const seg = plan.pickable[segSel.value];
+  const idle = rec.state === "idle";
+  document.querySelectorAll("#pick [data-pick]").forEach((b) => {
+    b.disabled = !idle || !seg || !seg.formats.includes(b.dataset.pick) || !$("pickGame").value;
+    b.title = seg && !seg.formats.includes(b.dataset.pick) ? `${seg.name} has no ${b.dataset.pick === "wide" ? "16:9" : "9:16"} version` : b.dataset.pick === "wide" ? "Build this show at 16:9 and set up the stage" : "Build this show at 9:16 and set up the stage";
+  });
+}
+
+async function buildShow(format) {
+  if (rec.state !== "idle") {
+    toast("Finish the take before building another show.");
+    return;
+  }
+  const body = { segment: $("pickSeg").value, format, sport: builder.sport, game: $("pickGame").value };
+  if (!body.segment || !body.game) return;
+  document.querySelectorAll("#pick [data-pick]").forEach((b) => (b.disabled = true));
+  status("Building the show...");
+  const r = await fetch("/__booth/api/intel-pick", { method: "POST", body: JSON.stringify(body) })
+    .then((x) => x.json())
+    .catch(() => ({ ok: false, message: "the booth server is not answering" }));
+  if (!r.ok) {
+    status(`Could not build the show: ${r.message}`, true);
+    paintPick();
+    return;
+  }
+  await loadPlan();
+  selectEpisode(r.id);
+  setupStage();
+  status(captureNote());
+}
+function nextBeat() {
+  if (!plan.ep) {
+    toast("Pick an episode under Show plan first.");
+    return;
+  }
+  if (plan.beat >= plan.ep.beats.length - 1) {
+    toast(rec.state === "idle" ? "That is the last beat." : "That was the last beat. R stops the take.");
+    return;
+  }
+  goBeat(plan.beat + 1);
+}
+
+/** The episode's format, and its pages as the tabs (the first one in front). */
+function setupStage() {
+  const ep = plan.ep;
+  if (!ep) return;
+  if (rec.state !== "idle") {
+    toast("Set up the stage before recording.");
+    return;
+  }
+  if (prefs.aspect !== ep.aspect) {
+    prefs.aspect = ep.aspect;
+    for (const t of tabs) t.strokes.length = 0; // the site reflows
+  }
+  const pages = ep.pages.slice(0, MAX_TABS);
+  if (pages.length) {
+    const before = shownKey();
+    const keep = [];
+    for (const p of pages) {
+      const t = tabs.find((x) => samePage(x.path, p) && !keep.includes(x));
+      // A tab left on one of the page's #tabs starts the show back at the top of the page.
+      if (t && t.path.includes("#")) go(p, t);
+      keep.push(t ?? makeTab(p));
+    }
+    for (const t of tabs.filter((x) => !keep.includes(x))) t.pane.remove();
+    tabs.splice(0, tabs.length, ...keep);
+    pair = null;
+    previous = null;
+    active = keep[0];
+    afterSwitch(before);
+  }
+  plan.beat = -1;
+  save();
+  paintRail();
+  layout();
+  dirty = true;
+  paintEpisode();
+  toast(`Stage set: ${ep.aspect === "vertical" ? "9:16" : "16:9"}${pages.length ? `, ${pages.length} page${pages.length > 1 ? "s" : ""} in tabs` : ""}. R to record, G for the next beat.`, 4000);
+}
+
+/** Shade where the chosen app paints its own UI. Only on an idle 9:16 stage, so never in a take. */
+function paintGuide() {
+  const g = $("guide");
+  const z = plan.safe[prefs.guide];
+  const show = Boolean(z) && prefs.aspect === "vertical" && rec.state === "idle";
+  g.hidden = !show;
+  if (!show) return;
+  const pct = (v, of) => `${((v / of) * 100).toFixed(2)}%`;
+  g.querySelector(".g-top").style.height = pct(z.top, 1920);
+  g.querySelector(".g-bottom").style.height = pct(z.bottom, 1920);
+  const r = g.querySelector(".g-right");
+  r.style.width = pct(z.right, 1080);
+  r.style.top = pct(z.top, 1920);
+  r.style.bottom = pct(z.bottom, 1920);
+  const names = { tiktok: "TikTok", shorts: "Shorts", reels: "Reels" };
+  $("guideLabel").textContent = `${names[prefs.guide] ?? prefs.guide} UI: keep text out of the shaded areas`;
+}
+
+/** Results for a take: one platform at a time, logged through content_intel so the plan learns. */
+function toggleResults(li, t) {
+  const open = li.querySelector("form");
+  if (open) {
+    open.remove();
+    return;
+  }
+  const f = document.createElement("form");
+  const segs = t.episode?.segment
+    ? ""
+    : `<label class="wide">Segment<select name="segment">${Object.entries(plan.segments)
+        .map(([id, n]) => `<option value="${id}">${escapeHtml(n)}</option>`)
+        .join("")}</select></label>`;
+  const plats = Object.entries(plan.platforms);
+  f.innerHTML = `
+    <label class="wide">Platform<select name="platform">${plats.map(([id, p]) => `<option value="${id}">${escapeHtml(p.label)}</option>`).join("")}</select></label>
+    ${segs}
+    <label>Views<input name="views" inputmode="numeric" placeholder="5400" /></label>
+    <label>Impressions (X)<input name="impressions" inputmode="numeric" /></label>
+    <label>Avg watched %<input name="watch_pct" inputmode="decimal" placeholder="42" /></label>
+    <label>Likes<input name="likes" inputmode="numeric" /></label>
+    <label>Comments / replies<input name="comments" inputmode="numeric" /></label>
+    <label>Shares / reposts<input name="shares" inputmode="numeric" /></label>
+    <label>Saves / bookmarks<input name="saves" inputmode="numeric" /></label>
+    <label>New follows / subs<input name="follows" inputmode="numeric" /></label>
+    <label>CTR % (YouTube)<input name="ctr" inputmode="decimal" /></label>
+    <label>Posted (date)<input name="posted_at" type="date" /></label>
+    <label class="wide">Post link<input name="url" placeholder="https://..." /></label>
+    <div class="row wide"><button class="grow" type="submit">Log results</button><button type="button" data-cancel>Close</button></div>`;
+  f.querySelector("[data-cancel]").onclick = () => f.remove();
+  f.onsubmit = async (e) => {
+    e.preventDefault();
+    const body = { take: t.name };
+    for (const [k, v] of new FormData(f)) if (String(v).trim()) body[k] = String(v).trim();
+    const r = await fetch("/__booth/api/perf", { method: "POST", body: JSON.stringify(body) })
+      .then((x) => x.json())
+      .catch(() => ({ ok: false, message: "the booth window is closed" }));
+    toast(r.message || (r.ok ? "Logged." : "Not logged."), 5000);
+    // Logged: clear the numbers for the next platform; the form stays open.
+    if (r.ok) for (const i of f.querySelectorAll("input")) i.value = "";
+  };
+  li.append(f);
+  f.querySelector("input[name=views]").focus();
 }
 
 /* ── hotkeys (heard from the booth AND from the site frame) ── */
@@ -1334,6 +1738,7 @@ function onKey(e) {
   if (k === "r") (rec.state === "idle" ? startRecording : stopRecording)();
   else if (k === "q") togglePause();
   else if (k === "m") addChapter();
+  else if (k === "g") nextBeat();
   else if (tools[k]) setTool(tool === tools[k] && k !== "v" ? "browse" : tools[k]);
   else if (k === "Escape") {
     zoomOut();
@@ -1388,6 +1793,9 @@ function paintRail() {
   $("countOn").checked = prefs.countdown;
   $("autoCh").checked = prefs.autoChapters;
   $("fade").checked = prefs.fade;
+  $("safeFit").checked = prefs.safeFit;
+  document.querySelectorAll("#guideSeg button").forEach((b) => b.classList.toggle("on", b.dataset.guide === prefs.guide));
+  paintGuide();
 }
 
 for (const [i, [label, color]] of TONES.entries()) {
@@ -1466,6 +1874,55 @@ $("micSel").onchange = (e) => {
   save();
   startDevices();
 };
+$("epSel").onchange = (e) => selectEpisode(e.target.value);
+$("epHook").onclick = () => {
+  if (!plan.ep?.hooks.length) return;
+  plan.hook = (plan.hook + 1) % plan.ep.hooks.length;
+  paintEpisode();
+};
+$("epSetup").onclick = setupStage;
+document.querySelectorAll("#pickSport button").forEach(
+  (b) =>
+    (b.onclick = () => {
+      if (builder.sport === b.dataset.sport) return;
+      builder.sport = prefs.pickSport = b.dataset.sport;
+      save();
+      loadPickGames();
+    }),
+);
+$("pickSeg").onchange = (e) => {
+  prefs.pickSeg = e.target.value;
+  save();
+  paintPick();
+};
+$("pickGame").onchange = (e) => {
+  prefs.pickGame = e.target.value;
+  save();
+  paintPick();
+};
+document.querySelectorAll("#pick [data-pick]").forEach((b) => (b.onclick = () => buildShow(b.dataset.pick)));
+$("beatBtn").onclick = nextBeat;
+$("planRefresh").onclick = async () => {
+  $("planRefresh").disabled = true;
+  status("Rebuilding the show plan (live slates + your logged results)...");
+  const r = await fetch("/__booth/api/intel-refresh", { method: "POST" })
+    .then((x) => x.json())
+    .catch(() => ({ ok: false, message: "booth offline" }));
+  $("planRefresh").disabled = false;
+  status(r.ok ? "Show plan rebuilt." : `Plan rebuild failed: ${r.message}`, !r.ok);
+  await loadPlan(r.ok ? r.message : "");
+};
+document.querySelectorAll("#guideSeg button").forEach(
+  (b) =>
+    (b.onclick = () => {
+      setPref("guide", b.dataset.guide);
+      layout();
+    }),
+);
+$("safeFit").onchange = (e) => {
+  setPref("safeFit", e.target.checked);
+  layout();
+};
 $("recBtn").onclick = () => (rec.state === "idle" ? startRecording() : stopRecording());
 $("pauseBtn").onclick = togglePause;
 $("chapterBtn").onclick = () => addChapter();
@@ -1513,6 +1970,8 @@ layout();
 startDevices();
 connectPhoneRelay();
 refreshTakes();
+loadPlan();
+loadPickGames();
 fetch("/__booth/api/info")
   .then((r) => r.json())
   .then((i) => {
