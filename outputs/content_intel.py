@@ -14,6 +14,9 @@ the roadmap shifts toward what actually works on each app.
     content intel import export.csv --platform tiktok
     content intel lint "caption text"         check copy against the compliance list
     content intel segments                    list segments, topics and priors
+    content intel games --sport cfb           the slate's upcoming games (JSON)
+    content intel pick --sport cfb --game UGA@ALA --format wide [--segment matchup_lab]
+                                              a show for one game you choose, added to the plan
 
 How a post is scored: each metric is compared to your typical post ON THAT PLATFORM (the
 median of what you have logged there), as a log ratio, and weighted by the platform's
@@ -131,6 +134,15 @@ def validate_playbook(pb: dict) -> list[str]:
                 out.append(f"{where}: {pid} takes none of the segment's formats")
             if not (isinstance(prior, (int, float)) and 1 <= prior <= 5):
                 out.append(f"{where}: prior for {pid} must be 1-5")
+        for table in ("beats", "length_s", "format_hooks", "format_captions"):
+            for key in g.get(table, {}):
+                fmt, _, sp = key.partition(":")
+                if fmt not in g.get("formats", []) or (sp and sp not in g.get("sports", [])):
+                    out.append(f"{where}: {table}.{key} is not one of its formats (or format:sport)")
+        for key, beats in g.get("beats", {}).items():
+            for b in beats:
+                if "tab" in b and ("{matchup}" not in g.get("pages", []) or not re.fullmatch(r"[a-z][\w-]*", str(b["tab"]))):
+                    out.append(f"{where}: beat {b.get('label')!r} in {key} has a tab but no matchup page (or a bad tab key)")
         for fmt in g.get("formats", []):
             if not g.get("beats", {}).get(fmt):
                 out.append(f"{where}: no {fmt} beats")
@@ -456,6 +468,11 @@ def fill(text: str, ctx: dict) -> str:
     return text.format_map(_Fill(ctx)) if text else ""
 
 
+def _variant(table: dict, fmt: str, sport: str | None):
+    """A segment's per-format entry, or its sport-specific override ("wide:cfb") when there is one."""
+    return (table.get(f"{fmt}:{sport}") if sport else None) or table.get(fmt)
+
+
 def lint(pb: dict, text: str) -> list[str]:
     """Compliance problems in one piece of copy."""
     low = (text or "").lower()
@@ -476,7 +493,7 @@ def _platform_kit(pb: dict, g: dict, fmt: str, pid: str, ctx: dict, target_s: in
     lo, hi = p["ideal_s"]
     sport_tags = pb["sports"][ctx["sport_id"]]["tags"] if ctx.get("sport_id") else []
     tags = [g["tag"], *sport_tags, *pb["pillars"][g["pillar"]].get("tags", [])][: max(1, int(p.get("hashtags", 3)))]
-    caption = fill(g.get("caption", ""), ctx)
+    caption = fill(_variant(g.get("format_captions", {}), fmt, ctx.get("sport_id")) or g.get("caption", ""), ctx)
     disclaimer = pb.get("disclaimer", "")
     body = f"{caption} {disclaimer}".strip() if disclaimer else caption
     full = f"{body} {' '.join(tags)}".strip()
@@ -501,13 +518,16 @@ def _platform_kit(pb: dict, g: dict, fmt: str, pid: str, ctx: dict, target_s: in
     return kit
 
 
-def _beats(g: dict, fmt: str, ctx: dict, games: list[dict]) -> list[dict]:
+def _beats(g: dict, fmt: str, ctx: dict, games: list[dict], sport: str | None = None) -> list[dict]:
     out, t = [], 0
     gi = 0
-    for b in g["beats"][fmt]:
+    for b in _variant(g["beats"], fmt, sport):
         beat = {"label": b["label"], "at_s": t, "s": int(b["s"]), "cue": fill(b.get("cue", ""), ctx)}
         if b.get("action"):
             beat["action"] = b["action"]
+        # A matchup page tab (its own #hash route): G in the booth switches the page to it.
+        if b.get("tab") and games:
+            beat["page"] = f"{games[0]['url']}#{b['tab']}"
         # The rundown's "Game N" beats name the game and carry its page.
         m = re.fullmatch(r"Game (\d+)", b["label"])
         if m and games:
@@ -670,10 +690,10 @@ def _episode(pb, g, gid, d, fmt, slot, sport, games, targets, scores, topic_use,
         "topic_hook": topic["hook"] if topic else "",
         "topic_or_sport": topic["title"] if topic else (sport_label or "betting"),
     }
-    hooks = [fill(h, ctx) for h in g.get("hooks", [])]
+    hooks = [fill(h, ctx) for h in (_variant(g.get("format_hooks", {}), fmt, sport) or g.get("hooks", []))]
     ctx["hook"] = hooks[0] if hooks else g["name"]
-    target_s = int(g["length_s"][fmt])
-    beats = _beats(g, fmt, ctx, games)
+    target_s = int(_variant(g["length_s"], fmt, sport))
+    beats = _beats(g, fmt, ctx, games, sport)
     kits = {p: _platform_kit(pb, g, fmt, p, ctx, target_s) for p in targets}
     copy = [*hooks, *(k["caption"] for k in kits.values()), *(k.get("post_text", "") for k in kits.values())]
     problems = sorted({p for c in copy for p in lint(pb, c)})
@@ -707,6 +727,48 @@ def _episode(pb, g, gid, d, fmt, slot, sport, games, targets, scores, topic_use,
         "todo": (["pick the game once the slate is published (content intel roadmap)"] if need_game else []),
         "compliance": problems,
     }
+
+
+def upcoming_games(slates: dict, sport: str, today: date) -> list[dict]:
+    """The slate's games from today on, soonest day first and the biggest games first within it."""
+    games = [x for x in slates.get(sport, {}).get("games", []) if x["et_date"] >= today.isoformat()]
+    return sorted(games, key=lambda x: (x["et_date"], -x["interest"], x["kickoff_utc"], x["id"]))
+
+
+def pick_episode(pb: dict, gid: str, fmt: str, sport: str, game_id: str, slates: dict, rows: list[dict],
+                 d: date) -> dict:
+    """A show for one game the host chose (the booth's Build a show), outside the planner's slots."""
+    g = pb["segments"].get(gid)
+    if not g:
+        raise IntelError(f"no segment {gid!r}")
+    if "{matchup}" not in g.get("pages", []) or g.get("timing") != "pregame":
+        raise IntelError(f"{g['name']} is not a one-game show")
+    if fmt not in g["formats"]:
+        raise IntelError(f"{g['name']} has no {fmt} format")
+    if sport not in g.get("sports", []):
+        raise IntelError(f"{g['name']} does not cover {sport}")
+    game = next((x for x in slates.get(sport, {}).get("games", []) if x["id"] == game_id), None)
+    if not game:
+        raise IntelError(f"no {sport} game {game_id!r} on the published slate")
+    scores = segment_scores(pb, rows)
+    targets = [p for p, sc in scores[gid].items() if fmt in pb["platforms"][p]["formats"] and not sc["dropped"]]
+    if not targets:
+        raise IntelError(f"no platform takes {g['name']} in {fmt}")
+    live = {s: st for s in pb["sports"] if (st := sport_state(pb, s, d))}
+    ep = _episode(pb, g, gid, d, fmt, 0, sport, [game], targets, scores, {}, live, {"picked": "chosen in the booth"})
+    ep["id"] = f"{d:%Y%m%d}-pick-{fmt[0]}-{gid}-{re.sub(r'[^A-Za-z0-9]+', '-', game_id).strip('-')}"
+    ep["picked"] = True
+    return ep
+
+
+def add_picked(rm: dict | None, ep: dict) -> dict:
+    """Put a picked show in the roadmap (replacing an earlier pick of the same show)."""
+    rm = rm or {"schema": "content-intel/roadmap/1", "generated_at": datetime.now().isoformat(timespec="seconds"),
+                "start": ep["date"], "days": 1, "posts_logged": 0, "slates": {}, "pillar_mix": {},
+                "pillar_targets": {}, "notes": [], "episodes": []}
+    rm["episodes"] = [e for e in rm["episodes"] if e["id"] != ep["id"]] + [ep]
+    rm["episodes"].sort(key=lambda e: e["date"])  # stable: a day's planned slots keep their order
+    return rm
 
 
 # ── rendering ────────────────────────────────────────────────────────────────────
@@ -941,6 +1003,16 @@ def main(argv: list[str] | None = None) -> int:
     im.add_argument("--platform", required=True)
     im.add_argument("--segment", help="segment for rows with no series hashtag")
     im.add_argument("--dry-run", action="store_true")
+    gm = sub.add_parser("games", help="the slate's upcoming games, as JSON (the booth's game picker)")
+    gm.add_argument("--sport", required=True)
+    gm.add_argument("--offline", action="store_true")
+    pk = sub.add_parser("pick", help="a show for one game you choose, added to the plan")
+    pk.add_argument("--sport", required=True)
+    pk.add_argument("--game", required=True, help="the slate's game id (see: content intel games)")
+    pk.add_argument("--format", required=True, choices=FORMATS)
+    pk.add_argument("--segment", default="matchup_lab")
+    pk.add_argument("--offline", action="store_true")
+    pk.add_argument("--json", action="store_true", help="print the episode as JSON")
     li = sub.add_parser("lint", help="check copy against the compliance list")
     li.add_argument("text")
     a = ap.parse_args(argv)
@@ -954,6 +1026,14 @@ def main(argv: list[str] | None = None) -> int:
             rows = read_perf()
             slates = load_slates(pb, offline=a.offline)
             rm = build_roadmap(pb, start, a.days, slates, rows)
+            # Shows picked in the booth are the host's own calls: a rebuild keeps them.
+            if ROADMAP_JSON.exists():
+                try:
+                    for e in json.loads(ROADMAP_JSON.read_text(encoding="utf-8")).get("episodes", []):
+                        if e.get("picked") and e["date"] >= start.isoformat():
+                            rm = add_picked(rm, e)
+                except (json.JSONDecodeError, KeyError):
+                    pass
             write_roadmap(rm)
             if not a.quiet:
                 _out(roadmap_md(rm))
@@ -1013,6 +1093,19 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 added, updated = upsert_perf(rows)
                 print(f"imported {added} new, {updated} updated, {len(skipped)} skipped")
+        elif a.cmd == "games":
+            slates = load_slates(pb, offline=a.offline)
+            games = upcoming_games(slates, a.sport, datetime.now(ET).date())
+            _out(json.dumps({"sport": a.sport, "source": slates.get(a.sport, {}).get("source", ""), "games": games}))
+        elif a.cmd == "pick":
+            slates = load_slates(pb, offline=a.offline)
+            ep = pick_episode(pb, a.segment, a.format, a.sport, a.game, slates, read_perf(), datetime.now(ET).date())
+            rm = add_picked(json.loads(ROADMAP_JSON.read_text(encoding="utf-8")) if ROADMAP_JSON.exists() else None, ep)
+            write_roadmap(rm)
+            if a.json:
+                _out(json.dumps(ep))
+            else:
+                _out(brief_md(ep) + "\n")
         elif a.cmd == "lint":
             probs = lint(pb, a.text)
             print("\n".join(probs) if probs else "ok")

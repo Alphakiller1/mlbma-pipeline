@@ -134,7 +134,13 @@ const playbookSegments = () => {
   const pb = readJson(path.join(repo, "outputs", "content_playbook.json"));
   const segs = Object.fromEntries(Object.entries(pb?.segments ?? {}).map(([id, g]) => [id, g.name]));
   const plats = Object.fromEntries(Object.entries(pb?.platforms ?? {}).map(([id, p]) => [id, { label: p.label, base: p.base }]));
-  return { segments: segs, platforms: plats };
+  // One-game shows the booth can build for any game on a slate (Build a show).
+  const pickable = Object.fromEntries(
+    Object.entries(pb?.segments ?? {})
+      .filter(([, g]) => g.timing === "pregame" && (g.pages ?? []).includes("{matchup}"))
+      .map(([id, g]) => [id, { name: g.name, formats: g.formats, sports: g.sports }]),
+  );
+  return { segments: segs, platforms: plats, pickable };
 };
 /** Everything a take needs to be posted: per-platform title, caption, post text and length. */
 const postKit = (name, body, episode) => {
@@ -260,10 +266,13 @@ const encode = (name, aspect, audioShift = 0) => {
   // The stage is always exactly 16:9 or 9:16, so a straight scale lands on the target.
   // The Remotion ffmpeg build is lean (no pad/fps filters, no positional filter args):
   // stick to scale + format with named options, and set the frame rate on the output.
+  // The captured stage is a pixel or two off the exact ratio and scale keeps the picture's
+  // shape by writing a non-square SAR (1052:1053), which apps may honour as a squeeze.
+  // This build has no setsar, so -aspect pins square pixels.
   const vf = `scale=w=${W}:h=${H}:flags=lanczos,format=pix_fmts=yuv420p`;
   const shift = Math.min(1, Math.max(0, Number(audioShift) || 0));
   const inputs = shift >= 0.01 ? ["-i", src, "-ss", shift.toFixed(3), "-i", src, "-map", "0:v:0", "-map", "1:a:0?"] : ["-i", src];
-  const argv = ["-y", "-hide_banner", "-loglevel", "error", ...inputs, "-vf", vf, "-r", "30", "-c:v", "libx264", "-preset", "medium", "-crf", "18",
+  const argv = ["-y", "-hide_banner", "-loglevel", "error", ...inputs, "-vf", vf, "-aspect", `${W}:${H}`, "-r", "30", "-c:v", "libx264", "-preset", "medium", "-crf", "18",
     "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", out];
   jobs.set(name, { state: "encoding", started: Date.now() });
   console.log(`  encoding ${name}.mp4 (${W}x${H}) ...`);
@@ -283,6 +292,7 @@ const encode = (name, aspect, audioShift = 0) => {
 };
 
 const bracketCache = new Map();
+const gamesCache = new Map();
 
 /* ── the proxy ── */
 const HOP = new Set(["connection", "keep-alive", "transfer-encoding", "upgrade", "proxy-connection", "te", "trailer", "host", "accept-encoding", "content-length"]);
@@ -366,6 +376,45 @@ const server = http.createServer(async (req, res) => {
         if (!fs.existsSync(roadmapFile)) built = await runIntel(["roadmap", "--quiet"]);
         const roadmap = readJson(roadmapFile);
         return json(res, { roadmap, safe: safeZones(), ...playbookSegments(), error: roadmap ? "" : built?.err || built?.out || "no roadmap" });
+      }
+      if (api === "intel-games") {
+        // The slate's upcoming games for Build a show. The slate changes a few times a day.
+        const sport = url.searchParams.get("sport") || "";
+        if (!/^[a-z]{2,6}$/.test(sport)) return json(res, { games: [], error: "bad sport" }, 400);
+        const hit = gamesCache.get(sport);
+        if (!hit || Date.now() - hit.at > 5 * 60_000 || url.searchParams.has("fresh")) {
+          const r = await runIntel(["games", "--sport", sport], 30_000);
+          let data = null;
+          try {
+            data = r.code === 0 ? JSON.parse(r.out) : null;
+          } catch {
+            data = null;
+          }
+          if (!data) return json(res, { games: hit?.data.games ?? [], error: r.err || r.out || "no games" }, hit ? 200 : 502);
+          gamesCache.set(sport, { at: Date.now(), data });
+        }
+        return json(res, gamesCache.get(sport).data);
+      }
+      if (req.method === "POST" && api === "intel-pick") {
+        // Build a show: one segment, one game, one format, added to the plan.
+        let body;
+        try {
+          body = JSON.parse((await readBody(req)).toString("utf8") || "{}");
+        } catch {
+          return json(res, { ok: false, message: "bad JSON" }, 400);
+        }
+        const { segment = "matchup_lab", format, sport, game } = body;
+        if (![segment, sport].every((v) => /^[a-z_]{2,40}$/.test(String(v))) || !["vertical", "wide"].includes(format) || !/^[\w@.-]{1,40}$/.test(String(game))) {
+          return json(res, { ok: false, message: "pick a sport, a game and a format" }, 400);
+        }
+        const r = await runIntel(["pick", "--segment", segment, "--format", format, "--sport", sport, "--game", game, "--json"], 60_000);
+        let ep = null;
+        try {
+          ep = r.code === 0 ? JSON.parse(r.out) : null;
+        } catch {
+          ep = null;
+        }
+        return ep ? json(res, { ok: true, id: ep.id }) : json(res, { ok: false, message: (r.err || r.out).replace(/^content intel:\s*/, "") }, 400);
       }
       if (req.method === "POST" && api === "intel-refresh") {
         const r = await runIntel(["roadmap", "--quiet"]);

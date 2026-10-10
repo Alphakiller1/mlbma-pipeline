@@ -109,6 +109,10 @@ textarea {
 .ring.live {
   border-color: var(--b-red);
 }
+.clip {
+  position: absolute;
+  inset: 0;
+}
 .zoom {
   position: absolute;
   inset: 0;
@@ -347,6 +351,16 @@ textarea {
 }
 .grow {
   flex: 1;
+}
+/* Build a show: sport, show, game, then the format that builds it. */
+.pick {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--b-line);
+}
+.pick select {
+  min-width: 0;
 }
 .tabs {
   display: flex;

@@ -117,19 +117,26 @@
       "name": "Matchup Lab",
       "tag": "#MatchupLab",
       "pillar": "timely",
-      "formats": ["vertical"],
+      "formats": ["vertical", "wide"],
       "timing": "pregame",
       "sports": ["nfl", "cfb", "mlb"],
       "gap_days": 0,
-      "priors": {"tiktok": 4, "shorts": 4, "x": 4},
-      "length_s": {"vertical": 55},
-      "why": "One game, one or two stats from the site that decide it. Timely, shareable before kickoff, and every one points at a real page.",
+      "priors": {"tiktok": 4, "shorts": 4, "x": 4, "youtube": 4},
+      "length_s": {"vertical": 55, "wide": 570, "wide:cfb": 750, "wide:nfl": 780},
+      "why": "One game on its matchup page. Vertical: one or two stats that decide it, before kickoff. Wide: the same page walked tab by tab, one chapter per tab, for people searching that game on YouTube.",
       "pages": ["{matchup}"],
       "hooks": [
         "{away} at {home}: one number decides this game.",
         "Everyone's talking about {home}. Look at this first.",
         "The {away}-{home} matchup nobody's breaking down."
       ],
+      "format_hooks": {
+        "wide": [
+          "{away} vs {home}: the full matchup breakdown",
+          "{away} at {home}: every unit, on the numbers",
+          "{away} vs {home} preview: where this game is decided"
+        ]
+      },
       "beats": {
         "vertical": [
           {"label": "Hook", "s": 3, "cue": "Say the claim. The number on screen is the first frame."},
@@ -138,9 +145,56 @@
           {"label": "Stat two", "s": 14, "cue": "The stat that confirms or contradicts it.", "action": "Zoom (Z) the card"},
           {"label": "The read", "s": 10, "cue": "What it means for the game. Evidence, not a verdict."},
           {"label": "Outro", "s": 4, "cue": "Full matchup on chase-analytics.com. Which side are you on?"}
+        ],
+        "vertical:cfb": [
+          {"label": "Hook", "s": 3, "cue": "Say the claim. The number on screen is the first frame."},
+          {"label": "The setup", "s": 8, "cue": "Records, kickoff, where it is played.", "action": "Matchup banner"},
+          {"label": "Stat one", "s": 16, "tab": "units", "cue": "Offense vs defense efficiency: the row that decides it.", "action": "Spotlight (S) the row"},
+          {"label": "Stat two", "s": 14, "cue": "Passing, Rushing or Situational tab: the stat that confirms or contradicts it.", "action": "Zoom (Z) the card"},
+          {"label": "The read", "s": 10, "cue": "What it means for the game. Evidence, not a verdict."},
+          {"label": "Outro", "s": 4, "cue": "Full matchup on chase-analytics.com. Which side are you on?"}
+        ],
+        "wide": [
+          {"label": "Cold open", "s": 30, "cue": "The question this game turns on, in one line."},
+          {"label": "The setup", "s": 60, "cue": "Records, starters, where it is played, what the market expects.", "action": "Matchup banner"},
+          {"label": "The starters", "s": 150, "cue": "Both starting pitchers: arsenal, form, the split that matters.", "action": "Zoom (Z) the card"},
+          {"label": "The lineups", "s": 150, "cue": "Each lineup against that starter's hand and pitch mix.", "action": "Spotlight (S) the row"},
+          {"label": "Bullpens", "s": 90, "cue": "Who is rested, who is not, and the late innings."},
+          {"label": "The read", "s": 60, "cue": "What the page adds up to. Evidence, not a verdict."},
+          {"label": "Wrap", "s": 30, "cue": "Ask which side they are on. Point to the Shorts and the site."}
+        ],
+        "wide:cfb": [
+          {"label": "Cold open", "s": 30, "cue": "The question this game turns on, in one line."},
+          {"label": "The setup", "s": 60, "cue": "Records, kickoff, setting, what the market expects.", "action": "Matchup banner"},
+          {"label": "Units", "s": 120, "tab": "units", "cue": "Offense vs defense efficiency. Switch the club to show both directions.", "action": "Spotlight (S) the row"},
+          {"label": "Recent form", "s": 75, "tab": "games", "cue": "The game log: who they beat, how, and the schedule so far."},
+          {"label": "Passing game", "s": 120, "tab": "passing", "cue": "Quarterbacks and the passing matchup.", "action": "Zoom (Z) the card"},
+          {"label": "Run game", "s": 100, "tab": "rushing", "cue": "Rushing attack vs run defense, and the backs.", "action": "Spotlight (S) the row"},
+          {"label": "Situational", "s": 75, "tab": "situational", "cue": "Third down, red zone, the hidden yards."},
+          {"label": "Special teams", "s": 30, "tab": "special", "cue": "Kicking, returns, field position."},
+          {"label": "Availability", "s": 50, "tab": "availability", "cue": "Who is out or questionable, and what it changes."},
+          {"label": "The read", "s": 60, "tab": "profile", "cue": "The radar: what it all adds up to. Evidence, not a verdict."},
+          {"label": "Wrap", "s": 30, "cue": "Ask which side they are on. Point to the Shorts and the site."}
+        ],
+        "wide:nfl": [
+          {"label": "Cold open", "s": 30, "cue": "The question this game turns on, in one line."},
+          {"label": "The setup", "s": 60, "cue": "Records, kickoff, weather, what the market expects.", "action": "Matchup banner"},
+          {"label": "Units", "s": 120, "tab": "units", "cue": "Offense vs defense efficiency. Switch the club to show both directions.", "action": "Spotlight (S) the row"},
+          {"label": "Recent form", "s": 60, "tab": "games", "cue": "The game log and the noise-adjusted margins."},
+          {"label": "Passing game", "s": 120, "tab": "passing", "cue": "Quarterbacks, coverage, the looks they will see.", "action": "Zoom (Z) the card"},
+          {"label": "Run game", "s": 90, "tab": "rushing", "cue": "Run game vs run defense, and the trenches.", "action": "Spotlight (S) the row"},
+          {"label": "Receivers", "s": 60, "tab": "receiving", "cue": "Who gets open against this coverage."},
+          {"label": "Red zone", "s": 60, "tab": "redzone", "cue": "Finishing drives, both ways."},
+          {"label": "Tendencies", "s": 45, "tab": "tendencies", "cue": "Pace and play calling by situation."},
+          {"label": "Lineups", "s": 45, "tab": "lineups", "cue": "Who is out or questionable, and what it changes."},
+          {"label": "The read", "s": 60, "tab": "profile", "cue": "The radar: what it all adds up to. Evidence, not a verdict."},
+          {"label": "Wrap", "s": 30, "cue": "Ask which side they are on. Point to the Shorts and the site."}
         ]
       },
       "caption": "{away} at {home}: the matchup in one stat.",
+      "format_captions": {
+        "wide": "{away} at {home}, walked through the full matchup page: every unit, both sides."
+      },
       "x_text": "{away} at {home}. The number that matters: [fill in]. Full matchup in the reply."
     },
 

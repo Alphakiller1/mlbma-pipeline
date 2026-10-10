@@ -208,5 +208,71 @@ class RoadmapTests(unittest.TestCase):
             self.assertEqual(e["beats"][0]["at_s"], 0)
 
 
+
+class PickTests(unittest.TestCase):
+    """Build a show: any game on a slate, in either format (the booth's picker)."""
+
+    def test_cfb_wide_walks_the_matchup_tabs(self):
+        ep = ci.pick_episode(PB, "matchup_lab", "wide", "cfb", "UGA@ALA", _slates(), [], date(2026, 10, 10))
+        self.assertEqual(ep["aspect"], "wide")
+        self.assertTrue(ep["picked"])
+        self.assertIn("youtube", ep["platforms"])
+        self.assertNotIn("tiktok", ep["platforms"])
+        self.assertEqual(ep["target_s"], PB["segments"]["matchup_lab"]["length_s"]["wide:cfb"])
+        self.assertEqual(sum(b["s"] for b in ep["beats"]), ep["target_s"])
+        url = ep["games"][0]["url"]
+        tabbed = [b for b in ep["beats"] if "page" in b]
+        self.assertGreaterEqual(len(tabbed), 6)
+        for b in tabbed:
+            base, _, tab = b["page"].partition("#")
+            self.assertEqual(base, url)  # away/home kept: CFB pages match on them
+            self.assertIn(tab, ("units", "games", "passing", "rushing", "situational", "special", "availability", "profile"))
+        self.assertTrue(ep["hooks"][0].startswith("UGA Club vs ALA Club"))
+        # YouTube chapters need 10 s+ each; the beats are what the host chapters on.
+        self.assertTrue(all(b["s"] >= 10 for b in ep["beats"]))
+
+    def test_cfb_vertical_is_a_short_with_the_short_copy(self):
+        ep = ci.pick_episode(PB, "matchup_lab", "vertical", "cfb", "UGA@ALA", _slates(), [], date(2026, 10, 10))
+        self.assertEqual(ep["target_s"], 55)
+        self.assertEqual(set(ep["platforms"]), {"tiktok", "shorts", "x"})
+        self.assertIn("one stat", ep["platforms"]["tiktok"]["caption"])
+        self.assertEqual(ep["compliance"], [])
+        self.assertTrue(any(b.get("page", "").endswith("#units") for b in ep["beats"]))
+
+    def test_sports_without_a_variant_use_the_format_default(self):
+        slates = _slates()
+        slates["mlb"] = {"games": [_game("mlb", "849831", "CWS", "CLE", "2026-10-11T00:08Z")], "source": "test", "generated_at": ""}
+        ep = ci.pick_episode(PB, "matchup_lab", "wide", "mlb", "849831", slates, [], date(2026, 10, 10))
+        self.assertEqual(ep["target_s"], PB["segments"]["matchup_lab"]["length_s"]["wide"])
+        self.assertFalse(any("page" in b for b in ep["beats"]))
+
+    def test_bad_picks_say_why(self):
+        for args in (("one_stat", "wide", "cfb", "UGA@ALA"),     # no wide one_stat
+                     ("sharp_school", "vertical", "cfb", "UGA@ALA"),  # not a one-game show
+                     ("matchup_lab", "wide", "cfb", "NOPE@NONE")):   # not on the slate
+            with self.assertRaises(ci.IntelError):
+                ci.pick_episode(PB, *args, _slates(), [], date(2026, 10, 10))
+
+    def test_picks_join_the_plan_and_replace_themselves(self):
+        rm = ci.build_roadmap(PB, date(2026, 10, 10), 2, _slates(), [])
+        n = len(rm["episodes"])
+        ep = ci.pick_episode(PB, "matchup_lab", "wide", "cfb", "UGA@ALA", _slates(), [], date(2026, 10, 10))
+        rm = ci.add_picked(ci.add_picked(rm, ep), ep)
+        self.assertEqual(len(rm["episodes"]), n + 1)
+        self.assertEqual([e["date"] for e in rm["episodes"]], sorted(e["date"] for e in rm["episodes"]))
+        self.assertEqual(ci.add_picked(None, ep)["episodes"], [ep])
+
+    def test_validation_catches_bad_variants(self):
+        pb = copy.deepcopy(PB)
+        g = pb["segments"]["matchup_lab"]
+        g["beats"]["wide:nba"] = g["beats"]["wide"]
+        g["beats"]["square"] = g["beats"]["wide"]
+        pb["segments"]["sharp_school"]["beats"]["wide"][0]["tab"] = "units"
+        probs = " ".join(ci.validate_playbook(pb))
+        self.assertIn("beats.wide:nba", probs)
+        self.assertIn("beats.square", probs)
+        self.assertIn("has a tab but no matchup page", probs)
+
+
 if __name__ == "__main__":
     unittest.main()

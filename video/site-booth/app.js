@@ -39,6 +39,7 @@ const prefs = Object.assign(
     pair: null, // [i, j] while comparing
     notes: "",
     guide: "tiktok", // the platform UI guide on a 9:16 stage: off | tiktok | shorts | reels
+    safeFit: true, // on a 9:16 stage, keep the site inside the guide's safe area
     episode: "", // the show-plan episode picked last
   },
   (() => {
@@ -86,7 +87,18 @@ const tone = () => TONES[prefs.tone % TONES.length][1];
  * The stage holds one tab, or two side by side (16:9) / stacked (9:16) when comparing.
  * Each visible tab gets a pane: a clip box at its spot on the stage, holding a viewport
  * that renders the site at `W` CSS px wide and is scaled by `k` to fit the pane. */
-const geo = { sw: 0, sh: 0, zoom: { z: 1, tx: 0, ty: 0 } };
+const geo = { sw: 0, sh: 0, safe: {}, zoom: { z: 1, tx: 0, ty: 0 } };
+/**
+ * Where the app's own UI covers a 9:16 video (from src/ds/safe.ts, in 1080x1920 px), in
+ * stage px. With Fit on and a guide picked, the site and the camera's corners stay inside
+ * it; the margins are bare stage, under the app's buttons and captions anyway.
+ */
+function safeInset() {
+  const z = geo.safe[prefs.guide];
+  if (!z || prefs.aspect !== "vertical" || !prefs.safeFit) return { top: 0, right: 0, bottom: 0 };
+  const k = geo.sw / 1080;
+  return { top: Math.round(z.top * k), right: Math.round(z.right * k), bottom: Math.round(z.bottom * k) };
+}
 const CAM_SIZES = [0.22, 0.3, 0.4];
 // The page width the site renders at, per format, alone and when comparing (each tab gets
 // half the stage there, so a narrower page keeps the type readable).
@@ -109,25 +121,30 @@ function layout() {
   stage.style.width = `${sw}px`;
   stage.style.height = `${sh}px`;
   const W = siteWidth();
+  // The content box: the whole stage, or the platform's safe area when fitted.
+  const ins = safeInset();
+  const [bx, by, bw, bh] = [0, ins.top, sw - ins.right, sh - ins.top - ins.bottom];
+  $("clip").style.clipPath = ins.top || ins.right || ins.bottom ? `inset(${ins.top}px ${ins.right}px ${ins.bottom}px 0)` : "";
   // Comparing: two panes with a thin violet rule between them (recorded, so viewers see the split).
   const gap = pair ? Math.max(2, Math.round(Math.min(sw, sh) * 0.005)) : 0;
   const rects = !pair
-    ? [[0, 0, sw, sh]]
+    ? [[bx, by, bw, bh]]
     : vertical
       ? [
-          [0, 0, sw, Math.floor((sh - gap) / 2)],
-          [0, Math.floor((sh - gap) / 2) + gap, sw, sh - Math.floor((sh - gap) / 2) - gap],
+          [bx, by, bw, Math.floor((bh - gap) / 2)],
+          [bx, by + Math.floor((bh - gap) / 2) + gap, bw, bh - Math.floor((bh - gap) / 2) - gap],
         ]
       : [
-          [0, 0, Math.floor((sw - gap) / 2), sh],
-          [Math.floor((sw - gap) / 2) + gap, 0, sw - Math.floor((sw - gap) / 2) - gap, sh],
+          [bx, by, Math.floor((bw - gap) / 2), bh],
+          [bx + Math.floor((bw - gap) / 2) + gap, by, bw - Math.floor((bw - gap) / 2) - gap, bh],
         ];
   const vis = shown();
   for (const t of tabs) t.pane.classList.toggle("hidden", !vis.includes(t));
   vis.forEach((t, i) => placeTab(t, rects[i], W));
   divider.classList.toggle("show", Boolean(pair));
   if (pair) {
-    const [x, y, w, h] = vertical ? [0, rects[0][3], sw, gap] : [rects[0][2], 0, gap, sh];
+    const [x0, y0, w0, h0] = rects[0];
+    const [x, y, w, h] = vertical ? [x0, y0 + h0, w0, gap] : [x0 + w0, y0, gap, h0];
     Object.assign(divider.style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px` });
   }
   paintFocus();
@@ -184,12 +201,13 @@ function placeOverlays() {
   const w = box ? Math.round(size * 1.2) : size;
   const h = box ? Math.round(size * 0.9) : size;
   let x, y;
+  const ins = safeInset();
   if (prefs.camFree) {
     x = prefs.camFree.x * sw;
     y = prefs.camFree.y * sh;
   } else {
-    x = prefs.corner.includes("l") ? m : sw - w - m;
-    y = prefs.corner.includes("t") ? m : sh - h - m;
+    x = prefs.corner.includes("l") ? m : sw - ins.right - w - m;
+    y = prefs.corner.includes("t") ? ins.top + m : sh - ins.bottom - h - m;
   }
   x = Math.max(0, Math.min(sw - w, x));
   y = Math.max(0, Math.min(sh - h, y));
@@ -203,7 +221,7 @@ function placeOverlays() {
   const camTop = y < sh / 2;
   const camLeft = x < sw / 2;
   const bugLeft = prefs.camOn && camTop && !camLeft;
-  Object.assign(bug.style, { top: `${m}px`, left: bugLeft ? `${m}px` : "auto", right: bugLeft ? "auto" : `${m}px` });
+  Object.assign(bug.style, { top: `${ins.top + m}px`, left: bugLeft ? `${m}px` : "auto", right: bugLeft ? "auto" : `${ins.right + m}px` });
   bug.classList.toggle("off", !prefs.bug);
 
   // Name strap: bottom-left, beside the camera when the camera is down there.
@@ -213,7 +231,7 @@ function placeOverlays() {
   $("lowerHandle").textContent = prefs.handle;
   const beside = prefs.camOn && !camTop && camLeft;
   lower.style.left = `${beside ? x + w + m * 0.6 : 0}px`;
-  lower.style.bottom = `${beside ? sh - (y + h) + h * 0.12 : m * 1.4}px`;
+  lower.style.bottom = `${beside ? sh - (y + h) + h * 0.12 : ins.bottom + m * 1.4}px`;
   lower.classList.toggle("off", !prefs.lower);
 }
 
@@ -222,7 +240,7 @@ function applyZoom() {
   const { z, tx, ty } = geo.zoom;
   zoomEl.style.transform = `translate(${tx}px, ${ty}px) scale(${z})`;
 }
-/** Zoom so a rect in tab `t`'s viewport (site CSS px) coordinates fills the stage. */
+/** Zoom so a rect in tab `t`'s viewport (site CSS px) coordinates fills the stage (its safe area, when fitted). */
 function zoomTo(r, t) {
   const k = t.k;
   const pad = 16;
@@ -230,11 +248,14 @@ function zoomTo(r, t) {
   const ry = t.y + (r.y - pad) * k;
   const rw = (r.w + pad * 2) * k;
   const rh = (r.h + pad * 2) * k;
-  const z = Math.max(1, Math.min(3, Math.min(geo.sw / rw, geo.sh / rh)));
-  let tx = geo.sw / 2 - z * (rx + rw / 2);
-  let ty = geo.sh / 2 - z * (ry + rh / 2);
-  tx = Math.min(0, Math.max(geo.sw - z * geo.sw, tx));
-  ty = Math.min(0, Math.max(geo.sh - z * geo.sh, ty));
+  const ins = safeInset();
+  const [bx, by, bw, bh] = [0, ins.top, geo.sw - ins.right, geo.sh - ins.top - ins.bottom];
+  const z = Math.max(1, Math.min(3, Math.min(bw / rw, bh / rh)));
+  let tx = bx + bw / 2 - z * (rx + rw / 2);
+  let ty = by + bh / 2 - z * (ry + rh / 2);
+  // Keep the zoomed content box covering the box: no bare stage creeps in at an edge.
+  tx = Math.min(bx - z * bx, Math.max(bx + bw - z * (bx + bw), tx));
+  ty = Math.min(by - z * by, Math.max(by + bh - z * (by + bh), ty));
   geo.zoom = { z, tx, ty };
   applyZoom();
 }
@@ -1303,7 +1324,10 @@ window.addEventListener("beforeunload", (e) => {
   if (rec.state !== "idle") e.preventDefault();
 });
 
-const setAspectLocked = (locked) => document.querySelectorAll("#aspectSeg button, #siteWidth, #camSel, #micSel").forEach((b) => (b.disabled = locked));
+const setAspectLocked = (locked) => {
+  document.querySelectorAll("#aspectSeg button, #siteWidth, #camSel, #micSel, #guideSeg button, #safeFit").forEach((b) => (b.disabled = locked));
+  paintPick();
+};
 
 /* ── takes ── */
 let takesTimer = 0;
@@ -1342,7 +1366,7 @@ async function refreshTakes() {
 }
 
 /* ── show plan: the roadmap from outputs/content_intel.py (content intel roadmap) ── */
-const plan = { episodes: [], segments: {}, platforms: {}, safe: {}, ep: null, hook: 0, beat: -1, beatAt: 0 };
+const plan = { episodes: [], segments: {}, platforms: {}, pickable: {}, safe: {}, ep: null, hook: 0, beat: -1, beatAt: 0 };
 const escapeHtml = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const el = (tag, text, cls) => {
   const n = document.createElement(tag);
@@ -1350,8 +1374,10 @@ const el = (tag, text, cls) => {
   if (cls) n.className = cls;
   return n;
 };
-/** The site drops ".html" (matchup.html?game= is served as matchup?game=), so compare without it. */
-const samePage = (a, b) => String(a).replace(/\.html(?=[?#]|$)/, "") === String(b).replace(/\.html(?=[?#]|$)/, "");
+/** The site drops ".html" (matchup.html?game= is served as matchup?game=), so compare without it,
+ * and without the #tab: a matchup page's tabs are hash routes on the same page. */
+const pageOnly = (p) => String(p).split("#")[0].replace(/\.html(?=[?]|$)/, "");
+const samePage = (a, b) => pageOnly(a) === pageOnly(b);
 const todayIso = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -1362,8 +1388,11 @@ async function loadPlan(message) {
     .then((x) => x.json())
     .catch(() => null);
   plan.safe = r?.safe ?? {};
+  geo.safe = plan.safe;
+  layout();
   plan.segments = r?.segments ?? {};
   plan.platforms = r?.platforms ?? {};
+  plan.pickable = r?.pickable ?? {};
   plan.episodes = r?.roadmap?.episodes ?? [];
   const sel = $("epSel");
   sel.innerHTML = "";
@@ -1384,6 +1413,7 @@ async function loadPlan(message) {
   const first = plan.episodes.find((e) => e.date === from);
   selectEpisode((keep ?? first)?.id ?? "");
   paintGuide();
+  paintPick();
   if (message) toast(message, 4000);
 }
 
@@ -1477,10 +1507,99 @@ function goBeat(i) {
   }
   if (b.page) {
     const t = tabs.find((x) => samePage(x.path, b.page));
-    if (t) setActive(t);
-    else go(b.page);
+    if (t) {
+      setActive(t);
+      showTab(t, b.page.split("#")[1]);
+    } else go(b.page);
   }
   paintEpisode();
+}
+
+/** A matchup page tab is a hash route: switch it in place (no reload). The marks were drawn on the old tab. */
+function showTab(t, hash) {
+  const w = win(t);
+  if (!hash || !w || w.location.hash === `#${hash}`) return;
+  t.strokes.length = 0;
+  t.spot = null;
+  t.lastPick = null;
+  if (shown().includes(t)) zoomOut();
+  w.location.hash = hash;
+  t.path = here(w);
+  if (t === active) $("address").value = t.path;
+  saveTabs();
+  dirty = true;
+}
+
+/* ── build a show: any game on a published slate, in either format ── */
+const builder = { sport: ["cfb", "nfl", "mlb"].includes(prefs.pickSport) ? prefs.pickSport : "cfb" };
+const dayLabel = (iso) =>
+  iso === todayIso() ? "Today" : new Date(`${iso}T12:00:00`).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+
+async function loadPickGames() {
+  const sel = $("pickGame");
+  const sport = builder.sport;
+  sel.innerHTML = "";
+  sel.append(new Option("Loading games...", ""));
+  paintPick();
+  const r = await fetch(`/__booth/api/intel-games?sport=${sport}`)
+    .then((x) => x.json())
+    .catch(() => null);
+  if (sport !== builder.sport) return; // switched sport while loading
+  const games = r?.games ?? [];
+  sel.innerHTML = "";
+  if (!games.length) sel.append(new Option(r?.error ? `No games (${r.error.split("\n").pop()})` : "No upcoming games on the slate", ""));
+  let group = null;
+  for (const g of games) {
+    if (group?.dataset.date !== g.et_date) {
+      group = document.createElement("optgroup");
+      group.dataset.date = g.et_date;
+      group.label = dayLabel(g.et_date);
+      sel.append(group);
+    }
+    const kick = new Date(g.kickoff_utc).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    group.append(new Option(`${g.away_name} at ${g.home_name} · ${kick}`, g.id));
+  }
+  if (games.some((g) => g.id === prefs.pickGame)) sel.value = prefs.pickGame;
+  paintPick();
+}
+
+function paintPick() {
+  document.querySelectorAll("#pickSport button").forEach((b) => b.classList.toggle("on", b.dataset.sport === builder.sport));
+  const segSel = $("pickSeg");
+  const want = segSel.value || prefs.pickSeg || "matchup_lab";
+  const segs = Object.entries(plan.pickable).filter(([, g]) => g.sports.includes(builder.sport));
+  segSel.innerHTML = "";
+  for (const [id, g] of segs) segSel.append(new Option(g.name, id));
+  if (segs.some(([id]) => id === want)) segSel.value = want;
+  const seg = plan.pickable[segSel.value];
+  const idle = rec.state === "idle";
+  document.querySelectorAll("#pick [data-pick]").forEach((b) => {
+    b.disabled = !idle || !seg || !seg.formats.includes(b.dataset.pick) || !$("pickGame").value;
+    b.title = seg && !seg.formats.includes(b.dataset.pick) ? `${seg.name} has no ${b.dataset.pick === "wide" ? "16:9" : "9:16"} version` : b.dataset.pick === "wide" ? "Build this show at 16:9 and set up the stage" : "Build this show at 9:16 and set up the stage";
+  });
+}
+
+async function buildShow(format) {
+  if (rec.state !== "idle") {
+    toast("Finish the take before building another show.");
+    return;
+  }
+  const body = { segment: $("pickSeg").value, format, sport: builder.sport, game: $("pickGame").value };
+  if (!body.segment || !body.game) return;
+  document.querySelectorAll("#pick [data-pick]").forEach((b) => (b.disabled = true));
+  status("Building the show...");
+  const r = await fetch("/__booth/api/intel-pick", { method: "POST", body: JSON.stringify(body) })
+    .then((x) => x.json())
+    .catch(() => ({ ok: false, message: "the booth server is not answering" }));
+  if (!r.ok) {
+    status(`Could not build the show: ${r.message}`, true);
+    paintPick();
+    return;
+  }
+  await loadPlan();
+  selectEpisode(r.id);
+  setupStage();
+  status(captureNote());
 }
 function nextBeat() {
   if (!plan.ep) {
@@ -1510,7 +1629,12 @@ function setupStage() {
   if (pages.length) {
     const before = shownKey();
     const keep = [];
-    for (const p of pages) keep.push(tabs.find((t) => samePage(t.path, p) && !keep.includes(t)) ?? makeTab(p));
+    for (const p of pages) {
+      const t = tabs.find((x) => samePage(x.path, p) && !keep.includes(x));
+      // A tab left on one of the page's #tabs starts the show back at the top of the page.
+      if (t && t.path.includes("#")) go(p, t);
+      keep.push(t ?? makeTab(p));
+    }
     for (const t of tabs.filter((x) => !keep.includes(x))) t.pane.remove();
     tabs.splice(0, tabs.length, ...keep);
     pair = null;
@@ -1669,6 +1793,7 @@ function paintRail() {
   $("countOn").checked = prefs.countdown;
   $("autoCh").checked = prefs.autoChapters;
   $("fade").checked = prefs.fade;
+  $("safeFit").checked = prefs.safeFit;
   document.querySelectorAll("#guideSeg button").forEach((b) => b.classList.toggle("on", b.dataset.guide === prefs.guide));
   paintGuide();
 }
@@ -1756,6 +1881,26 @@ $("epHook").onclick = () => {
   paintEpisode();
 };
 $("epSetup").onclick = setupStage;
+document.querySelectorAll("#pickSport button").forEach(
+  (b) =>
+    (b.onclick = () => {
+      if (builder.sport === b.dataset.sport) return;
+      builder.sport = prefs.pickSport = b.dataset.sport;
+      save();
+      loadPickGames();
+    }),
+);
+$("pickSeg").onchange = (e) => {
+  prefs.pickSeg = e.target.value;
+  save();
+  paintPick();
+};
+$("pickGame").onchange = (e) => {
+  prefs.pickGame = e.target.value;
+  save();
+  paintPick();
+};
+document.querySelectorAll("#pick [data-pick]").forEach((b) => (b.onclick = () => buildShow(b.dataset.pick)));
 $("beatBtn").onclick = nextBeat;
 $("planRefresh").onclick = async () => {
   $("planRefresh").disabled = true;
@@ -1767,7 +1912,17 @@ $("planRefresh").onclick = async () => {
   status(r.ok ? "Show plan rebuilt." : `Plan rebuild failed: ${r.message}`, !r.ok);
   await loadPlan(r.ok ? r.message : "");
 };
-document.querySelectorAll("#guideSeg button").forEach((b) => (b.onclick = () => setPref("guide", b.dataset.guide)));
+document.querySelectorAll("#guideSeg button").forEach(
+  (b) =>
+    (b.onclick = () => {
+      setPref("guide", b.dataset.guide);
+      layout();
+    }),
+);
+$("safeFit").onchange = (e) => {
+  setPref("safeFit", e.target.checked);
+  layout();
+};
 $("recBtn").onclick = () => (rec.state === "idle" ? startRecording() : stopRecording());
 $("pauseBtn").onclick = togglePause;
 $("chapterBtn").onclick = () => addChapter();
@@ -1816,6 +1971,7 @@ startDevices();
 connectPhoneRelay();
 refreshTakes();
 loadPlan();
+loadPickGames();
 fetch("/__booth/api/info")
   .then((r) => r.json())
   .then((i) => {
