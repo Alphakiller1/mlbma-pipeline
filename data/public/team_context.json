@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-team-context/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-08T19:08:55Z",
+  "generated_at_utc": "2026-10-10T17:28:32Z",
   "data_through_utc": "2026-09-24T15:40:25.892087+00:00",
   "formulas": {
     "osi": "0.43*RCV + 0.37*ABQ + 0.20*OBR",
