@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-10-11T13:28:01Z",
+  "generated_at_utc": "2026-10-11T18:00:00Z",
   "data_through_utc": "2026-10-04T19:35:01+00:00",
   "season": 2026,
   "week": 4,
@@ -4958,8 +4958,8 @@
       "through": "2026-10-04"
     },
     "JAX": {
-      "games": 4,
-      "through": "2026-10-04"
+      "games": 5,
+      "through": "2026-10-11"
     },
     "LAC": {
       "games": 4,
@@ -4998,8 +4998,8 @@
       "through": "2026-10-04"
     },
     "PHI": {
-      "games": 4,
-      "through": "2026-10-04"
+      "games": 5,
+      "through": "2026-10-11"
     },
     "PIT": {
       "games": 4,

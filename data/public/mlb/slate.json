@@ -1,14 +1,15 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-11T13:03:56Z",
-  "data_through_utc": "2026-10-11T13:03:56Z",
+  "generated_at_utc": "2026-10-11T17:59:27Z",
+  "data_through_utc": "2026-10-11T17:59:27Z",
   "games": [
     {
       "id": "849809",
       "sport": "mlb",
       "game_state": "scheduled",
       "kickoff_utc": "2026-10-12T00:00:00Z",
+      "kickoff_display": "8:00 PM ET",
       "game_pk": 849809,
       "away": "LAD",
       "home": "MIL",
