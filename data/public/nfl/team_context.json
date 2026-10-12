@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-10-12T02:24:44Z",
+  "generated_at_utc": "2026-10-12T05:49:24Z",
   "data_through_utc": "2026-10-04T19:35:01+00:00",
   "season": 2026,
   "week": 4,
@@ -4910,12 +4910,12 @@
       "through": "2026-10-11"
     },
     "ATL": {
-      "games": 4,
-      "through": "2026-10-06"
+      "games": 5,
+      "through": "2026-10-12"
     },
     "BAL": {
-      "games": 4,
-      "through": "2026-10-04"
+      "games": 5,
+      "through": "2026-10-12"
     },
     "BUF": {
       "games": 4,
