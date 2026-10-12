@@ -1,153 +1,69 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-11T23:44:23Z",
-  "data_through_utc": "2026-10-11T23:44:23Z",
+  "generated_at_utc": "2026-10-12T06:09:12Z",
+  "data_through_utc": "2026-10-12T06:09:12Z",
   "games": [
     {
-      "id": "849809",
+      "id": "849812",
       "sport": "mlb",
       "game_state": "scheduled",
-      "kickoff_utc": "2026-10-12T00:00:00Z",
-      "game_pk": 849809,
+      "kickoff_utc": "2026-10-12T21:00:00Z",
+      "game_pk": 849812,
       "away": "LAD",
       "home": "MIL",
       "away_name": "Los Angeles Dodgers",
       "home_name": "Milwaukee Brewers",
-      "away_record": "0-0",
-      "home_record": "0-0",
+      "away_record": "0-1",
+      "home_record": "1-0",
       "venue": "American Family Field",
       "venue_city": "Milwaukee, WI",
-      "broadcast": "FOX / FOX ONE, Fox Deportes / FOX ONE",
-      "conditions": "68\u00b0 \u00b7 Clear \u00b7 1 mph, Varies",
-      "weather_temp": "68",
-      "weather_cond": "Clear",
-      "weather_wind": "1 mph, Varies",
-      "away_starter": "Tarik Skubal",
-      "home_starter": "Jacob Misiorowski",
-      "away_starter_id": 669373,
-      "home_starter_id": 694819,
-      "away_hand": "L",
+      "broadcast": "FOX / FS1, Fox Deportes / FOX ONE",
+      "away_starter": "Yoshinobu Yamamoto",
+      "home_starter": "Logan Henderson",
+      "away_starter_id": 808967,
+      "home_starter_id": 701656,
+      "away_hand": "R",
       "home_hand": "R",
-      "away_era": "2.72",
-      "home_era": "1.80",
-      "away_lineup_state": "Confirmed",
-      "home_lineup_state": "Confirmed",
-      "away_lineup": [
-        {
-          "slot": 1,
-          "person_id": 605141,
-          "name": "Mookie Betts",
-          "position": "SS"
-        },
-        {
-          "slot": 2,
-          "person_id": 518692,
-          "name": "Freddie Freeman",
-          "position": "1B"
-        },
-        {
-          "slot": 3,
-          "person_id": 669257,
-          "name": "Will Smith",
-          "position": "C"
-        },
-        {
-          "slot": 4,
-          "person_id": 660271,
-          "name": "Shohei Ohtani",
-          "position": "DH"
-        },
-        {
-          "slot": 5,
-          "person_id": 606192,
-          "name": "Teoscar Hern\u00e1ndez",
-          "position": "LF"
-        },
-        {
-          "slot": 6,
-          "person_id": 571970,
-          "name": "Max Muncy",
-          "position": "3B"
-        },
-        {
-          "slot": 7,
-          "person_id": 681624,
-          "name": "Andy Pages",
-          "position": "CF"
-        },
-        {
-          "slot": 8,
-          "person_id": 663656,
-          "name": "Kyle Tucker",
-          "position": "RF"
-        },
-        {
-          "slot": 9,
-          "person_id": 571771,
-          "name": "Enrique Hern\u00e1ndez",
-          "position": "2B"
-        }
-      ],
-      "home_lineup": [
-        {
-          "slot": 1,
-          "person_id": 694192,
-          "name": "Jackson Chourio",
-          "position": "LF"
-        },
-        {
-          "slot": 2,
-          "person_id": 668930,
-          "name": "Brice Turang",
-          "position": "2B"
-        },
-        {
-          "slot": 3,
-          "person_id": 661388,
-          "name": "William Contreras",
-          "position": "C"
-        },
-        {
-          "slot": 4,
-          "person_id": 641343,
-          "name": "Jake Bauers",
-          "position": "1B"
-        },
-        {
-          "slot": 5,
-          "person_id": 683734,
-          "name": "Andrew Vaughn",
-          "position": "DH"
-        },
-        {
-          "slot": 6,
-          "person_id": 669003,
-          "name": "Garrett Mitchell",
-          "position": "CF"
-        },
-        {
-          "slot": 7,
-          "person_id": 806198,
-          "name": "Cooper Pratt",
-          "position": "SS"
-        },
-        {
-          "slot": 8,
-          "person_id": 800325,
-          "name": "Luis Lara",
-          "position": "RF"
-        },
-        {
-          "slot": 9,
-          "person_id": 687401,
-          "name": "Joey Ortiz",
-          "position": "3B"
-        }
-      ],
+      "away_era": "2.53",
+      "home_era": "2.47",
+      "away_lineup_state": "Expected",
+      "home_lineup_state": "Expected",
       "away_team_id": 119,
       "home_team_id": 158,
-      "venue_id": 32
+      "venue_id": 32,
+      "away_bullpen": "3/42",
+      "home_bullpen": "4/64"
+    },
+    {
+      "id": "849820",
+      "sport": "mlb",
+      "game_state": "scheduled",
+      "kickoff_utc": "2026-10-13T00:00:00Z",
+      "game_pk": 849820,
+      "away": "CLE",
+      "home": "TB",
+      "away_name": "Cleveland Guardians",
+      "home_name": "Tampa Bay Rays",
+      "away_record": "0-0",
+      "home_record": "0-0",
+      "venue": "Tropicana Field",
+      "venue_city": "St. Petersburg, FL",
+      "broadcast": "TBS/HBO MAX, TruTV",
+      "away_starter": "Foster Griffin",
+      "home_starter": "Drew Rasmussen",
+      "away_starter_id": 656492,
+      "home_starter_id": 656876,
+      "away_hand": "L",
+      "home_hand": "R",
+      "away_era": "3.60",
+      "home_era": "2.67",
+      "away_lineup_state": "Expected",
+      "home_lineup_state": "Expected",
+      "away_team_id": 114,
+      "home_team_id": 139,
+      "venue_id": 12,
+      "away_bullpen": "3/56"
     }
   ]
 }
