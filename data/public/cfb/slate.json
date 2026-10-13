@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 6,
-  "generated_at_utc": "2026-10-12T22:54:46Z",
+  "generated_at_utc": "2026-10-13T19:24:33Z",
   "data_through_utc": "2026-10-10T18:32:09Z",
   "games": [
     {
@@ -725,7 +725,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 81,
+            "rank": 82,
             "of": 138,
             "format": "num"
           },
@@ -733,7 +733,7 @@
             "label": "Sacks per game",
             "value": 2.2,
             "better": "high",
-            "rank": 52,
+            "rank": 53,
             "of": 138,
             "format": "num"
           },
@@ -4360,7 +4360,7 @@
             "value": 0.0395,
             "better": "high",
             "format": "pct",
-            "rank": 107,
+            "rank": 108,
             "of": 138
           }
         },
@@ -7369,7 +7369,7 @@
             "label": "Kick-return average",
             "value": 14.2,
             "better": "high",
-            "rank": 128,
+            "rank": 127,
             "of": 138,
             "format": "num"
           },
@@ -7482,7 +7482,7 @@
             "value": 0.0818,
             "better": "high",
             "format": "pct",
-            "rank": 29,
+            "rank": 30,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -10247,7 +10247,7 @@
             "label": "Kick-return average",
             "value": 17.3333,
             "better": "high",
-            "rank": 104,
+            "rank": 103,
             "of": 138,
             "format": "num"
           },
@@ -11007,7 +11007,7 @@
             "value": 30.0,
             "better": "neutral",
             "format": "num",
-            "rank": 89,
+            "rank": 88,
             "of": 138
           },
           "def_disruption_rate": {
@@ -13811,7 +13811,7 @@
             "value": 22.2,
             "better": "low",
             "format": "num",
-            "rank": 133,
+            "rank": 132,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -14129,7 +14129,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 81,
+            "rank": 82,
             "of": 138,
             "format": "num"
           },
@@ -14201,7 +14201,7 @@
             "label": "Net punt average",
             "value": 40.7143,
             "better": "high",
-            "rank": 117,
+            "rank": 118,
             "of": 138,
             "format": "num"
           },
@@ -17027,7 +17027,7 @@
             "label": "Sacks per game",
             "value": 1.6667,
             "better": "high",
-            "rank": 94,
+            "rank": 93,
             "of": 138,
             "format": "num"
           },
@@ -20435,7 +20435,7 @@
             "label": "Kick-return average",
             "value": 17.2857,
             "better": "high",
-            "rank": 106,
+            "rank": 105,
             "of": 138,
             "format": "num"
           },
@@ -20946,7 +20946,7 @@
             "label": "Net punt average",
             "value": 41.1364,
             "better": "high",
-            "rank": 109,
+            "rank": 110,
             "of": 138,
             "format": "num"
           },
@@ -24301,7 +24301,7 @@
             "label": "Net punt average",
             "value": 40.3684,
             "better": "high",
-            "rank": 124,
+            "rank": 125,
             "of": 138,
             "format": "num"
           },
@@ -24422,7 +24422,7 @@
             "value": 0.0556,
             "better": "high",
             "format": "pct",
-            "rank": 87,
+            "rank": 86,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -27298,7 +27298,7 @@
             "value": 67.1667,
             "better": "neutral",
             "format": "num",
-            "rank": 61,
+            "rank": 60,
             "of": 138
           },
           "off_pass_rate": {
@@ -27664,7 +27664,7 @@
             "label": "Sacks per game",
             "value": 1.6667,
             "better": "high",
-            "rank": 94,
+            "rank": 93,
             "of": 138,
             "format": "num"
           },
@@ -27849,7 +27849,7 @@
             "value": 0.0571,
             "better": "high",
             "format": "pct",
-            "rank": 82,
+            "rank": 81,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -30671,7 +30671,7 @@
             "label": "Kick-return average",
             "value": 15.8,
             "better": "high",
-            "rank": 122,
+            "rank": 121,
             "of": 138,
             "format": "num"
           },
@@ -30712,7 +30712,7 @@
             "value": 4.3886,
             "better": "high",
             "format": "num",
-            "rank": 135,
+            "rank": 134,
             "of": 138
           },
           "def_yards_per_play": {
@@ -37538,7 +37538,7 @@
             "value": 12.1667,
             "better": "high",
             "format": "num",
-            "rank": 74,
+            "rank": 75,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -37856,7 +37856,7 @@
             "label": "Sacks per game",
             "value": 2.2,
             "better": "high",
-            "rank": 52,
+            "rank": 53,
             "of": 138,
             "format": "num"
           },
@@ -37944,7 +37944,7 @@
             "label": "Penalty yards per game",
             "value": 56.8,
             "better": "low",
-            "rank": 66,
+            "rank": 65,
             "of": 138,
             "format": "num"
           },
@@ -40777,7 +40777,7 @@
             "label": "Net punt average",
             "value": 41.5333,
             "better": "high",
-            "rank": 105,
+            "rank": 106,
             "of": 138,
             "format": "num"
           },
@@ -40801,7 +40801,7 @@
             "label": "Penalty yards per game",
             "value": 56.8333,
             "better": "low",
-            "rank": 67,
+            "rank": 66,
             "of": 138,
             "format": "num"
           },
@@ -47515,7 +47515,7 @@
             "label": "Net punt average",
             "value": 40.6429,
             "better": "high",
-            "rank": 119,
+            "rank": 120,
             "of": 138,
             "format": "num"
           },
@@ -47523,7 +47523,7 @@
             "label": "Kick-return average",
             "value": 17.4286,
             "better": "high",
-            "rank": 103,
+            "rank": 102,
             "of": 138,
             "format": "num"
           },
@@ -48042,7 +48042,7 @@
             "label": "Kick-return average",
             "value": 17.5,
             "better": "high",
-            "rank": 101,
+            "rank": 100,
             "of": 138,
             "format": "num"
           },
@@ -50841,7 +50841,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 81,
+            "rank": 82,
             "of": 138,
             "format": "num"
           },
@@ -50919,9 +50919,9 @@
           },
           "off_kr": {
             "label": "Kick-return average",
-            "value": 17.8333,
+            "value": 10.3333,
             "better": "high",
-            "rank": 98,
+            "rank": 136,
             "of": 138,
             "format": "num"
           },
@@ -51018,7 +51018,7 @@
             "value": 0.4467,
             "better": "neutral",
             "format": "pct",
-            "rank": 100,
+            "rank": 99,
             "of": 138
           },
           "off_sack_rate": {
@@ -51553,7 +51553,7 @@
             "value": 0.0814,
             "better": "high",
             "format": "pct",
-            "rank": 30,
+            "rank": 31,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -54819,7 +54819,7 @@
             "label": "Kick-return average",
             "value": 17.5,
             "better": "high",
-            "rank": 101,
+            "rank": 100,
             "of": 138,
             "format": "num"
           },
@@ -57773,7 +57773,7 @@
             "value": 0.0569,
             "better": "high",
             "format": "pct",
-            "rank": 83,
+            "rank": 82,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -57789,7 +57789,7 @@
             "value": 12.1667,
             "better": "high",
             "format": "num",
-            "rank": 74,
+            "rank": 75,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -58107,7 +58107,7 @@
             "label": "Sacks per game",
             "value": 1.8,
             "better": "high",
-            "rank": 88,
+            "rank": 87,
             "of": 138,
             "format": "num"
           },
@@ -58292,7 +58292,7 @@
             "value": 0.0604,
             "better": "high",
             "format": "pct",
-            "rank": 76,
+            "rank": 75,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -61539,7 +61539,7 @@
             "label": "Kick-return average",
             "value": 17.25,
             "better": "high",
-            "rank": 108,
+            "rank": 107,
             "of": 138,
             "format": "num"
           },
@@ -68469,7 +68469,7 @@
             "value": 13.4,
             "better": "high",
             "format": "num",
-            "rank": 65,
+            "rank": 64,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -71357,7 +71357,7 @@
             "value": 0.0784,
             "better": "high",
             "format": "pct",
-            "rank": 36,
+            "rank": 37,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -71892,7 +71892,7 @@
             "value": 11.6667,
             "better": "high",
             "format": "num",
-            "rank": 82,
+            "rank": 83,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -74842,7 +74842,7 @@
             "value": 0.4478,
             "better": "neutral",
             "format": "pct",
-            "rank": 97,
+            "rank": 96,
             "of": 138
           },
           "off_sack_rate": {
@@ -74850,7 +74850,7 @@
             "value": 0.1647,
             "better": "low",
             "format": "pct",
-            "rank": 138,
+            "rank": 137,
             "of": 138
           },
           "def_sack_rate": {
@@ -74858,7 +74858,7 @@
             "value": 0.0777,
             "better": "high",
             "format": "pct",
-            "rank": 39,
+            "rank": 40,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -75192,7 +75192,7 @@
             "label": "Sacks per game",
             "value": 1.8,
             "better": "high",
-            "rank": 88,
+            "rank": 87,
             "of": 138,
             "format": "num"
           },
@@ -75264,7 +75264,7 @@
             "label": "Kick-return average",
             "value": 13.3333,
             "better": "high",
-            "rank": 131,
+            "rank": 130,
             "of": 138,
             "format": "num"
           },
@@ -75280,7 +75280,7 @@
             "label": "Penalty yards per game",
             "value": 57.0,
             "better": "low",
-            "rank": 68,
+            "rank": 67,
             "of": 138,
             "format": "num"
           },
@@ -75393,7 +75393,7 @@
             "value": 11.4,
             "better": "high",
             "format": "num",
-            "rank": 89,
+            "rank": 90,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -76748,7 +76748,35 @@
         }
       },
       "away_injuries": {
-        "players": [],
+        "players": [
+          {
+            "player": "J. Harrell",
+            "position": "WR",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Mon, Oct 12",
+            "detail": "Harrell is managing with an undisclosed injury, and he is not expected to be available against Georgia Southern on Thursday.",
+            "source": "Covers"
+          },
+          {
+            "player": "Q. Henicle",
+            "position": "QB",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "updated": "Mon, Oct 12",
+            "detail": "Henicle is laid up with an undisclosed injury, and it has yet to be determined if he will play against Georgia Southern on Thursday.",
+            "source": "Covers"
+          },
+          {
+            "player": "T. Johnson",
+            "position": "WR",
+            "status": "Probable",
+            "injury": "Undisclosed",
+            "updated": "Mon, Oct 12",
+            "detail": "Johnson is dealing with an undisclosed injury, but he is likely to suit up against Georgia Southern on Thursday.",
+            "source": "Covers"
+          }
+        ],
         "sources": "Covers, RotoWire"
       },
       "home_run_game": {
@@ -78124,7 +78152,7 @@
             "label": "Kick-return average",
             "value": 12.1667,
             "better": "high",
-            "rank": 135,
+            "rank": 134,
             "of": 138,
             "format": "num"
           },
@@ -78253,7 +78281,7 @@
             "value": 11.6667,
             "better": "high",
             "format": "num",
-            "rank": 82,
+            "rank": 83,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -78643,7 +78671,7 @@
             "label": "Kick-return average",
             "value": 17.0,
             "better": "high",
-            "rank": 110,
+            "rank": 109,
             "of": 138,
             "format": "num"
           },
@@ -78676,7 +78704,7 @@
             "value": 0.3079,
             "better": "low",
             "format": "num",
-            "rank": 45,
+            "rank": 46,
             "of": 138
           },
           "off_yards_per_play": {
@@ -81789,7 +81817,7 @@
             "value": 0.0407,
             "better": "high",
             "format": "pct",
-            "rank": 106,
+            "rank": 107,
             "of": 138
           }
         },
@@ -85045,7 +85073,7 @@
             "label": "Kick-return average",
             "value": 17.3,
             "better": "high",
-            "rank": 105,
+            "rank": 104,
             "of": 138,
             "format": "num"
           },
@@ -85150,7 +85178,7 @@
             "value": 0.0777,
             "better": "low",
             "format": "pct",
-            "rank": 107,
+            "rank": 108,
             "of": 138
           },
           "def_sack_rate": {
@@ -85564,7 +85592,7 @@
             "label": "Kick-return average",
             "value": 16.7,
             "better": "high",
-            "rank": 114,
+            "rank": 113,
             "of": 138,
             "format": "num"
           },
@@ -85813,7 +85841,7 @@
             "value": 0.0505,
             "better": "high",
             "format": "pct",
-            "rank": 75,
+            "rank": 74,
             "of": 138
           }
         },
@@ -88424,7 +88452,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 81,
+            "rank": 82,
             "of": 138,
             "format": "num"
           },
@@ -88504,7 +88532,7 @@
             "label": "Kick-return average",
             "value": 17.5455,
             "better": "high",
-            "rank": 100,
+            "rank": 99,
             "of": 138,
             "format": "num"
           },
@@ -88601,7 +88629,7 @@
             "value": 0.447,
             "better": "neutral",
             "format": "pct",
-            "rank": 99,
+            "rank": 98,
             "of": 138
           },
           "off_sack_rate": {
@@ -89015,7 +89043,7 @@
             "label": "Net punt average",
             "value": 41.0769,
             "better": "high",
-            "rank": 114,
+            "rank": 115,
             "of": 138,
             "format": "num"
           },
@@ -89023,7 +89051,7 @@
             "label": "Kick-return average",
             "value": 12.2857,
             "better": "high",
-            "rank": 134,
+            "rank": 133,
             "of": 138,
             "format": "num"
           },
@@ -91891,9 +91919,9 @@
           },
           "def_sacks": {
             "label": "Sacks per game",
-            "value": 1.8333,
+            "value": 1.6667,
             "better": "high",
-            "rank": 82,
+            "rank": 93,
             "of": 138,
             "format": "num"
           },
@@ -91981,7 +92009,7 @@
             "label": "Penalty yards per game",
             "value": 55.6667,
             "better": "low",
-            "rank": 63,
+            "rank": 62,
             "of": 138,
             "format": "num"
           },
@@ -91995,10 +92023,10 @@
           },
           "def_points_per_play": {
             "label": "Points allowed per defensive play",
-            "value": 0.3911,
+            "value": 0.3921,
             "better": "low",
             "format": "num",
-            "rank": 95,
+            "rank": 96,
             "of": 138
           },
           "off_yards_per_play": {
@@ -92011,10 +92039,10 @@
           },
           "def_yards_per_play": {
             "label": "Yards allowed per defensive play",
-            "value": 5.5396,
+            "value": 5.5533,
             "better": "low",
             "format": "num",
-            "rank": 93,
+            "rank": 94,
             "of": 138
           },
           "off_first_down_rate": {
@@ -92027,7 +92055,7 @@
           },
           "def_first_down_rate": {
             "label": "First downs allowed per defensive play",
-            "value": 0.3317,
+            "value": 0.3325,
             "better": "low",
             "format": "pct",
             "rank": 131,
@@ -92043,7 +92071,7 @@
           },
           "def_plays_pg": {
             "label": "Defensive plays faced per game",
-            "value": 67.3333,
+            "value": 67.1667,
             "better": "neutral",
             "format": "num",
             "rank": 60,
@@ -92059,10 +92087,10 @@
           },
           "def_pass_rate": {
             "label": "Opponent dropback share",
-            "value": 0.448,
+            "value": 0.4467,
             "better": "neutral",
             "format": "pct",
-            "rank": 96,
+            "rank": 100,
             "of": 138
           },
           "off_sack_rate": {
@@ -92075,10 +92103,10 @@
           },
           "def_sack_rate": {
             "label": "Sacks generated per opponent dropback",
-            "value": 0.0608,
+            "value": 0.0556,
             "better": "high",
             "format": "pct",
-            "rank": 75,
+            "rank": 86,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -92091,10 +92119,10 @@
           },
           "def_sack_yards_pg": {
             "label": "Opponent sack yards lost per game",
-            "value": 13.5,
+            "value": 13.3333,
             "better": "high",
             "format": "num",
-            "rank": 63,
+            "rank": 65,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -92203,7 +92231,7 @@
           },
           "def_dropbacks_pg": {
             "label": "Opponent dropbacks per game",
-            "value": 30.1667,
+            "value": 30.0,
             "better": "neutral",
             "format": "num",
             "rank": 88,
@@ -92211,10 +92239,10 @@
           },
           "def_disruption_rate": {
             "label": "Sacks plus takeaways per defensive play",
-            "value": 0.052,
+            "value": 0.0496,
             "better": "high",
             "format": "pct",
-            "rank": 73,
+            "rank": 78,
             "of": 138
           }
         },
@@ -92402,9 +92430,9 @@
           },
           "off_sacks": {
             "label": "Sacks taken per game",
-            "value": 2.0,
+            "value": 1.8333,
             "better": "low",
-            "rank": 81,
+            "rank": 75,
             "of": 138,
             "format": "num"
           },
@@ -92412,7 +92440,7 @@
             "label": "Sacks per game",
             "value": 1.6667,
             "better": "high",
-            "rank": 94,
+            "rank": 93,
             "of": 138,
             "format": "num"
           },
@@ -92506,7 +92534,7 @@
           },
           "off_points_per_play": {
             "label": "Points per offensive play",
-            "value": 0.4177,
+            "value": 0.4188,
             "better": "high",
             "format": "num",
             "rank": 77,
@@ -92522,7 +92550,7 @@
           },
           "off_yards_per_play": {
             "label": "Yards per offensive play",
-            "value": 5.3975,
+            "value": 5.4112,
             "better": "high",
             "format": "num",
             "rank": 92,
@@ -92538,10 +92566,10 @@
           },
           "off_first_down_rate": {
             "label": "First downs per offensive play",
-            "value": 0.2987,
+            "value": 0.2995,
             "better": "high",
             "format": "pct",
-            "rank": 83,
+            "rank": 82,
             "of": 138
           },
           "def_first_down_rate": {
@@ -92554,10 +92582,10 @@
           },
           "off_plays_pg": {
             "label": "Offensive plays per game",
-            "value": 65.8333,
+            "value": 65.6667,
             "better": "neutral",
             "format": "num",
-            "rank": 96,
+            "rank": 98,
             "of": 138
           },
           "def_plays_pg": {
@@ -92570,7 +92598,7 @@
           },
           "off_pass_rate": {
             "label": "Dropback share",
-            "value": 0.3747,
+            "value": 0.3731,
             "better": "neutral",
             "format": "pct",
             "rank": 127,
@@ -92586,10 +92614,10 @@
           },
           "off_sack_rate": {
             "label": "Sacks allowed per dropback",
-            "value": 0.0811,
+            "value": 0.0748,
             "better": "low",
             "format": "pct",
-            "rank": 110,
+            "rank": 106,
             "of": 138
           },
           "def_sack_rate": {
@@ -92597,12 +92625,12 @@
             "value": 0.0602,
             "better": "high",
             "format": "pct",
-            "rank": 77,
+            "rank": 76,
             "of": 138
           },
           "off_sack_yards_pg": {
             "label": "Sack yards lost per game",
-            "value": 12.0,
+            "value": 11.8333,
             "better": "low",
             "format": "num",
             "rank": 74,
@@ -92714,10 +92742,10 @@
           },
           "off_dropbacks_pg": {
             "label": "Dropbacks per game",
-            "value": 24.6667,
+            "value": 24.5,
             "better": "neutral",
             "format": "num",
-            "rank": 124,
+            "rank": 126,
             "of": 138
           },
           "def_dropbacks_pg": {
@@ -92733,7 +92761,7 @@
             "value": 0.0415,
             "better": "high",
             "format": "pct",
-            "rank": 105,
+            "rank": 106,
             "of": 138
           }
         },
@@ -95345,7 +95373,7 @@
             "label": "Sacks per game",
             "value": 2.2,
             "better": "high",
-            "rank": 52,
+            "rank": 53,
             "of": 138,
             "format": "num"
           },
@@ -95666,7 +95694,7 @@
             "value": 0.05,
             "better": "high",
             "format": "pct",
-            "rank": 78,
+            "rank": 77,
             "of": 138
           }
         },
@@ -97379,10 +97407,10 @@
           {
             "player": "C. Salas",
             "position": "K",
-            "status": "Questionable",
+            "status": "Out",
             "injury": "Undisclosed",
-            "updated": "Sun, Oct 11",
-            "detail": "Salas is dealing with an undisclosed injury, and it is unclear if he will play against the Tar Heels on Saturday, October 17th.",
+            "updated": "Mon, Oct 12",
+            "detail": "Salas is dealing with an undisclosed injury, and he will be idle for the remainder of the season.",
             "source": "Covers"
           },
           {
@@ -98705,7 +98733,7 @@
             "label": "Sacks per game",
             "value": 1.7143,
             "better": "high",
-            "rank": 93,
+            "rank": 92,
             "of": 138,
             "format": "num"
           },
@@ -99288,7 +99316,7 @@
             "label": "Net punt average",
             "value": 41.2143,
             "better": "high",
-            "rank": 107,
+            "rank": 108,
             "of": 138,
             "format": "num"
           },
@@ -99312,7 +99340,7 @@
             "label": "Penalty yards per game",
             "value": 57.0,
             "better": "low",
-            "rank": 68,
+            "rank": 67,
             "of": 138,
             "format": "num"
           },
@@ -99401,7 +99429,7 @@
             "value": 0.0792,
             "better": "low",
             "format": "pct",
-            "rank": 108,
+            "rank": 109,
             "of": 138
           },
           "def_sack_rate": {
@@ -102439,7 +102467,7 @@
             "value": 0.0558,
             "better": "high",
             "format": "pct",
-            "rank": 86,
+            "rank": 85,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -106301,7 +106329,7 @@
             "value": 5.5531,
             "better": "low",
             "format": "num",
-            "rank": 94,
+            "rank": 93,
             "of": 138
           },
           "off_first_down_rate": {
@@ -106373,7 +106401,7 @@
             "value": 22.5,
             "better": "low",
             "format": "num",
-            "rank": 134,
+            "rank": 133,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -109267,7 +109295,7 @@
             "label": "Net punt average",
             "value": 41.1667,
             "better": "high",
-            "rank": 108,
+            "rank": 109,
             "of": 138,
             "format": "num"
           },
@@ -109275,7 +109303,7 @@
             "label": "Kick-return average",
             "value": 16.9231,
             "better": "high",
-            "rank": 112,
+            "rank": 111,
             "of": 138,
             "format": "num"
           },
@@ -109524,7 +109552,7 @@
             "value": 0.0504,
             "better": "high",
             "format": "pct",
-            "rank": 76,
+            "rank": 75,
             "of": 138
           }
         },
@@ -109794,7 +109822,7 @@
             "label": "Kick-return average",
             "value": 14.5714,
             "better": "high",
-            "rank": 126,
+            "rank": 125,
             "of": 138,
             "format": "num"
           },
@@ -112640,7 +112668,7 @@
             "label": "Sacks per game",
             "value": 1.8,
             "better": "high",
-            "rank": 88,
+            "rank": 87,
             "of": 138,
             "format": "num"
           },
@@ -112712,7 +112740,7 @@
             "label": "Kick-return average",
             "value": 17.1429,
             "better": "high",
-            "rank": 109,
+            "rank": 108,
             "of": 138,
             "format": "num"
           },
@@ -112825,7 +112853,7 @@
             "value": 0.0588,
             "better": "high",
             "format": "pct",
-            "rank": 79,
+            "rank": 78,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -113151,7 +113179,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 81,
+            "rank": 82,
             "of": 138,
             "format": "num"
           },
@@ -113231,7 +113259,7 @@
             "label": "Kick-return average",
             "value": 16.3,
             "better": "high",
-            "rank": 119,
+            "rank": 118,
             "of": 138,
             "format": "num"
           },
@@ -113344,7 +113372,7 @@
             "value": 0.0769,
             "better": "high",
             "format": "pct",
-            "rank": 41,
+            "rank": 42,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -115955,7 +115983,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 81,
+            "rank": 82,
             "of": 138,
             "format": "num"
           },
@@ -116116,7 +116144,7 @@
             "value": 71.5,
             "better": "neutral",
             "format": "num",
-            "rank": 32,
+            "rank": 33,
             "of": 138
           },
           "off_pass_rate": {
@@ -116546,7 +116574,7 @@
             "label": "Net punt average",
             "value": 41.0909,
             "better": "high",
-            "rank": 113,
+            "rank": 114,
             "of": 138,
             "format": "num"
           },
@@ -119395,7 +119423,7 @@
             "label": "Net punt average",
             "value": 41.0952,
             "better": "high",
-            "rank": 112,
+            "rank": 113,
             "of": 138,
             "format": "num"
           },
@@ -119403,7 +119431,7 @@
             "label": "Kick-return average",
             "value": 13.0,
             "better": "high",
-            "rank": 133,
+            "rank": 132,
             "of": 138,
             "format": "num"
           },
@@ -119460,7 +119488,7 @@
             "value": 0.2992,
             "better": "high",
             "format": "pct",
-            "rank": 82,
+            "rank": 83,
             "of": 138
           },
           "def_first_down_rate": {
@@ -119938,7 +119966,7 @@
             "label": "Penalty yards per game",
             "value": 55.2,
             "better": "low",
-            "rank": 62,
+            "rank": 61,
             "of": 138,
             "format": "num"
           },
@@ -120027,7 +120055,7 @@
             "value": 0.08,
             "better": "low",
             "format": "pct",
-            "rank": 109,
+            "rank": 110,
             "of": 138
           },
           "def_sack_rate": {
@@ -122589,7 +122617,7 @@
             "label": "Sacks per game",
             "value": 2.3333,
             "better": "high",
-            "rank": 48,
+            "rank": 49,
             "of": 138,
             "format": "num"
           },
@@ -123108,7 +123136,7 @@
             "label": "Sacks per game",
             "value": 2.2,
             "better": "high",
-            "rank": 52,
+            "rank": 53,
             "of": 138,
             "format": "num"
           },
@@ -123293,7 +123321,7 @@
             "value": 0.0821,
             "better": "high",
             "format": "pct",
-            "rank": 28,
+            "rank": 29,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -126199,7 +126227,7 @@
             "value": 0.0556,
             "better": "high",
             "format": "pct",
-            "rank": 87,
+            "rank": 86,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -126533,7 +126561,7 @@
             "label": "Sacks per game",
             "value": 1.8,
             "better": "high",
-            "rank": 88,
+            "rank": 87,
             "of": 138,
             "format": "num"
           },
@@ -126605,7 +126633,7 @@
             "label": "Kick-return average",
             "value": 16.3333,
             "better": "high",
-            "rank": 118,
+            "rank": 117,
             "of": 138,
             "format": "num"
           },
@@ -126670,7 +126698,7 @@
             "value": 0.2684,
             "better": "low",
             "format": "pct",
-            "rank": 49,
+            "rank": 50,
             "of": 138
           },
           "off_plays_pg": {
@@ -126734,7 +126762,7 @@
             "value": 12.0,
             "better": "high",
             "format": "num",
-            "rank": 77,
+            "rank": 78,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -129476,7 +129504,7 @@
             "label": "Net punt average",
             "value": 41.1,
             "better": "high",
-            "rank": 110,
+            "rank": 111,
             "of": 138,
             "format": "num"
           },
@@ -133072,7 +133100,7 @@
             "value": 11.6667,
             "better": "high",
             "format": "num",
-            "rank": 82,
+            "rank": 83,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -136382,7 +136410,7 @@
             "label": "Net punt average",
             "value": 40.5714,
             "better": "high",
-            "rank": 120,
+            "rank": 121,
             "of": 138,
             "format": "num"
           },
@@ -136390,7 +136418,7 @@
             "label": "Kick-return average",
             "value": 15.3333,
             "better": "high",
-            "rank": 124,
+            "rank": 123,
             "of": 138,
             "format": "num"
           },
@@ -136487,7 +136515,7 @@
             "value": 0.4475,
             "better": "neutral",
             "format": "pct",
-            "rank": 98,
+            "rank": 97,
             "of": 138
           },
           "off_sack_rate": {
@@ -136909,7 +136937,7 @@
             "label": "Kick-return average",
             "value": 15.4286,
             "better": "high",
-            "rank": 123,
+            "rank": 122,
             "of": 138,
             "format": "num"
           },
@@ -137038,7 +137066,7 @@
             "value": 11.6667,
             "better": "high",
             "format": "num",
-            "rank": 82,
+            "rank": 83,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -137158,7 +137186,7 @@
             "value": 0.0501,
             "better": "high",
             "format": "pct",
-            "rank": 77,
+            "rank": 76,
             "of": 138
           }
         },
@@ -139805,7 +139833,7 @@
             "label": "Penalty yards per game",
             "value": 57.0,
             "better": "low",
-            "rank": 68,
+            "rank": 67,
             "of": 138,
             "format": "num"
           },
@@ -140300,7 +140328,7 @@
             "label": "Net punt average",
             "value": 40.9615,
             "better": "high",
-            "rank": 115,
+            "rank": 116,
             "of": 138,
             "format": "num"
           },
@@ -140421,7 +140449,7 @@
             "value": 0.0556,
             "better": "high",
             "format": "pct",
-            "rank": 87,
+            "rank": 86,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -143187,7 +143215,7 @@
             "label": "Sacks per game",
             "value": 1.6667,
             "better": "high",
-            "rank": 94,
+            "rank": 93,
             "of": 138,
             "format": "num"
           },
@@ -146722,7 +146750,7 @@
             "value": 67.1667,
             "better": "neutral",
             "format": "num",
-            "rank": 61,
+            "rank": 60,
             "of": 138
           },
           "off_pass_rate": {
@@ -146754,7 +146782,7 @@
             "value": 0.0783,
             "better": "high",
             "format": "pct",
-            "rank": 37,
+            "rank": 38,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -150026,7 +150054,7 @@
             "label": "Net punt average",
             "value": 41.1,
             "better": "high",
-            "rank": 110,
+            "rank": 111,
             "of": 138,
             "format": "num"
           },
@@ -150473,7 +150501,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 81,
+            "rank": 82,
             "of": 138,
             "format": "num"
           },
@@ -150545,7 +150573,7 @@
             "label": "Net punt average",
             "value": 40.65,
             "better": "high",
-            "rank": 118,
+            "rank": 119,
             "of": 138,
             "format": "num"
           },
@@ -150682,7 +150710,7 @@
             "value": 12.0,
             "better": "high",
             "format": "num",
-            "rank": 77,
+            "rank": 78,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -153481,7 +153509,7 @@
             "value": 0.2987,
             "better": "high",
             "format": "pct",
-            "rank": 83,
+            "rank": 84,
             "of": 138
           },
           "def_first_down_rate": {
@@ -153537,7 +153565,7 @@
             "value": 0.078,
             "better": "high",
             "format": "pct",
-            "rank": 38,
+            "rank": 39,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -153553,7 +153581,7 @@
             "value": 11.6667,
             "better": "high",
             "format": "num",
-            "rank": 82,
+            "rank": 83,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -153943,7 +153971,7 @@
             "label": "Kick-return average",
             "value": 16.6667,
             "better": "high",
-            "rank": 115,
+            "rank": 114,
             "of": 138,
             "format": "num"
           },
@@ -156642,9 +156670,9 @@
           },
           "def_sacks": {
             "label": "Sacks per game",
-            "value": 2.2,
+            "value": 2.4,
             "better": "high",
-            "rank": 52,
+            "rank": 43,
             "of": 138,
             "format": "num"
           },
@@ -156730,9 +156758,9 @@
           },
           "off_pen": {
             "label": "Penalty yards per game",
-            "value": 55.0,
+            "value": 57.0,
             "better": "low",
-            "rank": 61,
+            "rank": 67,
             "of": 138,
             "format": "num"
           },
@@ -156746,10 +156774,10 @@
           },
           "def_points_per_play": {
             "label": "Points allowed per defensive play",
-            "value": 0.3081,
+            "value": 0.3073,
             "better": "low",
             "format": "num",
-            "rank": 46,
+            "rank": 45,
             "of": 138
           },
           "off_yards_per_play": {
@@ -156762,7 +156790,7 @@
           },
           "def_yards_per_play": {
             "label": "Yards allowed per defensive play",
-            "value": 4.7423,
+            "value": 4.7291,
             "better": "low",
             "format": "num",
             "rank": 38,
@@ -156778,10 +156806,10 @@
           },
           "def_first_down_rate": {
             "label": "First downs allowed per defensive play",
-            "value": 0.2689,
+            "value": 0.2682,
             "better": "low",
             "format": "pct",
-            "rank": 50,
+            "rank": 49,
             "of": 138
           },
           "off_plays_pg": {
@@ -156794,10 +156822,10 @@
           },
           "def_plays_pg": {
             "label": "Defensive plays faced per game",
-            "value": 71.4,
+            "value": 71.6,
             "better": "neutral",
             "format": "num",
-            "rank": 33,
+            "rank": 29,
             "of": 138
           },
           "off_pass_rate": {
@@ -156810,7 +156838,7 @@
           },
           "def_pass_rate": {
             "label": "Opponent dropback share",
-            "value": 0.4006,
+            "value": 0.4022,
             "better": "neutral",
             "format": "pct",
             "rank": 128,
@@ -156826,10 +156854,10 @@
           },
           "def_sack_rate": {
             "label": "Sacks generated per opponent dropback",
-            "value": 0.0769,
+            "value": 0.0833,
             "better": "high",
             "format": "pct",
-            "rank": 41,
+            "rank": 28,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -156842,10 +156870,10 @@
           },
           "def_sack_yards_pg": {
             "label": "Opponent sack yards lost per game",
-            "value": 11.4,
+            "value": 12.2,
             "better": "high",
             "format": "num",
-            "rank": 89,
+            "rank": 72,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -156954,18 +156982,18 @@
           },
           "def_dropbacks_pg": {
             "label": "Opponent dropbacks per game",
-            "value": 28.6,
+            "value": 28.8,
             "better": "neutral",
             "format": "num",
-            "rank": 103,
+            "rank": 102,
             "of": 138
           },
           "def_disruption_rate": {
             "label": "Sacks plus takeaways per defensive play",
-            "value": 0.0392,
+            "value": 0.0419,
             "better": "high",
             "format": "pct",
-            "rank": 108,
+            "rank": 104,
             "of": 138
           }
         },
@@ -157153,7 +157181,7 @@
           },
           "off_sacks": {
             "label": "Sacks taken per game",
-            "value": 4.0,
+            "value": 4.1667,
             "better": "low",
             "rank": 137,
             "of": 138,
@@ -157225,9 +157253,9 @@
           },
           "off_punt": {
             "label": "Net punt average",
-            "value": 40.2258,
+            "value": 41.6452,
             "better": "high",
-            "rank": 126,
+            "rank": 104,
             "of": 138,
             "format": "num"
           },
@@ -157235,7 +157263,7 @@
             "label": "Kick-return average",
             "value": 17.2727,
             "better": "high",
-            "rank": 107,
+            "rank": 106,
             "of": 138,
             "format": "num"
           },
@@ -157251,13 +157279,13 @@
             "label": "Penalty yards per game",
             "value": 56.0,
             "better": "low",
-            "rank": 65,
+            "rank": 64,
             "of": 138,
             "format": "num"
           },
           "off_points_per_play": {
             "label": "Points per offensive play",
-            "value": 0.2707,
+            "value": 0.2699,
             "better": "high",
             "format": "num",
             "rank": 126,
@@ -157273,10 +157301,10 @@
           },
           "off_yards_per_play": {
             "label": "Yards per offensive play",
-            "value": 4.3932,
+            "value": 4.3807,
             "better": "high",
             "format": "num",
-            "rank": 134,
+            "rank": 135,
             "of": 138
           },
           "def_yards_per_play": {
@@ -157289,7 +157317,7 @@
           },
           "off_first_down_rate": {
             "label": "First downs per offensive play",
-            "value": 0.2222,
+            "value": 0.2216,
             "better": "high",
             "format": "pct",
             "rank": 137,
@@ -157305,7 +157333,7 @@
           },
           "off_plays_pg": {
             "label": "Offensive plays per game",
-            "value": 58.5,
+            "value": 58.6667,
             "better": "neutral",
             "format": "num",
             "rank": 134,
@@ -157321,7 +157349,7 @@
           },
           "off_pass_rate": {
             "label": "Dropback share",
-            "value": 0.4188,
+            "value": 0.4205,
             "better": "neutral",
             "format": "pct",
             "rank": 108,
@@ -157337,10 +157365,10 @@
           },
           "off_sack_rate": {
             "label": "Sacks allowed per dropback",
-            "value": 0.1633,
+            "value": 0.1689,
             "better": "low",
             "format": "pct",
-            "rank": 137,
+            "rank": 138,
             "of": 138
           },
           "def_sack_rate": {
@@ -157353,10 +157381,10 @@
           },
           "off_sack_yards_pg": {
             "label": "Sack yards lost per game",
-            "value": 22.1667,
+            "value": 22.8333,
             "better": "low",
             "format": "num",
-            "rank": 131,
+            "rank": 134,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -157465,10 +157493,10 @@
           },
           "off_dropbacks_pg": {
             "label": "Dropbacks per game",
-            "value": 24.5,
+            "value": 24.6667,
             "better": "neutral",
             "format": "num",
-            "rank": 126,
+            "rank": 124,
             "of": 138
           },
           "def_dropbacks_pg": {
@@ -160113,7 +160141,7 @@
             "label": "Kick-return average",
             "value": 14.5714,
             "better": "high",
-            "rank": 126,
+            "rank": 125,
             "of": 138,
             "format": "num"
           },
@@ -163634,7 +163662,7 @@
             "value": 0.0579,
             "better": "high",
             "format": "pct",
-            "rank": 80,
+            "rank": 79,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -164032,7 +164060,7 @@
             "label": "Net punt average",
             "value": 40.36,
             "better": "high",
-            "rank": 125,
+            "rank": 126,
             "of": 138,
             "format": "num"
           },
@@ -164040,7 +164068,7 @@
             "label": "Kick-return average",
             "value": 13.2857,
             "better": "high",
-            "rank": 132,
+            "rank": 131,
             "of": 138,
             "format": "num"
           },
@@ -164153,7 +164181,7 @@
             "value": 0.0593,
             "better": "high",
             "format": "pct",
-            "rank": 78,
+            "rank": 77,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -167383,7 +167411,7 @@
             "label": "Kick-return average",
             "value": 14.1111,
             "better": "high",
-            "rank": 129,
+            "rank": 128,
             "of": 138,
             "format": "num"
           },
@@ -167496,7 +167524,7 @@
             "value": 0.0802,
             "better": "high",
             "format": "pct",
-            "rank": 31,
+            "rank": 32,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -169941,12 +169969,39 @@
       "home_injuries": {
         "players": [
           {
+            "player": "D. Mbadinga",
+            "position": "RB",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Mon, Oct 12",
+            "detail": "Mbadinga is battling with an undisclosed injury, and he is unlikely to face Old Dominion on Thursday.",
+            "source": "Covers"
+          },
+          {
             "player": "A. Hollins",
             "position": "WR",
             "status": "Out",
             "injury": "Shoulder",
             "updated": "Thu, Oct 1",
             "detail": "Hollins is liad up with a shoulder injury, and he will be idle for the remainder of the season.",
+            "source": "Covers"
+          },
+          {
+            "player": "J. Ware",
+            "position": "WR",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Mon, Oct 12",
+            "detail": "Ware is dealing due to an undisclosed injury, and he will be out of the lineup against Old Dominion on Thursday.",
+            "source": "Covers"
+          },
+          {
+            "player": "W. Bryan",
+            "position": "QB",
+            "status": "Probable",
+            "injury": "Undisclosed",
+            "updated": "Mon, Oct 12",
+            "detail": "Bryan is nursing with an undisclosed injury, but he is projected to play against Old Dominion on Thursday.",
             "source": "Covers"
           }
         ],
@@ -170153,7 +170208,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 81,
+            "rank": 82,
             "of": 138,
             "format": "num"
           },
@@ -170346,7 +170401,7 @@
             "value": 0.0774,
             "better": "high",
             "format": "pct",
-            "rank": 40,
+            "rank": 41,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -170993,7 +171048,7 @@
             "value": 28.6667,
             "better": "neutral",
             "format": "num",
-            "rank": 102,
+            "rank": 103,
             "of": 138
           },
           "def_disruption_rate": {
@@ -173784,7 +173839,7 @@
             "value": 0.0802,
             "better": "high",
             "format": "pct",
-            "rank": 32,
+            "rank": 33,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -177498,7 +177553,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 81,
+            "rank": 82,
             "of": 138,
             "format": "num"
           },
@@ -180476,7 +180531,7 @@
             "label": "Kick-return average",
             "value": 16.4167,
             "better": "high",
-            "rank": 117,
+            "rank": 116,
             "of": 138,
             "format": "num"
           },
@@ -180492,7 +180547,7 @@
             "label": "Penalty yards per game",
             "value": 55.7143,
             "better": "low",
-            "rank": 64,
+            "rank": 63,
             "of": 138,
             "format": "num"
           },
@@ -180725,7 +180780,7 @@
             "value": 0.0515,
             "better": "high",
             "format": "pct",
-            "rank": 74,
+            "rank": 73,
             "of": 138
           }
         },
@@ -183927,7 +183982,7 @@
             "label": "Sacks per game",
             "value": 1.8,
             "better": "high",
-            "rank": 88,
+            "rank": 87,
             "of": 138,
             "format": "num"
           },
@@ -183991,7 +184046,7 @@
             "label": "Net punt average",
             "value": 41.5625,
             "better": "high",
-            "rank": 104,
+            "rank": 105,
             "of": 138,
             "format": "num"
           },
@@ -183999,7 +184054,7 @@
             "label": "Kick-return average",
             "value": 16.0,
             "better": "high",
-            "rank": 120,
+            "rank": 119,
             "of": 138,
             "format": "num"
           },
@@ -184446,7 +184501,7 @@
             "label": "Sacks per game",
             "value": 2.2,
             "better": "high",
-            "rank": 52,
+            "rank": 53,
             "of": 138,
             "format": "num"
           },
@@ -184631,7 +184686,7 @@
             "value": 0.0564,
             "better": "high",
             "format": "pct",
-            "rank": 84,
+            "rank": 83,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -187301,7 +187356,7 @@
             "label": "Sacks per game",
             "value": 2.3333,
             "better": "high",
-            "rank": 48,
+            "rank": 49,
             "of": 138,
             "format": "num"
           },
@@ -187365,7 +187420,7 @@
             "label": "Net punt average",
             "value": 40.8929,
             "better": "high",
-            "rank": 116,
+            "rank": 117,
             "of": 138,
             "format": "num"
           },
@@ -190641,7 +190696,7 @@
             "label": "Sacks per game",
             "value": 2.3333,
             "better": "high",
-            "rank": 48,
+            "rank": 49,
             "of": 138,
             "format": "num"
           },
@@ -190713,7 +190768,7 @@
             "label": "Kick-return average",
             "value": 13.75,
             "better": "high",
-            "rank": 130,
+            "rank": 129,
             "of": 138,
             "format": "num"
           },
@@ -191160,7 +191215,7 @@
             "label": "Sacks per game",
             "value": 2.3333,
             "better": "high",
-            "rank": 48,
+            "rank": 49,
             "of": 138,
             "format": "num"
           },
@@ -193977,7 +194032,7 @@
             "label": "Sacks per game",
             "value": 1.6667,
             "better": "high",
-            "rank": 94,
+            "rank": 93,
             "of": 138,
             "format": "num"
           },
@@ -194082,7 +194137,7 @@
             "value": 0.3919,
             "better": "low",
             "format": "num",
-            "rank": 96,
+            "rank": 95,
             "of": 138
           },
           "off_yards_per_play": {
@@ -194162,7 +194217,7 @@
             "value": 0.0559,
             "better": "high",
             "format": "pct",
-            "rank": 85,
+            "rank": 84,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -194178,7 +194233,7 @@
             "value": 12.1667,
             "better": "high",
             "format": "num",
-            "rank": 74,
+            "rank": 75,
             "of": 138
           },
           "off_rush_attempts_pg": {
