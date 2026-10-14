@@ -1,13 +1,13 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-13T21:20:45Z",
-  "data_through_utc": "2026-10-13T21:20:45Z",
+  "generated_at_utc": "2026-10-14T01:16:52Z",
+  "data_through_utc": "2026-10-14T00:00:00Z",
   "games": [
     {
       "id": "849813",
       "sport": "mlb",
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-14T00:00:00Z",
       "game_pk": 849813,
       "away": "CLE",
@@ -16,6 +16,8 @@
       "home_name": "Tampa Bay Rays",
       "away_record": "1-0",
       "home_record": "0-1",
+      "away_score": 0,
+      "home_score": 0,
       "venue": "Tropicana Field",
       "venue_city": "St. Petersburg, FL",
       "broadcast": "TBS/HBO MAX, TruTV",
