@@ -3,8 +3,8 @@
   "sport": "cfb",
   "season": 2026,
   "week": 7,
-  "generated_at_utc": "2026-10-14T17:24:08Z",
-  "data_through_utc": "2026-10-14T00:16:18Z",
+  "generated_at_utc": "2026-10-14T23:20:10Z",
+  "data_through_utc": "2026-10-14T18:33:32Z",
   "games": [
     {
       "id": "DEL@MTSU",
@@ -9063,6 +9063,16 @@
       "away_injuries": {
         "players": [
           {
+            "player": "Zion Booker",
+            "position": "WR",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Oct 14 7:30 PM",
+            "detail": "Booker is battling with an undisclosed injury, and it remains to be seen if he will be in the lineup against Missouri St. on Wednesday, October 14.",
+            "source": "RotoWire + Covers",
+            "return": "Oct 22nd"
+          },
+          {
             "player": "G. Bullock Jr.",
             "position": "TE",
             "status": "Questionable",
@@ -9070,16 +9080,6 @@
             "updated": "Thu, Oct 8",
             "detail": "Bullock Jr. is nursing with an undisclosed injury, and it remains to be seen if he will be active against Missouri St. on Wednesday, October 14.",
             "source": "Covers"
-          },
-          {
-            "player": "Zion Booker",
-            "position": "WR",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Oct 14 7:30 PM",
-            "detail": "Booker is battling with an undisclosed injury, and it remains to be seen if he will be in the lineup against Missouri St. on Wednesday, October 14.",
-            "source": "RotoWire + Covers",
-            "return": "Oct 14th"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -10210,24 +10210,50 @@
       "home_injuries": {
         "players": [
           {
+            "player": "Elijah Leonard",
+            "position": "QB",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "return": "Oct 20th",
+            "updated": "Oct 14 7:30 PM",
+            "source": "RotoWire"
+          },
+          {
+            "player": "Breezy Dubar",
+            "position": "RB",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "return": "Oct 20th",
+            "updated": "Oct 14 7:30 PM",
+            "source": "RotoWire"
+          },
+          {
             "player": "Josh Joyner",
             "position": "RB",
-            "status": "Questionable",
+            "status": "Out",
             "injury": "Undisclosed",
             "updated": "Oct 14 7:30 PM",
             "detail": "Joyner is nursing with an undisclosed injury, and it is unclear if he will face Kennesaw State on Wednesday.",
             "source": "RotoWire + Covers",
-            "return": "Oct 14th"
+            "return": "Oct 20th"
           },
           {
-            "player": "James Rexroat",
+            "player": "AJ Bell",
+            "position": "WR",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "return": "Oct 20th",
+            "updated": "Oct 14 7:30 PM",
+            "source": "RotoWire"
+          },
+          {
+            "player": "J. Rexroat",
             "position": "TE",
             "status": "Questionable",
             "injury": "Undisclosed",
-            "updated": "Oct 14 7:30 PM",
+            "updated": "Fri, Oct 9",
             "detail": "Rexroat is dealing with an undisclosed injury, and it is unclear if he will play against the Kennesaw State on Wednesday.",
-            "source": "RotoWire + Covers",
-            "return": "Oct 14th"
+            "source": "Covers"
           },
           {
             "player": "M. Cope",
@@ -12572,24 +12598,22 @@
       "away_injuries": {
         "players": [
           {
-            "player": "Adrion Boyd",
+            "player": "A. Boyd",
             "position": "RB",
             "status": "Questionable",
             "injury": "Undisclosed",
-            "updated": "Oct 14 8:00 PM",
+            "updated": "Fri, Oct 9",
             "detail": "Boyd is dealing with an undisclosed injury, and it is unclear whether he will play against Sam Houston on Wednesday.",
-            "source": "RotoWire + Covers",
-            "return": "Oct 14th"
+            "source": "Covers"
           },
           {
-            "player": "Sincere Baines",
+            "player": "S. Baines",
             "position": "RB",
             "status": "Questionable",
             "injury": "Undisclosed",
-            "updated": "Oct 14 8:00 PM",
+            "updated": "Fri, Oct 9",
             "detail": "Baines is dealing with an undisclosed injury, and it is undetermined if he will suit up against the Sam Houston on Wednesday.",
-            "source": "RotoWire + Covers",
-            "return": "Oct 14th"
+            "source": "Covers"
           },
           {
             "player": "G. Reimer",
@@ -47263,39 +47287,21 @@
             "source": "Covers"
           },
           {
+            "player": "L. Montgomery",
+            "position": "RB",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "updated": "Wed, Oct 14",
+            "detail": "Montgomery is dealing with an undisclosed injury, and it has yet to be determined if he will suit up against Texas on Saturday.",
+            "source": "Covers"
+          },
+          {
             "player": "V. Brown III",
             "position": "WR",
             "status": "Questionable",
             "injury": "Knee",
-            "updated": "Mon, Oct 5",
-            "detail": "Brown III is nursing a knee injury, and it has yet to be determined if he will play against South Carolina on Saturday.",
-            "source": "Covers"
-          },
-          {
-            "player": "L. Montgomery",
-            "position": "RB",
-            "status": "Probable",
-            "injury": "Undisclosed",
-            "updated": "Fri, Oct 9",
-            "detail": "Montgomery is dealing with an undisclosed injury, but he is likely to suit up against the South Carolina on Sunday.",
-            "source": "Covers"
-          },
-          {
-            "player": "B. Stockton",
-            "position": "WR",
-            "status": "Probable",
-            "injury": "Back",
-            "updated": "Fri, Oct 2",
-            "detail": "Stockton is dealing with a back injury, and he is likely to be available against Missouri on Saturday, 3rd October.",
-            "source": "Covers"
-          },
-          {
-            "player": "E. Singleton Jr.",
-            "position": "WR",
-            "status": "Probable",
-            "injury": "Ankle",
-            "updated": "Mon, Sep 28",
-            "detail": "Singleton Jr is dealing with an ankle injury, but he is expected to be active against Missouri on Saturday.",
+            "updated": "Wed, Oct 14",
+            "detail": "Brown III is nursing a knee injury, and it has yet to be determined if he will play against Texas on Sunday.",
             "source": "Covers"
           }
         ],
