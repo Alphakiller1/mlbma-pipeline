@@ -1,23 +1,23 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-15T17:09:19Z",
+  "generated_at_utc": "2026-10-15T21:31:07Z",
   "data_through_utc": "2026-10-15T17:00:00Z",
   "games": [
     {
       "id": "849818",
       "sport": "mlb",
-      "game_state": "live",
+      "game_state": "final",
       "kickoff_utc": "2026-10-15T17:00:00Z",
       "game_pk": 849818,
       "away": "TB",
       "home": "CLE",
       "away_name": "Tampa Bay Rays",
       "home_name": "Cleveland Guardians",
-      "away_record": "1-1",
-      "home_record": "1-1",
-      "away_score": 0,
-      "home_score": 0,
+      "away_record": "1-2",
+      "home_record": "2-1",
+      "away_score": 2,
+      "home_score": 3,
       "venue": "Progressive Field",
       "venue_city": "Cleveland, OH",
       "broadcast": "TBS/HBO MAX, TruTV",
@@ -57,7 +57,7 @@
         {
           "slot": 4,
           "person_id": 683748,
-          "name": "Victor Mesa Jr.",
+          "name": "Victor Mesa",
           "position": "RF"
         },
         {
@@ -168,21 +168,136 @@
       "venue": "UNIQLO Field at Dodger Stadium",
       "venue_city": "Los Angeles, CA",
       "broadcast": "FS1 / FOX ONE, Fox Deportes / FOX ONE",
-      "away_starter": "Dustin May",
+      "conditions": "89\u00b0 \u00b7 Clear \u00b7 4 mph, Out To RF",
+      "weather_temp": "89",
+      "weather_cond": "Clear",
+      "weather_wind": "4 mph, Out To RF",
+      "away_starter": "Shane Drohan",
       "home_starter": "Tyler Glasnow",
-      "away_starter_id": 669160,
+      "away_starter_id": 675660,
       "home_starter_id": 607192,
-      "away_starter_role": "primary",
-      "away_hand": "R",
+      "away_hand": "L",
       "home_hand": "R",
-      "away_era": "4.70",
+      "away_era": "4.19",
       "home_era": "3.53",
-      "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
+      "away_lineup_state": "Confirmed",
+      "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 694192,
+          "name": "Jackson Chourio",
+          "position": "LF"
+        },
+        {
+          "slot": 2,
+          "person_id": 668930,
+          "name": "Brice Turang",
+          "position": "2B"
+        },
+        {
+          "slot": 3,
+          "person_id": 661388,
+          "name": "William Contreras",
+          "position": "C"
+        },
+        {
+          "slot": 4,
+          "person_id": 641343,
+          "name": "Jake Bauers",
+          "position": "1B"
+        },
+        {
+          "slot": 5,
+          "person_id": 592885,
+          "name": "Christian Yelich",
+          "position": "DH"
+        },
+        {
+          "slot": 6,
+          "person_id": 669003,
+          "name": "Garrett Mitchell",
+          "position": "CF"
+        },
+        {
+          "slot": 7,
+          "person_id": 806198,
+          "name": "Cooper Pratt",
+          "position": "SS"
+        },
+        {
+          "slot": 8,
+          "person_id": 686217,
+          "name": "Sal Frelick",
+          "position": "RF"
+        },
+        {
+          "slot": 9,
+          "person_id": 666152,
+          "name": "David Hamilton",
+          "position": "3B"
+        }
+      ],
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 660271,
+          "name": "Shohei Ohtani",
+          "position": "DH"
+        },
+        {
+          "slot": 2,
+          "person_id": 605141,
+          "name": "Mookie Betts",
+          "position": "SS"
+        },
+        {
+          "slot": 3,
+          "person_id": 518692,
+          "name": "Freddie Freeman",
+          "position": "1B"
+        },
+        {
+          "slot": 4,
+          "person_id": 669257,
+          "name": "Will Smith",
+          "position": "C"
+        },
+        {
+          "slot": 5,
+          "person_id": 663656,
+          "name": "Kyle Tucker",
+          "position": "RF"
+        },
+        {
+          "slot": 6,
+          "person_id": 606192,
+          "name": "Teoscar Hern\u00e1ndez",
+          "position": "LF"
+        },
+        {
+          "slot": 7,
+          "person_id": 500743,
+          "name": "Miguel Rojas",
+          "position": "2B"
+        },
+        {
+          "slot": 8,
+          "person_id": 681624,
+          "name": "Andy Pages",
+          "position": "CF"
+        },
+        {
+          "slot": 9,
+          "person_id": 571771,
+          "name": "Enrique Hern\u00e1ndez",
+          "position": "3B"
+        }
+      ],
       "away_team_id": 158,
       "home_team_id": 119,
       "venue_id": 22,
-      "away_bullpen": "5/113",
+      "away_bullpen": "6/127",
       "home_bullpen": "8/153"
     }
   ]
