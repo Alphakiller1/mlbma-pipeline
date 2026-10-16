@@ -3,8 +3,8 @@
   "sport": "cfb",
   "season": 2026,
   "week": 7,
-  "generated_at_utc": "2026-10-16T16:49:31Z",
-  "data_through_utc": "2026-10-15T23:39:53Z",
+  "generated_at_utc": "2026-10-16T22:56:02Z",
+  "data_through_utc": "2026-10-16T18:00:52Z",
   "games": [
     {
       "id": "DEL@MTSU",
@@ -26474,17 +26474,7 @@
         }
       },
       "away_injuries": {
-        "players": [
-          {
-            "player": "Brady Kluse",
-            "position": "WR",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "return": "Oct 16th",
-            "updated": "Oct 16 7:30 PM",
-            "source": "RotoWire"
-          }
-        ],
+        "players": [],
         "sources": "Covers, RotoWire"
       },
       "home_run_game": {
@@ -27622,42 +27612,32 @@
             "source": "Covers"
           },
           {
-            "player": "Maurice Turner",
-            "position": "RB",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Oct 16 7:30 PM",
-            "detail": "Turner is dealing with an undisclosed injury, and it is unknown if he will face Memphis on Saturday, October 17th.",
-            "source": "RotoWire + Covers",
-            "return": "Oct 16th"
-          },
-          {
             "player": "Ty Thompson",
             "position": "TE",
-            "status": "Questionable",
+            "status": "Out",
             "injury": "Undisclosed",
-            "return": "Oct 16th",
+            "return": "Oct 24th",
             "updated": "Oct 16 7:30 PM",
             "source": "RotoWire"
           },
           {
             "player": "Antwaun Parham",
             "position": "WR",
-            "status": "Questionable",
+            "status": "Out",
             "injury": "Undisclosed",
             "updated": "Oct 16 7:30 PM",
             "detail": "Parham is nursing with an undisclosed injury, and it is uncertain if he will face Memphis on Saturday, October 17th.",
             "source": "RotoWire + Covers",
-            "return": "Oct 16th"
+            "return": "Oct 24th"
           },
           {
-            "player": "Keyshaun Coleman",
-            "position": "WR",
+            "player": "M. Turner",
+            "position": "RB",
             "status": "Questionable",
             "injury": "Undisclosed",
-            "return": "Oct 16th",
-            "updated": "Oct 16 7:30 PM",
-            "source": "RotoWire"
+            "updated": "Sat, Oct 10",
+            "detail": "Turner is dealing with an undisclosed injury, and it is unknown if he will face Memphis on Saturday, October 17th.",
+            "source": "Covers"
           },
           {
             "player": "Z. Lewis Jr.",
@@ -29966,12 +29946,30 @@
             "source": "Covers"
           },
           {
+            "player": "D. Galloway",
+            "position": "TE",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Fri, Oct 16",
+            "detail": "Galloway is nursing with an undisclosed injury, and he will be out of the lineup ahainst Coastal Carolina on Friday.",
+            "source": "Covers"
+          },
+          {
             "player": "A. Sanchez",
             "position": "WR",
             "status": "Questionable",
             "injury": "Undisclosed",
             "updated": "Wed, Oct 14",
             "detail": "Sanchez is nursing with an undisclosed injury, and it is unclear if he will face Coastal Carolina on Friday.",
+            "source": "Covers"
+          },
+          {
+            "player": "C. Lofton",
+            "position": "WR",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "updated": "Fri, Oct 16",
+            "detail": "Lofton is battling with an undisclosed injury, and it is unclear whether he will play against Coastal Carolina on Friday.",
             "source": "Covers"
           }
         ],
@@ -33501,6 +33499,24 @@
       "away_injuries": {
         "players": [
           {
+            "player": "Xe'ree Alexander",
+            "position": "LB",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "return": "Oct 31st",
+            "updated": "Oct 16 8:00 PM",
+            "source": "RotoWire"
+          },
+          {
+            "player": "D. Williams Jr.",
+            "position": "QB",
+            "status": "Out",
+            "injury": "Ribs",
+            "updated": "Fri, Oct 16",
+            "detail": "Williams is nursing with a rib injury, and he is unlikely to dress against Purdue on Friday.",
+            "source": "Covers"
+          },
+          {
             "player": "J. Limar",
             "position": "RB",
             "status": "Out",
@@ -33510,31 +33526,14 @@
             "source": "Covers"
           },
           {
-            "player": "Q. Carr",
+            "player": "Quaid Carr",
             "position": "RB",
             "status": "Out",
-            "injury": "Undisclosed",
-            "updated": "Mon, Sep 7",
+            "injury": "Upper Body",
+            "updated": "Oct 16 8:00 PM",
             "detail": "Carr will undergo surgery due to an undisclosed injury, and he is without a definitive timetable for return.",
-            "source": "Covers"
-          },
-          {
-            "player": "C. Christian",
-            "position": "S",
-            "status": "Out",
-            "injury": "Achilles",
-            "updated": "Sat, Oct 3",
-            "detail": "Christian is sidelined due to achilles injury, and he is expected to miss the remainder of the season.",
-            "source": "Covers"
-          },
-          {
-            "player": "D. Williams Jr.",
-            "position": "QB",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Sat, Oct 10",
-            "detail": "Williams is tending to an undisclosed injury, and it remains to be seen if he will play against the Boilermakers on Friday.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "Nov 28th"
           },
           {
             "player": "C. Moss",
@@ -33544,6 +33543,16 @@
             "updated": "Tue, Oct 13",
             "detail": "Moss is tending to an undisclosed injury, and it remains to be seen if he will play against the Boilermakers on Friday.",
             "source": "Covers"
+          },
+          {
+            "player": "CJ Christian",
+            "position": "DB",
+            "status": "OFS",
+            "injury": "Achilles",
+            "updated": "Oct 16 8:00 PM",
+            "detail": "Christian is sidelined due to achilles injury, and he is expected to miss the remainder of the season.",
+            "source": "RotoWire + Covers",
+            "return": "Mar 1st"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -74837,6 +74846,15 @@
             "injury": "Undisclosed",
             "updated": "Thu, Sep 17",
             "detail": "Levy is battling with an undisclsoed injury, and he will be out of the lineup against USC on Saturday.",
+            "source": "Covers"
+          },
+          {
+            "player": "K. Sanders",
+            "position": "CB",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Fri, Oct 16",
+            "detail": "Sanders is dealing with an undisclosed injury, and he is not expected to play against Maryland on Saturday.",
             "source": "Covers"
           },
           {
@@ -158278,21 +158296,21 @@
             "source": "Covers"
           },
           {
+            "player": "A. O'neal",
+            "position": "OG",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Fri, Oct 16",
+            "detail": "O'Neal is dealing with an undisclosed injury, and he is not likely to play against Syracuse on Saturday.",
+            "source": "Covers"
+          },
+          {
             "player": "K. Hughes",
             "position": "WR",
             "status": "Out",
             "injury": "Lower Body",
             "updated": "Tue, Aug 11",
             "detail": "Huges has been out of commission due to lower body injury, and it is anticipated that he will miss the remainder of the season.",
-            "source": "Covers"
-          },
-          {
-            "player": "A. O'neal",
-            "position": "OG",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Sat, Oct 10",
-            "detail": "O'Neal is dealing with an undisclosed injury, and it remains to be seen if he will suit up against the Orange on Saturday, October 17th.",
             "source": "Covers"
           },
           {
@@ -159484,6 +159502,15 @@
             "injury": "Undisclosed",
             "updated": "Sun, Oct 11",
             "detail": "Odom is bothered by an undisclosed injury, and it is unclear if he will suit up against Cardinals on Saturday, October 17th.",
+            "source": "Covers"
+          },
+          {
+            "player": "M. Nelson",
+            "position": "QB",
+            "status": "Questionable",
+            "injury": "Collarbone",
+            "updated": "Fri, Oct 16",
+            "detail": "Nelson is liad up with a collarbone injury, and it is uncertain if he will play against Louisville on Saturday.",
             "source": "Covers"
           },
           {
@@ -168688,6 +168715,15 @@
             "injury": "Undisclosed",
             "updated": "Sun, Oct 11",
             "detail": "Afari Jr. is nursing with an undisclosed injury, and he is unlikely to be available against Sooners on Saturday, October 17th.",
+            "source": "Covers"
+          },
+          {
+            "player": "C. Baxter",
+            "position": "RB",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "updated": "Fri, Oct 16",
+            "detail": "Baxter is nursing with an undisclosed injury, and it remains to be seen if he will be active against Oklahoma on Saturday.",
             "source": "Covers"
           },
           {
@@ -201216,8 +201252,8 @@
             "position": "QB",
             "status": "Questionable",
             "injury": "Head",
-            "updated": "Sun, Oct 11",
-            "detail": "Sagapolutele is dealing with a head injury, and it is unclear if he will play against the Demon Deacons on Saturday, October 17th.",
+            "updated": "Fri, Oct 16",
+            "detail": "Sagapolutele is dealing with a head injury, and it has yet to be determined if he will face Wake Forest on Saturday.",
             "source": "Covers"
           },
           {
