@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-16T13:20:07Z",
-  "data_through_utc": "2026-10-16T13:20:07Z",
+  "generated_at_utc": "2026-10-16T16:37:23Z",
+  "data_through_utc": "2026-10-16T16:37:23Z",
   "games": [
     {
       "id": "849817",
@@ -20,21 +20,20 @@
       "venue_city": "Cleveland, OH",
       "broadcast": "TBS/HBO MAX, TruTV",
       "away_starter": "Nick Martinez",
-      "home_starter": "Tanner Bibee",
+      "home_starter": "Shawn Armstrong",
       "away_starter_id": 607259,
-      "home_starter_id": 676440,
-      "home_starter_role": "projected",
+      "home_starter_id": 542888,
       "away_hand": "R",
       "home_hand": "R",
       "away_era": "3.10",
-      "home_era": "4.36",
+      "home_era": "4.58",
       "away_lineup_state": "Expected",
       "home_lineup_state": "Expected",
       "away_team_id": 139,
       "home_team_id": 114,
       "venue_id": 5,
       "away_bullpen": "5/91",
-      "home_bullpen": "7/91"
+      "home_bullpen": "6/71"
     }
   ]
 }
