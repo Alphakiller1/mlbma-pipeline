@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-starter-splits/2",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-16T16:38:04Z",
+  "generated_at_utc": "2026-10-17T15:26:56Z",
   "league_ops_allowed": 0.708,
   "note": "Starter lines by batter hand and by home or road, read from the MLB Stats API split endpoint and keyed by MLB person id. OPS+ is 100 x league OPS allowed over this line's OPS allowed, so 100 is league average and higher is the better arm. xFIP replaces the home runs actually allowed with the league rate on this line's own air balls. ERA is published for home and road only: a batter-hand cut does not attribute earned runs.",
   "starters": {
