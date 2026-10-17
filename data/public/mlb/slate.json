@@ -1,13 +1,13 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-16T21:20:42Z",
-  "data_through_utc": "2026-10-16T21:20:42Z",
+  "generated_at_utc": "2026-10-17T00:34:40Z",
+  "data_through_utc": "2026-10-17T00:34:40Z",
   "games": [
     {
       "id": "849817",
       "sport": "mlb",
-      "game_state": "scheduled",
+      "game_state": "delayed",
       "kickoff_utc": "2026-10-17T00:00:00Z",
       "game_pk": 849817,
       "away": "TB",
@@ -67,7 +67,7 @@
         {
           "slot": 6,
           "person_id": 683748,
-          "name": "Victor Mesa Jr.",
+          "name": "Victor Mesa",
           "position": "RF"
         },
         {
