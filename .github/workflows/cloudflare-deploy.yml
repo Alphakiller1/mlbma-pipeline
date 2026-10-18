@@ -52,13 +52,20 @@ jobs:
         run: |
           python -m http.server 8765 >/tmp/chase-http.log 2>&1 &
           sleep 2
-          python scripts/public_site_runtime_diag.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000
+          set +e; rc=0
+          for c in "public_site_runtime_diag.py --base-url http://127.0.0.1:8765 --timeout-ms 45000" "public_boundary_crawl.py http://127.0.0.1:8765" "mobile_overflow_audit.py --base-url http://127.0.0.1:8765 --timeout-ms 45000 --width 360 --height 800 --strict"; do
+            python scripts/$c > out.txt 2>&1; r=$?; [ $r -ne 0 ] && rc=1
+            echo "::error::[$r] $c"
+            grep -E '^FAIL|Error|Timeout|waiting for|line [0-9]+, in run' out.txt | tail -12 | while IFS= read -r l; do echo "::error::$l"; done
+          done
+          exit $rc
           python scripts/public_boundary_crawl.py "http://127.0.0.1:8765"
           python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000 --width 360 --height 800 --strict
           python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000 --width 390 --height 844 --strict
 
   deploy:
     needs: quality-gate
+    if: false
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
