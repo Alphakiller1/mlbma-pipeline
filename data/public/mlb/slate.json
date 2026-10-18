@@ -1,13 +1,13 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-18T18:41:46Z",
-  "data_through_utc": "2026-10-18T18:41:46Z",
+  "generated_at_utc": "2026-10-18T22:28:52Z",
+  "data_through_utc": "2026-10-18T21:08:00Z",
   "games": [
     {
       "id": "849817",
       "sport": "mlb",
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-18T21:08:00Z",
       "game_pk": 849817,
       "away": "TB",
@@ -16,13 +16,15 @@
       "home_name": "Cleveland Guardians",
       "away_record": "2-2",
       "home_record": "2-2",
+      "away_score": 3,
+      "home_score": 0,
       "venue": "Progressive Field",
       "venue_city": "Cleveland, OH",
       "broadcast": "TBS/HBO MAX, TruTV",
-      "conditions": "62\u00b0 \u00b7 Clear \u00b7 5 mph, Varies",
-      "weather_temp": "62",
+      "conditions": "63\u00b0 \u00b7 Clear \u00b7 8 mph, L To R",
+      "weather_temp": "63",
       "weather_cond": "Clear",
-      "weather_wind": "5 mph, Varies",
+      "weather_wind": "8 mph, L To R",
       "away_starter": "Drew Rasmussen",
       "home_starter": "Parker Messick",
       "away_starter_id": 656876,
@@ -149,7 +151,7 @@
       "home_team_id": 114,
       "venue_id": 5,
       "away_bullpen": "7/121",
-      "home_bullpen": "9/187"
+      "home_bullpen": "10/215"
     }
   ]
 }
