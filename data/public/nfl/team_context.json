@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-10-18T20:37:32Z",
+  "generated_at_utc": "2026-10-18T22:35:11Z",
   "data_through_utc": "2026-10-18T18:36:32+00:00",
   "season": 2026,
   "week": 6,
@@ -4994,8 +4994,8 @@
       "through": "2026-10-18"
     },
     "PIT": {
-      "games": 5,
-      "through": "2026-10-11"
+      "games": 6,
+      "through": "2026-10-18"
     },
     "SEA": {
       "games": 6,
@@ -5006,8 +5006,8 @@
       "through": "2026-10-11"
     },
     "TB": {
-      "games": 5,
-      "through": "2026-10-09"
+      "games": 6,
+      "through": "2026-10-18"
     },
     "TEN": {
       "games": 6,
