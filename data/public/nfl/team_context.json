@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-10-18T18:53:33Z",
+  "generated_at_utc": "2026-10-18T20:37:32Z",
   "data_through_utc": "2026-10-18T18:36:32+00:00",
   "season": 2026,
   "week": 6,
@@ -4910,28 +4910,28 @@
       "through": "2026-10-11"
     },
     "ATL": {
-      "games": 5,
-      "through": "2026-10-12"
+      "games": 6,
+      "through": "2026-10-18"
     },
     "BAL": {
-      "games": 5,
-      "through": "2026-10-12"
+      "games": 6,
+      "through": "2026-10-18"
     },
     "BUF": {
       "games": 5,
       "through": "2026-10-13"
     },
     "CAR": {
-      "games": 4,
-      "through": "2026-10-05"
+      "games": 5,
+      "through": "2026-10-18"
     },
     "CHI": {
-      "games": 5,
-      "through": "2026-10-11"
+      "games": 6,
+      "through": "2026-10-18"
     },
     "CLE": {
-      "games": 5,
-      "through": "2026-10-11"
+      "games": 6,
+      "through": "2026-10-18"
     },
     "DAL": {
       "games": 5,
@@ -4950,8 +4950,8 @@
       "through": "2026-10-18"
     },
     "IND": {
-      "games": 5,
-      "through": "2026-10-11"
+      "games": 6,
+      "through": "2026-10-18"
     },
     "JAX": {
       "games": 6,
@@ -4974,24 +4974,24 @@
       "through": "2026-10-11"
     },
     "NE": {
-      "games": 5,
-      "through": "2026-10-11"
+      "games": 6,
+      "through": "2026-10-18"
     },
     "NO": {
-      "games": 5,
-      "through": "2026-10-11"
+      "games": 6,
+      "through": "2026-10-18"
     },
     "NYG": {
-      "games": 5,
-      "through": "2026-10-11"
+      "games": 6,
+      "through": "2026-10-18"
     },
     "NYJ": {
-      "games": 5,
-      "through": "2026-10-11"
+      "games": 6,
+      "through": "2026-10-18"
     },
     "PHI": {
-      "games": 5,
-      "through": "2026-10-11"
+      "games": 6,
+      "through": "2026-10-18"
     },
     "PIT": {
       "games": 5,
@@ -5010,8 +5010,8 @@
       "through": "2026-10-09"
     },
     "TEN": {
-      "games": 5,
-      "through": "2026-10-11"
+      "games": 6,
+      "through": "2026-10-18"
     },
     "WSH": {
       "games": 5,
