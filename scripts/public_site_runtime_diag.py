@@ -6,7 +6,7 @@ import argparse
 import json
 import re
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
@@ -308,8 +308,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         offenders = [c for c in data_bars if c == violet]
         check("violet is not used for data grading", not offenders,
               f"{len(offenders)} of {len(data_bars)} data bars are brand violet")
-        check("MLB team form is current", age is not None and age <= 14,
-              "not published" if age is None else f"{age:.1f} days old")
+        form_ok, form_note = form_is_current(age)
+        check("MLB team form is current", form_ok, form_note)
         check("MLB form panels state when the form was published",
               "Team form as published" in page.locator("#form").inner_text())
         # The mirror and the radar both arrive with the league artifact, which
@@ -820,6 +820,24 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         context.close()
         browser.close()
     return results
+
+
+def form_is_current(age: float | None) -> tuple[bool, str]:
+    """In season, team form must be under two weeks old. From October through
+    February there are no regular-season games, so the final regular-season
+    snapshot is the newest form that can exist: require that instead (data
+    through Sept 15 or later). A fixed 14 days froze every deploy once the
+    2026 regular season ended."""
+    if age is None:
+        return False, "not published"
+    now = datetime.now(timezone.utc)
+    if now.month in (10, 11, 12, 1, 2):
+        season = now.year if now.month >= 10 else now.year - 1
+        observed = now - timedelta(days=age)
+        final = datetime(season, 9, 15, tzinfo=timezone.utc)
+        return observed >= final, (f"offseason: final {season} snapshot, "
+                                   f"data through {observed:%Y-%m-%d} ({age:.1f} days old)")
+    return age <= 14, f"{age:.1f} days old"
 
 
 def form_age_days() -> float | None:
