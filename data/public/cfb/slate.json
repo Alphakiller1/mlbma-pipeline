@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 7,
-  "generated_at_utc": "2026-10-19T21:01:53Z",
+  "generated_at_utc": "2026-10-19T23:50:12Z",
   "data_through_utc": "2026-10-17T23:05:49Z",
   "games": [
     {
@@ -33524,6 +33524,15 @@
             "injury": "Ribs",
             "updated": "Sat, Oct 17",
             "detail": "Williams is nursing with a rib injury, and he is unlikely to dress against Nebraska on Saturday, October 31st.",
+            "source": "Covers"
+          },
+          {
+            "player": "T. Cooley",
+            "position": "RB",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "updated": "Mon, Oct 19",
+            "detail": "Cooley is tending to an undisclosed injury, and it remains to be seen if he will play against the Nebraska on Saturday, October 31th.",
             "source": "Covers"
           },
           {
@@ -97620,10 +97629,10 @@
           {
             "player": "D. Lee Jr.",
             "position": "WR",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Sat, Oct 17",
-            "detail": "Lee is dealing with an undisclosed injury, and it is unknown if he will face Cincinnati on Saturday, October 24th.",
+            "status": "Out",
+            "injury": "Knee",
+            "updated": "Mon, Oct 19",
+            "detail": "Lee is dealing with a knee torn ACL injury, and he has been shut down for the remainder of the season.",
             "source": "Covers"
           },
           {
@@ -122010,6 +122019,15 @@
             "injury": "Undisclosed",
             "updated": "Mon, Oct 12",
             "detail": "Salas is dealing with an undisclosed injury, and he will be idle for the remainder of the season.",
+            "source": "Covers"
+          },
+          {
+            "player": "A. Pellicciotta",
+            "position": "S",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Mon, Oct 19",
+            "detail": "Pellicciotta is battling due to an undisclosed injury, and he will be out of action against Virginia on Friday.",
             "source": "Covers"
           }
         ],
