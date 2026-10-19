@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 7,
-  "generated_at_utc": "2026-10-19T18:47:03Z",
+  "generated_at_utc": "2026-10-19T21:01:53Z",
   "data_through_utc": "2026-10-17T23:05:49Z",
   "games": [
     {
@@ -2735,7 +2735,7 @@
           "epa_splits": {
             "all": {
               "label": "All plays EPA per play",
-              "value": 0.218,
+              "value": 0.216,
               "better": "high",
               "format": "ppa",
               "rank": 85,
@@ -2743,7 +2743,7 @@
             },
             "pass": {
               "label": "Dropbacks EPA per play",
-              "value": 0.207,
+              "value": 0.205,
               "better": "high",
               "format": "ppa",
               "rank": 100,
@@ -2767,10 +2767,10 @@
             },
             "passingDowns": {
               "label": "Passing downs EPA per play",
-              "value": 0.212,
+              "value": 0.207,
               "better": "high",
               "format": "ppa",
-              "rank": 122,
+              "rank": 123,
               "of": 176
             },
             "firstDown": {
@@ -11984,7 +11984,7 @@
               "value": 0.209,
               "better": "high",
               "format": "ppa",
-              "rank": 123,
+              "rank": 122,
               "of": 176
             },
             "firstDown": {
@@ -48401,12 +48401,30 @@
             "source": "Covers"
           },
           {
+            "player": "C. Simmons",
+            "position": "DL",
+            "status": "Questionable",
+            "injury": "Ankle",
+            "updated": "Mon, Oct 19",
+            "detail": "Simmons is hampered with an ankle injury, and it is uncertain if he will suit up against Ole Miss on Saturday.",
+            "source": "Covers"
+          },
+          {
             "player": "Z. Williams",
             "position": "DL",
             "status": "Questionable",
             "injury": "Undisclosed",
             "updated": "Sat, Oct 17",
             "detail": "Williams is dealing with an undisclosed injury, and it is unclear if he will play against Ole Miss on Saturday.",
+            "source": "Covers"
+          },
+          {
+            "player": "H. Smothers",
+            "position": "RB",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "updated": "Mon, Oct 19",
+            "detail": "Smothers is laid up with an undisclosed injury, and it remains to be seen if he will be active against Mississippi on Saturday.",
             "source": "Covers"
           },
           {
@@ -55325,6 +55343,15 @@
             "source": "Covers"
           },
           {
+            "player": "G. Oakley",
+            "position": "TE",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Mon, Oct 19",
+            "detail": "Oakley is ailing from illness, and he will be out of the lineup against Arizona State on Saturday.",
+            "source": "Covers"
+          },
+          {
             "player": "W. Anciaux",
             "position": "TE",
             "status": "Out",
@@ -55358,15 +55385,6 @@
             "injury": "Undisclosed",
             "updated": "Sat, Oct 17",
             "detail": "Knuth is dealing with an undisclosed injury, and it is unclear if he will play against Arizona State on Saturday.",
-            "source": "Covers"
-          },
-          {
-            "player": "G. Oakley",
-            "position": "TE",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Sat, Oct 17",
-            "detail": "Oakley is laid up with an undisclosed injury, and it is uncertain if he will play against Arizona State on Saturday.",
             "source": "Covers"
           },
           {
@@ -92902,12 +92920,30 @@
             "source": "Covers"
           },
           {
+            "player": "E. Crowell",
+            "position": "RB",
+            "status": "Questionable",
+            "injury": "Leg",
+            "updated": "Mon, Oct 19",
+            "detail": "Crowell is nursing due to a lower leg injury, and it is unclear whether he will play against Texas A&M on Saturday.",
+            "source": "Covers"
+          },
+          {
             "player": "J. Ford",
             "position": "TE",
             "status": "Questionable",
             "injury": "Arm",
             "updated": "Sat, Oct 17",
             "detail": "Ford is nursing with a arm injury, and it is unclear if he will be active against Texas A&M on Saturday, October 24th.",
+            "source": "Covers"
+          },
+          {
+            "player": "C. Morgan",
+            "position": "WR",
+            "status": "Questionable",
+            "injury": "Hamstring",
+            "updated": "Mon, Oct 19",
+            "detail": "Morgan is battling due to a hamstring injury, and it remains to be seen if he will be active against Texas A&M on Saturday.",
             "source": "Covers"
           }
         ],
@@ -111396,12 +111432,30 @@
             "source": "Covers"
           },
           {
+            "player": "D. DeBlanc",
+            "position": "WR",
+            "status": "Questionable",
+            "injury": "Toe",
+            "updated": "Mon, Oct 19",
+            "detail": "DeBlanc is nursing due to a toe injury, and it is uncertain if he will play against Air Force on Friday.",
+            "source": "Covers"
+          },
+          {
             "player": "J. Holman",
             "position": "WR",
             "status": "Questionable",
             "injury": "Undisclosed",
             "updated": "Sun, Oct 18",
             "detail": "Holman is battling due to an undisclosed injury, and it is uncertain if he will play against Air Force on Friday.",
+            "source": "Covers"
+          },
+          {
+            "player": "S. Harris",
+            "position": "RB",
+            "status": "Probable",
+            "injury": "Concussion",
+            "updated": "Mon, Oct 19",
+            "detail": "Harris is laid up with an concussion injury, but he is likely to suit up against Air Force on Friday.",
             "source": "Covers"
           }
         ],
@@ -131313,6 +131367,15 @@
             "injury": "Undisclosed",
             "updated": "Sat, Oct 3",
             "detail": "Worley has been out of the lineup due to undisclosed injury, and he is expected to miss the remainder of the season.",
+            "source": "Covers"
+          },
+          {
+            "player": "G. Crowder",
+            "position": "QB",
+            "status": "Questionable",
+            "injury": "Shoulder",
+            "updated": "Mon, Oct 19",
+            "detail": "Crowder is bothered by a shoulder injury, and it is unclear whether he will play against Louisiana-Monroe on Saturday.",
             "source": "Covers"
           }
         ],
@@ -175998,6 +176061,15 @@
       "away_injuries": {
         "players": [
           {
+            "player": "D. Brooks",
+            "position": "RB",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Mon, Oct 19",
+            "detail": "Brooks is battling due to an undisclosed injury, and he will be out of the lineup against Old Dominion on Saturday.",
+            "source": "Covers"
+          },
+          {
             "player": "D. Benedix",
             "position": "WR",
             "status": "Out",
@@ -204112,6 +204184,33 @@
       "away_injuries": {
         "players": [
           {
+            "player": "A. Jones Jr.",
+            "position": "DL",
+            "status": "Out",
+            "injury": "Foot",
+            "updated": "Mon, Oct 19",
+            "detail": "Jones Jr. is bothered by a foot injury, and a timetable for his return has yet to be established.",
+            "source": "Covers"
+          },
+          {
+            "player": "I. Mozee",
+            "position": "RB",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Mon, Oct 19",
+            "detail": "Mozee is nursing due to an undisclosed injury, and he will miss an undetermined length of time.",
+            "source": "Covers"
+          },
+          {
+            "player": "V. Genatone",
+            "position": "RB",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Mon, Oct 19",
+            "detail": "Genatone is managing due to an undisclosed injury, and he has been shut down for the remainder of the season.",
+            "source": "Covers"
+          },
+          {
             "player": "R. Van Poppel",
             "position": "DL",
             "status": "Questionable",
@@ -205267,15 +205366,6 @@
             "source": "Covers"
           },
           {
-            "player": "E. Stewart",
-            "position": "WR",
-            "status": "Out",
-            "injury": "Undisclosed",
-            "updated": "Fri, Oct 16",
-            "detail": "Stewart is nursing with an undisclosed injury, and he is unlikely to face Cornhuskers on Saturday.",
-            "source": "Covers"
-          },
-          {
             "player": "I. Hooks",
             "position": "WR",
             "status": "Out",
@@ -205309,6 +205399,15 @@
             "injury": "Neck",
             "updated": "Sun, Oct 18",
             "detail": "Gresham is hampered by a neck injury, and it has yet to be established if he will be active against the Illinois on Saturday.",
+            "source": "Covers"
+          },
+          {
+            "player": "E. Stewart",
+            "position": "WR",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "updated": "Mon, Oct 19",
+            "detail": "Stewart is nursing with an undisclosed injury, and it is unknown if he will play Saturday versus Illinois.",
             "source": "Covers"
           }
         ],
