@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-19T13:34:17Z",
-  "data_through_utc": "2026-10-19T13:34:17Z",
+  "generated_at_utc": "2026-10-19T18:46:13Z",
+  "data_through_utc": "2026-10-19T18:46:13Z",
   "games": [
     {
       "id": "849815",
@@ -19,21 +19,20 @@
       "venue": "Tropicana Field",
       "venue_city": "St. Petersburg, FL",
       "broadcast": "TBS/HBO MAX, TruTV",
-      "away_starter": "Tanner Bibee",
+      "away_starter": "Shawn Armstrong",
       "home_starter": "Freddy Peralta",
-      "away_starter_id": 676440,
+      "away_starter_id": 542888,
       "home_starter_id": 642547,
-      "away_starter_role": "projected",
       "away_hand": "R",
       "home_hand": "R",
-      "away_era": "4.36",
+      "away_era": "4.58",
       "home_era": "4.42",
       "away_lineup_state": "Expected",
       "home_lineup_state": "Expected",
       "away_team_id": 114,
       "home_team_id": 139,
       "venue_id": 12,
-      "away_bullpen": "10/318",
+      "away_bullpen": "9/292",
       "home_bullpen": "5/119"
     }
   ]
