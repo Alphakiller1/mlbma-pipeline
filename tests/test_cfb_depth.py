@@ -42,7 +42,9 @@ def test_game_logs_rank_against_fbs_only_and_build_a_season_row(monkeypatch):
 def test_record_and_starter_ordering():
     from scripts import publish_public_cfb_slate as cfb
     assert cfb._record([{"result": "W"}, {"result": "L"}, {"result": "W"}]) == "2-1"
-    qbs = [{"player_name": "Backup", "line": {"attempts": 90}},
-           {"player_name": "Starter Jr.", "line": {"attempts": 40}}]
-    assert cfb._starter_first(qbs, "Starter Jr.")[0]["player_name"] == "Starter Jr."
-    assert cfb._starter_first(qbs, None)[0]["player_name"] == "Backup"
+    # Starter selection lives in apply_availability (tests/test_cfb_availability.py):
+    # with no last game to read, the room is ordered by season attempts.
+    game = {"home": "X", "home_qbs": [{"player_id": "2", "player_name": "Starter Jr.", "line": {"attempts": 40}},
+                                      {"player_id": "1", "player_name": "Backup", "line": {"attempts": 90}}]}
+    cfb.apply_availability([game], {}, 2026)
+    assert game["home_qbs"][0]["player_name"] == "Backup"

@@ -32,6 +32,7 @@ import os
 import re
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -348,6 +349,77 @@ def _box(event_id: str) -> dict | None:
     payload = {"teams": teams}
     _store(name, payload)
     return payload
+
+
+def _box_players(event_id: str) -> dict | None:
+    """{ESPN team id: {"passers": [[id, name, attempts], ...], "appeared": [[id, name], ...]}}
+    for a completed game. ESPN athlete ids are the ids CFBD keys players by."""
+    name = f"players_{event_id}.json"
+    hit = _cached(name)
+    if hit is not None:
+        return hit
+    try:
+        raw = _get(f"{ESPN}/summary?event={event_id}")
+    except Exception:
+        return None
+    teams: dict[str, dict] = {}
+    for block in (raw.get("boxscore") or {}).get("players") or []:
+        tid = str((block.get("team") or {}).get("id") or "")
+        entry = teams.setdefault(tid, {"passers": [], "appeared": []})
+        for category in block.get("statistics") or []:
+            labels = category.get("labels") or []
+            for row in category.get("athletes") or []:
+                athlete = row.get("athlete") or {}
+                pid = str(athlete.get("id") or "")
+                if not pid or pid.startswith("-"):
+                    continue
+                if pid not in {p for p, _name in entry["appeared"]}:
+                    entry["appeared"].append([pid, athlete.get("displayName") or ""])
+                if category.get("name") == "passing" and "C/ATT" in labels:
+                    cell = str((row.get("stats") or [""] * len(labels))[labels.index("C/ATT")])
+                    made_att = re.fullmatch(r"(\d+)/(\d+)", cell)
+                    entry["passers"].append([pid, athlete.get("displayName") or "",
+                                             int(made_att.group(2)) if made_att else 0])
+    if not teams:
+        return None
+    _store(name, teams)
+    return teams
+
+
+def last_game_players(season: int, through_week: int, wanted: dict[str, str]) -> dict[str, dict]:
+    """{board abbreviation: {"date", "passers", "appeared"}} from each published
+    school's most recent completed game before ``through_week``.
+
+    This is who actually played, which the season passing lines cannot say:
+    a QB1 lost in October still leads his school in attempts all year.
+    """
+    out: dict[str, dict] = {}
+    pending: list[tuple[str, str, str, str]] = []  # (board, event id, team id, date)
+    for week in range(max(1, through_week) - 1, 0, -1):
+        for event in _week_events(season, week):
+            if not ((event.get("status") or {}).get("type") or {}).get("completed"):
+                continue
+            for side in (event.get("competitions") or [{}])[0].get("competitors") or []:
+                team = side.get("team") or {}
+                board = (wanted.get(str(team.get("abbreviation") or "").upper())
+                         or wanted.get(_norm(team.get("location") or "")))
+                if board and board not in out:
+                    out[board] = {}
+                    pending.append((board, str(event.get("id")), str(team.get("id") or ""),
+                                    event.get("date") or ""))
+        if len(out) >= len(set(wanted.values())):
+            break
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        boxes = list(pool.map(lambda p: _box_players(p[1]), pending))
+    for (board, _event, tid, date), box in zip(pending, boxes):
+        mine = (box or {}).get(tid)
+        if not mine:
+            out.pop(board, None)
+            continue
+        out[board] = {"date": date,
+                      "passers": sorted(mine["passers"], key=lambda p: -p[2]),
+                      "appeared": mine["appeared"]}
+    return out
 
 
 def _num(text) -> float | None:

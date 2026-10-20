@@ -9,9 +9,10 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from html import unescape
 from html.parser import HTMLParser
 from pathlib import Path
@@ -723,15 +724,122 @@ def _record(log: list[dict] | None) -> str | None:
     return f"{wins}-{losses}" + (f"-{ties}" if ties else "")
 
 
-def _starter_first(qbs: list[dict] | None, starter: str | None) -> list[dict] | None:
-    """The listed starter (ESPN's passing leader) first, then by attempts;
-    at most two passers."""
-    if not qbs:
+# Designations that keep a player off the field. Questionable and Probable do
+# not: they usually play, so the card names them with the designation shown.
+UNAVAILABLE = re.compile(r"\bout\b|doubtful|injured list|\bir\b|suspen|reserve", re.I)
+NAME_SUFFIXES = {"jr", "sr", "ii", "iii", "iv", "v"}
+
+
+def person_key(name: str | None) -> tuple[str, str] | None:
+    """(first initial, surname): the injury feeds print "N. Minicucci" where
+    the stat feeds print "Nick Minicucci"."""
+    text = unicodedata.normalize("NFKD", str(name or "")).encode("ascii", "ignore").decode()
+    words = re.sub(r"[^a-z\s]", " ", text.lower()).split()
+    # Suffixes only after the first name: "V. Ellison" is an initial, not "the fifth".
+    words = words[:1] + [w for w in words[1:] if w not in NAME_SUFFIXES]
+    return (words[0][0], words[-1]) if len(words) >= 2 else None
+
+
+def report_date(text: str | None, season: int) -> datetime | None:
+    """"Sat, Oct 17" -> that date in the season (January belongs to season + 1)."""
+    match = re.search(r"([A-Za-z]{3})[a-z]*\.?\s+(\d{1,2})", str(text or ""))
+    if not match:
         return None
-    key = cfb_depth._norm(starter) if starter else None
-    ordered = sorted(qbs, key=lambda q: (cfb_depth._norm(q.get("player_name")) != key,
-                                         -q["line"]["attempts"]))
-    return ordered[:2]
+    try:
+        month = datetime.strptime(match.group(1).title(), "%b").month
+    except ValueError:
+        return None
+    return datetime(season + (1 if month <= 2 else 0), month, int(match.group(2)), tzinfo=timezone.utc)
+
+
+def _game_day(iso: str | None) -> datetime | None:
+    """A kickoff's calendar day in US Eastern terms (UTC minus five hours)."""
+    try:
+        moment = datetime.fromisoformat(str(iso).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    moment = moment.astimezone(timezone.utc) - timedelta(hours=5)
+    return datetime(moment.year, moment.month, moment.day, tzinfo=timezone.utc)
+
+
+def apply_availability(games: list[dict], last_game: dict[str, dict], season: int) -> dict[str, int]:
+    """Make the QB room, the ball carriers and the injury report agree.
+
+    - A report entry is dropped when the box score shows that player playing
+      on a later day than the report is dated: the designation is stale.
+    - Every QB and ball carrier carries his designation (status, injury).
+    - The starter (depth_rank 1) is the passer who led the school's last game,
+      unless he is ruled out; then the next available QB by attempts. The
+      season attempts leader is not the starter when he is hurt or has lost
+      the job - Delaware's Nick Minicucci (out, leg) led the room on
+      2026-10-20 while Tyler Bell started.
+    """
+    counts = {"stale": 0, "ruled_out_qb1": 0, "changed_starter": 0}
+    for game in games:
+        for side in ("away", "home"):
+            played = last_game.get(str(game.get(side))) or {}
+            day = _game_day(played.get("date"))
+            appeared = {person_key(name) for _pid, name in played.get("appeared") or []}
+            report = game.get(side + "_injuries") or {}
+            kept = []
+            for entry in report.get("players") or []:
+                dated = report_date(entry.get("updated"), season)
+                if (UNAVAILABLE.search(str(entry.get("status") or "")) and day and dated
+                        and day > dated and person_key(entry.get("player")) in appeared):
+                    counts["stale"] += 1
+                    continue
+                kept.append(entry)
+            if report:
+                report["players"] = kept
+            designation = {person_key(e.get("player")): e for e in kept}
+
+            def mark(player: dict) -> dict:
+                entry = designation.get(person_key(player.get("player_name")))
+                player = {k: v for k, v in player.items() if k not in ("status", "injury", "depth_rank")}
+                if entry:
+                    player["status"] = entry.get("status")
+                    if entry.get("injury"):
+                        player["injury"] = entry["injury"]
+                return player
+
+            if game.get(side + "_rushers"):
+                game[side + "_rushers"] = [mark(r) for r in game[side + "_rushers"]]
+            qbs = [mark(q) for q in game.get(side + "_qbs") or []]
+            # The man who threw most of the last game is in the room even when
+            # the season lines do not list him (a CFBD outage carries last
+            # week's room forward); ten attempts is a start, not a trick play.
+            lead = (played.get("passers") or [[None, None, 0]])[0]
+            if (lead[0] and lead[2] >= 10 and qbs
+                    and not any(str(q.get("player_id")) == str(lead[0]) for q in qbs)):
+                qbs.append(mark({"player_id": str(lead[0]), "player_name": lead[1],
+                                 "position": "QB", "ranked": False, "line": {}}))
+            if not qbs:
+                continue
+            qbs.sort(key=lambda q: -((q.get("line") or {}).get("attempts") or 0))
+            out = [q for q in qbs if UNAVAILABLE.search(str(q.get("status") or ""))]
+            available = [q for q in qbs if q not in out]
+            # Last game's passers within a quarter of its leader's attempts
+            # shared the job; the one with the larger season workload gets it.
+            passers = played.get("passers") or []
+            shared = {str(p[0]) for p in passers if passers and p[2] >= 0.75 * passers[0][2]}
+            starter = next((q for q in available if str(q.get("player_id")) in shared),
+                           available[0] if available else None)
+            if starter is None:
+                room = qbs[:2]
+            else:
+                room = [starter] + [q for q in available if q is not starter][:1]
+                # A ruled-out QB1 stays in the room, marked, so the reader sees
+                # why the man ahead of him is starting.
+                room += [q for q in out if (q.get("line") or {}).get("attempts", 0) >
+                         (starter.get("line") or {}).get("attempts", 0)][:1]
+                counts["ruled_out_qb1"] += qbs[0] in out
+                counts["changed_starter"] += starter is not qbs[0]
+            for rank, q in enumerate(room, 1):
+                q["depth_rank"] = rank
+            game[side + "_qbs"] = room
+            if starter is not None:
+                game[side + "_starter"] = starter.get("player_name")
+    return counts
 
 
 def public_game(raw: dict, stats: dict, events: dict, pools: dict,
@@ -793,7 +901,8 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict,
         log = (depth.get("logs") or {}).get(abbr)
         row[side + "_run_game"] = team.get("run_game")
         row[side + "_scheme_stats"] = team.get("scheme")
-        row[side + "_qbs"] = _starter_first((depth.get("qbs") or {}).get(key), row.get(side + "_starter"))
+        # Ordered and trimmed to the room by apply_availability.
+        row[side + "_qbs"] = (depth.get("qbs") or {}).get(key)
         row[side + "_defense_splits"] = (depth.get("defense_splits") or {}).get(key)
         row[side + "_rushers"] = (depth.get("rushers") or {}).get(key)
         row[side + "_game_log"] = log
@@ -832,6 +941,7 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
             key[5:]: profile["overall"]["value"] for key, profile in (adjusted or {}).items()
             if key.startswith("name:") and (profile.get("overall") or {}).get("value") is not None}),
         "injuries": cfb_injuries.load(),
+        "last_game": cfb_depth.last_game_players(season, week, wanted),
     }
     print(f"  depth: {len(advanced)} CFBD team profiles, {len(depth['qbs'])} QB rooms, "
           f"{len(depth['logs'])} game logs")
@@ -908,6 +1018,10 @@ def main() -> int:
     carried = carry_forward_depth(games, season)
     if carried:
         print(f"  depth: carried {carried} school blocks forward from the published slate")
+    counts = apply_availability(games, depth.get("last_game") or {}, season)
+    print(f"  availability: {len(depth.get('last_game') or {})} schools' last games read; "
+          f"{counts['changed_starter']} starters differ from the attempts leader "
+          f"({counts['ruled_out_qb1']} ruled out); {counts['stale']} stale report entries dropped")
     games.sort(key=lambda row: (row.get("kickoff_utc") or "9999", row.get("id") or ""))
     stamp = datetime.now(timezone.utc).replace(microsecond=0)
     payload = {

@@ -524,7 +524,8 @@
     var pct = line.completion_pct && line.completion_pct.value != null
       ? (Number(line.completion_pct.value) * 100).toFixed(1) + '%' : null;
     var tds = line.touchdowns && line.touchdowns.value != null ? Math.round(Number(line.touchdowns.value)) + ' TD' : null;
-    var meta = ['QB'].concat([pct, tds].filter(Boolean)).join(' · ');
+    // A questionable starter is still named, with the designation beside him.
+    var meta = ['QB', qb.status].concat([pct, tds]).filter(Boolean).join(' · ');
     var ypa = line.yards_per_attempt;
     var tone = ypa && ypa.rank && ypa.of && global.MLBMAAssets && MLBMAAssets.rankChipClass
       ? MLBMAAssets.rankChipClass(ypa.rank, ypa.of) : '';
