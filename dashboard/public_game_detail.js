@@ -6160,8 +6160,11 @@ function seasonToggle(game) {
       ? '<img class="ca-cfb-player__shot" src="' + esc(url) + '" alt="" width="40" height="40" ' +
         'loading="lazy" decoding="async" data-initials="' + esc(initials(player.player_name)) + '">'
       : cfbInitials(player.player_name);
+    // The injury report's designation rides beside the position, so a ruled-out
+    // passer is never read as the man taking the snap.
+    var label = [position, player.status].filter(Boolean).join(' · ');
     return '<td><span class="ca-cfb-player">' + shot + '<span class="ca-cfb-player__id">' +
-      esc(player.player_name) + ' <span class="ca-lineup-player__position">' + esc(position) +
+      esc(player.player_name) + ' <span class="ca-lineup-player__position">' + esc(label) +
       '</span><small class="ca-qb-volume">' + esc(volume) + '</small></span></span></td>';
   }
 
@@ -6196,7 +6199,8 @@ function seasonToggle(game) {
     if (!qbs.length) return head + pending('Quarterback lines are not published yet.') + '</section>';
     var lineRows = qbs.map(function (q) {
       var line = q.line || {};
-      return '<tr>' + cfbPlayerCell(q, 'QB', line.completions + '/' + line.attempts) +
+      var volume = line.attempts != null ? line.completions + '/' + line.attempts : '';
+      return '<tr>' + cfbPlayerCell(q, q.depth_rank === 1 ? 'QB · Starting' : 'QB', volume) +
         CFB_QB_LINE.map(function (c) {
           return line[c[0]] ? cfbCell(line[c[0]]) : '<td class="num ca-vs-none">Not Rated</td>';
         }).join('') + '</tr>';
