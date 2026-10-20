@@ -3,14 +3,14 @@
   "sport": "cfb",
   "season": 2026,
   "week": 8,
-  "generated_at_utc": "2026-10-20T21:08:11Z",
+  "generated_at_utc": "2026-10-20T23:16:11Z",
   "data_through_utc": "2026-10-20T18:57:17Z",
   "games": [
     {
       "id": "MOST@DEL",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-20T23:00Z",
       "away": "MOST",
       "home": "DEL",
@@ -30,8 +30,8 @@
       "venue_city": "Newark, DE",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 62,
-      "weather_cond": "Mostly clear",
+      "weather_temp": 64,
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -2348,21 +2348,20 @@
           {
             "player": "Breezy Dubar",
             "position": "RB",
-            "status": "Questionable",
+            "status": "Out",
             "injury": "Undisclosed",
-            "return": "Oct 20th",
+            "return": "Oct 27th",
             "updated": "Oct 20 7:00 PM",
             "source": "RotoWire"
           },
           {
-            "player": "Josh Joyner",
+            "player": "J. Joyner",
             "position": "RB",
             "status": "Questionable",
             "injury": "Undisclosed",
-            "updated": "Oct 20 7:00 PM",
+            "updated": "Thu, Oct 15",
             "detail": "Joyner is nursing with an undisclosed injury, and it is unclear if he will face Blue Hens on Tuesday, October 20th.",
-            "source": "RotoWire + Covers",
-            "return": "Oct 20th"
+            "source": "Covers"
           },
           {
             "player": "J. Rexroat",
@@ -2372,15 +2371,6 @@
             "updated": "Thu, Oct 15",
             "detail": "Rexroat is dealing with an undisclosed injury, and it is unclear if he will play against the Blue Hens on Tuesday, October 20th.",
             "source": "Covers"
-          },
-          {
-            "player": "AJ Bell",
-            "position": "WR",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "return": "Oct 20th",
-            "updated": "Oct 20 7:00 PM",
-            "source": "RotoWire"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -2980,8 +2970,6 @@
               "of": 176
             }
           },
-          "status": "Questionable",
-          "injury": "Leg",
           "depth_rank": 2
         }
       ],
@@ -3578,15 +3566,6 @@
             "source": "Covers"
           },
           {
-            "player": "N. Minicucci",
-            "position": "QB",
-            "status": "Questionable",
-            "injury": "Leg",
-            "updated": "Sat, Oct 17",
-            "source": "RotoWire + Covers",
-            "return": "10/20/2026"
-          },
-          {
             "player": "B. Rehmann",
             "position": "WR",
             "status": "Questionable",
@@ -3605,7 +3584,7 @@
       "id": "MTSU@FIU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-20T23:00Z",
       "away": "MTSU",
       "home": "FIU",
@@ -3625,8 +3604,8 @@
       "venue_city": "Miami, FL",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 82,
-      "weather_cond": "Partly sunny",
+      "weather_temp": 79,
+      "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -6613,7 +6592,7 @@
             "rank": 418,
             "of": 460
           },
-          "status": "Doubtful",
+          "status": "Out",
           "injury": "Undisclosed"
         },
         {
@@ -7111,9 +7090,9 @@
           {
             "player": "Anthony Carrie",
             "position": "RB",
-            "status": "Doubtful",
+            "status": "Out",
             "injury": "Undisclosed",
-            "return": "Oct 20th",
+            "return": "Oct 31st",
             "updated": "Oct 20 7:00 PM",
             "source": "RotoWire"
           }
@@ -14219,7 +14198,7 @@
       "venue_city": "Boone, NC",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 56,
+      "weather_temp": 57,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -35627,7 +35606,7 @@
       "venue_city": "Laramie, WY",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 52,
+      "weather_temp": 53,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -39275,7 +39254,7 @@
       "venue_city": "Stanford, CA",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 66,
+      "weather_temp": 65,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -50087,7 +50066,7 @@
       "venue_city": "Auburn, AL",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 64,
+      "weather_temp": 65,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -53676,7 +53655,7 @@
       "venue": "Hard Rock Stadium",
       "venue_city": "Miami Gardens, FL",
       "roof": "Outdoor",
-      "broadcast": "ESPN",
+      "broadcast": "ESPN, Disney+",
       "weather_temp": 80,
       "weather_cond": "Intermittent clouds",
       "away_form": {
@@ -64494,7 +64473,7 @@
       "venue_city": "Cincinnati, OH",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 58,
+      "weather_temp": 60,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -67998,7 +67977,7 @@
       "venue_city": "Toledo, OH",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 56,
+      "weather_temp": 57,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -71563,7 +71542,7 @@
       "venue_city": "Fort Worth, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 71,
+      "weather_temp": 74,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -82343,7 +82322,7 @@
       "venue_city": "Mount Pleasant, MI",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 61,
+      "weather_temp": 60,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -86140,7 +86119,7 @@
       "venue_city": "Champaign, IL",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 70,
+      "weather_temp": 71,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -100365,7 +100344,7 @@
       "venue_city": "Dekalb, IL",
       "roof": "Outdoor",
       "broadcast": "MW+",
-      "weather_temp": 66,
+      "weather_temp": 68,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -103928,7 +103907,7 @@
       "venue_city": "Minneapolis, MN",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 71,
+      "weather_temp": 73,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -107429,7 +107408,7 @@
       "venue_city": "Pasadena, CA",
       "roof": "Outdoor",
       "broadcast": "CBS",
-      "weather_temp": 75,
+      "weather_temp": 73,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -114659,7 +114638,7 @@
       "venue_city": "Muncie, IN",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 69,
+      "weather_temp": 70,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -121908,8 +121887,8 @@
       "venue": "Williams-Brice Stadium",
       "venue_city": "Columbia, SC",
       "roof": "Outdoor",
-      "broadcast": "ESPN",
-      "weather_temp": 69,
+      "broadcast": "ESPN, Disney+",
+      "weather_temp": 70,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -125546,7 +125525,7 @@
       "venue_city": "Annapolis, MD",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 59,
+      "weather_temp": 58,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -129138,7 +129117,7 @@
       "venue_city": "Tempe, AZ",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 76,
+      "weather_temp": 75,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -140066,7 +140045,7 @@
       "venue_city": "Ruston, LA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 82,
+      "weather_temp": 83,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -143672,7 +143651,7 @@
       "venue_city": "Reno, NV",
       "roof": "Outdoor",
       "broadcast": "MW+",
-      "weather_temp": 59,
+      "weather_temp": 58,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -154348,7 +154327,7 @@
       "venue_city": "Fort Collins, CO",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 59,
+      "weather_temp": 57,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -158044,7 +158023,7 @@
       "venue_city": "Stillwater, OK",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 76,
+      "weather_temp": 75,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -161582,7 +161561,7 @@
       "venue_city": "Jonesboro, AR",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 77,
+      "weather_temp": 75,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -165039,7 +165018,7 @@
       "venue_city": "Clemson, SC",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 59,
+      "weather_temp": 61,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -179209,7 +179188,7 @@
       "venue_city": "Madison, WI",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 65,
+      "weather_temp": 66,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -193390,7 +193369,7 @@
       "venue_city": "Albuquerque, NM",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 59,
+      "weather_temp": 58,
       "weather_cond": "Thunderstorms",
       "away_form": {
         "rates": {
