@@ -235,6 +235,12 @@
         '<strong>' + esc(model.toFixed(1)) + '</strong>' +
         '<span class="mc-total__detail">Market total not published · no lean available</span></section>';
     }
+    if (g.starters_pending) {
+      return '<section class="mc-total is-withheld"><span class="mc-total__label">Projected total</span>' +
+        '<strong>' + esc(model.toFixed(1)) + '</strong>' +
+        '<span class="mc-total__detail">Market ' + esc(market.toFixed(1)) +
+        ' · starters not announced · no lean</span></section>';
+    }
     var delta = model - market;
     var direction = Math.abs(delta) < 0.05 ? 'At market' : (delta > 0 ? 'Over' : 'Under');
     var cls = delta > 0.05 ? ' is-over' : (delta < -0.05 ? ' is-under' : ' is-even');

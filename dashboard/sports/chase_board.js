@@ -115,7 +115,10 @@
       market_total: pickScore(g.market_total, g.book && g.book.total),
       win_probability: g.win_probability != null ? g.win_probability
         : (g.win_prob != null ? g.win_prob : g.home_win_prob),
-      lean: g.lean || g.model_lean || g.headline || null
+      lean: g.lean || g.model_lean || g.headline || null,
+      // MLB: a probable starter is not named yet, so the model priced a generic
+      // arm. The board withholds every edge; no lean may be derived here either.
+      starters_pending: g.starters_pending === true
     };
   }
 
