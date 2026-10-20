@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 8,
-  "generated_at_utc": "2026-10-20T20:18:51Z",
+  "generated_at_utc": "2026-10-20T20:56:34Z",
   "data_through_utc": "2026-10-20T18:57:17Z",
   "games": [
     {
@@ -2857,132 +2857,6 @@
           "depth_rank": 1
         },
         {
-          "player_id": "5224762",
-          "player_name": "Braden Streeter",
-          "position": "QB",
-          "ranked": false,
-          "line": {
-            "attempts": 35,
-            "completions": 12,
-            "interceptions": 3,
-            "completion_pct": {
-              "label": "Completion %",
-              "value": 0.3429,
-              "better": "high",
-              "format": "pct",
-              "rank": 178,
-              "of": 177
-            },
-            "yards_per_attempt": {
-              "label": "Yards per attempt",
-              "value": 5.0,
-              "better": "high",
-              "format": "num",
-              "rank": 176,
-              "of": 177
-            },
-            "td_rate": {
-              "label": "TD rate",
-              "value": 0.0286,
-              "better": "high",
-              "format": "pct",
-              "rank": 156,
-              "of": 177
-            },
-            "int_rate": {
-              "label": "INT rate",
-              "value": 0.0857,
-              "better": "low",
-              "format": "pct",
-              "rank": 178,
-              "of": 177
-            },
-            "yards": {
-              "label": "Passing yards",
-              "value": 175.0,
-              "better": "high",
-              "format": "int",
-              "rank": 178,
-              "of": 177
-            },
-            "touchdowns": {
-              "label": "Passing TDs",
-              "value": 1.0,
-              "better": "high",
-              "format": "int",
-              "rank": 172,
-              "of": 177
-            }
-          },
-          "epa_splits": {
-            "all": {
-              "label": "All plays EPA per play",
-              "value": -0.411,
-              "better": "high",
-              "format": "ppa",
-              "rank": 175,
-              "of": 177
-            },
-            "pass": {
-              "label": "Dropbacks EPA per play",
-              "value": -0.259,
-              "better": "high",
-              "format": "ppa",
-              "rank": 171,
-              "of": 176
-            },
-            "rush": {
-              "label": "Rushes EPA per play",
-              "value": -1.378,
-              "better": "high",
-              "format": "ppa",
-              "rank": 173,
-              "of": 174
-            },
-            "standardDowns": {
-              "label": "Standard downs EPA per play",
-              "value": -0.401,
-              "better": "high",
-              "format": "ppa",
-              "rank": 176,
-              "of": 177
-            },
-            "passingDowns": {
-              "label": "Passing downs EPA per play",
-              "value": -0.424,
-              "better": "high",
-              "format": "ppa",
-              "rank": 175,
-              "of": 176
-            },
-            "firstDown": {
-              "label": "1st down EPA per play",
-              "value": 0.193,
-              "better": "high",
-              "format": "ppa",
-              "rank": 47,
-              "of": 176
-            },
-            "secondDown": {
-              "label": "2nd down EPA per play",
-              "value": -0.504,
-              "better": "high",
-              "format": "ppa",
-              "rank": 175,
-              "of": 175
-            },
-            "thirdDown": {
-              "label": "3rd down EPA per play",
-              "value": -0.316,
-              "better": "high",
-              "format": "ppa",
-              "rank": 174,
-              "of": 176
-            }
-          },
-          "depth_rank": 2
-        },
-        {
           "player_id": "5153846",
           "player_name": "Nick Minicucci",
           "position": "QB",
@@ -3106,9 +2980,9 @@
               "of": 176
             }
           },
-          "status": "Out",
+          "status": "Questionable",
           "injury": "Leg",
-          "depth_rank": 3
+          "depth_rank": 2
         }
       ],
       "home_defense_splits": {
@@ -3686,15 +3560,6 @@
       "home_injuries": {
         "players": [
           {
-            "player": "N. Minicucci",
-            "position": "QB",
-            "status": "Out",
-            "injury": "Leg",
-            "updated": "Sat, Oct 17",
-            "detail": "Minicucci is hampered by a leg injury, and he will miss an undetermined length of time.",
-            "source": "Covers"
-          },
-          {
             "player": "G. Spiller",
             "position": "RB",
             "status": "Out",
@@ -3711,6 +3576,16 @@
             "updated": "Tue, Oct 13",
             "detail": "Salazer is dealing with an undisclosed injury, and he will miss an extended period.",
             "source": "Covers"
+          },
+          {
+            "player": "N. Minicucci",
+            "position": "QB",
+            "status": "Questionable",
+            "injury": "Leg",
+            "updated": "Sat, Oct 17",
+            "detail": "Minicucci is hampered by a leg injury, and he will miss an undetermined length of time.",
+            "source": "RotoWire + Covers",
+            "return": "10/20/2026"
           },
           {
             "player": "B. Rehmann",
@@ -3752,7 +3627,7 @@
       "roof": "Outdoor",
       "broadcast": "CBSSN",
       "weather_temp": 84,
-      "weather_cond": "Mostly sunny",
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -7273,7 +7148,7 @@
       "venue_city": "Huntington, WV",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 63,
+      "weather_temp": 69,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -17186,6 +17061,8 @@
               "of": 176
             }
           },
+          "status": "Questionable",
+          "injury": "Ankle",
           "depth_rank": 1
         },
         {
@@ -17473,7 +17350,9 @@
             "format": "int",
             "rank": 449,
             "of": 460
-          }
+          },
+          "status": "Questionable",
+          "injury": "Ankle"
         },
         {
           "player_id": "4700811",
@@ -17889,6 +17768,16 @@
       },
       "home_injuries": {
         "players": [
+          {
+            "player": "M. Singleton",
+            "position": "QB",
+            "status": "Questionable",
+            "injury": "Ankle",
+            "updated": "Sun, Oct 11",
+            "detail": "Singleton is dealing with an ankle injury, and it is unclear how long he will be idle.",
+            "source": "RotoWire + Covers",
+            "return": "10/22/2026"
+          },
           {
             "player": "J. Burnette",
             "position": "RB",
@@ -32144,7 +32033,8 @@
             "injury": "Undisclosed",
             "updated": "Sun, Oct 11",
             "detail": "Merklinger is dealing with an undisclosed injury, and it is unknown if he will face Minutemen on Friday , October 23rd.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "10/23/2026"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -37538,8 +37428,8 @@
               "of": 176
             }
           },
-          "status": "Out",
-          "injury": "Leg",
+          "status": "Out For Season",
+          "injury": "Lower Leg",
           "depth_rank": 3
         }
       ],
@@ -37624,8 +37514,8 @@
             "rank": 226,
             "of": 460
           },
-          "status": "Out",
-          "injury": "Leg"
+          "status": "Out For Season",
+          "injury": "Lower Leg"
         },
         {
           "player_id": "5223119",
@@ -38122,11 +38012,12 @@
           {
             "player": "L. Szarka",
             "position": "QB",
-            "status": "Out",
-            "injury": "Leg",
+            "status": "Out For Season",
+            "injury": "Lower Leg",
             "updated": "Mon, Oct 5",
             "detail": "Szarka is battling with a lower leg injury, and has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "3/1/2027"
           },
           {
             "player": "G. Stalfort",
@@ -39306,11 +39197,12 @@
           {
             "player": "T. Hasselbeck",
             "position": "QB",
-            "status": "Out",
+            "status": "Out For Season",
             "injury": "Knee",
             "updated": "Tue, Aug 11",
             "detail": "Hasselbeck has been out of commission due to knee injury, and he is likely to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "3/1/2027"
           },
           {
             "player": "D. Hubbard",
@@ -55404,6 +55296,132 @@
           "depth_rank": 1
         },
         {
+          "player_id": "4714300",
+          "player_name": "Holden Geriner",
+          "position": "QB",
+          "ranked": true,
+          "line": {
+            "attempts": 70,
+            "completions": 46,
+            "interceptions": 2,
+            "completion_pct": {
+              "label": "Completion %",
+              "value": 0.6571,
+              "better": "high",
+              "format": "pct",
+              "rank": 65,
+              "of": 177
+            },
+            "yards_per_attempt": {
+              "label": "Yards per attempt",
+              "value": 6.2571,
+              "better": "high",
+              "format": "num",
+              "rank": 147,
+              "of": 177
+            },
+            "td_rate": {
+              "label": "TD rate",
+              "value": 0.0286,
+              "better": "high",
+              "format": "pct",
+              "rank": 156,
+              "of": 177
+            },
+            "int_rate": {
+              "label": "INT rate",
+              "value": 0.0286,
+              "better": "low",
+              "format": "pct",
+              "rank": 119,
+              "of": 177
+            },
+            "yards": {
+              "label": "Passing yards",
+              "value": 438.0,
+              "better": "high",
+              "format": "int",
+              "rank": 153,
+              "of": 177
+            },
+            "touchdowns": {
+              "label": "Passing TDs",
+              "value": 2.0,
+              "better": "high",
+              "format": "int",
+              "rank": 158,
+              "of": 177
+            }
+          },
+          "epa_splits": {
+            "all": {
+              "label": "All plays EPA per play",
+              "value": -0.168,
+              "better": "high",
+              "format": "ppa",
+              "rank": 172,
+              "of": 177
+            },
+            "pass": {
+              "label": "Dropbacks EPA per play",
+              "value": -0.14,
+              "better": "high",
+              "format": "ppa",
+              "rank": 167,
+              "of": 176
+            },
+            "rush": {
+              "label": "Rushes EPA per play",
+              "value": -0.448,
+              "better": "high",
+              "format": "ppa",
+              "rank": 158,
+              "of": 174
+            },
+            "standardDowns": {
+              "label": "Standard downs EPA per play",
+              "value": -0.334,
+              "better": "high",
+              "format": "ppa",
+              "rank": 173,
+              "of": 177
+            },
+            "passingDowns": {
+              "label": "Passing downs EPA per play",
+              "value": 0.008,
+              "better": "high",
+              "format": "ppa",
+              "rank": 158,
+              "of": 176
+            },
+            "firstDown": {
+              "label": "1st down EPA per play",
+              "value": -0.176,
+              "better": "high",
+              "format": "ppa",
+              "rank": 159,
+              "of": 176
+            },
+            "secondDown": {
+              "label": "2nd down EPA per play",
+              "value": 0.092,
+              "better": "high",
+              "format": "ppa",
+              "rank": 130,
+              "of": 175
+            },
+            "thirdDown": {
+              "label": "3rd down EPA per play",
+              "value": 0.383,
+              "better": "high",
+              "format": "ppa",
+              "rank": 109,
+              "of": 176
+            }
+          },
+          "depth_rank": 2
+        },
+        {
           "player_id": "5208095",
           "player_name": "Mason Heintschel",
           "position": "QB",
@@ -55527,9 +55545,9 @@
               "of": 176
             }
           },
-          "status": "Questionable",
-          "injury": "Leg",
-          "depth_rank": 2
+          "status": "Out For Season",
+          "injury": "Knee",
+          "depth_rank": 3
         }
       ],
       "away_defense_splits": {
@@ -55732,8 +55750,8 @@
             "rank": 333,
             "of": 460
           },
-          "status": "Questionable",
-          "injury": "Leg"
+          "status": "Out For Season",
+          "injury": "Knee"
         }
       ],
       "away_game_log": {
@@ -56158,11 +56176,12 @@
           {
             "player": "M. Heintschel",
             "position": "QB",
-            "status": "Questionable",
-            "injury": "Leg",
+            "status": "Out For Season",
+            "injury": "Knee",
             "updated": "Sat, Oct 17",
             "detail": "Heintschel is battling with a leg injury, and it remains to be seen if he will be available against Miami on Saturday.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "3/1/2027"
           },
           {
             "player": "J. Turner",
@@ -63233,6 +63252,15 @@
       "away_injuries": {
         "players": [
           {
+            "player": "K. Sanders",
+            "position": "CB",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Tue, Oct 20",
+            "detail": "Sanders is dealing with an undisclosed injury, and he has been shut down for the remainder of the season.",
+            "source": "Covers"
+          },
+          {
             "player": "K. Levy",
             "position": "CB",
             "status": "Questionable",
@@ -63266,15 +63294,6 @@
             "injury": "Undisclosed",
             "updated": "Sat, Oct 17",
             "detail": "Houston is nursing with an undisclosed injury, and it remain to seen if he will face Northwestern on Saturday.",
-            "source": "Covers"
-          },
-          {
-            "player": "K. Sanders",
-            "position": "CB",
-            "status": "Six Game Injured List",
-            "injury": "Undisclosed",
-            "updated": "Sat, Oct 17",
-            "detail": "Sanders is dealing with an undisclosed injury, and it is uncertain if he will play against Northwestern on Saturday.",
             "source": "Covers"
           }
         ],
@@ -77467,7 +77486,8 @@
             "injury": "Knee",
             "updated": "Sat, Oct 17",
             "detail": "Gee is dealing with a knee injury, and it is unclear if he will play against Kent State on Saturday.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           },
           {
             "player": "S. Patrick",
@@ -81563,25 +81583,25 @@
           "depth_rank": 1
         },
         {
-          "player_id": "4986096",
-          "player_name": "Chase Jenkins",
+          "player_id": "5151060",
+          "player_name": "Cole Ballard",
           "position": "QB",
           "ranked": false,
           "line": {
-            "attempts": 3,
-            "completions": 3,
+            "attempts": 7,
+            "completions": 5,
             "interceptions": 0,
             "completion_pct": {
               "label": "Completion %",
-              "value": 1.0,
+              "value": 0.7143,
               "better": "high",
               "format": "pct",
-              "rank": 1,
+              "rank": 13,
               "of": 177
             },
             "yards_per_attempt": {
               "label": "Yards per attempt",
-              "value": 21.6667,
+              "value": 13.7143,
               "better": "high",
               "format": "num",
               "rank": 1,
@@ -81605,7 +81625,7 @@
             },
             "yards": {
               "label": "Passing yards",
-              "value": 65.0,
+              "value": 96.0,
               "better": "high",
               "format": "int",
               "rank": 178,
@@ -81620,7 +81640,42 @@
               "of": 177
             }
           },
-          "epa_splits": {},
+          "epa_splits": {
+            "all": {
+              "label": "All plays EPA per play",
+              "value": 0.571,
+              "better": "high",
+              "format": "ppa",
+              "rank": 6,
+              "of": 177
+            },
+            "pass": {
+              "label": "Dropbacks EPA per play",
+              "value": 0.571,
+              "better": "high",
+              "format": "ppa",
+              "rank": 8,
+              "of": 176
+            },
+            "standardDowns": {
+              "label": "Standard downs EPA per play",
+              "value": 0.571,
+              "better": "high",
+              "format": "ppa",
+              "rank": 7,
+              "of": 177
+            },
+            "secondDown": {
+              "label": "2nd down EPA per play",
+              "value": 0.571,
+              "better": "high",
+              "format": "ppa",
+              "rank": 15,
+              "of": 175
+            }
+          },
+          "status": "Questionable",
+          "injury": "Shoulder",
           "depth_rank": 2
         }
       ],
@@ -82201,15 +82256,6 @@
       "home_injuries": {
         "players": [
           {
-            "player": "C. Ballard",
-            "position": "QB",
-            "status": "Out",
-            "injury": "Shoulder",
-            "updated": "Fri, Oct 2",
-            "detail": "Ballard is dealing with a shoulder injury, and there is no timetable for return.",
-            "source": "Covers"
-          },
-          {
             "player": "J. Thurman",
             "position": "RB",
             "status": "Out",
@@ -82237,13 +82283,14 @@
             "source": "Covers"
           },
           {
-            "player": "J. Mason",
+            "player": "C. Ballard",
             "position": "QB",
             "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Sat, Oct 17",
-            "detail": "Mason is dealing with an undisclosed injury, and it is uncertain if he will play against Baylor on Saturday.",
-            "source": "Covers"
+            "injury": "Shoulder",
+            "updated": "Fri, Oct 2",
+            "detail": "Ballard is dealing with a shoulder injury, and there is no timetable for return.",
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           },
           {
             "player": "C. Moses",
@@ -84101,7 +84148,7 @@
               "of": 176
             }
           },
-          "status": "Out",
+          "status": "Out For Season",
           "injury": "Upper Body",
           "depth_rank": 3
         }
@@ -84728,20 +84775,22 @@
           {
             "player": "D. McComb",
             "position": "QB",
-            "status": "Out",
+            "status": "Out For Season",
             "injury": "Upper Body",
             "updated": "Sat, Oct 10",
             "detail": "McComb is nursing an upper body injury, and has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "3/1/2027"
           },
           {
             "player": "T. Gotkowski",
             "position": "QB",
-            "status": "Out",
+            "status": "Out For Season",
             "injury": "Undisclosed",
             "updated": "Mon, Aug 24",
             "detail": "Gotkowski is battling with an undisclosed injury, and he will be idle for the remainder of the season.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "3/1/2027"
           },
           {
             "player": "C. Ross",
@@ -86048,7 +86097,8 @@
             "injury": "Concussion",
             "updated": "Mon, Oct 19",
             "detail": "Flores is dealing due to a concussion injury, and it is uncertain if he will play against Miami (Ohio) on Saturday",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           },
           {
             "player": "J. Clerveaux",
@@ -96694,11 +96744,12 @@
           {
             "player": "E. Holmes",
             "position": "QB",
-            "status": "Out",
+            "status": "Out For Season",
             "injury": "Knee",
             "updated": "Tue, Oct 6",
             "detail": "Holmes is battling with a knee injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "3/1/2027"
           },
           {
             "player": "B. Mays",
@@ -100267,15 +100318,6 @@
             "source": "Covers"
           },
           {
-            "player": "A. Barnett III",
-            "position": "QB",
-            "status": "Out",
-            "injury": "Hamstring",
-            "updated": "Tue, Oct 20",
-            "detail": "Barnett III is managing with an hamstring injury, and he will be out of the lineup against BYU on Saturday.",
-            "source": "Covers"
-          },
-          {
             "player": "D. Thomas Jr.",
             "position": "WR",
             "status": "Out",
@@ -100283,6 +100325,16 @@
             "updated": "Sat, Oct 10",
             "detail": "Thomas Jr. is dealing with an undisclosed injury, and he will miss an extended period.",
             "source": "Covers"
+          },
+          {
+            "player": "A. Barnett III",
+            "position": "QB",
+            "status": "Doubtful",
+            "injury": "Hamstring",
+            "updated": "Tue, Oct 20",
+            "detail": "Barnett III is managing with an hamstring injury, and he will be out of the lineup against BYU on Saturday.",
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           },
           {
             "player": "D. Wade",
@@ -105616,8 +105668,6 @@
               "of": 176
             }
           },
-          "status": "Questionable",
-          "injury": "Shoulder",
           "depth_rank": 2
         }
       ],
@@ -106195,15 +106245,6 @@
       },
       "away_injuries": {
         "players": [
-          {
-            "player": "H. Brown",
-            "position": "QB",
-            "status": "Questionable",
-            "injury": "Shoulder",
-            "updated": "Sat, Oct 10",
-            "detail": "Brown is nursing with a shoulder injury, and it has yet to be established if he will play against the Gophers on Saturday, October 24th .",
-            "source": "Covers"
-          },
           {
             "player": "L. Phillips Jr.",
             "position": "RB",
@@ -109778,7 +109819,8 @@
             "injury": "Knee",
             "updated": "Sat, Oct 17",
             "detail": "Fancher is dealing with a knee injury, and it remains to be seen if he will be available against UCLA on Saturday.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           },
           {
             "player": "C. Edwards",
@@ -110490,7 +110532,7 @@
               "of": 176
             }
           },
-          "status": "Out",
+          "status": "Out For Season",
           "injury": "Leg",
           "depth_rank": 3
         }
@@ -110654,7 +110696,7 @@
             "rank": 226,
             "of": 460
           },
-          "status": "Out",
+          "status": "Out For Season",
           "injury": "Leg"
         },
         {
@@ -111092,11 +111134,12 @@
           {
             "player": "N. Iamaleava",
             "position": "QB",
-            "status": "Out",
+            "status": "Out For Season",
             "injury": "Leg",
             "updated": "Mon, Oct 19",
             "detail": "Iamaleava is managing due to a leg injury, and he will be idle for the remainder of the season",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "3/1/2027"
           },
           {
             "player": "M. Matthews",
@@ -125476,15 +125519,6 @@
             "source": "Covers"
           },
           {
-            "player": "L. Anderson III",
-            "position": "QB",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Thu, Oct 8",
-            "detail": "Anderson III is dealing with an undisclosed injury, and it is uncertain if he will play against Florida on Saturday.",
-            "source": "Covers"
-          },
-          {
             "player": "M. Bennett Jr.",
             "position": "WR",
             "status": "Questionable",
@@ -131377,15 +131411,6 @@
             "source": "Covers"
           },
           {
-            "player": "D. Duff",
-            "position": "QB",
-            "status": "Out",
-            "injury": "Undisclosed",
-            "updated": "Sat, Oct 17",
-            "detail": "Duff is bothered by an undisclosed injury, and it is unclear how long he will be idle.",
-            "source": "Covers"
-          },
-          {
             "player": "A. Morrell",
             "position": "TE",
             "status": "Out",
@@ -131428,16 +131453,18 @@
             "injury": "Lower Body",
             "updated": "Sat, Oct 17",
             "detail": "Barnett is bothered by a lower body injury, and it remains to be seen if he will take the field against Arizona State on Saturday.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           },
           {
-            "player": "J. Knuth",
+            "player": "D. Duff",
             "position": "QB",
             "status": "Questionable",
             "injury": "Undisclosed",
             "updated": "Sat, Oct 17",
-            "detail": "Knuth is dealing with an undisclosed injury, and it is unclear if he will play against Arizona State on Saturday.",
-            "source": "Covers"
+            "detail": "Duff is bothered by an undisclosed injury, and it is unclear how long he will be idle.",
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           },
           {
             "player": "D. Salley Jr.",
@@ -135118,15 +135145,6 @@
       "away_injuries": {
         "players": [
           {
-            "player": "N. Kinsey",
-            "position": "QB",
-            "status": "Out",
-            "injury": "Undisclosed",
-            "updated": "Sun, Oct 18",
-            "detail": "Kinsey is dealing with an undisclosed injury, and there is no timetable for recovery.",
-            "source": "Covers"
-          },
-          {
             "player": "N. Jones-Davis",
             "position": "RB",
             "status": "Out",
@@ -135214,7 +135232,8 @@
             "injury": "Undisclosed",
             "updated": "Sun, Oct 18",
             "detail": "Kim is dealing due to an undisclosed injury, and it is uncertain if he will play against Ohio on Saturday, October 24th.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           },
           {
             "player": "A. Sharp",
@@ -136470,7 +136489,8 @@
             "injury": "Undisclosed",
             "updated": "Sun, Oct 18",
             "detail": "Grand is nursing with an undisclosed injury, and it is unclear whether he will play against the Eastern Michigan on Saturday, October 24th.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           },
           {
             "player": "R. Neer",
@@ -140025,7 +140045,8 @@
             "injury": "Shoulder",
             "updated": "Mon, Oct 19",
             "detail": "Crowder is bothered by a shoulder injury, and it is unclear whether he will play against Louisiana-Monroe on Saturday.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -142428,7 +142449,8 @@
             "injury": "Undisclosed",
             "updated": "Fri, Oct 16",
             "detail": "Henicle is nursing with an undisclosed injury, and it is unknown if he will face Louisiana Tech on Saturday, October 24th.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           },
           {
             "player": "J. Harrell",
@@ -146619,8 +146641,8 @@
               "of": 176
             }
           },
-          "status": "Questionable",
-          "injury": "Undisclosed",
+          "status": "Probable",
+          "injury": "Arm",
           "depth_rank": 2
         }
       ],
@@ -146783,8 +146805,8 @@
             "rank": 273,
             "of": 460
           },
-          "status": "Questionable",
-          "injury": "Undisclosed"
+          "status": "Probable",
+          "injury": "Arm"
         },
         {
           "player_id": "4819250",
@@ -147203,11 +147225,12 @@
           {
             "player": "C. Jones",
             "position": "QB",
-            "status": "Questionable",
-            "injury": "Undisclosed",
+            "status": "Probable",
+            "injury": "Arm",
             "updated": "Sun, Oct 18",
             "detail": "Jones is managing due to an undisclosed injury, and it has yet to be determined if he will be active against San Jose State on Saturday.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -150075,64 +150098,131 @@
           "depth_rank": 1
         },
         {
-          "player_id": "5079628",
-          "player_name": "John White",
+          "player_id": "4618083",
+          "player_name": "Ethan Hampton",
           "position": "QB",
-          "ranked": false,
+          "ranked": true,
           "line": {
-            "attempts": 2,
-            "completions": 0,
-            "interceptions": 0,
+            "attempts": 75,
+            "completions": 45,
+            "interceptions": 4,
             "completion_pct": {
               "label": "Completion %",
-              "value": 0.0,
+              "value": 0.6,
               "better": "high",
               "format": "pct",
-              "rank": 178,
+              "rank": 124,
               "of": 177
             },
             "yards_per_attempt": {
               "label": "Yards per attempt",
-              "value": 0.0,
+              "value": 5.5867,
               "better": "high",
               "format": "num",
-              "rank": 178,
+              "rank": 169,
               "of": 177
             },
             "td_rate": {
               "label": "TD rate",
-              "value": 0.0,
+              "value": 0.0267,
               "better": "high",
               "format": "pct",
-              "rank": 176,
+              "rank": 159,
               "of": 177
             },
             "int_rate": {
               "label": "INT rate",
-              "value": 0.0,
+              "value": 0.0533,
               "better": "low",
               "format": "pct",
-              "rank": 1,
+              "rank": 173,
               "of": 177
             },
             "yards": {
               "label": "Passing yards",
-              "value": 0.0,
+              "value": 419.0,
               "better": "high",
               "format": "int",
-              "rank": 178,
+              "rank": 155,
               "of": 177
             },
             "touchdowns": {
               "label": "Passing TDs",
-              "value": 0.0,
+              "value": 2.0,
               "better": "high",
               "format": "int",
-              "rank": 176,
+              "rank": 158,
               "of": 177
             }
           },
-          "epa_splits": {},
+          "epa_splits": {
+            "all": {
+              "label": "All plays EPA per play",
+              "value": -0.075,
+              "better": "high",
+              "format": "ppa",
+              "rank": 163,
+              "of": 177
+            },
+            "pass": {
+              "label": "Dropbacks EPA per play",
+              "value": -0.043,
+              "better": "high",
+              "format": "ppa",
+              "rank": 160,
+              "of": 176
+            },
+            "rush": {
+              "label": "Rushes EPA per play",
+              "value": -0.056,
+              "better": "high",
+              "format": "ppa",
+              "rank": 124,
+              "of": 174
+            },
+            "standardDowns": {
+              "label": "Standard downs EPA per play",
+              "value": -0.133,
+              "better": "high",
+              "format": "ppa",
+              "rank": 157,
+              "of": 177
+            },
+            "passingDowns": {
+              "label": "Passing downs EPA per play",
+              "value": 0.029,
+              "better": "high",
+              "format": "ppa",
+              "rank": 153,
+              "of": 176
+            },
+            "firstDown": {
+              "label": "1st down EPA per play",
+              "value": -0.195,
+              "better": "high",
+              "format": "ppa",
+              "rank": 160,
+              "of": 176
+            },
+            "secondDown": {
+              "label": "2nd down EPA per play",
+              "value": 0.125,
+              "better": "high",
+              "format": "ppa",
+              "rank": 122,
+              "of": 175
+            },
+            "thirdDown": {
+              "label": "3rd down EPA per play",
+              "value": -0.104,
+              "better": "high",
+              "format": "ppa",
+              "rank": 169,
+              "of": 176
+            }
+          },
+          "status": "Questionable",
+          "injury": "Hand",
           "depth_rank": 2
         }
       ],
@@ -150334,7 +150424,7 @@
             "rank": 461,
             "of": 460
           },
-          "status": "Out",
+          "status": "Questionable",
           "injury": "Hand"
         }
       ],
@@ -150713,15 +150803,6 @@
       "home_injuries": {
         "players": [
           {
-            "player": "E. Hampton",
-            "position": "QB",
-            "status": "Out",
-            "injury": "Hand",
-            "updated": "Fri, Sep 25",
-            "detail": "Hampton is nursing with a hand injury, and a timetable for return has yet to be established.",
-            "source": "Covers"
-          },
-          {
             "player": "G. Page",
             "position": "WR",
             "status": "Out",
@@ -150747,6 +150828,16 @@
             "updated": "Sun, Oct 18",
             "detail": "Sledge is dealing with an undisclosed injury and, it is uncertain if he will be available against the Georgia State on October 24th.",
             "source": "Covers"
+          },
+          {
+            "player": "E. Hampton",
+            "position": "QB",
+            "status": "Questionable",
+            "injury": "Hand",
+            "updated": "Fri, Sep 25",
+            "detail": "Hampton is nursing with a hand injury, and a timetable for return has yet to be established.",
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -155884,7 +155975,7 @@
             }
           },
           "status": "Questionable",
-          "injury": "Undisclosed",
+          "injury": "Ankle",
           "depth_rank": 1
         },
         {
@@ -156213,7 +156304,7 @@
             "of": 460
           },
           "status": "Questionable",
-          "injury": "Undisclosed"
+          "injury": "Ankle"
         }
       ],
       "away_game_log": {
@@ -156639,10 +156730,11 @@
             "player": "J. Denegal",
             "position": "QB",
             "status": "Questionable",
-            "injury": "Undisclosed",
+            "injury": "Ankle",
             "updated": "Sun, Oct 18",
             "detail": "Denegal exited the game due to an undisclosed injury, and it is undetermined if he will play against the Colorado State on Saturday.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           },
           {
             "player": "J. Ellis",
@@ -157332,8 +157424,6 @@
               "of": 176
             }
           },
-          "status": "Questionable",
-          "injury": "Hamstring",
           "depth_rank": 2
         }
       ],
@@ -157911,15 +158001,6 @@
       },
       "home_injuries": {
         "players": [
-          {
-            "player": "H. Hejny",
-            "position": "QB",
-            "status": "Questionable",
-            "injury": "Hamstring",
-            "updated": "Thu, Oct 15",
-            "detail": "Hejny is laid up with a hamstring injury, and it is uncertain if he will play against San Diego State on Saturday, October 24th.",
-            "source": "Covers"
-          },
           {
             "player": "G. Houser",
             "position": "TE",
@@ -167805,41 +167886,41 @@
           "depth_rank": 1
         },
         {
-          "player_id": "5081434",
-          "player_name": "Trent Pearman",
+          "player_id": "4899369",
+          "player_name": "Christopher Vizzina",
           "position": "QB",
           "ranked": false,
           "line": {
-            "attempts": 13,
-            "completions": 8,
+            "attempts": 23,
+            "completions": 14,
             "interceptions": 2,
             "completion_pct": {
               "label": "Completion %",
-              "value": 0.6154,
+              "value": 0.6087,
               "better": "high",
               "format": "pct",
-              "rank": 114,
+              "rank": 119,
               "of": 177
             },
             "yards_per_attempt": {
               "label": "Yards per attempt",
-              "value": 6.1538,
+              "value": 4.4348,
               "better": "high",
               "format": "num",
-              "rank": 152,
+              "rank": 177,
               "of": 177
             },
             "td_rate": {
               "label": "TD rate",
-              "value": 0.0,
+              "value": 0.0435,
               "better": "high",
               "format": "pct",
-              "rank": 176,
+              "rank": 111,
               "of": 177
             },
             "int_rate": {
               "label": "INT rate",
-              "value": 0.1538,
+              "value": 0.087,
               "better": "low",
               "format": "pct",
               "rank": 178,
@@ -167847,7 +167928,7 @@
             },
             "yards": {
               "label": "Passing yards",
-              "value": 80.0,
+              "value": 102.0,
               "better": "high",
               "format": "int",
               "rank": 178,
@@ -167855,14 +167936,81 @@
             },
             "touchdowns": {
               "label": "Passing TDs",
-              "value": 0.0,
+              "value": 1.0,
               "better": "high",
               "format": "int",
-              "rank": 176,
+              "rank": 172,
               "of": 177
             }
           },
-          "epa_splits": {},
+          "epa_splits": {
+            "all": {
+              "label": "All plays EPA per play",
+              "value": -0.468,
+              "better": "high",
+              "format": "ppa",
+              "rank": 178,
+              "of": 177
+            },
+            "pass": {
+              "label": "Dropbacks EPA per play",
+              "value": -0.341,
+              "better": "high",
+              "format": "ppa",
+              "rank": 175,
+              "of": 176
+            },
+            "rush": {
+              "label": "Rushes EPA per play",
+              "value": -0.596,
+              "better": "high",
+              "format": "ppa",
+              "rank": 162,
+              "of": 174
+            },
+            "standardDowns": {
+              "label": "Standard downs EPA per play",
+              "value": -0.415,
+              "better": "high",
+              "format": "ppa",
+              "rank": 176,
+              "of": 177
+            },
+            "passingDowns": {
+              "label": "Passing downs EPA per play",
+              "value": -0.531,
+              "better": "high",
+              "format": "ppa",
+              "rank": 175,
+              "of": 176
+            },
+            "firstDown": {
+              "label": "1st down EPA per play",
+              "value": -0.409,
+              "better": "high",
+              "format": "ppa",
+              "rank": 173,
+              "of": 176
+            },
+            "secondDown": {
+              "label": "2nd down EPA per play",
+              "value": 0.243,
+              "better": "high",
+              "format": "ppa",
+              "rank": 89,
+              "of": 175
+            },
+            "thirdDown": {
+              "label": "3rd down EPA per play",
+              "value": -1.711,
+              "better": "high",
+              "format": "ppa",
+              "rank": 177,
+              "of": 176
+            }
+          },
+          "status": "Questionable",
+          "injury": "Elbow",
           "depth_rank": 2
         }
       ],
@@ -168443,15 +168591,6 @@
       "home_injuries": {
         "players": [
           {
-            "player": "C. Vizzina",
-            "position": "QB",
-            "status": "Out",
-            "injury": "Elbow",
-            "updated": "Sat, Oct 17",
-            "detail": "Vizzina is dealing with an elbow injury, and he will miss an undetermined length of time.",
-            "source": "Covers"
-          },
-          {
             "player": "D. Eziomume",
             "position": "RB",
             "status": "Out",
@@ -168486,6 +168625,16 @@
             "updated": "Sat, Oct 17",
             "detail": "Gipson is dealing with an Undisclosed injury, and it remains to be seen if he will be active against Virginia Tech on Saturday.",
             "source": "Covers"
+          },
+          {
+            "player": "C. Vizzina",
+            "position": "QB",
+            "status": "Questionable",
+            "injury": "Elbow",
+            "updated": "Sat, Oct 17",
+            "detail": "Vizzina is dealing with an elbow injury, and he will miss an undetermined length of time.",
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           },
           {
             "player": "J. Green",
@@ -177883,10 +178032,11 @@
             "player": "A. Odom",
             "position": "QB",
             "status": "Questionable",
-            "injury": "Undisclosed",
+            "injury": "Shoulder",
             "updated": "Sun, Oct 18",
             "detail": "Odom is bothered by an undisclosed injury, and it is unclear if he will suit up against North Carolina on Saturday, October 24th.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           },
           {
             "player": "S. Angeli",
@@ -177895,7 +178045,8 @@
             "injury": "Undisclosed",
             "updated": "Sun, Oct 18",
             "detail": "Angeli has an undisclosed injury, and it is uncertain if he will suit up against North Carolina on Saturday, October 24th.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "10/24/2026"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -181429,15 +181580,6 @@
             "source": "Covers"
           },
           {
-            "player": "S. Huard",
-            "position": "QB",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Sun, Oct 11",
-            "detail": "Huard is battling with an undisclosed injury, and it remains to be seen if he will suit up against Badgers on Saturday, October 24th.",
-            "source": "Covers"
-          },
-          {
             "player": "D. Redeaux",
             "position": "RB",
             "status": "Questionable",
@@ -182531,15 +182673,6 @@
       },
       "home_injuries": {
         "players": [
-          {
-            "player": "D. O'Neil",
-            "position": "QB",
-            "status": "Out",
-            "injury": "Lower Body",
-            "updated": "Sun, Oct 18",
-            "detail": "O'Neil is managing a lower body injury, and he will miss an undetermined length of time.",
-            "source": "Covers"
-          },
           {
             "player": "M. Lane",
             "position": "RB",
@@ -184326,8 +184459,6 @@
               "of": 176
             }
           },
-          "status": "Questionable",
-          "injury": "Undisclosed",
           "depth_rank": 2
         }
       ],
@@ -184489,9 +184620,7 @@
             "format": "int",
             "rank": 430,
             "of": 460
-          },
-          "status": "Questionable",
-          "injury": "Undisclosed"
+          }
         },
         {
           "player_id": "5297079",
@@ -184923,15 +185052,6 @@
             "injury": "Undisclosed",
             "updated": "Wed, Oct 7",
             "detail": "Boncore is dealing with an undisclosed injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
-          },
-          {
-            "player": "M. Hillstead",
-            "position": "QB",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Sat, Oct 10",
-            "detail": "Hillstead is dealing with an undisclosed injury, and it is undetermined if he will be suit up against the Bobcats on Saturday, October 24th.",
             "source": "Covers"
           },
           {
@@ -196705,11 +196825,12 @@
           {
             "player": "J. Layne",
             "position": "QB",
-            "status": "Out",
+            "status": "Out For Season",
             "injury": "Elbow",
             "updated": "Thu, Aug 27",
             "detail": "Layne is laid up with an elbow injury, and he will miss an undetermined length of time.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "3/1/2027"
           },
           {
             "player": "J. Olsen",
