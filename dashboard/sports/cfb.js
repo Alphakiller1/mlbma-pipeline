@@ -161,27 +161,43 @@
     return mapped;
   }
 
-  /* Unit rates belong to a team, not to a pairing. When the week's slate is
-     published without them (the model's stats source was out of calls), each
-     team keeps its most recent published rates - the latest slate that carries
-     them wins - rather than the matchup page going blank. */
-  function teamForms(payloads, season) {
-    var forms = {};
+  /* Season-to-date facts that belong to a team, not to a pairing. Injury
+     reports and schedule strength are left out: a week-old copy of either is
+     wrong, not merely older. */
+  var TEAM_FACTS = ['_qbs', '_adjusted_efficiency', '_scheme_profile', '_run_game',
+    '_scheme_stats', '_defense_splits', '_rushers', '_game_log'];
+
+  /* When the week's slate is published without a team's facts (the model's
+     stats source was out of calls, or the model board rolled to next week
+     before the site's slate did - 2026-10-20, every week-8 card read
+     "Quarterback Not Published" and no SP+), each team keeps its most recent
+     published facts - the latest slate that carries them wins - rather than
+     the card and matchup page going blank. */
+  function teamFacts(payloads, season) {
+    var facts = {};
     payloads.forEach(function (payload) {
       if (!payload || Number(payload.season) !== Number(season)) return;
+      var week = Number(payload.week || 0);
       (payload.games || []).forEach(function (g) {
-        [['away', g.away_form], ['home', g.home_form]].forEach(function (pair) {
-          var form = pair[1];
-          var name = String(g[pair[0] + '_name'] || g[pair[0]] || '').toLowerCase();
-          if (!name || !form || form.source !== 'espn' || Number(form.season) !== Number(season)) return;
-          var prior = forms[name];
-          if (!prior || Number(payload.week || 0) >= Number(prior.week || 0)) {
-            forms[name] = { form: form, week: payload.week };
+        ['away', 'home'].forEach(function (side) {
+          var name = String(g[side + '_name'] || g[side] || '').toLowerCase();
+          if (!name) return;
+          var entry = facts[name] || (facts[name] = {});
+          function take(key, value) {
+            if (!entry[key] || week >= entry[key].week) entry[key] = { value: value, week: week };
           }
+          var form = g[side + '_form'];
+          if (form && form.source === 'espn' && Number(form.season) === Number(season)) {
+            take('form', form);
+          }
+          TEAM_FACTS.forEach(function (key) {
+            var value = g[side + key];
+            if (value && (!Array.isArray(value) || value.length)) take(key, value);
+          });
         });
       });
     });
-    return forms;
+    return facts;
   }
 
   function seasonGames(payload, season) {
@@ -225,7 +241,7 @@
       var statsSeason = boardSeason === currentYear ? currentYear : null;
       var local = indexPublic(seasonGames(parts[2], statsSeason));
       var remote = indexPublic(seasonGames(parts[3], statsSeason));
-      var forms = teamForms([parts[2], parts[3]], statsSeason);
+      var facts = teamFacts([parts[2], parts[3]], statsSeason);
       var raw = Array.isArray(board.games) ? board.games : [];
       var games = sortGames(raw.map(function (g) {
         var key = publicKey({
@@ -236,10 +252,15 @@
         mapped.season = statsSeason;
         mapped = mergePublic(mergePublic(mapped, remote[key]), local[key]);
         ['away', 'home'].forEach(function (side) {
-          if (mapped[side + '_form']) return;
           var name = String((g[side] && (g[side].school || g[side].name)) || g[side] || '').toLowerCase();
-          var known = forms[name];
-          if (known) mapped[side + '_form'] = known.form;
+          var known = facts[name] || {};
+          if (!mapped[side + '_form'] && known.form) mapped[side + '_form'] = known.form.value;
+          TEAM_FACTS.forEach(function (key) {
+            var have = mapped[side + key];
+            if (known[key] && (!have || (Array.isArray(have) && !have.length))) {
+              mapped[side + key] = known[key].value;
+            }
+          });
         });
         return mapped;
       }));
