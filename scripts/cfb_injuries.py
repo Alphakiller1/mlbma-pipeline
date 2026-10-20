@@ -187,7 +187,13 @@ def verify(merged: dict[str, list[dict]], lookup=rotowire_card) -> dict[str, int
             counts["cleared"] += 1
             cleared.add(id(entry))
         else:
-            counts["changed" if card["status"] != entry.get("status") else "confirmed"] += 1
+            if card["status"] != entry.get("status"):
+                counts["changed"] += 1
+                # Covers' note explains Covers' designation ("will miss an
+                # undetermined length of time"); it contradicts the new one.
+                entry.pop("detail", None)
+            else:
+                counts["confirmed"] += 1
             entry.update({k: card[k] for k in ("status", "injury", "return") if card.get(k)})
             entry["source"] = "RotoWire + Covers"
     for school, entries in merged.items():
