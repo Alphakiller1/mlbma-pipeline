@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 8,
-  "generated_at_utc": "2026-10-20T20:56:34Z",
+  "generated_at_utc": "2026-10-20T21:08:11Z",
   "data_through_utc": "2026-10-20T18:57:17Z",
   "games": [
     {
@@ -3583,7 +3583,6 @@
             "status": "Questionable",
             "injury": "Leg",
             "updated": "Sat, Oct 17",
-            "detail": "Minicucci is hampered by a leg injury, and he will miss an undetermined length of time.",
             "source": "RotoWire + Covers",
             "return": "10/20/2026"
           },
@@ -3626,7 +3625,7 @@
       "venue_city": "Miami, FL",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 84,
+      "weather_temp": 82,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -17774,7 +17773,6 @@
             "status": "Questionable",
             "injury": "Ankle",
             "updated": "Sun, Oct 11",
-            "detail": "Singleton is dealing with an ankle injury, and it is unclear how long he will be idle.",
             "source": "RotoWire + Covers",
             "return": "10/22/2026"
           },
@@ -38015,7 +38013,6 @@
             "status": "Out For Season",
             "injury": "Lower Leg",
             "updated": "Mon, Oct 5",
-            "detail": "Szarka is battling with a lower leg injury, and has been shut down for the remainder of the season.",
             "source": "RotoWire + Covers",
             "return": "3/1/2027"
           },
@@ -39200,7 +39197,6 @@
             "status": "Out For Season",
             "injury": "Knee",
             "updated": "Tue, Aug 11",
-            "detail": "Hasselbeck has been out of commission due to knee injury, and he is likely to miss the remainder of the season.",
             "source": "RotoWire + Covers",
             "return": "3/1/2027"
           },
@@ -56179,7 +56175,6 @@
             "status": "Out For Season",
             "injury": "Knee",
             "updated": "Sat, Oct 17",
-            "detail": "Heintschel is battling with a leg injury, and it remains to be seen if he will be available against Miami on Saturday.",
             "source": "RotoWire + Covers",
             "return": "3/1/2027"
           },
@@ -82288,7 +82283,6 @@
             "status": "Questionable",
             "injury": "Shoulder",
             "updated": "Fri, Oct 2",
-            "detail": "Ballard is dealing with a shoulder injury, and there is no timetable for return.",
             "source": "RotoWire + Covers",
             "return": "10/24/2026"
           },
@@ -84778,7 +84772,6 @@
             "status": "Out For Season",
             "injury": "Upper Body",
             "updated": "Sat, Oct 10",
-            "detail": "McComb is nursing an upper body injury, and has been shut down for the remainder of the season.",
             "source": "RotoWire + Covers",
             "return": "3/1/2027"
           },
@@ -84788,7 +84781,6 @@
             "status": "Out For Season",
             "injury": "Undisclosed",
             "updated": "Mon, Aug 24",
-            "detail": "Gotkowski is battling with an undisclosed injury, and he will be idle for the remainder of the season.",
             "source": "RotoWire + Covers",
             "return": "3/1/2027"
           },
@@ -96747,7 +96739,6 @@
             "status": "Out For Season",
             "injury": "Knee",
             "updated": "Tue, Oct 6",
-            "detail": "Holmes is battling with a knee injury, and he has been shut down for the remainder of the season.",
             "source": "RotoWire + Covers",
             "return": "3/1/2027"
           },
@@ -100332,7 +100323,6 @@
             "status": "Doubtful",
             "injury": "Hamstring",
             "updated": "Tue, Oct 20",
-            "detail": "Barnett III is managing with an hamstring injury, and he will be out of the lineup against BYU on Saturday.",
             "source": "RotoWire + Covers",
             "return": "10/24/2026"
           },
@@ -111137,7 +111127,6 @@
             "status": "Out For Season",
             "injury": "Leg",
             "updated": "Mon, Oct 19",
-            "detail": "Iamaleava is managing due to a leg injury, and he will be idle for the remainder of the season",
             "source": "RotoWire + Covers",
             "return": "3/1/2027"
           },
@@ -131462,7 +131451,6 @@
             "status": "Questionable",
             "injury": "Undisclosed",
             "updated": "Sat, Oct 17",
-            "detail": "Duff is bothered by an undisclosed injury, and it is unclear how long he will be idle.",
             "source": "RotoWire + Covers",
             "return": "10/24/2026"
           },
@@ -147228,7 +147216,6 @@
             "status": "Probable",
             "injury": "Arm",
             "updated": "Sun, Oct 18",
-            "detail": "Jones is managing due to an undisclosed injury, and it has yet to be determined if he will be active against San Jose State on Saturday.",
             "source": "RotoWire + Covers",
             "return": "10/24/2026"
           }
@@ -150835,7 +150822,6 @@
             "status": "Questionable",
             "injury": "Hand",
             "updated": "Fri, Sep 25",
-            "detail": "Hampton is nursing with a hand injury, and a timetable for return has yet to be established.",
             "source": "RotoWire + Covers",
             "return": "10/24/2026"
           }
@@ -168632,7 +168618,6 @@
             "status": "Questionable",
             "injury": "Elbow",
             "updated": "Sat, Oct 17",
-            "detail": "Vizzina is dealing with an elbow injury, and he will miss an undetermined length of time.",
             "source": "RotoWire + Covers",
             "return": "10/24/2026"
           },
@@ -196828,7 +196813,6 @@
             "status": "Out For Season",
             "injury": "Elbow",
             "updated": "Thu, Aug 27",
-            "detail": "Layne is laid up with an elbow injury, and he will miss an undetermined length of time.",
             "source": "RotoWire + Covers",
             "return": "3/1/2027"
           },
