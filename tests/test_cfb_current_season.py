@@ -131,7 +131,7 @@ def test_publisher_refuses_a_short_pull(tmp_path, monkeypatch):
     monkeypatch.setattr(cfb, "load_board_games",
                         lambda: ([{"id": 1}, {"id": 2}], {"season": cfb.datetime.now(cfb.timezone.utc).year}))
     monkeypatch.setattr(cfb, "load_espn_stats", lambda season: {})
-    monkeypatch.setattr(cfb, "load_espn_events", lambda: [])
+    monkeypatch.setattr(cfb, "load_espn_events", lambda week: [])
     monkeypatch.setattr(cfb, "load_sp_plus", lambda season: {})
     monkeypatch.setattr(cfb, "load_scheme_profiles", lambda season, week: {})
     monkeypatch.setattr(cfb, "event_index", lambda events: {})
