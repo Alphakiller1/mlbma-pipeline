@@ -1224,16 +1224,51 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
     }
 
 
-def fetch_nfl_scoreboard() -> dict | None:
-    import urllib.request
+NFL_SCOREBOARD_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
 
-    url = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+
+def _fetch_nfl_board(url: str) -> dict:
+    request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(request, timeout=20) as resp:
+        return json.loads(resp.read().decode("utf-8"))
+
+
+def _nfl_week_played(board: dict) -> bool:
+    events = board.get("events") or []
+    return bool(events) and all(
+        ((event.get("status") or {}).get("type") or {}).get("state") == "post"
+        for event in events
+    )
+
+
+def fetch_nfl_scoreboard(fetch=_fetch_nfl_board) -> dict | None:
+    """The week the desk should show.
+
+    ESPN's default scoreboard stays on a finished week until midweek: on
+    2026-10-20, the Tuesday after Monday night, it still served 14 finals and
+    the desk showed last week's scores instead of Thursday's game. Once every
+    game on it is final, the next week is the one a reader is looking for.
+    """
     try:
-        with urllib.request.urlopen(url, timeout=20) as resp:
-            return json.loads(resp.read().decode("utf-8"))
+        board = fetch(NFL_SCOREBOARD_URL)
     except Exception as exc:
         print(f"  WARNING: NFL scoreboard fetch failed ({exc})")
         return None
+    if not _nfl_week_played(board):
+        return board
+    week = (board.get("week") or {}).get("number")
+    season_type = (board.get("season") or {}).get("type")
+    if not week or not season_type:
+        return board
+    try:
+        upcoming = fetch(f"{NFL_SCOREBOARD_URL}?seasontype={season_type}&week={int(week) + 1}")
+    except Exception as exc:
+        print(f"  WARNING: NFL next-week scoreboard fetch failed ({exc}); keeping week {week}")
+        return board
+    if not upcoming.get("events"):
+        return board
+    print(f"  nfl: week {week} is fully played; publishing week {int(week) + 1}")
+    return upcoming
 
 
 def write_nfl_league_context(context: dict, rest: dict) -> None:
