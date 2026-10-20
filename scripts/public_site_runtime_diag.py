@@ -283,8 +283,15 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("MLB player stats (BvP, relievers) are graded by colour with no rank numbers",
               depth["playerRanks"] == 0 and depth["playerGraded"] > 0,
               f"{depth['playerRanks']} ranked, {depth['playerGraded']} graded")
+        # A club with no game in the seven days before this one (a pennant
+        # winner waiting on the World Series) has no workload to tabulate; its
+        # panel says so instead. Each club still needs one or the other.
+        workload = page.evaluate("""() => [...document.querySelectorAll(
+            '#bullpens .ca-bullpen-panel')].map(p =>
+            p.querySelector('.ca-pc-table') ? 'table'
+            : /No relief appearances recorded/.test(p.innerText) ? 'rested' : 'missing')""")
         check("MLB bullpen workload remains available",
-              page.locator("#bullpens .ca-pc-table").count() == 2)
+              len(workload) == 2 and "missing" not in workload, str(workload))
         mlb_overflow = page.evaluate(
             "Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth")
         check("MLB detail no horizontal overflow", mlb_overflow <= 1,
