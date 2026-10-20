@@ -230,10 +230,13 @@
       return '<section class="mc-total is-withheld"><span class="mc-total__label">Total lean</span>' +
         '<strong>Not published</strong></section>';
     }
-    if (market == null) {
+    if (market == null || g.starters_pending) {
       return '<section class="mc-total is-withheld"><span class="mc-total__label">Projected total</span>' +
         '<strong>' + esc(model.toFixed(1)) + '</strong>' +
-        '<span class="mc-total__detail">Market total not published · no lean available</span></section>';
+        '<span class="mc-total__detail">' +
+        (market != null ? 'Market ' + esc(market.toFixed(1)) : 'Market total not published') +
+        (g.starters_pending ? ' · starters not announced · no lean' : ' · no lean available') +
+        '</span></section>';
     }
     var delta = model - market;
     var direction = Math.abs(delta) < 0.05 ? 'At market' : (delta > 0 ? 'Over' : 'Under');
