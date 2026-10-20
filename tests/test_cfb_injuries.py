@@ -56,7 +56,8 @@ def test_qbs_are_checked_against_their_own_rotowire_card():
     """Covers had Delaware's Nick Minicucci Out; his RotoWire card read
     Questionable (leg), est. return 10/20/2026 (2026-10-20)."""
     merged = {"delaware": [
-        {"player": "N. Minicucci", "position": "QB", "status": "Out", "source": "Covers"},
+        {"player": "N. Minicucci", "position": "QB", "status": "Out", "source": "Covers",
+         "detail": "Minicucci will miss an undetermined length of time."},
         {"player": "D. Lonergan", "position": "QB", "status": "Out", "source": "Covers"},
         {"player": "X. Unknown", "position": "QB", "status": "Out", "source": "Covers"},
         {"player": "G. Spiller", "position": "RB", "status": "Out", "source": "Covers"},
@@ -76,6 +77,7 @@ def test_qbs_are_checked_against_their_own_rotowire_card():
     assert rows["N. Minicucci"]["status"] == "Questionable"
     assert rows["N. Minicucci"]["return"] == "10/20/2026"
     assert rows["N. Minicucci"]["source"] == "RotoWire + Covers"
+    assert "detail" not in rows["N. Minicucci"]             # Covers' note no longer applies
     assert "D. Lonergan" not in rows                       # healthy on RotoWire
     assert rows["X. Unknown"]["status"] == "Out"           # card not found: kept as reported
     assert "G. Spiller" not in asked                       # only QBs are looked up
