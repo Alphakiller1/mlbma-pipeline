@@ -19,7 +19,9 @@ from __future__ import annotations
 import html
 import json
 import re
+import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 
 COVERS_URL = "https://www.covers.com/sport/football/ncaaf/injuries"
 ROTOWIRE_URL = "https://www.rotowire.com/cfootball/tables/injury-report.php?team=ALL&pos=ALL"
@@ -29,7 +31,8 @@ HEADERS = {
     "Accept": "text/html,application/json;q=0.9,*/*;q=0.8",
 }
 # Out first, then the doubtful end of the scale.
-STATUS_ORDER = {"Out": 0, "IR": 0, "Doubtful": 1, "Questionable": 2, "Probable": 3}
+STATUS_ORDER = {"Out For Season": 0, "Out": 0, "IR": 0, "Suspended": 0, "Doubtful": 1,
+                "Questionable": 2, "Probable": 3}
 
 
 def _norm(value: str) -> str:
@@ -115,6 +118,85 @@ def merge(covers: dict[str, list[dict]], roto: dict[str, list[dict]]) -> dict[st
     return out
 
 
+ROTOWIRE_SEARCH = "https://www.rotowire.com/frontend/ajax/search-players.php?league=CFB&searchTerm="
+ROTOWIRE_SITE = "https://www.rotowire.com"
+# Positions checked against each player's own RotoWire card. The table above
+# covers only RotoWire's current game window (3 schools on 2026-10-20), so the
+# Covers line went out unchallenged: it had Delaware's Nick Minicucci "Out"
+# while his RotoWire card read Questionable (leg), est. return 10/20.
+VERIFY_POSITIONS = {"QB"}
+# RotoWire card tags in the report's own words.
+CARD_STATUS = {"OFS": "Out For Season", "SUSP": "Suspended", "GTD": "Questionable"}
+
+
+def parse_card(page: str) -> dict:
+    """A RotoWire player page -> {"status", "injury", "return"}; all None when
+    the card carries no injury block (RotoWire lists him healthy)."""
+    block = re.search(r'<div class="p-card__injury">(.*?)</div>\s*</div>', page, re.S)
+    if not block:
+        return {"status": None, "injury": None, "return": None}
+    body = block.group(1)
+    tag = re.search(r'<div class="tag">(.*?)</div>', body, re.S)
+    fields = {_clean(k): _clean(v) for k, v in
+              re.findall(r'p-card__injury-data">(.*?)<b>(.*?)</b>', body, re.S)}
+    status = _clean(tag.group(1)) if tag else None
+    return {"status": CARD_STATUS.get(status, status),
+            "injury": fields.get("Injury") or None,
+            "return": fields.get("Est. Return") or None}
+
+
+def rotowire_card(player: str, school: str, position: str) -> dict | None:
+    """The player's RotoWire card, or None when he cannot be found unambiguously."""
+    surname = re.sub(r"[^A-Za-z' -]", " ", str(player or "")).split()
+    surname = [w for w in surname if w.lower() not in ("jr", "sr", "ii", "iii", "iv")]
+    if not surname:
+        return None
+    found = json.loads(_fetch(ROTOWIRE_SEARCH + urllib.parse.quote(surname[-1])))
+    want = _key(player)
+    hits = [p for p in found.get("players") or []
+            if _key(p.get("name")) == want and str(p.get("span") or "").upper() == position.upper()]
+    if len(hits) > 1:
+        hits = [p for p in hits if _norm(p.get("text")) == school]
+    if len(hits) != 1:
+        return None
+    card = parse_card(_fetch(ROTOWIRE_SITE + str(hits[0]["link"]).replace("\\/", "/")))
+    card["player"] = hits[0].get("name")
+    return card
+
+
+def verify(merged: dict[str, list[dict]], lookup=rotowire_card) -> dict[str, int]:
+    """Check every Covers-only entry at VERIFY_POSITIONS against the player's
+    RotoWire card: the card's designation wins, and a player RotoWire lists
+    healthy leaves the report. A card that cannot be read keeps the entry."""
+    jobs = [(school, e) for school, entries in merged.items() for e in entries
+            if (e.get("position") or "").upper() in VERIFY_POSITIONS and e.get("source") == "Covers"]
+
+    def check(job):
+        try:
+            return lookup(job[1]["player"], job[0], job[1]["position"])
+        except Exception:
+            return None
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        cards = list(pool.map(check, jobs))
+    counts = {"checked": len(jobs), "confirmed": 0, "changed": 0, "cleared": 0, "unverified": 0}
+    cleared = set()
+    for (school, entry), card in zip(jobs, cards):
+        if card is None:
+            counts["unverified"] += 1
+        elif card["status"] is None:
+            counts["cleared"] += 1
+            cleared.add(id(entry))
+        else:
+            counts["changed" if card["status"] != entry.get("status") else "confirmed"] += 1
+            entry.update({k: card[k] for k in ("status", "injury", "return") if card.get(k)})
+            entry["source"] = "RotoWire + Covers"
+    for school, entries in merged.items():
+        merged[school] = sorted((e for e in entries if id(e) not in cleared),
+                                key=lambda e: (STATUS_ORDER.get(e["status"], 4),
+                                               e.get("position") or "", e.get("player") or ""))
+    return counts
+
+
 def load() -> dict[str, list[dict]]:
     """{normalized school: [injury, ...]} - empty when both reports fail."""
     covers = roto = {}
@@ -127,7 +209,10 @@ def load() -> dict[str, list[dict]]:
     except Exception as exc:
         print(f"  injuries: RotoWire unavailable: {exc}")
     merged = merge(covers, roto)
+    counts = verify(merged)
     print(f"  injuries: {sum(len(v) for v in merged.values())} players across "
           f"{sum(1 for v in merged.values() if v)} schools "
-          f"(Covers {len(covers)}, RotoWire {len(roto)})")
+          f"(Covers {len(covers)}, RotoWire {len(roto)}); QBs checked against RotoWire cards: "
+          f"{counts['confirmed']} confirmed, {counts['changed']} changed, "
+          f"{counts['cleared']} cleared, {counts['unverified']} not found")
     return merged

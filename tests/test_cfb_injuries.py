@@ -40,5 +40,48 @@ def test_rotowire_upgrades_the_matching_covers_row_and_out_sorts_first():
     assert len(merged) == 2 and all(e["status"] == "Out" for e in merged)
 
 
+CARD = """<div class="p-card__injury"> <div class="tag">{tag}</div>
+<div class="p-card__injury-data">Injury <b>Leg</b></div>
+<div class="p-card__injury-data">Est. Return <b>10/20/2026</b></div> </div>"""
+
+
+def test_card_reads_designation_injury_and_return():
+    assert ci.parse_card(CARD.format(tag="Questionable")) == {
+        "status": "Questionable", "injury": "Leg", "return": "10/20/2026"}
+    assert ci.parse_card(CARD.format(tag="OFS"))["status"] == "Out For Season"
+    assert ci.parse_card("<div class='p-card__player'>healthy</div>")["status"] is None
+
+
+def test_qbs_are_checked_against_their_own_rotowire_card():
+    """Covers had Delaware's Nick Minicucci Out; his RotoWire card read
+    Questionable (leg), est. return 10/20/2026 (2026-10-20)."""
+    merged = {"delaware": [
+        {"player": "N. Minicucci", "position": "QB", "status": "Out", "source": "Covers"},
+        {"player": "D. Lonergan", "position": "QB", "status": "Out", "source": "Covers"},
+        {"player": "X. Unknown", "position": "QB", "status": "Out", "source": "Covers"},
+        {"player": "G. Spiller", "position": "RB", "status": "Out", "source": "Covers"},
+    ]}
+    cards = {
+        "N. Minicucci": {"status": "Questionable", "injury": "Leg", "return": "10/20/2026"},
+        "D. Lonergan": {"status": None, "injury": None, "return": None},
+    }
+    asked = []
+
+    def lookup(player, school, position):
+        asked.append(player)
+        return cards.get(player)
+
+    counts = ci.verify(merged, lookup)
+    rows = {e["player"]: e for e in merged["delaware"]}
+    assert rows["N. Minicucci"]["status"] == "Questionable"
+    assert rows["N. Minicucci"]["return"] == "10/20/2026"
+    assert rows["N. Minicucci"]["source"] == "RotoWire + Covers"
+    assert "D. Lonergan" not in rows                       # healthy on RotoWire
+    assert rows["X. Unknown"]["status"] == "Out"           # card not found: kept as reported
+    assert "G. Spiller" not in asked                       # only QBs are looked up
+    assert counts == {"checked": 3, "confirmed": 0, "changed": 1, "cleared": 1, "unverified": 1}
+    assert [e["status"] for e in merged["delaware"]] == ["Out", "Out", "Questionable"]
+
+
 def test_name_key_matches_initials_and_drops_suffixes():
     assert ci._key("Rodney Tisdale Jr.") == ci._key("R. Tisdale") == "rtisdale"
