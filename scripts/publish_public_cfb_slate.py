@@ -32,7 +32,11 @@ STATS_URL = (
     "https://site.web.api.espn.com/apis/common/v3/sports/football/"
     "college-football/statistics/byteam?region=us&lang=en&contentorigin=espn&limit=300"
 )
-SCOREBOARD_URL = "https://cdn.espn.com/core/college-football/scoreboard?xhr=1&limit=300"
+# groups=80 is FBS. Without it ESPN serves only its featured (Top 25) games:
+# 17 of the 56 on 2026-10-20, so the rest of the slate published no venue,
+# broadcast, weather, score or state - finals stayed "scheduled".
+SCOREBOARD_URL = ("https://site.api.espn.com/apis/site/v2/sports/football/college-football/"
+                  "scoreboard?groups=80&limit=400&seasontype=2&week={week}")
 SP_PLUS_URL = "https://cfbupdate.com/sp-ratings"
 SCHEME_WEEK_URL = (
     "https://deepmetricanalytics.com/college-football/{season}/scheme-matchups/week-{week}"
@@ -568,12 +572,28 @@ def load_espn_stats(season: int) -> dict[str, dict]:
     return teams
 
 
-def load_espn_events() -> list[dict]:
+def load_espn_events(week: int) -> list[dict]:
+    """The board's week, not ESPN's current one: the board rolls on Sunday."""
     try:
-        payload = fetch_json(SCOREBOARD_URL)
+        payload = fetch_json(SCOREBOARD_URL.format(week=week))
     except (RuntimeError, OSError):
         return []
-    return (((payload.get("content") or {}).get("sbData") or {}).get("events")) or []
+    return payload.get("events") or []
+
+
+def espn_weather(event: dict) -> tuple[int | None, str | None]:
+    """(temperature, condition). ESPN's college events swap the fields
+    (`displayValue: "2"`, `conditionId: "Mostly sunny"`), so the condition is
+    whichever of the two is words."""
+    weather = event.get("weather") or {}
+    temperature = weather.get("temperature")
+    try:
+        temperature = int(round(float(temperature))) if temperature is not None else None
+    except (TypeError, ValueError):
+        temperature = None
+    condition = next((str(v).strip() for v in (weather.get("displayValue"), weather.get("conditionId"))
+                      if v is not None and re.search(r"[A-Za-z]", str(v))), None)
+    return temperature, condition
 
 
 def event_index(events: list[dict]) -> dict[tuple[str, str], dict]:
@@ -612,7 +632,10 @@ def event_index(events: list[dict]) -> dict[tuple[str, str], dict]:
                 team = (item.get("team") or {}).get("abbreviation") or ""
                 if athlete.get("displayName") and team:
                     qbs[str(team).upper()] = athlete.get("displayName")
+        temperature, condition = espn_weather(event)
         payload = {
+            "weather_temp": temperature,
+            "weather_cond": condition,
             "kickoff_utc": event.get("date") or comp.get("date"),
             "venue": venue.get("fullName"),
             "venue_city": city or None,
@@ -750,6 +773,8 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict,
         "roof": event.get("roof"),
         "surface": event.get("surface"),
         "broadcast": event.get("broadcast"),
+        "weather_temp": event.get("weather_temp"),
+        "weather_cond": event.get("weather_cond"),
         "neutral": event.get("neutral") or (True if raw.get("neutral") else None),
         "away_starter": (event.get("qbs") or {}).get(str(away_abbr).upper()),
         "home_starter": (event.get("qbs") or {}).get(str(home_abbr).upper()),
@@ -873,9 +898,9 @@ def main() -> int:
             value = derived_rate(team, split, metric)
             if value is not None:
                 pools[key].append(value)
-    events = event_index(load_espn_events())
-    adjusted = load_sp_plus(season)
     week = int(board.get("week") or 0)
+    events = event_index(load_espn_events(week))
+    adjusted = load_sp_plus(season)
     schemes = load_scheme_profiles(season, week)
     depth = load_depth(season, week, games_in, adjusted)
     games = [public_game(raw, stats, events, pools, adjusted, schemes, season, depth)

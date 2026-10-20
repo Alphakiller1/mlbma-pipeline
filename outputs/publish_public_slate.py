@@ -1119,9 +1119,7 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
 
         away_ctx = rest_context(rest.get(away_abbr), kickoff, away_abbr, venue)
         home_ctx = rest_context(rest.get(home_abbr), kickoff, home_abbr, venue)
-        weather = comp.get("weather") or {}
-        condition = weather.get("displayValue") or weather.get("conditionId")
-        temperature = weather.get("temperature")
+        temperature, condition = espn_weather(event, comp)
         games.append({
             "id": str(event.get("id") or f"{away_abbr}@{home_abbr}"),
             "away": away_abbr,
@@ -1141,6 +1139,8 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
                 f"{temperature}°" if temperature is not None else "",
                 str(condition) if condition else "",
             ) if x) or None,
+            "weather_temp": temperature,
+            "weather_cond": condition,
             "surface": (
                 "Grass" if venue_data.get("grass") is True
                 else ("Turf" if venue_data.get("grass") is False else None)
@@ -1224,7 +1224,26 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
     }
 
 
-NFL_SCOREBOARD_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+def espn_weather(event: dict, comp: dict | None = None) -> tuple[int | None, str | None]:
+    """(temperature, condition) from an ESPN scoreboard event.
+
+    ESPN puts the forecast on the event, not the competition - reading only
+    `competition.weather` left every NFL game's conditions unpublished. Its
+    college events also swap the fields (`displayValue: "2"`, `conditionId:
+    "Mostly sunny"`), so the condition is whichever of the two is words.
+    """
+    weather = (comp or {}).get("weather") or event.get("weather") or {}
+    temperature = weather.get("temperature")
+    try:
+        temperature = int(round(float(temperature))) if temperature is not None else None
+    except (TypeError, ValueError):
+        temperature = None
+    condition = next((str(v).strip() for v in (weather.get("displayValue"), weather.get("conditionId"))
+                      if v is not None and re.search(r"[A-Za-z]", str(v))), None)
+    return temperature, condition
+
+
+NFL_SCOREBOARD_URL ="https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
 
 
 def _fetch_nfl_board(url: str) -> dict:

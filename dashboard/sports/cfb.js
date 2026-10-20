@@ -146,6 +146,16 @@
     mapped.home_conference = keep(pub.home_conference, mapped.home_conf);
     mapped.away_travel = keep(pub.away_travel, mapped.away_travel);
     mapped.home_travel = keep(pub.home_travel, mapped.home_travel);
+    // ESPN's facts about the fixture itself: where it airs, the forecast, and
+    // where it stands. The board only ever knows a game as scheduled.
+    mapped.broadcast = keep(pub.broadcast, mapped.broadcast);
+    mapped.weather_temp = keep(pub.weather_temp, mapped.weather_temp);
+    mapped.weather_cond = keep(pub.weather_cond, mapped.weather_cond);
+    if (pub.game_state === 'live' || pub.game_state === 'final') {
+      mapped.game_state = pub.game_state;
+      mapped.away_score = keep(pub.away_score, mapped.away_score);
+      mapped.home_score = keep(pub.home_score, mapped.home_score);
+    }
     mapped.stadium = keep(pub.venue, mapped.stadium);
     mapped.roof = keep(pub.roof, mapped.roof);
     mapped.surface = keep(pub.surface, mapped.surface);
