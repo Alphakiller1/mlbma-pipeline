@@ -1,7 +1,7 @@
 /**
- * GET /api/model-center/board?sport=mlb|nfl|wnba|cfb
+ * GET /api/model-center/board?sport=mlb|nfl|nba|wnba|cfb
  *
- * Public read-only proxy for the four producer boards. Keeping the sources
+ * Public read-only proxy for the five producer boards. Keeping the sources
  * server-side gives the client one stable same-origin contract while allowing
  * each sport model to publish on its own cadence.
  *
@@ -16,6 +16,7 @@ import { json, errorResponse, HttpError } from '../../_shared/http.js';
 const SPORTS = {
   mlb: ['MLB_MODEL_BOARD_URL', 'https://alphakiller1.github.io/mlb-model/board.json'],
   nfl: ['NFL_MODEL_BOARD_URL', 'https://alphakiller1.github.io/nfl-model/board.json'],
+  nba: ['NBA_MODEL_BOARD_URL', 'https://alphakiller1.github.io/nba-model/board.json'],
   wnba: ['WNBA_MODEL_BOARD_URL', 'https://alphakiller1.github.io/wnba-edge-model/board.json'],
   cfb: ['CFB_MODEL_BOARD_URL', 'https://alphakiller1.github.io/cfb-model/board.json']
 };
@@ -23,6 +24,7 @@ const SPORTS = {
 const ESPN = {
   mlb: 'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard',
   nfl: 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard',
+  nba: 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard',
   cfb: 'https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&limit=400'
 };
 
@@ -30,7 +32,8 @@ const ESPN = {
 const ALIAS = {
   mlb: { KCR: 'KC', SDP: 'SD', SFG: 'SF', TBR: 'TB', WSN: 'WSH', CWS: 'CHW', OAK: 'ATH', AZ: 'ARI' },
   nfl: { WAS: 'WSH', LA: 'LAR', JAC: 'JAX', OAK: 'LV', SD: 'LAC' },
-  cfb: {}
+  cfb: {},
+  nba: { GSW: 'GS', NYK: 'NY', NOP: 'NO', SAS: 'SA', UTA: 'UTAH', WAS: 'WSH' }
 };
 
 function num(value) {
@@ -53,7 +56,7 @@ async function espnQuotes(sport, board) {
   if (!base) return [];
   const urls = [base];
   const slate = String(board.slate_date || '').replace(/-/g, '');
-  if (sport === 'mlb' && /^\d{8}$/.test(slate)) urls[0] = base + '?dates=' + slate;
+  if ((sport === 'mlb' || sport === 'nba') && /^\d{8}$/.test(slate)) urls[0] = base + '?dates=' + slate;
   const out = [];
   const seen = new Set();
   for (const url of urls) {
@@ -73,7 +76,7 @@ async function espnQuotes(sport, board) {
     const events = (data && data.events) || [];
     // Football boards run a week ahead of the scoreboard late in a week.
     const week = data && data.week && data.week.number;
-    if (sport !== 'mlb' && week && urls.length === 1) {
+    if (sport !== 'mlb' && sport !== 'nba' && week && urls.length === 1) {
       urls.push(base + (base.includes('?') ? '&' : '?') + 'week=' + (Number(week) + 1) +
         '&seasontype=' + ((data.season && data.season.type) || 2));
     }
@@ -160,7 +163,7 @@ export async function onRequestGet({ request, env }) {
     const url = new URL(request.url);
     const sport = String(url.searchParams.get('sport') || 'mlb').toLowerCase();
     const source = SPORTS[sport];
-    if (!source) throw new HttpError(400, 'bad_sport', 'sport must be mlb, nfl, wnba, or cfb');
+    if (!source) throw new HttpError(400, 'bad_sport', 'sport must be mlb, nfl, nba, wnba, or cfb');
     const boardUrl = (env && env[source[0]]) || source[1];
     // No `cache` option here: production runs on a Pages compat date older than
     // 2024-11-11, where the Workers runtime throws on that field and every sport

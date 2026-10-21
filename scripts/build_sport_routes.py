@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the public MLB/NFL slate and factual game-detail routes.
+"""Generate the public MLB/NFL/CFB/NBA slate and factual game-detail routes.
 
 Each route loads only that sport's adapter. Regenerating is the source of truth
 for these files — edit this script, then re-run.
@@ -13,7 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 STAMP = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
 NAV = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8").strip()
-PUBLIC_SPORTS = ("mlb", "nfl", "cfb")
+PUBLIC_SPORTS = ("mlb", "nfl", "cfb", "nba")
 PARKED_SPORTS = ("wnba",)
 SPORTS = {
     "mlb": {
@@ -51,6 +51,15 @@ SPORTS = {
         "gems_label": None,
         "lede": "Every Game On This Week’s Board, With The Projected Score, Win Probability And Totals Behind It — Model Projections Only, Ranked Against The Field.",
         "matchups_href": "/cfb/matchups.html",
+    },
+    "nba": {
+        "title": "NBA — Chase Analytics",
+        "adapter": "nba",
+        "global": "ChaseSportNBA",
+        "picks_label": "Public slate",
+        "gems_label": None,
+        "lede": "Every Game On Tonight’s Board, With The Rotations, The Rest And The Four Factors Behind It.",
+        "matchups_href": "/nba/matchups.html",
     },
 }
 

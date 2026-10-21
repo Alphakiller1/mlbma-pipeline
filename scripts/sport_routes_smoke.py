@@ -32,7 +32,7 @@ try:
 except ModuleNotFoundError:
     from diag_console import is_ignorable_console
 
-SPORTS = ("mlb", "nfl", "wnba", "cfb")
+SPORTS = ("mlb", "nfl", "wnba", "cfb", "nba")
 ASYNC_SELECTOR = "#slate, .ca-async"
 NAV_TIMEOUT_MS = 20000
 VIEWS = ("index", "matchups", "results")

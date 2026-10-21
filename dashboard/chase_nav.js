@@ -123,7 +123,7 @@
 
   function sportNavKey() {
     var path = window.location.pathname || '';
-    var m = path.match(/^\/(mlb|nfl|wnba|cfb)(\/|$)/i);
+    var m = path.match(/^\/(mlb|nfl|wnba|cfb|nba)(\/|$)/i);
     if (m) return m[1].toLowerCase();
     if (/^\/models(\/|$)/i.test(path)) return 'models';
     if (/^\/model-center(\/|$)/i.test(path)) return 'models';
@@ -155,7 +155,7 @@
     // carries data-sport="mlb" for its adapters but shows both slates, so it
     // must not light a tab — hence pathname rather than the body attribute.
     var seg = String(location.pathname || '').split('/').filter(Boolean)[0] || '';
-    var routeSport = /^(mlb|nfl|wnba|cfb)$/.test(seg) ? seg : '';
+    var routeSport = /^(mlb|nfl|wnba|cfb|nba)$/.test(seg) ? seg : '';
     document.querySelectorAll('.chase-sport-tab').forEach(function (tab) {
       var key = tab.getAttribute('data-nav');
       if (routeSport && key === routeSport) {
@@ -410,7 +410,7 @@
 
   function rewriteSportRootNavHrefs() {
     var path = window.location.pathname || '';
-    if (!/^\/(nfl|cfb|wnba|mlb)(\/|$)/i.test(path)) return;
+    if (!/^\/(nfl|cfb|wnba|mlb|nba)(\/|$)/i.test(path)) return;
     var dash = '/dashboard/';
     document.querySelectorAll('.chase-header a[href], .chase-mobile-menu a[href]').forEach(function (a) {
       var href = a.getAttribute('href') || '';

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "note": "Exhaustive per-field classification for the public MLB and NFL artifacts. Every key in a published artifact must resolve to exactly one class here; scripts/validate_public_fields.py fails the build on any key that does not. Classification is by how a number was produced, not by which object it arrived in - teams[].form carries thirteen keys, ten observed and three modelled, and an object-level rule would ship all thirteen.",
+  "note": "Exhaustive per-field classification for the public MLB, NFL, CFB and NBA artifacts. Every key in a published artifact must resolve to exactly one class here; scripts/validate_public_fields.py fails the build on any key that does not. Classification is by how a number was produced, not by which object it arrived in - teams[].form carries thirteen keys, ten observed and three modelled, and an object-level rule would ship all thirteen.",
   "classes": {
     "provenance": {
       "public": true,
@@ -83,7 +83,8 @@
     "team_games",
     "through_week",
     "ranked",
-    "updated"
+    "updated",
+    "slate_date"
   ],
   "identity": [
     "id",
@@ -140,7 +141,8 @@
     "TE",
     "RB",
     "game_id",
-    "opp"
+    "opp",
+    "headshot"
   ],
   "factual_status": [
     "game_state",
@@ -179,7 +181,16 @@
     "home_injuries",
     "injury",
     "player",
-    "return"
+    "return",
+    "status_detail",
+    "return_date",
+    "away_b2b",
+    "home_b2b",
+    "away_split_record",
+    "home_split_record",
+    "record",
+    "moved",
+    "comment"
   ],
   "descriptive": [
     "abq",
@@ -655,7 +666,41 @@
     "seconds_per_play_neutral",
     "time_of_possession",
     "time_of_possession_h1",
-    "time_of_possession_h2"
+    "time_of_possession_h2",
+    "away_form_prior",
+    "home_form_prior",
+    "away_players_prior",
+    "home_players_prior",
+    "apg",
+    "bpg",
+    "mpg",
+    "ppg",
+    "rpg",
+    "spg",
+    "tpg",
+    "three_pct",
+    "three_pm",
+    "ts_pct",
+    "off_rtg",
+    "def_rtg",
+    "off_efg",
+    "def_efg",
+    "off_tov",
+    "def_tov",
+    "off_orb",
+    "def_orb",
+    "off_ftr",
+    "def_ftr",
+    "off_ft_pct",
+    "def_ft_pct",
+    "off_three_rate",
+    "def_three_rate",
+    "off_three_pct",
+    "def_three_pct",
+    "off_two_pct",
+    "def_two_pct",
+    "off_ast_rate",
+    "def_ast_rate"
   ],
   "derived_descriptive": [
     "depth_rank",
@@ -719,7 +764,8 @@
     "pass_defense_dvoa",
     "rush_defense_dvoa",
     "away_schedule_strength",
-    "home_schedule_strength"
+    "home_schedule_strength",
+    "net_rtg"
   ],
   "contextual_environment": [
     "conditions",

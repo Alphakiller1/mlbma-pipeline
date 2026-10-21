@@ -135,7 +135,8 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("function cfbInjuryPanel", js)
         self.assertIn("SP+ Opponent-Adjusted Efficiency By Unit", js)
         self.assertIn("game.away_adjusted_efficiency", js)
-        self.assertIn("host.__deskTabs = sport === 'cfb' ? CFB_TABS : NFL_TABS", js)
+        self.assertIn("host.__deskTabs = deskTabsFor(sport)", js)
+        self.assertIn("return sport === 'cfb' ? CFB_TABS : (sport === 'nba' ? NBA_TABS : NFL_TABS);", js)
         self.assertIn("Matchup Analysis", js)
         self.assertNotIn("function nflScriptLens", js)
         # Evidence, never verdicts: CFB no longer ranks the widest gaps for the reader.
@@ -403,10 +404,10 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("box-shadow: inset 3px 0 0 var(--club, var(--accent));", css)
         self.assertIn("function totalRead(g)", js)
         self.assertIn("Market total not published · no lean available", js)
-        self.assertIn("['mlb', 'MLB'], ['nfl', 'NFL'], ['wnba', 'WNBA'], ['cfb', 'CFB']", js)
+        self.assertIn("['mlb', 'MLB'], ['nfl', 'NFL'], ['nba', 'NBA'], ['wnba', 'WNBA'], ['cfb', 'CFB']", js)
 
     def test_public_adapters_do_not_fetch_performance_ledgers(self):
-        for sport in ("mlb", "nfl", "wnba", "cfb"):
+        for sport in ("mlb", "nfl", "wnba", "cfb", "nba"):
             js = (ROOT / "dashboard" / "sports" / f"{sport}.js").read_text(encoding="utf-8")
             self.assertNotIn("RECORD_URL", js)
 

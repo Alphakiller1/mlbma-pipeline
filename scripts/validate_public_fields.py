@@ -21,10 +21,12 @@ LEAK = ROOT / "tests" / "fixtures" / "restricted_board_leak.json"
 
 PUBLIC_ENTRIES = (
     ROOT / "index.html",
-    *(ROOT / sport / name for sport in ("mlb", "nfl") for name in ("index.html", "matchups.html", "matchup.html")),
+    # NBA reads only its published slate, so it is held to the same graph as
+    # MLB/NFL. CFB is not: its adapter reads the cfb-model board directly.
+    *(ROOT / sport / name for sport in ("mlb", "nfl", "nba") for name in ("index.html", "matchups.html", "matchup.html")),
 )
 
-PUBLIC_SLATES = tuple(ROOT / "data" / "public" / sport / "slate.json" for sport in ("mlb", "nfl"))
+PUBLIC_SLATES = tuple(ROOT / "data" / "public" / sport / "slate.json" for sport in ("mlb", "nfl", "nba"))
 
 
 def published_artifacts() -> list:
@@ -56,6 +58,7 @@ BANNED_NETWORK = (
     "alphakiller1.github.io/nfl-model/board.json",
     "alphakiller1.github.io/wnba-edge-model/board.json",
     "alphakiller1.github.io/cfb-model/board.json",
+    "alphakiller1.github.io/nba-model/board.json",
 )
 
 # Exact user-facing concepts prohibited from the public matchup experience.
