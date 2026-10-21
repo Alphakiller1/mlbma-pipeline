@@ -204,6 +204,18 @@ class NbaRenderTests(unittest.TestCase):
             self.assertIn(coach, html)
         self.assertNotIn("NaN", html)
         self.assertNotIn("undefined", html)
+
+    def test_illustrations_render_and_lead_the_desk(self):
+        html = self.out["detail"]
+        for sec in ("nba-edge-map", "nba-fingerprint", "nba-tape", "nba-aging", "nba-shot-maps"):
+            self.assertIn('id="' + sec + '"', html)
+        first = html.index('class="ca-detail-section" id="')
+        self.assertTrue(html[first:].startswith('class="ca-detail-section" id="nba-edge-map"'))
+        self.assertIn("ca-edge-row", html)        # dumbbell rows
+        self.assertIn("ca-fly__bar", html)        # mirrored bars
+        self.assertIn("ca-aging__curve", html)    # league age curve
+        self.assertIn("ca-mini-court__zone", html)
+        self.assertGreater(html.count('data-tip="'), 50)  # every mark explains itself
         g = self.out["game"]
         self.assertIn(g["away_name"] + " Offense vs " + g["home_name"] + " Defense", html)
         self.assertIn("eFG%", html)

@@ -92,6 +92,12 @@
   --series-5: var(--ca-violet-700);
   --series-6: var(--ca-blue-300);
   --series-7: var(--ca-red-400);
+  /* Matchup illustrations: away and home identity on the dark surface.
+     Validated (dataviz validate_palette.js, dark, #0D0D10): lightness band,
+     chroma, CVD dE 31.3, normal dE 31.6, contrast - all pass. amber-400, the
+     radar's home colour, sits above the dark lightness band. */
+  --viz-away: var(--ca-violet-500);
+  --viz-home: var(--ca-gold-700);
   /* Board chrome: the 3px brand edge and the top-edge glint that reads as the
      light source. Roles, so L5–L7 never reach for a --ca-* primitive. */
   --edge-brand: var(--ca-grad-brand);

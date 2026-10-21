@@ -5781,3 +5781,185 @@ body[data-sport="nfl"] .ca-detail-nav {
   color: var(--text-primary);
   font-weight: 600;
 }
+
+/* NBA matchup illustrations (2026-10-21). Away = --viz-away, home =
+   --viz-home (validated pair for the dark surface). Text stays in text
+   tokens; colour marks carry identity beside it, never alone. */
+.ca-viz-card {
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card, 14px);
+  background: var(--surface-card);
+}
+.ca-edge-key, .ca-aging figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: var(--space-2) 0 var(--space-3);
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.ca-edge-key span, .ca-aging figcaption span { display: inline-flex; align-items: center; gap: var(--space-1); }
+.ca-edge-key__axis { margin-left: auto; color: var(--text-meta); }
+.ca-edge-rows { display: grid; gap: 2px; }
+.ca-edge-row {
+  display: grid;
+  grid-template-columns: minmax(96px, 150px) 1fr minmax(64px, auto);
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 34px;
+  padding: 2px var(--space-2);
+  border-radius: 8px;
+  outline: none;
+}
+.ca-edge-row:hover, .ca-edge-row:focus-visible { background: var(--surface-raised); }
+.ca-edge-row:focus-visible { box-shadow: 0 0 0 2px var(--border-focus); }
+.ca-edge-row__label { color: var(--text-primary); font-size: 13px; font-weight: 600; }
+.ca-edge-track { position: relative; height: 20px; }
+.ca-edge-track::before {
+  content: "";
+  position: absolute;
+  inset: 9px 0;
+  border-radius: 2px;
+  background: var(--surface-3);
+}
+.ca-edge-track__mid {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 50%;
+  width: 1px;
+  background: var(--border-default);
+}
+.ca-edge-link {
+  position: absolute;
+  top: 8px;
+  height: 4px;
+  border-radius: 2px;
+  opacity: 0.55;
+}
+.ca-edge-link.is-away, .ca-edge-dot.is-away { background: var(--viz-away); }
+.ca-edge-link.is-home, .ca-edge-dot.is-home { background: var(--viz-home); }
+.ca-edge-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--surface-card);
+}
+.ca-edge-track .ca-edge-dot { position: absolute; top: 4px; margin-left: -6px; }
+.ca-edge-chip {
+  justify-self: end;
+  padding: 2px var(--space-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.ca-edge-chip.is-away { border-color: var(--viz-away); }
+.ca-edge-chip.is-home { border-color: var(--viz-home); }
+.ca-edge-chip.is-even { color: var(--text-meta); }
+
+.ca-fly { margin: 0; }
+.ca-fly__head, .ca-fly__row {
+  display: grid;
+  grid-template-columns: 1fr minmax(92px, 150px) 1fr;
+  align-items: center;
+  gap: var(--space-2);
+}
+.ca-fly__head { margin-bottom: var(--space-2); color: var(--text-secondary); font-size: 12px; font-weight: 700; }
+.ca-fly__head .is-away { text-align: right; }
+.ca-fly__row { min-height: 32px; }
+.ca-fly__label { color: var(--text-primary); font-size: 13px; font-weight: 600; text-align: center; }
+.ca-fly__cell { position: relative; display: flex; align-items: center; height: 24px; outline: none; }
+.ca-fly__cell.is-away { justify-content: flex-end; }
+.ca-fly__cell:focus-visible { box-shadow: 0 0 0 2px var(--border-focus); border-radius: 4px; }
+.ca-fly__bar { position: absolute; top: 4px; bottom: 4px; min-width: 2px; }
+.ca-fly__bar.is-away { right: 0; border-radius: 4px 0 0 4px; background: var(--viz-away); }
+.ca-fly__bar.is-home { left: 0; border-radius: 0 4px 4px 0; background: var(--viz-home); }
+.ca-fly__val {
+  position: relative;
+  padding: 0 var(--space-2);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 3px var(--surface-page);
+}
+.ca-fly figcaption, .ca-mini-court figcaption span {
+  margin-top: var(--space-2);
+  color: var(--text-meta);
+  font-size: 12px;
+}
+
+.ca-aging { margin: 0; }
+.ca-aging svg { display: block; width: 100%; height: auto; }
+.ca-aging__grid { stroke: var(--border-subtle); stroke-width: 1; }
+.ca-aging__grid.is-zero { stroke: var(--border-strong); }
+.ca-aging__tick, .ca-aging__axis { fill: var(--text-meta); font-size: 12px; }
+.ca-aging__curve { fill: none; stroke: var(--text-secondary); stroke-width: 2; }
+.ca-aging__dot { stroke: var(--surface-card); stroke-width: 2; outline: none; cursor: default; }
+.ca-aging__dot.is-away { fill: var(--viz-away); }
+.ca-aging__dot.is-home { fill: var(--viz-home); }
+.ca-aging__dot:focus-visible { stroke: var(--border-focus); }
+.ca-aging__name { fill: var(--text-primary); font-size: 12px; font-weight: 600; }
+
+.ca-mini-courts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-3);
+}
+.ca-mini-court { margin: 0; }
+.ca-mini-court svg { display: block; width: 100%; height: auto; }
+.ca-mini-court__zone { stroke: var(--border-strong); stroke-width: 3; outline: none; }
+.ca-mini-court__zone.is-away { fill: var(--viz-away); }
+.ca-mini-court__zone.is-home { fill: var(--viz-home); }
+.ca-mini-court__zone:focus-visible { stroke: var(--border-focus); }
+.ca-mini-court__label {
+  fill: var(--text-primary);
+  font-size: 30px;
+  font-weight: 700;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--surface-page);
+  stroke-width: 5px;
+  pointer-events: none;
+}
+.ca-mini-court figcaption { display: grid; gap: 2px; margin-top: var(--space-1); }
+.ca-mini-court figcaption b { color: var(--text-primary); font-size: 13px; }
+.ca-mini-court figcaption span { margin-top: 0; }
+
+.ca-viz-tip {
+  position: fixed;
+  z-index: 50;
+  display: none;
+  max-width: 280px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  font-size: 12px;
+  line-height: 1.4;
+  pointer-events: none;
+  box-shadow: 0 8px 24px var(--surface-overlay);
+}
+
+@media (max-width: 520px) {
+  .ca-edge-row { grid-template-columns: 1fr minmax(56px, auto); }
+  .ca-edge-row__label { grid-column: 1 / -1; }
+  .ca-edge-track { grid-column: 1; }
+  .ca-fly__head, .ca-fly__row { grid-template-columns: 1fr 76px 1fr; }
+  .ca-fly__label { font-size: 12px; }
+  .ca-fly__val { font-size: 12px; padding: 0 4px; }
+  .ca-mini-courts { grid-template-columns: repeat(2, 1fr); }
+}
+/* A two-figure NBA table fits a phone: the CFB panel's 16.5rem label column
+   would push both figures past the edge of a 375px screen. */
+@media (max-width: 560px) {
+  .ca-nba-fit { table-layout: fixed; width: 100%; }
+  .ca-cfb-panel .ca-lineup-table.ca-split-table.ca-nba-fit thead th:first-child,
+  .ca-nba-fit tbody td:first-child { min-width: 0; width: 44%; }
+}
+.ca-aging svg { margin: 0 auto; }
