@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-21",
- "generated_at_utc": "2026-10-21T20:32:04+00:00",
+ "generated_at_utc": "2026-10-21T23:20:24+00:00",
  "data_through_utc": "2026-10-21T01:50Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -121,8 +121,8 @@
    "id": "401909834",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/21 - 7:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "10:22 - 2nd",
    "kickoff_utc": "2026-10-21T23:00Z",
    "away": "ATL",
    "home": "ORL",
@@ -136,8 +136,8 @@
    "home_record": "0-0",
    "away_split_record": "0-0",
    "home_split_record": "0-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 35,
+   "home_score": 34,
    "venue": "Kia Center",
    "venue_city": "Orlando, FL",
    "broadcast": "NBA League Pass",
@@ -5949,8 +5949,8 @@
    "id": "401909835",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/21 - 7:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "6:59 - 2nd",
    "kickoff_utc": "2026-10-21T23:00Z",
    "away": "MIL",
    "home": "WSH",
@@ -5964,8 +5964,8 @@
    "home_record": "0-0",
    "away_split_record": "0-0",
    "home_split_record": "0-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 33,
+   "home_score": 34,
    "venue": "Capital One Arena",
    "venue_city": "Washington, DC",
    "broadcast": "MNMT / NBA League Pass / MyMi / Bucks App",
@@ -7341,15 +7341,15 @@
     "size": {
      "height": {
       "label": "Rotation Height (in, minutes-weighted)",
-      "value": 78.5824,
+      "value": 78.6901,
       "better": "neutral",
-      "rank": 19,
+      "rank": 16,
       "of": 30,
       "format": "num"
      },
      "weight": {
       "label": "Rotation Weight (lb, minutes-weighted)",
-      "value": 209.5341,
+      "value": 210.2226,
       "better": "neutral",
       "rank": 26,
       "of": 30,
@@ -7357,7 +7357,7 @@
      },
      "age": {
       "label": "Rotation Age (minutes-weighted)",
-      "value": 25.8862,
+      "value": 25.8913,
       "better": "neutral",
       "rank": 19,
       "of": 30,
@@ -8878,17 +8878,7 @@
     "miles_last_7": null,
     "altitude": false
    },
-   "away_injuries": [
-    {
-     "player_id": "5164559",
-     "player_name": "Nate Ament",
-     "status": "Day-To-Day",
-     "detail": "Left Ankle Sprain",
-     "comment": "Ament is probable for Wednesday's season opener against the Wizards with a right ankle sprain.",
-     "date": "2026-10-20T20:59Z",
-     "return_date": "2026-10-21"
-    }
-   ],
+   "away_injuries": [],
    "home_form": null,
    "home_form_prior": {
     "source": "espn-box",
@@ -11807,8 +11797,8 @@
    "id": "401909091",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/21 - 7:30 PM EDT",
+   "game_state": "live",
+   "status_detail": "6:28 - 1st",
    "kickoff_utc": "2026-10-21T23:30Z",
    "away": "MIN",
    "home": "MIA",
@@ -11822,8 +11812,8 @@
    "home_record": "0-0",
    "away_split_record": "0-0",
    "home_split_record": "0-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 22,
+   "home_score": 17,
    "venue": "Kaseya Center",
    "venue_city": "Miami, FL",
    "broadcast": "ESPN",
@@ -17567,24 +17557,14 @@
     "miles_last_7": null,
     "altitude": false
    },
-   "home_injuries": [
-    {
-     "player_id": "4700818",
-     "player_name": "Vladislav Goldin",
-     "status": "Day-To-Day",
-     "detail": "Ankle",
-     "comment": "Goldin is questionable for Wednesday's season opener against Minnesota with a right ankle sprain.",
-     "date": "2026-10-20T19:48Z",
-     "return_date": "2026-10-21"
-    }
-   ]
+   "home_injuries": []
   },
   {
    "id": "401909836",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/21 - 7:30 PM EDT",
+   "game_state": "live",
+   "status_detail": "7:28 - 1st",
    "kickoff_utc": "2026-10-21T23:30Z",
    "away": "CHA",
    "home": "BKN",
@@ -17598,8 +17578,8 @@
    "home_record": "0-0",
    "away_split_record": "0-0",
    "home_split_record": "0-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 5,
+   "home_score": 11,
    "venue": "Barclays Center",
    "venue_city": "Brooklyn, NY",
    "broadcast": "NBA League Pass / DAZN (YES)",
@@ -18977,7 +18957,7 @@
       "label": "Rotation Height (in, minutes-weighted)",
       "value": 78.623,
       "better": "neutral",
-      "rank": 16,
+      "rank": 17,
       "of": 30,
       "format": "num"
      },
@@ -23450,8 +23430,8 @@
    "id": "401909837",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/21 - 7:30 PM EDT",
+   "game_state": "live",
+   "status_detail": "7:38 - 1st",
    "kickoff_utc": "2026-10-21T23:30Z",
    "away": "CHI",
    "home": "TOR",
@@ -23465,8 +23445,8 @@
    "home_record": "0-0",
    "away_split_record": "0-0",
    "home_split_record": "0-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 6,
+   "home_score": 11,
    "venue": "Scotiabank Arena",
    "venue_city": "Toronto, ON",
    "broadcast": "NBA League Pass / CHSN",
@@ -25754,7 +25734,7 @@
       "player_name": "Isaac Okoro",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4432822.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 26.9,
       "ppg": 9.3,
       "height_in": 76.0,
@@ -26373,42 +26353,6 @@
      "comment": "Hawkins is out for Wednesday's season opener against Toronto with an illness.",
      "date": "2026-10-21T18:04Z",
      "return_date": "2026-10-24"
-    },
-    {
-     "player_id": "5044385",
-     "player_name": "Leonard Miller",
-     "status": "Day-To-Day",
-     "detail": "Right Groin",
-     "comment": "Miller is probable for Wednesday's game against the Raptors with a right adductor strain.",
-     "date": "2026-10-20T18:46Z",
-     "return_date": "2026-10-21"
-    },
-    {
-     "player_id": "4432822",
-     "player_name": "Isaac Okoro",
-     "status": "Day-To-Day",
-     "detail": "Knee",
-     "comment": "Okoro (knee) is probable for Wednesday's season opener against Toronto.",
-     "date": "2026-10-20T18:45Z",
-     "return_date": "2026-10-21"
-    },
-    {
-     "player_id": "4066650",
-     "player_name": "Zach Collins",
-     "status": "Day-To-Day",
-     "detail": "Right Toe Surgery",
-     "comment": "Collins (toe) is probable for Wednesday's game against the Raptors.",
-     "date": "2026-10-20T18:43Z",
-     "return_date": "2026-10-21"
-    },
-    {
-     "player_id": "5105555",
-     "player_name": "Tobe Awaka",
-     "status": "Day-To-Day",
-     "detail": "Knee",
-     "comment": "Awaka (knee) is probable for Wednesday's game against the Raptors.",
-     "date": "2026-10-20T18:41Z",
-     "return_date": "2026-10-21"
     },
     {
      "player_id": "4278067",
@@ -34465,7 +34409,7 @@
       "player_name": "Isaiah Stewart",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4432810.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 22.7,
       "ppg": 10.0,
       "height_in": 80.0,
@@ -35086,11 +35030,11 @@
     {
      "player_id": "4432810",
      "player_name": "Isaiah Stewart",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Left Ankle",
-     "comment": "Stewart (ankle) is doubtful to play Wednesday against the Jazz.",
-     "date": "2026-10-20T22:12Z",
-     "return_date": "2026-10-21"
+     "comment": "Stewart (ankle) has been ruled out for Wednesday's game against the Jazz.",
+     "date": "2026-10-21T23:05Z",
+     "return_date": "2026-10-23"
     }
    ]
   },
@@ -43683,7 +43627,7 @@
       "player_name": "Jett Howard",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5105806.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 12.7,
       "ppg": 5.5,
       "height_in": 80.0,
@@ -43847,11 +43791,11 @@
     {
      "player_id": "5105806",
      "player_name": "Jett Howard",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Right Calf",
      "comment": "Howard (calf) is now doubtful for Wednesday against the Rockets.",
-     "date": "2026-10-21T17:18Z",
-     "return_date": "2026-10-21"
+     "date": "2026-10-21T23:11Z",
+     "return_date": "2026-10-23"
     },
     {
      "player_id": "3138160",
@@ -52649,7 +52593,7 @@
    "home_score": null,
    "venue": "Moda Center",
    "venue_city": "Portland, OR",
-   "broadcast": "NBA League Pass / Suns Live / KUNP 16 / BlazerVision",
+   "broadcast": "NBA League Pass / Suns Live / Arizona's Family 3TV / KUNP 16 / BlazerVision",
    "neutral": false,
    "away_form": null,
    "away_form_prior": {
@@ -55550,7 +55494,7 @@
      "status": "Day-To-Day",
      "detail": "Left Knee Strain",
      "comment": "Kennard (knee) is listed as questionable for Wednesday's game against Portland.",
-     "date": "2026-10-21T20:02Z",
+     "date": "2026-10-21T23:03Z",
      "return_date": "2026-10-21"
     },
     {
@@ -64319,5 +64263,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-21T20:35:35+00:00"
+ "published_at_utc": "2026-10-21T23:55:46+00:00"
 }
