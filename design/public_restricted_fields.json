@@ -179,7 +179,11 @@
     "home_split_record",
     "neutral",
     "season",
-    "status_detail"
+    "status_detail",
+    "away_profile",
+    "home_profile",
+    "away_schedule",
+    "home_schedule"
   ],
   "notes": {
     "away_availability_list": "Official injury designations: name, position, status, body part. factual-status. No projection, snap share or confidence.",

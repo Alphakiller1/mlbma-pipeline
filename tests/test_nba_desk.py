@@ -180,12 +180,30 @@ class NbaRenderTests(unittest.TestCase):
 
     def test_detail_renders_the_nba_desk(self):
         html = self.out["detail"]
-        for tab in ("data-nfl-tab=\"units\"", "data-nfl-tab=\"shooting\"", "data-nfl-tab=\"rotation\"",
+        for tab in ("data-nfl-tab=\"units\"", "data-nfl-tab=\"shots\"", "data-nfl-tab=\"rotation\"",
                     "data-nfl-tab=\"availability\"", "data-nfl-tab=\"games\"", "data-nfl-tab=\"context\""):
             self.assertIn(tab, html)
-        for sec in ("id=\"nba-ratings\"", "id=\"nba-efficiency\"", "id=\"nba-shooting\"", "id=\"nba-rotation\"",
-                    "id=\"nba-availability\"", "id=\"nba-game-log\"", "id=\"team-context\""):
-            self.assertIn(sec, html)
+        for sec in ("nba-ratings", "nba-efficiency", "nba-shooting", "nba-rotation", "nba-availability",
+                    "nba-game-log", "team-context", "nba-shot-chart", "nba-shot-kinds", "nba-play-types",
+                    "nba-defenders", "nba-size", "nba-tracking", "nba-style", "nba-regression",
+                    "nba-shooter-regression", "nba-player-types", "nba-player-zones", "nba-player-bio",
+                    "nba-schedule"):
+            self.assertIn('id="' + sec + '"', html)
+        for tab in ("shots", "playtypes", "defense", "athletic", "style", "regression", "players"):
+            self.assertIn('data-nfl-tab="' + tab + '"', html)
+
+    def test_depth_sections_render_published_figures(self):
+        html = self.out["detail"]
+        g = self.out["game"]
+        self.assertIn("ca-court-zone", html)                        # shot chart drawn
+        self.assertIn("P&amp;R Ball Handler", html)                 # play-type ledger
+        self.assertIn("As Closest Defender", html)                  # defender dashboard
+        self.assertIn("Regression Watch", html)
+        coach = ((g.get("away_profile") or {}).get("coach") or {}).get("head_coach")
+        if coach:
+            self.assertIn(coach, html)
+        self.assertNotIn("NaN", html)
+        self.assertNotIn("undefined", html)
         g = self.out["game"]
         self.assertIn(g["away_name"] + " Offense vs " + g["home_name"] + " Defense", html)
         self.assertIn("eFG%", html)

@@ -140,6 +140,10 @@
       mapped[side + '_injuries'] = injuryReport(g[side + '_injuries']);
       mapped[side + '_availability_list'] = availabilityList(g[side + '_injuries'], positionsOf(g, side));
       mapped[side + '_game_log'] = g[side + '_game_log'] || [];
+      // How the club plays and who it plays (nba-model profiles.py), and the
+      // schedule's toll into tonight.
+      mapped[side + '_profile'] = g[side + '_profile'] || null;
+      mapped[side + '_schedule'] = g[side + '_schedule'] || null;
       mapped[side + '_rest_days'] = g[side + '_rest_days'] != null ? g[side + '_rest_days'] : null;
       mapped[side + '_b2b'] = g[side + '_b2b'] === true;
       mapped[side + '_rest_label'] = restLabel(g[side + '_rest_days'], g[side + '_b2b'] === true);
