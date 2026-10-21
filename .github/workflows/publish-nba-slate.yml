@@ -1,0 +1,60 @@
+name: Publish NBA Slate
+
+# The NBA desk reads data/public/nba/slate.json, built from nba-model's public
+# slate (rebuilt hourly through the evening, every two hours otherwise) with
+# each game's state and score refreshed from ESPN's scoreboard. Injury
+# designations move through the day and games go final from 9 PM to 1 AM ET,
+# so this runs every 30 minutes through that window and every two hours
+# otherwise, October through June. The publisher keeps the published slate
+# whenever the source is stale, malformed, carries model fields, or has fewer
+# games for the same night.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "5 */2 * 10-12,1-6 *"
+    # 21:00-05:35 UTC: tip-offs through the last final.
+    - cron: "5,35 21-23,0-5 * 10-12,1-6 *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-nba-slate
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install validation dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build the NBA slate
+        run: python scripts/publish_public_nba_slate.py
+
+      - name: Commit the refreshed slate to master
+        env:
+          TARGET_BRANCH: master
+        run: |
+          set -euo pipefail
+          python scripts/validate_public_fields.py
+          git add -- data/public/nba/slate.json
+          if git diff --cached --quiet; then
+            echo "NBA slate is already current; no commit needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "data: refresh public NBA slate"
+          git pull --rebase origin "$TARGET_BRANCH"
+          git push origin "HEAD:$TARGET_BRANCH"

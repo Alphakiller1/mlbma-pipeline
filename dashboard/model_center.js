@@ -90,7 +90,7 @@
   function domainFor(sport) {
     sport = String(sport).toLowerCase();
     if (sport === 'cfb') return 20;
-    if (sport === 'nfl' || sport === 'wnba') return 10;
+    if (sport === 'nfl' || sport === 'wnba' || sport === 'nba') return 10;
     return 3;
   }
 
@@ -688,7 +688,7 @@
       : board;
     var games = (mapped && mapped.games) || (board && board.games) || [];
     var sports = '<nav class="mc-sports" aria-label="Model Center sports">' +
-      [['mlb', 'MLB'], ['nfl', 'NFL'], ['wnba', 'WNBA'], ['cfb', 'CFB']].map(function (pair) {
+      [['mlb', 'MLB'], ['nfl', 'NFL'], ['nba', 'NBA'], ['wnba', 'WNBA'], ['cfb', 'CFB']].map(function (pair) {
         return '<a href="?sport=' + pair[0] + '"' +
           (pair[0] === sport ? ' aria-current="page"' : '') + '>' + pair[1] + '</a>';
       }).join('') + '</nav>';
@@ -759,7 +759,7 @@
 
   function boot() {
     var sport = (qs().get('sport') || 'mlb').toLowerCase();
-    if (['mlb', 'nfl', 'wnba', 'cfb'].indexOf(sport) < 0) sport = 'mlb';
+    if (['mlb', 'nfl', 'nba', 'wnba', 'cfb'].indexOf(sport) < 0) sport = 'mlb';
     var game = qs().get('game');
     setContext(game
       ? ('Requested ' + sport.toUpperCase() + ' game ' + game + '.')

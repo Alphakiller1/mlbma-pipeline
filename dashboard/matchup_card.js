@@ -1,4 +1,4 @@
-/** Public matchup desk — factual MLB/NFL cards, expansion, and slate loading. */
+/** Public matchup desk — factual MLB/NFL/CFB/NBA cards, expansion, and slate loading. */
 (function (global) {
   'use strict';
 
@@ -266,6 +266,24 @@
         (cfbConf ? '<span class="ca-matchup-card__record">' + esc(cfbConf) + '</span>' : '') +
         '</div></div>';
     }
+    // NBA crests arrive as ESPN URLs on the published slate, like CFB's; the
+    // club line keeps its W-L record.
+    if (sport === 'nba') {
+      var nbaName = teamName('nba', game[side], game[side + '_name']);
+      var nbaColor = game[side + '_color'];
+      var nbaLogo = game[side + '_logo'];
+      var nbaRecord = game[side + '_record'];
+      return '<div class="ca-matchup-card__club ca-matchup-card__club--' + side + '"' +
+        (nbaColor ? ' style="--team-accent:' + esc(nbaColor) + '"' : '') + '>' +
+        (nbaLogo
+          ? '<img class="ca-matchup-logo" src="' + esc(nbaLogo) + '" width="44" height="44" alt="' + esc(nbaName) +
+            ' logo" loading="lazy" decoding="async">'
+          : '<span class="ca-team-logo-placeholder" aria-hidden="true"></span>') +
+        '<div class="ca-matchup-card__club-copy">' +
+        '<span class="ca-matchup-card__name">' + esc(nbaName) + '</span>' +
+        (nbaRecord ? '<span class="ca-matchup-card__record">' + esc(nbaRecord) + '</span>' : '') +
+        '</div></div>';
+    }
     var abbr = game[side];
     var supplied = game[side + '_name'];
     var name = teamName(sport, abbr, supplied);
@@ -398,6 +416,9 @@
     var html = '<div class="ca-matchup-card__expand" id="' + esc(panelId) + '" hidden>';
     if (sport === 'cfb') {
       return html + cfbAnalysis(game, awayName, homeName) + '</div>';
+    }
+    if (sport === 'nba') {
+      return html + nbaAnalysis(game, awayName, homeName) + '</div>';
     }
     if (sport === 'nfl') {
       var awayAv = availabilityPanel(game, 'away', awayName);
@@ -553,7 +574,45 @@
       img.replaceWith(span);
     }, true);
   }
+  /* NBA middle band: each club's leading scorer - the face a reader knows the
+     club by - with his per-game line and his scoring average as the chip. The
+     line is this season's once the club has played a few games, and last
+     season's (for players on the current roster) until then. */
+  function nbaLead(game, side) {
+    var players = (game[side + '_rotation'] || []).filter(function (p) { return p && p.player_name; });
+    var lead = players.slice().sort(function (a, b) { return (b.ppg || 0) - (a.ppg || 0); })[0];
+    if (!lead) {
+      return '<div class="ca-matchup-card__arm">' +
+        '<span class="ca-matchup-card__shot ca-matchup-card__shot--empty" aria-hidden="true"></span>' +
+        '<div class="ca-matchup-card__arm-copy"><span class="ca-matchup-card__arm-name">' +
+        esc(teamName('nba', game[side], game[side + '_name'])) +
+        '</span><span class="ca-matchup-card__arm-meta is-absent">Player Lines Not Published</span></div></div>';
+    }
+    var listed = ((game[side + '_injuries'] || {}).players || []).filter(function (i) {
+      return i.player_id && i.player_id === lead.player_id;
+    })[0];
+    var meta = [lead.position, listed ? listed.status : null,
+      lead.rpg != null ? Number(lead.rpg).toFixed(1) + ' RPG' : null,
+      lead.apg != null ? Number(lead.apg).toFixed(1) + ' APG' : null].filter(Boolean).join(' · ');
+    var shot = lead.headshot
+      ? '<img class="ca-matchup-card__shot" src="' + esc(lead.headshot) + '" width="40" height="40" alt="' +
+        esc(lead.player_name) + '" loading="lazy" decoding="async" data-initials="' +
+        esc(cfbInitials(lead.player_name)) + '">'
+      : '<span class="ca-matchup-card__shot ca-matchup-card__shot--empty" aria-hidden="true">' +
+        esc(cfbInitials(lead.player_name)) + '</span>';
+    return '<div class="ca-matchup-card__arm">' + shot +
+      '<div class="ca-matchup-card__arm-copy">' +
+      '<span class="ca-matchup-card__arm-name">' + esc(lead.player_name) + '</span>' +
+      '<span class="ca-matchup-card__arm-meta">' + esc(meta) + '</span></div>' +
+      (lead.ppg != null ? '<span class="ca-matchup-card__arm-era">' + esc(Number(lead.ppg).toFixed(1)) +
+        '<i>PPG</i></span>' : '') + '</div>';
+  }
+
   function armsRow(sport, game) {
+    if (sport === 'nba') {
+      return '<div class="ca-matchup-card__arms" role="group" aria-label="Leading Scorers">' +
+        nbaLead(game, 'away') + nbaLead(game, 'home') + '</div>';
+    }
     if (sport === 'cfb') {
       return '<div class="ca-matchup-card__arms" role="group" aria-label="Quarterbacks">' +
         cfbArm(game, 'away') + cfbArm(game, 'home') + '</div>';
@@ -563,6 +622,15 @@
       starterFace(sport, game, 'away') + starterFace(sport, game, 'home') + '</div>';
   }
   function summaryRow(sport, game, statusLine) {
+    if (sport === 'nba') {
+      var rest = (game.away || '') + ' ' + (game.away_rest_short || '--') + ' · ' +
+        (game.home || '') + ' ' + (game.home_rest_short || '--');
+      return '<div class="ca-matchup-card__summary">' +
+        miniFact('Rest', rest, '', 'calendar') +
+        miniFact('Availability', statusLine, '', 'whistle') +
+        miniFact('Broadcast', game.broadcast || 'Not Published', '', 'tv') +
+        '</div>';
+    }
     if (sport === 'cfb') {
       // Owner 2026-10-01: the card states facts, not the model's read - the
       // margin, win probability and total live in Model Center.
@@ -620,6 +688,27 @@
       facts('away', awayName) + facts('home', homeName) + '</div>';
   }
 
+  /* Expanded NBA card: facts only. Each club's ratings per 100 possessions
+     and pace with its place among the 30 clubs, the basis they are read on,
+     then everyone on the injury report. */
+  function nbaAnalysis(game, awayName, homeName) {
+    function facts(side, name) {
+      var r = game[side + '_rates'] || {};
+      return miniFact(name + ' net rating', cfbFact(r.net_rtg, true)) +
+        miniFact(name + ' offense /100', cfbFact(r.off_rtg)) +
+        miniFact(name + ' defense /100', cfbFact(r.def_rtg)) +
+        miniFact(name + ' pace', cfbFact(r.pace));
+    }
+    var basis = game.away_rates_basis === game.home_rates_basis
+      ? game.away_rates_basis
+      : (game.away || '') + ' ' + game.away_rates_basis + ' · ' + (game.home || '') + ' ' + game.home_rates_basis;
+    var awayAv = availabilityPanel(game, 'away', awayName);
+    var homeAv = availabilityPanel(game, 'home', homeName);
+    return '<p class="ca-ctx-head">Ratings: ' + esc(basis || 'Not Published') + '</p>' +
+      '<div class="ca-matchup-card__detail-grid">' + facts('away', awayName) + facts('home', homeName) + '</div>' +
+      (awayAv || homeAv ? '<div class="ca-ctx-duo">' + awayAv + homeAv + '</div>' : '');
+  }
+
   function cardHtml(sport, game) {
     var id = 'matchup-' + String(game.id || '').replace(/[^a-z0-9_-]/gi, '-');
     var panelId = id + '-details';
@@ -637,7 +726,7 @@
     // nothing to say. An empty weather slot says nothing loudly; no slot says
     // nothing quietly, which is the right volume for a fact that is coming.
     var wxText = conditions(game);
-    var hasWx = wxText && wxText.indexOf('not published') < 0;
+    var hasWx = sport !== 'nba' && wxText && wxText.indexOf('not published') < 0;
     var roof = game.roof || (sport === 'mlb' ? null : game.surface);
     return '<article class="ca-matchup-card" id="' + esc(id) + '" data-game="' + esc(game.id) +
       '" data-sport="' + esc(sport) + '">' +
@@ -1068,7 +1157,7 @@
         '<button type="button" data-date-shift="1" aria-label="Next day">→</button></div>';
     } else {
       html += '<strong class="ca-desk-window-label">' +
-        (desk.results ? 'Completed games' : (sport === 'nfl' ? 'NFL Weeks' : 'Kickoff windows')) + '</strong>';
+        (desk.results ? 'Completed games' : (sport === 'nfl' ? 'NFL Weeks' : (sport === 'nba' ? 'Tip-Off Times' : 'Kickoff windows'))) + '</strong>';
     }
     // Search moved to the header (#chaseNavSearch drives the same filter), so
     // the toolbar no longer carries a duplicate field.

@@ -1,6 +1,6 @@
 /**
  * Public Research sport registry. Enabled sports only appear in nav/search/routes.
- * WNBA/CFB stay registered for future L7 work and must not render while disabled.
+ * WNBA stays registered for future work and must not render while disabled.
  */
 (function (global) {
   'use strict';
@@ -13,7 +13,9 @@
     { id: 'wnba', enabled: false, href: '/wnba/', label: 'WNBA', searchEnabled: false,
       previewTabs: ['overview', 'rotation', 'availability', 'form', 'conditions'] },
     { id: 'cfb', enabled: true, href: '/cfb/', label: 'CFB', searchEnabled: false,
-      previewTabs: ['overview', 'projection', 'units', 'tendencies', 'availability', 'conditions'] }
+      previewTabs: ['overview', 'projection', 'units', 'tendencies', 'availability', 'conditions'] },
+    { id: 'nba', enabled: true, href: '/nba/', label: 'NBA', searchEnabled: false,
+      previewTabs: ['units', 'shooting', 'rotation', 'availability', 'games', 'context'] }
   ];
 
   var TEAM_NAMES = {
@@ -38,12 +40,26 @@
       NYG: 'New York Giants', NYJ: 'New York Jets', PHI: 'Philadelphia Eagles', PIT: 'Pittsburgh Steelers',
       SEA: 'Seattle Seahawks', SF: 'San Francisco 49ers', TB: 'Tampa Bay Buccaneers', TEN: 'Tennessee Titans',
       WSH: 'Washington Commanders', WAS: 'Washington Commanders'
+    },
+    // ESPN's codes (GS, NY, NO, SA, UTAH, WSH) are canonical; the aliases are
+    // the other spellings a feed may send.
+    nba: {
+      ATL: 'Atlanta Hawks', BOS: 'Boston Celtics', BKN: 'Brooklyn Nets', CHA: 'Charlotte Hornets',
+      CHI: 'Chicago Bulls', CLE: 'Cleveland Cavaliers', DAL: 'Dallas Mavericks', DEN: 'Denver Nuggets',
+      DET: 'Detroit Pistons', GS: 'Golden State Warriors', GSW: 'Golden State Warriors',
+      HOU: 'Houston Rockets', IND: 'Indiana Pacers', LAC: 'LA Clippers', LAL: 'Los Angeles Lakers',
+      MEM: 'Memphis Grizzlies', MIA: 'Miami Heat', MIL: 'Milwaukee Bucks', MIN: 'Minnesota Timberwolves',
+      NO: 'New Orleans Pelicans', NOP: 'New Orleans Pelicans', NY: 'New York Knicks', NYK: 'New York Knicks',
+      OKC: 'Oklahoma City Thunder', ORL: 'Orlando Magic', PHI: 'Philadelphia 76ers', PHX: 'Phoenix Suns',
+      POR: 'Portland Trail Blazers', SAC: 'Sacramento Kings', SA: 'San Antonio Spurs', SAS: 'San Antonio Spurs',
+      TOR: 'Toronto Raptors', UTAH: 'Utah Jazz', UTA: 'Utah Jazz', WSH: 'Washington Wizards', WAS: 'Washington Wizards'
     }
   };
 
   var LOGO_KEYS = {
     mlb: { SDP: 'SD', SFG: 'SF', TBR: 'TB', WSN: 'WSH', OAK: 'ATH' },
-    nfl: { JAC: 'JAX', WAS: 'WSH' }
+    nfl: { JAC: 'JAX', WAS: 'WSH' },
+    nba: { GSW: 'GS', NYK: 'NY', NOP: 'NO', SAS: 'SA', UTA: 'UTAH', WAS: 'WSH' }
   };
 
   function enabled() {

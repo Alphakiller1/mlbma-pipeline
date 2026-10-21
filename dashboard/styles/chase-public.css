@@ -5729,3 +5729,55 @@ body[data-sport="nfl"] .ca-detail-nav {
   font-weight: 800;
   color: var(--text-secondary);
 }
+
+/* NBA shot chart and style tags (2026-10-21). Each court zone takes its
+   shade from the rank tier the figure earns (--grade, set by .c-*), so the
+   court reads in the same five colours as every ranked figure on the desk. */
+.ca-court {
+  margin: var(--space-3) auto var(--space-4);
+  max-width: 420px;
+}
+.ca-court svg { display: block; width: 100%; height: auto; }
+.ca-court-zone {
+  fill: var(--grade, var(--surface-3));
+  fill-opacity: 0.42;
+  stroke: var(--border-strong);
+  stroke-width: 2;
+}
+.ca-court-zone.c-na { fill: var(--surface-2); fill-opacity: 1; }
+.ca-court-rim { fill: none; stroke: var(--text-secondary); stroke-width: 2.5; }
+.ca-court-label {
+  fill: var(--text-primary);
+  font-family: inherit;
+  font-size: 19px;
+  font-weight: 700;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--surface-page);
+  stroke-width: 4px;
+}
+.ca-court figcaption {
+  margin-top: var(--space-1);
+  color: var(--text-meta);
+  font-size: 12px;
+  text-align: center;
+}
+.ca-style-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ca-style-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 36px;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  color: var(--text-primary);
+  font-weight: 600;
+}

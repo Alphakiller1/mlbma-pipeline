@@ -190,6 +190,7 @@
       // CFB matchup pages set CHASE_SPORT_PAGE only after the nav has asked, so the
       // header read "Published: unknown - no public slate url" there.
       if (!slateUrl && global.ChaseSportCFB && sport === 'cfb') slateUrl = ChaseSportCFB.SLATE_URL;
+      if (!slateUrl && global.ChaseSportNBA && sport === 'nba') slateUrl = ChaseSportNBA.SLATE_URL;
       if (!slateUrl) {
         var page = global.CHASE_SPORT_PAGE;
         slateUrl = page && page.SLATE_URL;
