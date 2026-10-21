@@ -126,7 +126,9 @@
       home_score: g.home_score != null ? g.home_score : null,
       venue: g.venue || null, venue_city: g.venue_city || null, broadcast: g.broadcast || null,
       neutral: g.neutral === true,
-      availability_summary: availabilitySummary(g)
+      availability_summary: availabilitySummary(g),
+      // League history, shared by every game: drawn as the age-curve chart.
+      aging_curve: ((slate.profile_sources || {}).aging_curve) || null
     };
     ['away', 'home'].forEach(function (side) {
       var pick = chooseForm(g[side + '_form'], g[side + '_form_prior']);
