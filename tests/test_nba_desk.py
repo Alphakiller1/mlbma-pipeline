@@ -205,6 +205,15 @@ class NbaRenderTests(unittest.TestCase):
         self.assertNotIn("NaN", html)
         self.assertNotIn("undefined", html)
 
+    def test_coach_and_scheme_render(self):
+        html = self.out["detail"]
+        self.assertIn('id="nba-scheme"', html)
+        self.assertIn("ca-coach-hero", html)
+        self.assertRegex(html, r"(First Season|Season \d+) With The ")
+        self.assertIn("Coaching Fingerprint", html)
+        self.assertIn("ca-pctl__fill", html)
+        self.assertIn("The Figures Behind It", html)
+
     def test_illustrations_render_and_lead_the_desk(self):
         html = self.out["detail"]
         for sec in ("nba-edge-map", "nba-fingerprint", "nba-tape", "nba-aging", "nba-shot-maps", "nba-onfloor"):

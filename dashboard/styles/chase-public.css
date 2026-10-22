@@ -5780,6 +5780,108 @@ body[data-sport="nfl"] .ca-detail-nav {
   font-weight: 600;
 }
 
+.ca-style-tag small { color: var(--text-meta); font-size: 12px; font-weight: 600; }
+
+/* NBA coach and defensive scheme (2026-10-21): tenure, career path, the
+   coach's percentile fingerprint, and scheme reads with their figures. */
+.ca-coach-hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  margin: var(--space-2) 0 var(--space-3);
+}
+.ca-coach-hero__kicker { display: block; color: var(--text-meta); font-size: 12px; font-weight: 600; }
+.ca-coach-hero b { color: var(--text-primary); font-family: var(--font-display); font-size: var(--type-20, 20px); }
+.ca-coach-tenure {
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+.ca-coach-tenure.is-new {
+  border-color: var(--border-strong);
+  background: var(--surface-3);
+  color: var(--text-primary);
+}
+.ca-coach-career { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-3) 0 0; }
+.ca-coach-career span {
+  display: grid;
+  gap: 1px;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+}
+.ca-coach-career b { color: var(--text-primary); font-size: 12px; }
+.ca-coach-h {
+  margin: var(--space-5) 0 var(--space-2);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.01em;
+}
+.ca-coach-note { margin: var(--space-3) 0 0; color: var(--text-meta); font-size: 12px; line-height: 1.5; }
+.ca-coach-summary { margin: 0 0 var(--space-2); color: var(--text-secondary); font-size: 14px; line-height: 1.5; }
+.ca-coach-fp { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-top: var(--space-3); }
+.ca-coach-fp h4 { margin: 0 0 var(--space-1); color: var(--text-meta); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+.ca-pctl { display: grid; gap: 0; }
+.ca-pctl__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(64px, 1fr) 28px;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 30px;
+  border-top: 1px solid var(--border-subtle);
+  outline: none;
+}
+.ca-pctl__row:focus-visible { box-shadow: inset 0 0 0 2px var(--border-focus); }
+.ca-pctl__label { color: var(--text-secondary); font-size: 12px; line-height: 1.3; }
+.ca-pctl__track { position: relative; height: 8px; border-radius: 4px; background: var(--border-subtle); }
+.ca-pctl__fill { position: absolute; inset: 0 auto 0 0; border-radius: 4px; }
+.ca-pctl__fill.is-away { background: var(--nba-away, var(--viz-away)); }
+.ca-pctl__fill.is-home { background: var(--nba-home, var(--viz-home)); }
+.ca-pctl__mid { position: absolute; top: -3px; bottom: -3px; left: 50%; width: 1px; background: var(--text-meta); }
+.ca-pctl__val { color: var(--text-primary); font-size: 12px; font-variant-numeric: tabular-nums; text-align: right; }
+.ca-scheme-flag {
+  margin: var(--space-2) 0 var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-left: 3px solid var(--nba-home, var(--viz-home));
+  border-radius: 4px;
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.ca-scheme-reads { display: grid; gap: var(--space-2); margin: var(--space-2) 0 0; padding: 0; list-style: none; }
+.ca-scheme-read {
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: var(--surface-raised);
+}
+.ca-scheme-read__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.ca-scheme-read__head b { color: var(--text-primary); font-family: var(--font-display); font-size: 16px; }
+.ca-scheme-read__head span {
+  padding: 2px var(--space-2);
+  border-radius: 6px;
+  background: var(--surface-3);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+.ca-scheme-read.is-strong .ca-scheme-read__head span { color: var(--text-primary); background: var(--border-strong); }
+.ca-scheme-read p { margin: var(--space-1) 0 0; color: var(--text-secondary); font-size: 13px; }
+.ca-scheme-read .ca-scheme-read__ev { color: var(--text-meta); font-size: 12px; }
+@media (max-width: 520px) {
+  .ca-coach-fp { grid-template-columns: 1fr; }
+}
+
 /* NBA matchup illustrations, visual system v2 (2026-10-21). Away and home
    are the clubs' own colours (--nba-away / --nba-home, set on the desk host
    by nbaPair through MLBMAAssets.teamPairColors at a 3:1 floor), with the
