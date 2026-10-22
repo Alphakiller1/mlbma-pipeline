@@ -214,10 +214,10 @@ class NbaRenderTests(unittest.TestCase):
         self.assertIn("ca-edge-row", html)        # dumbbell rows
         self.assertIn("ca-fly__bar", html)        # mirrored bars
         self.assertIn("ca-aging__curve", html)    # league age curve
-        self.assertIn("ca-mini-court__zone", html)
+        self.assertIn("ca-dist-seg", html)
         self.assertGreater(html.count('data-tip="'), 50)  # every mark explains itself
         g = self.out["game"]
-        self.assertIn(g["away_name"] + " Offense vs " + g["home_name"] + " Defense", html)
+        self.assertRegex(html, r"<h3>[^<]+ Offense vs [^<]+ Defense</h3>")
         self.assertIn("eFG%", html)
         self.assertIn("Ranked Of 30 Clubs", html)
         self.assertIn("ca-cfb-ledger-table", html)

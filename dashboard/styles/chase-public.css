@@ -5738,24 +5738,22 @@ body[data-sport="nfl"] .ca-detail-nav {
   max-width: 420px;
 }
 .ca-court svg { display: block; width: 100%; height: auto; }
+.ca-court-floor { fill: var(--surface-2); }
 .ca-court-zone {
   fill: var(--grade, var(--surface-3));
-  fill-opacity: 0.42;
-  stroke: var(--border-strong);
-  stroke-width: 2;
+  fill-opacity: 0.2;
+  stroke: none;
+  outline: none;
 }
-.ca-court-zone.c-na { fill: var(--surface-2); fill-opacity: 1; }
-.ca-court-rim { fill: none; stroke: var(--text-secondary); stroke-width: 2.5; }
-.ca-court-label {
-  fill: var(--text-primary);
-  font-family: inherit;
-  font-size: 19px;
-  font-weight: 700;
-  text-anchor: middle;
-  paint-order: stroke;
-  stroke: var(--surface-page);
-  stroke-width: 4px;
-}
+.ca-court-zone:hover, .ca-court-zone:focus-visible { fill-opacity: 0.34; }
+.ca-court-zone.c-na { fill: transparent; }
+.ca-court-lines { fill: none; stroke: var(--border-strong); stroke-width: 2; pointer-events: none; }
+.ca-court-rim { stroke: var(--text-secondary); stroke-width: 2.5; }
+.ca-court-badge { pointer-events: none; }
+.ca-court-badge rect { fill: var(--surface-card); fill-opacity: 0.92; stroke: var(--border-default); stroke-width: 1; }
+.ca-court-badge text { text-anchor: middle; font-variant-numeric: tabular-nums; }
+.ca-court-badge__big { fill: var(--text-primary); font-family: var(--font-display); font-size: 21px; font-weight: 700; }
+.ca-court-badge__small { fill: var(--text-secondary); font-size: 13px; font-weight: 600; }
 .ca-court figcaption {
   margin-top: var(--space-1);
   color: var(--text-meta);
@@ -5782,52 +5780,72 @@ body[data-sport="nfl"] .ca-detail-nav {
   font-weight: 600;
 }
 
-/* NBA matchup illustrations (2026-10-21). Away = --viz-away, home =
-   --viz-home (validated pair for the dark surface). Text stays in text
-   tokens; colour marks carry identity beside it, never alone. */
+/* NBA matchup illustrations, visual system v2 (2026-10-21). Away and home
+   are the clubs' own colours (--nba-away / --nba-home, set on the desk host
+   by nbaPair through MLBMAAssets.teamPairColors at a 3:1 floor), with the
+   validated --viz pair behind them. Text stays in text tokens; a crest and
+   name key sits on every two-club figure, so identity is never colour alone. */
 .ca-viz-card {
-  padding: var(--space-4);
+  padding: var(--space-5) var(--space-4) var(--space-4);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-card, 14px);
   background: var(--surface-card);
 }
-.ca-edge-key, .ca-aging figcaption {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  margin: var(--space-2) 0 var(--space-3);
-  color: var(--text-secondary);
-  font-size: 12px;
-}
-.ca-edge-key span, .ca-aging figcaption span { display: inline-flex; align-items: center; gap: var(--space-1); }
-.ca-edge-key__axis { margin-left: auto; color: var(--text-meta); }
-.ca-edge-rows { display: grid; gap: 2px; }
+.ca-viz-key { margin-bottom: var(--space-4); }
+.ca-viz-key .ca-mirror__crest { width: 22px; height: 22px; object-fit: contain; }
+.ca-viz-swatch.is-away { background: var(--nba-away, var(--viz-away)); }
+.ca-viz-swatch.is-home { background: var(--nba-home, var(--viz-home)); }
+
+/* Matchup map: offense rank (filled) against the defense it meets (ring). */
+.ca-edge-rows { display: grid; gap: 0; }
 .ca-edge-row {
   display: grid;
-  grid-template-columns: minmax(96px, 150px) 1fr minmax(64px, auto);
+  grid-template-columns: minmax(104px, 150px) 1fr 88px;
   align-items: center;
   gap: var(--space-3);
-  min-height: 34px;
-  padding: 2px var(--space-2);
-  border-radius: 8px;
+  min-height: 36px;
+  padding: 0 var(--space-2);
+  border-top: 1px solid var(--border-subtle);
   outline: none;
 }
 .ca-edge-row:hover, .ca-edge-row:focus-visible { background: var(--surface-raised); }
-.ca-edge-row:focus-visible { box-shadow: 0 0 0 2px var(--border-focus); }
-.ca-edge-row__label { color: var(--text-primary); font-size: 13px; font-weight: 600; }
+.ca-edge-row:focus-visible { box-shadow: inset 0 0 0 2px var(--border-focus); }
+.ca-edge-row.is-extra { display: none; }
+.ca-edge-panel.is-open .ca-edge-row.is-extra { display: grid; }
+.ca-edge-row--axis { min-height: 24px; border-top: 0; }
+.ca-edge-row--axis:hover { background: none; }
+.ca-edge-axis { position: relative; height: 16px; }
+.ca-edge-axis b {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  color: var(--text-meta);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.ca-edge-axis b:first-child { transform: none; }
+.ca-edge-axis b:last-child { transform: translateX(-100%); }
+.ca-edge-axis__edge { justify-self: end; color: var(--text-meta); font-size: 12px; font-weight: 600; }
+.ca-edge-row__label {
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
 .ca-edge-track { position: relative; height: 20px; }
 .ca-edge-track::before {
   content: "";
   position: absolute;
   inset: 9px 0;
-  border-radius: 2px;
-  background: var(--surface-3);
+  border-radius: 1px;
+  background: var(--border-subtle);
 }
-.ca-edge-track__mid {
+.ca-edge-track__q {
   position: absolute;
-  top: 3px;
-  bottom: 3px;
-  left: 50%;
+  top: 5px;
+  bottom: 5px;
   width: 1px;
   background: var(--border-default);
 }
@@ -5836,10 +5854,10 @@ body[data-sport="nfl"] .ca-detail-nav {
   top: 8px;
   height: 4px;
   border-radius: 2px;
-  opacity: 0.55;
+  opacity: 0.4;
 }
-.ca-edge-link.is-away, .ca-edge-dot.is-away { background: var(--viz-away); }
-.ca-edge-link.is-home, .ca-edge-dot.is-home { background: var(--viz-home); }
+.ca-edge-link.is-away, .ca-edge-dot.is-away { background: var(--nba-away, var(--viz-away)); }
+.ca-edge-link.is-home, .ca-edge-dot.is-home { background: var(--nba-home, var(--viz-home)); }
 .ca-edge-dot {
   display: inline-block;
   width: 12px;
@@ -5847,88 +5865,156 @@ body[data-sport="nfl"] .ca-detail-nav {
   border-radius: 50%;
   box-shadow: 0 0 0 2px var(--surface-card);
 }
+.ca-edge-dot.is-def { background: var(--surface-card); }
+.ca-edge-dot.is-def.is-away { box-shadow: inset 0 0 0 3px var(--nba-away, var(--viz-away)), 0 0 0 2px var(--surface-card); }
+.ca-edge-dot.is-def.is-home { box-shadow: inset 0 0 0 3px var(--nba-home, var(--viz-home)), 0 0 0 2px var(--surface-card); }
 .ca-edge-track .ca-edge-dot { position: absolute; top: 4px; margin-left: -6px; }
 .ca-edge-chip {
   justify-self: end;
-  padding: 2px var(--space-2);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-pill);
+  padding: 3px var(--space-2);
+  border-radius: 6px;
   color: var(--text-primary);
   font-size: 12px;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.ca-edge-chip.is-away { border-color: var(--viz-away); }
-.ca-edge-chip.is-home { border-color: var(--viz-home); }
+.ca-edge-chip.is-away { background: color-mix(in srgb, var(--nba-away, var(--viz-away)) 22%, transparent); }
+.ca-edge-chip.is-home { background: color-mix(in srgb, var(--nba-home, var(--viz-home)) 22%, transparent); }
 .ca-edge-chip.is-even { color: var(--text-meta); }
-
-.ca-fly { margin: 0; }
-.ca-fly__head, .ca-fly__row {
-  display: grid;
-  grid-template-columns: 1fr minmax(92px, 150px) 1fr;
-  align-items: center;
-  gap: var(--space-2);
+.ca-edge-more {
+  display: block;
+  min-height: 44px;
+  margin: var(--space-2) auto 0;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
 }
-.ca-fly__head { margin-bottom: var(--space-2); color: var(--text-secondary); font-size: 12px; font-weight: 700; }
-.ca-fly__head .is-away { text-align: right; }
-.ca-fly__row { min-height: 32px; }
-.ca-fly__label { color: var(--text-primary); font-size: 13px; font-weight: 600; text-align: center; }
-.ca-fly__cell { position: relative; display: flex; align-items: center; height: 24px; outline: none; }
-.ca-fly__cell.is-away { justify-content: flex-end; }
+.ca-edge-more:hover { color: var(--text-primary); border-color: var(--border-strong); }
+
+/* Mirrored bars: thin team-colour bars on a track, values outside them. */
+.ca-fly { margin: 0; }
+.ca-fly__row {
+  display: grid;
+  grid-template-columns: 1fr minmax(92px, 132px) 1fr;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 34px;
+}
+.ca-fly__row + .ca-fly__row { border-top: 1px solid var(--border-subtle); }
+.ca-fly__label {
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+.ca-fly__cell { display: flex; align-items: center; gap: var(--space-2); height: 28px; outline: none; }
+.ca-fly__cell.is-away { flex-direction: row-reverse; }
 .ca-fly__cell:focus-visible { box-shadow: 0 0 0 2px var(--border-focus); border-radius: 4px; }
-.ca-fly__bar { position: absolute; top: 4px; bottom: 4px; min-width: 2px; }
-.ca-fly__bar.is-away { right: 0; border-radius: 4px 0 0 4px; background: var(--viz-away); }
-.ca-fly__bar.is-home { left: 0; border-radius: 0 4px 4px 0; background: var(--viz-home); }
+.ca-fly__track { position: relative; flex: 1 1 auto; height: 10px; border-radius: 5px; background: var(--border-subtle); }
+.ca-fly__bar { position: absolute; top: 0; bottom: 0; }
+.ca-fly__bar.is-away { right: 0; border-radius: 5px; background: var(--nba-away, var(--viz-away)); }
+.ca-fly__bar.is-home { left: 0; border-radius: 5px; background: var(--nba-home, var(--viz-home)); }
 .ca-fly__val {
-  position: relative;
-  padding: 0 var(--space-2);
+  flex: 0 0 auto;
+  min-width: 5.5em;
   color: var(--text-primary);
   font-size: 12px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 3px var(--surface-page);
 }
-.ca-fly figcaption, .ca-mini-court figcaption span {
-  margin-top: var(--space-2);
+.ca-fly__cell.is-away .ca-fly__val { text-align: right; }
+.ca-fly figcaption, .ca-dist-legend {
+  margin-top: var(--space-3);
   color: var(--text-meta);
   font-size: 12px;
 }
 
+/* Age curve: development bands behind the league curve. */
 .ca-aging { margin: 0; }
-.ca-aging svg { display: block; width: 100%; height: auto; }
+.ca-aging svg { display: block; width: 100%; height: auto; margin: 0 auto; }
+.ca-aging figcaption {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  color: var(--text-meta);
+  font-size: 12px;
+  text-align: center;
+}
+.ca-aging figcaption .ca-viz-key { margin: 0; }
+.ca-aging__band { fill: var(--surface-raised); opacity: 0.35; }
+.ca-aging__band.is-prime { opacity: 0.9; }
+.ca-aging__band-label {
+  fill: var(--text-meta);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-anchor: middle;
+  text-transform: uppercase;
+}
 .ca-aging__grid { stroke: var(--border-subtle); stroke-width: 1; }
 .ca-aging__grid.is-zero { stroke: var(--border-strong); }
 .ca-aging__tick, .ca-aging__axis { fill: var(--text-meta); font-size: 12px; }
-.ca-aging__curve { fill: none; stroke: var(--text-secondary); stroke-width: 2; }
+.ca-aging__curve { fill: none; stroke: var(--text-secondary); stroke-width: 2; stroke-dasharray: 6 4; }
 .ca-aging__dot { stroke: var(--surface-card); stroke-width: 2; outline: none; cursor: default; }
-.ca-aging__dot.is-away { fill: var(--viz-away); }
-.ca-aging__dot.is-home { fill: var(--viz-home); }
+.ca-aging__dot.is-away { fill: var(--nba-away, var(--viz-away)); }
+.ca-aging__dot.is-home { fill: var(--nba-home, var(--viz-home)); }
 .ca-aging__dot:focus-visible { stroke: var(--border-focus); }
 .ca-aging__name { fill: var(--text-primary); font-size: 12px; font-weight: 600; }
 
-.ca-mini-courts {
+/* Shot distribution: one bar per player, five zones in shades of the club. */
+.ca-dist-legend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); margin: 0 0 var(--space-3); }
+.ca-dist-legend span { display: inline-flex; align-items: center; gap: var(--space-1); }
+.ca-dist-legend .ca-dist-seg { width: 12px; height: 12px; border-radius: 3px; }
+.ca-dist { display: grid; gap: 0; }
+.ca-dist-row {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: minmax(120px, 190px) 1fr;
+  align-items: center;
   gap: var(--space-3);
+  min-height: 40px;
+  border-top: 1px solid var(--border-subtle);
 }
-.ca-mini-court { margin: 0; }
-.ca-mini-court svg { display: block; width: 100%; height: auto; }
-.ca-mini-court__zone { stroke: var(--border-strong); stroke-width: 3; outline: none; }
-.ca-mini-court__zone.is-away { fill: var(--viz-away); }
-.ca-mini-court__zone.is-home { fill: var(--viz-home); }
-.ca-mini-court__zone:focus-visible { stroke: var(--border-focus); }
-.ca-mini-court__label {
-  fill: var(--text-primary);
-  font-size: 30px;
-  font-weight: 700;
-  text-anchor: middle;
-  paint-order: stroke;
-  stroke: var(--surface-page);
-  stroke-width: 5px;
-  pointer-events: none;
+.ca-dist-row__name { display: grid; gap: 1px; min-width: 0; }
+.ca-dist-row__name b {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.ca-mini-court figcaption { display: grid; gap: 2px; margin-top: var(--space-1); }
-.ca-mini-court figcaption b { color: var(--text-primary); font-size: 13px; }
-.ca-mini-court figcaption span { margin-top: 0; }
+.ca-dist-row__name small { color: var(--text-meta); font-size: 12px; }
+.ca-dist-bar { display: flex; gap: 2px; height: 20px; }
+.ca-dist-seg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2px;
+  font-style: normal;
+  outline: none;
+}
+.ca-dist-bar .ca-dist-seg:first-child { border-radius: 4px 0 0 4px; }
+.ca-dist-bar .ca-dist-seg:last-child { border-radius: 0 4px 4px 0; }
+.ca-dist-seg:focus-visible { box-shadow: 0 0 0 2px var(--border-focus); }
+.ca-dist-seg b { color: var(--text-primary); font-size: 12px; font-style: normal; font-weight: 700; text-shadow: 0 0 3px var(--surface-page); }
+.ca-dist-seg.is-away { --dist: var(--nba-away, var(--viz-away)); }
+.ca-dist-seg.is-home { --dist: var(--nba-home, var(--viz-home)); }
+.ca-dist-seg.z0 { background: var(--dist); }
+.ca-dist-seg.z1 { background: color-mix(in srgb, var(--dist) 62%, var(--surface-card)); }
+.ca-dist-seg.z2 { background: color-mix(in srgb, var(--dist) 40%, var(--surface-card)); }
+.ca-dist-seg.z3 { background: color-mix(in srgb, var(--dist) 25%, var(--surface-card)); }
+.ca-dist-seg.z4 { background: color-mix(in srgb, var(--dist) 13%, var(--surface-card)); }
 
 .ca-viz-tip {
   position: fixed;
@@ -5947,13 +6033,18 @@ body[data-sport="nfl"] .ca-detail-nav {
 }
 
 @media (max-width: 520px) {
-  .ca-edge-row { grid-template-columns: 1fr minmax(56px, auto); }
+  .ca-viz-card { padding: var(--space-4) var(--space-3) var(--space-3); }
+  .ca-edge-row { grid-template-columns: 1fr 76px; row-gap: 0; padding: var(--space-1) var(--space-2); }
   .ca-edge-row__label { grid-column: 1 / -1; }
   .ca-edge-track { grid-column: 1; }
-  .ca-fly__head, .ca-fly__row { grid-template-columns: 1fr 76px 1fr; }
+  .ca-edge-row--axis > span:first-child { display: none; }
+  .ca-fly__row { grid-template-columns: 1fr 72px 1fr; gap: var(--space-2); }
   .ca-fly__label { font-size: 12px; }
-  .ca-fly__val { font-size: 12px; padding: 0 4px; }
-  .ca-mini-courts { grid-template-columns: repeat(2, 1fr); }
+  .ca-fly__cell { flex-direction: column-reverse; align-items: stretch; gap: 2px; height: auto; padding: var(--space-1) 0; }
+  .ca-fly__cell.is-away { flex-direction: column-reverse; }
+  .ca-fly__val { min-width: 0; }
+  .ca-fly__track { flex: 0 0 8px; height: 8px; }
+  .ca-dist-row { grid-template-columns: 1fr; gap: var(--space-1); padding: var(--space-2) 0; }
 }
 /* A two-figure NBA table fits a phone: the CFB panel's 16.5rem label column
    would push both figures past the edge of a 375px screen. */
@@ -5962,4 +6053,3 @@ body[data-sport="nfl"] .ca-detail-nav {
   .ca-cfb-panel .ca-lineup-table.ca-split-table.ca-nba-fit thead th:first-child,
   .ca-nba-fit tbody td:first-child { min-width: 0; width: 44%; }
 }
-.ca-aging svg { margin: 0 auto; }

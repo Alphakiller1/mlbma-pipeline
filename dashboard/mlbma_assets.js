@@ -1252,6 +1252,15 @@
       SF: '#AA0000', SFO: '#AA0000', SEA: '#002244',
       TB: '#D50A0A', TAM: '#D50A0A', TEN: '#0C2340',
       WAS: '#5A1414', WSH: '#5A1414'
+    },
+    // NBA: league brand colours under ESPN codes (aliases beside them).
+    nba: {
+      ATL: '#E03A3E', BOS: '#007A33', BKN: '#000000', CHA: '#1D1160', CHI: '#CE1141', CLE: '#860038',
+      DAL: '#00538C', DEN: '#0E2240', DET: '#C8102E', GS: '#1D428A', GSW: '#1D428A', HOU: '#CE1141',
+      IND: '#002D62', LAC: '#C8102E', LAL: '#552583', MEM: '#5D76A9', MIA: '#98002E', MIL: '#00471B',
+      MIN: '#0C2340', NO: '#0C2340', NOP: '#0C2340', NY: '#006BB6', NYK: '#006BB6', OKC: '#007AC1',
+      ORL: '#0077C0', PHI: '#006BB6', PHX: '#1D1160', POR: '#E03A3E', SAC: '#5A2D81', SA: '#C4CED4',
+      SAS: '#C4CED4', TOR: '#CE1141', UTAH: '#4E008E', UTA: '#4E008E', WSH: '#002B5C', WAS: '#002B5C'
     }
   };
 
@@ -1442,6 +1451,14 @@
       SF: '#B3995D', SFO: '#B3995D', SEA: '#69BE28',
       TB: '#34302B', TAM: '#34302B', TEN: '#4B92DB',
       WAS: '#FFB612', WSH: '#FFB612'
+    },
+    nba: {
+      ATL: '#C1D32F', BOS: '#BA9653', BKN: '#707271', CHA: '#00788C', CHI: '#000000', CLE: '#FDBB30',
+      DAL: '#B8C4CA', DEN: '#FEC524', DET: '#1D42BA', GS: '#FFC72C', GSW: '#FFC72C', HOU: '#C4CED4',
+      IND: '#FDBB30', LAC: '#1D428A', LAL: '#FDB927', MEM: '#12173F', MIA: '#F9A01B', MIL: '#EEE1C6',
+      MIN: '#78BE20', NO: '#C8102E', NOP: '#C8102E', NY: '#F58426', NYK: '#F58426', OKC: '#EF3B24',
+      ORL: '#C4CED4', PHI: '#ED174C', PHX: '#E56020', POR: '#000000', SAC: '#63727A', SA: '#000000',
+      SAS: '#000000', TOR: '#000000', UTAH: '#F9A01B', UTA: '#F9A01B', WSH: '#E31837', WAS: '#E31837'
     }
   };
 
