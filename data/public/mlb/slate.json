@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-22T17:18:27Z",
-  "data_through_utc": "2026-10-22T17:18:27Z",
+  "generated_at_utc": "2026-10-22T21:44:00Z",
+  "data_through_utc": "2026-10-22T21:44:00Z",
   "games": [
     {
       "id": "849805",
@@ -19,14 +19,13 @@
       "venue": "American Family Field",
       "venue_city": "Milwaukee, WI",
       "broadcast": "FOX / FOX ONE, Fox Deportes / FOX ONE",
-      "away_starter": "Drew Rasmussen",
+      "away_starter": "Nick Martinez",
       "home_starter": "Jacob Misiorowski",
-      "away_starter_id": 656876,
+      "away_starter_id": 607259,
       "home_starter_id": 694819,
-      "away_starter_role": "projected",
       "away_hand": "R",
       "home_hand": "R",
-      "away_era": "2.67",
+      "away_era": "3.10",
       "home_era": "1.80",
       "away_lineup_state": "Expected",
       "home_lineup_state": "Expected",
