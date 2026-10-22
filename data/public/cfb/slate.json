@@ -3,8 +3,8 @@
   "sport": "cfb",
   "season": 2026,
   "week": 8,
-  "generated_at_utc": "2026-10-21T17:26:53Z",
-  "data_through_utc": "2026-10-20T18:57:17Z",
+  "generated_at_utc": "2026-10-21T23:29:29Z",
+  "data_through_utc": "2026-10-21T18:34:48Z",
   "games": [
     {
       "id": "MOST@DEL",
@@ -12970,12 +12970,31 @@
           {
             "player": "Ilya Uvaydov",
             "position": "K",
-            "status": "Questionable",
+            "status": "Out",
             "injury": "Undisclosed",
             "updated": "Oct 21 8:00 PM",
             "detail": "Uvaydov is dealing with an undisclosed injury, and it is unclear whether he will play against Sam Houston on Wednesday, October 21th.",
             "source": "RotoWire + Covers",
-            "return": "Oct 21st"
+            "return": "Oct 28th"
+          },
+          {
+            "player": "Ray Lotten",
+            "position": "TE",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Oct 21 8:00 PM",
+            "detail": "Lotten is battling with an undisclosed injury, and it remains to be seen if he will be available against Sam Houston on Wednesday, October 21st.",
+            "source": "RotoWire + Covers",
+            "return": "Oct 28th"
+          },
+          {
+            "player": "Jaylen Stokes",
+            "position": "WR",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "return": "Oct 28th",
+            "updated": "Oct 21 8:00 PM",
+            "source": "RotoWire"
           },
           {
             "player": "R. Burton",
@@ -12985,16 +13004,6 @@
             "updated": "Thu, Oct 8",
             "detail": "Burton is dealing with an undisclosed injury, and it has yet to be determined if he will suit up against Sam Houston on Wednesday, October 21st.",
             "source": "Covers"
-          },
-          {
-            "player": "Ray Lotten",
-            "position": "TE",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Oct 21 8:00 PM",
-            "detail": "Lotten is battling with an undisclosed injury, and it remains to be seen if he will be available against Sam Houston on Wednesday, October 21st.",
-            "source": "RotoWire + Covers",
-            "return": "Oct 21st"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -14156,20 +14165,11 @@
       "home_injuries": {
         "players": [
           {
-            "player": "Jerrian Parker",
-            "position": "RB",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "return": "Oct 21st",
-            "updated": "Oct 21 8:00 PM",
-            "source": "RotoWire"
-          },
-          {
             "player": "Jack Merryman",
             "position": "TE",
-            "status": "Questionable",
+            "status": "Out",
             "injury": "Undisclosed",
-            "return": "Oct 21st",
+            "return": "Oct 27th",
             "updated": "Oct 21 8:00 PM",
             "source": "RotoWire"
           },
@@ -14222,7 +14222,7 @@
       "venue_city": "Boone, NC",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 55,
+      "weather_temp": 54,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -21345,7 +21345,7 @@
       "venue_city": "Memphis, TN",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 77,
+      "weather_temp": 76,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -24902,7 +24902,7 @@
       "venue_city": "Charlottesville, VA",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 55,
+      "weather_temp": 56,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -28534,7 +28534,7 @@
       "venue_city": "East Hartford, CT",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 49,
+      "weather_temp": 50,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -32076,7 +32076,7 @@
       "venue_city": "Tulsa, OK",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 73,
+      "weather_temp": 74,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -35638,8 +35638,8 @@
       "venue": "War Memorial Stadium",
       "venue_city": "Laramie, WY",
       "roof": "Outdoor",
-      "broadcast": "CW, ESPN Unlmtd",
-      "weather_temp": 53,
+      "broadcast": "CW",
+      "weather_temp": 54,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -39287,7 +39287,7 @@
       "venue_city": "Stanford, CA",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 66,
+      "weather_temp": 65,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -42921,8 +42921,8 @@
       "venue": "Gerald J. Ford Stadium",
       "venue_city": "Dallas, TX",
       "roof": "Outdoor",
-      "broadcast": "CW, ESPN Unlmtd",
-      "weather_temp": 73,
+      "broadcast": "CW",
+      "weather_temp": 74,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -46572,7 +46572,7 @@
       "venue_city": "Ann Arbor, MI",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 57,
+      "weather_temp": 56,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -50126,7 +50126,7 @@
       "venue_city": "Auburn, AL",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 65,
+      "weather_temp": 64,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -57383,7 +57383,7 @@
       "venue_city": "Boca Raton, FL",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 81,
+      "weather_temp": 83,
       "weather_cond": "Showers",
       "away_form": {
         "rates": {
@@ -64533,7 +64533,7 @@
       "venue_city": "Cincinnati, OH",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 61,
+      "weather_temp": 58,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -68037,7 +68037,7 @@
       "venue_city": "Toledo, OH",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 60,
+      "weather_temp": 57,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -71602,7 +71602,7 @@
       "venue_city": "Fort Worth, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 73,
+      "weather_temp": 72,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -75111,7 +75111,7 @@
       "venue_city": "Kent, OH",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 59,
+      "weather_temp": 58,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -82382,7 +82382,7 @@
       "venue_city": "Mount Pleasant, MI",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 62,
+      "weather_temp": 61,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -93347,7 +93347,7 @@
       "venue_city": "Buffalo, NY",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 62,
+      "weather_temp": 63,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -96874,7 +96874,7 @@
       "venue_city": "Orlando, FL",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 79,
+      "weather_temp": 80,
       "weather_cond": "Mostly cloudy w/ showers",
       "away_form": {
         "rates": {
@@ -100404,7 +100404,7 @@
       "venue_city": "Dekalb, IL",
       "roof": "Outdoor",
       "broadcast": "MW+",
-      "weather_temp": 69,
+      "weather_temp": 67,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -103967,7 +103967,7 @@
       "venue_city": "Minneapolis, MN",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 73,
+      "weather_temp": 71,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -107468,7 +107468,7 @@
       "venue_city": "Pasadena, CA",
       "roof": "Outdoor",
       "broadcast": "CBS",
-      "weather_temp": 72,
+      "weather_temp": 73,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -114698,7 +114698,7 @@
       "venue_city": "Muncie, IN",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 70,
+      "weather_temp": 66,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -118373,7 +118373,7 @@
       "venue_city": "Tuscaloosa, AL",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 75,
+      "weather_temp": 76,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -121948,7 +121948,7 @@
       "venue_city": "Columbia, SC",
       "roof": "Outdoor",
       "broadcast": "ESPN, Disney+",
-      "weather_temp": 69,
+      "weather_temp": 70,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -147288,7 +147288,7 @@
       "venue_city": "Hattiesburg, MS",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 80,
+      "weather_temp": 79,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -154386,8 +154386,8 @@
       "venue": "Canvas Stadium",
       "venue_city": "Fort Collins, CO",
       "roof": "Outdoor",
-      "broadcast": "CW, ESPN Unlmtd",
-      "weather_temp": 57,
+      "broadcast": "CW",
+      "weather_temp": 59,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -158083,7 +158083,7 @@
       "venue_city": "Stillwater, OK",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 78,
+      "weather_temp": 77,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -161621,7 +161621,7 @@
       "venue_city": "Jonesboro, AR",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 77,
+      "weather_temp": 75,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -165078,7 +165078,7 @@
       "venue_city": "Clemson, SC",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 60,
+      "weather_temp": 61,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -168708,7 +168708,7 @@
       "venue_city": "Tucson, AZ",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 72,
+      "weather_temp": 73,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -175717,7 +175717,7 @@
       "venue_city": "Chapel Hill, NC",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 57,
+      "weather_temp": 58,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -179248,7 +179248,7 @@
       "venue_city": "Madison, WI",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 66,
+      "weather_temp": 68,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -186310,7 +186310,7 @@
       "venue_city": "Lexington, KY",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 63,
+      "weather_temp": 66,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -189902,7 +189902,7 @@
       "venue_city": "New Orleans, LA",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 71,
+      "weather_temp": 70,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -193428,8 +193428,8 @@
       "venue": "University Stadium (NM)",
       "venue_city": "Albuquerque, NM",
       "roof": "Outdoor",
-      "broadcast": "CW, ESPN Unlmtd",
-      "weather_temp": 58,
+      "broadcast": "CW",
+      "weather_temp": 59,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -196939,7 +196939,7 @@
       "venue_city": "Salt Lake City, UT",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 50,
+      "weather_temp": 52,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
