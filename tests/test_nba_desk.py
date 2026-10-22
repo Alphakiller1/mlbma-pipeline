@@ -68,6 +68,14 @@ class NbaRouteTests(unittest.TestCase):
         status = (ROOT / "dashboard" / "chase_datastatus.js").read_text(encoding="utf-8")
         self.assertIn("nba: '/data/public/nba/slate.json'", status)
 
+    def test_publisher_drops_unclassified_keys_and_keeps_the_rest(self):
+        slate = {"games": [{"id": "1", "away": "ATL", "upstream_new": {"x": 1},
+                            "away_profile": {"coach": {"head_coach": "X", "brand_new": 2}}}]}
+        dropped = pub.prune_unclassified(slate)
+        self.assertEqual(set(dropped), {"upstream_new", "brand_new"})
+        self.assertEqual(slate["games"][0]["away_profile"]["coach"], {"head_coach": "X"})
+        self.assertEqual(slate["games"][0]["away"], "ATL")
+
     def test_publish_workflow_validates_before_committing(self):
         wf = (ROOT / ".github" / "workflows" / "publish-nba-slate.yml").read_text(encoding="utf-8")
         self.assertIn("python scripts/publish_public_nba_slate.py", wf)
