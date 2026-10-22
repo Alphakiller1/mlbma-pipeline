@@ -3,8 +3,8 @@
   "sport": "cfb",
   "season": 2026,
   "week": 8,
-  "generated_at_utc": "2026-10-22T17:24:14Z",
-  "data_through_utc": "2026-10-21T23:59:24Z",
+  "generated_at_utc": "2026-10-22T23:29:18Z",
+  "data_through_utc": "2026-10-22T18:29:49Z",
   "games": [
     {
       "id": "MOST@DEL",
@@ -14195,7 +14195,7 @@
       "id": "JMU@APP",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-22T23:00Z",
       "away": "JMU",
       "home": "APP",
@@ -14209,13 +14209,13 @@
       "home_color": "#000000",
       "away_record": "7-0",
       "home_record": "4-2",
-      "away_score": "0",
+      "away_score": "7",
       "home_score": "0",
       "venue": "Kidd Brewer Stadium",
       "venue_city": "Boone, NC",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 56,
+      "weather_temp": 52,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -17796,7 +17796,7 @@
       "id": "LIB@KENN",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-22T23:00Z",
       "away": "LIB",
       "home": "KENN",
@@ -17810,13 +17810,13 @@
       "home_color": "#fdbb30",
       "away_record": "5-1",
       "home_record": "1-5",
-      "away_score": "0",
+      "away_score": "7",
       "home_score": "0",
       "venue": "Walens Family Field at Fifth Third Stadium",
       "venue_city": "Kennesaw, GA",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 71,
+      "weather_temp": 70,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -20141,14 +20141,13 @@
             "source": "Covers"
           },
           {
-            "player": "Bo Burklow",
+            "player": "B. Burklow",
             "position": "TE",
             "status": "Questionable",
             "injury": "Undisclosed",
-            "updated": "Oct 22 7:00 PM",
+            "updated": "Fri, Oct 9",
             "detail": "Burklow is hampered with an undisclosed injury, and it has yet to be determined if he will play against the Kennesaw State on Thursday, October 22nd.",
-            "source": "RotoWire + Covers",
-            "return": "Oct 22nd"
+            "source": "Covers"
           },
           {
             "player": "C. Ryan",
@@ -21280,6 +21279,16 @@
       "home_injuries": {
         "players": [
           {
+            "player": "Zion Booker",
+            "position": "WR",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Oct 22 7:00 PM",
+            "detail": "Booker is battling with an undisclosed injury, and it remains to be seen if he will be in the lineup against Flames on Thursday, October 22nd.",
+            "source": "RotoWire + Covers",
+            "return": "Oct 28th"
+          },
+          {
             "player": "G. Bullock Jr.",
             "position": "TE",
             "status": "Questionable",
@@ -21287,16 +21296,6 @@
             "updated": "Thu, Oct 15",
             "detail": "Bullock Jr. is nursing with an undisclosed injury, and it remains to be seen if he will be active against Flames on Thursday, October 22nd.",
             "source": "Covers"
-          },
-          {
-            "player": "Zion Booker",
-            "position": "WR",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Oct 22 7:00 PM",
-            "detail": "Booker is battling with an undisclosed injury, and it remains to be seen if he will be in the lineup against Flames on Thursday, October 22nd.",
-            "source": "RotoWire + Covers",
-            "return": "Oct 22nd"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -23646,9 +23645,18 @@
           {
             "player": "Landon Lewis",
             "position": "TE",
-            "status": "Questionable",
+            "status": "Out",
             "injury": "Undisclosed",
-            "return": "Oct 22nd",
+            "return": "Oct 31st",
+            "updated": "Oct 22 7:30 PM",
+            "source": "RotoWire"
+          },
+          {
+            "player": "Dillon Lorick",
+            "position": "WR",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "return": "Oct 31st",
             "updated": "Oct 22 7:30 PM",
             "source": "RotoWire"
           }
@@ -32069,7 +32077,7 @@
       "venue_city": "Tulsa, OK",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 74,
+      "weather_temp": 73,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -35632,7 +35640,7 @@
       "venue_city": "Laramie, WY",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 52,
+      "weather_temp": 53,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -39280,7 +39288,7 @@
       "venue_city": "Stanford, CA",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 65,
+      "weather_temp": 64,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -42915,7 +42923,7 @@
       "venue_city": "Dallas, TX",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 73,
+      "weather_temp": 74,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -50119,7 +50127,7 @@
       "venue_city": "Auburn, AL",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 65,
+      "weather_temp": 64,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -53709,8 +53717,8 @@
       "venue_city": "Miami Gardens, FL",
       "roof": "Outdoor",
       "broadcast": "ESPN, Disney+",
-      "weather_temp": 83,
-      "weather_cond": "Showers",
+      "weather_temp": 81,
+      "weather_cond": "Thunderstorms",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -57376,7 +57384,7 @@
       "venue_city": "Boca Raton, FL",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 82,
+      "weather_temp": 84,
       "weather_cond": "Showers",
       "away_form": {
         "rates": {
@@ -64526,7 +64534,7 @@
       "venue_city": "Cincinnati, OH",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 60,
+      "weather_temp": 61,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -75104,7 +75112,7 @@
       "venue_city": "Kent, OH",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 59,
+      "weather_temp": 57,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -78811,7 +78819,7 @@
       "venue_city": "Lawrence, KS",
       "roof": "Outdoor",
       "broadcast": "TNT",
-      "weather_temp": 70,
+      "weather_temp": 71,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -86172,7 +86180,7 @@
       "venue_city": "Champaign, IL",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 70,
+      "weather_temp": 71,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -96867,7 +96875,7 @@
       "venue_city": "Orlando, FL",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 80,
+      "weather_temp": 79,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -100407,7 +100415,7 @@
       "venue_city": "Dekalb, IL",
       "roof": "Outdoor",
       "broadcast": "MW+",
-      "weather_temp": 66,
+      "weather_temp": 67,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -107471,7 +107479,7 @@
       "venue_city": "Pasadena, CA",
       "roof": "Outdoor",
       "broadcast": "CBS",
-      "weather_temp": 72,
+      "weather_temp": 73,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -111161,7 +111169,7 @@
       "venue_city": "Starkville, MS",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 76,
+      "weather_temp": 77,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -121883,7 +121891,7 @@
       "venue_city": "Columbia, SC",
       "roof": "Outdoor",
       "broadcast": "ESPN, Disney+",
-      "weather_temp": 70,
+      "weather_temp": 69,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -125520,7 +125528,7 @@
       "venue_city": "Annapolis, MD",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 59,
+      "weather_temp": 60,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -129112,7 +129120,7 @@
       "venue_city": "Tempe, AZ",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 75,
+      "weather_temp": 76,
       "weather_cond": "Partly sunny w/ showers",
       "away_form": {
         "rates": {
@@ -140031,7 +140039,7 @@
       "venue_city": "Ruston, LA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 83,
+      "weather_temp": 84,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -143697,7 +143705,7 @@
       "venue_city": "Reno, NV",
       "roof": "Outdoor",
       "broadcast": "MW+",
-      "weather_temp": 56,
+      "weather_temp": 57,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -147274,7 +147282,7 @@
       "venue_city": "Hattiesburg, MS",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 79,
+      "weather_temp": 80,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -158003,7 +158011,7 @@
       "venue_city": "Stillwater, OK",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 77,
+      "weather_temp": 78,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -161541,7 +161549,7 @@
       "venue_city": "Jonesboro, AR",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 77,
+      "weather_temp": 74,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -164998,7 +165006,7 @@
       "venue_city": "Clemson, SC",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 61,
+      "weather_temp": 62,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -168617,7 +168625,7 @@
       "venue_city": "Tucson, AZ",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 74,
+      "weather_temp": 73,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -175626,7 +175634,7 @@
       "venue_city": "Chapel Hill, NC",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 57,
+      "weather_temp": 58,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -179156,7 +179164,7 @@
       "venue_city": "Madison, WI",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 64,
+      "weather_temp": 65,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -186218,7 +186226,7 @@
       "venue_city": "Lexington, KY",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 65,
+      "weather_temp": 64,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -193337,7 +193345,7 @@
       "venue_city": "Albuquerque, NM",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 59,
+      "weather_temp": 61,
       "weather_cond": "Thunderstorms",
       "away_form": {
         "rates": {
