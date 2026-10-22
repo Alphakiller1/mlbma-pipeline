@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-22",
- "generated_at_utc": "2026-10-22T17:12:10+00:00",
+ "generated_at_utc": "2026-10-22T21:36:44+00:00",
  "data_through_utc": "2026-10-22T02:30Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -121,8 +121,8 @@
    "id": "401909093",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/22 - 7:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "10:50 - 1st",
    "kickoff_utc": "2026-10-22T23:00Z",
    "away": "CLE",
    "home": "PHI",
@@ -136,8 +136,8 @@
    "home_record": "1-0",
    "away_split_record": "0-0",
    "home_split_record": "0-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 4,
+   "home_score": 3,
    "venue": "Xfinity Mobile Arena",
    "venue_city": "Philadelphia, PA",
    "broadcast": "ESPN",
@@ -15060,5 +15060,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-22T18:29:04+00:00"
+ "published_at_utc": "2026-10-22T23:16:24+00:00"
 }
