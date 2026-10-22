@@ -113,7 +113,7 @@
     'nba-size': 'users', 'nba-tracking': 'gauge', 'nba-style': 'whistle', 'nba-regression': 'trend',
     'nba-shooter-regression': 'trend', 'nba-player-types': 'users', 'nba-player-zones': 'target',
     'nba-player-bio': 'users', 'nba-schedule': 'plane', 'nba-edge-map': 'target', 'nba-fingerprint': 'lineup',
-    'nba-tape': 'gauge', 'nba-aging': 'trend', 'nba-shot-maps': 'target'
+    'nba-tape': 'gauge', 'nba-aging': 'trend', 'nba-shot-maps': 'target', 'nba-onfloor': 'users'
   };
 
   function ico(name, cls, px) {
@@ -6366,7 +6366,7 @@ function seasonToggle(game) {
     ['units', 'Matchup', ['nba-edge-map', 'nba-ratings', 'nba-efficiency']],
     ['shots', 'Shot Profile', ['nba-shot-chart', 'nba-shot-maps', 'nba-shot-kinds', 'nba-shooting']],
     ['playtypes', 'Play Types', ['nba-fingerprint', 'nba-play-types']],
-    ['defense', 'Defense', ['nba-defenders']],
+    ['defense', 'Defense', ['nba-defenders', 'nba-onfloor']],
     ['athletic', 'Size And Speed', ['nba-tape', 'nba-size', 'nba-tracking']],
     ['style', 'Coach And Style', ['nba-style']],
     ['regression', 'Regression Watch', ['nba-aging', 'nba-regression', 'nba-shooter-regression']],
@@ -6592,7 +6592,9 @@ function seasonToggle(game) {
         return cfbLedgerRow(z[1] + ' FG%', (off[z[0]] || {}).fg, (dfn[z[0]] || {}).fg);
       }) }
     ];
-    return head + nbaProfBasis(sport, game) + nbaCourt(off, offName + ' shot chart') +
+    var zb = nbaProf(game, offSide).zones_basis;
+    return head + nbaProfBasis(sport, game) + (zb ? '<p class="ca-lineup-context">' + esc('Zones: ' + zb) + '</p>' : '') +
+      nbaCourt(off, offName + ' shot chart') +
       cfbLedgerTable([offName, 'Offense'], [defName, 'Allowed'], groups) + '</section>';
   }
 
@@ -6671,6 +6673,37 @@ function seasonToggle(game) {
   }
 
   function nbaEntry(obj, key) { return obj ? obj[key] : null; }
+
+  /* On-floor defense: opponents' FG% in each zone with the player on the
+     floor against with him off it (ESPN play-by-play). Shares credit with
+     four teammates, so it reads beside the closest-defender table, not
+     instead of it. */
+  function nbaOnFloorCell(z) {
+    if (!z || z.diff == null) return '<td class="num ca-vs-none">—</td>';
+    var d = Number(z.diff) * 100;
+    var tone = d <= -4 ? 'c-elite' : d <= -1.5 ? 'c-good' : d < 1.5 ? 'c-mid' : d < 4 ? 'c-weak' : 'c-poor';
+    return '<td class="num ' + tone + '"' + nbaTip(z.label + ': ' + nbaPct(z.fg_on) + ' with him on the floor (' +
+      z.attempts_on + ' attempts) vs ' + nbaPct(z.fg_off) + ' with him off (' + z.attempts_off + ')') + '>' +
+      (d > 0 ? '+' : '') + d.toFixed(1) + '</td>';
+  }
+
+  function nbaOnFloorPanel(sport, game, side) {
+    var prof = nbaProf(game, side);
+    var players = (prof.players || []).filter(function (p) { return (p.defense_onfloor || []).length; });
+    var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' + esc(fullName(sport, game, side) +
+      ' On-Floor Defense By Zone') + '</h3>';
+    if (!players.length) return head + pending('Not enough on-floor shots for this club yet.') + '</section>';
+    var cols = [['rim', 'Rim'], ['paint', 'Paint'], ['mid', 'Mid'], ['three', '3PT']];
+    var rows = players.map(function (p) {
+      var by = {};
+      p.defense_onfloor.forEach(function (z) { by[z.zone] = z; });
+      return '<tr>' + nbaPlayerCell(p, p.status) + cols.map(function (c) { return nbaOnFloorCell(by[c[0]]); }).join('') +
+        '</tr>';
+    });
+    return head + '<p class="ca-lineup-context">' + esc('Opponents’ FG% With Him On The Floor Minus With Him ' +
+      'Off (Points) · Negative Is Better · ' + (prof.zones_basis || '') + ' · 60+ Attempts Each Way') + '</p>' +
+      nflSplitTable(cols.map(function (c) { return c[1]; }), rows, 'Defender') + '</section>';
+  }
 
   function nbaSizeBody(sport, game) {
     var a = nbaProf(game, 'away').size || {}, h = nbaProf(game, 'home').size || {};
@@ -7081,7 +7114,8 @@ function seasonToggle(game) {
     var players = (nbaProf(game, side).players || []).filter(function (p) { return (p.zones || []).length; });
     var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' + esc(fullName(sport, game, side) + ' Shot Maps') + '</h3>';
     if (!players.length) return head + pending('Player shot locations are not published yet.') + '</section>';
-    return head + '<p class="ca-lineup-context">Share Of Each Player’s Shots By Zone · Darker Is More · Hover For FG%</p>' +
+    return head + '<p class="ca-lineup-context">' + esc('Share Of Each Player’s Shots By Zone · Darker Is More · ' +
+      'Hover For FG% · ' + (nbaProf(game, side).zones_basis || 'stats.nba.com')) + '</p>' +
       '<div class="ca-mini-courts">' + players.map(function (p) { return nbaMiniCourt(p, side); }).join('') +
       '</div></section>';
   }
@@ -7141,6 +7175,8 @@ function seasonToggle(game) {
         nflDuo(nbaPlayTypePanel, sport, game)),
       section('nba-defenders', 'Defenders By Zone', 'Who Holds Shooters Below Their Normal, And Where',
         nflDuo(nbaDefendersPanel, sport, game)),
+      section('nba-onfloor', 'On-Floor Defense By Zone', 'How Opponents Shoot With Each Player On The Floor And Off It',
+        nflDuo(nbaOnFloorPanel, sport, game)),
       section('nba-size', 'Size And Age', 'Rotation Height, Weight And Age, Minutes-Weighted', nbaSizeBody(sport, game)),
       section('nba-tracking', 'Speed And Movement', 'Pace Of Play On Both Ends, Drives And Shot Creation',
         nbaTrackingBody(sport, game)),

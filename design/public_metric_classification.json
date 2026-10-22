@@ -90,7 +90,8 @@
     "profile_sources",
     "regression_basis",
     "stats_nba_as_of",
-    "stats_nba_season"
+    "stats_nba_season",
+    "zones_basis"
   ],
   "identity": [
     "id",
@@ -799,7 +800,11 @@
     "weight_lb",
     "zones",
     "head_coach_seasons",
-    "staff_size"
+    "staff_size",
+    "attempts_off",
+    "attempts_on",
+    "fg_off",
+    "fg_on"
   ],
   "derived_descriptive": [
     "depth_rank",
@@ -871,7 +876,8 @@
     "opp_ft_luck",
     "opp_three_luck",
     "own_three_vs_league",
-    "wins_over_pythag"
+    "wins_over_pythag",
+    "defense_onfloor"
   ],
   "contextual_environment": [
     "conditions",

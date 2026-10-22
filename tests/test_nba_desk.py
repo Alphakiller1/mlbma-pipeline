@@ -207,7 +207,7 @@ class NbaRenderTests(unittest.TestCase):
 
     def test_illustrations_render_and_lead_the_desk(self):
         html = self.out["detail"]
-        for sec in ("nba-edge-map", "nba-fingerprint", "nba-tape", "nba-aging", "nba-shot-maps"):
+        for sec in ("nba-edge-map", "nba-fingerprint", "nba-tape", "nba-aging", "nba-shot-maps", "nba-onfloor"):
             self.assertIn('id="' + sec + '"', html)
         first = html.index('class="ca-detail-section" id="')
         self.assertTrue(html[first:].startswith('class="ca-detail-section" id="nba-edge-map"'))
