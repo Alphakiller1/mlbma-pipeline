@@ -122,7 +122,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "10:50 - 1st",
+   "status_detail": "8:02 - 2nd",
    "kickoff_utc": "2026-10-22T23:00Z",
    "away": "CLE",
    "home": "PHI",
@@ -136,8 +136,8 @@
    "home_record": "1-0",
    "away_split_record": "0-0",
    "home_split_record": "0-0",
-   "away_score": 4,
-   "home_score": 3,
+   "away_score": 49,
+   "home_score": 28,
    "venue": "Xfinity Mobile Arena",
    "venue_city": "Philadelphia, PA",
    "broadcast": "ESPN",
@@ -15060,5 +15060,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-22T23:16:24+00:00"
+ "published_at_utc": "2026-10-22T23:54:26+00:00"
 }
