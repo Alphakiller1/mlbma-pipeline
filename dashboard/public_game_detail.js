@@ -6783,7 +6783,7 @@ function seasonToggle(game) {
     }
     var fingerprint = metrics.length ? '<div class="ca-coach-fp"><div><h4>Offense</h4>' +
       nbaPctlRows(group(true), side) + '</div><div><h4>Defense</h4>' + nbaPctlRows(group(false), side) +
-      '</div></div><p class="ca-detail-source-note">League percentile, averaged over every season the coach ran a club ' +
+      '</div></div><p class="ca-coach-note">League percentile, averaged over every season the coach ran a club ' +
       '(41+ games) since 2018-19 · Basketball-Reference. 50 is league average.</p>' : '';
     var philTags = (phil.tags || []).slice(0, 6).map(function (t) {
       return '<li class="ca-style-tag"><span>' + esc(t.tag) + '</span><small>' + Math.round(t.percentile) +
@@ -6829,7 +6829,7 @@ function seasonToggle(game) {
       (reads ? '<ul class="ca-scheme-reads">' + reads + '</ul>' :
         '<p class="ca-coach-summary">No coverage stands out clearly (75th percentile or beyond) on this basis.</p>') +
       '<h4 class="ca-coach-h">The Figures Behind It</h4>' + nbaPctlRows(rows, side) +
-      (ds.not_measured ? '<p class="ca-detail-source-note">' + esc('Not read: ' + ds.not_measured) + '</p>' : '') +
+      (ds.not_measured ? '<p class="ca-coach-note">' + esc('Not read: ' + ds.not_measured) + '</p>' : '') +
       '</section>';
   }
 
