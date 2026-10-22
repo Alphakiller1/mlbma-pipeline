@@ -91,7 +91,11 @@
     "regression_basis",
     "stats_nba_as_of",
     "stats_nba_season",
-    "zones_basis"
+    "zones_basis",
+    "high",
+    "low",
+    "not_measured",
+    "measured_under"
   ],
   "identity": [
     "id",
@@ -183,7 +187,8 @@
     "tag",
     "transition",
     "zone",
-    "head_coach"
+    "head_coach",
+    "event_id"
   ],
   "factual_status": [
     "game_state",
@@ -804,7 +809,17 @@
     "attempts_off",
     "attempts_on",
     "fg_off",
-    "fg_on"
+    "fg_on",
+    "first_season_with_club",
+    "season_with_club",
+    "seasons_as_head_coach",
+    "career_record",
+    "career",
+    "season_label",
+    "clubs",
+    "w",
+    "l",
+    "possessions"
   ],
   "derived_descriptive": [
     "depth_rank",
@@ -877,7 +892,24 @@
     "opp_three_luck",
     "own_three_vs_league",
     "wins_over_pythag",
-    "defense_onfloor"
+    "defense_onfloor",
+    "philosophy",
+    "summary",
+    "tags",
+    "indices",
+    "switch",
+    "pnr_pressure",
+    "pnr_containment",
+    "roll_allowed",
+    "mid_funnel",
+    "rim_deterrence",
+    "rim_protection",
+    "iso_faced",
+    "threes_conceded",
+    "assisted_threes",
+    "reads",
+    "scheme",
+    "strength"
   ],
   "contextual_environment": [
     "conditions",
@@ -1001,7 +1033,13 @@
       ".rates.*.of": "provenance",
       ".rates.*.rank": "derived_descriptive",
       ".rates[].rank": "derived_descriptive",
-      ".windows.*.rank": "derived_descriptive"
+      ".windows.*.rank": "derived_descriptive",
+      ".philosophy.metrics": "derived_descriptive",
+      ".reads[].evidence": "derived_descriptive",
+      ".reads[].note": "provenance",
+      ".reads[].score": "derived_descriptive",
+      "_game_log[].score": "descriptive",
+      "_game_log[].margin": "descriptive"
     },
     "id_map_note": "Paths whose immediate children are identifiers - a team code, an MLB person id, a normalised player name, a pitch-type code - rather than field names. The classifier descends into their values but does not try to classify the identifier itself: 'aaronjudge' is not a metric, and demanding a class for it would mean re-editing this file every time a club calls somebody up.",
     "id_maps": [

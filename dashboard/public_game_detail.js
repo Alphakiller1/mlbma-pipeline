@@ -110,7 +110,7 @@
     'nba-ratings': 'gauge', 'nba-efficiency': 'trend', 'nba-shooting': 'target',
     'nba-rotation': 'users', 'nba-availability': 'whistle', 'nba-game-log': 'calendar',
     'nba-shot-chart': 'target', 'nba-shot-kinds': 'target', 'nba-play-types': 'lineup', 'nba-defenders': 'users',
-    'nba-size': 'users', 'nba-tracking': 'gauge', 'nba-style': 'whistle', 'nba-regression': 'trend',
+    'nba-size': 'users', 'nba-tracking': 'gauge', 'nba-style': 'whistle', 'nba-scheme': 'lineup', 'nba-regression': 'trend',
     'nba-shooter-regression': 'trend', 'nba-player-types': 'users', 'nba-player-zones': 'target',
     'nba-player-bio': 'users', 'nba-schedule': 'plane', 'nba-edge-map': 'target', 'nba-fingerprint': 'lineup',
     'nba-tape': 'gauge', 'nba-aging': 'trend', 'nba-shot-maps': 'target', 'nba-onfloor': 'users'
@@ -6368,7 +6368,7 @@ function seasonToggle(game) {
     ['playtypes', 'Play Types', ['nba-fingerprint', 'nba-play-types']],
     ['defense', 'Defense', ['nba-defenders', 'nba-onfloor']],
     ['athletic', 'Size And Speed', ['nba-tape', 'nba-size', 'nba-tracking']],
-    ['style', 'Coach And Style', ['nba-style']],
+    ['style', 'Coach And Style', ['nba-style', 'nba-scheme']],
     ['regression', 'Regression Watch', ['nba-aging', 'nba-regression', 'nba-shooter-regression']],
     ['players', 'Players', ['nba-player-types', 'nba-player-zones', 'nba-player-bio']],
     ['rotation', 'Rotation', ['nba-rotation']],
@@ -6739,23 +6739,97 @@ function seasonToggle(game) {
         ['Post Touches', at.post_touches, ht.post_touches]]);
   }
 
+  /* A league percentile as a short bar: the 50th is marked, the fill runs
+     in the club's colour, and the number sits beside it. */
+  function nbaPctlRows(rows, side) {
+    return '<div class="ca-pctl">' + rows.map(function (r) {
+      var v = Math.max(0, Math.min(100, Number(r.percentile) || 0));
+      return '<div class="ca-pctl__row"' + nbaTip(r.label + ': ' + Math.round(v) + ordinal(Math.round(v)) +
+        ' percentile' + (r.tip ? ' · ' + r.tip : '')) + '><span class="ca-pctl__label">' + esc(r.label) +
+        '</span><span class="ca-pctl__track"><i class="ca-pctl__fill is-' + side + '" style="width:' + v.toFixed(1) +
+        '%"></i><i class="ca-pctl__mid"></i></span><b class="ca-pctl__val">' + Math.round(v) + '</b></div>';
+    }).join('') + '</div>';
+  }
+
   function nbaStylePanel(sport, game, side) {
-    var p = nbaProf(game, side), coach = p.coach || {};
-    var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' + esc(fullName(sport, game, side) +
+    var p = nbaProf(game, side), coach = p.coach || {}, phil = coach.philosophy || {};
+    var nick = nflNick(sport, game, side);
+    var head = '<section class="ca-form-panel ca-cfb-panel ca-coach-panel"><h3>' + esc(fullName(sport, game, side) +
       ' Coach And Style') + '</h3>';
+    var tenure = coach.first_season_with_club ? 'First Season With The ' + nick :
+      coach.season_with_club ? 'Season ' + coach.season_with_club + ' With The ' + nick : '';
+    var hero = '<div class="ca-coach-hero"><div><span class="ca-coach-hero__kicker">Head Coach</span><b>' +
+      esc(coach.head_coach || 'Not Published') + '</b></div>' +
+      (tenure ? '<span class="ca-coach-tenure' + (coach.first_season_with_club ? ' is-new' : '') + '">' +
+        esc(tenure) + '</span>' : '') + '</div>';
     var facts = '<dl class="ca-detail-list">' + [
-      ['Head Coach', coach.head_coach || 'Not Published'],
-      ['Seasons As An NBA Head Coach', coach.head_coach_seasons != null ? String(coach.head_coach_seasons) :
-        'Not Published'],
-      ['Staff Size', coach.staff_size != null ? String(coach.staff_size) : 'Not Published']
+      ['NBA Head-Coaching Seasons', coach.seasons_as_head_coach != null ? String(coach.seasons_as_head_coach) :
+        (coach.head_coach_seasons != null ? String(coach.head_coach_seasons) : '—')],
+      ['Career Record', coach.career_record && coach.career_record !== '0-0' ? coach.career_record :
+        'No Games Yet'],
+      ['Staff Size', coach.staff_size != null ? String(coach.staff_size) : '—']
     ].map(function (r) { return '<div><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd></div>'; }).join('') +
       '</dl>';
+    var career = (coach.career || []).slice(-6);
+    var path = career.length ? '<div class="ca-coach-career" aria-label="Head-coaching seasons">' + career.map(function (c) {
+      return '<span' + nbaTip(c.season_label + ' · ' + c.team + ' · ' + c.w + '-' + c.l + ' in ' + c.games + ' games') +
+        '><b>' + esc(c.season_label) + '</b>' + esc(c.team + ' ' + c.w + '-' + c.l) + '</span>';
+    }).join('') + '</div>' : '';
+    var metrics = phil.metrics || [];
+    function group(off) {
+      return metrics.filter(function (m) { return off !== /^(opp_|drb)/.test(m.key); }).map(function (m) {
+        return { label: m.label, percentile: m.percentile, tip: m.seasons + ' season' + (m.seasons === 1 ? '' : 's') };
+      });
+    }
+    var fingerprint = metrics.length ? '<div class="ca-coach-fp"><div><h4>Offense</h4>' +
+      nbaPctlRows(group(true), side) + '</div><div><h4>Defense</h4>' + nbaPctlRows(group(false), side) +
+      '</div></div><p class="ca-detail-source-note">League percentile, averaged over every season the coach ran a club ' +
+      '(41+ games) since 2018-19 · Basketball-Reference. 50 is league average.</p>' : '';
+    var philTags = (phil.tags || []).slice(0, 6).map(function (t) {
+      return '<li class="ca-style-tag"><span>' + esc(t.tag) + '</span><small>' + Math.round(t.percentile) +
+        ordinal(Math.round(t.percentile)) + ' pct</small></li>';
+    }).join('');
     var tags = (p.style || []).map(function (t) {
       return '<li class="ca-style-tag"><span>' + esc(t.tag) + '</span>' + rankBadge({ rank: t.rank, of: t.of }) + '</li>';
     }).join('');
-    return head + facts + '<p class="ca-lineup-context">' + esc('Style Read From The Numbers: Shown Where ' +
+    return head + hero + facts + path +
+      '<h4 class="ca-coach-h">Coaching Fingerprint</h4>' +
+      (phil.summary ? '<p class="ca-coach-summary">' + esc(phil.summary) + '</p>' : '') +
+      (philTags ? '<ul class="ca-style-tags">' + philTags + '</ul>' : '') + fingerprint +
+      '<h4 class="ca-coach-h">This Roster’s Style</h4><p class="ca-lineup-context">' + esc('Shown Where ' +
       'The Club Ranks Top Or Bottom Five · ' + (p.basis || '')) + '</p>' +
       (tags ? '<ul class="ca-style-tags">' + tags + '</ul>' : pending('No extreme tendencies on this basis.')) +
+      '</section>';
+  }
+
+  var NBA_SCHEME_ORDER = ['switch', 'pnr_pressure', 'pnr_containment', 'roll_allowed', 'mid_funnel',
+    'rim_deterrence', 'rim_protection', 'iso_faced', 'threes_conceded', 'assisted_threes'];
+
+  function nbaSchemePanel(sport, game, side) {
+    var p = nbaProf(game, side), ds = p.defense_scheme || {}, coach = (p.coach || {}).head_coach;
+    var head = '<section class="ca-form-panel ca-cfb-panel ca-scheme-panel"><h3>' + esc(fullName(sport, game, side) +
+      ' Defensive Scheme') + '</h3>';
+    var idx = ds.indices || {};
+    if (!Object.keys(idx).length) return head + pending('Scheme figures are not published for this club yet.') + '</section>';
+    var under = ds.measured_under && coach && ds.measured_under !== coach ?
+      '<p class="ca-scheme-flag">' + esc('Measured under ' + ds.measured_under + ' (' + (ds.basis || 'last season') +
+        '). ' + coach + ' is new to the club, so this is the defense inherited, not yet the new staff’s own.') + '</p>' : '';
+    var reads = (ds.reads || []).map(function (r) {
+      return '<li class="ca-scheme-read is-' + esc(r.strength) + '"><div class="ca-scheme-read__head"><b>' + esc(r.scheme) +
+        '</b><span>' + esc(r.strength === 'strong' ? 'Strong Read' : 'Clear Read') + '</span></div>' +
+        (r.note ? '<p>' + esc(r.note) + '</p>' : '') + '<p class="ca-scheme-read__ev">' + esc((r.evidence || []).map(function (e) {
+          return e.label + ' ' + Math.round(e.percentile) + ordinal(Math.round(e.percentile));
+        }).join(' · ')) + '</p></li>';
+    }).join('');
+    var rows = NBA_SCHEME_ORDER.filter(function (k) { return idx[k]; }).map(function (k) {
+      return { label: idx[k].label, percentile: idx[k].percentile };
+    });
+    return head + '<p class="ca-lineup-context">' + esc((ds.basis || '') + ' · Read From What The Coverage Leaves ' +
+      'Behind · stats.nba.com Matchups And Synergy, Basketball-Reference') + '</p>' + under +
+      (reads ? '<ul class="ca-scheme-reads">' + reads + '</ul>' :
+        '<p class="ca-coach-summary">No coverage stands out clearly (75th percentile or beyond) on this basis.</p>') +
+      '<h4 class="ca-coach-h">The Figures Behind It</h4>' + nbaPctlRows(rows, side) +
+      (ds.not_measured ? '<p class="ca-detail-source-note">' + esc('Not read: ' + ds.not_measured) + '</p>' : '') +
       '</section>';
   }
 
@@ -7222,8 +7296,10 @@ function seasonToggle(game) {
       section('nba-size', 'Size And Age', 'Rotation Height, Weight And Age, Minutes-Weighted', nbaSizeBody(sport, game)),
       section('nba-tracking', 'Speed And Movement', 'Pace Of Play On Both Ends, Drives And Shot Creation',
         nbaTrackingBody(sport, game)),
-      section('nba-style', 'Coach And Style', 'The Staff And The Tendencies The Numbers Show',
+      section('nba-style', 'Coach And Style', 'Tenure, Career And The Fingerprint The Coach’s Teams Carry',
         nflDuo(nbaStylePanel, sport, game)),
+      section('nba-scheme', 'Defensive Scheme', 'Switching, Pick-And-Roll Coverage And Rim Protection',
+        nflDuo(nbaSchemePanel, sport, game)),
       section('nba-regression', 'Regression Watch', 'The Gaps That Tend To Close', nbaRegressionBody(sport, game)),
       section('nba-shooter-regression', 'Shooters And Age', 'Shooting Against Track Record, And Where Each Player Sits On The Age Curve',
         nflDuo(nbaShooterRegressionPanel, sport, game)),
