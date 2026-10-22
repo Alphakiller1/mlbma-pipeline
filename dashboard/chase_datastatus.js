@@ -180,6 +180,13 @@
       '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(sheetTab);
   }
 
+  var PUBLIC_SLATES = {
+    mlb: '/data/public/mlb/slate.json',
+    nfl: '/data/public/nfl/slate.json',
+    nba: '/data/public/nba/slate.json',
+    cfb: 'https://alphakiller1.github.io/cfb-model/slate.json'
+  };
+
   function fetchLastUpdated(opts) {
     opts = opts || {};
     var sport = String(opts.sport || 'mlb').toLowerCase();
@@ -195,6 +202,9 @@
         var page = global.CHASE_SPORT_PAGE;
         slateUrl = page && page.SLATE_URL;
       }
+      // Pages that load no sport adapter (Model Center) still know where each
+      // sport's public slate lives.
+      if (!slateUrl) slateUrl = PUBLIC_SLATES[sport];
       if (!slateUrl) {
         return Promise.resolve(unknownFields({
           source: opts.source || 'public-slate',

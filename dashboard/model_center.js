@@ -452,9 +452,10 @@
       '</td></tr>';
   }
 
-  /* ---- Weekly player prop projections (CFB, NFL) -----------------------
-     cfb-model's and nfl-model's player layers: every QB, back and receiver
-     on the week's board, one game at a time. No book line is posted for most
+  /* ---- Player prop projections (CFB, NFL, NBA) --------------------------
+     cfb-model's and nfl-model's player layers (every QB, back and receiver
+     on the week's board) and nba-model's (every rotation player tonight),
+     one game at a time. No book line is posted for most
      of them, so the over % is against the model's own line and uncoloured. */
   var WEEKLY_PROPS = {
     cfb: [
@@ -470,6 +471,10 @@
       ['rush_attempts', 'Rush Att', 15, 'untoned'], ['carries', 'Carries', 30, 'untoned'],
       ['targets', 'Targets', 15, 'untoned'], ['receptions', 'Rec', 12, 'untoned'],
       ['receiving_yards', 'Rec Yds', 180, 'untoned']
+    ],
+    nba: [
+      ['points', 'Pts', 45, 'untoned'], ['rebounds', 'Reb', 20, 'untoned'],
+      ['assists', 'Ast', 15, 'untoned'], ['threes', '3PM', 8, 'untoned'], ['pra', 'PRA', 70, 'untoned']
     ]
   };
   var PROP_POSITION_ORDER = { QB: 0, RB: 1, WR: 2, TE: 3 };
@@ -489,6 +494,7 @@
   // (WNBA rows are grouped by wnbaPlayers, which keys them itself.)
   function propGameKey(sport, p) {
     if (sport === 'cfb') return p.game_key;
+    if (sport === 'nba') return p.game_id == null ? null : String(p.game_id);
     return p.home ? p.opponent + '@' + p.team : p.team + '@' + p.opponent;
   }
 
@@ -574,9 +580,13 @@
     var side = p.home ? 'home' : 'away';
     var body = WEEKLY_PROPS[sport].filter(function (stat) { return propShown(p, stat); })
       .map(function (stat) { return propRow(stat, p.stats[stat[0]], p.lines); }).join('');
-    var games = Number(sport === 'cfb' ? p.games : p.history_games) || 0;
+    var games = Number(sport === 'cfb' || sport === 'nba' ? p.games : p.history_games) || 0;
     var td = anytimeTd(p);
-    var meta = [p.team, p.position, games + (games === 1 ? ' game' : ' games'),
+    var meta = [p.team, p.position,
+      sport === 'nba' && p.minutes != null ? fixed(p.minutes, 1) + ' min expected' : '',
+      sport === 'nba' && !games && p.history_games
+        ? p.history_games + ' games last season'
+        : games + (games === 1 ? ' game' : ' games') + (sport === 'nba' ? ' this season' : ''),
       p.injury_status ? String(p.injury_status) : '',
       td != null ? 'Anytime TD ' + pctText(td) : ''
     ].filter(Boolean).join(' \u00b7 ');
@@ -591,7 +601,7 @@
 
   function propLead(p) {
     var st = p.stats;
-    var s = st.pass_yds || st.passing_yards || st.rush_yds || st.rushing_yards ||
+    var s = st.points || st.pass_yds || st.passing_yards || st.rush_yds || st.rushing_yards ||
       st.rec_yds || st.receiving_yards || {};
     return Number(s.mean) || 0;
   }

@@ -446,6 +446,11 @@
       return Promise.resolve();
     }
     var sport = String((document.body && document.body.getAttribute('data-sport')) || 'mlb').toLowerCase();
+    // Model Center shows one sport at a time, named in ?sport=.
+    if (/^\/model-center\//.test(location.pathname)) {
+      var picked = String(new URLSearchParams(location.search).get('sport') || 'mlb').toLowerCase();
+      if (/^(mlb|nfl|nba|wnba|cfb)$/.test(picked)) sport = picked;
+    }
     var publicResearch = document.body && document.body.getAttribute('data-ca-product') === 'research';
     return ChaseDataStatus.fetchLastUpdated({
       source: publicResearch || sport !== 'mlb' ? 'public-slate' : 'sheet',
