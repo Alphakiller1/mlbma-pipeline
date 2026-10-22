@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-22",
- "generated_at_utc": "2026-10-22T11:53:58+00:00",
+ "generated_at_utc": "2026-10-22T17:12:10+00:00",
  "data_through_utc": "2026-10-22T02:30Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -3620,6 +3620,15 @@
    },
    "away_injuries": [
     {
+     "player_id": "4066328",
+     "player_name": "Jarrett Allen",
+     "status": "Day-To-Day",
+     "detail": "Right Knee",
+     "comment": "Allen (knee) said he expects to play Thursday against the 76ers, Chris Fedor of The Cleveland Plain Dealer reports.",
+     "date": "2026-10-22T15:08Z",
+     "return_date": "2026-10-22"
+    },
+    {
      "player_id": "4997530",
      "player_name": "Khalifa Diop",
      "status": "Out",
@@ -3627,15 +3636,6 @@
      "comment": "Diop (knee) has been ruled out for Thursday's game against the 76ers.",
      "date": "2026-10-21T21:07Z",
      "return_date": "2026-10-24"
-    },
-    {
-     "player_id": "4066328",
-     "player_name": "Jarrett Allen",
-     "status": "Day-To-Day",
-     "detail": "Right Knee",
-     "comment": "Allen (knee) is questionable for Thursday's game against the 76ers.",
-     "date": "2026-10-21T21:07Z",
-     "return_date": "2026-10-22"
     },
     {
      "player_id": "5106268",
@@ -7540,6 +7540,15 @@
    },
    "home_injuries": [
     {
+     "player_id": "3912848",
+     "player_name": "Dean Wade",
+     "status": "Day-To-Day",
+     "detail": "Ankle Sprain",
+     "comment": "Wade (ankle) participated in Thursday's morning shootaround, Adam Aaronson of PhillyVoice.com reports.",
+     "date": "2026-10-22T15:06Z",
+     "return_date": "2026-10-22"
+    },
+    {
      "player_id": "3904625",
      "player_name": "Tacko Fall",
      "status": "Out",
@@ -7547,15 +7556,6 @@
      "comment": "Fall (quadriceps) is out for Thursday's game against Cleveland.",
      "date": "2026-10-21T21:07Z",
      "return_date": "2026-10-24"
-    },
-    {
-     "player_id": "3912848",
-     "player_name": "Dean Wade",
-     "status": "Day-To-Day",
-     "detail": "Ankle Sprain",
-     "comment": "Wade (ankle) is questionable for Thursday's game against Cleveland.",
-     "date": "2026-10-21T21:05Z",
-     "return_date": "2026-10-22"
     },
     {
      "player_id": "4870562",
@@ -15060,5 +15060,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-22T13:43:49+00:00"
+ "published_at_utc": "2026-10-22T18:29:04+00:00"
 }
