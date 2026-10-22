@@ -61,6 +61,12 @@ class NbaRouteTests(unittest.TestCase):
         mc = (ROOT / "dashboard" / "model_center.js").read_text(encoding="utf-8")
         self.assertIn("['nba', 'NBA']", mc)
         self.assertIn("['mlb', 'nfl', 'nba', 'wnba', 'cfb']", mc)
+        # NBA player props render in Model Center beside NFL and CFB, keyed by event id.
+        mc = (ROOT / "dashboard" / "model_center.js").read_text(encoding="utf-8")
+        self.assertIn("['points', 'Pts', 45, 'untoned']", mc)
+        self.assertIn("if (sport === 'nba') return p.game_id == null ? null : String(p.game_id);", mc)
+        status = (ROOT / "dashboard" / "chase_datastatus.js").read_text(encoding="utf-8")
+        self.assertIn("nba: '/data/public/nba/slate.json'", status)
 
     def test_publish_workflow_validates_before_committing(self):
         wf = (ROOT / ".github" / "workflows" / "publish-nba-slate.yml").read_text(encoding="utf-8")

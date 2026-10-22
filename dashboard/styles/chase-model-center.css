@@ -45,6 +45,7 @@
 /* —— Board list ——————————————————————————————————————————————— */
 .mc-board {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
 }
 
@@ -910,7 +911,7 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 .mc-score { border-color: var(--border-card); }
 
 /* —— MLB starter prop projections ——————————————————————————————— */
-.mc-props { display: grid; gap: var(--space-3); margin-top: var(--space-5); }
+.mc-props { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); margin-top: var(--space-5); }
 .mc-props__grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); align-items: start; }
 .mc-prop {
   display: grid;
@@ -970,6 +971,7 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 .mc-props__pick { display: flex; align-items: center; gap: var(--space-2); font-size: var(--type-meta); color: var(--text-secondary); font-weight: 700; }
 .mc-props__pick select {
   min-height: 44px;
+  min-width: 0;
   max-width: 100%;
   padding: 0 var(--space-3);
   background: var(--surface-board-raised);
