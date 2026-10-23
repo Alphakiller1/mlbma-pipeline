@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-10-23T00:54:28Z",
+  "generated_at_utc": "2026-10-23T04:44:21Z",
   "data_through_utc": "2026-10-20T22:43:05+00:00",
   "season": 2026,
   "week": 7,
@@ -4922,8 +4922,8 @@
       "through": "2026-10-18"
     },
     "CHI": {
-      "games": 6,
-      "through": "2026-10-18"
+      "games": 7,
+      "through": "2026-10-23"
     },
     "CIN": {
       "games": 5,
@@ -4978,8 +4978,8 @@
       "through": "2026-10-11"
     },
     "NE": {
-      "games": 6,
-      "through": "2026-10-18"
+      "games": 7,
+      "through": "2026-10-23"
     },
     "NO": {
       "games": 6,
