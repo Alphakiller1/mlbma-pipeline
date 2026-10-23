@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-22",
- "generated_at_utc": "2026-10-22T21:36:44+00:00",
+ "generated_at_utc": "2026-10-23T00:41:09+00:00",
  "data_through_utc": "2026-10-22T02:30Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -121,8 +121,8 @@
    "id": "401909093",
    "sport": "nba",
    "season": 2027,
-   "game_state": "live",
-   "status_detail": "8:02 - 2nd",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-10-22T23:00Z",
    "away": "CLE",
    "home": "PHI",
@@ -132,12 +132,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/phi.png",
    "away_color": "#860038",
    "home_color": "#1d428a",
-   "away_record": "0-0",
-   "home_record": "1-0",
+   "away_record": "0-1",
+   "home_record": "2-0",
    "away_split_record": "0-0",
    "home_split_record": "0-0",
-   "away_score": 49,
-   "home_score": 28,
+   "away_score": 106,
+   "home_score": 114,
    "venue": "Xfinity Mobile Arena",
    "venue_city": "Philadelphia, PA",
    "broadcast": "ESPN",
@@ -501,25 +501,6 @@
      "moved": false
     },
     {
-     "player_id": "5106268",
-     "player_name": "Nae'Qwan Tomlin",
-     "position": "F",
-     "games": 64,
-     "starts": 3,
-     "mpg": 15.7,
-     "ppg": 5.8,
-     "rpg": 2.9,
-     "apg": 0.8,
-     "spg": 0.6,
-     "bpg": 0.5,
-     "tpg": 0.5,
-     "three_pm": 0.4,
-     "ts_pct": 0.549,
-     "three_pct": 0.235,
-     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5106268.png",
-     "moved": false
-    },
-    {
      "player_id": "3934723",
      "player_name": "Thomas Bryant",
      "position": "C",
@@ -574,6 +555,25 @@
      "ts_pct": 0.587,
      "three_pct": 0.3,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4431734.png",
+     "moved": false
+    },
+    {
+     "player_id": "5177362",
+     "player_name": "Riley Minix",
+     "position": "F",
+     "games": 9,
+     "starts": 0,
+     "mpg": 6.6,
+     "ppg": 3.9,
+     "rpg": 0.7,
+     "apg": 0.6,
+     "spg": 0.2,
+     "bpg": 0.1,
+     "tpg": 0.3,
+     "three_pm": 0.4,
+     "ts_pct": 0.72,
+     "three_pct": 0.333,
+     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5177362.png",
      "moved": false
     }
    ],
@@ -1513,15 +1513,15 @@
     "size": {
      "height": {
       "label": "Rotation Height (in, minutes-weighted)",
-      "value": 78.1834,
+      "value": 78.0769,
       "better": "neutral",
-      "rank": 25,
+      "rank": 27,
       "of": 30,
       "format": "num"
      },
      "weight": {
       "label": "Rotation Weight (lb, minutes-weighted)",
-      "value": 214.0892,
+      "value": 214.3289,
       "better": "neutral",
       "rank": 21,
       "of": 30,
@@ -1529,7 +1529,7 @@
      },
      "age": {
       "label": "Rotation Age (minutes-weighted)",
-      "value": 27.2563,
+      "value": 27.3886,
       "better": "neutral",
       "rank": 9,
       "of": 30,
@@ -2847,7 +2847,7 @@
       "player_name": "Jarrett Allen",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066328.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 27.2,
       "ppg": 15.4,
       "height_in": 81.0,
@@ -3422,188 +3422,195 @@
       ]
      },
      {
-      "player_id": "5106268",
-      "player_name": "Nae'Qwan Tomlin",
-      "position": "F",
-      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5106268.png",
-      "status": "Out",
-      "mpg": 15.7,
-      "ppg": 5.8,
-      "height_in": 80.0,
-      "height": "6-8",
-      "weight_lb": 210.0,
-      "age": 25.0,
-      "usage": 0.151,
-      "ts": 0.549,
+      "player_id": "3934723",
+      "player_name": "Thomas Bryant",
+      "position": "C",
+      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3934723.png",
+      "status": null,
+      "mpg": 12.2,
+      "ppg": 6.2,
+      "height_in": 81.0,
+      "height": "6-9",
+      "weight_lb": 248.0,
+      "age": 28.0,
+      "usage": 0.182,
+      "ts": 0.625,
       "age_change": {
-       "offense": 0.03,
-       "defense": 0.004,
+       "offense": -0.265,
+       "defense": -0.056,
        "about": "League history: average change in box impact from this age to the next"
       },
       "zones": [
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 2.8,
-        "share": 0.5323,
-        "fg": 0.6606
+        "fga": 1.61,
+        "share": 0.3422,
+        "fg": 0.7
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
-        "fga": 0.54,
-        "share": 0.1032,
-        "fg": 0.375
+        "fga": 0.68,
+        "share": 0.1445,
+        "fg": 0.6053
+       },
+       {
+        "zone": "mid",
+        "label": "Mid-Range",
+        "fga": 0.12,
+        "share": 0.0266,
+        "fg": 0.2857
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 1.1,
-        "share": 0.2097,
-        "fg": 0.2154
+        "fga": 0.43,
+        "share": 0.0913,
+        "fg": 0.2917
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
-        "fga": 0.81,
-        "share": 0.1548,
-        "fg": 0.2708
+        "fga": 1.86,
+        "share": 0.3954,
+        "fg": 0.375
        }
       ],
       "play_types": [
        {
-        "play_type": "Spotup",
-        "label": "Spot-Up",
-        "freq": 0.308,
-        "ppp": 0.694,
-        "percentile": 0.038,
-        "poss": 1.8
+        "play_type": "PRRollman",
+        "label": "Pick-And-Roll Roll Man",
+        "freq": 0.285,
+        "ppp": 1.154,
+        "percentile": 0.623,
+        "poss": 1.6
        },
        {
-        "play_type": "Transition",
-        "label": "Transition",
-        "freq": 0.214,
-        "ppp": 1.117,
-        "percentile": 0.461,
-        "poss": 1.3
+        "play_type": "Spotup",
+        "label": "Spot-Up",
+        "freq": 0.223,
+        "ppp": 0.93,
+        "percentile": 0.253,
+        "poss": 1.2
        },
        {
         "play_type": "Cut",
         "label": "Cut",
-        "freq": 0.178,
-        "ppp": 1.297,
-        "percentile": 0.501,
-        "poss": 1.0
+        "freq": 0.157,
+        "ppp": 1.7,
+        "percentile": 0.994,
+        "poss": 0.9
        },
        {
         "play_type": "OffRebound",
         "label": "Putbacks",
-        "freq": 0.142,
-        "ppp": 1.255,
-        "percentile": 0.727,
-        "poss": 0.8
+        "freq": 0.107,
+        "ppp": 1.147,
+        "percentile": 0.547,
+        "poss": 0.6
        },
        {
-        "play_type": "Misc",
-        "label": "Miscellaneous",
-        "freq": 0.067,
-        "ppp": 0.5,
-        "percentile": 0.496,
-        "poss": 0.4
+        "play_type": "Transition",
+        "label": "Transition",
+        "freq": 0.097,
+        "ppp": 1.452,
+        "percentile": 0.961,
+        "poss": 0.5
        }
       ],
       "tracking": {
-       "speed": 4.8,
-       "speed_off": 5.09,
-       "speed_def": 4.53,
-       "miles": 1.2,
-       "drives": 1.5,
-       "drive_fg": 0.574
+       "speed": 4.18,
+       "speed_off": 4.46,
+       "speed_def": 3.93,
+       "miles": 0.8,
+       "drives": 0.2,
+       "drive_fg": 0.2
       },
       "defense_zones": [
        {
         "zone": "Less Than 6Ft",
         "label": "Within 6 Ft",
-        "fg_against": 0.537,
-        "normal_fg": 0.632,
-        "diff": -0.095,
-        "attempts_pg": 1.77
+        "fg_against": 0.523,
+        "normal_fg": 0.629,
+        "diff": -0.106,
+        "attempts_pg": 2.97
        },
        {
         "zone": "Less Than 10Ft",
         "label": "Within 10 Ft",
-        "fg_against": 0.514,
-        "normal_fg": 0.586,
-        "diff": -0.072,
-        "attempts_pg": 2.3
+        "fg_against": 0.515,
+        "normal_fg": 0.589,
+        "diff": -0.074,
+        "attempts_pg": 3.38
        },
        {
         "zone": "Greater Than 15Ft",
         "label": "Beyond 15 Ft",
-        "fg_against": 0.408,
-        "normal_fg": 0.364,
-        "diff": 0.044,
-        "attempts_pg": 3.38
+        "fg_against": 0.507,
+        "normal_fg": 0.362,
+        "diff": 0.145,
+        "attempts_pg": 2.45
        },
        {
         "zone": "3 Pointers",
         "label": "Three-Pointers",
-        "fg_against": 0.385,
-        "normal_fg": 0.356,
-        "diff": 0.029,
-        "attempts_pg": 2.98
+        "fg_against": 0.513,
+        "normal_fg": 0.358,
+        "diff": 0.155,
+        "attempts_pg": 1.95
        },
        {
         "zone": "Overall",
         "label": "All Shots",
-        "fg_against": 0.455,
-        "normal_fg": 0.463,
-        "diff": -0.008,
-        "attempts_pg": 6.05
+        "fg_against": 0.518,
+        "normal_fg": 0.486,
+        "diff": 0.032,
+        "attempts_pg": 6.26
        }
       ],
       "three_track_record": {
-       "made": 2,
-       "attempts": 10,
-       "pct": 0.2,
+       "made": 90,
+       "attempts": 271,
+       "pct": 0.3321,
        "about": "Three-point record over the previous seasons in the box-score cache"
       },
       "defense_onfloor": [
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fg_on": 0.6058,
-        "fg_off": 0.6344,
-        "diff": -0.0285,
-        "attempts_on": 515,
-        "attempts_off": 1548
+        "fg_on": 0.6119,
+        "fg_off": 0.6304,
+        "diff": -0.0185,
+        "attempts_on": 353,
+        "attempts_off": 1710
        },
        {
         "zone": "paint",
         "label": "Paint",
-        "fg_on": 0.4027,
-        "fg_off": 0.4432,
-        "diff": -0.0406,
-        "attempts_on": 298,
-        "attempts_off": 925
+        "fg_on": 0.4553,
+        "fg_off": 0.4281,
+        "diff": 0.0272,
+        "attempts_on": 235,
+        "attempts_off": 988
        },
        {
         "zone": "mid",
         "label": "Mid-Range",
-        "fg_on": 0.4583,
-        "fg_off": 0.421,
-        "diff": 0.0374,
-        "attempts_on": 168,
-        "attempts_off": 601
+        "fg_on": 0.4318,
+        "fg_off": 0.4286,
+        "diff": 0.0032,
+        "attempts_on": 132,
+        "attempts_off": 637
        },
        {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.3698,
-        "fg_off": 0.3755,
-        "diff": -0.0057,
-        "attempts_on": 841,
-        "attempts_off": 2173
+        "fg_on": 0.3609,
+        "fg_off": 0.3772,
+        "diff": -0.0163,
+        "attempts_on": 604,
+        "attempts_off": 2410
        }
       ]
      }
@@ -3618,35 +3625,7 @@
     "miles_last_7": null,
     "altitude": false
    },
-   "away_injuries": [
-    {
-     "player_id": "4066328",
-     "player_name": "Jarrett Allen",
-     "status": "Day-To-Day",
-     "detail": "Right Knee",
-     "comment": "Allen (knee) said he expects to play Thursday against the 76ers, Chris Fedor of The Cleveland Plain Dealer reports.",
-     "date": "2026-10-22T15:08Z",
-     "return_date": "2026-10-22"
-    },
-    {
-     "player_id": "4997530",
-     "player_name": "Khalifa Diop",
-     "status": "Out",
-     "detail": "Left Knee",
-     "comment": "Diop (knee) has been ruled out for Thursday's game against the 76ers.",
-     "date": "2026-10-21T21:07Z",
-     "return_date": "2026-10-24"
-    },
-    {
-     "player_id": "5106268",
-     "player_name": "Nae'Qwan Tomlin",
-     "status": "Out",
-     "detail": "Back",
-     "comment": "Tomlin is set to miss several weeks with a lower back stress reaction, Chris Fedor of The Cleveland Plain Dealer reports.",
-     "date": "2026-10-20T15:11Z",
-     "return_date": "2026-11-16"
-    }
-   ],
+   "away_injuries": [],
    "home_form": {
     "source": "espn-box",
     "season": 2027,
@@ -6953,7 +6932,7 @@
       "player_name": "Dean Wade",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3912848.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 22.4,
       "ppg": 5.8,
       "height_in": 81.0,
@@ -7542,11 +7521,11 @@
     {
      "player_id": "3912848",
      "player_name": "Dean Wade",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Ankle Sprain",
-     "comment": "Wade (ankle) participated in Thursday's morning shootaround, Adam Aaronson of PhillyVoice.com reports.",
-     "date": "2026-10-22T15:06Z",
-     "return_date": "2026-10-22"
+     "comment": "Wade (ankle) is out for Thursday's game against the Cavaliers.",
+     "date": "2026-10-22T22:35Z",
+     "return_date": "2026-10-24"
     },
     {
      "player_id": "3904625",
@@ -7581,8 +7560,8 @@
    "id": "401909094",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/22 - 9:30 PM EDT",
+   "game_state": "live",
+   "status_detail": "10:42 - 4th",
    "kickoff_utc": "2026-10-23T01:30Z",
    "away": "DEN",
    "home": "OKC",
@@ -7596,8 +7575,8 @@
    "home_record": "1-0",
    "away_split_record": "0-0",
    "home_split_record": "0-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 64,
+   "home_score": 72,
    "venue": "Paycom Center",
    "venue_city": "Oklahoma City, OK",
    "broadcast": "ESPN",
@@ -10117,7 +10096,7 @@
       "player_name": "Spencer Jones",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4592427.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 22.5,
       "ppg": 5.6,
       "height_in": 79.0,
@@ -11068,11 +11047,11 @@
     {
      "player_id": "4592427",
      "player_name": "Spencer Jones",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Hamstring",
-     "comment": "Jones (hamstring) is questionable for Thursday's season opener against the Thunder.",
-     "date": "2026-10-21T22:21Z",
-     "return_date": "2026-10-22"
+     "comment": "Jones (hamstring) has been ruled out for Thursday's game against Oklahoma City, Justin Martinez of The Oklahoman reports.",
+     "date": "2026-10-23T00:06Z",
+     "return_date": "2026-10-24"
     },
     {
      "player_id": "4432181",
@@ -15060,5 +15039,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-22T23:54:26+00:00"
+ "published_at_utc": "2026-10-23T03:46:50+00:00"
 }
