@@ -3,8 +3,8 @@
   "sport": "cfb",
   "season": 2026,
   "week": 8,
-  "generated_at_utc": "2026-10-23T17:19:42Z",
-  "data_through_utc": "2026-10-22T23:58:11Z",
+  "generated_at_utc": "2026-10-23T23:16:34Z",
+  "data_through_utc": "2026-10-23T18:16:56Z",
   "games": [
     {
       "id": "MOST@DEL",
@@ -24905,7 +24905,7 @@
       "id": "DUKE@UVA",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-23T23:00Z",
       "away": "DUKE",
       "home": "UVA",
@@ -24919,14 +24919,14 @@
       "home_color": "#232d4b",
       "away_record": "4-2",
       "home_record": "4-3",
-      "away_score": "0",
+      "away_score": "7",
       "home_score": "0",
       "venue": "Scott Stadium",
       "venue_city": "Charlottesville, VA",
       "roof": "Outdoor",
       "broadcast": "ESPN",
       "weather_temp": 56,
-      "weather_cond": "Mostly clear",
+      "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -28501,6 +28501,25 @@
             "source": "Covers"
           },
           {
+            "player": "Dylan Cope",
+            "position": "WR",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "return": "Oct 31st",
+            "updated": "Oct 23 7:00 PM",
+            "source": "RotoWire"
+          },
+          {
+            "player": "Kameron Courtney",
+            "position": "WR",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Oct 23 7:00 PM",
+            "detail": "Courtney is battling due to an undisclosed injury, and it has yet to be determined if he will be active against Duke on Friday.",
+            "source": "RotoWire + Covers",
+            "return": "Oct 31st"
+          },
+          {
             "player": "R. Flores Jr.",
             "position": "WR",
             "status": "Out",
@@ -28517,25 +28536,6 @@
             "updated": "Sat, Oct 17",
             "detail": "Ward is hampered by an undisclosed injury, and there is no timetable for his return.",
             "source": "Covers"
-          },
-          {
-            "player": "Dylan Cope",
-            "position": "WR",
-            "status": "Doubtful",
-            "injury": "Undisclosed",
-            "return": "Oct 23rd",
-            "updated": "Oct 23 7:00 PM",
-            "source": "RotoWire"
-          },
-          {
-            "player": "Kameron Courtney",
-            "position": "WR",
-            "status": "Doubtful",
-            "injury": "Undisclosed",
-            "updated": "Oct 23 7:00 PM",
-            "detail": "Courtney is battling due to an undisclosed injury, and it has yet to be determined if he will be active against Duke on Friday.",
-            "source": "RotoWire + Covers",
-            "return": "Oct 23rd"
           },
           {
             "player": "P. Lewis",
@@ -28565,7 +28565,7 @@
       "id": "MASS@CONN",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-23T23:00Z",
       "away": "MASS",
       "home": "CONN",
@@ -28585,7 +28585,7 @@
       "venue_city": "East Hartford, CT",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 50,
+      "weather_temp": 49,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -35700,7 +35700,7 @@
       "venue_city": "Laramie, WY",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 51,
+      "weather_temp": 58,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -57444,7 +57444,7 @@
       "venue_city": "Boca Raton, FL",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 81,
+      "weather_temp": 82,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -61031,7 +61031,7 @@
       "venue_city": "Evanston, IL",
       "roof": "Outdoor",
       "broadcast": "Peacock",
-      "weather_temp": 67,
+      "weather_temp": 66,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -71663,7 +71663,7 @@
       "venue_city": "Fort Worth, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 72,
+      "weather_temp": 73,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -75172,7 +75172,7 @@
       "venue_city": "Kent, OH",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 58,
+      "weather_temp": 59,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -82443,7 +82443,7 @@
       "venue_city": "Mount Pleasant, MI",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 61,
+      "weather_temp": 60,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -86240,7 +86240,7 @@
       "venue_city": "Champaign, IL",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 71,
+      "weather_temp": 70,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -93408,7 +93408,7 @@
       "venue_city": "Buffalo, NY",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 63,
+      "weather_temp": 64,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -107539,7 +107539,7 @@
       "venue_city": "Pasadena, CA",
       "roof": "Outdoor",
       "broadcast": "CBS",
-      "weather_temp": 72,
+      "weather_temp": 73,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -114701,7 +114701,7 @@
       "venue_city": "Muncie, IN",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 71,
+      "weather_temp": 70,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -121951,7 +121951,7 @@
       "venue_city": "Columbia, SC",
       "roof": "Outdoor",
       "broadcast": "ESPN, Disney+",
-      "weather_temp": 70,
+      "weather_temp": 71,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -125588,7 +125588,7 @@
       "venue_city": "Annapolis, MD",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 61,
+      "weather_temp": 62,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -140099,7 +140099,7 @@
       "venue_city": "Ruston, LA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 85,
+      "weather_temp": 84,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -146599,6 +146599,124 @@
           "depth_rank": 1
         },
         {
+          "player_id": "5077500",
+          "player_name": "Luke Duncan",
+          "position": "QB",
+          "ranked": false,
+          "line": {
+            "attempts": 18,
+            "completions": 7,
+            "interceptions": 2,
+            "completion_pct": {
+              "label": "Completion %",
+              "value": 0.3889,
+              "better": "high",
+              "format": "pct",
+              "rank": 178,
+              "of": 177
+            },
+            "yards_per_attempt": {
+              "label": "Yards per attempt",
+              "value": 2.8333,
+              "better": "high",
+              "format": "num",
+              "rank": 178,
+              "of": 177
+            },
+            "td_rate": {
+              "label": "TD rate",
+              "value": 0.0,
+              "better": "high",
+              "format": "pct",
+              "rank": 176,
+              "of": 177
+            },
+            "int_rate": {
+              "label": "INT rate",
+              "value": 0.1111,
+              "better": "low",
+              "format": "pct",
+              "rank": 178,
+              "of": 177
+            },
+            "yards": {
+              "label": "Passing yards",
+              "value": 51.0,
+              "better": "high",
+              "format": "int",
+              "rank": 178,
+              "of": 177
+            },
+            "touchdowns": {
+              "label": "Passing TDs",
+              "value": 0.0,
+              "better": "high",
+              "format": "int",
+              "rank": 176,
+              "of": 177
+            }
+          },
+          "epa_splits": {
+            "all": {
+              "label": "All plays EPA per play",
+              "value": -1.017,
+              "better": "high",
+              "format": "ppa",
+              "rank": 178,
+              "of": 177
+            },
+            "pass": {
+              "label": "Dropbacks EPA per play",
+              "value": -0.85,
+              "better": "high",
+              "format": "ppa",
+              "rank": 177,
+              "of": 176
+            },
+            "standardDowns": {
+              "label": "Standard downs EPA per play",
+              "value": 0.044,
+              "better": "high",
+              "format": "ppa",
+              "rank": 118,
+              "of": 177
+            },
+            "passingDowns": {
+              "label": "Passing downs EPA per play",
+              "value": -1.547,
+              "better": "high",
+              "format": "ppa",
+              "rank": 177,
+              "of": 176
+            },
+            "firstDown": {
+              "label": "1st down EPA per play",
+              "value": 0.044,
+              "better": "high",
+              "format": "ppa",
+              "rank": 89,
+              "of": 176
+            },
+            "secondDown": {
+              "label": "2nd down EPA per play",
+              "value": -1.233,
+              "better": "high",
+              "format": "ppa",
+              "rank": 176,
+              "of": 175
+            },
+            "thirdDown": {
+              "label": "3rd down EPA per play",
+              "value": -0.941,
+              "better": "high",
+              "format": "ppa",
+              "rank": 177,
+              "of": 176
+            }
+          },
+          "depth_rank": 2
+        },
+        {
           "player_id": "5205097",
           "player_name": "Carter Jones",
           "position": "QB",
@@ -146722,9 +146840,9 @@
               "of": 176
             }
           },
-          "status": "Questionable",
+          "status": "Doubtful",
           "injury": "Arm",
-          "depth_rank": 2
+          "depth_rank": 3
         }
       ],
       "home_defense_splits": {
@@ -146886,7 +147004,7 @@
             "rank": 278,
             "of": 467
           },
-          "status": "Questionable",
+          "status": "Doubtful",
           "injury": "Arm"
         },
         {
@@ -147306,10 +147424,9 @@
           {
             "player": "C. Jones",
             "position": "QB",
-            "status": "Questionable",
+            "status": "Doubtful",
             "injury": "Arm",
             "updated": "Sun, Oct 18",
-            "detail": "Jones is managing due to an undisclosed injury, and it has yet to be determined if he will be active against San Jose State on Saturday.",
             "source": "RotoWire + Covers",
             "return": "10/24/2026"
           }
@@ -161610,7 +161727,7 @@
       "venue_city": "Jonesboro, AR",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 77,
+      "weather_temp": 75,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -177433,7 +177550,7 @@
               "of": 176
             }
           },
-          "status": "Questionable",
+          "status": "Probable",
           "injury": "Undisclosed",
           "depth_rank": 2
         }
@@ -178042,10 +178159,9 @@
           {
             "player": "S. Angeli",
             "position": "QB",
-            "status": "Questionable",
+            "status": "Probable",
             "injury": "Undisclosed",
             "updated": "Sun, Oct 18",
-            "detail": "Angeli has an undisclosed injury, and it is uncertain if he will suit up against North Carolina on Saturday, October 24th.",
             "source": "RotoWire + Covers",
             "return": "10/24/2026"
           }
@@ -196916,7 +197032,7 @@
       "venue_city": "Salt Lake City, UT",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 49,
+      "weather_temp": 48,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
