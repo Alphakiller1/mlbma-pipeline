@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-23",
- "generated_at_utc": "2026-10-23T13:28:16+00:00",
+ "generated_at_utc": "2026-10-23T18:22:44+00:00",
  "data_through_utc": "2026-10-23T01:30Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -121,8 +121,8 @@
    "id": "401909848",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/23 - 4:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "Halftime",
    "kickoff_utc": "2026-10-23T20:00Z",
    "away": "CHI",
    "home": "MIL",
@@ -136,8 +136,8 @@
    "home_record": "0-1",
    "away_split_record": "0-1",
    "home_split_record": "0-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 61,
+   "home_score": 62,
    "venue": "Fiserv Forum",
    "venue_city": "Milwaukee, WI",
    "broadcast": "NBA League Pass / MyMi / Bucks App",
@@ -2952,7 +2952,7 @@
       "player_name": "Josh Giddey",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4871145.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 32.1,
       "ppg": 17.0,
       "height_in": 79.0,
@@ -4093,51 +4093,6 @@
     "altitude": false
    },
    "away_injuries": [
-    {
-     "player_id": "4848625",
-     "player_name": "Dailyn Swain",
-     "status": "Day-To-Day",
-     "detail": "Illness Not Specified",
-     "comment": "Swain (illness) is questionable for Friday's game against the Bucks.",
-     "date": "2026-10-22T20:11Z",
-     "return_date": "2026-10-23"
-    },
-    {
-     "player_id": "4683750",
-     "player_name": "Jordan Hawkins",
-     "status": "Day-To-Day",
-     "detail": "Illness Not Specified",
-     "comment": "Hawkins (illness) is questionable for Friday's game against the Bucks.",
-     "date": "2026-10-22T20:09Z",
-     "return_date": "2026-10-23"
-    },
-    {
-     "player_id": "4066650",
-     "player_name": "Zach Collins",
-     "status": "Day-To-Day",
-     "detail": "Quadriceps",
-     "comment": "Collins (quadriceps) is probable for Friday's game against the Bucks.",
-     "date": "2026-10-22T20:07Z",
-     "return_date": "2026-10-23"
-    },
-    {
-     "player_id": "5105555",
-     "player_name": "Tobe Awaka",
-     "status": "Day-To-Day",
-     "detail": "Left Knee Sprain",
-     "comment": "Awaka (knee) is probable for Friday's game against the Bucks.",
-     "date": "2026-10-22T20:05Z",
-     "return_date": "2026-10-23"
-    },
-    {
-     "player_id": "4871145",
-     "player_name": "Josh Giddey",
-     "status": "Day-To-Day",
-     "detail": "Wrist",
-     "comment": "Giddey (wrist) is probable for Friday's game against the Bucks.",
-     "date": "2026-10-22T20:04Z",
-     "return_date": "2026-10-23"
-    },
     {
      "player_id": "4278067",
      "player_name": "Nic Claxton",
@@ -9885,7 +9840,7 @@
     "size": {
      "height": {
       "label": "Rotation Height (in, minutes-weighted)",
-      "value": 77.8358,
+      "value": 77.8409,
       "better": "neutral",
       "rank": 29,
       "of": 30,
@@ -9893,7 +9848,7 @@
      },
      "weight": {
       "label": "Rotation Weight (lb, minutes-weighted)",
-      "value": 214.953,
+      "value": 214.9544,
       "better": "neutral",
       "rank": 18,
       "of": 30,
@@ -9901,7 +9856,7 @@
      },
      "age": {
       "label": "Rotation Age (minutes-weighted)",
-      "value": 28.4406,
+      "value": 28.334,
       "better": "neutral",
       "rank": 3,
       "of": 30,
@@ -39289,8 +39244,8 @@
      "player_name": "Anthony Black",
      "status": "Out",
      "detail": "Right Ankle Sprain",
-     "comment": "Black (ankle) has been ruled out for Friday's game against the Timberwolves.",
-     "date": "2026-10-22T20:21Z",
+     "comment": "Black (ankle) has been ruled out for Friday's game against Minnesota but participated in shootaround and has experienced no setbacks in his recovery, Jason Beede of the Orlando Sentinel reports.",
+     "date": "2026-10-23T16:06Z",
      "return_date": "2026-10-25"
     },
     {
@@ -51138,17 +51093,7 @@
     "tz_shift": 0,
     "altitude": false
    },
-   "away_injuries": [
-    {
-     "player_id": "2990962",
-     "player_name": "Taurean Prince",
-     "status": "Day-To-Day",
-     "detail": "Personal",
-     "comment": "Prince (personal) is listed as probable for Friday's game against the Heat.",
-     "date": "2026-10-22T19:04Z",
-     "return_date": "2026-10-23"
-    }
-   ],
+   "away_injuries": [],
    "home_form": {
     "source": "espn-box",
     "season": 2027,
@@ -63023,21 +62968,21 @@
    },
    "home_injuries": [
     {
-     "player_id": "4066259",
-     "player_name": "De'Aaron Fox",
-     "status": "Day-To-Day",
-     "detail": "Right Wrist Sprain",
-     "comment": "Fox (wrist) is questionable to play in Friday's game against the Rockets.",
-     "date": "2026-10-22T22:11Z",
-     "return_date": "2026-10-23"
-    },
-    {
      "player_id": "4395723",
      "player_name": "Keldon Johnson",
      "status": "Day-To-Day",
      "detail": "Mouth Laceration",
-     "comment": "Johnson is listed as questionable for Friday's game against the Rockets due to a mouth laceration.",
-     "date": "2026-10-22T22:05Z",
+     "comment": "Johnson (mouth) participated in shooting drills after Friday's morning shootaround, per Tom Orsborn of the San Antonio Express-News.",
+     "date": "2026-10-23T17:38Z",
+     "return_date": "2026-10-23"
+    },
+    {
+     "player_id": "4066259",
+     "player_name": "De'Aaron Fox",
+     "status": "Day-To-Day",
+     "detail": "Right Wrist Sprain",
+     "comment": "Fox (wrist) participated in Friday's morning shootaround, Tom Orsborn of the San Antonio Express-News reports.",
+     "date": "2026-10-23T17:37Z",
      "return_date": "2026-10-23"
     },
     {
@@ -70914,15 +70859,6 @@
      "comment": "Alexander won't play Wednesday against the Grizzlies due to a left knee bone bruise.",
      "date": "2026-10-22T23:02Z",
      "return_date": "2026-10-25"
-    },
-    {
-     "player_id": "4065673",
-     "player_name": "Tony Bradley",
-     "status": "Day-To-Day",
-     "detail": "Left Quadriceps Strain",
-     "comment": "Bradley (quadriceps) is questionable for Friday's game against New Orleans.",
-     "date": "2026-10-22T23:02Z",
-     "return_date": "2026-10-23"
     },
     {
      "player_id": "3102530",
@@ -94399,5 +94335,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-23T16:58:59+00:00"
+ "published_at_utc": "2026-10-23T21:19:51+00:00"
 }
