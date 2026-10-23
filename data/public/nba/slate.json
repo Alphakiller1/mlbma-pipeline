@@ -7560,8 +7560,8 @@
    "id": "401909094",
    "sport": "nba",
    "season": 2027,
-   "game_state": "live",
-   "status_detail": "10:42 - 4th",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-10-23T01:30Z",
    "away": "DEN",
    "home": "OKC",
@@ -7571,12 +7571,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/okc.png",
    "away_color": "#0e2240",
    "home_color": "#007ac1",
-   "away_record": "0-0",
-   "home_record": "1-0",
+   "away_record": "0-1",
+   "home_record": "2-0",
    "away_split_record": "0-0",
    "home_split_record": "0-0",
-   "away_score": 64,
-   "home_score": 72,
+   "away_score": 84,
+   "home_score": 96,
    "venue": "Paycom Center",
    "venue_city": "Oklahoma City, OK",
    "broadcast": "ESPN",
@@ -15039,5 +15039,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-23T03:46:50+00:00"
+ "published_at_utc": "2026-10-23T04:37:15+00:00"
 }
