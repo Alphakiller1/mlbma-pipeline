@@ -3,8 +3,8 @@
   "sport": "cfb",
   "season": 2026,
   "week": 8,
-  "generated_at_utc": "2026-10-24T16:07:32Z",
-  "data_through_utc": "2026-10-23T23:50:45Z",
+  "generated_at_utc": "2026-10-24T22:36:22Z",
+  "data_through_utc": "2026-10-24T17:24:36Z",
   "games": [
     {
       "id": "MOST@DEL",
@@ -42915,7 +42915,7 @@
       "id": "CAL@SMU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-10-24T16:00Z",
       "away": "CAL",
       "home": "SMU",
@@ -42927,16 +42927,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/2567.png",
       "away_color": "#041e42",
       "home_color": "#d70000",
-      "away_record": "3-4",
-      "home_record": "5-1",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "3-5",
+      "home_record": "6-1",
+      "away_score": "20",
+      "home_score": "59",
       "venue": "Gerald J. Ford Stadium",
       "venue_city": "Dallas, TX",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 71,
-      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -46565,7 +46563,7 @@
       "id": "IU@MICH",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-10-24T16:00Z",
       "away": "IU",
       "home": "MICH",
@@ -46577,16 +46575,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/130.png",
       "away_color": "#990000",
       "home_color": "#00274c",
-      "away_record": "6-1",
-      "home_record": "4-2",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "7-1",
+      "home_record": "4-3",
+      "away_score": "13",
+      "home_score": "6",
       "venue": "Michigan Stadium",
       "venue_city": "Ann Arbor, MI",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 56,
-      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -50138,7 +50134,7 @@
       "id": "LSU@AUB",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-10-24T16:00Z",
       "away": "LSU",
       "home": "AUB",
@@ -50150,16 +50146,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/2.png",
       "away_color": "#461d7c",
       "home_color": "#0c2340",
-      "away_record": "5-2",
-      "home_record": "4-2",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "6-2",
+      "home_record": "4-3",
+      "away_score": "38",
+      "home_score": "17",
       "venue": "Jordan-Hare Stadium",
       "venue_city": "Auburn, AL",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 65,
-      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -53737,7 +53731,7 @@
       "id": "PITT@MIA",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-10-24T16:00Z",
       "away": "PITT",
       "home": "MIA",
@@ -53749,16 +53743,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/2390.png",
       "away_color": "#003594",
       "home_color": "#f47321",
-      "away_record": "5-2",
-      "home_record": "6-0",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "5-3",
+      "home_record": "7-0",
+      "away_score": "23",
+      "home_score": "52",
       "venue": "Hard Rock Stadium",
       "venue_city": "Miami Gardens, FL",
       "roof": "Outdoor",
-      "broadcast": "ESPN, Disney+",
-      "weather_temp": 82,
-      "weather_cond": "Partly sunny",
+      "broadcast": "ESPNEWS, Disney+",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -57404,7 +57396,7 @@
       "id": "RICE@FAU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-10-24T16:00Z",
       "away": "RICE",
       "home": "FAU",
@@ -57416,16 +57408,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/2226.png",
       "away_color": "#00205b",
       "home_color": "#003366",
-      "away_record": "1-6",
-      "home_record": "4-2",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "1-7",
+      "home_record": "5-2",
+      "away_score": "49",
+      "home_score": "51",
       "venue": "Flagler Credit Union Stadium",
       "venue_city": "Boca Raton, FL",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 81,
-      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -60991,7 +60981,7 @@
       "id": "RUTG@NU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-10-24T16:00Z",
       "away": "RUTG",
       "home": "NU",
@@ -61003,16 +60993,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/77.png",
       "away_color": "#ce0e2d",
       "home_color": "#582c83",
-      "away_record": "2-4",
-      "home_record": "5-1",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "2-5",
+      "home_record": "6-1",
+      "away_score": "14",
+      "home_score": "42",
       "venue": "Ryan Field",
       "venue_city": "Evanston, IL",
       "roof": "Outdoor",
       "broadcast": "Peacock",
-      "weather_temp": 59,
-      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -64563,7 +64551,7 @@
       "id": "TTU@CIN",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "live",
+      "game_state": "final",
       "kickoff_utc": "2026-10-24T16:00Z",
       "away": "TTU",
       "home": "CIN",
@@ -64575,16 +64563,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/2132.png",
       "away_color": "#c30020",
       "home_color": "#000000",
-      "away_record": "6-0",
-      "home_record": "4-2",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "6-1",
+      "home_record": "5-2",
+      "away_score": "24",
+      "home_score": "37",
       "venue": "Nippert Stadium",
       "venue_city": "Cincinnati, OH",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 66,
-      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -68067,7 +68053,7 @@
       "id": "WMU@TOL",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "live",
+      "game_state": "final",
       "kickoff_utc": "2026-10-24T16:00Z",
       "away": "WMU",
       "home": "TOL",
@@ -68079,16 +68065,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/2649.png",
       "away_color": "#532e1f",
       "home_color": "#0b2240",
-      "away_record": "5-2",
-      "home_record": "5-2",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "5-3",
+      "home_record": "6-2",
+      "away_score": "38",
+      "home_score": "45",
       "venue": "Glass Bowl",
       "venue_city": "Toledo, OH",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 61,
-      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -71632,7 +71616,7 @@
       "id": "WVU@TCU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "live",
+      "game_state": "final",
       "kickoff_utc": "2026-10-24T16:00Z",
       "away": "WVU",
       "home": "TCU",
@@ -71644,16 +71628,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/2628.png",
       "away_color": "#eaaa00",
       "home_color": "#4d1979",
-      "away_record": "4-3",
-      "home_record": "3-3",
-      "away_score": "3",
-      "home_score": "0",
+      "away_record": "5-3",
+      "home_record": "3-4",
+      "away_score": "24",
+      "home_score": "20",
       "venue": "Amon G. Carter Stadium",
       "venue_city": "Fort Worth, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 76,
-      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -75141,7 +75123,7 @@
       "id": "AKR@KENT",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-10-24T17:00Z",
       "away": "AKR",
       "home": "KENT",
@@ -75153,16 +75135,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/2309.png",
       "away_color": "#041e42",
       "home_color": "#002664",
-      "away_record": "1-6",
-      "home_record": "2-5",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "1-7",
+      "home_record": "3-5",
+      "away_score": "20",
+      "home_score": "35",
       "venue": "Zoeller Field at Dix Stadium",
       "venue_city": "Kent, OH",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 59,
-      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -78834,7 +78814,7 @@
       "id": "BAY@KU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-10-24T17:00Z",
       "away": "BAY",
       "home": "KU",
@@ -78846,16 +78826,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/2305.png",
       "away_color": "#154734",
       "home_color": "#0051ba",
-      "away_record": "4-2",
-      "home_record": "2-4",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "4-3",
+      "home_record": "3-4",
+      "away_score": "24",
+      "home_score": "25",
       "venue": "David Booth Kansas Memorial Stadium",
       "venue_city": "Lawrence, KS",
       "roof": "Outdoor",
       "broadcast": "TNT",
-      "weather_temp": 72,
-      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -82398,7 +82376,7 @@
       "id": "M-OH@CMU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-10-24T17:00Z",
       "away": "M-OH",
       "home": "CMU",
@@ -82410,16 +82388,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/2117.png",
       "away_color": "#c41230",
       "home_color": "#6a0032",
-      "away_record": "4-3",
-      "home_record": "3-4",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "5-3",
+      "home_record": "3-5",
+      "away_score": "28",
+      "home_score": "27",
       "venue": "Kelly/Shorts Stadium",
       "venue_city": "Mount Pleasant, MI",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 59,
-      "weather_cond": "Fog",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -86194,7 +86170,7 @@
       "id": "ORE@ILL",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-10-24T19:00Z",
       "away": "ORE",
       "home": "ILL",
@@ -86206,16 +86182,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/356.png",
       "away_color": "#007030",
       "home_color": "#ff5f05",
-      "away_record": "4-2",
-      "home_record": "3-3",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "4-3",
+      "home_record": "4-3",
+      "away_score": "10",
+      "home_score": "21",
       "venue": "Gies Memorial Stadium",
       "venue_city": "Champaign, IL",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 71,
-      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -89867,7 +89841,7 @@
       "id": "BC@GT",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T19:30Z",
       "away": "BC",
       "home": "GT",
@@ -89881,13 +89855,13 @@
       "home_color": "#b3a369",
       "away_record": "3-3",
       "home_record": "2-4",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "42",
+      "home_score": "20",
       "venue": "Bobby Dodd Stadium",
       "venue_city": "Atlanta, GA",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 70,
+      "weather_temp": 76,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -93362,7 +93336,7 @@
       "id": "BGSU@BUF",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-10-24T19:30Z",
       "away": "BGSU",
       "home": "BUF",
@@ -93374,16 +93348,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/2084.png",
       "away_color": "#fd5000",
       "home_color": "#005bbb",
-      "away_record": "2-5",
-      "home_record": "4-3",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "2-6",
+      "home_record": "5-3",
+      "away_score": "24",
+      "home_score": "31",
       "venue": "Broadview Stadium",
       "venue_city": "Buffalo, NY",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 64,
-      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -96889,7 +96861,7 @@
       "id": "BYU@UCF",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T19:30Z",
       "away": "BYU",
       "home": "UCF",
@@ -96903,14 +96875,14 @@
       "home_color": "#000000",
       "away_record": "6-0",
       "home_record": "3-3",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "24",
+      "home_score": "24",
       "venue": "Acrisure Bounce House",
       "venue_city": "Orlando, FL",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 81,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 74,
+      "weather_cond": "Rain",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -98747,15 +98719,6 @@
             "source": "Covers"
           },
           {
-            "player": "A. Barnett III",
-            "position": "QB",
-            "status": "Questionable",
-            "injury": "Hamstring",
-            "updated": "Tue, Oct 20",
-            "source": "RotoWire + Covers",
-            "return": "10/24/2026"
-          },
-          {
             "player": "D. Wade",
             "position": "TE",
             "status": "Questionable",
@@ -100157,8 +100120,6 @@
               "of": 176
             }
           },
-          "status": "Questionable",
-          "injury": "Hamstring",
           "depth_rank": 2
         }
       ],
@@ -100429,7 +100390,7 @@
       "id": "HAW@NIU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T19:30Z",
       "away": "HAW",
       "home": "NIU",
@@ -100443,14 +100404,14 @@
       "home_color": "#c8102e",
       "away_record": "1-6",
       "home_record": "0-6",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "56",
+      "home_score": "21",
       "venue": "Huskie Stadium",
       "venue_city": "Dekalb, IL",
       "roof": "Outdoor",
       "broadcast": "MW+",
-      "weather_temp": 68,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 66,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -103992,7 +103953,7 @@
       "id": "IOWA@MINN",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T19:30Z",
       "away": "IOWA",
       "home": "MINN",
@@ -104006,13 +103967,13 @@
       "home_color": "#7a0019",
       "away_record": "5-1",
       "home_record": "4-2",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "3",
+      "home_score": "10",
       "venue": "Huntington Bank Stadium",
       "venue_city": "Minneapolis, MN",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 74,
+      "weather_temp": 73,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -107493,7 +107454,7 @@
       "id": "MSU@UCLA",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T19:30Z",
       "away": "MSU",
       "home": "UCLA",
@@ -107507,13 +107468,13 @@
       "home_color": "#2774ae",
       "away_record": "2-5",
       "home_record": "6-0",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "7",
+      "home_score": "28",
       "venue": "Rose Bowl",
       "venue_city": "Pasadena, CA",
       "roof": "Outdoor",
       "broadcast": "CBS",
-      "weather_temp": 68,
+      "weather_temp": 78,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -111183,7 +111144,7 @@
       "id": "OU@MSST",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T19:30Z",
       "away": "OU",
       "home": "MSST",
@@ -111197,13 +111158,13 @@
       "home_color": "#5d1725",
       "away_record": "3-3",
       "home_record": "4-2",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "23",
+      "home_score": "7",
       "venue": "Davis Wade Stadium",
       "venue_city": "Starkville, MS",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 77,
+      "weather_temp": 74,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -114655,7 +114616,7 @@
       "id": "SAC@BALL",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T19:30Z",
       "away": "SAC",
       "home": "BALL",
@@ -114669,13 +114630,13 @@
       "home_color": "#ba0c2f",
       "away_record": "1-6",
       "home_record": "2-5",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "17",
+      "home_score": "34",
       "venue": "Scheumann Stadium",
       "venue_city": "Muncie, IN",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 70,
+      "weather_temp": 68,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -118330,7 +118291,7 @@
       "id": "TA&M@ALA",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T19:30Z",
       "away": "TA&M",
       "home": "ALA",
@@ -118344,13 +118305,13 @@
       "home_color": "#9e1b32",
       "away_record": "4-3",
       "home_record": "5-2",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "20",
+      "home_score": "31",
       "venue": "Bryant-Denny Stadium",
       "venue_city": "Tuscaloosa, AL",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 75,
+      "weather_temp": 73,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -121905,7 +121866,7 @@
       "id": "TENN@SC",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T19:30Z",
       "away": "TENN",
       "home": "SC",
@@ -121919,14 +121880,14 @@
       "home_color": "#73000a",
       "away_record": "6-1",
       "home_record": "3-3",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "24",
+      "home_score": "17",
       "venue": "Williams-Brice Stadium",
       "venue_city": "Columbia, SC",
       "roof": "Outdoor",
       "broadcast": "ESPN, Disney+",
-      "weather_temp": 72,
-      "weather_cond": "Sunny",
+      "weather_temp": 69,
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -125542,7 +125503,7 @@
       "id": "UNT@NAVY",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T19:30Z",
       "away": "UNT",
       "home": "NAVY",
@@ -125556,13 +125517,13 @@
       "home_color": "#00225b",
       "away_record": "4-2",
       "home_record": "2-4",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "49",
+      "home_score": "39",
       "venue": "Navy-Marine Corps Memorial Stadium",
       "venue_city": "Annapolis, MD",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 62,
+      "weather_temp": 60,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -129134,7 +129095,7 @@
       "id": "KSU@ASU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T19:45Z",
       "away": "KSU",
       "home": "ASU",
@@ -129148,13 +129109,13 @@
       "home_color": "#ffc627",
       "away_record": "4-2",
       "home_record": "3-3",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "17",
+      "home_score": "14",
       "venue": "Mountain America Stadium",
       "venue_city": "Tempe, AZ",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 75,
+      "weather_temp": 77,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -132710,7 +132671,7 @@
       "id": "EMU@OHIO",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T20:00Z",
       "away": "EMU",
       "home": "OHIO",
@@ -132724,13 +132685,13 @@
       "home_color": "#024230",
       "away_record": "4-4",
       "home_record": "5-2",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "13",
+      "home_score": "17",
       "venue": "Peden Stadium",
       "venue_city": "Athens, OH",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 69,
+      "weather_temp": 62,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -134278,6 +134239,15 @@
       "away_injuries": {
         "players": [
           {
+            "player": "N. Kim",
+            "position": "QB",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Sun, Oct 18",
+            "source": "RotoWire + Covers",
+            "return": "11/4/2026"
+          },
+          {
             "player": "N. Jones-Davis",
             "position": "RB",
             "status": "Out",
@@ -134357,16 +134327,6 @@
             "updated": "Sun, Oct 18",
             "detail": "Fishwick is tending to an undisclosed injury, and the severity of the injury ailment is unknown etc.",
             "source": "Covers"
-          },
-          {
-            "player": "N. Kim",
-            "position": "QB",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Sun, Oct 18",
-            "detail": "Kim is dealing due to an undisclosed injury, and it is uncertain if he will play against Ohio on Saturday, October 24th.",
-            "source": "RotoWire + Covers",
-            "return": "10/24/2026"
           },
           {
             "player": "A. Sharp",
@@ -134749,6 +134709,15 @@
       "home_injuries": {
         "players": [
           {
+            "player": "H. Grand",
+            "position": "QB",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Sun, Oct 18",
+            "source": "RotoWire + Covers",
+            "return": "11/3/2026"
+          },
+          {
             "player": "R. Perry",
             "position": "WR",
             "status": "Out",
@@ -134756,16 +134725,6 @@
             "updated": "Sat, Oct 10",
             "detail": "Perry is dealing with an undisclosed injury, and is expected to miss the remainder of the season.",
             "source": "Covers"
-          },
-          {
-            "player": "H. Grand",
-            "position": "QB",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Sun, Oct 18",
-            "detail": "Grand is nursing with an undisclosed injury, and it is unclear whether he will play against the Eastern Michigan on Saturday, October 24th.",
-            "source": "RotoWire + Covers",
-            "return": "10/24/2026"
           },
           {
             "player": "R. Neer",
@@ -135125,134 +135084,6 @@
       },
       "away_qbs": [
         {
-          "player_id": "4690158",
-          "player_name": "Noah Kim",
-          "position": "QB",
-          "ranked": true,
-          "line": {
-            "attempts": 285,
-            "completions": 169,
-            "interceptions": 4,
-            "completion_pct": {
-              "label": "Completion %",
-              "value": 0.593,
-              "better": "high",
-              "format": "pct",
-              "rank": 131,
-              "of": 177
-            },
-            "yards_per_attempt": {
-              "label": "Yards per attempt",
-              "value": 5.8877,
-              "better": "high",
-              "format": "num",
-              "rank": 158,
-              "of": 177
-            },
-            "td_rate": {
-              "label": "TD rate",
-              "value": 0.0386,
-              "better": "high",
-              "format": "pct",
-              "rank": 133,
-              "of": 177
-            },
-            "int_rate": {
-              "label": "INT rate",
-              "value": 0.014,
-              "better": "low",
-              "format": "pct",
-              "rank": 50,
-              "of": 177
-            },
-            "yards": {
-              "label": "Passing yards",
-              "value": 1678.0,
-              "better": "high",
-              "format": "int",
-              "rank": 23,
-              "of": 177
-            },
-            "touchdowns": {
-              "label": "Passing TDs",
-              "value": 11.0,
-              "better": "high",
-              "format": "int",
-              "rank": 41,
-              "of": 177
-            }
-          },
-          "epa_splits": {
-            "all": {
-              "label": "All plays EPA per play",
-              "value": 0.107,
-              "better": "high",
-              "format": "ppa",
-              "rank": 125,
-              "of": 177
-            },
-            "pass": {
-              "label": "Dropbacks EPA per play",
-              "value": 0.176,
-              "better": "high",
-              "format": "ppa",
-              "rank": 110,
-              "of": 176
-            },
-            "rush": {
-              "label": "Rushes EPA per play",
-              "value": -0.163,
-              "better": "high",
-              "format": "ppa",
-              "rank": 139,
-              "of": 174
-            },
-            "standardDowns": {
-              "label": "Standard downs EPA per play",
-              "value": 0.0,
-              "better": "high",
-              "format": "ppa",
-              "rank": 128,
-              "of": 177
-            },
-            "passingDowns": {
-              "label": "Passing downs EPA per play",
-              "value": 0.263,
-              "better": "high",
-              "format": "ppa",
-              "rank": 106,
-              "of": 176
-            },
-            "firstDown": {
-              "label": "1st down EPA per play",
-              "value": -0.003,
-              "better": "high",
-              "format": "ppa",
-              "rank": 114,
-              "of": 176
-            },
-            "secondDown": {
-              "label": "2nd down EPA per play",
-              "value": -0.008,
-              "better": "high",
-              "format": "ppa",
-              "rank": 152,
-              "of": 175
-            },
-            "thirdDown": {
-              "label": "3rd down EPA per play",
-              "value": 0.623,
-              "better": "high",
-              "format": "ppa",
-              "rank": 50,
-              "of": 176
-            }
-          },
-          "status": "Questionable",
-          "injury": "Undisclosed",
-          "depth_rank": 1
-        },
-        {
           "player_id": "5144207",
           "player_name": "Jace Stuckey",
           "position": "QB",
@@ -135376,6 +135207,134 @@
               "of": 176
             }
           },
+          "depth_rank": 1
+        },
+        {
+          "player_id": "4690158",
+          "player_name": "Noah Kim",
+          "position": "QB",
+          "ranked": true,
+          "line": {
+            "attempts": 285,
+            "completions": 169,
+            "interceptions": 4,
+            "completion_pct": {
+              "label": "Completion %",
+              "value": 0.593,
+              "better": "high",
+              "format": "pct",
+              "rank": 131,
+              "of": 177
+            },
+            "yards_per_attempt": {
+              "label": "Yards per attempt",
+              "value": 5.8877,
+              "better": "high",
+              "format": "num",
+              "rank": 158,
+              "of": 177
+            },
+            "td_rate": {
+              "label": "TD rate",
+              "value": 0.0386,
+              "better": "high",
+              "format": "pct",
+              "rank": 133,
+              "of": 177
+            },
+            "int_rate": {
+              "label": "INT rate",
+              "value": 0.014,
+              "better": "low",
+              "format": "pct",
+              "rank": 50,
+              "of": 177
+            },
+            "yards": {
+              "label": "Passing yards",
+              "value": 1678.0,
+              "better": "high",
+              "format": "int",
+              "rank": 23,
+              "of": 177
+            },
+            "touchdowns": {
+              "label": "Passing TDs",
+              "value": 11.0,
+              "better": "high",
+              "format": "int",
+              "rank": 41,
+              "of": 177
+            }
+          },
+          "epa_splits": {
+            "all": {
+              "label": "All plays EPA per play",
+              "value": 0.107,
+              "better": "high",
+              "format": "ppa",
+              "rank": 125,
+              "of": 177
+            },
+            "pass": {
+              "label": "Dropbacks EPA per play",
+              "value": 0.176,
+              "better": "high",
+              "format": "ppa",
+              "rank": 110,
+              "of": 176
+            },
+            "rush": {
+              "label": "Rushes EPA per play",
+              "value": -0.163,
+              "better": "high",
+              "format": "ppa",
+              "rank": 139,
+              "of": 174
+            },
+            "standardDowns": {
+              "label": "Standard downs EPA per play",
+              "value": 0.0,
+              "better": "high",
+              "format": "ppa",
+              "rank": 128,
+              "of": 177
+            },
+            "passingDowns": {
+              "label": "Passing downs EPA per play",
+              "value": 0.263,
+              "better": "high",
+              "format": "ppa",
+              "rank": 106,
+              "of": 176
+            },
+            "firstDown": {
+              "label": "1st down EPA per play",
+              "value": -0.003,
+              "better": "high",
+              "format": "ppa",
+              "rank": 114,
+              "of": 176
+            },
+            "secondDown": {
+              "label": "2nd down EPA per play",
+              "value": -0.008,
+              "better": "high",
+              "format": "ppa",
+              "rank": 152,
+              "of": 175
+            },
+            "thirdDown": {
+              "label": "3rd down EPA per play",
+              "value": 0.623,
+              "better": "high",
+              "format": "ppa",
+              "rank": 50,
+              "of": 176
+            }
+          },
+          "status": "Out",
+          "injury": "Undisclosed",
           "depth_rank": 2
         }
       ],
@@ -135577,7 +135536,7 @@
             "rank": 456,
             "of": 467
           },
-          "status": "Questionable",
+          "status": "Out",
           "injury": "Undisclosed"
         }
       ],
@@ -136499,14 +136458,14 @@
           }
         }
       },
-      "away_starter": "Noah Kim",
+      "away_starter": "Jace Stuckey",
       "home_starter": "Nick Poulos"
     },
     {
       "id": "ULM@TROY",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T20:00Z",
       "away": "ULM",
       "home": "TROY",
@@ -136520,13 +136479,13 @@
       "home_color": "#862633",
       "away_record": "0-6",
       "home_record": "3-3",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "3",
+      "home_score": "7",
       "venue": "Veterans Memorial Stadium (AL)",
       "venue_city": "Troy, AL",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 75,
+      "weather_temp": 70,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -140043,7 +140002,7 @@
       "id": "ODU@LT",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T21:00Z",
       "away": "ODU",
       "home": "LT",
@@ -140058,13 +140017,13 @@
       "away_record": "2-5",
       "home_record": "4-2",
       "away_score": "0",
-      "home_score": "0",
+      "home_score": "17",
       "venue": "Joe Aillet Stadium",
       "venue_city": "Ruston, LA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 85,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 82,
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -143709,7 +143668,7 @@
       "id": "SJSU@NEV",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T21:00Z",
       "away": "SJSU",
       "home": "NEV",
@@ -143723,13 +143682,13 @@
       "home_color": "#041e42",
       "away_record": "4-3",
       "home_record": "2-4",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "3",
+      "home_score": "7",
       "venue": "Mackay Stadium",
       "venue_city": "Reno, NV",
       "roof": "Outdoor",
       "broadcast": "MW+",
-      "weather_temp": 55,
+      "weather_temp": 56,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -145550,9 +145509,10 @@
           {
             "player": "C. Jones",
             "position": "QB",
-            "status": "Doubtful",
+            "status": "Questionable",
             "injury": "Arm",
             "updated": "Sun, Oct 18",
+            "detail": "Jones is managing due to an undisclosed injury, and it has yet to be determined if he will be active against San Jose State on Saturday.",
             "source": "RotoWire + Covers",
             "return": "10/24/2026"
           }
@@ -146889,124 +146849,6 @@
           "depth_rank": 1
         },
         {
-          "player_id": "5077500",
-          "player_name": "Luke Duncan",
-          "position": "QB",
-          "ranked": false,
-          "line": {
-            "attempts": 18,
-            "completions": 7,
-            "interceptions": 2,
-            "completion_pct": {
-              "label": "Completion %",
-              "value": 0.3889,
-              "better": "high",
-              "format": "pct",
-              "rank": 178,
-              "of": 177
-            },
-            "yards_per_attempt": {
-              "label": "Yards per attempt",
-              "value": 2.8333,
-              "better": "high",
-              "format": "num",
-              "rank": 178,
-              "of": 177
-            },
-            "td_rate": {
-              "label": "TD rate",
-              "value": 0.0,
-              "better": "high",
-              "format": "pct",
-              "rank": 176,
-              "of": 177
-            },
-            "int_rate": {
-              "label": "INT rate",
-              "value": 0.1111,
-              "better": "low",
-              "format": "pct",
-              "rank": 178,
-              "of": 177
-            },
-            "yards": {
-              "label": "Passing yards",
-              "value": 51.0,
-              "better": "high",
-              "format": "int",
-              "rank": 178,
-              "of": 177
-            },
-            "touchdowns": {
-              "label": "Passing TDs",
-              "value": 0.0,
-              "better": "high",
-              "format": "int",
-              "rank": 176,
-              "of": 177
-            }
-          },
-          "epa_splits": {
-            "all": {
-              "label": "All plays EPA per play",
-              "value": -1.017,
-              "better": "high",
-              "format": "ppa",
-              "rank": 178,
-              "of": 177
-            },
-            "pass": {
-              "label": "Dropbacks EPA per play",
-              "value": -0.85,
-              "better": "high",
-              "format": "ppa",
-              "rank": 177,
-              "of": 176
-            },
-            "standardDowns": {
-              "label": "Standard downs EPA per play",
-              "value": 0.044,
-              "better": "high",
-              "format": "ppa",
-              "rank": 118,
-              "of": 177
-            },
-            "passingDowns": {
-              "label": "Passing downs EPA per play",
-              "value": -1.547,
-              "better": "high",
-              "format": "ppa",
-              "rank": 177,
-              "of": 176
-            },
-            "firstDown": {
-              "label": "1st down EPA per play",
-              "value": 0.044,
-              "better": "high",
-              "format": "ppa",
-              "rank": 89,
-              "of": 176
-            },
-            "secondDown": {
-              "label": "2nd down EPA per play",
-              "value": -1.233,
-              "better": "high",
-              "format": "ppa",
-              "rank": 176,
-              "of": 175
-            },
-            "thirdDown": {
-              "label": "3rd down EPA per play",
-              "value": -0.941,
-              "better": "high",
-              "format": "ppa",
-              "rank": 177,
-              "of": 176
-            }
-          },
-          "depth_rank": 2
-        },
-        {
           "player_id": "5205097",
           "player_name": "Carter Jones",
           "position": "QB",
@@ -147130,9 +146972,9 @@
               "of": 176
             }
           },
-          "status": "Doubtful",
+          "status": "Questionable",
           "injury": "Arm",
-          "depth_rank": 3
+          "depth_rank": 2
         }
       ],
       "home_defense_splits": {
@@ -147294,7 +147136,7 @@
             "rank": 278,
             "of": 467
           },
-          "status": "Doubtful",
+          "status": "Questionable",
           "injury": "Arm"
         },
         {
@@ -147404,7 +147246,7 @@
       "id": "UL@USM",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T21:00Z",
       "away": "UL",
       "home": "USM",
@@ -147418,13 +147260,13 @@
       "home_color": "#ffc72c",
       "away_record": "5-2",
       "home_record": "1-5",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "21",
+      "home_score": "21",
       "venue": "M. M. Roberts Stadium",
       "venue_city": "Hattiesburg, MS",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 79,
+      "weather_temp": 76,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -150944,7 +150786,7 @@
       "id": "BOIS@WSU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-24T22:00Z",
       "away": "BOIS",
       "home": "WSU",
@@ -150958,14 +150800,14 @@
       "home_color": "#a60f2d",
       "away_record": "5-1",
       "home_record": "1-6",
-      "away_score": "0",
+      "away_score": "7",
       "home_score": "0",
       "venue": "Martin Stadium",
       "venue_city": "Pullman, WA",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 55,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 53,
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -154457,8 +154299,8 @@
       "venue_city": "Fort Collins, CO",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 56,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 54,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -158153,7 +157995,7 @@
       "venue_city": "Stillwater, OK",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 77,
+      "weather_temp": 76,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -161691,8 +161533,8 @@
       "venue_city": "Jonesboro, AR",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 77,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 75,
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -168768,7 +168610,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN2",
       "weather_temp": 74,
-      "weather_cond": "Partly sunny",
+      "weather_cond": "Showers",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -177259,15 +177101,6 @@
             "updated": "Sun, Oct 18",
             "detail": "Woody has an undisclosed injury, and it is unclear if he will suit up against against North Carolina on Saturday, October 24th.",
             "source": "Covers"
-          },
-          {
-            "player": "S. Angeli",
-            "position": "QB",
-            "status": "Probable",
-            "injury": "Undisclosed",
-            "updated": "Sun, Oct 18",
-            "source": "RotoWire + Covers",
-            "return": "10/24/2026"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -178220,8 +178053,6 @@
               "of": 176
             }
           },
-          "status": "Probable",
-          "injury": "Undisclosed",
           "depth_rank": 2
         }
       ],
@@ -179305,8 +179136,8 @@
       "venue_city": "Madison, WI",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 66,
-      "weather_cond": "Mostly cloudy",
+      "weather_temp": 72,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -182803,7 +182634,7 @@
       "roof": "Outdoor",
       "broadcast": "CBSSN",
       "weather_temp": 84,
-      "weather_cond": "Partly sunny",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -193486,7 +193317,7 @@
       "venue_city": "Albuquerque, NM",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 60,
+      "weather_temp": 61,
       "weather_cond": "Thunderstorms",
       "away_form": {
         "rates": {
@@ -196996,7 +196827,7 @@
       "venue_city": "Salt Lake City, UT",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 45,
+      "weather_temp": 47,
       "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
