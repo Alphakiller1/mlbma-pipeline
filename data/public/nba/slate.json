@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-24",
- "generated_at_utc": "2026-10-24T11:02:07+00:00",
+ "generated_at_utc": "2026-10-24T15:57:58+00:00",
  "data_through_utc": "2026-10-24T02:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -35440,7 +35440,7 @@
       "player_name": "Tobias Harris",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/6440.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 27.8,
       "ppg": 13.3,
       "height_in": 80.0,
@@ -35836,10 +35836,10 @@
     {
      "player_id": "6440",
      "player_name": "Tobias Harris",
-     "status": "Out",
+     "status": "Day-To-Day",
      "detail": "Left Calf Strain",
      "comment": "Harris (calf) is out for Friday's game against the Rockets.",
-     "date": "2026-10-22T22:03Z",
+     "date": "2026-10-24T13:45Z",
      "return_date": "2026-10-24"
     },
     {
@@ -39597,6 +39597,15 @@
    },
    "home_injuries": [
     {
+     "player_id": "6442",
+     "player_name": "Kyrie Irving",
+     "status": "Day-To-Day",
+     "detail": "Rest",
+     "comment": "Irving posted 24 points (8-15 FG, 5-10 3Pt, 3-3 FT), one rebound, three assists, one block and one steal over 25 minutes before fouling out of Friday's 121-105 win over Indiana.",
+     "date": "2026-10-24T14:25Z",
+     "return_date": "2026-10-24"
+    },
+    {
      "player_id": "3138160",
      "player_name": "Caleb Martin",
      "status": "Day-To-Day",
@@ -42688,7 +42697,7 @@
       "player_name": "Reed Sheppard",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4711272.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 26.2,
       "ppg": 13.5,
       "height_in": 74.0,
@@ -43452,7 +43461,7 @@
       "player_name": "Steven Adams",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/2991235.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 22.8,
       "ppg": 5.8,
       "height_in": 83.0,
@@ -43631,12 +43640,30 @@
    },
    "away_injuries": [
     {
+     "player_id": "2991235",
+     "player_name": "Steven Adams",
+     "status": "Day-To-Day",
+     "detail": "Rest",
+     "comment": "Adams (rest) will likely be sidelined for Saturday's game against the Hawks.",
+     "date": "2026-10-24T15:16Z",
+     "return_date": "2026-10-24"
+    },
+    {
+     "player_id": "2991230",
+     "player_name": "Fred VanVleet",
+     "status": "Day-To-Day",
+     "detail": "Rest",
+     "comment": "VanVleet (rest) is unlikely to play in the second leg of the Rockets' back-to-back set Saturday against the Hawks.",
+     "date": "2026-10-24T15:13Z",
+     "return_date": "2026-10-24"
+    },
+    {
      "player_id": "4711272",
      "player_name": "Reed Sheppard",
-     "status": "Out",
+     "status": "Day-To-Day",
      "detail": "Left Knee Bruise",
      "comment": "Sheppard (knee) is out for Friday's game in San Antonio.",
-     "date": "2026-10-24T00:21Z",
+     "date": "2026-10-24T13:45Z",
      "return_date": "2026-10-24"
     }
    ],
@@ -57804,7 +57831,7 @@
       "player_name": "Brandin Podziemski",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4709138.png",
-      "status": null,
+      "status": "Out",
       "mpg": 28.5,
       "ppg": 13.8,
       "height_in": 76.0,
@@ -58946,7 +58973,7 @@
       "player_name": "Stephen Curry",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3975.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 31.0,
       "ppg": 26.6,
       "height_in": 74.0,
@@ -59533,12 +59560,30 @@
    },
    "away_injuries": [
     {
+     "player_id": "4709138",
+     "player_name": "Brandin Podziemski",
+     "status": "Out",
+     "detail": "Back",
+     "comment": "Podziemski (back) told reporters Friday that he will not play in the second leg of the Warriors' back-to-back set Saturday against the Suns, Nick Friedell of The Athletic reports.",
+     "date": "2026-10-24T14:11Z",
+     "return_date": "2026-10-26"
+    },
+    {
+     "player_id": "3975",
+     "player_name": "Stephen Curry",
+     "status": "Day-To-Day",
+     "detail": "Rest",
+     "comment": "Curry told reporters after Friday's loss to the Grizzlies that he will \"probably not\" play against the Suns on Saturday, Nick Friedell of The Athletic reports.",
+     "date": "2026-10-24T14:07Z",
+     "return_date": "2026-10-24"
+    },
+    {
      "player_id": "4397886",
      "player_name": "Charles Bassey",
-     "status": "Out",
+     "status": "Day-To-Day",
      "detail": "Knee",
      "comment": "Bassey (knee) is out for Friday's game versus the Grizzlies.",
-     "date": "2026-10-23T20:04Z",
+     "date": "2026-10-24T13:46Z",
      "return_date": "2026-10-24"
     },
     {
@@ -63516,7 +63561,7 @@
      "status": "Day-To-Day",
      "detail": "Left Knee Strain",
      "comment": "Kennard (knee) is questionable to play Saturday against the Warriors.",
-     "date": "2026-10-24T10:00Z",
+     "date": "2026-10-24T15:01Z",
      "return_date": "2026-10-24"
     },
     {
@@ -63540,5 +63585,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-24T12:37:47+00:00"
+ "published_at_utc": "2026-10-24T17:22:44+00:00"
 }
