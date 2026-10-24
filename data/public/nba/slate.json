@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-24",
- "generated_at_utc": "2026-10-24T18:48:19+00:00",
+ "generated_at_utc": "2026-10-24T22:29:36+00:00",
  "data_through_utc": "2026-10-24T02:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -121,8 +121,8 @@
    "id": "401909853",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/24 - 6:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "7:26 - 2nd",
    "kickoff_utc": "2026-10-24T22:00Z",
    "away": "MIA",
    "home": "CHA",
@@ -136,8 +136,8 @@
    "home_record": "1-1",
    "away_split_record": "0-0",
    "home_split_record": "0-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 43,
+   "home_score": 44,
    "venue": "Spectrum Center",
    "venue_city": "Charlotte, NC",
    "broadcast": "NBA League Pass",
@@ -3132,7 +3132,7 @@
       "player_name": "Pelle Larsson",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4601025.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 26.5,
       "ppg": 11.4,
       "height_in": 77.0,
@@ -4095,17 +4095,7 @@
     "tz_shift": 0,
     "altitude": false
    },
-   "away_injuries": [
-    {
-     "player_id": "4601025",
-     "player_name": "Pelle Larsson",
-     "status": "Day-To-Day",
-     "detail": "Left Finger Sprain",
-     "comment": "Larsson (finger) is listed as probable for Saturday's game against Charlotte.",
-     "date": "2026-10-24T17:13Z",
-     "return_date": "2026-10-24"
-    }
-   ],
+   "away_injuries": [],
    "home_form": {
     "source": "espn-box",
     "season": 2027,
@@ -8072,16 +8062,7 @@
      "detail": "Right Hamstring",
      "comment": "Williams (hamstring) has been ruled out for Saturday's game against the Heat.",
      "date": "2026-10-24T17:26Z",
-     "return_date": "2026-10-26"
-    },
-    {
-     "player_id": "5060701",
-     "player_name": "Christian Anderson",
-     "status": "Day-To-Day",
-     "detail": "Left Ankle Sprain",
-     "comment": "Anderson (ankle) is probable for Saturday's game against the Heat.",
-     "date": "2026-10-24T17:24Z",
-     "return_date": "2026-10-24"
+     "return_date": "2026-10-30"
     },
     {
      "player_id": "4395651",
@@ -31289,7 +31270,7 @@
       "player_name": "Patrick Williams",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4431687.png",
-      "status": null,
+      "status": "Out",
       "mpg": 20.5,
       "ppg": 7.0,
       "height_in": 78.0,
@@ -31860,13 +31841,22 @@
    },
    "home_injuries": [
     {
+     "player_id": "4431687",
+     "player_name": "Patrick Williams",
+     "status": "Out",
+     "detail": "Right Groin Soreness",
+     "comment": "Williams (groin) is listed as questionable for Saturday's game against the Wizards.",
+     "date": "2026-10-24T22:23Z",
+     "return_date": "2026-10-26"
+    },
+    {
      "player_id": "5242496",
      "player_name": "Noa Essengue",
-     "status": "Day-To-Day",
-     "detail": "Head",
-     "comment": "Essengue (head) is probable for Saturday's game against the Wizards, Joel Lorenzi of The Athletic reports.",
-     "date": "2026-10-24T16:58Z",
-     "return_date": "2026-10-24"
+     "status": "Out",
+     "detail": "Head Bruise",
+     "comment": "Essengue (head) has been downgraded to questionable for Saturday's game against the Wizards.",
+     "date": "2026-10-24T22:20Z",
+     "return_date": "2026-10-26"
     },
     {
      "player_id": "4278067",
@@ -39625,21 +39615,30 @@
    },
    "home_injuries": [
     {
-     "player_id": "5211175",
-     "player_name": "Zaccharie Risacher",
-     "status": "Day-To-Day",
-     "detail": "Right Hip Soreness",
-     "comment": "Risacher ended Wednesday's 128-110 loss to Houston with four points (2-7 FG, 0-4 3Pt), six rebounds, two assists and five steals over 27 minutes.",
-     "date": "2026-10-24T18:31Z",
-     "return_date": "2026-10-24"
+     "player_id": "6442",
+     "player_name": "Kyrie Irving",
+     "status": "Out",
+     "detail": "Left Rest",
+     "comment": "Irving (knee) has been downgraded from questionable to doubtful ahead of Saturday's game against the Spurs.",
+     "date": "2026-10-24T22:20Z",
+     "return_date": "2026-10-26"
     },
     {
      "player_id": "4873153",
      "player_name": "Morez Johnson Jr.",
      "status": "Day-To-Day",
-     "detail": "Right Lower Leg",
-     "comment": "Johnson (shin) is listed as questionable for Saturday's game against the Spurs.",
-     "date": "2026-10-24T18:29Z",
+     "detail": "",
+     "comment": "Johnson (shin) is listed as probable for Saturday's game against the Spurs.",
+     "date": "2026-10-24T21:50Z",
+     "return_date": ""
+    },
+    {
+     "player_id": "5211175",
+     "player_name": "Zaccharie Risacher",
+     "status": "Day-To-Day",
+     "detail": "Right Hip Soreness",
+     "comment": "Risacher (hip) has been upgraded from questionable to probable ahead of Saturday's game against San Antonio.",
+     "date": "2026-10-24T21:49Z",
      "return_date": "2026-10-24"
     },
     {
@@ -39658,15 +39657,6 @@
      "detail": "Right Calf Soreness",
      "comment": "Howard (calf) is listed as doubtful against the Spurs on Saturday.",
      "date": "2026-10-24T18:27Z",
-     "return_date": "2026-10-24"
-    },
-    {
-     "player_id": "6442",
-     "player_name": "Kyrie Irving",
-     "status": "Day-To-Day",
-     "detail": "Left Knee",
-     "comment": "Irving (knee) is listed as questionable for Saturday's game against San Antonio.",
-     "date": "2026-10-24T18:26Z",
      "return_date": "2026-10-24"
     },
     {
@@ -42945,7 +42935,7 @@
       "player_name": "Marcus Smart",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/2990992.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 28.5,
       "ppg": 9.3,
       "height_in": 75.0,
@@ -43694,6 +43684,15 @@
     "altitude": false
    },
    "away_injuries": [
+    {
+     "player_id": "2990992",
+     "player_name": "Marcus Smart",
+     "status": "Day-To-Day",
+     "detail": "Left Forearm Strain",
+     "comment": "Smart (forearm) is listed as questionable for Saturday's game against the Hawks.",
+     "date": "2026-10-24T19:34Z",
+     "return_date": "2026-10-24"
+    },
     {
      "player_id": "2991235",
      "player_name": "Steven Adams",
@@ -51272,7 +51271,7 @@
       "player_name": "Yves Missi",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5061589.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 19.6,
       "ppg": 5.7,
       "height_in": 83.0,
@@ -51661,11 +51660,11 @@
     {
      "player_id": "5061589",
      "player_name": "Yves Missi",
-     "status": "Day-To-Day",
-     "detail": "Left Knee",
-     "comment": "Missi won't return to Friday's game against the Jazz due to a left knee injury.",
-     "date": "2026-10-24T02:46Z",
-     "return_date": "2026-10-24"
+     "status": "Out",
+     "detail": "Left Knee Bruise",
+     "comment": "Missi has been diagnosed with a left knee bone bruise and he will miss an extended period of time, Brett Siegel of ClutchPoints.com reports.",
+     "date": "2026-10-24T22:17Z",
+     "return_date": "2026-11-27"
     }
    ],
    "home_form": {
@@ -58079,7 +58078,7 @@
       "player_name": "Draymond Green",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/6589.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 27.5,
       "ppg": 8.4,
       "height_in": 78.0,
@@ -59028,7 +59027,7 @@
       "player_name": "Stephen Curry",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3975.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 31.0,
       "ppg": 26.6,
       "height_in": 74.0,
@@ -59615,6 +59614,42 @@
    },
    "away_injuries": [
     {
+     "player_id": "4397886",
+     "player_name": "Charles Bassey",
+     "status": "Day-To-Day",
+     "detail": "Knee",
+     "comment": "Bassey (knee) is listed as questionable for Saturday's game against the Suns.",
+     "date": "2026-10-24T20:22Z",
+     "return_date": "2026-10-24"
+    },
+    {
+     "player_id": "3213",
+     "player_name": "Al Horford",
+     "status": "Out",
+     "detail": "Back",
+     "comment": "Horford (back) has been ruled out for Saturday's game against the Suns.",
+     "date": "2026-10-24T20:20Z",
+     "return_date": "2026-10-26"
+    },
+    {
+     "player_id": "6589",
+     "player_name": "Draymond Green",
+     "status": "Day-To-Day",
+     "detail": "Back",
+     "comment": "Green is doubtful to play Saturday against the Suns due to bilateral low back soreness.",
+     "date": "2026-10-24T20:17Z",
+     "return_date": "2026-10-24"
+    },
+    {
+     "player_id": "3975",
+     "player_name": "Stephen Curry",
+     "status": "Out",
+     "detail": "Rest",
+     "comment": "Curry (rest) won't play Saturday against the Suns.",
+     "date": "2026-10-24T20:08Z",
+     "return_date": "2026-10-26"
+    },
+    {
      "player_id": "4709138",
      "player_name": "Brandin Podziemski",
      "status": "Out",
@@ -59622,24 +59657,6 @@
      "comment": "Podziemski (back) told reporters Friday that he will not play in the second leg of the Warriors' back-to-back set Saturday against the Suns, Nick Friedell of The Athletic reports.",
      "date": "2026-10-24T14:11Z",
      "return_date": "2026-10-26"
-    },
-    {
-     "player_id": "3975",
-     "player_name": "Stephen Curry",
-     "status": "Day-To-Day",
-     "detail": "Rest",
-     "comment": "Curry told reporters after Friday's loss to the Grizzlies that he will \"probably not\" play against the Suns on Saturday, Nick Friedell of The Athletic reports.",
-     "date": "2026-10-24T14:07Z",
-     "return_date": "2026-10-24"
-    },
-    {
-     "player_id": "4397886",
-     "player_name": "Charles Bassey",
-     "status": "Day-To-Day",
-     "detail": "Knee",
-     "comment": "Bassey (knee) is out for Friday's game versus the Grizzlies.",
-     "date": "2026-10-24T13:46Z",
-     "return_date": "2026-10-24"
     },
     {
      "player_id": "3102531",
@@ -62459,7 +62476,7 @@
       "player_name": "Oso Ighodaro",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4601023.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 22.1,
       "ppg": 6.5,
       "height_in": 83.0,
@@ -63616,17 +63633,17 @@
      "status": "Day-To-Day",
      "detail": "Left Knee Strain",
      "comment": "Kennard (knee) is questionable to play Saturday against the Warriors.",
-     "date": "2026-10-24T18:33Z",
+     "date": "2026-10-24T22:23Z",
      "return_date": "2026-10-24"
     },
     {
      "player_id": "4601023",
      "player_name": "Oso Ighodaro",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Oblique Strain",
-     "comment": "Ighodaro (oblique) is listed as doubtful for Saturday's game against Golden State.",
-     "date": "2026-10-24T00:24Z",
-     "return_date": "2026-10-24"
+     "comment": "Ighodaro (oblique) has been ruled out for Saturday's game against the Warriors, Duane Rankin of The Arizona Republic reports.",
+     "date": "2026-10-24T20:24Z",
+     "return_date": "2026-10-26"
     },
     {
      "player_id": "4701232",
@@ -63640,5 +63657,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-24T20:40:58+00:00"
+ "published_at_utc": "2026-10-24T22:57:44+00:00"
 }
