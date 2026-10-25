@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-24",
- "generated_at_utc": "2026-10-24T22:29:36+00:00",
+ "generated_at_utc": "2026-10-24T23:44:20+00:00",
  "data_through_utc": "2026-10-24T02:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -122,7 +122,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "7:26 - 2nd",
+   "status_detail": "5:42 - 4th",
    "kickoff_utc": "2026-10-24T22:00Z",
    "away": "MIA",
    "home": "CHA",
@@ -136,8 +136,8 @@
    "home_record": "1-1",
    "away_split_record": "0-0",
    "home_split_record": "0-1",
-   "away_score": 43,
-   "home_score": 44,
+   "away_score": 100,
+   "home_score": 100,
    "venue": "Spectrum Center",
    "venue_city": "Charlotte, NC",
    "broadcast": "NBA League Pass",
@@ -8097,8 +8097,8 @@
    "id": "401909854",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/24 - 7:30 PM EDT",
+   "game_state": "live",
+   "status_detail": "10:51 - 2nd",
    "kickoff_utc": "2026-10-24T23:30Z",
    "away": "BKN",
    "home": "CLE",
@@ -8112,8 +8112,8 @@
    "home_record": "0-1",
    "away_split_record": "0-0",
    "home_split_record": "0-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 30,
+   "home_score": 38,
    "venue": "Rocket Arena",
    "venue_city": "Cleveland, OH",
    "broadcast": "NBA League Pass / DAZN (YES) / DAZN CLE",
@@ -15954,8 +15954,8 @@
    "id": "401909855",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/24 - 7:30 PM EDT",
+   "game_state": "live",
+   "status_detail": "8:39 - 2nd",
    "kickoff_utc": "2026-10-24T23:30Z",
    "away": "MIL",
    "home": "PHI",
@@ -15969,8 +15969,8 @@
    "home_record": "2-0",
    "away_split_record": "0-1",
    "home_split_record": "1-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 34,
+   "home_score": 34,
    "venue": "Xfinity Mobile Arena",
    "venue_city": "Philadelphia, PA",
    "broadcast": "NBA TV / MyMi / Bucks App",
@@ -23242,7 +23242,7 @@
       "player_name": "Dean Wade",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3912848.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 22.4,
       "ppg": 5.8,
       "height_in": 81.0,
@@ -23847,15 +23847,6 @@
      "return_date": "2026-10-25"
     },
     {
-     "player_id": "3912848",
-     "player_name": "Dean Wade",
-     "status": "Day-To-Day",
-     "detail": "Left Ankle Sprain",
-     "comment": "Wade is listed as questionable for Saturday's game against the Bucks due to a left ankle sprain.",
-     "date": "2026-10-23T21:07Z",
-     "return_date": "2026-10-24"
-    },
-    {
      "player_id": "4870562",
      "player_name": "Dominick Barlow",
      "status": "Out",
@@ -23879,8 +23870,8 @@
    "id": "401909857",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/24 - 8:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "10:17 - 1st",
    "kickoff_utc": "2026-10-25T00:00Z",
    "away": "WSH",
    "home": "CHI",
@@ -23894,8 +23885,8 @@
    "home_record": "1-1",
    "away_split_record": "0-0",
    "home_split_record": "0-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 5,
+   "home_score": 2,
    "venue": "United Center",
    "venue_city": "Chicago, IL",
    "broadcast": "MNMT / NBA League Pass",
@@ -31845,8 +31836,8 @@
      "player_name": "Patrick Williams",
      "status": "Out",
      "detail": "Right Groin Soreness",
-     "comment": "Williams (groin) is listed as questionable for Saturday's game against the Wizards.",
-     "date": "2026-10-24T22:23Z",
+     "comment": "Williams (groin) is out for Saturday's game versus the Wizards, Joel Lorenzi of The Athletic reports.",
+     "date": "2026-10-24T22:22Z",
      "return_date": "2026-10-26"
     },
     {
@@ -31854,7 +31845,7 @@
      "player_name": "Noa Essengue",
      "status": "Out",
      "detail": "Head Bruise",
-     "comment": "Essengue (head) has been downgraded to questionable for Saturday's game against the Wizards.",
+     "comment": "Essengue (head) won't suit up for Saturday's game against the Wizards, Joel Lorenzi of The Athletic reports.",
      "date": "2026-10-24T22:20Z",
      "return_date": "2026-10-26"
     },
@@ -31873,8 +31864,8 @@
    "id": "401909858",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/24 - 8:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "10:45 - 1st",
    "kickoff_utc": "2026-10-25T00:00Z",
    "away": "SA",
    "home": "DAL",
@@ -31888,8 +31879,8 @@
    "home_record": "1-1",
    "away_split_record": "0-0",
    "home_split_record": "0-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 4,
+   "home_score": 0,
    "venue": "American Airlines Center",
    "venue_city": "Dallas, TX",
    "broadcast": "NBA League Pass / DAZN SAS / KFAA-TV / MavsTV",
@@ -38077,7 +38068,7 @@
       "player_name": "Max Christie",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4432582.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 29.1,
       "ppg": 12.3,
       "height_in": 77.0,
@@ -38656,7 +38647,7 @@
       "player_name": "Zaccharie Risacher",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5211175.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 22.4,
       "ppg": 9.6,
       "height_in": 80.0,
@@ -39618,28 +39609,10 @@
      "player_id": "6442",
      "player_name": "Kyrie Irving",
      "status": "Out",
-     "detail": "Left Rest",
-     "comment": "Irving (knee) has been downgraded from questionable to doubtful ahead of Saturday's game against the Spurs.",
+     "detail": "Left Knee",
+     "comment": "Irving is out for Saturday's game against the Spurs due to rest, Christian Clark of The Athletic reports.",
      "date": "2026-10-24T22:20Z",
      "return_date": "2026-10-26"
-    },
-    {
-     "player_id": "4873153",
-     "player_name": "Morez Johnson Jr.",
-     "status": "Day-To-Day",
-     "detail": "",
-     "comment": "Johnson (shin) is listed as probable for Saturday's game against the Spurs.",
-     "date": "2026-10-24T21:50Z",
-     "return_date": ""
-    },
-    {
-     "player_id": "5211175",
-     "player_name": "Zaccharie Risacher",
-     "status": "Day-To-Day",
-     "detail": "Right Hip Soreness",
-     "comment": "Risacher (hip) has been upgraded from questionable to probable ahead of Saturday's game against San Antonio.",
-     "date": "2026-10-24T21:49Z",
-     "return_date": "2026-10-24"
     },
     {
      "player_id": "3138160",
@@ -39649,24 +39622,6 @@
      "comment": "Martin (thumb) has been ruled out against San Antonio on Saturday.",
      "date": "2026-10-24T18:29Z",
      "return_date": "2026-11-02"
-    },
-    {
-     "player_id": "5105806",
-     "player_name": "Jett Howard",
-     "status": "Out",
-     "detail": "Right Calf Soreness",
-     "comment": "Howard (calf) is listed as doubtful against the Spurs on Saturday.",
-     "date": "2026-10-24T18:27Z",
-     "return_date": "2026-10-24"
-    },
-    {
-     "player_id": "4432582",
-     "player_name": "Max Christie",
-     "status": "Day-To-Day",
-     "detail": "Right Leg",
-     "comment": "Christie (shin) is questionable for Saturday's game against the Spurs.",
-     "date": "2026-10-24T18:25Z",
-     "return_date": "2026-10-24"
     },
     {
      "player_id": "5148538",
@@ -42742,7 +42697,7 @@
       "player_name": "Reed Sheppard",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4711272.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 26.2,
       "ppg": 13.5,
       "height_in": 74.0,
@@ -42935,7 +42890,7 @@
       "player_name": "Marcus Smart",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/2990992.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 28.5,
       "ppg": 9.3,
       "height_in": 75.0,
@@ -43687,11 +43642,11 @@
     {
      "player_id": "2990992",
      "player_name": "Marcus Smart",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Left Forearm Strain",
-     "comment": "Smart (forearm) is listed as questionable for Saturday's game against the Hawks.",
-     "date": "2026-10-24T19:34Z",
-     "return_date": "2026-10-24"
+     "comment": "Smart (forearm) has been ruled out for Saturday's game against the Hawks, Varun Shankar of the Houston Chronicle reports.",
+     "date": "2026-10-24T23:15Z",
+     "return_date": "2026-10-26"
     },
     {
      "player_id": "2991235",
@@ -43701,15 +43656,6 @@
      "comment": "Adams (ankle) has been ruled out for Saturday's game against the Hawks.",
      "date": "2026-10-24T17:20Z",
      "return_date": "2026-10-26"
-    },
-    {
-     "player_id": "4711272",
-     "player_name": "Reed Sheppard",
-     "status": "Day-To-Day",
-     "detail": "Left Knee Bruise",
-     "comment": "Sheppard (knee) is listed as questionable for Saturday's game against the Hawks.",
-     "date": "2026-10-24T17:18Z",
-     "return_date": "2026-10-24"
     },
     {
      "player_id": "2991230",
@@ -51664,7 +51610,7 @@
      "detail": "Left Knee Bruise",
      "comment": "Missi has been diagnosed with a left knee bone bruise and he will miss an extended period of time, Brett Siegel of ClutchPoints.com reports.",
      "date": "2026-10-24T22:17Z",
-     "return_date": "2026-11-27"
+     "return_date": "2026-11-02"
     }
    ],
    "home_form": {
@@ -63633,7 +63579,7 @@
      "status": "Day-To-Day",
      "detail": "Left Knee Strain",
      "comment": "Kennard (knee) is questionable to play Saturday against the Warriors.",
-     "date": "2026-10-24T22:23Z",
+     "date": "2026-10-24T23:26Z",
      "return_date": "2026-10-24"
     },
     {
@@ -63657,5 +63603,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-24T22:57:44+00:00"
+ "published_at_utc": "2026-10-25T00:15:56+00:00"
 }
