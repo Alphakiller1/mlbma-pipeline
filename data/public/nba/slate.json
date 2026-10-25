@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-25",
- "generated_at_utc": "2026-10-25T04:42:20+00:00",
+ "generated_at_utc": "2026-10-25T06:54:25+00:00",
  "data_through_utc": "2026-10-25T02:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -2004,7 +2004,7 @@
      "season_with_club": 3,
      "first_season_with_club": false,
      "seasons_as_head_coach": 3,
-     "career_record": "104-61",
+     "career_record": "105-61",
      "career": [
       {
        "season_label": "2024-25",
@@ -5873,7 +5873,7 @@
      "season_with_club": 5,
      "first_season_with_club": false,
      "seasons_as_head_coach": 5,
-     "career_record": "107-222",
+     "career_record": "108-222",
      "career": [
       {
        "season_label": "2022-23",
@@ -9891,7 +9891,7 @@
      "season_with_club": 10,
      "first_season_with_club": false,
      "seasons_as_head_coach": 25,
-     "career_record": "1013-923",
+     "career_record": "1013-924",
      "career": [
       {
        "season_label": "2018-19",
@@ -17885,7 +17885,7 @@
      "season_with_club": 1,
      "first_season_with_club": true,
      "seasons_as_head_coach": 1,
-     "career_record": "0-1",
+     "career_record": "0-2",
      "career": [],
      "philosophy": {
       "seasons": 0,
@@ -21646,7 +21646,7 @@
      "season_with_club": 2,
      "first_season_with_club": false,
      "seasons_as_head_coach": 13,
-     "career_record": "507-334",
+     "career_record": "507-335",
      "career": [
       {
        "season_label": "2022-23",
@@ -25636,7 +25636,7 @@
      "season_with_club": 4,
      "first_season_with_club": false,
      "seasons_as_head_coach": 4,
-     "career_record": "102-145",
+     "career_record": "103-145",
      "career": [
       {
        "season_label": "2023-24",
@@ -29537,7 +29537,7 @@
      "season_with_club": 7,
      "first_season_with_club": false,
      "seasons_as_head_coach": 7,
-     "career_record": "259-193",
+     "career_record": "260-193",
      "career": [
       {
        "season_label": "2020-21",
@@ -33524,7 +33524,7 @@
      "season_with_club": 7,
      "first_season_with_club": false,
      "seasons_as_head_coach": 11,
-     "career_record": "405-289",
+     "career_record": "405-290",
      "career": [
       {
        "season_label": "2018-19",
@@ -41536,7 +41536,7 @@
      "season_with_club": 3,
      "first_season_with_club": false,
      "seasons_as_head_coach": 11,
-     "career_record": "360-350",
+     "career_record": "361-350",
      "career": [
       {
        "season_label": "2018-19",
@@ -49581,7 +49581,7 @@
      "season_with_club": 3,
      "first_season_with_club": false,
      "seasons_as_head_coach": 3,
-     "career_record": "30-62",
+     "career_record": "31-62",
      "career": [
       {
        "season_label": "2024-25",
@@ -53459,7 +53459,7 @@
      "season_with_club": 3,
      "first_season_with_club": false,
      "seasons_as_head_coach": 3,
-     "career_record": "49-85",
+     "career_record": "49-86",
      "career": [
       {
        "season_label": "2024-25",
@@ -55522,5 +55522,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-25T05:47:18+00:00"
+ "published_at_utc": "2026-10-25T07:32:15+00:00"
 }
