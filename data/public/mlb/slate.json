@@ -1,155 +1,39 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-24T22:33:51Z",
-  "data_through_utc": "2026-10-24T22:33:51Z",
+  "generated_at_utc": "2026-10-25T04:54:08Z",
+  "data_through_utc": "2026-10-25T04:54:08Z",
   "games": [
     {
-      "id": "849802",
+      "id": "849804",
       "sport": "mlb",
       "game_state": "scheduled",
-      "kickoff_utc": "2026-10-25T00:00:00Z",
-      "game_pk": 849802,
-      "away": "TB",
-      "home": "MIL",
-      "away_name": "Tampa Bay Rays",
-      "home_name": "Milwaukee Brewers",
-      "away_record": "0-1",
-      "home_record": "1-0",
-      "venue": "American Family Field",
-      "venue_city": "Milwaukee, WI",
+      "kickoff_utc": "2026-10-27T00:00:00Z",
+      "game_pk": 849804,
+      "away": "MIL",
+      "home": "TB",
+      "away_name": "Milwaukee Brewers",
+      "home_name": "Tampa Bay Rays",
+      "away_record": "2-0",
+      "home_record": "0-2",
+      "venue": "Tropicana Field",
+      "venue_city": "St. Petersburg, FL",
       "broadcast": "FOX / FOX ONE, Fox Deportes / FOX ONE",
-      "conditions": "70\u00b0 \u00b7 Roof Closed \u00b7 1 mph, R To L",
-      "weather_temp": "70",
-      "weather_cond": "Roof Closed",
-      "weather_wind": "1 mph, R To L",
-      "away_starter": "Drew Rasmussen",
-      "home_starter": "Logan Henderson",
-      "away_starter_id": 656876,
-      "home_starter_id": 701656,
-      "away_hand": "R",
+      "away_starter": "Robert Gasser",
+      "home_starter": "Freddy Peralta",
+      "away_starter_id": 688107,
+      "home_starter_id": 642547,
+      "away_hand": "L",
       "home_hand": "R",
-      "away_era": "2.67",
-      "home_era": "2.47",
-      "away_lineup_state": "Confirmed",
-      "home_lineup_state": "Confirmed",
-      "away_lineup": [
-        {
-          "slot": 1,
-          "person_id": 650490,
-          "name": "Yandy D\u00edaz",
-          "position": "DH"
-        },
-        {
-          "slot": 2,
-          "person_id": 666018,
-          "name": "Jonathan Aranda",
-          "position": "1B"
-        },
-        {
-          "slot": 3,
-          "person_id": 802415,
-          "name": "Chandler Simpson",
-          "position": "LF"
-        },
-        {
-          "slot": 4,
-          "person_id": 691406,
-          "name": "Junior Caminero",
-          "position": "3B"
-        },
-        {
-          "slot": 5,
-          "person_id": 689414,
-          "name": "Liam Hicks",
-          "position": "C"
-        },
-        {
-          "slot": 6,
-          "person_id": 680700,
-          "name": "Richie Palacios",
-          "position": "2B"
-        },
-        {
-          "slot": 7,
-          "person_id": 676356,
-          "name": "Jonny DeLuca",
-          "position": "CF"
-        },
-        {
-          "slot": 8,
-          "person_id": 683748,
-          "name": "Victor Mesa Jr.",
-          "position": "RF"
-        },
-        {
-          "slot": 9,
-          "person_id": 670764,
-          "name": "Taylor Walls",
-          "position": "SS"
-        }
-      ],
-      "home_lineup": [
-        {
-          "slot": 1,
-          "person_id": 694192,
-          "name": "Jackson Chourio",
-          "position": "LF"
-        },
-        {
-          "slot": 2,
-          "person_id": 641343,
-          "name": "Jake Bauers",
-          "position": "1B"
-        },
-        {
-          "slot": 3,
-          "person_id": 592885,
-          "name": "Christian Yelich",
-          "position": "DH"
-        },
-        {
-          "slot": 4,
-          "person_id": 661388,
-          "name": "William Contreras",
-          "position": "C"
-        },
-        {
-          "slot": 5,
-          "person_id": 668930,
-          "name": "Brice Turang",
-          "position": "2B"
-        },
-        {
-          "slot": 6,
-          "person_id": 669003,
-          "name": "Garrett Mitchell",
-          "position": "CF"
-        },
-        {
-          "slot": 7,
-          "person_id": 806198,
-          "name": "Cooper Pratt",
-          "position": "SS"
-        },
-        {
-          "slot": 8,
-          "person_id": 686217,
-          "name": "Sal Frelick",
-          "position": "RF"
-        },
-        {
-          "slot": 9,
-          "person_id": 666152,
-          "name": "David Hamilton",
-          "position": "3B"
-        }
-      ],
-      "away_team_id": 139,
-      "home_team_id": 158,
-      "venue_id": 32,
-      "away_bullpen": "4/57",
-      "home_bullpen": "3/55"
+      "away_era": "3.87",
+      "home_era": "4.42",
+      "away_lineup_state": "Expected",
+      "home_lineup_state": "Expected",
+      "away_team_id": 158,
+      "home_team_id": 139,
+      "venue_id": 12,
+      "away_bullpen": "6/148",
+      "home_bullpen": "7/152"
     }
   ]
 }
