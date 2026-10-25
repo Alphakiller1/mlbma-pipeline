@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-25T16:12:39Z",
-  "data_through_utc": "2026-10-25T16:12:39Z",
+  "generated_at_utc": "2026-10-25T16:32:45Z",
+  "data_through_utc": "2026-10-25T16:32:45Z",
   "games": [
     {
       "id": "849804",
