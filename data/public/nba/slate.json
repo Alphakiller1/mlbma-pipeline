@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-25",
- "generated_at_utc": "2026-10-25T11:30:23+00:00",
+ "generated_at_utc": "2026-10-25T16:20:28+00:00",
  "data_through_utc": "2026-10-25T02:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -15979,22 +15979,22 @@
    },
    "home_injuries": [
     {
+     "player_id": "5105626",
+     "player_name": "Tyler Bilodeau",
+     "status": "Day-To-Day",
+     "detail": "Shoulder",
+     "comment": "Bilodeau (shoulder) has been ruled out for Saturday's game in Cleveland.",
+     "date": "2026-10-25T13:43Z",
+     "return_date": "2026-10-25"
+    },
+    {
      "player_id": "5101761",
      "player_name": "Mikel Brown Jr.",
      "status": "Out",
      "detail": "Rest",
      "comment": "Head coach Jordi Fernandez said Brown (rest) will be held out of Sunday's game against the Pacers, Brian Lewis of the New York Post reports.",
-     "date": "2026-10-25T02:32Z",
+     "date": "2026-10-25T13:40Z",
      "return_date": "2026-10-27"
-    },
-    {
-     "player_id": "5105626",
-     "player_name": "Tyler Bilodeau",
-     "status": "Out",
-     "detail": "Shoulder",
-     "comment": "Bilodeau (shoulder) has been ruled out for Saturday's game in Cleveland.",
-     "date": "2026-10-23T21:08Z",
-     "return_date": "2026-10-25"
     }
    ]
   },
@@ -43651,8 +43651,8 @@
      "player_name": "Ausar Thompson",
      "status": "Day-To-Day",
      "detail": "Right Ankle Sprain",
-     "comment": "Thompson (ankle) is listed as questionable for Sunday's game against Philadelphia.",
-     "date": "2026-10-24T20:14Z",
+     "comment": "Thompson (ankle) did not participate in Sunday morning's shootaround, Coty M. Davis of The Detroit News reports.",
+     "date": "2026-10-25T15:48Z",
      "return_date": "2026-10-25"
     },
     {
@@ -43660,9 +43660,9 @@
      "player_name": "Jalen Duren",
      "status": "Out",
      "detail": "Right Hamstring Strain",
-     "comment": "Duren has been ruled out for Sunday's game against the 76ers due to a right hamstring strain, Eric Vincent of ClutchPoints.com reports.",
-     "date": "2026-10-24T20:08Z",
-     "return_date": "2026-10-27"
+     "comment": "Duren will be re-evaluated in two weeks due to a right hamstring strain, Eric Vincent of ClutchPoints.com reports.",
+     "date": "2026-10-25T14:56Z",
+     "return_date": "2026-11-09"
     }
    ],
    "home_form": {
@@ -46859,7 +46859,7 @@
       "player_name": "LeBron James",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/1966.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 33.5,
       "ppg": 15.5,
       "height_in": 81.0,
@@ -47639,6 +47639,15 @@
    },
    "home_injuries": [
     {
+     "player_id": "1966",
+     "player_name": "LeBron James",
+     "status": "Day-To-Day",
+     "detail": "Back",
+     "comment": "James (back) has been ruled out for Saturday's game against the Bucks, Adam Aaronson of PhillyVoice.com reports.",
+     "date": "2026-10-25T13:35Z",
+     "return_date": "2026-10-25"
+    },
+    {
      "player_id": "3059318",
      "player_name": "Joel Embiid",
      "status": "Day-To-Day",
@@ -47654,15 +47663,6 @@
      "detail": "Right Knee",
      "comment": "Walker (ankle) exited Saturday's 127-116 win over the Bucks in the third quarter and did not return, finishing with six points (2-3 FG, 2-3 FT), three rebounds, one assist and one steal across 12 minutes.",
      "date": "2026-10-25T02:11Z",
-     "return_date": "2026-10-25"
-    },
-    {
-     "player_id": "1966",
-     "player_name": "LeBron James",
-     "status": "Out",
-     "detail": "Back",
-     "comment": "James (back) has been ruled out for Saturday's game against the Bucks, Adam Aaronson of PhillyVoice.com reports.",
-     "date": "2026-10-24T17:06Z",
      "return_date": "2026-10-25"
     },
     {
@@ -55522,5 +55522,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-25T13:09:10+00:00"
+ "published_at_utc": "2026-10-25T17:37:00+00:00"
 }
