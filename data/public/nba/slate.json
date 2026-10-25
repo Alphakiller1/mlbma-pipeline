@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-25",
- "generated_at_utc": "2026-10-25T16:20:28+00:00",
+ "generated_at_utc": "2026-10-25T20:51:37+00:00",
  "data_through_utc": "2026-10-25T02:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -121,8 +121,8 @@
    "id": "401909861",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/25 - 5:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "11:57 - 4th",
    "kickoff_utc": "2026-10-25T21:00Z",
    "away": "LAL",
    "home": "UTAH",
@@ -136,8 +136,8 @@
    "home_record": "1-1",
    "away_split_record": "0-0",
    "home_split_record": "1-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 103,
+   "home_score": 100,
    "venue": "Delta Center",
    "venue_city": "Salt Lake City, UT",
    "broadcast": "NBA League Pass / Spectrum Sports Net / Spectrum Sports Net + / KJZZ-TV / Jazz+",
@@ -8008,8 +8008,8 @@
    "id": "401909862",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/25 - 6:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "3:56 - 2nd",
    "kickoff_utc": "2026-10-25T22:00Z",
    "away": "IND",
    "home": "BKN",
@@ -8023,8 +8023,8 @@
    "home_record": "0-2",
    "away_split_record": "1-0",
    "home_split_record": "0-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 46,
+   "home_score": 44,
    "venue": "Barclays Center",
    "venue_city": "Brooklyn, NY",
    "broadcast": "NBA League Pass / DAZN IND / DAZN (YES)",
@@ -15981,11 +15981,11 @@
     {
      "player_id": "5105626",
      "player_name": "Tyler Bilodeau",
-     "status": "Day-To-Day",
-     "detail": "Shoulder",
-     "comment": "Bilodeau (shoulder) has been ruled out for Saturday's game in Cleveland.",
-     "date": "2026-10-25T13:43Z",
-     "return_date": "2026-10-25"
+     "status": "Out",
+     "detail": "Right Shoulder Sprain",
+     "comment": "Bilodeau (shoulder) has been ruled out for Sunday's game against Indiana.",
+     "date": "2026-10-25T17:19Z",
+     "return_date": "2026-10-27"
     },
     {
      "player_id": "5101761",
@@ -46280,7 +46280,7 @@
       "player_name": "Joel Embiid",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3059318.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 34.3,
       "ppg": 21.7,
       "height_in": 84.0,
@@ -46859,7 +46859,7 @@
       "player_name": "LeBron James",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/1966.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 33.5,
       "ppg": 15.5,
       "height_in": 81.0,
@@ -47639,40 +47639,31 @@
    },
    "home_injuries": [
     {
-     "player_id": "1966",
-     "player_name": "LeBron James",
-     "status": "Day-To-Day",
-     "detail": "Back",
-     "comment": "James (back) has been ruled out for Saturday's game against the Bucks, Adam Aaronson of PhillyVoice.com reports.",
-     "date": "2026-10-25T13:35Z",
-     "return_date": "2026-10-25"
-    },
-    {
-     "player_id": "3059318",
-     "player_name": "Joel Embiid",
-     "status": "Day-To-Day",
-     "detail": "Rest",
-     "comment": "Embiid produced 28 points (8-20 FG, 0-3 3Pt, 12-14 FT), 11 rebounds, 10 assists, one steal and four turnovers across 36 minutes in Saturday's 127-116 win over the Bucks.",
-     "date": "2026-10-25T02:15Z",
-     "return_date": "2026-10-25"
-    },
-    {
-     "player_id": "4432446",
-     "player_name": "Jabari Walker",
-     "status": "Day-To-Day",
-     "detail": "Right Knee",
-     "comment": "Walker (ankle) exited Saturday's 127-116 win over the Bucks in the third quarter and did not return, finishing with six points (2-3 FG, 2-3 FT), three rebounds, one assist and one steal across 12 minutes.",
-     "date": "2026-10-25T02:11Z",
-     "return_date": "2026-10-25"
-    },
-    {
      "player_id": "3904625",
      "player_name": "Tacko Fall",
      "status": "Out",
      "detail": "Left Quadriceps Strain",
-     "comment": "Fall (quadriceps) is out for Saturday's game against the Bucks.",
-     "date": "2026-10-23T21:10Z",
-     "return_date": "2026-10-25"
+     "comment": "Fall (quadriceps) has been ruled out for Sunday's game against Detroit.",
+     "date": "2026-10-25T17:13Z",
+     "return_date": "2026-10-28"
+    },
+    {
+     "player_id": "4432446",
+     "player_name": "Jabari Walker",
+     "status": "Out",
+     "detail": "Left Knee Soreness",
+     "comment": "Walker has been ruled out for Sunday's game against the Pistons due to left knee soreness.",
+     "date": "2026-10-25T17:11Z",
+     "return_date": "2026-10-28"
+    },
+    {
+     "player_id": "3059318",
+     "player_name": "Joel Embiid",
+     "status": "Out",
+     "detail": "Right Heel",
+     "comment": "Embiid has been ruled out for Sunday's game against Detroit due to right plantar fasciitis management.",
+     "date": "2026-10-25T17:08Z",
+     "return_date": "2026-10-28"
     },
     {
      "player_id": "4870562",
@@ -51578,6 +51569,15 @@
     "altitude": false
    },
    "away_injuries": [
+    {
+     "player_id": "5231919",
+     "player_name": "Karim Lopez",
+     "status": "Day-To-Day",
+     "detail": "Right Knee Bruise",
+     "comment": "Lopez (knee) is listed as questionable for Sunday's game against the Kings.",
+     "date": "2026-10-25T20:02Z",
+     "return_date": "2026-10-25"
+    },
     {
      "player_id": "4903027",
      "player_name": "Cedric Coward",
@@ -55488,8 +55488,8 @@
      "player_name": "Keegan Murray",
      "status": "Day-To-Day",
      "detail": "Ankle",
-     "comment": "Murray is questionable to play Sunday against the Grizzlies due to left ankle capsulitis.",
-     "date": "2026-10-25T00:18Z",
+     "comment": "Murray (ankle) has been downgraded to doubtful for Sunday's game against Memphis.",
+     "date": "2026-10-25T18:37Z",
      "return_date": "2026-10-25"
     },
     {
@@ -55522,5 +55522,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-25T17:37:00+00:00"
+ "published_at_utc": "2026-10-25T23:03:19+00:00"
 }
