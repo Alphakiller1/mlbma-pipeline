@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 9,
-  "generated_at_utc": "2026-10-25T22:41:14Z",
+  "generated_at_utc": "2026-10-26T18:45:05Z",
   "data_through_utc": "2026-10-25T18:32:22Z",
   "games": [
     {
@@ -30,7 +30,7 @@
       "venue_city": "Bowling Green, KY",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 69,
+      "weather_temp": 70,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -3480,7 +3480,7 @@
             "label": "Passing yards allowed per game",
             "value": 250.143,
             "better": "low",
-            "rank": 115,
+            "rank": 116,
             "of": 138,
             "format": "num"
           },
@@ -6547,7 +6547,7 @@
             "label": "Yards allowed per game",
             "value": 380.0,
             "better": "low",
-            "rank": 94,
+            "rank": 95,
             "of": 138,
             "format": "num"
           },
@@ -10128,8 +10128,8 @@
       "venue_city": "Las Cruces, NM",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 74,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 75,
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -10569,7 +10569,7 @@
             "value": 0.3116,
             "better": "low",
             "format": "pct",
-            "rank": 74,
+            "rank": 75,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -10743,7 +10743,7 @@
             "label": "Yards per pass allowed",
             "value": 7.132,
             "better": "low",
-            "rank": 68,
+            "rank": 69,
             "of": 138,
             "format": "num"
           },
@@ -12905,8 +12905,8 @@
       "venue_city": "Denton, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 77,
-      "weather_cond": "Mostly cloudy",
+      "weather_temp": 74,
+      "weather_cond": "Showers",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -12929,7 +12929,7 @@
             "label": "Yards per game",
             "value": 428.1,
             "better": "high",
-            "rank": 39,
+            "rank": 38,
             "of": 138,
             "format": "num"
           },
@@ -13001,7 +13001,7 @@
             "label": "Yards per pass allowed",
             "value": 8.17,
             "better": "low",
-            "rank": 125,
+            "rank": 126,
             "of": 138,
             "format": "num"
           },
@@ -13454,9 +13454,9 @@
           },
           "def_ypg": {
             "label": "Yards allowed per game",
-            "value": 380.571,
+            "value": 377.286,
             "better": "low",
-            "rank": 96,
+            "rank": 92,
             "of": 138,
             "format": "num"
           },
@@ -13472,7 +13472,7 @@
             "label": "Third-down rate allowed",
             "value": 0.3441,
             "better": "low",
-            "rank": 38,
+            "rank": 39,
             "of": 138,
             "format": "pct"
           },
@@ -13518,9 +13518,9 @@
           },
           "def_ypa": {
             "label": "Yards per pass allowed",
-            "value": 8.21,
+            "value": 8.126,
             "better": "low",
-            "rank": 127,
+            "rank": 122,
             "of": 138,
             "format": "num"
           },
@@ -13534,9 +13534,9 @@
           },
           "def_pass_ypg": {
             "label": "Passing yards allowed per game",
-            "value": 206.429,
+            "value": 203.143,
             "better": "low",
-            "rank": 62,
+            "rank": 54,
             "of": 138,
             "format": "num"
           },
@@ -13550,9 +13550,9 @@
           },
           "def_comp": {
             "label": "Completion rate allowed",
-            "value": 0.6364,
+            "value": 0.6343,
             "better": "low",
-            "rank": 96,
+            "rank": 95,
             "of": 138,
             "format": "pct"
           },
@@ -13566,7 +13566,7 @@
           },
           "def_qbr": {
             "label": "Passer rating allowed",
-            "value": 153.168,
+            "value": 152.3734,
             "better": "low",
             "rank": 127,
             "of": 138,
@@ -13718,7 +13718,7 @@
           },
           "def_points_per_play": {
             "label": "Points allowed per defensive play",
-            "value": 0.4458,
+            "value": 0.4468,
             "better": "low",
             "format": "num",
             "rank": 112,
@@ -13734,10 +13734,10 @@
           },
           "def_yards_per_play": {
             "label": "Yards allowed per defensive play",
-            "value": 5.55,
+            "value": 5.5136,
             "better": "low",
             "format": "num",
-            "rank": 92,
+            "rank": 90,
             "of": 138
           },
           "off_first_down_rate": {
@@ -13750,10 +13750,10 @@
           },
           "def_first_down_rate": {
             "label": "First downs allowed per defensive play",
-            "value": 0.2938,
+            "value": 0.2944,
             "better": "low",
             "format": "pct",
-            "rank": 85,
+            "rank": 86,
             "of": 138
           },
           "off_plays_pg": {
@@ -13766,10 +13766,10 @@
           },
           "def_plays_pg": {
             "label": "Defensive plays faced per game",
-            "value": 68.5714,
+            "value": 68.4286,
             "better": "neutral",
             "format": "num",
-            "rank": 52,
+            "rank": 53,
             "of": 138
           },
           "off_pass_rate": {
@@ -13782,10 +13782,10 @@
           },
           "def_pass_rate": {
             "label": "Opponent dropback share",
-            "value": 0.3979,
+            "value": 0.3967,
             "better": "neutral",
             "format": "pct",
-            "rank": 128,
+            "rank": 129,
             "of": 138
           },
           "off_sack_rate": {
@@ -13798,10 +13798,10 @@
           },
           "def_sack_rate": {
             "label": "Sacks generated per opponent dropback",
-            "value": 0.0785,
+            "value": 0.0789,
             "better": "high",
             "format": "pct",
-            "rank": 34,
+            "rank": 33,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -13862,10 +13862,10 @@
           },
           "def_pass_first_rate": {
             "label": "Passing first downs allowed per attempt",
-            "value": 0.3693,
+            "value": 0.3714,
             "better": "low",
             "format": "pct",
-            "rank": 124,
+            "rank": 127,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -13878,7 +13878,7 @@
           },
           "def_yards_per_completion": {
             "label": "Yards allowed per completion",
-            "value": 12.9018,
+            "value": 12.8108,
             "better": "low",
             "format": "num",
             "rank": 125,
@@ -13894,7 +13894,7 @@
           },
           "def_pass_td_rate": {
             "label": "Passing touchdowns allowed per attempt",
-            "value": 0.0795,
+            "value": 0.08,
             "better": "low",
             "format": "pct",
             "rank": 133,
@@ -13910,7 +13910,7 @@
           },
           "def_interception_rate": {
             "label": "Interceptions forced per opponent attempt",
-            "value": 0.0284,
+            "value": 0.0286,
             "better": "high",
             "format": "pct",
             "rank": 54,
@@ -13926,15 +13926,15 @@
           },
           "def_dropbacks_pg": {
             "label": "Opponent dropbacks per game",
-            "value": 27.2857,
+            "value": 27.1429,
             "better": "neutral",
             "format": "num",
-            "rank": 123,
+            "rank": 125,
             "of": 138
           },
           "def_disruption_rate": {
             "label": "Sacks plus takeaways per defensive play",
-            "value": 0.0521,
+            "value": 0.0522,
             "better": "high",
             "format": "pct",
             "rank": 64,
@@ -16529,7 +16529,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN2",
       "weather_temp": 60,
-      "weather_cond": "Clear",
+      "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -16640,7 +16640,7 @@
             "label": "Passing yards allowed per game",
             "value": 205.429,
             "better": "low",
-            "rank": 60,
+            "rank": 61,
             "of": 138,
             "format": "num"
           },
@@ -20210,8 +20210,8 @@
       "venue_city": "Charlotte, NC",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 67,
-      "weather_cond": "Partly cloudy",
+      "weather_temp": 68,
+      "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -21170,7 +21170,7 @@
             "value": 0.3704,
             "better": "low",
             "format": "pct",
-            "rank": 125,
+            "rank": 124,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -26644,7 +26644,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN2",
       "weather_temp": 59,
-      "weather_cond": "Intermittent clouds",
+      "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -27603,7 +27603,7 @@
             "value": 0.3711,
             "better": "low",
             "format": "pct",
-            "rank": 126,
+            "rank": 125,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -30381,8 +30381,8 @@
       "venue_city": "Lubbock, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 69,
-      "weather_cond": "Partly sunny",
+      "weather_temp": 61,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -34059,7 +34059,7 @@
       "venue_city": "Durham, NC",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 63,
+      "weather_temp": 66,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -34476,7 +34476,7 @@
             "value": 0.2772,
             "better": "high",
             "format": "pct",
-            "rank": 14,
+            "rank": 15,
             "of": 138
           },
           "def_rush_first_rate": {
@@ -37651,8 +37651,8 @@
       "venue_city": "Kalamazoo, MI",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 59,
-      "weather_cond": "Thunderstorms",
+      "weather_temp": 62,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -41288,8 +41288,8 @@
       "venue_city": "Raleigh, NC",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 66,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 67,
+      "weather_cond": "Hazy sunshine",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -41839,7 +41839,7 @@
             "label": "Yards allowed per game",
             "value": 380.0,
             "better": "low",
-            "rank": 94,
+            "rank": 95,
             "of": 138,
             "format": "num"
           },
@@ -45118,8 +45118,8 @@
       "venue_city": "College Park, MD",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 64,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 66,
+      "weather_cond": "Hazy sunshine",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -45182,7 +45182,7 @@
             "label": "Fourth-down rate allowed",
             "value": 0.7333,
             "better": "low",
-            "rank": 119,
+            "rank": 118,
             "of": 138,
             "format": "pct"
           },
@@ -45254,7 +45254,7 @@
             "label": "Passer rating",
             "value": 150.5287,
             "better": "high",
-            "rank": 41,
+            "rank": 40,
             "of": 138,
             "format": "num"
           },
@@ -47977,8 +47977,8 @@
       "venue_city": "Foxborough, MA",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 56,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 57,
+      "weather_cond": "Partly sunny",
       "neutral": true,
       "away_form": {
         "rates": {
@@ -48419,7 +48419,7 @@
             "value": 0.3135,
             "better": "low",
             "format": "pct",
-            "rank": 78,
+            "rank": 79,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -48519,9 +48519,9 @@
           },
           "off_ypg": {
             "label": "Yards per game",
-            "value": 430.4,
+            "value": 427.1,
             "better": "high",
-            "rank": 36,
+            "rank": 39,
             "of": 138,
             "format": "num"
           },
@@ -48583,9 +48583,9 @@
           },
           "off_ypa": {
             "label": "Yards per pass attempt",
-            "value": 9.8,
+            "value": 9.6,
             "better": "high",
-            "rank": 5,
+            "rank": 8,
             "of": 138,
             "format": "num"
           },
@@ -48599,9 +48599,9 @@
           },
           "off_pass_ypg": {
             "label": "Passing yards per game",
-            "value": 122.7,
+            "value": 119.4,
             "better": "high",
-            "rank": 134,
+            "rank": 135,
             "of": 138,
             "format": "num"
           },
@@ -48615,7 +48615,7 @@
           },
           "off_comp": {
             "label": "Completion rate",
-            "value": 0.477,
+            "value": 0.471,
             "better": "high",
             "rank": 138,
             "of": 138,
@@ -48631,9 +48631,9 @@
           },
           "off_qbr": {
             "label": "Passer rating",
-            "value": 151.67,
+            "value": 149.6917,
             "better": "high",
-            "rank": 39,
+            "rank": 43,
             "of": 138,
             "format": "num"
           },
@@ -48783,7 +48783,7 @@
           },
           "off_points_per_play": {
             "label": "Points per offensive play",
-            "value": 0.4388,
+            "value": 0.4397,
             "better": "high",
             "format": "num",
             "rank": 62,
@@ -48799,10 +48799,10 @@
           },
           "off_yards_per_play": {
             "label": "Yards per offensive play",
-            "value": 6.3565,
+            "value": 6.3214,
             "better": "high",
             "format": "num",
-            "rank": 26,
+            "rank": 30,
             "of": 138
           },
           "def_yards_per_play": {
@@ -48815,7 +48815,7 @@
           },
           "off_first_down_rate": {
             "label": "First downs per offensive play",
-            "value": 0.3249,
+            "value": 0.3256,
             "better": "high",
             "format": "pct",
             "rank": 30,
@@ -48831,10 +48831,10 @@
           },
           "off_plays_pg": {
             "label": "Offensive plays per game",
-            "value": 67.7143,
+            "value": 67.5714,
             "better": "neutral",
             "format": "num",
-            "rank": 78,
+            "rank": 79,
             "of": 138
           },
           "def_plays_pg": {
@@ -48847,7 +48847,7 @@
           },
           "off_pass_rate": {
             "label": "Dropback share",
-            "value": 0.2046,
+            "value": 0.203,
             "better": "neutral",
             "format": "pct",
             "rank": 136,
@@ -48863,7 +48863,7 @@
           },
           "off_sack_rate": {
             "label": "Sacks allowed per dropback",
-            "value": 0.0928,
+            "value": 0.0938,
             "better": "low",
             "format": "pct",
             "rank": 127,
@@ -48927,10 +48927,10 @@
           },
           "off_pass_first_rate": {
             "label": "Passing first downs per attempt",
-            "value": 0.3295,
+            "value": 0.3333,
             "better": "high",
             "format": "pct",
-            "rank": 73,
+            "rank": 70,
             "of": 138
           },
           "def_pass_first_rate": {
@@ -48943,7 +48943,7 @@
           },
           "off_yards_per_completion": {
             "label": "Yards per completion",
-            "value": 20.4524,
+            "value": 20.3902,
             "better": "high",
             "format": "num",
             "rank": 1,
@@ -48959,10 +48959,10 @@
           },
           "off_pass_td_rate": {
             "label": "Passing touchdowns per attempt",
-            "value": 0.0795,
+            "value": 0.0805,
             "better": "high",
             "format": "pct",
-            "rank": 16,
+            "rank": 15,
             "of": 138
           },
           "def_pass_td_rate": {
@@ -48975,7 +48975,7 @@
           },
           "off_interception_rate": {
             "label": "Interceptions thrown per attempt",
-            "value": 0.0227,
+            "value": 0.023,
             "better": "low",
             "format": "pct",
             "rank": 67,
@@ -48991,7 +48991,7 @@
           },
           "off_dropbacks_pg": {
             "label": "Dropbacks per game",
-            "value": 13.8571,
+            "value": 13.7143,
             "better": "neutral",
             "format": "num",
             "rank": 136,
@@ -50765,7 +50765,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "ESPN2",
-      "weather_temp": 54,
+      "weather_temp": 60,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -54402,8 +54402,8 @@
       "venue_city": "Tampa, FL",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 82,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 81,
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -56341,7 +56341,7 @@
           },
           "def_ypg": {
             "label": "Yards allowed per game",
-            "value": 280.143,
+            "value": 279.857,
             "better": "low",
             "rank": 13,
             "of": 138,
@@ -56405,7 +56405,7 @@
           },
           "def_ypa": {
             "label": "Yards per pass allowed",
-            "value": 5.587,
+            "value": 5.583,
             "better": "low",
             "rank": 5,
             "of": 138,
@@ -56421,7 +56421,7 @@
           },
           "def_pass_ypg": {
             "label": "Passing yards allowed per game",
-            "value": 183.571,
+            "value": 183.429,
             "better": "low",
             "rank": 31,
             "of": 138,
@@ -56453,7 +56453,7 @@
           },
           "def_qbr": {
             "label": "Passer rating allowed",
-            "value": 104.4099,
+            "value": 104.3763,
             "better": "low",
             "rank": 7,
             "of": 138,
@@ -56517,7 +56517,7 @@
           },
           "def_ypc": {
             "label": "Yards per rush allowed",
-            "value": 2.782,
+            "value": 2.778,
             "better": "low",
             "rank": 7,
             "of": 138,
@@ -56533,7 +56533,7 @@
           },
           "def_rush_ypg": {
             "label": "Rushing yards allowed per game",
-            "value": 96.571,
+            "value": 96.429,
             "better": "low",
             "rank": 16,
             "of": 138,
@@ -56621,7 +56621,7 @@
           },
           "def_yards_per_play": {
             "label": "Yards allowed per defensive play",
-            "value": 4.035,
+            "value": 4.0309,
             "better": "low",
             "format": "num",
             "rank": 4,
@@ -56765,7 +56765,7 @@
           },
           "def_yards_per_completion": {
             "label": "Yards allowed per completion",
-            "value": 9.6617,
+            "value": 9.6541,
             "better": "low",
             "format": "num",
             "rank": 8,
@@ -59814,7 +59814,7 @@
       "venue_city": "Piscataway, NJ",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 62,
+      "weather_temp": 64,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -63527,8 +63527,8 @@
       "venue_city": "Oxford, MS",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 69,
-      "weather_cond": "Mostly cloudy",
+      "weather_temp": 68,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -63549,7 +63549,7 @@
           },
           "off_ypg": {
             "label": "Yards per game",
-            "value": 376.6,
+            "value": 376.4,
             "better": "high",
             "rank": 80,
             "of": 138,
@@ -63573,9 +63573,9 @@
           },
           "def_third_down": {
             "label": "Third-down rate allowed",
-            "value": 0.3458,
+            "value": 0.3364,
             "better": "low",
-            "rank": 41,
+            "rank": 34,
             "of": 138,
             "format": "pct"
           },
@@ -63589,9 +63589,9 @@
           },
           "def_fourth": {
             "label": "Fourth-down rate allowed",
-            "value": 0.7273,
+            "value": 0.7391,
             "better": "low",
-            "rank": 118,
+            "rank": 120,
             "of": 138,
             "format": "pct"
           },
@@ -63621,9 +63621,9 @@
           },
           "def_ypa": {
             "label": "Yards per pass allowed",
-            "value": 7.163,
+            "value": 7.127,
             "better": "low",
-            "rank": 71,
+            "rank": 68,
             "of": 138,
             "format": "num"
           },
@@ -63637,9 +63637,9 @@
           },
           "def_pass_ypg": {
             "label": "Passing yards allowed per game",
-            "value": 250.714,
+            "value": 249.429,
             "better": "low",
-            "rank": 116,
+            "rank": 115,
             "of": 138,
             "format": "num"
           },
@@ -63669,7 +63669,7 @@
           },
           "def_qbr": {
             "label": "Passer rating allowed",
-            "value": 129.0266,
+            "value": 128.7242,
             "better": "low",
             "rank": 66,
             "of": 138,
@@ -63733,15 +63733,15 @@
           },
           "def_ypc": {
             "label": "Yards per rush allowed",
-            "value": 3.72,
+            "value": 3.753,
             "better": "low",
-            "rank": 47,
+            "rank": 51,
             "of": 138,
             "format": "num"
           },
           "off_rush_ypg": {
             "label": "Rushing yards per game",
-            "value": 165.6,
+            "value": 165.4,
             "better": "high",
             "rank": 55,
             "of": 138,
@@ -63749,9 +63749,9 @@
           },
           "def_rush_ypg": {
             "label": "Rushing yards allowed per game",
-            "value": 146.143,
+            "value": 147.429,
             "better": "low",
-            "rank": 77,
+            "rank": 78,
             "of": 138,
             "format": "num"
           },
@@ -63805,9 +63805,9 @@
           },
           "off_pen": {
             "label": "Penalty yards per game",
-            "value": 65.1429,
+            "value": 65.0,
             "better": "low",
-            "rank": 102,
+            "rank": 101,
             "of": 138,
             "format": "num"
           },
@@ -63829,7 +63829,7 @@
           },
           "off_yards_per_play": {
             "label": "Yards per offensive play",
-            "value": 5.079,
+            "value": 5.0771,
             "better": "high",
             "format": "num",
             "rank": 113,
@@ -63909,10 +63909,10 @@
           },
           "off_sack_yards_pg": {
             "label": "Sack yards lost per game",
-            "value": 20.5714,
+            "value": 20.4286,
             "better": "low",
             "format": "num",
-            "rank": 129,
+            "rank": 128,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -63949,10 +63949,10 @@
           },
           "def_rush_first_rate": {
             "label": "Rushing first downs allowed per attempt",
-            "value": 0.2182,
+            "value": 0.2218,
             "better": "low",
             "format": "pct",
-            "rank": 70,
+            "rank": 73,
             "of": 138
           },
           "off_pass_first_rate": {
@@ -63965,10 +63965,10 @@
           },
           "def_pass_first_rate": {
             "label": "Passing first downs allowed per attempt",
-            "value": 0.3143,
+            "value": 0.3102,
             "better": "low",
             "format": "pct",
-            "rank": 82,
+            "rank": 71,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -63981,10 +63981,10 @@
           },
           "def_yards_per_completion": {
             "label": "Yards allowed per completion",
-            "value": 11.3226,
+            "value": 11.2645,
             "better": "low",
             "format": "num",
-            "rank": 56,
+            "rank": 55,
             "of": 138
           },
           "off_pass_td_rate": {
@@ -64479,7 +64479,7 @@
             "value": 0.3321,
             "better": "high",
             "format": "pct",
-            "rank": 72,
+            "rank": 73,
             "of": 138
           },
           "def_pass_first_rate": {
@@ -64487,7 +64487,7 @@
             "value": 0.3119,
             "better": "low",
             "format": "pct",
-            "rank": 75,
+            "rank": 76,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -67066,8 +67066,8 @@
       "venue_city": "Norfolk, VA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 68,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 69,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -68026,7 +68026,7 @@
             "value": 0.311,
             "better": "low",
             "format": "pct",
-            "rank": 72,
+            "rank": 73,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -68977,9 +68977,10 @@
           {
             "player": "Q. Henicle",
             "position": "QB",
-            "status": "Out",
+            "status": "Questionable",
             "injury": "Undisclosed",
             "updated": "Fri, Oct 16",
+            "detail": "Henicle is nursing with an undisclosed injury, and it is unknown if he will face Louisiana Tech on Saturday, October 24th.",
             "source": "RotoWire + Covers",
             "return": "10/31/2026"
           },
@@ -70228,132 +70229,6 @@
           "depth_rank": 1
         },
         {
-          "player_id": "5295919",
-          "player_name": "Ryan Huff",
-          "position": "QB",
-          "ranked": true,
-          "line": {
-            "attempts": 62,
-            "completions": 32,
-            "interceptions": 1,
-            "completion_pct": {
-              "label": "Completion %",
-              "value": 0.5161,
-              "better": "high",
-              "format": "pct",
-              "rank": 173,
-              "of": 177
-            },
-            "yards_per_attempt": {
-              "label": "Yards per attempt",
-              "value": 6.3548,
-              "better": "high",
-              "format": "num",
-              "rank": 142,
-              "of": 177
-            },
-            "td_rate": {
-              "label": "TD rate",
-              "value": 0.0323,
-              "better": "high",
-              "format": "pct",
-              "rank": 152,
-              "of": 177
-            },
-            "int_rate": {
-              "label": "INT rate",
-              "value": 0.0161,
-              "better": "low",
-              "format": "pct",
-              "rank": 53,
-              "of": 177
-            },
-            "yards": {
-              "label": "Passing yards",
-              "value": 394.0,
-              "better": "high",
-              "format": "int",
-              "rank": 160,
-              "of": 177
-            },
-            "touchdowns": {
-              "label": "Passing TDs",
-              "value": 2.0,
-              "better": "high",
-              "format": "int",
-              "rank": 159,
-              "of": 177
-            }
-          },
-          "epa_splits": {
-            "all": {
-              "label": "All plays EPA per play",
-              "value": -0.299,
-              "better": "high",
-              "format": "ppa",
-              "rank": 174,
-              "of": 177
-            },
-            "pass": {
-              "label": "Dropbacks EPA per play",
-              "value": -0.223,
-              "better": "high",
-              "format": "ppa",
-              "rank": 169,
-              "of": 176
-            },
-            "rush": {
-              "label": "Rushes EPA per play",
-              "value": -1.321,
-              "better": "high",
-              "format": "ppa",
-              "rank": 171,
-              "of": 174
-            },
-            "standardDowns": {
-              "label": "Standard downs EPA per play",
-              "value": -0.478,
-              "better": "high",
-              "format": "ppa",
-              "rank": 176,
-              "of": 177
-            },
-            "passingDowns": {
-              "label": "Passing downs EPA per play",
-              "value": -0.121,
-              "better": "high",
-              "format": "ppa",
-              "rank": 167,
-              "of": 176
-            },
-            "firstDown": {
-              "label": "1st down EPA per play",
-              "value": -0.245,
-              "better": "high",
-              "format": "ppa",
-              "rank": 164,
-              "of": 176
-            },
-            "secondDown": {
-              "label": "2nd down EPA per play",
-              "value": 0.197,
-              "better": "high",
-              "format": "ppa",
-              "rank": 98,
-              "of": 175
-            },
-            "thirdDown": {
-              "label": "3rd down EPA per play",
-              "value": -0.378,
-              "better": "high",
-              "format": "ppa",
-              "rank": 175,
-              "of": 176
-            }
-          },
-          "depth_rank": 2
-        },
-        {
           "player_id": "5193346",
           "player_name": "Quinn Henicle",
           "position": "QB",
@@ -70477,9 +70352,9 @@
               "of": 176
             }
           },
-          "status": "Out",
+          "status": "Questionable",
           "injury": "Undisclosed",
-          "depth_rank": 3
+          "depth_rank": 2
         }
       ],
       "home_defense_splits": {
@@ -70602,7 +70477,7 @@
             "rank": 24,
             "of": 467
           },
-          "status": "Out",
+          "status": "Questionable",
           "injury": "Undisclosed"
         },
         {
@@ -70771,8 +70646,8 @@
       "venue_city": "Atlanta, GA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 73,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 71,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -71402,7 +71277,7 @@
             "label": "Passing yards allowed per game",
             "value": 206.286,
             "better": "low",
-            "rank": 61,
+            "rank": 62,
             "of": 138,
             "format": "num"
           },
@@ -73541,7 +73416,7 @@
       "roof": "Outdoor",
       "broadcast": "TNT",
       "weather_temp": 63,
-      "weather_cond": "Mostly cloudy w/ showers",
+      "weather_cond": "Showers",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -73588,7 +73463,7 @@
             "label": "Third-down rate allowed",
             "value": 0.3404,
             "better": "low",
-            "rank": 36,
+            "rank": 37,
             "of": 138,
             "format": "pct"
           },
@@ -74267,7 +74142,7 @@
             "label": "Yards per rush allowed",
             "value": 3.745,
             "better": "low",
-            "rank": 51,
+            "rank": 50,
             "of": 138,
             "format": "num"
           },
@@ -77170,8 +77045,8 @@
       "venue_city": "USAF Academy, CO",
       "roof": "Outdoor",
       "broadcast": "MW+",
-      "weather_temp": 62,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 60,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -77499,7 +77374,7 @@
             "value": 0.2943,
             "better": "low",
             "format": "pct",
-            "rank": 86,
+            "rank": 85,
             "of": 138
           },
           "off_plays_pg": {
@@ -77611,7 +77486,7 @@
             "value": 0.3139,
             "better": "low",
             "format": "pct",
-            "rank": 79,
+            "rank": 80,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -78002,7 +77877,7 @@
             "value": 5.5333,
             "better": "low",
             "format": "num",
-            "rank": 91,
+            "rank": 92,
             "of": 138
           },
           "off_first_down_rate": {
@@ -80850,8 +80725,8 @@
       "venue_city": "Mobile, AL",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 80,
-      "weather_cond": "Mostly cloudy",
+      "weather_temp": 81,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -81291,7 +81166,7 @@
             "value": 0.3125,
             "better": "low",
             "format": "pct",
-            "rank": 77,
+            "rank": 78,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -81465,7 +81340,7 @@
             "label": "Yards per pass allowed",
             "value": 8.194,
             "better": "low",
-            "rank": 126,
+            "rank": 127,
             "of": 138,
             "format": "num"
           },
@@ -84514,8 +84389,8 @@
       "venue_city": "Greenville, NC",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 77,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 76,
+      "weather_cond": "Hazy sunshine",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -84819,7 +84694,7 @@
             "value": 6.338,
             "better": "high",
             "format": "num",
-            "rank": 28,
+            "rank": 27,
             "of": 138
           },
           "def_yards_per_play": {
@@ -84955,7 +84830,7 @@
             "value": 0.3713,
             "better": "low",
             "format": "pct",
-            "rank": 127,
+            "rank": 126,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -85129,7 +85004,7 @@
             "label": "Yards per pass allowed",
             "value": 7.153,
             "better": "low",
-            "rank": 69,
+            "rank": 70,
             "of": 138,
             "format": "num"
           },
@@ -85145,7 +85020,7 @@
             "label": "Passing yards allowed per game",
             "value": 206.429,
             "better": "low",
-            "rank": 62,
+            "rank": 63,
             "of": 138,
             "format": "num"
           },
@@ -88287,7 +88162,7 @@
             "value": 0.3105,
             "better": "low",
             "format": "pct",
-            "rank": 71,
+            "rank": 72,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -90166,7 +90041,7 @@
       "venue_city": "Provo, UT",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 60,
+      "weather_temp": 58,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -90390,7 +90265,7 @@
             "label": "Rushing yards allowed per game",
             "value": 146.429,
             "better": "low",
-            "rank": 78,
+            "rank": 77,
             "of": 138,
             "format": "num"
           },
@@ -90615,7 +90490,7 @@
             "value": 12.5638,
             "better": "high",
             "format": "num",
-            "rank": 45,
+            "rank": 44,
             "of": 138
           },
           "def_yards_per_completion": {
@@ -90797,7 +90672,7 @@
             "label": "Passing yards allowed per game",
             "value": 203.429,
             "better": "low",
-            "rank": 56,
+            "rank": 57,
             "of": 138,
             "format": "num"
           },
@@ -91102,7 +90977,7 @@
             "value": 0.2778,
             "better": "high",
             "format": "pct",
-            "rank": 13,
+            "rank": 14,
             "of": 138
           },
           "def_rush_first_rate": {
@@ -93931,7 +93806,7 @@
             "label": "Passer rating",
             "value": 149.8823,
             "better": "high",
-            "rank": 43,
+            "rank": 42,
             "of": 138,
             "format": "num"
           },
@@ -94739,7 +94614,7 @@
             "value": 0.2213,
             "better": "low",
             "format": "pct",
-            "rank": 73,
+            "rank": 72,
             "of": 138
           },
           "off_pass_first_rate": {
@@ -97504,8 +97379,8 @@
       "venue_city": "Lynchburg, VA",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 70,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 71,
+      "weather_cond": "Hazy sunshine",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -97712,7 +97587,7 @@
             "label": "Yards per rush allowed",
             "value": 3.736,
             "better": "low",
-            "rank": 48,
+            "rank": 47,
             "of": 138,
             "format": "num"
           },
@@ -98328,7 +98203,7 @@
             "value": 6.3392,
             "better": "high",
             "format": "num",
-            "rank": 27,
+            "rank": 26,
             "of": 138
           },
           "def_yards_per_play": {
@@ -98488,7 +98363,7 @@
             "value": 0.08,
             "better": "high",
             "format": "pct",
-            "rank": 15,
+            "rank": 16,
             "of": 138
           },
           "def_pass_td_rate": {
@@ -101141,8 +101016,8 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "ABC",
-      "weather_temp": 74,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 72,
+      "weather_cond": "Mostly cloudy",
       "neutral": true,
       "away_form": {
         "rates": {
@@ -101749,7 +101624,7 @@
             "label": "Yards per pass attempt",
             "value": 9.7,
             "better": "high",
-            "rank": 7,
+            "rank": 6,
             "of": 138,
             "format": "num"
           },
@@ -102662,16 +102537,6 @@
             "source": "Covers"
           },
           {
-            "player": "A. Philo",
-            "position": "QB",
-            "status": "Questionable",
-            "injury": "Shoulder",
-            "updated": "Sat, Oct 17",
-            "detail": "Philo is nursing with a shoulder injury, and it remains to be seen if he will be active against Georgia on Saturday, October 31th.",
-            "source": "RotoWire + Covers",
-            "return": "10/31/2026"
-          },
-          {
             "player": "V. Brown III",
             "position": "WR",
             "status": "Questionable",
@@ -103097,8 +102962,8 @@
       "venue_city": "Fort Worth, TX",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 76,
-      "weather_cond": "Rain",
+      "weather_temp": 73,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -106693,8 +106558,8 @@
       "venue_city": "Bloomington, IN",
       "roof": "Outdoor",
       "broadcast": "CBS",
-      "weather_temp": 70,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 69,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -110272,8 +110137,8 @@
       "venue_city": "Eugene, OR",
       "roof": "Outdoor",
       "broadcast": "Peacock",
-      "weather_temp": 47,
-      "weather_cond": "Mostly cloudy",
+      "weather_temp": 48,
+      "weather_cond": "Showers",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -110360,7 +110225,7 @@
             "label": "Yards per pass attempt",
             "value": 9.6,
             "better": "high",
-            "rank": 9,
+            "rank": 8,
             "of": 138,
             "format": "num"
           },
@@ -113926,7 +113791,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN+",
       "weather_temp": 76,
-      "weather_cond": "Mostly cloudy",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -115428,16 +115293,6 @@
       "away_injuries": {
         "players": [
           {
-            "player": "E. Hampton",
-            "position": "QB",
-            "status": "Out",
-            "injury": "Hand",
-            "updated": "Fri, Sep 25",
-            "detail": "Hampton is nursing with a hand injury, and a timetable for return has yet to be established.",
-            "source": "RotoWire + Covers",
-            "return": "10/31/2026"
-          },
-          {
             "player": "G. Page",
             "position": "WR",
             "status": "Out",
@@ -115463,6 +115318,15 @@
             "updated": "Sun, Oct 18",
             "detail": "Sledge is dealing with an undisclosed injury and, it is uncertain if he will be available against the Georgia State on October 24th.",
             "source": "Covers"
+          },
+          {
+            "player": "E. Hampton",
+            "position": "QB",
+            "status": "Questionable",
+            "injury": "Hand",
+            "updated": "Fri, Sep 25",
+            "source": "RotoWire + Covers",
+            "return": "10/31/2026"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -116559,7 +116423,7 @@
             "rank": 468,
             "of": 467
           },
-          "status": "Out",
+          "status": "Questionable",
           "injury": "Hand"
         }
       ],
@@ -117509,7 +117373,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "MW+",
-      "weather_temp": 54,
+      "weather_temp": 56,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -117621,7 +117485,7 @@
             "label": "Passing yards allowed per game",
             "value": 204.857,
             "better": "low",
-            "rank": 57,
+            "rank": 58,
             "of": 138,
             "format": "num"
           },
@@ -117870,7 +117734,7 @@
             "value": 0.3969,
             "better": "neutral",
             "format": "pct",
-            "rank": 129,
+            "rank": 128,
             "of": 138
           },
           "off_sack_rate": {
@@ -118076,7 +117940,7 @@
             "label": "Third-down rate allowed",
             "value": 0.3365,
             "better": "low",
-            "rank": 34,
+            "rank": 35,
             "of": 138,
             "format": "pct"
           },
@@ -120186,8 +120050,8 @@
       "venue_city": "Cincinnati, OH",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 72,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 73,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -120234,7 +120098,7 @@
             "label": "Third-down rate allowed",
             "value": 0.3434,
             "better": "low",
-            "rank": 37,
+            "rank": 38,
             "of": 138,
             "format": "pct"
           },
@@ -123761,7 +123625,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN2",
       "weather_temp": 73,
-      "weather_cond": "Intermittent clouds",
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -126623,8 +126487,8 @@
       "venue_city": "San Jose, CA",
       "roof": "Outdoor",
       "broadcast": "MW+",
-      "weather_temp": 62,
-      "weather_cond": "Partly sunny",
+      "weather_temp": 59,
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -127174,7 +127038,7 @@
             "label": "Yards allowed per game",
             "value": 379.875,
             "better": "low",
-            "rank": 93,
+            "rank": 94,
             "of": 138,
             "format": "num"
           },
@@ -130340,7 +130204,7 @@
       "venue_city": "Pasadena, CA",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 71,
+      "weather_temp": 72,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -131164,7 +131028,7 @@
             "value": 6.3374,
             "better": "high",
             "format": "num",
-            "rank": 29,
+            "rank": 28,
             "of": 138
           },
           "def_yards_per_play": {
@@ -133998,7 +133862,7 @@
       "venue_city": "University Park, PA",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 66,
+      "weather_temp": 65,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -135935,7 +135799,7 @@
       "venue_city": "Norman, OK",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 68,
+      "weather_temp": 66,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -136312,7 +136176,7 @@
             "value": 0.0786,
             "better": "high",
             "format": "pct",
-            "rank": 33,
+            "rank": 34,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -139543,8 +139407,8 @@
       "venue_city": "Statesboro, GA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 77,
-      "weather_cond": "Mostly cloudy",
+      "weather_temp": 76,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -140158,7 +140022,7 @@
             "label": "Yards per pass allowed",
             "value": 7.158,
             "better": "low",
-            "rank": 70,
+            "rank": 71,
             "of": 138,
             "format": "num"
           },
@@ -142358,7 +142222,7 @@
       "venue_city": "Tallahassee, FL",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 79,
+      "weather_temp": 77,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -142566,7 +142430,7 @@
             "label": "Yards per rush allowed",
             "value": 3.736,
             "better": "low",
-            "rank": 48,
+            "rank": 47,
             "of": 138,
             "format": "num"
           },
@@ -142973,7 +142837,7 @@
             "label": "Yards per pass allowed",
             "value": 8.155,
             "better": "low",
-            "rank": 123,
+            "rank": 124,
             "of": 138,
             "format": "num"
           },
@@ -145210,7 +145074,7 @@
       "venue_city": "Ames, IA",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 61,
+      "weather_temp": 60,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -145298,7 +145162,7 @@
             "label": "Yards per pass attempt",
             "value": 9.7,
             "better": "high",
-            "rank": 7,
+            "rank": 6,
             "of": 138,
             "format": "num"
           },
@@ -145777,7 +145641,7 @@
             "label": "Third-down rate allowed",
             "value": 0.3444,
             "better": "low",
-            "rank": 39,
+            "rank": 40,
             "of": 138,
             "format": "pct"
           },
@@ -146170,7 +146034,7 @@
             "value": 0.3141,
             "better": "low",
             "format": "pct",
-            "rank": 80,
+            "rank": 81,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -148718,7 +148582,7 @@
       "venue_city": "San Diego, CA",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 70,
+      "weather_temp": 71,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -152559,7 +152423,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN2",
       "weather_temp": 61,
-      "weather_cond": "Partly cloudy",
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -153173,7 +153037,7 @@
             "label": "Yards per pass allowed",
             "value": 8.161,
             "better": "low",
-            "rank": 124,
+            "rank": 125,
             "of": 138,
             "format": "num"
           },
@@ -156392,8 +156256,8 @@
       "venue_city": "Chapel Hill, NC",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 64,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 66,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -156440,7 +156304,7 @@
             "label": "Third-down rate allowed",
             "value": 0.3367,
             "better": "low",
-            "rank": 35,
+            "rank": 36,
             "of": 138,
             "format": "pct"
           },
@@ -159898,7 +159762,7 @@
       "venue_city": "Austin, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 79,
+      "weather_temp": 75,
       "weather_cond": "Thunderstorms",
       "away_form": {
         "rates": {
@@ -160355,7 +160219,7 @@
             "value": 11.2771,
             "better": "low",
             "format": "num",
-            "rank": 55,
+            "rank": 56,
             "of": 138
           },
           "off_pass_td_rate": {
@@ -163496,7 +163360,7 @@
       "venue_city": "Los Angeles, CA",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 69,
+      "weather_temp": 70,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -164037,7 +163901,7 @@
           },
           "off_ypg": {
             "label": "Yards per game",
-            "value": 434.8,
+            "value": 434.5,
             "better": "high",
             "rank": 34,
             "of": 138,
@@ -164063,7 +163927,7 @@
             "label": "Third-down rate allowed",
             "value": 0.3444,
             "better": "low",
-            "rank": 39,
+            "rank": 40,
             "of": 138,
             "format": "pct"
           },
@@ -164079,7 +163943,7 @@
             "label": "Fourth-down rate allowed",
             "value": 0.7368,
             "better": "low",
-            "rank": 120,
+            "rank": 119,
             "of": 138,
             "format": "pct"
           },
@@ -164117,7 +163981,7 @@
           },
           "off_pass_ypg": {
             "label": "Passing yards per game",
-            "value": 303.6,
+            "value": 303.5,
             "better": "high",
             "rank": 10,
             "of": 138,
@@ -164229,7 +164093,7 @@
           },
           "off_rush_ypg": {
             "label": "Rushing yards per game",
-            "value": 131.1,
+            "value": 131.0,
             "better": "high",
             "rank": 106,
             "of": 138,
@@ -164269,7 +164133,7 @@
           },
           "off_punt": {
             "label": "Net punt average",
-            "value": 49.4615,
+            "value": 49.5385,
             "better": "high",
             "rank": 3,
             "of": 138,
@@ -164293,7 +164157,7 @@
           },
           "off_pen": {
             "label": "Penalty yards per game",
-            "value": 55.125,
+            "value": 55.0,
             "better": "low",
             "rank": 63,
             "of": 138,
@@ -164317,7 +164181,7 @@
           },
           "off_yards_per_play": {
             "label": "Yards per offensive play",
-            "value": 6.0804,
+            "value": 6.0769,
             "better": "high",
             "format": "num",
             "rank": 45,
@@ -164461,7 +164325,7 @@
           },
           "off_yards_per_completion": {
             "label": "Yards per completion",
-            "value": 12.4564,
+            "value": 12.4513,
             "better": "high",
             "format": "num",
             "rank": 50,
@@ -166387,7 +166251,7 @@
       "venue_city": "Fayetteville, AR",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 67,
+      "weather_temp": 65,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -166411,7 +166275,7 @@
             "label": "Yards per game",
             "value": 429.6,
             "better": "high",
-            "rank": 38,
+            "rank": 37,
             "of": 138,
             "format": "num"
           },
@@ -166523,7 +166387,7 @@
             "label": "Passer rating",
             "value": 151.1533,
             "better": "high",
-            "rank": 40,
+            "rank": 39,
             "of": 138,
             "format": "num"
           },
@@ -168360,7 +168224,7 @@
       "venue_city": "Memphis, TN",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 71,
+      "weather_temp": 69,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -168416,7 +168280,7 @@
             "label": "Fourth-down rate",
             "value": 0.8125,
             "better": "high",
-            "rank": 3,
+            "rank": 4,
             "of": 138,
             "format": "pct"
           },
@@ -168911,7 +168775,7 @@
             "label": "Yards allowed per game",
             "value": 378.5,
             "better": "low",
-            "rank": 92,
+            "rank": 93,
             "of": 138,
             "format": "num"
           },
@@ -168967,7 +168831,7 @@
             "label": "Yards per pass attempt",
             "value": 9.6,
             "better": "high",
-            "rank": 9,
+            "rank": 8,
             "of": 138,
             "format": "num"
           },
@@ -171989,7 +171853,7 @@
       "roof": "Outdoor",
       "broadcast": "BTN",
       "weather_temp": 62,
-      "weather_cond": "Hazy moonlight",
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -172100,7 +171964,7 @@
             "label": "Passing yards allowed per game",
             "value": 205.0,
             "better": "low",
-            "rank": 59,
+            "rank": 60,
             "of": 138,
             "format": "num"
           },
@@ -172531,7 +172395,7 @@
             "label": "Yards per game",
             "value": 430.3,
             "better": "high",
-            "rank": 37,
+            "rank": 36,
             "of": 138,
             "format": "num"
           },
@@ -173989,8 +173853,8 @@
       "venue_city": "Boise, ID",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 49,
-      "weather_cond": "Mostly cloudy w/ showers",
+      "weather_temp": 47,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -174548,7 +174412,7 @@
             "label": "Offense third-down rate",
             "value": 0.5161,
             "better": "high",
-            "rank": 13,
+            "rank": 12,
             "of": 138,
             "format": "pct"
           },
@@ -174813,7 +174677,7 @@
             "value": 6.334,
             "better": "high",
             "format": "num",
-            "rank": 30,
+            "rank": 29,
             "of": 138
           },
           "def_yards_per_play": {
@@ -177465,7 +177329,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "CBSSN",
-      "weather_temp": 68,
+      "weather_temp": 67,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -180234,7 +180098,7 @@
       "roof": "Outdoor",
       "broadcast": "USA Net",
       "weather_temp": 60,
-      "weather_cond": "Mostly cloudy",
+      "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -180345,7 +180209,7 @@
             "label": "Passing yards allowed per game",
             "value": 204.857,
             "better": "low",
-            "rank": 57,
+            "rank": 58,
             "of": 138,
             "format": "num"
           },
