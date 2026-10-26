@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-26",
- "generated_at_utc": "2026-10-26T07:48:54+00:00",
+ "generated_at_utc": "2026-10-26T15:12:54+00:00",
  "data_through_utc": "2026-10-26T01:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -45276,7 +45276,7 @@
       "player_name": "Jalen Williams",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4593803.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 31.7,
       "ppg": 13.7,
       "height_in": 77.0,
@@ -46667,10 +46667,10 @@
     {
      "player_id": "4593803",
      "player_name": "Jalen Williams",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Left Ankle",
      "comment": "Williams was stretchered off the floor during Sunday's game against the Clippers due to an apparent left ankle injury, NBA writer Justin Russo reports.",
-     "date": "2026-10-26T01:28Z",
+     "date": "2026-10-26T14:03Z",
      "return_date": "2026-11-02"
     },
     {
@@ -58188,19 +58188,19 @@
     {
      "player_id": "5231919",
      "player_name": "Karim Lopez",
-     "status": "Out",
+     "status": "Day-To-Day",
      "detail": "Right Knee Bruise",
      "comment": "Lopez (knee) is out for Sunday's game in Sacramento.",
-     "date": "2026-10-26T00:15Z",
+     "date": "2026-10-26T14:06Z",
      "return_date": "2026-10-26"
     },
     {
      "player_id": "4600663",
      "player_name": "Zach Edey",
-     "status": "Out",
+     "status": "Day-To-Day",
      "detail": "Left Ankle",
      "comment": "Edey has been ruled out for Sunday's game against Sacramento due to left ankle injury management.",
-     "date": "2026-10-25T00:12Z",
+     "date": "2026-10-26T14:05Z",
      "return_date": "2026-10-26"
     }
    ],
@@ -69615,5 +69615,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-26T15:07:28+00:00"
+ "published_at_utc": "2026-10-26T20:59:48+00:00"
 }
