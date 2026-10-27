@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-27T14:38:20Z",
-  "data_through_utc": "2026-10-27T14:38:20Z",
+  "generated_at_utc": "2026-10-27T20:46:29Z",
+  "data_through_utc": "2026-10-27T20:46:29Z",
   "games": [
     {
       "id": "849803",
@@ -19,17 +19,132 @@
       "venue": "Tropicana Field",
       "venue_city": "St. Petersburg, FL",
       "broadcast": "FOX / FOX ONE, Fox Deportes / FOX ONE",
+      "conditions": "70\u00b0 \u00b7 Roof Closed \u00b7 0 mph, None",
+      "weather_temp": "70",
+      "weather_cond": "Roof Closed",
+      "weather_wind": "0 mph, None",
       "away_starter": "Dustin May",
       "home_starter": "Griffin Jax",
       "away_starter_id": 669160,
       "home_starter_id": 643377,
-      "away_starter_role": "projected",
       "away_hand": "R",
       "home_hand": "R",
       "away_era": "4.70",
       "home_era": "3.53",
-      "away_lineup_state": "Expected",
-      "home_lineup_state": "Expected",
+      "away_lineup_state": "Confirmed",
+      "home_lineup_state": "Confirmed",
+      "away_lineup": [
+        {
+          "slot": 1,
+          "person_id": 694192,
+          "name": "Jackson Chourio",
+          "position": "LF"
+        },
+        {
+          "slot": 2,
+          "person_id": 641343,
+          "name": "Jake Bauers",
+          "position": "1B"
+        },
+        {
+          "slot": 3,
+          "person_id": 592885,
+          "name": "Christian Yelich",
+          "position": "DH"
+        },
+        {
+          "slot": 4,
+          "person_id": 661388,
+          "name": "William Contreras",
+          "position": "C"
+        },
+        {
+          "slot": 5,
+          "person_id": 668930,
+          "name": "Brice Turang",
+          "position": "2B"
+        },
+        {
+          "slot": 6,
+          "person_id": 686217,
+          "name": "Sal Frelick",
+          "position": "RF"
+        },
+        {
+          "slot": 7,
+          "person_id": 806198,
+          "name": "Cooper Pratt",
+          "position": "SS"
+        },
+        {
+          "slot": 8,
+          "person_id": 669003,
+          "name": "Garrett Mitchell",
+          "position": "CF"
+        },
+        {
+          "slot": 9,
+          "person_id": 666152,
+          "name": "David Hamilton",
+          "position": "3B"
+        }
+      ],
+      "home_lineup": [
+        {
+          "slot": 1,
+          "person_id": 650490,
+          "name": "Yandy D\u00edaz",
+          "position": "DH"
+        },
+        {
+          "slot": 2,
+          "person_id": 666018,
+          "name": "Jonathan Aranda",
+          "position": "1B"
+        },
+        {
+          "slot": 3,
+          "person_id": 691406,
+          "name": "Junior Caminero",
+          "position": "3B"
+        },
+        {
+          "slot": 4,
+          "person_id": 689414,
+          "name": "Liam Hicks",
+          "position": "C"
+        },
+        {
+          "slot": 5,
+          "person_id": 676356,
+          "name": "Jonny DeLuca",
+          "position": "CF"
+        },
+        {
+          "slot": 6,
+          "person_id": 802415,
+          "name": "Chandler Simpson",
+          "position": "LF"
+        },
+        {
+          "slot": 7,
+          "person_id": 668723,
+          "name": "Ryan Vilade",
+          "position": "RF"
+        },
+        {
+          "slot": 8,
+          "person_id": 680700,
+          "name": "Richie Palacios",
+          "position": "2B"
+        },
+        {
+          "slot": 9,
+          "person_id": 670764,
+          "name": "Taylor Walls",
+          "position": "SS"
+        }
+      ],
       "away_team_id": 158,
       "home_team_id": 139,
       "venue_id": 12,
