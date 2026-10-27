@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-26",
- "generated_at_utc": "2026-10-26T15:12:54+00:00",
+ "generated_at_utc": "2026-10-26T21:01:44+00:00",
  "data_through_utc": "2026-10-26T01:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -121,8 +121,8 @@
    "id": "401909868",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/26 - 7:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "Halftime",
    "kickoff_utc": "2026-10-26T23:00Z",
    "away": "WSH",
    "home": "CHA",
@@ -136,8 +136,8 @@
    "home_record": "2-1",
    "away_split_record": "1-0",
    "home_split_record": "1-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 44,
+   "home_score": 54,
    "venue": "Spectrum Center",
    "venue_city": "Charlotte, NC",
    "broadcast": "MNMT / NBA League Pass",
@@ -6550,7 +6550,7 @@
       "player_name": "Naz Reid",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4396971.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 31.7,
       "ppg": 20.0,
       "height_in": 81.0,
@@ -8094,6 +8094,15 @@
    },
    "home_injuries": [
     {
+     "player_id": "4396971",
+     "player_name": "Naz Reid",
+     "status": "Day-To-Day",
+     "detail": "Illness",
+     "comment": "Reid is listed as probable for Monday's game against Washington, according to the NBA's official injury report.",
+     "date": "2026-10-26T15:18Z",
+     "return_date": "2026-10-26"
+    },
+    {
      "player_id": "5061575",
      "player_name": "Kon Knueppel",
      "status": "Out",
@@ -8135,8 +8144,8 @@
    "id": "401909869",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/26 - 7:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "Halftime",
    "kickoff_utc": "2026-10-26T23:00Z",
    "away": "MIN",
    "home": "CLE",
@@ -8150,8 +8159,8 @@
    "home_record": "1-1",
    "away_split_record": "2-0",
    "home_split_record": "1-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 60,
+   "home_score": 50,
    "venue": "Rocket Arena",
    "venue_city": "Cleveland, OH",
    "broadcast": "NBA League Pass / DAZN MIN",
@@ -10584,7 +10593,7 @@
       "player_name": "Anthony Edwards",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4594268.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 31.3,
       "ppg": 28.7,
       "height_in": 76.0,
@@ -11893,6 +11902,15 @@
     "altitude": false
    },
    "away_injuries": [
+    {
+     "player_id": "4594268",
+     "player_name": "Anthony Edwards",
+     "status": "Day-To-Day",
+     "detail": "Knee",
+     "comment": "Edwards (knee) is questionable for Monday's game against Cleveland.",
+     "date": "2026-10-26T17:06Z",
+     "return_date": "2026-10-26"
+    },
     {
      "player_id": "3934673",
      "player_name": "Donte DiVincenzo",
@@ -15807,8 +15825,8 @@
    "id": "401909870",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/26 - 7:30 PM EDT",
+   "game_state": "live",
+   "status_detail": "8:14 - 2nd",
    "kickoff_utc": "2026-10-26T23:30Z",
    "away": "CHI",
    "home": "BOS",
@@ -15822,8 +15840,8 @@
    "home_record": "1-1",
    "away_split_record": "1-1",
    "home_split_record": "1-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 36,
+   "home_score": 44,
    "venue": "TD Garden",
    "venue_city": "Boston, MA",
    "broadcast": "NBA League Pass",
@@ -23673,8 +23691,8 @@
    "id": "401909871",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/26 - 7:30 PM EDT",
+   "game_state": "live",
+   "status_detail": "10:00 - 2nd",
    "kickoff_utc": "2026-10-26T23:30Z",
    "away": "DAL",
    "home": "MIA",
@@ -23688,8 +23706,8 @@
    "home_record": "0-3",
    "away_split_record": "1-1",
    "home_split_record": "0-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 30,
+   "home_score": 39,
    "venue": "Kaseya Center",
    "venue_city": "Miami, FL",
    "broadcast": "NBA TV / KFAA-TV / MavsTV",
@@ -26872,7 +26890,7 @@
       "player_name": "Cooper Flagg",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5041939.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 25.0,
       "ppg": 23.0,
       "height_in": 81.0,
@@ -27145,17 +27163,17 @@
      "player_name": "Caleb Martin",
      "status": "Out",
      "detail": "Right Thumb Sprain",
-     "comment": "Martin (thumb) is listed as doubtful for Monday's game against the Heat.",
-     "date": "2026-10-25T20:28Z",
-     "return_date": "2026-10-26"
+     "comment": "Martin (thumb) is out for Monday's game against the Heat, Mike Curtis of The Dallas Morning News reports.",
+     "date": "2026-10-26T17:09Z",
+     "return_date": "2026-11-02"
     },
     {
      "player_id": "5041939",
      "player_name": "Cooper Flagg",
-     "status": "Out",
+     "status": "Day-To-Day",
      "detail": "Left Shoulder Sprain",
-     "comment": "Flagg (shoulder) is questionable to play Monday against the Heat.",
-     "date": "2026-10-25T20:26Z",
+     "comment": "Flagg (shoulder) has been upgraded to probable for Monday against the Heat, Mike Curtis of The Dallas Morning News reports.",
+     "date": "2026-10-26T17:05Z",
      "return_date": "2026-10-26"
     },
     {
@@ -27183,7 +27201,7 @@
      "detail": "Right Knee Surgery",
      "comment": "Aldama (knee) has been ruled out for Saturday's game against the Spurs.",
      "date": "2026-10-24T18:18Z",
-     "return_date": "2026-10-28"
+     "return_date": "2026-11-02"
     },
     {
      "player_id": "4683688",
@@ -27192,7 +27210,7 @@
      "detail": "Right Foot Surgery",
      "comment": "Lively (foot) has been ruled out for Friday's game against the Pacers.",
      "date": "2026-10-22T20:10Z",
-     "return_date": "2026-10-28"
+     "return_date": "2026-11-02"
     }
    ],
    "home_form": {
@@ -31158,8 +31176,8 @@
    "id": "401909872",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/26 - 8:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "8:18 - 1st",
    "kickoff_utc": "2026-10-27T00:00Z",
    "away": "IND",
    "home": "MIL",
@@ -31173,8 +31191,8 @@
    "home_record": "0-3",
    "away_split_record": "2-0",
    "home_split_record": "0-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 6,
+   "home_score": 6,
    "venue": "Fiserv Forum",
    "venue_city": "Milwaukee, WI",
    "broadcast": "NBA League Pass / DAZN IND / MyMi / Bucks App",
@@ -33446,7 +33464,7 @@
       "player_name": "Andrew Nembhard",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4395712.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 32.0,
       "ppg": 16.0,
       "height_in": 76.0,
@@ -34218,7 +34236,7 @@
       "player_name": "Ivica Zubac",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4017837.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 21.7,
       "ppg": 9.0,
       "height_in": 84.0,
@@ -34775,7 +34793,7 @@
       "player_name": "Aaron Nesmith",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4396909.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 19.5,
       "ppg": 11.0,
       "height_in": 77.0,
@@ -34976,22 +34994,40 @@
    },
    "away_injuries": [
     {
-     "player_id": "4017837",
-     "player_name": "Ivica Zubac",
+     "player_id": "4395712",
+     "player_name": "Andrew Nembhard",
      "status": "Day-To-Day",
-     "detail": "Left Ankle Sprain",
-     "comment": "Head coach Rick Carlisle said that X-rays on Zubac's sprained left ankle came back negative, but he's got some swelling and is unlikely to play Monday in Milwaukee, Scott Agness of FieldhouseFiles.com reports.",
-     "date": "2026-10-26T01:03Z",
+     "detail": "Neck Soreness",
+     "comment": "Nembhard (neck) is questionable for Monday's game against the Bucks.",
+     "date": "2026-10-26T18:34Z",
      "return_date": "2026-10-26"
     },
     {
      "player_id": "2530530",
      "player_name": "T.J. McConnell",
      "status": "Out",
-     "detail": "Right Hamstring",
-     "comment": "McConnell (hamstring) is out for Sunday's game against the Nets.",
-     "date": "2026-10-24T21:03Z",
+     "detail": "Right Hamstring Strain",
+     "comment": "McConnell (hamstring) is out for Monday's game against the Bucks.",
+     "date": "2026-10-26T18:26Z",
+     "return_date": "2026-10-28"
+    },
+    {
+     "player_id": "4396909",
+     "player_name": "Aaron Nesmith",
+     "status": "Day-To-Day",
+     "detail": "Left Hamstring",
+     "comment": "Nesmith (hamstring) is probable for Monday's game against the Bucks.",
+     "date": "2026-10-26T18:22Z",
      "return_date": "2026-10-26"
+    },
+    {
+     "player_id": "4017837",
+     "player_name": "Ivica Zubac",
+     "status": "Out",
+     "detail": "Left Ankle Sprain",
+     "comment": "Zubac (ankle) is out for Monday's game against the Bucks.",
+     "date": "2026-10-26T18:20Z",
+     "return_date": "2026-10-28"
     },
     {
      "player_id": "4433076",
@@ -38856,8 +38892,8 @@
    "id": "401909873",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/26 - 8:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "8:09 - 1st",
    "kickoff_utc": "2026-10-27T00:00Z",
    "away": "PHX",
    "home": "OKC",
@@ -38871,8 +38907,8 @@
    "home_record": "3-0",
    "away_split_record": "0-1",
    "home_split_record": "2-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 5,
+   "home_score": 6,
    "venue": "Paycom Center",
    "venue_city": "Oklahoma City, OK",
    "broadcast": "NBA League Pass / Suns Live / Arizona's Family 3TV / KSBI / Thunder App",
@@ -41679,7 +41715,7 @@
       "player_name": "Oso Ighodaro",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4601023.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 22.1,
       "ppg": 6.5,
       "height_in": 83.0,
@@ -42833,11 +42869,11 @@
     {
      "player_id": "4601023",
      "player_name": "Oso Ighodaro",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Oblique Strain",
-     "comment": "Ighodaro (oblique) is doubtful for Monday's matchup with the Thunder, Duane Rankin of The Arizona Republic reports.",
-     "date": "2026-10-25T22:25Z",
-     "return_date": "2026-10-26"
+     "comment": "Ighodaro (oblique) is out for Monday's matchup with the Thunder.",
+     "date": "2026-10-26T18:30Z",
+     "return_date": "2026-10-30"
     },
     {
      "player_id": "4701232",
@@ -45461,7 +45497,7 @@
       "player_name": "Chet Holmgren",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4433255.png",
-      "status": null,
+      "status": "Out",
       "mpg": 30.0,
       "ppg": 12.0,
       "height_in": 85.0,
@@ -46426,7 +46462,7 @@
       "player_name": "Cason Wallace",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4683692.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 16.3,
       "ppg": 6.3,
       "height_in": 75.0,
@@ -46665,31 +46701,49 @@
    },
    "home_injuries": [
     {
-     "player_id": "4593803",
-     "player_name": "Jalen Williams",
+     "player_id": "5159925",
+     "player_name": "Nikola Topic",
      "status": "Out",
-     "detail": "Left Ankle",
-     "comment": "Williams was stretchered off the floor during Sunday's game against the Clippers due to an apparent left ankle injury, NBA writer Justin Russo reports.",
-     "date": "2026-10-26T14:03Z",
-     "return_date": "2026-11-02"
+     "detail": "Back",
+     "comment": "Topic (back) won't play in Monday's game against the Suns, Andrew Schlecht of The Athletic reports.",
+     "date": "2026-10-26T19:24Z",
+     "return_date": "2026-10-28"
     },
     {
-     "player_id": "4432823",
-     "player_name": "Jaylin Williams",
-     "status": "Day-To-Day",
-     "detail": "Right Wrist Soreness",
-     "comment": "Williams won't return to Sunday's game against the Clippers due to right wrist soreness, Nick Crain of SLAM reports.",
-     "date": "2026-10-26T01:06Z",
-     "return_date": "2026-10-26"
+     "player_id": "5061603",
+     "player_name": "Thomas Sorber",
+     "status": "Out",
+     "detail": "Knee",
+     "comment": "Sorber (knee) is out for Monday's game versus the Suns, per Andrew Schlecht of The Athletic.",
+     "date": "2026-10-26T19:23Z",
+     "return_date": "2026-10-28"
     },
     {
      "player_id": "4683692",
      "player_name": "Cason Wallace",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Left Shoulder",
-     "comment": "Wallace (shoulder) will not return to Sunday's game against the Clippers, Rylan Stiles of SI.com  reports.",
-     "date": "2026-10-26T00:19Z",
-     "return_date": "2026-10-26"
+     "comment": "Wallace (shoulder) is out for Monday's game versus the Suns.",
+     "date": "2026-10-26T18:24Z",
+     "return_date": "2026-10-28"
+    },
+    {
+     "player_id": "4433255",
+     "player_name": "Chet Holmgren",
+     "status": "Out",
+     "detail": "Knee",
+     "comment": "Holmgren (knee) is out for Monday's game versus the Suns.",
+     "date": "2026-10-26T18:22Z",
+     "return_date": "2026-10-28"
+    },
+    {
+     "player_id": "4593803",
+     "player_name": "Jalen Williams",
+     "status": "Out",
+     "detail": "Left Ankle Not Specified",
+     "comment": "Williams was stretchered off the floor during Sunday's game against the Clippers due to an apparent left ankle injury, NBA writer Justin Russo reports.",
+     "date": "2026-10-26T14:03Z",
+     "return_date": "2027-03-02"
     },
     {
      "player_id": "5106270",
@@ -46699,24 +46753,6 @@
      "comment": "The Thunder plan to waive Oweh (Achilles) on Friday.",
      "date": "2026-10-23T18:52Z",
      "return_date": "2027-07-01"
-    },
-    {
-     "player_id": "5159925",
-     "player_name": "Nikola Topic",
-     "status": "Out",
-     "detail": "Back Surgery",
-     "comment": "Topic (back) won't play in Thursday's game against the Nuggets.",
-     "date": "2026-10-21T22:13Z",
-     "return_date": "2026-10-26"
-    },
-    {
-     "player_id": "5061603",
-     "player_name": "Thomas Sorber",
-     "status": "Out",
-     "detail": "Right Knee Surgery",
-     "comment": "Sorber (knee) is listed as out for Thursday's game against Denver.",
-     "date": "2026-10-21T22:08Z",
-     "return_date": "2026-10-26"
     }
    ]
   },
@@ -53856,7 +53892,7 @@
       "player_name": "Marcus Smart",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/2990992.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 23.5,
       "ppg": 7.5,
       "height_in": 75.0,
@@ -54445,11 +54481,11 @@
     {
      "player_id": "2990992",
      "player_name": "Marcus Smart",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Left Forearm Strain",
-     "comment": "Smart (forearm) is listed as questionable for Monday's game against the Hawks.",
-     "date": "2026-10-25T21:26Z",
-     "return_date": "2026-10-26"
+     "comment": "Smart (arm) is out for Monday's game against the Hawks.",
+     "date": "2026-10-26T16:20Z",
+     "return_date": "2026-10-28"
     },
     {
      "player_id": "2991235",
@@ -58186,21 +58222,21 @@
    },
    "away_injuries": [
     {
+     "player_id": "4432810",
+     "player_name": "Isaiah Stewart",
+     "status": "Day-To-Day",
+     "detail": "Left Ankle",
+     "comment": "Stewart is listed as questionable for Monday's game against the Jazz due to left ankle injury management.",
+     "date": "2026-10-26T19:17Z",
+     "return_date": "2026-10-26"
+    },
+    {
      "player_id": "5231919",
      "player_name": "Karim Lopez",
      "status": "Day-To-Day",
      "detail": "Right Knee Bruise",
-     "comment": "Lopez (knee) is out for Sunday's game in Sacramento.",
-     "date": "2026-10-26T14:06Z",
-     "return_date": "2026-10-26"
-    },
-    {
-     "player_id": "4600663",
-     "player_name": "Zach Edey",
-     "status": "Day-To-Day",
-     "detail": "Left Ankle",
-     "comment": "Edey has been ruled out for Sunday's game against Sacramento due to left ankle injury management.",
-     "date": "2026-10-26T14:05Z",
+     "comment": "Lopez (knee) is questionable for Monday's game in Utah.",
+     "date": "2026-10-26T19:16Z",
      "return_date": "2026-10-26"
     }
    ],
@@ -61269,7 +61305,7 @@
       "player_name": "Jaxson Hayes",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4397077.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 23.7,
       "ppg": 10.3,
       "height_in": 84.0,
@@ -62035,13 +62071,22 @@
    },
    "home_injuries": [
     {
+     "player_id": "4397077",
+     "player_name": "Jaxson Hayes",
+     "status": "Day-To-Day",
+     "detail": "Right Shoulder Soreness",
+     "comment": "Hayes is listed as questionable for Monday's game against the Grizzlies due to right shoulder soreness, Shreyas Laddha of The Salt Lake Tribune reports.",
+     "date": "2026-10-26T19:05Z",
+     "return_date": "2026-10-26"
+    },
+    {
      "player_id": "4433268",
      "player_name": "Trey Alexander",
      "status": "Out",
      "detail": "Left Knee Bruise",
      "comment": "Alexander won't play Wednesday against the Grizzlies due to a left knee bone bruise.",
      "date": "2026-10-24T23:18Z",
-     "return_date": "2026-10-26"
+     "return_date": "2026-10-28"
     },
     {
      "player_id": "3102530",
@@ -69579,11 +69624,11 @@
     {
      "player_id": "4065813",
      "player_name": "Alpha Diallo",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Right Wrist",
-     "comment": "Diallo (wrist) is doubtful for Monday's game against the Warriors.",
-     "date": "2026-10-25T22:43Z",
-     "return_date": "2026-10-26"
+     "comment": "Diallo (wrist) is out for Monday's game against the Warriors.",
+     "date": "2026-10-26T19:03Z",
+     "return_date": "2026-10-28"
     },
     {
      "player_id": "3138196",
@@ -69615,5 +69660,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-26T20:59:48+00:00"
+ "published_at_utc": "2026-10-27T00:15:49+00:00"
 }
