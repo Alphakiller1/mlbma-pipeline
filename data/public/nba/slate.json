@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-27",
- "generated_at_utc": "2026-10-27T06:51:25+00:00",
+ "generated_at_utc": "2026-10-27T07:52:56+00:00",
  "data_through_utc": "2026-10-27T02:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -31438,5 +31438,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-27T07:42:36+00:00"
+ "published_at_utc": "2026-10-27T10:48:29+00:00"
 }
