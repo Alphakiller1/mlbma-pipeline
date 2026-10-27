@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 9,
-  "generated_at_utc": "2026-10-26T23:57:36Z",
+  "generated_at_utc": "2026-10-27T18:08:26Z",
   "data_through_utc": "2026-10-25T18:32:22Z",
   "games": [
     {
@@ -30,7 +30,7 @@
       "venue_city": "Bowling Green, KY",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 69,
+      "weather_temp": 70,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -278,7 +278,7 @@
             "label": "Field-goal rate",
             "value": 0.75,
             "better": "high",
-            "rank": 74,
+            "rank": 73,
             "of": 138,
             "format": "pct"
           },
@@ -310,7 +310,7 @@
             "label": "Penalty yards per game",
             "value": 52.4286,
             "better": "low",
-            "rank": 47,
+            "rank": 48,
             "of": 138,
             "format": "num"
           },
@@ -391,7 +391,7 @@
             "value": 0.5234,
             "better": "neutral",
             "format": "pct",
-            "rank": 26,
+            "rank": 27,
             "of": 138
           },
           "off_sack_rate": {
@@ -407,7 +407,7 @@
             "value": 0.07,
             "better": "high",
             "format": "pct",
-            "rank": 57,
+            "rank": 56,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -423,7 +423,7 @@
             "value": 17.2857,
             "better": "high",
             "format": "num",
-            "rank": 32,
+            "rank": 31,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -910,7 +910,7 @@
             "value": 0.4797,
             "better": "neutral",
             "format": "pct",
-            "rank": 68,
+            "rank": 67,
             "of": 138
           },
           "off_sack_rate": {
@@ -1075,23 +1075,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -12.9,
-          "rank": 120,
+          "value": -11.7,
+          "rank": 117,
           "of": 138
         },
         "offense": {
-          "value": 21.1,
-          "rank": 102,
+          "value": 23.1,
+          "rank": 98,
           "of": 138
         },
         "defense": {
-          "value": 33.7,
-          "rank": 121,
+          "value": 34.4,
+          "rank": 125,
           "of": 138
         },
         "special_teams": {
           "value": -0.3,
-          "rank": 112,
+          "rank": 111,
           "of": 138
         }
       },
@@ -1100,23 +1100,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -11.2,
-          "rank": 113,
+          "value": -11.5,
+          "rank": 115,
           "of": 138
         },
         "offense": {
-          "value": 18.7,
-          "rank": 114,
+          "value": 18.8,
+          "rank": 115,
           "of": 138
         },
         "defense": {
-          "value": 30.4,
-          "rank": 106,
+          "value": 30.7,
+          "rank": 105,
           "of": 138
         },
         "special_teams": {
           "value": 0.4,
-          "rank": 18,
+          "rank": 26,
           "of": 138
         }
       },
@@ -2849,8 +2849,8 @@
       "venue_city": "Springfield, MO",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 66,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 68,
+      "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -3480,7 +3480,7 @@
             "label": "Passing yards allowed per game",
             "value": 250.143,
             "better": "low",
-            "rank": 116,
+            "rank": 115,
             "of": 138,
             "format": "num"
           },
@@ -3552,7 +3552,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 78,
+            "rank": 77,
             "of": 138,
             "format": "num"
           },
@@ -3894,23 +3894,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -16.9,
-          "rank": 127,
+          "value": -18.0,
+          "rank": 129,
           "of": 138
         },
         "offense": {
-          "value": 14.7,
-          "rank": 133,
+          "value": 13.9,
+          "rank": 132,
           "of": 138
         },
         "defense": {
-          "value": 31.2,
-          "rank": 110,
+          "value": 31.6,
+          "rank": 109,
           "of": 138
         },
         "special_teams": {
-          "value": -0.3,
-          "rank": 115,
+          "value": -0.4,
+          "rank": 121,
           "of": 138
         }
       },
@@ -3919,23 +3919,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -16.6,
-          "rank": 126,
+          "value": -16.9,
+          "rank": 128,
           "of": 138
         },
         "offense": {
-          "value": 17.8,
-          "rank": 115,
+          "value": 19.0,
+          "rank": 114,
           "of": 138
         },
         "defense": {
-          "value": 34.0,
-          "rank": 122,
+          "value": 35.4,
+          "rank": 128,
           "of": 138
         },
         "special_teams": {
-          "value": -0.4,
-          "rank": 123,
+          "value": -0.6,
+          "rank": 134,
           "of": 138
         }
       },
@@ -6516,7 +6516,7 @@
       "roof": "Outdoor",
       "broadcast": "CBSSN",
       "weather_temp": 67,
-      "weather_cond": "Partly cloudy",
+      "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -7355,7 +7355,7 @@
             "value": 0.3157,
             "better": "high",
             "format": "pct",
-            "rank": 53,
+            "rank": 52,
             "of": 138
           },
           "def_first_down_rate": {
@@ -7560,23 +7560,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -10.8,
-          "rank": 112,
+          "value": -13.8,
+          "rank": 120,
           "of": 138
         },
         "offense": {
-          "value": 19.9,
-          "rank": 110,
+          "value": 17.4,
+          "rank": 121,
           "of": 138
         },
         "defense": {
-          "value": 30.3,
-          "rank": 104,
+          "value": 30.7,
+          "rank": 105,
           "of": 138
         },
         "special_teams": {
-          "value": -0.4,
-          "rank": 120,
+          "value": -0.5,
+          "rank": 128,
           "of": 138
         }
       },
@@ -7585,23 +7585,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -17.3,
-          "rank": 129,
+          "value": -15.2,
+          "rank": 125,
           "of": 138
         },
         "offense": {
-          "value": 17.6,
+          "value": 18.1,
           "rank": 117,
           "of": 138
         },
         "defense": {
-          "value": 35.0,
-          "rank": 127,
+          "value": 33.7,
+          "rank": 119,
           "of": 138
         },
         "special_teams": {
-          "value": 0.1,
-          "rank": 69,
+          "value": 0.4,
+          "rank": 27,
           "of": 138
         }
       },
@@ -10376,7 +10376,7 @@
             "label": "Field-goal rate",
             "value": 0.7692,
             "better": "high",
-            "rank": 67,
+            "rank": 66,
             "of": 138,
             "format": "pct"
           },
@@ -10433,7 +10433,7 @@
             "value": 6.2563,
             "better": "high",
             "format": "num",
-            "rank": 33,
+            "rank": 34,
             "of": 138
           },
           "def_yards_per_play": {
@@ -10473,7 +10473,7 @@
             "value": 67.1429,
             "better": "neutral",
             "format": "num",
-            "rank": 66,
+            "rank": 65,
             "of": 138
           },
           "off_pass_rate": {
@@ -10569,7 +10569,7 @@
             "value": 0.3116,
             "better": "low",
             "format": "pct",
-            "rank": 75,
+            "rank": 74,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -10743,7 +10743,7 @@
             "label": "Yards per pass allowed",
             "value": 7.132,
             "better": "low",
-            "rank": 69,
+            "rank": 68,
             "of": 138,
             "format": "num"
           },
@@ -10968,7 +10968,7 @@
             "value": 0.2842,
             "better": "high",
             "format": "pct",
-            "rank": 102,
+            "rank": 101,
             "of": 138
           },
           "def_first_down_rate": {
@@ -11160,7 +11160,7 @@
             "value": 0.0552,
             "better": "high",
             "format": "pct",
-            "rank": 53,
+            "rank": 54,
             "of": 138
           }
         },
@@ -11173,23 +11173,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -0.5,
-          "rank": 75,
+          "value": -2.6,
+          "rank": 84,
           "of": 138
         },
         "offense": {
-          "value": 27.0,
-          "rank": 68,
+          "value": 25.5,
+          "rank": 79,
           "of": 138
         },
         "defense": {
-          "value": 27.4,
-          "rank": 82,
+          "value": 28.1,
+          "rank": 83,
           "of": 138
         },
         "special_teams": {
-          "value": 0.0,
-          "rank": 76,
+          "value": -0.1,
+          "rank": 88,
           "of": 138
         }
       },
@@ -11198,23 +11198,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -14.5,
-          "rank": 124,
+          "value": -13.4,
+          "rank": 119,
           "of": 138
         },
         "offense": {
-          "value": 16.9,
+          "value": 17.3,
           "rank": 122,
           "of": 138
         },
         "defense": {
-          "value": 31.1,
-          "rank": 109,
+          "value": 30.2,
+          "rank": 100,
           "of": 138
         },
         "special_teams": {
-          "value": -0.3,
-          "rank": 114,
+          "value": -0.4,
+          "rank": 119,
           "of": 138
         }
       },
@@ -13338,7 +13338,7 @@
             "value": 0.363,
             "better": "high",
             "format": "pct",
-            "rank": 36,
+            "rank": 35,
             "of": 138
           },
           "def_pass_first_rate": {
@@ -13346,7 +13346,7 @@
             "value": 0.3082,
             "better": "low",
             "format": "pct",
-            "rank": 68,
+            "rank": 69,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -13472,7 +13472,7 @@
             "label": "Third-down rate allowed",
             "value": 0.3441,
             "better": "low",
-            "rank": 39,
+            "rank": 38,
             "of": 138,
             "format": "pct"
           },
@@ -13616,7 +13616,7 @@
             "label": "Sacks per game",
             "value": 2.1429,
             "better": "high",
-            "rank": 62,
+            "rank": 61,
             "of": 138,
             "format": "num"
           },
@@ -13672,7 +13672,7 @@
             "label": "Field-goal rate",
             "value": 0.75,
             "better": "high",
-            "rank": 74,
+            "rank": 73,
             "of": 138,
             "format": "pct"
           },
@@ -13817,7 +13817,7 @@
             "value": 17.4286,
             "better": "high",
             "format": "num",
-            "rank": 30,
+            "rank": 29,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -13950,23 +13950,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -2.6,
-          "rank": 86,
+          "value": -3.4,
+          "rank": 90,
           "of": 138
         },
         "offense": {
-          "value": 28.9,
-          "rank": 54,
+          "value": 30.1,
+          "rank": 44,
           "of": 138
         },
         "defense": {
-          "value": 31.8,
-          "rank": 113,
+          "value": 33.9,
+          "rank": 123,
           "of": 138
         },
         "special_teams": {
           "value": 0.3,
-          "rank": 37,
+          "rank": 39,
           "of": 138
         }
       },
@@ -13975,23 +13975,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -0.9,
-          "rank": 77,
+          "value": -0.6,
+          "rank": 72,
           "of": 138
         },
         "offense": {
-          "value": 32.1,
-          "rank": 38,
+          "value": 33.5,
+          "rank": 24,
           "of": 138
         },
         "defense": {
-          "value": 32.7,
-          "rank": 116,
+          "value": 33.7,
+          "rank": 119,
           "of": 138
         },
         "special_teams": {
-          "value": -0.3,
-          "rank": 111,
+          "value": -0.4,
+          "rank": 116,
           "of": 138
         }
       },
@@ -16528,8 +16528,8 @@
       "venue_city": "Harrisonburg, VA",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 62,
-      "weather_cond": "Mostly clear",
+      "weather_temp": 61,
+      "weather_cond": "Clear",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -16937,7 +16937,7 @@
             "value": 32.0,
             "better": "neutral",
             "format": "num",
-            "rank": 112,
+            "rank": 111,
             "of": 138
           },
           "off_rush_first_rate": {
@@ -16985,7 +16985,7 @@
             "value": 11.3228,
             "better": "low",
             "format": "num",
-            "rank": 57,
+            "rank": 56,
             "of": 138
           },
           "off_pass_td_rate": {
@@ -17125,9 +17125,9 @@
           },
           "def_first_downs": {
             "label": "First downs allowed per game",
-            "value": 19.25,
+            "value": 19.125,
             "better": "low",
-            "rank": 70,
+            "rank": 67,
             "of": 138,
             "format": "num"
           },
@@ -17373,10 +17373,10 @@
           },
           "def_first_down_rate": {
             "label": "First downs allowed per defensive play",
-            "value": 0.2632,
+            "value": 0.2615,
             "better": "low",
             "format": "pct",
-            "rank": 30,
+            "rank": 28,
             "of": 138
           },
           "off_plays_pg": {
@@ -17448,7 +17448,7 @@
             "value": 38.125,
             "better": "neutral",
             "format": "num",
-            "rank": 36,
+            "rank": 35,
             "of": 138
           },
           "def_rush_attempts_pg": {
@@ -17485,10 +17485,10 @@
           },
           "def_pass_first_rate": {
             "label": "Passing first downs allowed per attempt",
-            "value": 0.3093,
+            "value": 0.3058,
             "better": "low",
             "format": "pct",
-            "rank": 69,
+            "rank": 64,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -17573,23 +17573,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -9.0,
-          "rank": 107,
+          "value": -9.9,
+          "rank": 108,
           "of": 138
         },
         "offense": {
-          "value": 21.0,
-          "rank": 104,
+          "value": 19.1,
+          "rank": 112,
           "of": 138
         },
         "defense": {
-          "value": 29.8,
-          "rank": 100,
+          "value": 28.8,
+          "rank": 91,
           "of": 138
         },
         "special_teams": {
           "value": -0.2,
-          "rank": 103,
+          "rank": 101,
           "of": 138
         }
       },
@@ -17598,23 +17598,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 12.1,
-          "rank": 27,
+          "value": 10.9,
+          "rank": 29,
           "of": 138
         },
         "offense": {
-          "value": 33.0,
-          "rank": 31,
+          "value": 32.5,
+          "rank": 33,
           "of": 138
         },
         "defense": {
-          "value": 21.2,
-          "rank": 34,
+          "value": 21.7,
+          "rank": 37,
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 25,
+          "value": 0.1,
+          "rank": 56,
           "of": 138
         }
       },
@@ -18047,6 +18047,15 @@
             "updated": "Sat, Oct 3",
             "detail": "Worley has been out of the lineup due to undisclosed injury, and he is expected to miss the remainder of the season.",
             "source": "Covers"
+          },
+          {
+            "player": "G. Crowder",
+            "position": "QB",
+            "status": "Probable",
+            "injury": "Undisclosed",
+            "updated": "Mon, Oct 19",
+            "source": "RotoWire + Covers",
+            "return": "10/29/2026"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -20210,8 +20219,8 @@
       "venue_city": "Charlotte, NC",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 69,
-      "weather_cond": "Mostly clear",
+      "weather_temp": 70,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -20458,7 +20467,7 @@
             "label": "Field-goal rate",
             "value": 0.7692,
             "better": "high",
-            "rank": 67,
+            "rank": 66,
             "of": 138,
             "format": "pct"
           },
@@ -20547,7 +20556,7 @@
             "value": 62.7143,
             "better": "neutral",
             "format": "num",
-            "rank": 122,
+            "rank": 121,
             "of": 138
           },
           "def_plays_pg": {
@@ -20587,7 +20596,7 @@
             "value": 0.0707,
             "better": "high",
             "format": "pct",
-            "rank": 56,
+            "rank": 55,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -21114,7 +21123,7 @@
             "value": 9.7143,
             "better": "low",
             "format": "num",
-            "rank": 49,
+            "rank": 50,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -21255,23 +21264,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -6.7,
-          "rank": 100,
+          "value": -8.2,
+          "rank": 101,
           "of": 138
         },
         "offense": {
-          "value": 19.6,
-          "rank": 112,
+          "value": 19.4,
+          "rank": 110,
           "of": 138
         },
         "defense": {
-          "value": 26.6,
-          "rank": 74,
+          "value": 28.1,
+          "rank": 83,
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 40,
+          "value": 0.6,
+          "rank": 3,
           "of": 138
         }
       },
@@ -21280,23 +21289,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -24.8,
-          "rank": 135,
+          "value": -25.4,
+          "rank": 136,
           "of": 138
         },
         "offense": {
-          "value": 15.7,
-          "rank": 127,
+          "value": 15.5,
+          "rank": 128,
           "of": 138
         },
         "defense": {
-          "value": 40.4,
-          "rank": 137,
+          "value": 40.7,
+          "rank": 138,
           "of": 138
         },
         "special_teams": {
           "value": -0.2,
-          "rank": 106,
+          "rank": 103,
           "of": 138
         }
       },
@@ -23190,7 +23199,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 78,
+            "rank": 77,
             "of": 138,
             "format": "num"
           },
@@ -23447,7 +23456,7 @@
             "value": 0.3062,
             "better": "low",
             "format": "pct",
-            "rank": 64,
+            "rank": 65,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -23773,7 +23782,7 @@
             "label": "Field-goal rate",
             "value": 0.75,
             "better": "high",
-            "rank": 74,
+            "rank": 73,
             "of": 138,
             "format": "pct"
           },
@@ -23797,7 +23806,7 @@
             "label": "Punt-return average",
             "value": 13.4167,
             "better": "high",
-            "rank": 28,
+            "rank": 29,
             "of": 138,
             "format": "num"
           },
@@ -23878,7 +23887,7 @@
             "value": 0.4858,
             "better": "neutral",
             "format": "pct",
-            "rank": 59,
+            "rank": 60,
             "of": 138
           },
           "def_pass_rate": {
@@ -23910,7 +23919,7 @@
             "value": 8.5714,
             "better": "low",
             "format": "num",
-            "rank": 37,
+            "rank": 36,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -24051,23 +24060,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 8.9,
-          "rank": 40,
+          "value": 8.5,
+          "rank": 43,
           "of": 138
         },
         "offense": {
-          "value": 28.1,
-          "rank": 60,
+          "value": 28.0,
+          "rank": 59,
           "of": 138
         },
         "defense": {
-          "value": 19.5,
-          "rank": 25,
+          "value": 20.0,
+          "rank": 29,
           "of": 138
         },
         "special_teams": {
           "value": 0.4,
-          "rank": 12,
+          "rank": 20,
           "of": 138
         }
       },
@@ -24076,23 +24085,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 4.0,
+          "value": 4.5,
           "rank": 56,
           "of": 138
         },
         "offense": {
-          "value": 26.0,
-          "rank": 80,
+          "value": 27.2,
+          "rank": 63,
           "of": 138
         },
         "defense": {
-          "value": 22.1,
-          "rank": 40,
+          "value": 22.8,
+          "rank": 43,
           "of": 138
         },
         "special_teams": {
           "value": 0.1,
-          "rank": 62,
+          "rank": 57,
           "of": 138
         }
       },
@@ -26643,8 +26652,8 @@
       "venue_city": "Sacramento, CA",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 60,
-      "weather_cond": "Mostly clear",
+      "weather_temp": 63,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -27156,7 +27165,7 @@
             "value": 0.0545,
             "better": "high",
             "format": "pct",
-            "rank": 60,
+            "rank": 61,
             "of": 138
           }
         },
@@ -27346,7 +27355,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 78,
+            "rank": 77,
             "of": 138,
             "format": "num"
           },
@@ -27688,23 +27697,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -22.3,
+          "value": -21.3,
           "rank": 132,
           "of": 138
         },
         "offense": {
-          "value": 11.5,
-          "rank": 137,
+          "value": 13.1,
+          "rank": 136,
           "of": 138
         },
         "defense": {
-          "value": 33.1,
-          "rank": 120,
+          "value": 33.7,
+          "rank": 119,
           "of": 138
         },
         "special_teams": {
-          "value": -0.7,
-          "rank": 136,
+          "value": -0.6,
+          "rank": 135,
           "of": 138
         }
       },
@@ -27713,23 +27722,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -26.1,
-          "rank": 137,
+          "value": -29.1,
+          "rank": 138,
           "of": 138
         },
         "offense": {
-          "value": 11.2,
+          "value": 10.4,
           "rank": 138,
           "of": 138
         },
         "defense": {
-          "value": 36.9,
-          "rank": 129,
+          "value": 39.2,
+          "rank": 137,
           "of": 138
         },
         "special_teams": {
-          "value": -0.5,
-          "rank": 133,
+          "value": -0.4,
+          "rank": 123,
           "of": 138
         }
       },
@@ -30381,8 +30390,8 @@
       "venue_city": "Lubbock, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 62,
-      "weather_cond": "Mostly cloudy",
+      "weather_temp": 61,
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -30750,7 +30759,7 @@
             "value": 0.0661,
             "better": "low",
             "format": "pct",
-            "rank": 87,
+            "rank": 86,
             "of": 138
           },
           "def_sack_rate": {
@@ -30894,7 +30903,7 @@
             "value": 0.0615,
             "better": "high",
             "format": "pct",
-            "rank": 32,
+            "rank": 31,
             "of": 138
           }
         },
@@ -31090,9 +31099,9 @@
           },
           "def_sacks": {
             "label": "Sacks per game",
-            "value": 2.8571,
+            "value": 3.0,
             "better": "high",
-            "rank": 15,
+            "rank": 12,
             "of": 138,
             "format": "num"
           },
@@ -31194,10 +31203,10 @@
           },
           "def_points_per_play": {
             "label": "Points allowed per defensive play",
-            "value": 0.2782,
+            "value": 0.2777,
             "better": "low",
             "format": "num",
-            "rank": 29,
+            "rank": 28,
             "of": 138
           },
           "off_yards_per_play": {
@@ -31210,10 +31219,10 @@
           },
           "def_yards_per_play": {
             "label": "Yards allowed per defensive play",
-            "value": 5.0778,
+            "value": 5.068,
             "better": "low",
             "format": "num",
-            "rank": 57,
+            "rank": 56,
             "of": 138
           },
           "off_first_down_rate": {
@@ -31226,10 +31235,10 @@
           },
           "def_first_down_rate": {
             "label": "First downs allowed per defensive play",
-            "value": 0.2665,
+            "value": 0.266,
             "better": "low",
             "format": "pct",
-            "rank": 36,
+            "rank": 35,
             "of": 138
           },
           "off_plays_pg": {
@@ -31242,7 +31251,7 @@
           },
           "def_plays_pg": {
             "label": "Defensive plays faced per game",
-            "value": 73.4286,
+            "value": 73.5714,
             "better": "neutral",
             "format": "num",
             "rank": 14,
@@ -31258,7 +31267,7 @@
           },
           "def_pass_rate": {
             "label": "Opponent dropback share",
-            "value": 0.5875,
+            "value": 0.5883,
             "better": "neutral",
             "format": "pct",
             "rank": 2,
@@ -31274,10 +31283,10 @@
           },
           "def_sack_rate": {
             "label": "Sacks generated per opponent dropback",
-            "value": 0.0662,
+            "value": 0.0693,
             "better": "high",
             "format": "pct",
-            "rank": 68,
+            "rank": 59,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -31290,10 +31299,10 @@
           },
           "def_sack_yards_pg": {
             "label": "Opponent sack yards lost per game",
-            "value": 18.4286,
+            "value": 18.5714,
             "better": "high",
             "format": "num",
-            "rank": 21,
+            "rank": 20,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -31301,7 +31310,7 @@
             "value": 38.0,
             "better": "neutral",
             "format": "num",
-            "rank": 37,
+            "rank": 36,
             "of": 138
           },
           "def_rush_attempts_pg": {
@@ -31402,7 +31411,7 @@
           },
           "def_dropbacks_pg": {
             "label": "Opponent dropbacks per game",
-            "value": 43.1429,
+            "value": 43.2857,
             "better": "neutral",
             "format": "num",
             "rank": 1,
@@ -31410,10 +31419,10 @@
           },
           "def_disruption_rate": {
             "label": "Sacks plus takeaways per defensive play",
-            "value": 0.072,
+            "value": 0.0738,
             "better": "high",
             "format": "pct",
-            "rank": 12,
+            "rank": 11,
             "of": 138
           }
         },
@@ -31426,23 +31435,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 15.7,
-          "rank": 15,
+          "value": 16.0,
+          "rank": 14,
           "of": 138
         },
         "offense": {
-          "value": 35.7,
+          "value": 35.4,
           "rank": 14,
           "of": 138
         },
         "defense": {
-          "value": 19.8,
-          "rank": 27,
+          "value": 19.0,
+          "rank": 24,
           "of": 138
         },
         "special_teams": {
-          "value": -0.3,
-          "rank": 108,
+          "value": -0.4,
+          "rank": 113,
           "of": 138
         }
       },
@@ -31451,23 +31460,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 21.9,
-          "rank": 7,
+          "value": 18.4,
+          "rank": 9,
           "of": 138
         },
         "offense": {
-          "value": 37.9,
-          "rank": 8,
+          "value": 36.2,
+          "rank": 10,
           "of": 138
         },
         "defense": {
-          "value": 16.3,
-          "rank": 13,
+          "value": 18.2,
+          "rank": 23,
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 21,
+          "value": 0.4,
+          "rank": 14,
           "of": 138
         }
       },
@@ -34060,7 +34069,7 @@
       "roof": "Outdoor",
       "broadcast": "CW",
       "weather_temp": 66,
-      "weather_cond": "Hazy sunshine",
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -34083,7 +34092,7 @@
             "label": "Yards per game",
             "value": 375.7,
             "better": "high",
-            "rank": 81,
+            "rank": 80,
             "of": 138,
             "format": "num"
           },
@@ -34307,7 +34316,7 @@
             "label": "Field-goal rate",
             "value": 0.75,
             "better": "high",
-            "rank": 74,
+            "rank": 73,
             "of": 138,
             "format": "pct"
           },
@@ -34476,7 +34485,7 @@
             "value": 0.2772,
             "better": "high",
             "format": "pct",
-            "rank": 15,
+            "rank": 14,
             "of": 138
           },
           "def_rush_first_rate": {
@@ -34850,7 +34859,7 @@
             "label": "Punt-return average",
             "value": 13.4,
             "better": "high",
-            "rank": 29,
+            "rank": 30,
             "of": 138,
             "format": "num"
           },
@@ -34883,7 +34892,7 @@
             "value": 6.2537,
             "better": "high",
             "format": "num",
-            "rank": 34,
+            "rank": 35,
             "of": 138
           },
           "def_yards_per_play": {
@@ -35104,23 +35113,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -3.2,
-          "rank": 89,
+          "value": -1.5,
+          "rank": 78,
           "of": 138
         },
         "offense": {
-          "value": 21.1,
-          "rank": 102,
+          "value": 23.9,
+          "rank": 90,
           "of": 138
         },
         "defense": {
-          "value": 24.4,
-          "rank": 57,
+          "value": 25.1,
+          "rank": 59,
           "of": 138
         },
         "special_teams": {
-          "value": 0.0,
-          "rank": 78,
+          "value": -0.2,
+          "rank": 96,
           "of": 138
         }
       },
@@ -35129,23 +35138,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 6.5,
-          "rank": 50,
+          "value": 6.8,
+          "rank": 47,
           "of": 138
         },
         "offense": {
-          "value": 30.1,
-          "rank": 44,
+          "value": 29.7,
+          "rank": 49,
           "of": 138
         },
         "defense": {
-          "value": 23.7,
-          "rank": 50,
+          "value": 22.9,
+          "rank": 44,
           "of": 138
         },
         "special_teams": {
           "value": 0.0,
-          "rank": 73,
+          "rank": 74,
           "of": 138
         }
       },
@@ -37651,7 +37660,7 @@
       "venue_city": "Kalamazoo, MI",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 59,
+      "weather_temp": 55,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -38020,7 +38029,7 @@
             "value": 0.0651,
             "better": "low",
             "format": "pct",
-            "rank": 84,
+            "rank": 83,
             "of": 138
           },
           "def_sack_rate": {
@@ -38164,7 +38173,7 @@
             "value": 0.055,
             "better": "high",
             "format": "pct",
-            "rank": 54,
+            "rank": 55,
             "of": 138
           }
         },
@@ -38555,7 +38564,7 @@
             "value": 9.625,
             "better": "low",
             "format": "num",
-            "rank": 48,
+            "rank": 49,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -38683,7 +38692,7 @@
             "value": 0.0555,
             "better": "high",
             "format": "pct",
-            "rank": 52,
+            "rank": 53,
             "of": 138
           }
         },
@@ -38696,23 +38705,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -17.9,
+          "value": -18.2,
           "rank": 130,
           "of": 138
         },
         "offense": {
-          "value": 15.0,
+          "value": 15.4,
           "rank": 129,
           "of": 138
         },
         "defense": {
-          "value": 32.7,
-          "rank": 116,
+          "value": 33.5,
+          "rank": 118,
           "of": 138
         },
         "special_teams": {
-          "value": -0.2,
-          "rank": 105,
+          "value": -0.1,
+          "rank": 91,
           "of": 138
         }
       },
@@ -38721,23 +38730,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -1.5,
-          "rank": 81,
+          "value": -2.7,
+          "rank": 86,
           "of": 138
         },
         "offense": {
-          "value": 21.7,
+          "value": 22.8,
           "rank": 101,
           "of": 138
         },
         "defense": {
-          "value": 23.4,
-          "rank": 43,
+          "value": 25.8,
+          "rank": 65,
           "of": 138
         },
         "special_teams": {
           "value": 0.3,
-          "rank": 35,
+          "rank": 38,
           "of": 138
         }
       },
@@ -41288,7 +41297,7 @@
       "venue_city": "Raleigh, NC",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 67,
+      "weather_temp": 65,
       "weather_cond": "Hazy sunshine",
       "away_form": {
         "rates": {
@@ -41472,7 +41481,7 @@
             "label": "Sacks taken per game",
             "value": 1.875,
             "better": "low",
-            "rank": 70,
+            "rank": 69,
             "of": 138,
             "format": "num"
           },
@@ -41887,7 +41896,7 @@
             "label": "First downs allowed per game",
             "value": 19.1429,
             "better": "low",
-            "rank": 67,
+            "rank": 68,
             "of": 138,
             "format": "num"
           },
@@ -42333,23 +42342,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -6.2,
-          "rank": 97,
+          "value": -8.2,
+          "rank": 101,
           "of": 138
         },
         "offense": {
-          "value": 22.5,
-          "rank": 100,
+          "value": 22.8,
+          "rank": 101,
           "of": 138
         },
         "defense": {
-          "value": 28.2,
-          "rank": 89,
+          "value": 30.5,
+          "rank": 103,
           "of": 138
         },
         "special_teams": {
-          "value": -0.6,
-          "rank": 134,
+          "value": -0.5,
+          "rank": 124,
           "of": 138
         }
       },
@@ -42358,23 +42367,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -1.0,
-          "rank": 78,
+          "value": -0.9,
+          "rank": 74,
           "of": 138
         },
         "offense": {
-          "value": 29.2,
-          "rank": 51,
+          "value": 30.0,
+          "rank": 46,
           "of": 138
         },
         "defense": {
-          "value": 30.3,
-          "rank": 104,
+          "value": 31.0,
+          "rank": 107,
           "of": 138
         },
         "special_teams": {
-          "value": 0.0,
-          "rank": 77,
+          "value": 0.1,
+          "rank": 62,
           "of": 138
         }
       },
@@ -45118,8 +45127,8 @@
       "venue_city": "College Park, MD",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 62,
-      "weather_cond": "Hazy sunshine",
+      "weather_temp": 61,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -45182,7 +45191,7 @@
             "label": "Fourth-down rate allowed",
             "value": 0.7333,
             "better": "low",
-            "rank": 118,
+            "rank": 119,
             "of": 138,
             "format": "pct"
           },
@@ -45300,9 +45309,9 @@
           },
           "off_sacks": {
             "label": "Sacks taken per game",
-            "value": 1.2857,
+            "value": 1.1429,
             "better": "low",
-            "rank": 32,
+            "rank": 21,
             "of": 138,
             "format": "num"
           },
@@ -45404,10 +45413,10 @@
           },
           "off_points_per_play": {
             "label": "Points per offensive play",
-            "value": 0.4818,
+            "value": 0.4829,
             "better": "high",
             "format": "num",
-            "rank": 39,
+            "rank": 38,
             "of": 138
           },
           "def_points_per_play": {
@@ -45420,10 +45429,10 @@
           },
           "off_yards_per_play": {
             "label": "Yards per offensive play",
-            "value": 6.2432,
+            "value": 6.2574,
             "better": "high",
             "format": "num",
-            "rank": 35,
+            "rank": 33,
             "of": 138
           },
           "def_yards_per_play": {
@@ -45436,10 +45445,10 @@
           },
           "off_first_down_rate": {
             "label": "First downs per offensive play",
-            "value": 0.3455,
+            "value": 0.3462,
             "better": "high",
             "format": "pct",
-            "rank": 12,
+            "rank": 11,
             "of": 138
           },
           "def_first_down_rate": {
@@ -45452,7 +45461,7 @@
           },
           "off_plays_pg": {
             "label": "Offensive plays per game",
-            "value": 62.8571,
+            "value": 62.7143,
             "better": "neutral",
             "format": "num",
             "rank": 121,
@@ -45468,7 +45477,7 @@
           },
           "off_pass_rate": {
             "label": "Dropback share",
-            "value": 0.5045,
+            "value": 0.5034,
             "better": "neutral",
             "format": "pct",
             "rank": 43,
@@ -45484,10 +45493,10 @@
           },
           "off_sack_rate": {
             "label": "Sacks allowed per dropback",
-            "value": 0.0405,
+            "value": 0.0362,
             "better": "low",
             "format": "pct",
-            "rank": 32,
+            "rank": 25,
             "of": 138
           },
           "def_sack_rate": {
@@ -45500,10 +45509,10 @@
           },
           "off_sack_yards_pg": {
             "label": "Sack yards lost per game",
-            "value": 10.0,
+            "value": 9.2857,
             "better": "low",
             "format": "num",
-            "rank": 52,
+            "rank": 45,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -45612,10 +45621,10 @@
           },
           "off_dropbacks_pg": {
             "label": "Dropbacks per game",
-            "value": 31.7143,
+            "value": 31.5714,
             "better": "neutral",
             "format": "num",
-            "rank": 79,
+            "rank": 81,
             "of": 138
           },
           "def_dropbacks_pg": {
@@ -46163,23 +46172,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 6.0,
-          "rank": 52,
+          "value": 6.8,
+          "rank": 47,
           "of": 138
         },
         "offense": {
-          "value": 33.1,
-          "rank": 30,
+          "value": 31.7,
+          "rank": 36,
           "of": 138
         },
         "defense": {
-          "value": 27.4,
-          "rank": 82,
+          "value": 25.5,
+          "rank": 63,
           "of": 138
         },
         "special_teams": {
-          "value": 0.4,
-          "rank": 14,
+          "value": 0.5,
+          "rank": 6,
           "of": 138
         }
       },
@@ -46188,23 +46197,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -2.9,
-          "rank": 88,
+          "value": -2.1,
+          "rank": 81,
           "of": 138
         },
         "offense": {
-          "value": 26.9,
-          "rank": 69,
+          "value": 26.6,
+          "rank": 70,
           "of": 138
         },
         "defense": {
-          "value": 29.9,
-          "rank": 102,
+          "value": 28.7,
+          "rank": 89,
           "of": 138
         },
         "special_teams": {
-          "value": 0.1,
-          "rank": 67,
+          "value": -0.1,
+          "rank": 87,
           "of": 138
         }
       },
@@ -47977,8 +47986,8 @@
       "venue_city": "Foxborough, MA",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 55,
-      "weather_cond": "Partly sunny",
+      "weather_temp": 53,
+      "weather_cond": "Intermittent clouds",
       "neutral": true,
       "away_form": {
         "rates": {
@@ -48170,7 +48179,7 @@
             "label": "Sacks per game",
             "value": 2.1429,
             "better": "high",
-            "rank": 62,
+            "rank": 61,
             "of": 138,
             "format": "num"
           },
@@ -48403,7 +48412,7 @@
             "value": 0.1726,
             "better": "low",
             "format": "pct",
-            "rank": 15,
+            "rank": 16,
             "of": 138
           },
           "off_pass_first_rate": {
@@ -48419,7 +48428,7 @@
             "value": 0.3135,
             "better": "low",
             "format": "pct",
-            "rank": 79,
+            "rank": 78,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -48681,7 +48690,7 @@
             "label": "Sacks taken per game",
             "value": 1.2857,
             "better": "low",
-            "rank": 32,
+            "rank": 33,
             "of": 138,
             "format": "num"
           },
@@ -48689,7 +48698,7 @@
             "label": "Sacks per game",
             "value": 2.1429,
             "better": "high",
-            "rank": 62,
+            "rank": 61,
             "of": 138,
             "format": "num"
           },
@@ -49023,23 +49032,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 24.8,
-          "rank": 4,
+          "value": 25.2,
+          "rank": 3,
           "of": 138
         },
         "offense": {
-          "value": 39.1,
+          "value": 39.5,
           "rank": 3,
           "of": 138
         },
         "defense": {
-          "value": 14.6,
+          "value": 14.7,
           "rank": 8,
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 20,
+          "value": 0.4,
+          "rank": 12,
           "of": 138
         }
       },
@@ -49048,23 +49057,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 0.2,
-          "rank": 72,
+          "value": -1.6,
+          "rank": 80,
           "of": 138
         },
         "offense": {
-          "value": 28.3,
-          "rank": 58,
+          "value": 29.0,
+          "rank": 52,
           "of": 138
         },
         "defense": {
-          "value": 28.0,
-          "rank": 88,
+          "value": 30.4,
+          "rank": 101,
           "of": 138
         },
         "special_teams": {
-          "value": -0.1,
-          "rank": 90,
+          "value": -0.3,
+          "rank": 109,
           "of": 138
         }
       },
@@ -50765,8 +50774,8 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "ESPN2",
-      "weather_temp": 54,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 53,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -51500,7 +51509,7 @@
             "label": "Rushing yards per game",
             "value": 164.4,
             "better": "high",
-            "rank": 56,
+            "rank": 55,
             "of": 138,
             "format": "num"
           },
@@ -51797,7 +51806,7 @@
             "value": 0.0548,
             "better": "high",
             "format": "pct",
-            "rank": 56,
+            "rank": 57,
             "of": 138
           }
         },
@@ -51810,23 +51819,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 12.9,
-          "rank": 24,
+          "value": 13.4,
+          "rank": 21,
           "of": 138
         },
         "offense": {
-          "value": 33.0,
-          "rank": 31,
+          "value": 34.1,
+          "rank": 19,
           "of": 138
         },
         "defense": {
-          "value": 19.8,
-          "rank": 27,
+          "value": 20.4,
+          "rank": 31,
           "of": 138
         },
         "special_teams": {
           "value": -0.4,
-          "rank": 116,
+          "rank": 114,
           "of": 138
         }
       },
@@ -51835,23 +51844,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -2.3,
-          "rank": 84,
+          "value": -2.8,
+          "rank": 87,
           "of": 138
         },
         "offense": {
-          "value": 25.0,
-          "rank": 85,
+          "value": 25.7,
+          "rank": 77,
           "of": 138
         },
         "defense": {
-          "value": 27.1,
-          "rank": 78,
+          "value": 28.3,
+          "rank": 85,
           "of": 138
         },
         "special_teams": {
-          "value": -0.1,
-          "rank": 92,
+          "value": -0.2,
+          "rank": 98,
           "of": 138
         }
       },
@@ -54403,7 +54412,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPNU",
       "weather_temp": 82,
-      "weather_cond": "Mostly sunny",
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -54674,7 +54683,7 @@
             "label": "Punt-return average",
             "value": 13.1818,
             "better": "high",
-            "rank": 30,
+            "rank": 31,
             "of": 138,
             "format": "num"
           },
@@ -55169,7 +55178,7 @@
             "label": "Field-goal rate",
             "value": 0.7692,
             "better": "high",
-            "rank": 67,
+            "rank": 66,
             "of": 138,
             "format": "pct"
           },
@@ -55290,7 +55299,7 @@
             "value": 0.0663,
             "better": "low",
             "format": "pct",
-            "rank": 88,
+            "rank": 87,
             "of": 138
           },
           "def_sack_rate": {
@@ -55447,23 +55456,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -8.9,
-          "rank": 105,
+          "value": -10.4,
+          "rank": 110,
           "of": 138
         },
         "offense": {
-          "value": 19.7,
-          "rank": 111,
+          "value": 20.0,
+          "rank": 109,
           "of": 138
         },
         "defense": {
-          "value": 28.9,
-          "rank": 95,
+          "value": 30.5,
+          "rank": 103,
           "of": 138
         },
         "special_teams": {
-          "value": 0.2,
-          "rank": 50,
+          "value": 0.1,
+          "rank": 67,
           "of": 138
         }
       },
@@ -55472,23 +55481,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 2.7,
-          "rank": 61,
+          "value": 2.2,
+          "rank": 63,
           "of": 138
         },
         "offense": {
-          "value": 26.6,
-          "rank": 71,
+          "value": 26.5,
+          "rank": 72,
           "of": 138
         },
         "defense": {
-          "value": 24.2,
-          "rank": 55,
+          "value": 24.5,
+          "rank": 54,
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 32,
+          "value": 0.1,
+          "rank": 60,
           "of": 138
         }
       },
@@ -56311,7 +56320,7 @@
       "venue_city": "Iowa City, IA",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 62,
+      "weather_temp": 59,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -56632,7 +56641,7 @@
             "value": 0.284,
             "better": "high",
             "format": "pct",
-            "rank": 103,
+            "rank": 102,
             "of": 138
           },
           "def_first_down_rate": {
@@ -57175,7 +57184,7 @@
             "value": 66.8571,
             "better": "neutral",
             "format": "num",
-            "rank": 72,
+            "rank": 71,
             "of": 138
           },
           "off_pass_rate": {
@@ -57356,23 +57365,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 8.3,
-          "rank": 43,
+          "value": 8.7,
+          "rank": 40,
           "of": 138
         },
         "offense": {
-          "value": 23.9,
-          "rank": 94,
+          "value": 23.6,
+          "rank": 93,
           "of": 138
         },
         "defense": {
-          "value": 15.7,
-          "rank": 11,
+          "value": 15.1,
+          "rank": 9,
           "of": 138
         },
         "special_teams": {
-          "value": 0.1,
-          "rank": 60,
+          "value": 0.2,
+          "rank": 46,
           "of": 138
         }
       },
@@ -57381,23 +57390,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 13.6,
-          "rank": 20,
+          "value": 12.4,
+          "rank": 23,
           "of": 138
         },
         "offense": {
-          "value": 29.5,
-          "rank": 49,
+          "value": 27.3,
+          "rank": 62,
           "of": 138
         },
         "defense": {
-          "value": 16.3,
-          "rank": 13,
+          "value": 15.3,
+          "rank": 10,
           "of": 138
         },
         "special_teams": {
           "value": 0.4,
-          "rank": 7,
+          "rank": 16,
           "of": 138
         }
       },
@@ -59814,7 +59823,7 @@
       "venue_city": "Piscataway, NJ",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 62,
+      "weather_temp": 60,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -59830,7 +59839,7 @@
             "label": "Points allowed per game",
             "value": 15.714,
             "better": "low",
-            "rank": 15,
+            "rank": 16,
             "of": 138,
             "format": "num"
           },
@@ -60022,7 +60031,7 @@
             "label": "Yards per rush allowed",
             "value": 2.835,
             "better": "low",
-            "rank": 9,
+            "rank": 10,
             "of": 138,
             "format": "num"
           },
@@ -60062,7 +60071,7 @@
             "label": "Field-goal rate",
             "value": 0.75,
             "better": "high",
-            "rank": 74,
+            "rank": 73,
             "of": 138,
             "format": "pct"
           },
@@ -60327,7 +60336,7 @@
             "value": 0.0564,
             "better": "high",
             "format": "pct",
-            "rank": 48,
+            "rank": 49,
             "of": 138
           }
         },
@@ -60859,23 +60868,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 13.0,
-          "rank": 23,
+          "value": 11.5,
+          "rank": 27,
           "of": 138
         },
         "offense": {
-          "value": 26.2,
-          "rank": 75,
+          "value": 24.4,
+          "rank": 86,
           "of": 138
         },
         "defense": {
-          "value": 13.2,
-          "rank": 2,
+          "value": 12.7,
+          "rank": 3,
           "of": 138
         },
         "special_teams": {
-          "value": 0.0,
-          "rank": 70,
+          "value": -0.2,
+          "rank": 93,
           "of": 138
         }
       },
@@ -60884,23 +60893,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -3.8,
-          "rank": 91,
+          "value": -4.9,
+          "rank": 95,
           "of": 138
         },
         "offense": {
-          "value": 30.3,
-          "rank": 42,
+          "value": 28.7,
+          "rank": 54,
           "of": 138
         },
         "defense": {
-          "value": 34.3,
-          "rank": 125,
+          "value": 34.0,
+          "rank": 124,
           "of": 138
         },
         "special_teams": {
           "value": 0.3,
-          "rank": 38,
+          "rank": 40,
           "of": 138
         }
       },
@@ -63533,7 +63542,7 @@
         "rates": {
           "off_ppg": {
             "label": "Points per game",
-            "value": 25.43,
+            "value": 25.0,
             "better": "high",
             "rank": 93,
             "of": 138,
@@ -63549,9 +63558,9 @@
           },
           "off_ypg": {
             "label": "Yards per game",
-            "value": 376.4,
+            "value": 375.3,
             "better": "high",
-            "rank": 80,
+            "rank": 81,
             "of": 138,
             "format": "num"
           },
@@ -63573,9 +63582,9 @@
           },
           "def_third_down": {
             "label": "Third-down rate allowed",
-            "value": 0.3364,
+            "value": 0.3458,
             "better": "low",
-            "rank": 34,
+            "rank": 41,
             "of": 138,
             "format": "pct"
           },
@@ -63589,17 +63598,17 @@
           },
           "def_fourth": {
             "label": "Fourth-down rate allowed",
-            "value": 0.7391,
+            "value": 0.7273,
             "better": "low",
-            "rank": 120,
+            "rank": 118,
             "of": 138,
             "format": "pct"
           },
           "off_first_downs": {
             "label": "First downs per game",
-            "value": 21.1429,
+            "value": 20.8571,
             "better": "high",
-            "rank": 60,
+            "rank": 63,
             "of": 138,
             "format": "num"
           },
@@ -63621,9 +63630,9 @@
           },
           "def_ypa": {
             "label": "Yards per pass allowed",
-            "value": 7.127,
+            "value": 7.167,
             "better": "low",
-            "rank": 68,
+            "rank": 71,
             "of": 138,
             "format": "num"
           },
@@ -63637,9 +63646,9 @@
           },
           "def_pass_ypg": {
             "label": "Passing yards allowed per game",
-            "value": 249.429,
+            "value": 250.857,
             "better": "low",
-            "rank": 115,
+            "rank": 116,
             "of": 138,
             "format": "num"
           },
@@ -63669,7 +63678,7 @@
           },
           "def_qbr": {
             "label": "Passer rating allowed",
-            "value": 128.7242,
+            "value": 129.0602,
             "better": "low",
             "rank": 66,
             "of": 138,
@@ -63733,25 +63742,25 @@
           },
           "def_ypc": {
             "label": "Yards per rush allowed",
-            "value": 3.753,
+            "value": 3.716,
             "better": "low",
-            "rank": 51,
+            "rank": 47,
             "of": 138,
             "format": "num"
           },
           "off_rush_ypg": {
             "label": "Rushing yards per game",
-            "value": 165.4,
+            "value": 164.3,
             "better": "high",
-            "rank": 55,
+            "rank": 56,
             "of": 138,
             "format": "num"
           },
           "def_rush_ypg": {
             "label": "Rushing yards allowed per game",
-            "value": 147.429,
+            "value": 146.0,
             "better": "low",
-            "rank": 78,
+            "rank": 77,
             "of": 138,
             "format": "num"
           },
@@ -63773,9 +63782,9 @@
           },
           "off_fg": {
             "label": "Field-goal rate",
-            "value": 0.7778,
+            "value": 0.75,
             "better": "high",
-            "rank": 61,
+            "rank": 73,
             "of": 138,
             "format": "pct"
           },
@@ -63813,7 +63822,7 @@
           },
           "off_points_per_play": {
             "label": "Points per offensive play",
-            "value": 0.343,
+            "value": 0.3385,
             "better": "high",
             "format": "num",
             "rank": 102,
@@ -63829,7 +63838,7 @@
           },
           "off_yards_per_play": {
             "label": "Yards per offensive play",
-            "value": 5.0771,
+            "value": 5.0812,
             "better": "high",
             "format": "num",
             "rank": 113,
@@ -63845,10 +63854,10 @@
           },
           "off_first_down_rate": {
             "label": "First downs per offensive play",
-            "value": 0.2852,
+            "value": 0.2824,
             "better": "high",
             "format": "pct",
-            "rank": 99,
+            "rank": 105,
             "of": 138
           },
           "def_first_down_rate": {
@@ -63861,10 +63870,10 @@
           },
           "off_plays_pg": {
             "label": "Offensive plays per game",
-            "value": 74.1429,
+            "value": 73.8571,
             "better": "neutral",
             "format": "num",
-            "rank": 10,
+            "rank": 11,
             "of": 138
           },
           "def_plays_pg": {
@@ -63877,10 +63886,10 @@
           },
           "off_pass_rate": {
             "label": "Dropback share",
-            "value": 0.4855,
+            "value": 0.4874,
             "better": "neutral",
             "format": "pct",
-            "rank": 60,
+            "rank": 57,
             "of": 138
           },
           "def_pass_rate": {
@@ -63925,10 +63934,10 @@
           },
           "off_rush_attempts_pg": {
             "label": "Rushing attempts per game",
-            "value": 38.1429,
+            "value": 37.8571,
             "better": "neutral",
             "format": "num",
-            "rank": 33,
+            "rank": 41,
             "of": 138
           },
           "def_rush_attempts_pg": {
@@ -63941,18 +63950,18 @@
           },
           "off_rush_first_rate": {
             "label": "Rushing first downs per attempt",
-            "value": 0.2472,
+            "value": 0.2453,
             "better": "high",
             "format": "pct",
-            "rank": 54,
+            "rank": 56,
             "of": 138
           },
           "def_rush_first_rate": {
             "label": "Rushing first downs allowed per attempt",
-            "value": 0.2218,
+            "value": 0.2182,
             "better": "low",
             "format": "pct",
-            "rank": 73,
+            "rank": 70,
             "of": 138
           },
           "off_pass_first_rate": {
@@ -63965,10 +63974,10 @@
           },
           "def_pass_first_rate": {
             "label": "Passing first downs allowed per attempt",
-            "value": 0.3102,
+            "value": 0.3143,
             "better": "low",
             "format": "pct",
-            "rank": 71,
+            "rank": 82,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -63981,10 +63990,10 @@
           },
           "def_yards_per_completion": {
             "label": "Yards allowed per completion",
-            "value": 11.2645,
+            "value": 11.329,
             "better": "low",
             "format": "num",
-            "rank": 55,
+            "rank": 57,
             "of": 138
           },
           "off_pass_td_rate": {
@@ -64037,10 +64046,10 @@
           },
           "def_disruption_rate": {
             "label": "Sacks plus takeaways per defensive play",
-            "value": 0.054,
+            "value": 0.0559,
             "better": "high",
             "format": "pct",
-            "rank": 61,
+            "rank": 51,
             "of": 138
           }
         },
@@ -64487,7 +64496,7 @@
             "value": 0.3119,
             "better": "low",
             "format": "pct",
-            "rank": 76,
+            "rank": 75,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -64572,23 +64581,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 8.9,
-          "rank": 40,
+          "value": 6.5,
+          "rank": 51,
           "of": 138
         },
         "offense": {
-          "value": 27.1,
-          "rank": 67,
+          "value": 26.5,
+          "rank": 72,
           "of": 138
         },
         "defense": {
-          "value": 18.5,
-          "rank": 24,
+          "value": 20.4,
+          "rank": 31,
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 29,
+          "value": 0.4,
+          "rank": 21,
           "of": 138
         }
       },
@@ -64597,23 +64606,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 17.1,
-          "rank": 14,
+          "value": 14.7,
+          "rank": 16,
           "of": 138
         },
         "offense": {
-          "value": 39.1,
-          "rank": 3,
+          "value": 37.2,
+          "rank": 7,
           "of": 138
         },
         "defense": {
-          "value": 22.5,
-          "rank": 41,
+          "value": 23.2,
+          "rank": 48,
           "of": 138
         },
         "special_teams": {
-          "value": 0.5,
-          "rank": 3,
+          "value": 0.7,
+          "rank": 1,
           "of": 138
         }
       },
@@ -67066,8 +67075,8 @@
       "venue_city": "Norfolk, VA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 66,
-      "weather_cond": "Mostly cloudy",
+      "weather_temp": 68,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -67483,7 +67492,7 @@
             "value": 0.246,
             "better": "high",
             "format": "pct",
-            "rank": 56,
+            "rank": 55,
             "of": 138
           },
           "def_rush_first_rate": {
@@ -67571,7 +67580,7 @@
             "value": 32.1429,
             "better": "neutral",
             "format": "num",
-            "rank": 64,
+            "rank": 63,
             "of": 138
           },
           "def_disruption_rate": {
@@ -67962,7 +67971,7 @@
             "value": 0.0696,
             "better": "high",
             "format": "pct",
-            "rank": 59,
+            "rank": 58,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -68026,7 +68035,7 @@
             "value": 0.311,
             "better": "low",
             "format": "pct",
-            "rank": 73,
+            "rank": 72,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -68098,7 +68107,7 @@
             "value": 0.0575,
             "better": "high",
             "format": "pct",
-            "rank": 43,
+            "rank": 44,
             "of": 138
           }
         },
@@ -68111,23 +68120,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -13.2,
-          "rank": 121,
+          "value": -10.7,
+          "rank": 111,
           "of": 138
         },
         "offense": {
-          "value": 24.1,
-          "rank": 93,
+          "value": 23.7,
+          "rank": 92,
           "of": 138
         },
         "defense": {
-          "value": 37.3,
-          "rank": 132,
+          "value": 34.4,
+          "rank": 125,
           "of": 138
         },
         "special_teams": {
-          "value": 0.0,
-          "rank": 82,
+          "value": -0.1,
+          "rank": 89,
           "of": 138
         }
       },
@@ -68136,23 +68145,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -11.2,
-          "rank": 113,
+          "value": -14.7,
+          "rank": 124,
           "of": 138
         },
         "offense": {
-          "value": 15.5,
-          "rank": 128,
+          "value": 13.4,
+          "rank": 135,
           "of": 138
         },
         "defense": {
-          "value": 26.2,
-          "rank": 71,
+          "value": 27.5,
+          "rank": 79,
           "of": 138
         },
         "special_teams": {
-          "value": -0.5,
-          "rank": 129,
+          "value": -0.6,
+          "rank": 132,
           "of": 138
         }
       },
@@ -70646,7 +70655,7 @@
       "venue_city": "Atlanta, GA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 73,
+      "weather_temp": 72,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -70838,7 +70847,7 @@
             "label": "Sacks per game",
             "value": 2.1429,
             "better": "high",
-            "rank": 62,
+            "rank": 61,
             "of": 138,
             "format": "num"
           },
@@ -71598,7 +71607,7 @@
             "value": 0.3636,
             "better": "high",
             "format": "pct",
-            "rank": 34,
+            "rank": 33,
             "of": 138
           },
           "def_pass_first_rate": {
@@ -71670,7 +71679,7 @@
             "value": 32.1429,
             "better": "neutral",
             "format": "num",
-            "rank": 64,
+            "rank": 63,
             "of": 138
           },
           "def_disruption_rate": {
@@ -71691,23 +71700,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -8.9,
-          "rank": 105,
+          "value": -10.3,
+          "rank": 109,
           "of": 138
         },
         "offense": {
-          "value": 24.9,
-          "rank": 88,
+          "value": 23.3,
+          "rank": 96,
           "of": 138
         },
         "defense": {
-          "value": 34.0,
-          "rank": 122,
+          "value": 33.7,
+          "rank": 119,
           "of": 138
         },
         "special_teams": {
-          "value": 0.2,
-          "rank": 49,
+          "value": 0.1,
+          "rank": 66,
           "of": 138
         }
       },
@@ -71716,23 +71725,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -7.6,
-          "rank": 103,
+          "value": -9.2,
+          "rank": 105,
           "of": 138
         },
         "offense": {
-          "value": 26.6,
-          "rank": 71,
+          "value": 26.3,
+          "rank": 75,
           "of": 138
         },
         "defense": {
-          "value": 34.0,
-          "rank": 122,
+          "value": 35.3,
+          "rank": 127,
           "of": 138
         },
         "special_teams": {
           "value": -0.2,
-          "rank": 102,
+          "rank": 100,
           "of": 138
         }
       },
@@ -73415,8 +73424,8 @@
       "venue_city": "Boulder, CO",
       "roof": "Outdoor",
       "broadcast": "TNT",
-      "weather_temp": 64,
-      "weather_cond": "Partly sunny w/ showers",
+      "weather_temp": 59,
+      "weather_cond": "Mostly cloudy w/ showers",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -73463,7 +73472,7 @@
             "label": "Third-down rate allowed",
             "value": 0.3404,
             "better": "low",
-            "rank": 37,
+            "rank": 36,
             "of": 138,
             "format": "pct"
           },
@@ -73687,7 +73696,7 @@
             "label": "Punt-return average",
             "value": 13.5,
             "better": "high",
-            "rank": 26,
+            "rank": 27,
             "of": 138,
             "format": "num"
           },
@@ -74142,7 +74151,7 @@
             "label": "Yards per rush allowed",
             "value": 3.745,
             "better": "low",
-            "rank": 50,
+            "rank": 51,
             "of": 138,
             "format": "num"
           },
@@ -74460,23 +74469,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 11.9,
-          "rank": 29,
+          "value": 8.8,
+          "rank": 39,
           "of": 138
         },
         "offense": {
-          "value": 34.2,
-          "rank": 21,
+          "value": 31.4,
+          "rank": 40,
           "of": 138
         },
         "defense": {
-          "value": 22.5,
-          "rank": 41,
+          "value": 23.0,
+          "rank": 45,
           "of": 138
         },
         "special_teams": {
-          "value": 0.2,
-          "rank": 44,
+          "value": 0.4,
+          "rank": 19,
           "of": 138
         }
       },
@@ -74485,23 +74494,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -1.3,
-          "rank": 80,
+          "value": -4.3,
+          "rank": 93,
           "of": 138
         },
         "offense": {
-          "value": 22.8,
-          "rank": 99,
+          "value": 22.7,
+          "rank": 103,
           "of": 138
         },
         "defense": {
-          "value": 23.6,
-          "rank": 48,
+          "value": 26.5,
+          "rank": 71,
           "of": 138
         },
         "special_teams": {
-          "value": -0.5,
-          "rank": 126,
+          "value": -0.6,
+          "rank": 131,
           "of": 138
         }
       },
@@ -77045,8 +77054,8 @@
       "venue_city": "USAF Academy, CO",
       "roof": "Outdoor",
       "broadcast": "MW+",
-      "weather_temp": 60,
-      "weather_cond": "Partly sunny",
+      "weather_temp": 55,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -77446,7 +77455,7 @@
             "value": 38.0,
             "better": "neutral",
             "format": "num",
-            "rank": 37,
+            "rank": 36,
             "of": 138
           },
           "def_rush_attempts_pg": {
@@ -77486,7 +77495,7 @@
             "value": 0.3139,
             "better": "low",
             "format": "pct",
-            "rank": 80,
+            "rank": 79,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -77997,7 +78006,7 @@
             "value": 0.3636,
             "better": "high",
             "format": "pct",
-            "rank": 34,
+            "rank": 33,
             "of": 138
           },
           "def_pass_first_rate": {
@@ -78090,23 +78099,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -0.3,
-          "rank": 74,
+          "value": 0.7,
+          "rank": 67,
           "of": 138
         },
         "offense": {
-          "value": 29.5,
-          "rank": 49,
+          "value": 29.2,
+          "rank": 51,
           "of": 138
         },
         "defense": {
-          "value": 30.0,
-          "rank": 103,
+          "value": 28.6,
+          "rank": 88,
           "of": 138
         },
         "special_teams": {
-          "value": 0.2,
-          "rank": 48,
+          "value": 0.1,
+          "rank": 61,
           "of": 138
         }
       },
@@ -78115,23 +78124,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 1.5,
-          "rank": 66,
+          "value": -0.8,
+          "rank": 73,
           "of": 138
         },
         "offense": {
-          "value": 28.2,
-          "rank": 59,
+          "value": 26.6,
+          "rank": 70,
           "of": 138
         },
         "defense": {
-          "value": 26.8,
-          "rank": 75,
+          "value": 27.6,
+          "rank": 80,
           "of": 138
         },
         "special_teams": {
-          "value": 0.1,
-          "rank": 64,
+          "value": 0.2,
+          "rank": 50,
           "of": 138
         }
       },
@@ -80725,8 +80734,8 @@
       "venue_city": "Mobile, AL",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 81,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 78,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -80797,7 +80806,7 @@
             "label": "First downs per game",
             "value": 20.8571,
             "better": "high",
-            "rank": 64,
+            "rank": 63,
             "of": 138,
             "format": "num"
           },
@@ -81070,7 +81079,7 @@
             "value": 67.1429,
             "better": "neutral",
             "format": "num",
-            "rank": 66,
+            "rank": 65,
             "of": 138
           },
           "off_pass_rate": {
@@ -81166,7 +81175,7 @@
             "value": 0.3125,
             "better": "low",
             "format": "pct",
-            "rank": 78,
+            "rank": 77,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -81492,7 +81501,7 @@
             "label": "Field-goal rate",
             "value": 0.75,
             "better": "high",
-            "rank": 74,
+            "rank": 73,
             "of": 138,
             "format": "pct"
           },
@@ -81533,7 +81542,7 @@
             "value": 0.4824,
             "better": "high",
             "format": "num",
-            "rank": 38,
+            "rank": 39,
             "of": 138
           },
           "def_points_per_play": {
@@ -81757,7 +81766,7 @@
             "value": 0.0556,
             "better": "high",
             "format": "pct",
-            "rank": 51,
+            "rank": 52,
             "of": 138
           }
         },
@@ -81770,23 +81779,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -3.8,
-          "rank": 91,
+          "value": -2.6,
+          "rank": 84,
           "of": 138
         },
         "offense": {
-          "value": 24.9,
-          "rank": 88,
+          "value": 24.6,
+          "rank": 85,
           "of": 138
         },
         "defense": {
-          "value": 28.5,
-          "rank": 93,
+          "value": 26.8,
+          "rank": 74,
           "of": 138
         },
         "special_teams": {
-          "value": -0.2,
-          "rank": 100,
+          "value": -0.3,
+          "rank": 110,
           "of": 138
         }
       },
@@ -81795,23 +81804,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -11.2,
-          "rank": 113,
+          "value": -11.5,
+          "rank": 115,
           "of": 138
         },
         "offense": {
-          "value": 28.8,
-          "rank": 56,
+          "value": 26.5,
+          "rank": 72,
           "of": 138
         },
         "defense": {
-          "value": 39.7,
-          "rank": 136,
+          "value": 37.5,
+          "rank": 133,
           "of": 138
         },
         "special_teams": {
-          "value": -0.4,
-          "rank": 121,
+          "value": -0.5,
+          "rank": 127,
           "of": 138
         }
       },
@@ -84389,8 +84398,8 @@
       "venue_city": "Greenville, NC",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 77,
-      "weather_cond": "Hazy sunshine",
+      "weather_temp": 74,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -84637,7 +84646,7 @@
             "label": "Field-goal rate",
             "value": 0.75,
             "better": "high",
-            "rank": 74,
+            "rank": 73,
             "of": 138,
             "format": "pct"
           },
@@ -84734,7 +84743,7 @@
             "value": 66.8571,
             "better": "neutral",
             "format": "num",
-            "rank": 72,
+            "rank": 71,
             "of": 138
           },
           "off_pass_rate": {
@@ -84916,7 +84925,7 @@
             "label": "Points per game",
             "value": 25.0,
             "better": "high",
-            "rank": 94,
+            "rank": 93,
             "of": 138,
             "format": "num"
           },
@@ -85004,7 +85013,7 @@
             "label": "Yards per pass allowed",
             "value": 7.153,
             "better": "low",
-            "rank": 70,
+            "rank": 69,
             "of": 138,
             "format": "num"
           },
@@ -85421,7 +85430,7 @@
             "value": 0.0577,
             "better": "high",
             "format": "pct",
-            "rank": 42,
+            "rank": 43,
             "of": 138
           }
         },
@@ -85434,23 +85443,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -6.9,
-          "rank": 102,
+          "value": -7.7,
+          "rank": 99,
           "of": 138
         },
         "offense": {
-          "value": 26.0,
-          "rank": 80,
+          "value": 25.5,
+          "rank": 79,
           "of": 138
         },
         "defense": {
-          "value": 33.0,
-          "rank": 119,
+          "value": 33.3,
+          "rank": 117,
           "of": 138
         },
         "special_teams": {
           "value": 0.1,
-          "rank": 68,
+          "rank": 65,
           "of": 138
         }
       },
@@ -85459,23 +85468,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -3.8,
+          "value": -4.0,
           "rank": 91,
           "of": 138
         },
         "offense": {
-          "value": 20.9,
+          "value": 22.2,
           "rank": 105,
           "of": 138
         },
         "defense": {
-          "value": 24.5,
-          "rank": 58,
+          "value": 26.4,
+          "rank": 70,
           "of": 138
         },
         "special_teams": {
-          "value": -0.2,
-          "rank": 99,
+          "value": 0.2,
+          "rank": 52,
           "of": 138
         }
       },
@@ -87203,7 +87212,7 @@
       "roof": "Outdoor",
       "broadcast": "ACC Network",
       "weather_temp": 70,
-      "weather_cond": "Mostly cloudy",
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -87793,7 +87802,7 @@
             "label": "First downs per game",
             "value": 21.8571,
             "better": "high",
-            "rank": 45,
+            "rank": 44,
             "of": 138,
             "format": "num"
           },
@@ -87905,7 +87914,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 78,
+            "rank": 77,
             "of": 138,
             "format": "num"
           },
@@ -88162,7 +88171,7 @@
             "value": 0.3105,
             "better": "low",
             "format": "pct",
-            "rank": 72,
+            "rank": 71,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -88247,23 +88256,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -11.2,
-          "rank": 113,
+          "value": -10.8,
+          "rank": 112,
           "of": 138
         },
         "offense": {
-          "value": 20.8,
+          "value": 22.0,
           "rank": 106,
           "of": 138
         },
         "defense": {
-          "value": 31.5,
-          "rank": 111,
+          "value": 32.3,
+          "rank": 114,
           "of": 138
         },
         "special_teams": {
           "value": -0.5,
-          "rank": 130,
+          "rank": 126,
           "of": 138
         }
       },
@@ -88272,23 +88281,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 12.9,
-          "rank": 24,
+          "value": 12.2,
+          "rank": 25,
           "of": 138
         },
         "offense": {
-          "value": 38.9,
-          "rank": 5,
+          "value": 37.7,
+          "rank": 6,
           "of": 138
         },
         "defense": {
-          "value": 25.9,
-          "rank": 65,
+          "value": 25.4,
+          "rank": 61,
           "of": 138
         },
         "special_teams": {
           "value": -0.1,
-          "rank": 85,
+          "rank": 83,
           "of": 138
         }
       },
@@ -90265,7 +90274,7 @@
             "label": "Rushing yards allowed per game",
             "value": 146.429,
             "better": "low",
-            "rank": 77,
+            "rank": 78,
             "of": 138,
             "format": "num"
           },
@@ -90490,7 +90499,7 @@
             "value": 12.5638,
             "better": "high",
             "format": "num",
-            "rank": 44,
+            "rank": 45,
             "of": 138
           },
           "def_yards_per_completion": {
@@ -90840,7 +90849,7 @@
             "label": "Penalty yards per game",
             "value": 52.1429,
             "better": "low",
-            "rank": 46,
+            "rank": 47,
             "of": 138,
             "format": "num"
           },
@@ -90857,7 +90866,7 @@
             "value": 0.2778,
             "better": "low",
             "format": "num",
-            "rank": 28,
+            "rank": 29,
             "of": 138
           },
           "off_yards_per_play": {
@@ -90905,7 +90914,7 @@
             "value": 66.8571,
             "better": "neutral",
             "format": "num",
-            "rank": 72,
+            "rank": 71,
             "of": 138
           },
           "off_pass_rate": {
@@ -90977,7 +90986,7 @@
             "value": 0.2778,
             "better": "high",
             "format": "pct",
-            "rank": 14,
+            "rank": 13,
             "of": 138
           },
           "def_rush_first_rate": {
@@ -91086,23 +91095,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 0.6,
-          "rank": 70,
+          "value": 2.3,
+          "rank": 62,
           "of": 138
         },
         "offense": {
           "value": 26.9,
-          "rank": 69,
+          "rank": 66,
           "of": 138
         },
         "defense": {
-          "value": 26.1,
-          "rank": 68,
+          "value": 24.3,
+          "rank": 53,
           "of": 138
         },
         "special_teams": {
-          "value": -0.2,
-          "rank": 98,
+          "value": -0.3,
+          "rank": 107,
           "of": 138
         }
       },
@@ -91111,23 +91120,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 20.6,
-          "rank": 9,
+          "value": 16.7,
+          "rank": 13,
           "of": 138
         },
         "offense": {
-          "value": 35.0,
-          "rank": 17,
+          "value": 33.9,
+          "rank": 20,
           "of": 138
         },
         "defense": {
-          "value": 14.7,
-          "rank": 9,
+          "value": 17.6,
+          "rank": 20,
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 22,
+          "value": 0.4,
+          "rank": 15,
           "of": 138
         }
       },
@@ -93670,8 +93679,8 @@
       "venue_city": "Logan, UT",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 51,
-      "weather_cond": "Mostly cloudy",
+      "weather_temp": 54,
+      "weather_cond": "Showers",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -93975,7 +93984,7 @@
             "value": 6.655,
             "better": "high",
             "format": "num",
-            "rank": 14,
+            "rank": 13,
             "of": 138
           },
           "def_yards_per_play": {
@@ -94015,7 +94024,7 @@
             "value": 67.0,
             "better": "neutral",
             "format": "num",
-            "rank": 70,
+            "rank": 69,
             "of": 138
           },
           "off_pass_rate": {
@@ -94614,7 +94623,7 @@
             "value": 0.2213,
             "better": "low",
             "format": "pct",
-            "rank": 72,
+            "rank": 73,
             "of": 138
           },
           "off_pass_first_rate": {
@@ -94715,23 +94724,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -9.6,
-          "rank": 111,
+          "value": -8.4,
+          "rank": 103,
           "of": 138
         },
         "offense": {
-          "value": 27.7,
-          "rank": 64,
+          "value": 28.6,
+          "rank": 55,
           "of": 138
         },
         "defense": {
-          "value": 37.3,
-          "rank": 132,
+          "value": 37.0,
+          "rank": 131,
           "of": 138
         },
         "special_teams": {
           "value": 0.0,
-          "rank": 81,
+          "rank": 77,
           "of": 138
         }
       },
@@ -94740,23 +94749,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -9.0,
-          "rank": 107,
+          "value": -9.2,
+          "rank": 105,
           "of": 138
         },
         "offense": {
           "value": 17.2,
-          "rank": 120,
+          "rank": 124,
           "of": 138
         },
         "defense": {
           "value": 25.9,
-          "rank": 65,
+          "rank": 67,
           "of": 138
         },
         "special_teams": {
-          "value": -0.4,
-          "rank": 119,
+          "value": -0.5,
+          "rank": 125,
           "of": 138
         }
       },
@@ -97379,8 +97388,8 @@
       "venue_city": "Lynchburg, VA",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 70,
-      "weather_cond": "Hazy sunshine",
+      "weather_temp": 68,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -97587,7 +97596,7 @@
             "label": "Yards per rush allowed",
             "value": 3.736,
             "better": "low",
-            "rank": 47,
+            "rank": 48,
             "of": 138,
             "format": "num"
           },
@@ -97740,7 +97749,7 @@
             "value": 0.4794,
             "better": "neutral",
             "format": "pct",
-            "rank": 69,
+            "rank": 68,
             "of": 138
           },
           "off_sack_rate": {
@@ -97764,7 +97773,7 @@
             "value": 8.5714,
             "better": "low",
             "format": "num",
-            "rank": 37,
+            "rank": 36,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -97892,7 +97901,7 @@
             "value": 0.0573,
             "better": "high",
             "format": "pct",
-            "rank": 46,
+            "rank": 47,
             "of": 138
           }
         },
@@ -98291,7 +98300,7 @@
             "value": 17.4286,
             "better": "high",
             "format": "num",
-            "rank": 30,
+            "rank": 29,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -98411,7 +98420,7 @@
             "value": 0.0609,
             "better": "high",
             "format": "pct",
-            "rank": 34,
+            "rank": 33,
             "of": 138
           }
         },
@@ -98424,23 +98433,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -6.2,
-          "rank": 97,
+          "value": -7.9,
+          "rank": 100,
           "of": 138
         },
         "offense": {
-          "value": 17.5,
-          "rank": 119,
+          "value": 17.9,
+          "rank": 118,
           "of": 138
         },
         "defense": {
-          "value": 23.7,
-          "rank": 50,
+          "value": 25.4,
+          "rank": 61,
           "of": 138
         },
         "special_teams": {
-          "value": 0.0,
-          "rank": 79,
+          "value": -0.4,
+          "rank": 118,
           "of": 138
         }
       },
@@ -98450,22 +98459,22 @@
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
           "value": 7.5,
-          "rank": 46,
+          "rank": 45,
           "of": 138
         },
         "offense": {
-          "value": 29.0,
-          "rank": 53,
+          "value": 28.5,
+          "rank": 56,
           "of": 138
         },
         "defense": {
-          "value": 21.5,
-          "rank": 36,
+          "value": 21.0,
+          "rank": 34,
           "of": 138
         },
         "special_teams": {
           "value": 0.0,
-          "rank": 72,
+          "rank": 73,
           "of": 138
         }
       },
@@ -101016,8 +101025,8 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "ABC",
-      "weather_temp": 74,
-      "weather_cond": "Mostly cloudy",
+      "weather_temp": 72,
+      "weather_cond": "Cloudy",
       "neutral": true,
       "away_form": {
         "rates": {
@@ -101201,7 +101210,7 @@
             "label": "Sacks taken per game",
             "value": 1.2857,
             "better": "low",
-            "rank": 32,
+            "rank": 33,
             "of": 138,
             "format": "num"
           },
@@ -101386,7 +101395,7 @@
             "value": 0.0404,
             "better": "low",
             "format": "pct",
-            "rank": 31,
+            "rank": 32,
             "of": 138
           },
           "def_sack_rate": {
@@ -101402,7 +101411,7 @@
             "value": 9.7143,
             "better": "low",
             "format": "num",
-            "rank": 49,
+            "rank": 50,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -101426,7 +101435,7 @@
             "value": 31.8571,
             "better": "neutral",
             "format": "num",
-            "rank": 117,
+            "rank": 116,
             "of": 138
           },
           "off_rush_first_rate": {
@@ -101550,9 +101559,9 @@
           },
           "def_ppg": {
             "label": "Points allowed per game",
-            "value": 15.857,
+            "value": 15.429,
             "better": "low",
-            "rank": 16,
+            "rank": 14,
             "of": 138,
             "format": "num"
           },
@@ -101566,7 +101575,7 @@
           },
           "def_ypg": {
             "label": "Yards allowed per game",
-            "value": 276.429,
+            "value": 275.286,
             "better": "low",
             "rank": 12,
             "of": 138,
@@ -101614,9 +101623,9 @@
           },
           "def_first_downs": {
             "label": "First downs allowed per game",
-            "value": 16.2857,
+            "value": 16.0,
             "better": "low",
-            "rank": 19,
+            "rank": 17,
             "of": 138,
             "format": "num"
           },
@@ -101742,9 +101751,9 @@
           },
           "def_ypc": {
             "label": "Yards per rush allowed",
-            "value": 2.844,
+            "value": 2.834,
             "better": "low",
-            "rank": 11,
+            "rank": 9,
             "of": 138,
             "format": "num"
           },
@@ -101758,9 +101767,9 @@
           },
           "def_rush_ypg": {
             "label": "Rushing yards allowed per game",
-            "value": 91.429,
+            "value": 90.286,
             "better": "low",
-            "rank": 10,
+            "rank": 9,
             "of": 138,
             "format": "num"
           },
@@ -101814,9 +101823,9 @@
           },
           "off_pen": {
             "label": "Penalty yards per game",
-            "value": 52.8571,
+            "value": 50.7143,
             "better": "low",
-            "rank": 50,
+            "rank": 42,
             "of": 138,
             "format": "num"
           },
@@ -101830,10 +101839,10 @@
           },
           "def_points_per_play": {
             "label": "Points allowed per defensive play",
-            "value": 0.2362,
+            "value": 0.2308,
             "better": "low",
             "format": "num",
-            "rank": 13,
+            "rank": 12,
             "of": 138
           },
           "off_yards_per_play": {
@@ -101846,7 +101855,7 @@
           },
           "def_yards_per_play": {
             "label": "Yards allowed per defensive play",
-            "value": 4.117,
+            "value": 4.1175,
             "better": "low",
             "format": "num",
             "rank": 6,
@@ -101862,10 +101871,10 @@
           },
           "def_first_down_rate": {
             "label": "First downs allowed per defensive play",
-            "value": 0.2426,
+            "value": 0.2393,
             "better": "low",
             "format": "pct",
-            "rank": 8,
+            "rank": 6,
             "of": 138
           },
           "off_plays_pg": {
@@ -101878,10 +101887,10 @@
           },
           "def_plays_pg": {
             "label": "Defensive plays faced per game",
-            "value": 67.1429,
+            "value": 66.8571,
             "better": "neutral",
             "format": "num",
-            "rank": 66,
+            "rank": 71,
             "of": 138
           },
           "off_pass_rate": {
@@ -101894,10 +101903,10 @@
           },
           "def_pass_rate": {
             "label": "Opponent dropback share",
-            "value": 0.5213,
+            "value": 0.5235,
             "better": "neutral",
             "format": "pct",
-            "rank": 27,
+            "rank": 26,
             "of": 138
           },
           "off_sack_rate": {
@@ -101905,7 +101914,7 @@
             "value": 0.039,
             "better": "low",
             "format": "pct",
-            "rank": 28,
+            "rank": 29,
             "of": 138
           },
           "def_sack_rate": {
@@ -101942,10 +101951,10 @@
           },
           "def_rush_attempts_pg": {
             "label": "Opponent rushing attempts per game",
-            "value": 32.1429,
+            "value": 31.8571,
             "better": "neutral",
             "format": "num",
-            "rank": 109,
+            "rank": 116,
             "of": 138
           },
           "off_rush_first_rate": {
@@ -101958,10 +101967,10 @@
           },
           "def_rush_first_rate": {
             "label": "Rushing first downs allowed per attempt",
-            "value": 0.1733,
+            "value": 0.1704,
             "better": "low",
             "format": "pct",
-            "rank": 16,
+            "rank": 13,
             "of": 138
           },
           "off_pass_first_rate": {
@@ -102046,7 +102055,7 @@
           },
           "def_disruption_rate": {
             "label": "Sacks plus takeaways per defensive play",
-            "value": 0.0745,
+            "value": 0.0748,
             "better": "high",
             "format": "pct",
             "rank": 7,
@@ -102062,23 +102071,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 9.2,
-          "rank": 38,
+          "value": 10.6,
+          "rank": 31,
           "of": 138
         },
         "offense": {
           "value": 33.5,
-          "rank": 27,
+          "rank": 24,
           "of": 138
         },
         "defense": {
-          "value": 24.9,
-          "rank": 61,
+          "value": 23.5,
+          "rank": 50,
           "of": 138
         },
         "special_teams": {
           "value": 0.6,
-          "rank": 1,
+          "rank": 2,
           "of": 138
         }
       },
@@ -102087,23 +102096,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 26.5,
+          "value": 27.1,
           "rank": 2,
           "of": 138
         },
         "offense": {
-          "value": 39.4,
+          "value": 39.6,
           "rank": 2,
           "of": 138
         },
         "defense": {
-          "value": 13.3,
+          "value": 12.9,
           "rank": 4,
           "of": 138
         },
         "special_teams": {
-          "value": 0.5,
-          "rank": 2,
+          "value": 0.4,
+          "rank": 11,
           "of": 138
         }
       },
@@ -102962,8 +102971,8 @@
       "venue_city": "Fort Worth, TX",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 74,
-      "weather_cond": "Cloudy",
+      "weather_temp": 72,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -104007,23 +104016,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 3.5,
-          "rank": 58,
-          "of": 138
-        },
-        "offense": {
-          "value": 28.0,
-          "rank": 62,
-          "of": 138
-        },
-        "defense": {
-          "value": 24.7,
+          "value": 2.8,
           "rank": 60,
           "of": 138
         },
+        "offense": {
+          "value": 27.5,
+          "rank": 61,
+          "of": 138
+        },
+        "defense": {
+          "value": 25.0,
+          "rank": 57,
+          "of": 138
+        },
         "special_teams": {
-          "value": 0.2,
-          "rank": 47,
+          "value": 0.3,
+          "rank": 35,
           "of": 138
         }
       },
@@ -104032,23 +104041,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 10.1,
-          "rank": 31,
+          "value": 8.6,
+          "rank": 41,
           "of": 138
         },
         "offense": {
-          "value": 26.2,
-          "rank": 75,
+          "value": 25.3,
+          "rank": 83,
           "of": 138
         },
         "defense": {
-          "value": 15.9,
-          "rank": 12,
+          "value": 16.5,
+          "rank": 11,
           "of": 138
         },
         "special_teams": {
           "value": -0.1,
-          "rank": 86,
+          "rank": 85,
           "of": 138
         }
       },
@@ -106558,7 +106567,7 @@
       "venue_city": "Bloomington, IN",
       "roof": "Outdoor",
       "broadcast": "CBS",
-      "weather_temp": 68,
+      "weather_temp": 69,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -106750,7 +106759,7 @@
             "label": "Sacks per game",
             "value": 2.1429,
             "better": "high",
-            "rank": 62,
+            "rank": 61,
             "of": 138,
             "format": "num"
           },
@@ -107518,7 +107527,7 @@
             "value": 0.3067,
             "better": "low",
             "format": "pct",
-            "rank": 65,
+            "rank": 66,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -107603,23 +107612,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 3.1,
-          "rank": 60,
+          "value": 3.9,
+          "rank": 57,
           "of": 138
         },
         "offense": {
-          "value": 25.0,
-          "rank": 85,
+          "value": 23.6,
+          "rank": 93,
           "of": 138
         },
         "defense": {
-          "value": 21.8,
-          "rank": 39,
+          "value": 19.8,
+          "rank": 27,
           "of": 138
         },
         "special_teams": {
-          "value": 0.0,
-          "rank": 74,
+          "value": 0.1,
+          "rank": 58,
           "of": 138
         }
       },
@@ -107628,23 +107637,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 23.6,
-          "rank": 5,
+          "value": 24.2,
+          "rank": 6,
           "of": 138
         },
         "offense": {
-          "value": 36.6,
-          "rank": 12,
+          "value": 35.1,
+          "rank": 15,
           "of": 138
         },
         "defense": {
-          "value": 13.2,
+          "value": 10.9,
           "rank": 2,
           "of": 138
         },
         "special_teams": {
-          "value": 0.2,
-          "rank": 41,
+          "value": 0.0,
+          "rank": 68,
           "of": 138
         }
       },
@@ -110137,8 +110146,8 @@
       "venue_city": "Eugene, OR",
       "roof": "Outdoor",
       "broadcast": "Peacock",
-      "weather_temp": 47,
-      "weather_cond": "Showers",
+      "weather_temp": 48,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -110434,7 +110443,7 @@
             "value": 0.2339,
             "better": "low",
             "format": "num",
-            "rank": 12,
+            "rank": 13,
             "of": 138
           },
           "off_yards_per_play": {
@@ -110530,7 +110539,7 @@
             "value": 16.8571,
             "better": "high",
             "format": "num",
-            "rank": 33,
+            "rank": 32,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -110846,9 +110855,9 @@
           },
           "def_sacks": {
             "label": "Sacks per game",
-            "value": 2.2857,
+            "value": 2.1429,
             "better": "high",
-            "rank": 55,
+            "rank": 61,
             "of": 138,
             "format": "num"
           },
@@ -110904,7 +110913,7 @@
             "label": "Field-goal rate",
             "value": 0.7692,
             "better": "high",
-            "rank": 67,
+            "rank": 66,
             "of": 138,
             "format": "pct"
           },
@@ -110950,10 +110959,10 @@
           },
           "def_points_per_play": {
             "label": "Points allowed per defensive play",
-            "value": 0.3079,
+            "value": 0.3085,
             "better": "low",
             "format": "num",
-            "rank": 39,
+            "rank": 40,
             "of": 138
           },
           "off_yards_per_play": {
@@ -110966,7 +110975,7 @@
           },
           "def_yards_per_play": {
             "label": "Yards allowed per defensive play",
-            "value": 4.8365,
+            "value": 4.8468,
             "better": "low",
             "format": "num",
             "rank": 39,
@@ -110977,12 +110986,12 @@
             "value": 0.2846,
             "better": "high",
             "format": "pct",
-            "rank": 100,
+            "rank": 99,
             "of": 138
           },
           "def_first_down_rate": {
             "label": "First downs allowed per defensive play",
-            "value": 0.2548,
+            "value": 0.2553,
             "better": "low",
             "format": "pct",
             "rank": 23,
@@ -110998,10 +111007,10 @@
           },
           "def_plays_pg": {
             "label": "Defensive plays faced per game",
-            "value": 67.2857,
+            "value": 67.1429,
             "better": "neutral",
             "format": "num",
-            "rank": 63,
+            "rank": 65,
             "of": 138
           },
           "off_pass_rate": {
@@ -111014,10 +111023,10 @@
           },
           "def_pass_rate": {
             "label": "Opponent dropback share",
-            "value": 0.4798,
+            "value": 0.4787,
             "better": "neutral",
             "format": "pct",
-            "rank": 67,
+            "rank": 70,
             "of": 138
           },
           "off_sack_rate": {
@@ -111030,10 +111039,10 @@
           },
           "def_sack_rate": {
             "label": "Sacks generated per opponent dropback",
-            "value": 0.0708,
+            "value": 0.0667,
             "better": "high",
             "format": "pct",
-            "rank": 55,
+            "rank": 67,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -111041,15 +111050,15 @@
             "value": 9.5714,
             "better": "low",
             "format": "num",
-            "rank": 47,
+            "rank": 48,
             "of": 138
           },
           "def_sack_yards_pg": {
             "label": "Opponent sack yards lost per game",
-            "value": 17.5714,
+            "value": 16.8571,
             "better": "high",
             "format": "num",
-            "rank": 26,
+            "rank": 32,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -111158,18 +111167,18 @@
           },
           "def_dropbacks_pg": {
             "label": "Opponent dropbacks per game",
-            "value": 32.2857,
+            "value": 32.1429,
             "better": "neutral",
             "format": "num",
-            "rank": 62,
+            "rank": 63,
             "of": 138
           },
           "def_disruption_rate": {
             "label": "Sacks plus takeaways per defensive play",
-            "value": 0.0616,
+            "value": 0.0596,
             "better": "high",
             "format": "pct",
-            "rank": 31,
+            "rank": 34,
             "of": 138
           }
         },
@@ -111182,23 +111191,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 12.6,
-          "rank": 26,
+          "value": 13.7,
+          "rank": 20,
           "of": 138
         },
         "offense": {
-          "value": 32.7,
-          "rank": 35,
+          "value": 32.8,
+          "rank": 31,
           "of": 138
         },
         "defense": {
-          "value": 20.4,
-          "rank": 30,
+          "value": 19.1,
+          "rank": 26,
           "of": 138
         },
         "special_teams": {
-          "value": 0.2,
-          "rank": 43,
+          "value": 0.0,
+          "rank": 69,
           "of": 138
         }
       },
@@ -111207,23 +111216,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 18.8,
-          "rank": 11,
+          "value": 17.0,
+          "rank": 12,
           "of": 138
         },
         "offense": {
-          "value": 34.9,
-          "rank": 18,
+          "value": 33.2,
+          "rank": 28,
           "of": 138
         },
         "defense": {
-          "value": 16.4,
-          "rank": 15,
+          "value": 16.5,
+          "rank": 11,
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 23,
+          "value": 0.2,
+          "rank": 42,
           "of": 138
         }
       },
@@ -113790,8 +113799,8 @@
       "venue_city": "Monroe, LA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 75,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 74,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -113974,7 +113983,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 78,
+            "rank": 77,
             "of": 138,
             "format": "num"
           },
@@ -114493,7 +114502,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 78,
+            "rank": 77,
             "of": 138,
             "format": "num"
           },
@@ -114835,23 +114844,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -17.1,
-          "rank": 128,
+          "value": -16.0,
+          "rank": 126,
           "of": 138
         },
         "offense": {
-          "value": 19.6,
-          "rank": 112,
+          "value": 20.2,
+          "rank": 108,
           "of": 138
         },
         "defense": {
-          "value": 36.3,
-          "rank": 128,
+          "value": 35.6,
+          "rank": 129,
           "of": 138
         },
         "special_teams": {
-          "value": -0.4,
-          "rank": 124,
+          "value": -0.6,
+          "rank": 133,
           "of": 138
         }
       },
@@ -114860,23 +114869,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -27.4,
-          "rank": 138,
+          "value": -24.2,
+          "rank": 133,
           "of": 138
         },
         "offense": {
-          "value": 14.8,
-          "rank": 130,
+          "value": 14.7,
+          "rank": 131,
           "of": 138
         },
         "defense": {
-          "value": 41.7,
-          "rank": 138,
+          "value": 38.2,
+          "rank": 134,
           "of": 138
         },
         "special_teams": {
-          "value": -0.6,
-          "rank": 135,
+          "value": -0.7,
+          "rank": 137,
           "of": 138
         }
       },
@@ -117373,8 +117382,8 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "MW+",
-      "weather_temp": 55,
-      "weather_cond": "Cloudy",
+      "weather_temp": 54,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -117940,7 +117949,7 @@
             "label": "Third-down rate allowed",
             "value": 0.3365,
             "better": "low",
-            "rank": 35,
+            "rank": 34,
             "of": 138,
             "format": "pct"
           },
@@ -118213,7 +118222,7 @@
             "value": 0.283,
             "better": "high",
             "format": "pct",
-            "rank": 105,
+            "rank": 104,
             "of": 138
           },
           "def_first_down_rate": {
@@ -118418,23 +118427,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -24.6,
+          "value": -24.5,
           "rank": 134,
           "of": 138
         },
         "offense": {
-          "value": 13.2,
-          "rank": 135,
+          "value": 12.7,
+          "rank": 137,
           "of": 138
         },
         "defense": {
-          "value": 37.1,
-          "rank": 131,
+          "value": 36.6,
+          "rank": 130,
           "of": 138
         },
         "special_teams": {
-          "value": -0.7,
-          "rank": 138,
+          "value": -0.6,
+          "rank": 136,
           "of": 138
         }
       },
@@ -118443,23 +118452,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 9.5,
-          "rank": 35,
+          "value": 8.6,
+          "rank": 41,
           "of": 138
         },
         "offense": {
-          "value": 26.1,
-          "rank": 79,
+          "value": 25.4,
+          "rank": 81,
           "of": 138
         },
         "defense": {
-          "value": 16.9,
-          "rank": 18,
+          "value": 16.8,
+          "rank": 17,
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 28,
+          "value": 0.0,
+          "rank": 72,
           "of": 138
         }
       },
@@ -120050,8 +120059,8 @@
       "venue_city": "Cincinnati, OH",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 73,
-      "weather_cond": "Cloudy",
+      "weather_temp": 69,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -120098,7 +120107,7 @@
             "label": "Third-down rate allowed",
             "value": 0.3434,
             "better": "low",
-            "rank": 38,
+            "rank": 37,
             "of": 138,
             "format": "pct"
           },
@@ -120298,7 +120307,7 @@
             "label": "Field-goal rate",
             "value": 0.75,
             "better": "high",
-            "rank": 74,
+            "rank": 73,
             "of": 138,
             "format": "pct"
           },
@@ -120475,7 +120484,7 @@
             "value": 0.171,
             "better": "low",
             "format": "pct",
-            "rank": 13,
+            "rank": 14,
             "of": 138
           },
           "off_pass_first_rate": {
@@ -120563,7 +120572,7 @@
             "value": 0.0547,
             "better": "high",
             "format": "pct",
-            "rank": 57,
+            "rank": 58,
             "of": 138
           }
         },
@@ -120751,9 +120760,9 @@
           },
           "off_sacks": {
             "label": "Sacks taken per game",
-            "value": 1.8571,
+            "value": 2.0,
             "better": "low",
-            "rank": 61,
+            "rank": 77,
             "of": 138,
             "format": "num"
           },
@@ -120855,7 +120864,7 @@
           },
           "off_points_per_play": {
             "label": "Points per offensive play",
-            "value": 0.5188,
+            "value": 0.5177,
             "better": "high",
             "format": "num",
             "rank": 23,
@@ -120871,10 +120880,10 @@
           },
           "off_yards_per_play": {
             "label": "Yards per offensive play",
-            "value": 6.6674,
+            "value": 6.6534,
             "better": "high",
             "format": "num",
-            "rank": 13,
+            "rank": 14,
             "of": 138
           },
           "def_yards_per_play": {
@@ -120887,10 +120896,10 @@
           },
           "off_first_down_rate": {
             "label": "First downs per offensive play",
-            "value": 0.3159,
+            "value": 0.3152,
             "better": "high",
             "format": "pct",
-            "rank": 52,
+            "rank": 54,
             "of": 138
           },
           "def_first_down_rate": {
@@ -120903,10 +120912,10 @@
           },
           "off_plays_pg": {
             "label": "Offensive plays per game",
-            "value": 68.2857,
+            "value": 68.4286,
             "better": "neutral",
             "format": "num",
-            "rank": 73,
+            "rank": 72,
             "of": 138
           },
           "def_plays_pg": {
@@ -120919,7 +120928,7 @@
           },
           "off_pass_rate": {
             "label": "Dropback share",
-            "value": 0.4268,
+            "value": 0.428,
             "better": "neutral",
             "format": "pct",
             "rank": 113,
@@ -120935,10 +120944,10 @@
           },
           "off_sack_rate": {
             "label": "Sacks allowed per dropback",
-            "value": 0.0637,
+            "value": 0.0683,
             "better": "low",
             "format": "pct",
-            "rank": 80,
+            "rank": 91,
             "of": 138
           },
           "def_sack_rate": {
@@ -120951,7 +120960,7 @@
           },
           "off_sack_yards_pg": {
             "label": "Sack yards lost per game",
-            "value": 8.4286,
+            "value": 8.5714,
             "better": "low",
             "format": "num",
             "rank": 36,
@@ -121063,10 +121072,10 @@
           },
           "off_dropbacks_pg": {
             "label": "Dropbacks per game",
-            "value": 29.1429,
+            "value": 29.2857,
             "better": "neutral",
             "format": "num",
-            "rank": 103,
+            "rank": 102,
             "of": 138
           },
           "def_dropbacks_pg": {
@@ -121079,10 +121088,10 @@
           },
           "def_disruption_rate": {
             "label": "Sacks plus takeaways per defensive play",
-            "value": 0.0561,
+            "value": 0.058,
             "better": "high",
             "format": "pct",
-            "rank": 50,
+            "rank": 41,
             "of": 138
           }
         },
@@ -121095,23 +121104,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 19.4,
+          "value": 18.0,
           "rank": 10,
           "of": 138
         },
         "offense": {
-          "value": 37.0,
-          "rank": 11,
+          "value": 35.7,
+          "rank": 13,
           "of": 138
         },
         "defense": {
           "value": 17.7,
-          "rank": 20,
+          "rank": 22,
           "of": 138
         },
         "special_teams": {
           "value": 0.1,
-          "rank": 54,
+          "rank": 55,
           "of": 138
         }
       },
@@ -121120,23 +121129,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 5.2,
-          "rank": 53,
+          "value": 6.7,
+          "rank": 49,
           "of": 138
         },
         "offense": {
-          "value": 33.4,
-          "rank": 28,
+          "value": 33.8,
+          "rank": 21,
           "of": 138
         },
         "defense": {
-          "value": 28.3,
-          "rank": 92,
+          "value": 27.4,
+          "rank": 78,
           "of": 138
         },
         "special_teams": {
-          "value": 0.2,
-          "rank": 46,
+          "value": 0.3,
+          "rank": 33,
           "of": 138
         }
       },
@@ -123624,8 +123633,8 @@
       "venue_city": "Winston-Salem, NC",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 72,
-      "weather_cond": "Hazy sunshine",
+      "weather_temp": 70,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -123696,7 +123705,7 @@
             "label": "First downs per game",
             "value": 21.0,
             "better": "high",
-            "rank": 62,
+            "rank": 61,
             "of": 138,
             "format": "num"
           },
@@ -124669,23 +124678,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 6.6,
-          "rank": 49,
+          "value": 5.8,
+          "rank": 53,
           "of": 138
         },
         "offense": {
-          "value": 28.1,
-          "rank": 60,
+          "value": 27.0,
+          "rank": 65,
           "of": 138
         },
         "defense": {
-          "value": 21.7,
-          "rank": 38,
+          "value": 21.5,
+          "rank": 36,
           "of": 138
         },
         "special_teams": {
-          "value": 0.2,
-          "rank": 45,
+          "value": 0.3,
+          "rank": 34,
           "of": 138
         }
       },
@@ -124694,23 +124703,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 13.6,
-          "rank": 20,
+          "value": 12.2,
+          "rank": 25,
           "of": 138
         },
         "offense": {
-          "value": 34.3,
-          "rank": 20,
+          "value": 33.1,
+          "rank": 29,
           "of": 138
         },
         "defense": {
-          "value": 21.1,
-          "rank": 33,
+          "value": 21.3,
+          "rank": 35,
           "of": 138
         },
         "special_teams": {
-          "value": 0.4,
-          "rank": 8,
+          "value": 0.3,
+          "rank": 30,
           "of": 138
         }
       },
@@ -126487,7 +126496,7 @@
       "venue_city": "San Jose, CA",
       "roof": "Outdoor",
       "broadcast": "MW+",
-      "weather_temp": 63,
+      "weather_temp": 65,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -126679,7 +126688,7 @@
             "label": "Sacks per game",
             "value": 2.8571,
             "better": "high",
-            "rank": 15,
+            "rank": 16,
             "of": 138,
             "format": "num"
           },
@@ -126695,7 +126704,7 @@
             "label": "Yards per rush allowed",
             "value": 2.84,
             "better": "low",
-            "rank": 10,
+            "rank": 11,
             "of": 138,
             "format": "num"
           },
@@ -127375,7 +127384,7 @@
             "value": 0.0681,
             "better": "low",
             "format": "pct",
-            "rank": 91,
+            "rank": 90,
             "of": 138
           },
           "def_sack_rate": {
@@ -127532,23 +127541,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 10.6,
-          "rank": 30,
+          "value": 9.3,
+          "rank": 36,
           "of": 138
         },
         "offense": {
-          "value": 28.4,
-          "rank": 57,
+          "value": 26.8,
+          "rank": 68,
           "of": 138
         },
         "defense": {
-          "value": 18.0,
-          "rank": 21,
+          "value": 17.6,
+          "rank": 20,
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 26,
+          "value": 0.0,
+          "rank": 71,
           "of": 138
         }
       },
@@ -127557,23 +127566,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -9.3,
-          "rank": 109,
+          "value": -11.3,
+          "rank": 114,
           "of": 138
         },
         "offense": {
-          "value": 17.6,
-          "rank": 117,
+          "value": 15.9,
+          "rank": 126,
           "of": 138
         },
         "defense": {
-          "value": 26.4,
-          "rank": 73,
+          "value": 27.0,
+          "rank": 75,
           "of": 138
         },
         "special_teams": {
-          "value": -0.5,
-          "rank": 128,
+          "value": -0.2,
+          "rank": 102,
           "of": 138
         }
       },
@@ -130204,7 +130213,7 @@
       "venue_city": "Pasadena, CA",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 68,
+      "weather_temp": 69,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -130388,7 +130397,7 @@
             "label": "Sacks taken per game",
             "value": 1.2857,
             "better": "low",
-            "rank": 32,
+            "rank": 33,
             "of": 138,
             "format": "num"
           },
@@ -130474,9 +130483,9 @@
           },
           "off_pr": {
             "label": "Punt-return average",
-            "value": 12.9375,
+            "value": 13.8,
             "better": "high",
-            "rank": 33,
+            "rank": 24,
             "of": 138,
             "format": "num"
           },
@@ -130525,7 +130534,7 @@
             "value": 0.2833,
             "better": "high",
             "format": "pct",
-            "rank": 104,
+            "rank": 103,
             "of": 138
           },
           "def_first_down_rate": {
@@ -130589,7 +130598,7 @@
             "value": 8.5714,
             "better": "low",
             "format": "num",
-            "rank": 37,
+            "rank": 36,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -130621,7 +130630,7 @@
             "value": 0.2462,
             "better": "high",
             "format": "pct",
-            "rank": 55,
+            "rank": 54,
             "of": 138
           },
           "def_rush_first_rate": {
@@ -130907,7 +130916,7 @@
             "label": "Sacks taken per game",
             "value": 1.2857,
             "better": "low",
-            "rank": 32,
+            "rank": 33,
             "of": 138,
             "format": "num"
           },
@@ -130947,7 +130956,7 @@
             "label": "Rushing yards allowed per game",
             "value": 90.429,
             "better": "low",
-            "rank": 9,
+            "rank": 10,
             "of": 138,
             "format": "num"
           },
@@ -131052,7 +131061,7 @@
             "value": 0.2406,
             "better": "low",
             "format": "pct",
-            "rank": 6,
+            "rank": 7,
             "of": 138
           },
           "off_plays_pg": {
@@ -131249,23 +131258,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -4.6,
-          "rank": 95,
+          "value": -3.1,
+          "rank": 89,
           "of": 138
         },
         "offense": {
-          "value": 20.6,
+          "value": 20.9,
           "rank": 107,
           "of": 138
         },
         "defense": {
-          "value": 25.6,
-          "rank": 63,
+          "value": 24.6,
+          "rank": 55,
           "of": 138
         },
         "special_teams": {
-          "value": 0.4,
-          "rank": 17,
+          "value": 0.5,
+          "rank": 9,
           "of": 138
         }
       },
@@ -131274,23 +131283,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 14.0,
-          "rank": 19,
+          "value": 14.4,
+          "rank": 17,
           "of": 138
         },
         "offense": {
-          "value": 32.1,
+          "value": 31.5,
           "rank": 38,
           "of": 138
         },
         "defense": {
-          "value": 18.0,
-          "rank": 21,
+          "value": 17.1,
+          "rank": 19,
           "of": 138
         },
         "special_teams": {
           "value": -0.1,
-          "rank": 84,
+          "rank": 81,
           "of": 138
         }
       },
@@ -133862,7 +133871,7 @@
       "venue_city": "University Park, PA",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 66,
+      "weather_temp": 65,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -134907,23 +134916,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -0.1,
-          "rank": 73,
+          "value": 0.2,
+          "rank": 69,
           "of": 138
         },
         "offense": {
-          "value": 31.2,
-          "rank": 41,
+          "value": 30.0,
+          "rank": 46,
           "of": 138
         },
         "defense": {
-          "value": 31.8,
-          "rank": 113,
+          "value": 30.4,
+          "rank": 101,
           "of": 138
         },
         "special_teams": {
           "value": 0.5,
-          "rank": 4,
+          "rank": 8,
           "of": 138
         }
       },
@@ -134932,23 +134941,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 7.3,
-          "rank": 47,
+          "value": 9.3,
+          "rank": 36,
           "of": 138
         },
         "offense": {
-          "value": 28.0,
-          "rank": 62,
+          "value": 28.9,
+          "rank": 53,
           "of": 138
         },
         "defense": {
-          "value": 20.8,
-          "rank": 32,
+          "value": 19.8,
+          "rank": 27,
           "of": 138
         },
         "special_teams": {
-          "value": 0.1,
-          "rank": 61,
+          "value": 0.2,
+          "rank": 45,
           "of": 138
         }
       },
@@ -135799,8 +135808,8 @@
       "venue_city": "Norman, OK",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 67,
-      "weather_cond": "Cloudy",
+      "weather_temp": 66,
+      "weather_cond": "Showers",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -136071,7 +136080,7 @@
             "label": "Punt-return average",
             "value": 13.5333,
             "better": "high",
-            "rank": 25,
+            "rank": 26,
             "of": 138,
             "format": "num"
           },
@@ -136152,7 +136161,7 @@
             "value": 0.4874,
             "better": "neutral",
             "format": "pct",
-            "rank": 57,
+            "rank": 58,
             "of": 138
           },
           "def_pass_rate": {
@@ -136671,7 +136680,7 @@
             "value": 0.4871,
             "better": "neutral",
             "format": "pct",
-            "rank": 58,
+            "rank": 59,
             "of": 138
           },
           "def_pass_rate": {
@@ -136831,7 +136840,7 @@
             "value": 0.0728,
             "better": "high",
             "format": "pct",
-            "rank": 11,
+            "rank": 12,
             "of": 138
           }
         },
@@ -136844,23 +136853,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 10.0,
-          "rank": 32,
+          "value": 11.0,
+          "rank": 28,
           "of": 138
         },
         "offense": {
-          "value": 33.3,
-          "rank": 29,
+          "value": 33.6,
+          "rank": 23,
           "of": 138
         },
         "defense": {
-          "value": 23.6,
-          "rank": 48,
+          "value": 23.1,
+          "rank": 47,
           "of": 138
         },
         "special_teams": {
-          "value": 0.4,
-          "rank": 10,
+          "value": 0.5,
+          "rank": 5,
           "of": 138
         }
       },
@@ -136869,13 +136878,13 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 9.8,
-          "rank": 34,
+          "value": 10.3,
+          "rank": 33,
           "of": 138
         },
         "offense": {
-          "value": 23.7,
-          "rank": 95,
+          "value": 24.3,
+          "rank": 88,
           "of": 138
         },
         "defense": {
@@ -136884,8 +136893,8 @@
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 27,
+          "value": 0.2,
+          "rank": 44,
           "of": 138
         }
       },
@@ -139407,7 +139416,7 @@
       "venue_city": "Statesboro, GA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 74,
+      "weather_temp": 72,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -139477,9 +139486,9 @@
           },
           "off_first_downs": {
             "label": "First downs per game",
-            "value": 22.0,
+            "value": 21.8571,
             "better": "high",
-            "rank": 41,
+            "rank": 44,
             "of": 138,
             "format": "num"
           },
@@ -139725,7 +139734,7 @@
           },
           "off_first_down_rate": {
             "label": "First downs per offensive play",
-            "value": 0.308,
+            "value": 0.306,
             "better": "high",
             "format": "pct",
             "rank": 65,
@@ -139736,7 +139745,7 @@
             "value": 0.2631,
             "better": "low",
             "format": "pct",
-            "rank": 29,
+            "rank": 30,
             "of": 138
           },
           "off_plays_pg": {
@@ -139837,10 +139846,10 @@
           },
           "off_pass_first_rate": {
             "label": "Passing first downs per attempt",
-            "value": 0.3667,
+            "value": 0.3625,
             "better": "high",
             "format": "pct",
-            "rank": 33,
+            "rank": 36,
             "of": 138
           },
           "def_pass_first_rate": {
@@ -139998,7 +140007,7 @@
             "label": "First downs per game",
             "value": 21.8571,
             "better": "high",
-            "rank": 45,
+            "rank": 44,
             "of": 138,
             "format": "num"
           },
@@ -140022,7 +140031,7 @@
             "label": "Yards per pass allowed",
             "value": 7.158,
             "better": "low",
-            "rank": 71,
+            "rank": 70,
             "of": 138,
             "format": "num"
           },
@@ -140247,7 +140256,7 @@
             "value": 0.3155,
             "better": "high",
             "format": "pct",
-            "rank": 54,
+            "rank": 53,
             "of": 138
           },
           "def_first_down_rate": {
@@ -140452,23 +140461,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -5.3,
-          "rank": 96,
-          "of": 138
-        },
-        "offense": {
-          "value": 23.7,
+          "value": -4.9,
           "rank": 95,
           "of": 138
         },
+        "offense": {
+          "value": 24.2,
+          "rank": 89,
+          "of": 138
+        },
         "defense": {
-          "value": 29.3,
-          "rank": 98,
+          "value": 29.5,
+          "rank": 96,
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 39,
+          "value": 0.4,
+          "rank": 25,
           "of": 138
         }
       },
@@ -140477,23 +140486,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -2.5,
-          "rank": 85,
+          "value": -4.8,
+          "rank": 94,
           "of": 138
         },
         "offense": {
-          "value": 25.7,
-          "rank": 82,
+          "value": 24.4,
+          "rank": 86,
           "of": 138
         },
         "defense": {
-          "value": 27.7,
-          "rank": 85,
+          "value": 28.8,
+          "rank": 91,
           "of": 138
         },
         "special_teams": {
-          "value": -0.5,
-          "rank": 127,
+          "value": -0.4,
+          "rank": 117,
           "of": 138
         }
       },
@@ -142302,7 +142311,7 @@
             "label": "First downs allowed per game",
             "value": 19.1429,
             "better": "low",
-            "rank": 67,
+            "rank": 68,
             "of": 138,
             "format": "num"
           },
@@ -142414,7 +142423,7 @@
             "label": "Sacks per game",
             "value": 2.8571,
             "better": "high",
-            "rank": 15,
+            "rank": 16,
             "of": 138,
             "format": "num"
           },
@@ -142430,7 +142439,7 @@
             "label": "Yards per rush allowed",
             "value": 3.736,
             "better": "low",
-            "rank": 47,
+            "rank": 48,
             "of": 138,
             "format": "num"
           },
@@ -142494,7 +142503,7 @@
             "label": "Punt-return average",
             "value": 13.4667,
             "better": "high",
-            "rank": 27,
+            "rank": 28,
             "of": 138,
             "format": "num"
           },
@@ -142519,7 +142528,7 @@
             "value": 0.3085,
             "better": "low",
             "format": "num",
-            "rank": 40,
+            "rank": 39,
             "of": 138
           },
           "off_yards_per_play": {
@@ -142735,7 +142744,7 @@
             "value": 0.058,
             "better": "high",
             "format": "pct",
-            "rank": 41,
+            "rank": 42,
             "of": 138
           }
         },
@@ -143102,7 +143111,7 @@
             "value": 0.479,
             "better": "neutral",
             "format": "pct",
-            "rank": 70,
+            "rank": 69,
             "of": 138
           },
           "off_sack_rate": {
@@ -143142,7 +143151,7 @@
             "value": 38.0,
             "better": "neutral",
             "format": "num",
-            "rank": 37,
+            "rank": 36,
             "of": 138
           },
           "def_rush_attempts_pg": {
@@ -143238,7 +143247,7 @@
             "value": 29.1429,
             "better": "neutral",
             "format": "num",
-            "rank": 103,
+            "rank": 104,
             "of": 138
           },
           "def_dropbacks_pg": {
@@ -143267,23 +143276,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 4.0,
-          "rank": 56,
+          "value": 4.7,
+          "rank": 55,
           "of": 138
         },
         "offense": {
-          "value": 23.1,
-          "rank": 98,
+          "value": 23.3,
+          "rank": 96,
           "of": 138
         },
         "defense": {
-          "value": 19.5,
-          "rank": 25,
+          "value": 19.0,
+          "rank": 24,
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 31,
+          "value": 0.5,
+          "rank": 7,
           "of": 138
         }
       },
@@ -143292,23 +143301,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 4.9,
-          "rank": 55,
+          "value": 5.8,
+          "rank": 53,
           "of": 138
         },
         "offense": {
-          "value": 32.8,
-          "rank": 33,
+          "value": 32.7,
+          "rank": 32,
           "of": 138
         },
         "defense": {
-          "value": 28.2,
-          "rank": 89,
+          "value": 27.1,
+          "rank": 76,
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 30,
+          "value": 0.2,
+          "rank": 47,
           "of": 138
         }
       },
@@ -145074,7 +145083,7 @@
       "venue_city": "Ames, IA",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 62,
+      "weather_temp": 58,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -145266,7 +145275,7 @@
             "label": "Sacks per game",
             "value": 2.1429,
             "better": "high",
-            "rank": 62,
+            "rank": 61,
             "of": 138,
             "format": "num"
           },
@@ -145354,7 +145363,7 @@
             "label": "Penalty yards per game",
             "value": 51.8571,
             "better": "low",
-            "rank": 44,
+            "rank": 45,
             "of": 138,
             "format": "num"
           },
@@ -145641,7 +145650,7 @@
             "label": "Third-down rate allowed",
             "value": 0.3444,
             "better": "low",
-            "rank": 40,
+            "rank": 39,
             "of": 138,
             "format": "pct"
           },
@@ -145962,7 +145971,7 @@
             "value": 0.0677,
             "better": "low",
             "format": "pct",
-            "rank": 90,
+            "rank": 89,
             "of": 138
           },
           "def_sack_rate": {
@@ -146034,7 +146043,7 @@
             "value": 0.3141,
             "better": "low",
             "format": "pct",
-            "rank": 81,
+            "rank": 80,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -146119,23 +146128,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 12.1,
-          "rank": 27,
+          "value": 12.4,
+          "rank": 23,
           "of": 138
         },
         "offense": {
-          "value": 35.3,
-          "rank": 16,
+          "value": 36.1,
+          "rank": 11,
           "of": 138
         },
         "defense": {
-          "value": 23.5,
-          "rank": 45,
+          "value": 24.1,
+          "rank": 52,
           "of": 138
         },
         "special_teams": {
           "value": 0.4,
-          "rank": 9,
+          "rank": 17,
           "of": 138
         }
       },
@@ -146144,23 +146153,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 1.0,
-          "rank": 68,
+          "value": -1.2,
+          "rank": 76,
           "of": 138
         },
         "offense": {
-          "value": 25.4,
-          "rank": 83,
+          "value": 23.6,
+          "rank": 93,
           "of": 138
         },
         "defense": {
-          "value": 24.6,
-          "rank": 59,
+          "value": 25.2,
+          "rank": 60,
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 33,
+          "value": 0.4,
+          "rank": 23,
           "of": 138
         }
       },
@@ -148582,8 +148591,8 @@
       "venue_city": "San Diego, CA",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 70,
-      "weather_cond": "Cloudy",
+      "weather_temp": 69,
+      "weather_cond": "Rain",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -149285,7 +149294,7 @@
             "label": "Sacks taken per game",
             "value": 1.25,
             "better": "low",
-            "rank": 28,
+            "rank": 29,
             "of": 138,
             "format": "num"
           },
@@ -149627,23 +149636,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -12.1,
-          "rank": 117,
+          "value": -14.1,
+          "rank": 121,
           "of": 138
         },
         "offense": {
-          "value": 16.6,
-          "rank": 125,
+          "value": 15.8,
+          "rank": 127,
           "of": 138
         },
         "defense": {
-          "value": 28.2,
-          "rank": 89,
+          "value": 29.5,
+          "rank": 96,
           "of": 138
         },
         "special_teams": {
-          "value": -0.5,
-          "rank": 131,
+          "value": -0.4,
+          "rank": 120,
           "of": 138
         }
       },
@@ -149652,23 +149661,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -8.7,
+          "value": -8.6,
           "rank": 104,
           "of": 138
         },
         "offense": {
-          "value": 20.3,
-          "rank": 108,
+          "value": 22.4,
+          "rank": 104,
           "of": 138
         },
         "defense": {
-          "value": 29.5,
-          "rank": 99,
+          "value": 31.6,
+          "rank": 109,
           "of": 138
         },
         "special_teams": {
           "value": 0.5,
-          "rank": 5,
+          "rank": 10,
           "of": 138
         }
       },
@@ -152422,8 +152431,8 @@
       "venue_city": "Pittsburgh, PA",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 63,
-      "weather_cond": "Cloudy",
+      "weather_temp": 60,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -152670,7 +152679,7 @@
             "label": "Field-goal rate",
             "value": 0.75,
             "better": "high",
-            "rank": 74,
+            "rank": 73,
             "of": 138,
             "format": "pct"
           },
@@ -152791,7 +152800,7 @@
             "value": 0.0661,
             "better": "low",
             "format": "pct",
-            "rank": 86,
+            "rank": 85,
             "of": 138
           },
           "def_sack_rate": {
@@ -153125,7 +153134,7 @@
             "label": "Sacks taken per game",
             "value": 1.25,
             "better": "low",
-            "rank": 28,
+            "rank": 29,
             "of": 138,
             "format": "num"
           },
@@ -153254,7 +153263,7 @@
             "value": 5.0766,
             "better": "low",
             "format": "num",
-            "rank": 56,
+            "rank": 57,
             "of": 138
           },
           "off_first_down_rate": {
@@ -153334,7 +153343,7 @@
             "value": 18.5,
             "better": "high",
             "format": "num",
-            "rank": 20,
+            "rank": 21,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -153467,23 +153476,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 1.9,
-          "rank": 63,
+          "value": -1.1,
+          "rank": 75,
           "of": 138
         },
         "offense": {
-          "value": 28.9,
-          "rank": 54,
+          "value": 28.3,
+          "rank": 57,
           "of": 138
         },
         "defense": {
-          "value": 27.2,
-          "rank": 79,
+          "value": 29.4,
+          "rank": 95,
           "of": 138
         },
         "special_teams": {
-          "value": 0.1,
-          "rank": 63,
+          "value": 0.0,
+          "rank": 75,
           "of": 138
         }
       },
@@ -153492,23 +153501,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 9.4,
-          "rank": 36,
+          "value": 7.9,
+          "rank": 44,
           "of": 138
         },
         "offense": {
-          "value": 29.2,
-          "rank": 51,
+          "value": 30.0,
+          "rank": 46,
           "of": 138
         },
         "defense": {
-          "value": 19.8,
-          "rank": 27,
+          "value": 22.4,
+          "rank": 39,
           "of": 138
         },
         "special_teams": {
-          "value": 0.1,
-          "rank": 59,
+          "value": 0.3,
+          "rank": 32,
           "of": 138
         }
       },
@@ -156256,8 +156265,8 @@
       "venue_city": "Chapel Hill, NC",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 65,
-      "weather_cond": "Hazy moonlight",
+      "weather_temp": 62,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -156304,7 +156313,7 @@
             "label": "Third-down rate allowed",
             "value": 0.3367,
             "better": "low",
-            "rank": 36,
+            "rank": 35,
             "of": 138,
             "format": "pct"
           },
@@ -156440,7 +156449,7 @@
             "label": "Sacks taken per game",
             "value": 1.2857,
             "better": "low",
-            "rank": 32,
+            "rank": 33,
             "of": 138,
             "format": "num"
           },
@@ -156448,7 +156457,7 @@
             "label": "Sacks per game",
             "value": 2.8571,
             "better": "high",
-            "rank": 15,
+            "rank": 16,
             "of": 138,
             "format": "num"
           },
@@ -156625,7 +156634,7 @@
             "value": 0.0377,
             "better": "low",
             "format": "pct",
-            "rank": 25,
+            "rank": 26,
             "of": 138
           },
           "def_sack_rate": {
@@ -157144,7 +157153,7 @@
             "value": 0.0676,
             "better": "low",
             "format": "pct",
-            "rank": 89,
+            "rank": 88,
             "of": 138
           },
           "def_sack_rate": {
@@ -157301,23 +157310,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 25.3,
-          "rank": 3,
+          "value": 24.7,
+          "rank": 5,
           "of": 138
         },
         "offense": {
-          "value": 40.2,
+          "value": 40.9,
           "rank": 1,
           "of": 138
         },
         "defense": {
-          "value": 15.2,
-          "rank": 10,
+          "value": 16.6,
+          "rank": 14,
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 19,
+          "value": 0.4,
+          "rank": 13,
           "of": 138
         }
       },
@@ -157326,23 +157335,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 5.0,
-          "rank": 54,
+          "value": 3.7,
+          "rank": 58,
           "of": 138
         },
         "offense": {
-          "value": 26.2,
+          "value": 26.3,
           "rank": 75,
           "of": 138
         },
         "defense": {
-          "value": 21.2,
-          "rank": 34,
+          "value": 22.5,
+          "rank": 42,
           "of": 138
         },
         "special_teams": {
-          "value": -0.1,
-          "rank": 88,
+          "value": -0.2,
+          "rank": 94,
           "of": 138
         }
       },
@@ -159762,8 +159771,8 @@
       "venue_city": "Austin, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 77,
-      "weather_cond": "Thunderstorms",
+      "weather_temp": 78,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -160219,7 +160228,7 @@
             "value": 11.2771,
             "better": "low",
             "format": "num",
-            "rank": 56,
+            "rank": 55,
             "of": 138
           },
           "off_pass_td_rate": {
@@ -160682,7 +160691,7 @@
             "value": 38.0,
             "better": "neutral",
             "format": "num",
-            "rank": 37,
+            "rank": 36,
             "of": 138
           },
           "def_rush_attempts_pg": {
@@ -160807,23 +160816,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 7.3,
-          "rank": 47,
+          "value": 6.0,
+          "rank": 52,
           "of": 138
         },
         "offense": {
-          "value": 33.7,
-          "rank": 24,
+          "value": 31.9,
+          "rank": 35,
           "of": 138
         },
         "defense": {
-          "value": 26.8,
-          "rank": 75,
+          "value": 26.3,
+          "rank": 68,
           "of": 138
         },
         "special_teams": {
           "value": 0.4,
-          "rank": 13,
+          "rank": 22,
           "of": 138
         }
       },
@@ -160832,23 +160841,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 21.1,
+          "value": 20.4,
           "rank": 8,
           "of": 138
         },
         "offense": {
-          "value": 34.4,
-          "rank": 19,
+          "value": 34.6,
+          "rank": 16,
           "of": 138
         },
         "defense": {
-          "value": 13.5,
-          "rank": 5,
+          "value": 14.5,
+          "rank": 7,
           "of": 138
         },
         "special_teams": {
-          "value": 0.2,
-          "rank": 42,
+          "value": 0.3,
+          "rank": 29,
           "of": 138
         }
       },
@@ -163360,7 +163369,7 @@
       "venue_city": "Los Angeles, CA",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 69,
+      "weather_temp": 70,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -163640,7 +163649,7 @@
             "label": "Penalty yards per game",
             "value": 52.0,
             "better": "low",
-            "rank": 45,
+            "rank": 46,
             "of": 138,
             "format": "num"
           },
@@ -163681,7 +163690,7 @@
             "value": 0.3455,
             "better": "high",
             "format": "pct",
-            "rank": 12,
+            "rank": 13,
             "of": 138
           },
           "def_first_down_rate": {
@@ -163729,7 +163738,7 @@
             "value": 0.0661,
             "better": "low",
             "format": "pct",
-            "rank": 85,
+            "rank": 84,
             "of": 138
           },
           "def_sack_rate": {
@@ -163785,7 +163794,7 @@
             "value": 0.1722,
             "better": "low",
             "format": "pct",
-            "rank": 14,
+            "rank": 15,
             "of": 138
           },
           "off_pass_first_rate": {
@@ -163927,7 +163936,7 @@
             "label": "Third-down rate allowed",
             "value": 0.3444,
             "better": "low",
-            "rank": 40,
+            "rank": 39,
             "of": 138,
             "format": "pct"
           },
@@ -163943,7 +163952,7 @@
             "label": "Fourth-down rate allowed",
             "value": 0.7368,
             "better": "low",
-            "rank": 119,
+            "rank": 120,
             "of": 138,
             "format": "pct"
           },
@@ -164248,7 +164257,7 @@
             "value": 0.0399,
             "better": "low",
             "format": "pct",
-            "rank": 30,
+            "rank": 31,
             "of": 138
           },
           "def_sack_rate": {
@@ -164288,7 +164297,7 @@
             "value": 31.875,
             "better": "neutral",
             "format": "num",
-            "rank": 115,
+            "rank": 114,
             "of": 138
           },
           "off_rush_first_rate": {
@@ -164405,23 +164414,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 26.8,
+          "value": 28.6,
           "rank": 1,
           "of": 138
         },
         "offense": {
-          "value": 38.7,
-          "rank": 6,
+          "value": 39.2,
+          "rank": 4,
           "of": 138
         },
         "defense": {
-          "value": 11.9,
+          "value": 10.7,
           "rank": 1,
           "of": 138
         },
         "special_teams": {
-          "value": -0.1,
-          "rank": 83,
+          "value": 0.1,
+          "rank": 54,
           "of": 138
         }
       },
@@ -164430,23 +164439,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 15.3,
-          "rank": 17,
+          "value": 14.2,
+          "rank": 18,
           "of": 138
         },
         "offense": {
-          "value": 38.7,
-          "rank": 6,
+          "value": 36.6,
+          "rank": 9,
           "of": 138
         },
         "defense": {
-          "value": 23.5,
-          "rank": 45,
+          "value": 22.4,
+          "rank": 39,
           "of": 138
         },
         "special_teams": {
-          "value": 0.1,
-          "rank": 55,
+          "value": -0.1,
+          "rank": 82,
           "of": 138
         }
       },
@@ -166251,7 +166260,7 @@
       "venue_city": "Fayetteville, AR",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 64,
+      "weather_temp": 65,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -166628,7 +166637,7 @@
             "value": 0.07,
             "better": "high",
             "format": "pct",
-            "rank": 57,
+            "rank": 56,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -166764,7 +166773,7 @@
             "value": 0.0574,
             "better": "high",
             "format": "pct",
-            "rank": 44,
+            "rank": 45,
             "of": 138
           }
         },
@@ -167050,7 +167059,7 @@
             "label": "Penalty yards per game",
             "value": 52.7143,
             "better": "low",
-            "rank": 49,
+            "rank": 50,
             "of": 138,
             "format": "num"
           },
@@ -167296,23 +167305,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 13.6,
-          "rank": 20,
+          "value": 14.2,
+          "rank": 18,
           "of": 138
         },
         "offense": {
-          "value": 30.1,
-          "rank": 44,
+          "value": 30.9,
+          "rank": 42,
           "of": 138
         },
         "defense": {
-          "value": 16.6,
-          "rank": 16,
+          "value": 16.5,
+          "rank": 11,
           "of": 138
         },
         "special_teams": {
-          "value": 0.1,
-          "rank": 57,
+          "value": -0.2,
+          "rank": 92,
           "of": 138
         }
       },
@@ -167321,23 +167330,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -1.7,
-          "rank": 82,
+          "value": -0.4,
+          "rank": 71,
           "of": 138
         },
         "offense": {
-          "value": 26.5,
-          "rank": 73,
+          "value": 27.7,
+          "rank": 60,
           "of": 138
         },
         "defense": {
-          "value": 28.5,
-          "rank": 93,
+          "value": 28.3,
+          "rank": 85,
           "of": 138
         },
         "special_teams": {
-          "value": 0.3,
-          "rank": 36,
+          "value": 0.2,
+          "rank": 49,
           "of": 138
         }
       },
@@ -168224,7 +168233,7 @@
       "venue_city": "Memphis, TN",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 68,
+      "weather_temp": 70,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -168280,7 +168289,7 @@
             "label": "Fourth-down rate",
             "value": 0.8125,
             "better": "high",
-            "rank": 4,
+            "rank": 3,
             "of": 138,
             "format": "pct"
           },
@@ -168593,7 +168602,7 @@
             "value": 0.0385,
             "better": "low",
             "format": "pct",
-            "rank": 26,
+            "rank": 27,
             "of": 138
           },
           "def_sack_rate": {
@@ -168927,7 +168936,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 78,
+            "rank": 77,
             "of": 138,
             "format": "num"
           },
@@ -168991,7 +169000,7 @@
             "label": "Field-goal rate",
             "value": 0.7692,
             "better": "high",
-            "rank": 67,
+            "rank": 66,
             "of": 138,
             "format": "pct"
           },
@@ -169088,7 +169097,7 @@
             "value": 67.25,
             "better": "neutral",
             "format": "num",
-            "rank": 65,
+            "rank": 64,
             "of": 138
           },
           "off_pass_rate": {
@@ -169112,7 +169121,7 @@
             "value": 0.064,
             "better": "low",
             "format": "pct",
-            "rank": 81,
+            "rank": 80,
             "of": 138
           },
           "def_sack_rate": {
@@ -169184,7 +169193,7 @@
             "value": 0.308,
             "better": "low",
             "format": "pct",
-            "rank": 67,
+            "rank": 68,
             "of": 138
           },
           "off_yards_per_completion": {
@@ -169269,23 +169278,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 1.2,
-          "rank": 67,
+          "value": 1.0,
+          "rank": 66,
           "of": 138
         },
         "offense": {
-          "value": 30.3,
-          "rank": 42,
+          "value": 30.2,
+          "rank": 43,
           "of": 138
         },
         "defense": {
-          "value": 29.2,
-          "rank": 97,
+          "value": 29.5,
+          "rank": 96,
           "of": 138
         },
         "special_teams": {
-          "value": 0.1,
-          "rank": 65,
+          "value": 0.3,
+          "rank": 37,
           "of": 138
         }
       },
@@ -169294,23 +169303,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 6.5,
-          "rank": 50,
+          "value": 7.0,
+          "rank": 46,
           "of": 138
         },
         "offense": {
-          "value": 32.8,
-          "rank": 33,
+          "value": 33.8,
+          "rank": 21,
           "of": 138
         },
         "defense": {
-          "value": 26.3,
+          "value": 26.6,
           "rank": 72,
           "of": 138
         },
         "special_teams": {
           "value": -0.1,
-          "rank": 87,
+          "rank": 86,
           "of": 138
         }
       },
@@ -171852,7 +171861,7 @@
       "venue_city": "Lincoln, NE",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 63,
+      "weather_temp": 59,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -171932,7 +171941,7 @@
             "label": "First downs allowed per game",
             "value": 19.1429,
             "better": "low",
-            "rank": 67,
+            "rank": 68,
             "of": 138,
             "format": "num"
           },
@@ -172365,7 +172374,7 @@
             "value": 0.0546,
             "better": "high",
             "format": "pct",
-            "rank": 59,
+            "rank": 60,
             "of": 138
           }
         },
@@ -172555,7 +172564,7 @@
             "label": "Sacks taken per game",
             "value": 2.0,
             "better": "low",
-            "rank": 78,
+            "rank": 77,
             "of": 138,
             "format": "num"
           },
@@ -172700,7 +172709,7 @@
             "value": 0.2408,
             "better": "low",
             "format": "pct",
-            "rank": 7,
+            "rank": 8,
             "of": 138
           },
           "off_plays_pg": {
@@ -172708,7 +172717,7 @@
             "value": 74.0,
             "better": "neutral",
             "format": "num",
-            "rank": 11,
+            "rank": 10,
             "of": 138
           },
           "def_plays_pg": {
@@ -172897,23 +172906,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 8.2,
-          "rank": 44,
+          "value": 9.5,
+          "rank": 35,
           "of": 138
         },
         "offense": {
           "value": 29.7,
-          "rank": 47,
+          "rank": 49,
           "of": 138
         },
         "defense": {
-          "value": 21.5,
-          "rank": 36,
+          "value": 20.2,
+          "rank": 30,
           "of": 138
         },
         "special_teams": {
           "value": 0.0,
-          "rank": 71,
+          "rank": 70,
           "of": 138
         }
       },
@@ -172922,23 +172931,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 15.6,
-          "rank": 16,
+          "value": 15.4,
+          "rank": 15,
           "of": 138
         },
         "offense": {
-          "value": 32.6,
-          "rank": 37,
+          "value": 32.2,
+          "rank": 34,
           "of": 138
         },
         "defense": {
-          "value": 16.9,
-          "rank": 18,
+          "value": 16.7,
+          "rank": 16,
           "of": 138
         },
         "special_teams": {
-          "value": -0.2,
-          "rank": 96,
+          "value": -0.1,
+          "rank": 80,
           "of": 138
         }
       },
@@ -173853,8 +173862,8 @@
       "venue_city": "Boise, ID",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 50,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 51,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -174125,7 +174134,7 @@
             "label": "Punt-return average",
             "value": 13.0,
             "better": "high",
-            "rank": 32,
+            "rank": 33,
             "of": 138,
             "format": "num"
           },
@@ -174133,7 +174142,7 @@
             "label": "Penalty yards per game",
             "value": 52.4286,
             "better": "low",
-            "rank": 47,
+            "rank": 48,
             "of": 138,
             "format": "num"
           },
@@ -174412,7 +174421,7 @@
             "label": "Offense third-down rate",
             "value": 0.5161,
             "better": "high",
-            "rank": 12,
+            "rank": 13,
             "of": 138,
             "format": "pct"
           },
@@ -174452,7 +174461,7 @@
             "label": "First downs allowed per game",
             "value": 16.1429,
             "better": "low",
-            "rank": 18,
+            "rank": 19,
             "of": 138,
             "format": "num"
           },
@@ -174898,23 +174907,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 2.5,
-          "rank": 62,
+          "value": 1.5,
+          "rank": 65,
           "of": 138
         },
         "offense": {
-          "value": 35.5,
-          "rank": 15,
+          "value": 33.5,
+          "rank": 24,
           "of": 138
         },
         "defense": {
-          "value": 32.8,
-          "rank": 118,
+          "value": 31.6,
+          "rank": 109,
           "of": 138
         },
         "special_teams": {
-          "value": -0.2,
-          "rank": 97,
+          "value": -0.4,
+          "rank": 115,
           "of": 138
         }
       },
@@ -174923,23 +174932,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 9.4,
-          "rank": 36,
+          "value": 10.9,
+          "rank": 29,
           "of": 138
         },
         "offense": {
           "value": 34.2,
-          "rank": 21,
+          "rank": 18,
           "of": 138
         },
         "defense": {
-          "value": 24.9,
-          "rank": 61,
+          "value": 23.6,
+          "rank": 51,
           "of": 138
         },
         "special_teams": {
-          "value": 0.1,
-          "rank": 58,
+          "value": 0.3,
+          "rank": 31,
           "of": 138
         }
       },
@@ -178169,7 +178178,7 @@
             "value": 0.2842,
             "better": "high",
             "format": "pct",
-            "rank": 101,
+            "rank": 100,
             "of": 138
           },
           "def_first_down_rate": {
@@ -178374,23 +178383,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -25.0,
+          "value": -25.4,
           "rank": 136,
           "of": 138
         },
         "offense": {
-          "value": 13.0,
-          "rank": 136,
-          "of": 138
-        },
-        "defense": {
-          "value": 37.6,
+          "value": 13.5,
           "rank": 134,
           "of": 138
         },
+        "defense": {
+          "value": 38.4,
+          "rank": 135,
+          "of": 138
+        },
         "special_teams": {
-          "value": -0.4,
-          "rank": 125,
+          "value": -0.5,
+          "rank": 130,
           "of": 138
         }
       },
@@ -178399,23 +178408,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": -3.4,
-          "rank": 90,
+          "value": -2.2,
+          "rank": 82,
           "of": 138
         },
         "offense": {
-          "value": 24.7,
-          "rank": 90,
+          "value": 25.3,
+          "rank": 83,
           "of": 138
         },
         "defense": {
-          "value": 27.9,
-          "rank": 86,
+          "value": 27.6,
+          "rank": 80,
           "of": 138
         },
         "special_teams": {
-          "value": -0.1,
-          "rank": 94,
+          "value": 0.1,
+          "rank": 64,
           "of": 138
         }
       },
@@ -180098,7 +180107,7 @@
       "roof": "Outdoor",
       "broadcast": "USA Net",
       "weather_temp": 60,
-      "weather_cond": "Mostly clear",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -180281,7 +180290,7 @@
             "label": "Sacks taken per game",
             "value": 1.2857,
             "better": "low",
-            "rank": 32,
+            "rank": 33,
             "of": 138,
             "format": "num"
           },
@@ -180610,7 +180619,7 @@
             "value": 0.0574,
             "better": "high",
             "format": "pct",
-            "rank": 44,
+            "rank": 45,
             "of": 138
           }
         },
@@ -180808,7 +180817,7 @@
             "label": "Sacks per game",
             "value": 2.1429,
             "better": "high",
-            "rank": 62,
+            "rank": 61,
             "of": 138,
             "format": "num"
           },
@@ -181129,7 +181138,7 @@
             "value": 0.0563,
             "better": "high",
             "format": "pct",
-            "rank": 49,
+            "rank": 50,
             "of": 138
           }
         },
@@ -181142,23 +181151,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 9.1,
-          "rank": 39,
+          "value": 6.6,
+          "rank": 50,
           "of": 138
         },
         "offense": {
-          "value": 33.7,
-          "rank": 24,
+          "value": 31.6,
+          "rank": 37,
           "of": 138
         },
         "defense": {
-          "value": 24.2,
-          "rank": 55,
+          "value": 24.7,
+          "rank": 56,
           "of": 138
         },
         "special_teams": {
-          "value": -0.4,
-          "rank": 117,
+          "value": -0.3,
+          "rank": 106,
           "of": 138
         }
       },
@@ -181167,23 +181176,23 @@
         "season": 2026,
         "method": "Opponent-adjusted CFB efficiency; not FTN DVOA",
         "overall": {
-          "value": 3.4,
-          "rank": 59,
+          "value": 2.6,
+          "rank": 61,
           "of": 138
         },
         "offense": {
-          "value": 26.5,
-          "rank": 73,
+          "value": 25.7,
+          "rank": 77,
           "of": 138
         },
         "defense": {
-          "value": 23.5,
-          "rank": 45,
+          "value": 23.4,
+          "rank": 49,
           "of": 138
         },
         "special_teams": {
-          "value": 0.4,
-          "rank": 15,
+          "value": 0.3,
+          "rank": 36,
           "of": 138
         }
       },
