@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-slate/1",
   "sport": "mlb",
-  "generated_at_utc": "2026-10-28T08:42:46Z",
-  "data_through_utc": "2026-10-28T08:42:46Z",
+  "generated_at_utc": "2026-10-28T16:42:56Z",
+  "data_through_utc": "2026-10-28T16:42:56Z",
   "games": [
     {
       "id": "849799",
@@ -20,21 +20,21 @@
       "venue_city": "St. Petersburg, FL",
       "broadcast": "FOX / FOX ONE, Fox Deportes / FOX ONE",
       "away_starter": "Jacob Misiorowski",
-      "home_starter": "Nick Martinez",
+      "home_starter": "Drew Rasmussen",
       "away_starter_id": 694819,
-      "home_starter_id": 607259,
+      "home_starter_id": 656876,
       "home_starter_role": "projected",
       "away_hand": "R",
       "home_hand": "R",
       "away_era": "1.80",
-      "home_era": "3.10",
+      "home_era": "2.67",
       "away_lineup_state": "Expected",
       "home_lineup_state": "Expected",
       "away_team_id": 158,
       "home_team_id": 139,
       "venue_id": 12,
       "away_bullpen": "8/167",
-      "home_bullpen": "8/186"
+      "home_bullpen": "9/219"
     }
   ]
 }
