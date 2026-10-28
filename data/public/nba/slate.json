@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-27",
- "generated_at_utc": "2026-10-27T20:42:47+00:00",
+ "generated_at_utc": "2026-10-28T00:45:17+00:00",
  "data_through_utc": "2026-10-27T02:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -122,7 +122,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "8:08 - 2nd",
+   "status_detail": "4:31 - 3rd",
    "kickoff_utc": "2026-10-27T23:30Z",
    "away": "BKN",
    "home": "BOS",
@@ -136,8 +136,8 @@
    "home_record": "2-1",
    "away_split_record": "0-1",
    "home_split_record": "2-0",
-   "away_score": 41,
-   "home_score": 35,
+   "away_score": 77,
+   "home_score": 72,
    "venue": "TD Garden",
    "venue_city": "Boston, MA",
    "broadcast": "NBA League Pass / DAZN (YES)",
@@ -6815,7 +6815,7 @@
       "player_name": "Derrick White",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3078576.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 29.0,
       "ppg": 11.3,
       "height_in": 76.0,
@@ -8129,15 +8129,6 @@
    },
    "home_injuries": [
     {
-     "player_id": "3078576",
-     "player_name": "Derrick White",
-     "status": "Day-To-Day",
-     "detail": "Right Hip",
-     "comment": "White (right hip) is probable for Tuesday's game against the Nets.",
-     "date": "2026-10-27T16:58Z",
-     "return_date": "2026-10-27"
-    },
-    {
      "player_id": "4433188",
      "player_name": "Devin Carter",
      "status": "Out",
@@ -8153,7 +8144,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "9:50 - 1st",
+   "status_detail": "2:36 - 2nd",
    "kickoff_utc": "2026-10-28T00:00Z",
    "away": "DET",
    "home": "NY",
@@ -8167,8 +8158,8 @@
    "home_record": "0-3",
    "away_split_record": "2-0",
    "home_split_record": "0-2",
-   "away_score": 2,
-   "home_score": 4,
+   "away_score": 45,
+   "home_score": 46,
    "venue": "Madison Square Garden",
    "venue_city": "New York, NY",
    "broadcast": "NBC",
@@ -11778,7 +11769,7 @@
       "player_name": "Ausar Thompson",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4684742.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 26.0,
       "ppg": 7.5,
       "height_in": 79.0,
@@ -12172,22 +12163,13 @@
    },
    "away_injuries": [
     {
-     "player_id": "4684742",
-     "player_name": "Ausar Thompson",
-     "status": "Day-To-Day",
-     "detail": "Right Ankle Sprain",
-     "comment": "Thompson (ankle) was a full participant at Tuesday's shootaround, Coty M. Davis of The Detroit News reports.",
-     "date": "2026-10-27T15:24Z",
-     "return_date": "2026-10-27"
-    },
-    {
      "player_id": "4395702",
      "player_name": "Isaiah Joe",
-     "status": "Day-To-Day",
-     "detail": "Hip Bruise",
-     "comment": "Joe (hip) is questionable for Tuesday's game against the Knicks.",
-     "date": "2026-10-26T20:54Z",
-     "return_date": "2026-10-27"
+     "status": "Out",
+     "detail": "Right Hip Bruise",
+     "comment": "Joe (hip) has been ruled out for Tuesday's game against the Knicks.",
+     "date": "2026-10-27T23:21Z",
+     "return_date": "2026-10-28"
     },
     {
      "player_id": "4433621",
@@ -16173,7 +16155,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "8:50 - 1st",
+   "status_detail": "Halftime",
    "kickoff_utc": "2026-10-28T00:00Z",
    "away": "SAC",
    "home": "SA",
@@ -16187,8 +16169,8 @@
    "home_record": "1-2",
    "away_split_record": "0-1",
    "home_split_record": "0-2",
-   "away_score": 4,
-   "home_score": 10,
+   "away_score": 54,
+   "home_score": 80,
    "venue": "Frost Bank Center",
    "venue_city": "San Antonio, TX",
    "broadcast": "NBA League Pass",
@@ -31427,6 +31409,15 @@
    },
    "home_injuries": [
     {
+     "player_id": "5113969",
+     "player_name": "Cameron Carr",
+     "status": "Out",
+     "detail": "Right Oblique Strain",
+     "comment": "The Lakers recalled Carr (oblique) from the G League's Coachella Valley Lakers on Tuesday, Mark Medina of TheSportingTribune.com reports.",
+     "date": "2026-10-27T23:42Z",
+     "return_date": "2026-10-28"
+    },
+    {
      "player_id": "5060631",
      "player_name": "Adou Thiero",
      "status": "Out",
@@ -31438,5 +31429,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-28T00:17:22+00:00"
+ "published_at_utc": "2026-10-28T01:12:54+00:00"
 }
