@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-28",
- "generated_at_utc": "2026-10-28T08:33:38+00:00",
+ "generated_at_utc": "2026-10-28T16:38:40+00:00",
  "data_through_utc": "2026-10-28T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -2963,7 +2963,7 @@
       "player_name": "Pelle Larsson",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4601025.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 30.8,
       "ppg": 9.0,
       "height_in": 77.0,
@@ -4113,22 +4113,13 @@
    },
    "away_injuries": [
     {
-     "player_id": "4601025",
-     "player_name": "Pelle Larsson",
-     "status": "Day-To-Day",
-     "detail": "Right Ankle Sprain",
-     "comment": "Larsson is listed as probable for Wednesday's game at Atlanta due to a right ankle sprain.",
-     "date": "2026-10-27T20:04Z",
-     "return_date": "2026-10-28"
-    },
-    {
      "player_id": "3899664",
      "player_name": "Simone Fontecchio",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Illness",
-     "comment": "Fontecchio is doubtful for Wednesday's game in Atlanta due to an illness, per Tim Reynolds of Associated Press.",
-     "date": "2026-10-27T20:03Z",
-     "return_date": "2026-10-28"
+     "comment": "Fontecchio (illness) is out for Wednesday's game against the Hawks.",
+     "date": "2026-10-28T15:04Z",
+     "return_date": "2026-10-30"
     }
    ],
    "home_form": {
@@ -7986,8 +7977,8 @@
      "player_name": "Aaron Wiggins",
      "status": "Day-To-Day",
      "detail": "Left Knee Bruise",
-     "comment": "Wiggins is questionable for Wednesday's game against the Heat due to a left knee contusion.",
-     "date": "2026-10-27T21:07Z",
+     "comment": "Wiggins (knee) is probable for Wednesday against Miami.",
+     "date": "2026-10-28T16:25Z",
      "return_date": "2026-10-28"
     },
     {
@@ -12007,15 +11998,6 @@
      "comment": "Champagnie (foot) is out for Wednesday's game versus Cleveland.",
      "date": "2026-10-27T20:50Z",
      "return_date": "2026-10-30"
-    },
-    {
-     "player_id": "5142718",
-     "player_name": "AJ Dybantsa",
-     "status": "Out",
-     "detail": "Left Ankle Sprain",
-     "comment": "Dybantsa (ankle) is questionable for Wednesday's game versus Cleveland.",
-     "date": "2026-10-27T20:48Z",
-     "return_date": "2026-10-28"
     },
     {
      "player_id": "4997537",
@@ -27767,7 +27749,7 @@
      "detail": "Back Fracture",
      "comment": "Barlow will miss at least the next two weeks of action due to a lumbar spine bone stress response, Adam Aaronson of PhillyVoice.com reports.",
      "date": "2026-10-19T21:07Z",
-     "return_date": "2026-11-02"
+     "return_date": "2026-11-04"
     },
     {
      "player_id": "4871141",
@@ -35232,7 +35214,7 @@
       "player_name": "Anthony Black",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4712849.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 26.0,
       "ppg": 18.0,
       "height_in": 79.0,
@@ -35432,6 +35414,15 @@
     "altitude": false
    },
    "away_injuries": [
+    {
+     "player_id": "4712849",
+     "player_name": "Anthony Black",
+     "status": "Day-To-Day",
+     "detail": "Personal",
+     "comment": "Black (personal) was not present at Wednesday's morning shootaround, Jason Beede of the Orlando Sentinel reports.",
+     "date": "2026-10-28T14:41Z",
+     "return_date": "2026-10-28"
+    },
     {
      "player_id": "4065654",
      "player_name": "Jonathan Isaac",
@@ -58589,6 +58580,15 @@
    },
    "away_injuries": [
     {
+     "player_id": "3102531",
+     "player_name": "Kristaps Porzingis",
+     "status": "Out",
+     "detail": "Illness",
+     "comment": "The Warriors are exploring potential trades involving Porzingis (personal), who remains away from the team indefinitely while dealing with ongoing health concerns, Anthony Slater of ESPN.com reports.",
+     "date": "2026-10-28T14:25Z",
+     "return_date": "2026-12-01"
+    },
+    {
      "player_id": "5175737",
      "player_name": "Yaxel Lendeborg",
      "status": "Day-To-Day",
@@ -58596,15 +58596,6 @@
      "comment": "Lendeborg (foot) is questionable for Wednesday's game against Minnesota.",
      "date": "2026-10-27T20:33Z",
      "return_date": "2026-10-28"
-    },
-    {
-     "player_id": "3102531",
-     "player_name": "Kristaps Porzingis",
-     "status": "Out",
-     "detail": "Illness",
-     "comment": "Porzingis is contemplating his future in basketball as he deals with recurring symptoms from the autoimmune condition termed as postural orthostatic tachycardia syndrome, per Shams Charania of ESPN.",
-     "date": "2026-10-21T18:27Z",
-     "return_date": "2026-12-01"
     },
     {
      "player_id": "4432171",
@@ -93164,5 +93155,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-28T16:35:10+00:00"
+ "published_at_utc": "2026-10-28T22:30:17+00:00"
 }
