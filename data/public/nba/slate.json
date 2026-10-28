@@ -3,8 +3,8 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-28",
- "generated_at_utc": "2026-10-28T05:05:26+00:00",
- "data_through_utc": "2026-10-28T00:00Z",
+ "generated_at_utc": "2026-10-28T06:21:02+00:00",
+ "data_through_utc": "2026-10-28T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
   "stats_nba_as_of": "2026-10-21T19:28:26+00:00",
@@ -160,7 +160,7 @@
       "label": "Points allowed per 100 possessions",
       "value": 114.929,
       "better": "low",
-      "rank": 23,
+      "rank": 22,
       "of": 30,
       "format": "num"
      },
@@ -192,7 +192,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.5666,
       "better": "low",
-      "rank": 26,
+      "rank": 25,
       "of": 30,
       "format": "pct"
      },
@@ -232,7 +232,7 @@
       "label": "Free throws made per field-goal attempt",
       "value": 0.2078,
       "better": "high",
-      "rank": 19,
+      "rank": 20,
       "of": 30,
       "format": "num2"
      },
@@ -248,7 +248,7 @@
       "label": "Share of shots from three",
       "value": 0.4432,
       "better": "neutral",
-      "rank": 12,
+      "rank": 13,
       "of": 30,
       "format": "pct"
      },
@@ -288,7 +288,7 @@
       "label": "Two-point rate allowed",
       "value": 0.5497,
       "better": "low",
-      "rank": 19,
+      "rank": 18,
       "of": 30,
       "format": "pct"
      },
@@ -296,7 +296,7 @@
       "label": "Free-throw rate made",
       "value": 0.7212,
       "better": "high",
-      "rank": 27,
+      "rank": 26,
       "of": 30,
       "format": "pct"
      },
@@ -4149,7 +4149,7 @@
       "label": "Points allowed per 100 possessions",
       "value": 105.4693,
       "better": "low",
-      "rank": 10,
+      "rank": 9,
       "of": 30,
       "format": "num"
      },
@@ -4213,7 +4213,7 @@
       "label": "Offensive rebound rate allowed",
       "value": 0.3174,
       "better": "low",
-      "rank": 27,
+      "rank": 28,
       "of": 30,
       "format": "pct"
      },
@@ -4221,7 +4221,7 @@
       "label": "Free throws made per field-goal attempt",
       "value": 0.1953,
       "better": "high",
-      "rank": 21,
+      "rank": 22,
       "of": 30,
       "format": "num2"
      },
@@ -4237,7 +4237,7 @@
       "label": "Share of shots from three",
       "value": 0.4459,
       "better": "neutral",
-      "rank": 11,
+      "rank": 12,
       "of": 30,
       "format": "pct"
      },
@@ -4285,7 +4285,7 @@
       "label": "Free-throw rate made",
       "value": 0.74,
       "better": "high",
-      "rank": 20,
+      "rank": 19,
       "of": 30,
       "format": "pct"
      },
@@ -4293,7 +4293,7 @@
       "label": "Opponent free-throw rate",
       "value": 0.8208,
       "better": "low",
-      "rank": 26,
+      "rank": 27,
       "of": 30,
       "format": "pct"
      },
@@ -4317,7 +4317,7 @@
       "label": "Net points per 100 possessions",
       "value": 8.7301,
       "better": "high",
-      "rank": 8,
+      "rank": 7,
       "of": 30,
       "format": "signed"
      },
@@ -8085,7 +8085,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.4974,
       "better": "low",
-      "rank": 6,
+      "rank": 5,
       "of": 30,
       "format": "pct"
      },
@@ -8109,7 +8109,7 @@
       "label": "Offensive rebound rate",
       "value": 0.2294,
       "better": "high",
-      "rank": 26,
+      "rank": 25,
       "of": 30,
       "format": "pct"
      },
@@ -8149,7 +8149,7 @@
       "label": "Opponent share of shots from three",
       "value": 0.411,
       "better": "neutral",
-      "rank": 16,
+      "rank": 18,
       "of": 30,
       "format": "pct"
      },
@@ -8165,7 +8165,7 @@
       "label": "Three-point rate allowed",
       "value": 0.293,
       "better": "low",
-      "rank": 4,
+      "rank": 3,
       "of": 30,
       "format": "pct"
      },
@@ -8181,7 +8181,7 @@
       "label": "Two-point rate allowed",
       "value": 0.5378,
       "better": "low",
-      "rank": 16,
+      "rank": 15,
       "of": 30,
       "format": "pct"
      },
@@ -8189,7 +8189,7 @@
       "label": "Free-throw rate made",
       "value": 0.8235,
       "better": "high",
-      "rank": 8,
+      "rank": 7,
       "of": 30,
       "format": "pct"
      },
@@ -9885,7 +9885,7 @@
       "label": "Rotation Height (in, minutes-weighted)",
       "value": 79.078,
       "better": "neutral",
-      "rank": 9,
+      "rank": 10,
       "of": 30,
       "format": "num"
      },
@@ -12070,7 +12070,7 @@
       "label": "Points allowed per game",
       "value": 120.0,
       "better": "low",
-      "rank": 20,
+      "rank": 19,
       "of": 30,
       "format": "num"
      },
@@ -12086,7 +12086,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.5155,
       "better": "low",
-      "rank": 12,
+      "rank": 11,
       "of": 30,
       "format": "pct"
      },
@@ -12150,7 +12150,7 @@
       "label": "Opponent share of shots from three",
       "value": 0.4021,
       "better": "neutral",
-      "rank": 22,
+      "rank": 24,
       "of": 30,
       "format": "pct"
      },
@@ -12158,7 +12158,7 @@
       "label": "Three-point rate made",
       "value": 0.3661,
       "better": "high",
-      "rank": 10,
+      "rank": 11,
       "of": 30,
       "format": "pct"
      },
@@ -12166,7 +12166,7 @@
       "label": "Three-point rate allowed",
       "value": 0.3419,
       "better": "low",
-      "rank": 18,
+      "rank": 17,
       "of": 30,
       "format": "pct"
      },
@@ -12182,7 +12182,7 @@
       "label": "Two-point rate allowed",
       "value": 0.5172,
       "better": "low",
-      "rank": 11,
+      "rank": 10,
       "of": 30,
       "format": "pct"
      },
@@ -12190,7 +12190,7 @@
       "label": "Free-throw rate made",
       "value": 0.7528,
       "better": "high",
-      "rank": 18,
+      "rank": 17,
       "of": 30,
       "format": "pct"
      },
@@ -12198,7 +12198,7 @@
       "label": "Opponent free-throw rate",
       "value": 0.75,
       "better": "low",
-      "rank": 13,
+      "rank": 14,
       "of": 30,
       "format": "pct"
      },
@@ -15732,7 +15732,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.5434,
       "better": "low",
-      "rank": 20,
+      "rank": 19,
       "of": 30,
       "format": "pct"
      },
@@ -15788,7 +15788,7 @@
       "label": "Share of shots from three",
       "value": 0.4973,
       "better": "neutral",
-      "rank": 2,
+      "rank": 1,
       "of": 30,
       "format": "pct"
      },
@@ -15796,7 +15796,7 @@
       "label": "Opponent share of shots from three",
       "value": 0.4017,
       "better": "neutral",
-      "rank": 23,
+      "rank": 25,
       "of": 30,
       "format": "pct"
      },
@@ -15828,7 +15828,7 @@
       "label": "Two-point rate allowed",
       "value": 0.5314,
       "better": "low",
-      "rank": 12,
+      "rank": 11,
       "of": 30,
       "format": "pct"
      },
@@ -15860,7 +15860,7 @@
       "label": "Opponent assisted field goals",
       "value": 0.6296,
       "better": "low",
-      "rank": 12,
+      "rank": 11,
       "of": 30,
       "format": "pct"
      },
@@ -19720,7 +19720,7 @@
       "label": "Points allowed per 100 possessions",
       "value": 105.1029,
       "better": "low",
-      "rank": 9,
+      "rank": 8,
       "of": 30,
       "format": "num"
      },
@@ -19736,7 +19736,7 @@
       "label": "Points allowed per game",
       "value": 107.0,
       "better": "low",
-      "rank": 6,
+      "rank": 5,
       "of": 30,
       "format": "num"
      },
@@ -19752,7 +19752,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.4851,
       "better": "low",
-      "rank": 3,
+      "rank": 2,
       "of": 30,
       "format": "pct"
      },
@@ -19776,7 +19776,7 @@
       "label": "Offensive rebound rate",
       "value": 0.3256,
       "better": "high",
-      "rank": 6,
+      "rank": 5,
       "of": 30,
       "format": "pct"
      },
@@ -19792,7 +19792,7 @@
       "label": "Free throws made per field-goal attempt",
       "value": 0.212,
       "better": "high",
-      "rank": 16,
+      "rank": 17,
       "of": 30,
       "format": "num2"
      },
@@ -19824,7 +19824,7 @@
       "label": "Three-point rate made",
       "value": 0.3758,
       "better": "high",
-      "rank": 8,
+      "rank": 9,
       "of": 30,
       "format": "pct"
      },
@@ -19832,7 +19832,7 @@
       "label": "Three-point rate allowed",
       "value": 0.3269,
       "better": "low",
-      "rank": 10,
+      "rank": 9,
       "of": 30,
       "format": "pct"
      },
@@ -19856,7 +19856,7 @@
       "label": "Free-throw rate made",
       "value": 0.7327,
       "better": "high",
-      "rank": 24,
+      "rank": 23,
       "of": 30,
       "format": "pct"
      },
@@ -19872,7 +19872,7 @@
       "label": "Assisted field goals",
       "value": 0.677,
       "better": "high",
-      "rank": 7,
+      "rank": 6,
       "of": 30,
       "format": "pct"
      },
@@ -23715,10 +23715,10 @@
     {
      "player_id": "4395702",
      "player_name": "Isaiah Joe",
-     "status": "Out",
+     "status": "Day-To-Day",
      "detail": "Right Hip Bruise",
      "comment": "Joe (hip) has been ruled out for Tuesday's game against the Knicks.",
-     "date": "2026-10-27T23:21Z",
+     "date": "2026-10-28T05:11Z",
      "return_date": "2026-10-28"
     },
     {
@@ -23775,7 +23775,7 @@
       "label": "Points allowed per 100 possessions",
       "value": 99.5719,
       "better": "low",
-      "rank": 5,
+      "rank": 4,
       "of": 30,
       "format": "num"
      },
@@ -23791,7 +23791,7 @@
       "label": "Points allowed per game",
       "value": 107.0,
       "better": "low",
-      "rank": 6,
+      "rank": 5,
       "of": 30,
       "format": "num"
      },
@@ -23807,7 +23807,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.4902,
       "better": "low",
-      "rank": 5,
+      "rank": 4,
       "of": 30,
       "format": "pct"
      },
@@ -23847,7 +23847,7 @@
       "label": "Free throws made per field-goal attempt",
       "value": 0.2331,
       "better": "high",
-      "rank": 12,
+      "rank": 13,
       "of": 30,
       "format": "num2"
      },
@@ -23871,7 +23871,7 @@
       "label": "Opponent share of shots from three",
       "value": 0.3631,
       "better": "neutral",
-      "rank": 27,
+      "rank": 28,
       "of": 30,
       "format": "pct"
      },
@@ -23887,7 +23887,7 @@
       "label": "Three-point rate allowed",
       "value": 0.3308,
       "better": "low",
-      "rank": 13,
+      "rank": 12,
       "of": 30,
       "format": "pct"
      },
@@ -23911,7 +23911,7 @@
       "label": "Free-throw rate made",
       "value": 0.7544,
       "better": "high",
-      "rank": 17,
+      "rank": 16,
       "of": 30,
       "format": "pct"
      },
@@ -27829,7 +27829,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.5112,
       "better": "low",
-      "rank": 11,
+      "rank": 10,
       "of": 30,
       "format": "pct"
      },
@@ -27853,7 +27853,7 @@
       "label": "Offensive rebound rate",
       "value": 0.2162,
       "better": "high",
-      "rank": 27,
+      "rank": 26,
       "of": 30,
       "format": "pct"
      },
@@ -27877,7 +27877,7 @@
       "label": "Free throws allowed per field-goal attempt",
       "value": 0.2626,
       "better": "low",
-      "rank": 27,
+      "rank": 26,
       "of": 30,
       "format": "num2"
      },
@@ -27893,7 +27893,7 @@
       "label": "Opponent share of shots from three",
       "value": 0.4106,
       "better": "neutral",
-      "rank": 17,
+      "rank": 19,
       "of": 30,
       "format": "pct"
      },
@@ -27909,7 +27909,7 @@
       "label": "Three-point rate allowed",
       "value": 0.3401,
       "better": "low",
-      "rank": 17,
+      "rank": 16,
       "of": 30,
       "format": "pct"
      },
@@ -27949,7 +27949,7 @@
       "label": "Assisted field goals",
       "value": 0.6724,
       "better": "high",
-      "rank": 9,
+      "rank": 8,
       "of": 30,
       "format": "pct"
      },
@@ -31720,7 +31720,7 @@
       "label": "Points allowed per game",
       "value": 116.3333,
       "better": "low",
-      "rank": 19,
+      "rank": 18,
       "of": 30,
       "format": "num"
      },
@@ -31736,7 +31736,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.5071,
       "better": "low",
-      "rank": 9,
+      "rank": 8,
       "of": 30,
       "format": "pct"
      },
@@ -31776,7 +31776,7 @@
       "label": "Free throws made per field-goal attempt",
       "value": 0.2257,
       "better": "high",
-      "rank": 14,
+      "rank": 15,
       "of": 30,
       "format": "num2"
      },
@@ -31784,7 +31784,7 @@
       "label": "Free throws allowed per field-goal attempt",
       "value": 0.2278,
       "better": "low",
-      "rank": 17,
+      "rank": 16,
       "of": 30,
       "format": "num2"
      },
@@ -31800,7 +31800,7 @@
       "label": "Opponent share of shots from three",
       "value": 0.395,
       "better": "neutral",
-      "rank": 25,
+      "rank": 26,
       "of": 30,
       "format": "pct"
      },
@@ -31816,7 +31816,7 @@
       "label": "Three-point rate allowed",
       "value": 0.3333,
       "better": "low",
-      "rank": 14,
+      "rank": 13,
       "of": 30,
       "format": "pct"
      },
@@ -31840,7 +31840,7 @@
       "label": "Free-throw rate made",
       "value": 0.7342,
       "better": "high",
-      "rank": 23,
+      "rank": 22,
       "of": 30,
       "format": "pct"
      },
@@ -35512,7 +35512,7 @@
       "label": "Points allowed per game",
       "value": 103.6667,
       "better": "low",
-      "rank": 3,
+      "rank": 2,
       "of": 30,
       "format": "num"
      },
@@ -35528,7 +35528,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.4793,
       "better": "low",
-      "rank": 2,
+      "rank": 1,
       "of": 30,
       "format": "pct"
      },
@@ -35552,7 +35552,7 @@
       "label": "Offensive rebound rate",
       "value": 0.3082,
       "better": "high",
-      "rank": 9,
+      "rank": 8,
       "of": 30,
       "format": "pct"
      },
@@ -35568,7 +35568,7 @@
       "label": "Free throws made per field-goal attempt",
       "value": 0.2345,
       "better": "high",
-      "rank": 11,
+      "rank": 12,
       "of": 30,
       "format": "num2"
      },
@@ -35640,7 +35640,7 @@
       "label": "Opponent free-throw rate",
       "value": 0.7477,
       "better": "low",
-      "rank": 12,
+      "rank": 13,
       "of": 30,
       "format": "pct"
      },
@@ -35656,7 +35656,7 @@
       "label": "Opponent assisted field goals",
       "value": 0.63,
       "better": "low",
-      "rank": 14,
+      "rank": 13,
       "of": 30,
       "format": "pct"
      },
@@ -35664,7 +35664,7 @@
       "label": "Net points per 100 possessions",
       "value": 9.2194,
       "better": "high",
-      "rank": 7,
+      "rank": 6,
       "of": 30,
       "format": "signed"
      },
@@ -39298,7 +39298,7 @@
       "label": "Points allowed per 100 possessions",
       "value": 103.8583,
       "better": "low",
-      "rank": 6,
+      "rank": 5,
       "of": 30,
       "format": "num"
      },
@@ -39314,7 +39314,7 @@
       "label": "Points allowed per game",
       "value": 105.25,
       "better": "low",
-      "rank": 5,
+      "rank": 4,
       "of": 30,
       "format": "num"
      },
@@ -39330,7 +39330,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.5085,
       "better": "low",
-      "rank": 10,
+      "rank": 9,
       "of": 30,
       "format": "pct"
      },
@@ -39362,7 +39362,7 @@
       "label": "Offensive rebound rate allowed",
       "value": 0.2343,
       "better": "low",
-      "rank": 4,
+      "rank": 5,
       "of": 30,
       "format": "pct"
      },
@@ -39370,7 +39370,7 @@
       "label": "Free throws made per field-goal attempt",
       "value": 0.2085,
       "better": "high",
-      "rank": 18,
+      "rank": 19,
       "of": 30,
       "format": "num2"
      },
@@ -39410,7 +39410,7 @@
       "label": "Three-point rate allowed",
       "value": 0.3354,
       "better": "low",
-      "rank": 15,
+      "rank": 14,
       "of": 30,
       "format": "pct"
      },
@@ -39434,7 +39434,7 @@
       "label": "Free-throw rate made",
       "value": 0.74,
       "better": "high",
-      "rank": 20,
+      "rank": 19,
       "of": 30,
       "format": "pct"
      },
@@ -39442,7 +39442,7 @@
       "label": "Opponent free-throw rate",
       "value": 0.7273,
       "better": "low",
-      "rank": 7,
+      "rank": 8,
       "of": 30,
       "format": "pct"
      },
@@ -43050,7 +43050,7 @@
       "player_name": "Jose Alvarado",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4277869.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 13.5,
       "ppg": 5.0,
       "height_in": 72.0,
@@ -43253,10 +43253,10 @@
     {
      "player_id": "4277869",
      "player_name": "Jose Alvarado",
-     "status": "Out",
+     "status": "Day-To-Day",
      "detail": "Left Ankle Sprain",
      "comment": "Alvarado (ankle) is out for Tuesday's game against the Pistons.",
-     "date": "2026-10-26T20:50Z",
+     "date": "2026-10-28T05:12Z",
      "return_date": "2026-10-28"
     }
    ],
@@ -43310,7 +43310,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.5597,
       "better": "low",
-      "rank": 24,
+      "rank": 23,
       "of": 30,
       "format": "pct"
      },
@@ -43350,7 +43350,7 @@
       "label": "Free throws made per field-goal attempt",
       "value": 0.3083,
       "better": "high",
-      "rank": 2,
+      "rank": 1,
       "of": 30,
       "format": "num2"
      },
@@ -43374,7 +43374,7 @@
       "label": "Opponent share of shots from three",
       "value": 0.4085,
       "better": "neutral",
-      "rank": 20,
+      "rank": 22,
       "of": 30,
       "format": "pct"
      },
@@ -43406,7 +43406,7 @@
       "label": "Two-point rate allowed",
       "value": 0.5426,
       "better": "low",
-      "rank": 18,
+      "rank": 17,
       "of": 30,
       "format": "pct"
      },
@@ -43422,7 +43422,7 @@
       "label": "Opponent free-throw rate",
       "value": 0.7442,
       "better": "low",
-      "rank": 11,
+      "rank": 12,
       "of": 30,
       "format": "pct"
      },
@@ -43438,7 +43438,7 @@
       "label": "Opponent assisted field goals",
       "value": 0.6298,
       "better": "low",
-      "rank": 13,
+      "rank": 12,
       "of": 30,
       "format": "pct"
      },
@@ -47180,7 +47180,7 @@
       "label": "Effective field-goal rate",
       "value": 0.5804,
       "better": "high",
-      "rank": 3,
+      "rank": 4,
       "of": 30,
       "format": "pct"
      },
@@ -47212,7 +47212,7 @@
       "label": "Offensive rebound rate",
       "value": 0.3268,
       "better": "high",
-      "rank": 5,
+      "rank": 4,
       "of": 30,
       "format": "pct"
      },
@@ -47268,7 +47268,7 @@
       "label": "Three-point rate allowed",
       "value": 0.2901,
       "better": "low",
-      "rank": 3,
+      "rank": 2,
       "of": 30,
       "format": "pct"
      },
@@ -47308,7 +47308,7 @@
       "label": "Assisted field goals",
       "value": 0.6725,
       "better": "high",
-      "rank": 8,
+      "rank": 7,
       "of": 30,
       "format": "pct"
      },
@@ -47324,7 +47324,7 @@
       "label": "Net points per 100 possessions",
       "value": 9.5034,
       "better": "high",
-      "rank": 6,
+      "rank": 5,
       "of": 30,
       "format": "signed"
      },
@@ -51036,7 +51036,7 @@
       "label": "Points allowed per 100 possessions",
       "value": 114.0871,
       "better": "low",
-      "rank": 21,
+      "rank": 20,
       "of": 30,
       "format": "num"
      },
@@ -51068,7 +51068,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.5159,
       "better": "low",
-      "rank": 13,
+      "rank": 12,
       "of": 30,
       "format": "pct"
      },
@@ -51092,7 +51092,7 @@
       "label": "Offensive rebound rate",
       "value": 0.3115,
       "better": "high",
-      "rank": 8,
+      "rank": 7,
       "of": 30,
       "format": "pct"
      },
@@ -51116,7 +51116,7 @@
       "label": "Free throws allowed per field-goal attempt",
       "value": 0.2619,
       "better": "low",
-      "rank": 26,
+      "rank": 25,
       "of": 30,
       "format": "num2"
      },
@@ -51124,7 +51124,7 @@
       "label": "Share of shots from three",
       "value": 0.4484,
       "better": "neutral",
-      "rank": 9,
+      "rank": 10,
       "of": 30,
       "format": "pct"
      },
@@ -51140,7 +51140,7 @@
       "label": "Three-point rate made",
       "value": 0.3515,
       "better": "high",
-      "rank": 12,
+      "rank": 13,
       "of": 30,
       "format": "pct"
      },
@@ -51164,7 +51164,7 @@
       "label": "Two-point rate allowed",
       "value": 0.5634,
       "better": "low",
-      "rank": 21,
+      "rank": 20,
       "of": 30,
       "format": "pct"
      },
@@ -54961,7 +54961,7 @@
       "label": "Turnover rate forced",
       "value": 0.1829,
       "better": "high",
-      "rank": 4,
+      "rank": 3,
       "of": 30,
       "format": "pct"
      },
@@ -54977,7 +54977,7 @@
       "label": "Offensive rebound rate allowed",
       "value": 0.3176,
       "better": "low",
-      "rank": 28,
+      "rank": 29,
       "of": 30,
       "format": "pct"
      },
@@ -54993,7 +54993,7 @@
       "label": "Free throws allowed per field-goal attempt",
       "value": 0.2285,
       "better": "low",
-      "rank": 18,
+      "rank": 17,
       "of": 30,
       "format": "num2"
      },
@@ -55001,7 +55001,7 @@
       "label": "Share of shots from three",
       "value": 0.4558,
       "better": "neutral",
-      "rank": 7,
+      "rank": 8,
       "of": 30,
       "format": "pct"
      },
@@ -55009,7 +55009,7 @@
       "label": "Opponent share of shots from three",
       "value": 0.3947,
       "better": "neutral",
-      "rank": 26,
+      "rank": 27,
       "of": 30,
       "format": "pct"
      },
@@ -55017,7 +55017,7 @@
       "label": "Three-point rate made",
       "value": 0.3812,
       "better": "high",
-      "rank": 7,
+      "rank": 8,
       "of": 30,
       "format": "pct"
      },
@@ -55049,7 +55049,7 @@
       "label": "Free-throw rate made",
       "value": 0.8257,
       "better": "high",
-      "rank": 7,
+      "rank": 6,
       "of": 30,
       "format": "pct"
      },
@@ -55057,7 +55057,7 @@
       "label": "Opponent free-throw rate",
       "value": 0.8191,
       "better": "low",
-      "rank": 24,
+      "rank": 25,
       "of": 30,
       "format": "pct"
      },
@@ -58643,7 +58643,7 @@
       "label": "Points allowed per 100 possessions",
       "value": 98.912,
       "better": "low",
-      "rank": 4,
+      "rank": 3,
       "of": 30,
       "format": "num"
      },
@@ -58659,7 +58659,7 @@
       "label": "Points allowed per game",
       "value": 105.0,
       "better": "low",
-      "rank": 4,
+      "rank": 3,
       "of": 30,
       "format": "num"
      },
@@ -58675,7 +58675,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.5,
       "better": "low",
-      "rank": 7,
+      "rank": 6,
       "of": 30,
       "format": "pct"
      },
@@ -58755,7 +58755,7 @@
       "label": "Three-point rate allowed",
       "value": 0.2839,
       "better": "low",
-      "rank": 2,
+      "rank": 1,
       "of": 30,
       "format": "pct"
      },
@@ -58771,7 +58771,7 @@
       "label": "Two-point rate allowed",
       "value": 0.5567,
       "better": "low",
-      "rank": 20,
+      "rank": 19,
       "of": 30,
       "format": "pct"
      },
@@ -58795,7 +58795,7 @@
       "label": "Assisted field goals",
       "value": 0.5778,
       "better": "high",
-      "rank": 25,
+      "rank": 26,
       "of": 30,
       "format": "pct"
      },
@@ -62469,7 +62469,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.552,
       "better": "low",
-      "rank": 22,
+      "rank": 21,
       "of": 30,
       "format": "pct"
      },
@@ -62493,7 +62493,7 @@
       "label": "Offensive rebound rate",
       "value": 0.305,
       "better": "high",
-      "rank": 10,
+      "rank": 9,
       "of": 30,
       "format": "pct"
      },
@@ -62501,7 +62501,7 @@
       "label": "Offensive rebound rate allowed",
       "value": 0.3162,
       "better": "low",
-      "rank": 26,
+      "rank": 27,
       "of": 30,
       "format": "pct"
      },
@@ -62549,7 +62549,7 @@
       "label": "Three-point rate allowed",
       "value": 0.352,
       "better": "low",
-      "rank": 20,
+      "rank": 19,
       "of": 30,
       "format": "pct"
      },
@@ -62565,7 +62565,7 @@
       "label": "Two-point rate allowed",
       "value": 0.5714,
       "better": "low",
-      "rank": 24,
+      "rank": 22,
       "of": 30,
       "format": "pct"
      },
@@ -62573,7 +62573,7 @@
       "label": "Free-throw rate made",
       "value": 0.7619,
       "better": "high",
-      "rank": 14,
+      "rank": 13,
       "of": 30,
       "format": "pct"
      },
@@ -66116,7 +66116,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.5659,
       "better": "low",
-      "rank": 25,
+      "rank": 24,
       "of": 30,
       "format": "pct"
      },
@@ -66180,7 +66180,7 @@
       "label": "Opponent share of shots from three",
       "value": 0.4103,
       "better": "neutral",
-      "rank": 18,
+      "rank": 20,
       "of": 30,
       "format": "pct"
      },
@@ -66196,7 +66196,7 @@
       "label": "Three-point rate allowed",
       "value": 0.3304,
       "better": "low",
-      "rank": 12,
+      "rank": 11,
       "of": 30,
       "format": "pct"
      },
@@ -66228,7 +66228,7 @@
       "label": "Opponent free-throw rate",
       "value": 0.7426,
       "better": "low",
-      "rank": 9,
+      "rank": 10,
       "of": 30,
       "format": "pct"
      },
@@ -70077,7 +70077,7 @@
       "label": "Points allowed per 100 possessions",
       "value": 105.5187,
       "better": "low",
-      "rank": 11,
+      "rank": 10,
       "of": 30,
       "format": "num"
      },
@@ -70093,7 +70093,7 @@
       "label": "Points allowed per game",
       "value": 109.75,
       "better": "low",
-      "rank": 10,
+      "rank": 9,
       "of": 30,
       "format": "num"
      },
@@ -70109,7 +70109,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.5367,
       "better": "low",
-      "rank": 18,
+      "rank": 17,
       "of": 30,
       "format": "pct"
      },
@@ -70117,7 +70117,7 @@
       "label": "Turnover rate",
       "value": 0.1322,
       "better": "low",
-      "rank": 3,
+      "rank": 2,
       "of": 30,
       "format": "pct"
      },
@@ -70141,7 +70141,7 @@
       "label": "Offensive rebound rate allowed",
       "value": 0.2294,
       "better": "low",
-      "rank": 3,
+      "rank": 4,
       "of": 30,
       "format": "pct"
      },
@@ -70181,7 +70181,7 @@
       "label": "Three-point rate made",
       "value": 0.3529,
       "better": "high",
-      "rank": 11,
+      "rank": 12,
       "of": 30,
       "format": "pct"
      },
@@ -70221,7 +70221,7 @@
       "label": "Opponent free-throw rate",
       "value": 0.8194,
       "better": "low",
-      "rank": 25,
+      "rank": 26,
       "of": 30,
       "format": "pct"
      },
@@ -70253,7 +70253,7 @@
       "label": "Possessions per game",
       "value": 104.01,
       "better": "neutral",
-      "rank": 18,
+      "rank": 17,
       "of": 30,
       "format": "num"
      }
@@ -71909,7 +71909,7 @@
       "label": "Rotation Height (in, minutes-weighted)",
       "value": 79.0708,
       "better": "neutral",
-      "rank": 10,
+      "rank": 11,
       "of": 30,
       "format": "num"
      },
@@ -74110,7 +74110,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.5576,
       "better": "low",
-      "rank": 23,
+      "rank": 22,
       "of": 30,
       "format": "pct"
      },
@@ -74206,7 +74206,7 @@
       "label": "Two-point rate allowed",
       "value": 0.532,
       "better": "low",
-      "rank": 13,
+      "rank": 12,
       "of": 30,
       "format": "pct"
      },
@@ -74214,7 +74214,7 @@
       "label": "Free-throw rate made",
       "value": 0.7373,
       "better": "high",
-      "rank": 22,
+      "rank": 21,
       "of": 30,
       "format": "pct"
      },
@@ -74222,7 +74222,7 @@
       "label": "Opponent free-throw rate",
       "value": 0.8435,
       "better": "low",
-      "rank": 27,
+      "rank": 28,
       "of": 30,
       "format": "pct"
      },
@@ -74238,7 +74238,7 @@
       "label": "Opponent assisted field goals",
       "value": 0.5212,
       "better": "low",
-      "rank": 2,
+      "rank": 1,
       "of": 30,
       "format": "pct"
      },
@@ -74254,7 +74254,7 @@
       "label": "Possessions per game",
       "value": 103.565,
       "better": "neutral",
-      "rank": 20,
+      "rank": 19,
       "of": 30,
       "format": "num"
      }
@@ -77992,7 +77992,7 @@
       "label": "Points allowed per 100 possessions",
       "value": 98.1156,
       "better": "low",
-      "rank": 3,
+      "rank": 2,
       "of": 30,
       "format": "num"
      },
@@ -78024,7 +78024,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.4856,
       "better": "low",
-      "rank": 4,
+      "rank": 3,
       "of": 30,
       "format": "pct"
      },
@@ -78040,7 +78040,7 @@
       "label": "Turnover rate forced",
       "value": 0.1826,
       "better": "high",
-      "rank": 5,
+      "rank": 4,
       "of": 30,
       "format": "pct"
      },
@@ -78104,7 +78104,7 @@
       "label": "Three-point rate allowed",
       "value": 0.329,
       "better": "low",
-      "rank": 11,
+      "rank": 10,
       "of": 30,
       "format": "pct"
      },
@@ -78136,7 +78136,7 @@
       "label": "Opponent free-throw rate",
       "value": 0.7586,
       "better": "low",
-      "rank": 14,
+      "rank": 15,
       "of": 30,
       "format": "pct"
      },
@@ -78160,7 +78160,7 @@
       "label": "Net points per 100 possessions",
       "value": 10.2254,
       "better": "high",
-      "rank": 4,
+      "rank": 3,
       "of": 30,
       "format": "signed"
      },
@@ -81892,7 +81892,7 @@
       "label": "Points allowed per 100 possessions",
       "value": 111.4581,
       "better": "low",
-      "rank": 20,
+      "rank": 19,
       "of": 30,
       "format": "num"
      },
@@ -81908,7 +81908,7 @@
       "label": "Points allowed per game",
       "value": 116.0,
       "better": "low",
-      "rank": 18,
+      "rank": 17,
       "of": 30,
       "format": "num"
      },
@@ -81916,7 +81916,7 @@
       "label": "Effective field-goal rate",
       "value": 0.5673,
       "better": "high",
-      "rank": 4,
+      "rank": 5,
       "of": 30,
       "format": "pct"
      },
@@ -81924,7 +81924,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.5434,
       "better": "low",
-      "rank": 21,
+      "rank": 20,
       "of": 30,
       "format": "pct"
      },
@@ -81988,7 +81988,7 @@
       "label": "Opponent share of shots from three",
       "value": 0.4092,
       "better": "neutral",
-      "rank": 19,
+      "rank": 21,
       "of": 30,
       "format": "pct"
      },
@@ -82004,7 +82004,7 @@
       "label": "Three-point rate allowed",
       "value": 0.3377,
       "better": "low",
-      "rank": 16,
+      "rank": 15,
       "of": 30,
       "format": "pct"
      },
@@ -82020,7 +82020,7 @@
       "label": "Two-point rate allowed",
       "value": 0.5688,
       "better": "low",
-      "rank": 23,
+      "rank": 21,
       "of": 30,
       "format": "pct"
      },
@@ -82028,7 +82028,7 @@
       "label": "Free-throw rate made",
       "value": 0.7606,
       "better": "high",
-      "rank": 15,
+      "rank": 14,
       "of": 30,
       "format": "pct"
      },
@@ -82068,7 +82068,7 @@
       "label": "Possessions per game",
       "value": 104.075,
       "better": "neutral",
-      "rank": 17,
+      "rank": 16,
       "of": 30,
       "format": "num"
      }
@@ -85425,44 +85425,44 @@
    "away_form": {
     "source": "espn-box",
     "season": 2027,
-    "games": 3,
-    "record": "3-0",
+    "games": 4,
+    "record": "3-1",
     "rates": {
      "off_rtg": {
       "label": "Points per 100 possessions",
-      "value": 122.8093,
+      "value": 123.5252,
       "better": "high",
-      "rank": 1,
+      "rank": 2,
       "of": 30,
       "format": "num"
      },
      "def_rtg": {
       "label": "Points allowed per 100 possessions",
-      "value": 110.3364,
+      "value": 115.8199,
       "better": "low",
-      "rank": 19,
+      "rank": 23,
       "of": 30,
       "format": "num"
      },
      "off_ppg": {
       "label": "Points per game",
-      "value": 128.0,
+      "value": 128.25,
       "better": "high",
-      "rank": 1,
+      "rank": 2,
       "of": 30,
       "format": "num"
      },
      "def_ppg": {
       "label": "Points allowed per game",
-      "value": 115.0,
+      "value": 120.25,
       "better": "low",
-      "rank": 16,
+      "rank": 20,
       "of": 30,
       "format": "num"
      },
      "off_efg": {
       "label": "Effective field-goal rate",
-      "value": 0.6384,
+      "value": 0.646,
       "better": "high",
       "rank": 1,
       "of": 30,
@@ -85470,15 +85470,15 @@
      },
      "def_efg": {
       "label": "Effective field-goal rate allowed",
-      "value": 0.5279,
+      "value": 0.5677,
       "better": "low",
-      "rank": 17,
+      "rank": 26,
       "of": 30,
       "format": "pct"
      },
      "off_tov": {
       "label": "Turnover rate",
-      "value": 0.1567,
+      "value": 0.1541,
       "better": "low",
       "rank": 15,
       "of": 30,
@@ -85486,63 +85486,63 @@
      },
      "def_tov": {
       "label": "Turnover rate forced",
-      "value": 0.1887,
+      "value": 0.1758,
       "better": "high",
-      "rank": 3,
+      "rank": 6,
       "of": 30,
       "format": "pct"
      },
      "off_orb": {
       "label": "Offensive rebound rate",
-      "value": 0.23,
+      "value": 0.2117,
       "better": "high",
-      "rank": 25,
+      "rank": 27,
       "of": 30,
       "format": "pct"
      },
      "def_orb": {
       "label": "Offensive rebound rate allowed",
-      "value": 0.3383,
+      "value": 0.3152,
       "better": "low",
-      "rank": 29,
+      "rank": 26,
       "of": 30,
       "format": "pct"
      },
      "off_ftr": {
       "label": "Free throws made per field-goal attempt",
-      "value": 0.3099,
+      "value": 0.3012,
       "better": "high",
-      "rank": 1,
+      "rank": 2,
       "of": 30,
       "format": "num2"
      },
      "def_ftr": {
       "label": "Free throws allowed per field-goal attempt",
-      "value": 0.2268,
+      "value": 0.2507,
       "better": "low",
-      "rank": 16,
+      "rank": 21,
       "of": 30,
       "format": "num2"
      },
      "off_three_rate": {
       "label": "Share of shots from three",
-      "value": 0.4421,
+      "value": 0.4658,
       "better": "neutral",
-      "rank": 13,
+      "rank": 6,
       "of": 30,
       "format": "pct"
      },
      "def_three_rate": {
       "label": "Opponent share of shots from three",
-      "value": 0.4015,
+      "value": 0.415,
       "better": "neutral",
-      "rank": 24,
+      "rank": 15,
       "of": 30,
       "format": "pct"
      },
      "off_three_pct": {
       "label": "Three-point rate made",
-      "value": 0.4206,
+      "value": 0.4133,
       "better": "high",
       "rank": 1,
       "of": 30,
@@ -85550,15 +85550,15 @@
      },
      "def_three_pct": {
       "label": "Three-point rate allowed",
-      "value": 0.3148,
+      "value": 0.3611,
       "better": "low",
-      "rank": 8,
+      "rank": 21,
       "of": 30,
       "format": "pct"
      },
      "off_two_pct": {
       "label": "Two-point rate made",
-      "value": 0.6444,
+      "value": 0.6686,
       "better": "high",
       "rank": 1,
       "of": 30,
@@ -85566,57 +85566,57 @@
      },
      "def_two_pct": {
       "label": "Two-point rate allowed",
-      "value": 0.5652,
+      "value": 0.5862,
       "better": "low",
-      "rank": 22,
+      "rank": 24,
       "of": 30,
       "format": "pct"
      },
      "off_ft_pct": {
       "label": "Free-throw rate made",
-      "value": 0.8333,
+      "value": 0.8083,
       "better": "high",
-      "rank": 5,
+      "rank": 8,
       "of": 30,
       "format": "pct"
      },
      "def_ft_pct": {
       "label": "Opponent free-throw rate",
-      "value": 0.7722,
+      "value": 0.725,
       "better": "low",
-      "rank": 17,
+      "rank": 7,
       "of": 30,
       "format": "pct"
      },
      "off_ast_rate": {
       "label": "Assisted field goals",
-      "value": 0.5758,
+      "value": 0.5876,
       "better": "high",
-      "rank": 26,
+      "rank": 25,
       "of": 30,
       "format": "pct"
      },
      "def_ast_rate": {
       "label": "Opponent assisted field goals",
-      "value": 0.624,
+      "value": 0.6316,
       "better": "low",
-      "rank": 11,
+      "rank": 14,
       "of": 30,
       "format": "pct"
      },
      "net_rtg": {
       "label": "Net points per 100 possessions",
-      "value": 12.4728,
+      "value": 7.7053,
       "better": "high",
-      "rank": 3,
+      "rank": 8,
       "of": 30,
       "format": "signed"
      },
      "pace": {
       "label": "Possessions per game",
-      "value": 104.2267,
+      "value": 103.825,
       "better": "neutral",
-      "rank": 16,
+      "rank": 18,
       "of": 30,
       "format": "num"
      }
@@ -85822,9 +85822,21 @@
      }
     }
    },
-   "away_rest_days": 2,
-   "away_b2b": false,
+   "away_rest_days": 0,
+   "away_b2b": true,
    "away_game_log": [
+    {
+     "date": "2026-10-28",
+     "event_id": "401909880",
+     "opponent": "POR",
+     "home": true,
+     "result": "L",
+     "score": "129-136",
+     "margin": -7,
+     "possessions": 102.6,
+     "off_rtg": 125.7,
+     "def_rtg": 132.5
+    },
     {
      "date": "2026-10-25",
      "event_id": "401909861",
@@ -85867,18 +85879,18 @@
      "player_id": "4066457",
      "player_name": "Austin Reaves",
      "position": "G",
-     "games": 3,
-     "starts": 3,
-     "mpg": 35.3,
-     "ppg": 26.7,
-     "rpg": 2.3,
-     "apg": 6.3,
-     "spg": 1.7,
-     "bpg": 1.0,
-     "tpg": 4.3,
-     "three_pm": 2.7,
-     "ts_pct": 0.82,
-     "three_pct": 0.615,
+     "games": 4,
+     "starts": 4,
+     "mpg": 36.2,
+     "ppg": 26.5,
+     "rpg": 2.8,
+     "apg": 6.5,
+     "spg": 1.2,
+     "bpg": 0.8,
+     "tpg": 3.2,
+     "three_pm": 3.0,
+     "ts_pct": 0.817,
+     "three_pct": 0.571,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066457.png",
      "moved": false
     },
@@ -85886,18 +85898,18 @@
      "player_id": "3945274",
      "player_name": "Luka Doncic",
      "position": "G",
-     "games": 3,
-     "starts": 3,
-     "mpg": 35.0,
-     "ppg": 34.3,
-     "rpg": 7.3,
-     "apg": 8.0,
-     "spg": 1.7,
-     "bpg": 0.3,
-     "tpg": 7.0,
-     "three_pm": 5.0,
-     "ts_pct": 0.637,
-     "three_pct": 0.395,
+     "games": 4,
+     "starts": 4,
+     "mpg": 35.5,
+     "ppg": 36.0,
+     "rpg": 6.8,
+     "apg": 8.2,
+     "spg": 1.2,
+     "bpg": 0.5,
+     "tpg": 5.8,
+     "three_pm": 5.2,
+     "ts_pct": 0.663,
+     "three_pct": 0.396,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3945274.png",
      "moved": false
     },
@@ -85905,17 +85917,17 @@
      "player_id": "4433136",
      "player_name": "Walker Kessler",
      "position": "C",
-     "games": 3,
-     "starts": 3,
-     "mpg": 31.0,
-     "ppg": 16.7,
+     "games": 4,
+     "starts": 4,
+     "mpg": 31.5,
+     "ppg": 15.8,
      "rpg": 8.0,
-     "apg": 1.3,
+     "apg": 1.0,
      "spg": 1.0,
-     "bpg": 3.0,
-     "tpg": 1.3,
+     "bpg": 2.8,
+     "tpg": 2.0,
      "three_pm": 0.0,
-     "ts_pct": 0.782,
+     "ts_pct": 0.737,
      "three_pct": null,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4433136.png",
      "moved": false
@@ -85924,18 +85936,18 @@
      "player_id": "4433137",
      "player_name": "Ziaire Williams",
      "position": "F",
-     "games": 3,
-     "starts": 3,
-     "mpg": 28.3,
-     "ppg": 11.3,
-     "rpg": 3.3,
-     "apg": 1.7,
-     "spg": 1.3,
-     "bpg": 0.3,
-     "tpg": 0.7,
-     "three_pm": 1.7,
-     "ts_pct": 0.675,
-     "three_pct": 0.417,
+     "games": 4,
+     "starts": 4,
+     "mpg": 28.5,
+     "ppg": 11.2,
+     "rpg": 3.0,
+     "apg": 2.2,
+     "spg": 1.5,
+     "bpg": 0.2,
+     "tpg": 0.8,
+     "three_pm": 1.8,
+     "ts_pct": 0.724,
+     "three_pct": 0.467,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4433137.png",
      "moved": false
     },
@@ -85943,18 +85955,18 @@
      "player_id": "4397014",
      "player_name": "Quentin Grimes",
      "position": "G",
-     "games": 3,
+     "games": 4,
      "starts": 0,
-     "mpg": 26.0,
-     "ppg": 8.7,
-     "rpg": 3.7,
-     "apg": 3.0,
-     "spg": 0.7,
-     "bpg": 0.3,
-     "tpg": 0.7,
-     "three_pm": 1.0,
-     "ts_pct": 0.702,
-     "three_pct": 0.375,
+     "mpg": 24.2,
+     "ppg": 7.0,
+     "rpg": 3.8,
+     "apg": 2.2,
+     "spg": 0.5,
+     "bpg": 0.2,
+     "tpg": 0.8,
+     "three_pm": 0.8,
+     "ts_pct": 0.622,
+     "three_pct": 0.273,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4397014.png",
      "moved": false
     },
@@ -85962,18 +85974,18 @@
      "player_id": "3907498",
      "player_name": "Matisse Thybulle",
      "position": "G",
-     "games": 3,
-     "starts": 3,
-     "mpg": 24.3,
-     "ppg": 9.0,
-     "rpg": 1.7,
-     "apg": 1.3,
-     "spg": 2.0,
-     "bpg": 1.0,
-     "tpg": 0.3,
-     "three_pm": 2.3,
-     "ts_pct": 0.675,
-     "three_pct": 0.467,
+     "games": 4,
+     "starts": 4,
+     "mpg": 23.8,
+     "ppg": 8.0,
+     "rpg": 1.8,
+     "apg": 1.2,
+     "spg": 1.5,
+     "bpg": 0.8,
+     "tpg": 1.0,
+     "three_pm": 2.0,
+     "ts_pct": 0.64,
+     "three_pct": 0.421,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3907498.png",
      "moved": false
     },
@@ -85981,69 +85993,69 @@
      "player_id": "4278580",
      "player_name": "Sandro Mamukelashvili",
      "position": "F",
-     "games": 3,
+     "games": 4,
      "starts": 0,
-     "mpg": 22.3,
-     "ppg": 7.0,
+     "mpg": 22.8,
+     "ppg": 9.5,
      "rpg": 4.0,
-     "apg": 1.3,
-     "spg": 0.7,
-     "bpg": 0.3,
-     "tpg": 0.0,
-     "three_pm": 0.7,
-     "ts_pct": 0.636,
-     "three_pct": 0.4,
-     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4278580.png",
-     "moved": false
-    },
-    {
-     "player_id": "4277811",
-     "player_name": "Collin Sexton",
-     "position": "G",
-     "games": 2,
-     "starts": 0,
-     "mpg": 18.0,
-     "ppg": 9.0,
-     "rpg": 1.5,
      "apg": 1.5,
-     "spg": 1.5,
-     "bpg": 0.0,
-     "tpg": 1.5,
-     "three_pm": 1.0,
-     "ts_pct": 0.503,
-     "three_pct": 0.25,
-     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4277811.png",
+     "spg": 0.5,
+     "bpg": 0.5,
+     "tpg": 0.2,
+     "three_pm": 1.2,
+     "ts_pct": 0.72,
+     "three_pct": 0.556,
+     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4278580.png",
      "moved": false
     },
     {
      "player_id": "4592691",
      "player_name": "Jake LaRavia",
      "position": "F",
-     "games": 2,
+     "games": 3,
      "starts": 0,
-     "mpg": 16.5,
+     "mpg": 17.3,
      "ppg": 5.0,
-     "rpg": 3.0,
-     "apg": 1.5,
-     "spg": 1.5,
-     "bpg": 0.5,
-     "tpg": 0.5,
+     "rpg": 2.3,
+     "apg": 1.3,
+     "spg": 2.0,
+     "bpg": 0.3,
+     "tpg": 0.3,
      "three_pm": 1.0,
-     "ts_pct": 0.625,
-     "three_pct": 0.4,
+     "ts_pct": 0.75,
+     "three_pct": 0.5,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4592691.png",
+     "moved": false
+    },
+    {
+     "player_id": "4277811",
+     "player_name": "Collin Sexton",
+     "position": "G",
+     "games": 3,
+     "starts": 0,
+     "mpg": 16.7,
+     "ppg": 9.0,
+     "rpg": 1.3,
+     "apg": 2.3,
+     "spg": 1.0,
+     "bpg": 0.0,
+     "tpg": 2.0,
+     "three_pm": 0.7,
+     "ts_pct": 0.454,
+     "three_pct": 0.154,
+     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4277811.png",
      "moved": false
     },
     {
      "player_id": "3155535",
      "player_name": "Kevon Looney",
      "position": "F",
-     "games": 3,
+     "games": 4,
      "starts": 0,
-     "mpg": 8.3,
-     "ppg": 2.7,
-     "rpg": 2.7,
-     "apg": 0.3,
+     "mpg": 7.5,
+     "ppg": 2.0,
+     "rpg": 2.0,
+     "apg": 0.2,
      "spg": 0.0,
      "bpg": 0.0,
      "tpg": 0.0,
@@ -87258,7 +87270,7 @@
     "size": {
      "height": {
       "label": "Rotation Height (in, minutes-weighted)",
-      "value": 79.1721,
+      "value": 79.2174,
       "better": "neutral",
       "rank": 8,
       "of": 30,
@@ -87266,15 +87278,15 @@
      },
      "weight": {
       "label": "Rotation Weight (lb, minutes-weighted)",
-      "value": 214.0653,
+      "value": 214.3519,
       "better": "neutral",
-      "rank": 20,
+      "rank": 19,
       "of": 30,
       "format": "num"
      },
      "age": {
       "label": "Rotation Age (minutes-weighted)",
-      "value": 26.1223,
+      "value": 26.0992,
       "better": "neutral",
       "rank": 16,
       "of": 30,
@@ -87593,8 +87605,8 @@
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066457.png",
       "status": null,
-      "mpg": 35.3,
-      "ppg": 26.7,
+      "mpg": 36.2,
+      "ppg": 26.5,
       "height_in": 77.0,
       "height": "6-5",
       "weight_lb": 197.0,
@@ -87786,8 +87798,8 @@
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3945274.png",
       "status": null,
-      "mpg": 35.0,
-      "ppg": 34.3,
+      "mpg": 35.5,
+      "ppg": 36.0,
       "height_in": 80.0,
       "height": "6-8",
       "weight_lb": 230.0,
@@ -87979,8 +87991,8 @@
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4433136.png",
       "status": null,
-      "mpg": 31.0,
-      "ppg": 16.7,
+      "mpg": 31.5,
+      "ppg": 15.8,
       "height_in": 86.0,
       "height": "7-2",
       "weight_lb": 245.0,
@@ -88140,8 +88152,8 @@
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4433137.png",
       "status": null,
-      "mpg": 28.3,
-      "ppg": 11.3,
+      "mpg": 28.5,
+      "ppg": 11.2,
       "height_in": 81.0,
       "height": "6-9",
       "weight_lb": 185.0,
@@ -88325,8 +88337,8 @@
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4397014.png",
       "status": null,
-      "mpg": 26.0,
-      "ppg": 8.7,
+      "mpg": 24.2,
+      "ppg": 7.0,
       "height_in": 77.0,
       "height": "6-5",
       "weight_lb": 207.0,
@@ -88518,8 +88530,8 @@
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3907498.png",
       "status": null,
-      "mpg": 24.3,
-      "ppg": 9.0,
+      "mpg": 23.8,
+      "ppg": 8.0,
       "height_in": 77.0,
       "height": "6-5",
       "weight_lb": 202.0,
@@ -88688,8 +88700,8 @@
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4278580.png",
       "status": null,
-      "mpg": 22.3,
-      "ppg": 7.0,
+      "mpg": 22.8,
+      "ppg": 9.5,
       "height_in": 81.0,
       "height": "6-9",
       "weight_lb": 240.0,
@@ -88876,197 +88888,12 @@
       ]
      },
      {
-      "player_id": "4277811",
-      "player_name": "Collin Sexton",
-      "position": "G",
-      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4277811.png",
-      "status": null,
-      "mpg": 18.0,
-      "ppg": 9.0,
-      "height_in": 75.0,
-      "height": "6-3",
-      "weight_lb": 190.0,
-      "age": 27.0,
-      "usage": 0.248,
-      "ts": 0.615,
-      "age_change": {
-       "offense": -0.184,
-       "defense": -0.041,
-       "about": "League history: average change in box impact from this age to the next"
-      },
-      "zones": [
-       {
-        "zone": "rim",
-        "label": "At The Rim",
-        "fga": 3.46,
-        "share": 0.3315,
-        "fg": 0.6298
-       },
-       {
-        "zone": "paint",
-        "label": "Paint (Non-RA)",
-        "fga": 2.18,
-        "share": 0.2087,
-        "fg": 0.4527
-       },
-       {
-        "zone": "mid",
-        "label": "Mid-Range",
-        "fga": 0.93,
-        "share": 0.0889,
-        "fg": 0.381
-       },
-       {
-        "zone": "corner3",
-        "label": "Corner Three",
-        "fga": 0.57,
-        "share": 0.055,
-        "fg": 0.4103
-       },
-       {
-        "zone": "above3",
-        "label": "Above-The-Break Three",
-        "fga": 3.29,
-        "share": 0.3159,
-        "fg": 0.3929
-       }
-      ],
-      "play_types": [
-       {
-        "play_type": "PRBallHandler",
-        "label": "Pick-And-Roll Ball Handler",
-        "freq": 0.361,
-        "ppp": 0.834,
-        "percentile": 0.483,
-        "poss": 4.9
-       },
-       {
-        "play_type": "Spotup",
-        "label": "Spot-Up",
-        "freq": 0.219,
-        "ppp": 1.162,
-        "percentile": 0.762,
-        "poss": 3.0
-       },
-       {
-        "play_type": "Transition",
-        "label": "Transition",
-        "freq": 0.209,
-        "ppp": 1.268,
-        "percentile": 0.784,
-        "poss": 2.9
-       },
-       {
-        "play_type": "Isolation",
-        "label": "Isolation",
-        "freq": 0.076,
-        "ppp": 1.375,
-        "percentile": 0.986,
-        "poss": 1.2
-       }
-      ],
-      "tracking": {
-       "speed": 4.46,
-       "speed_off": 4.85,
-       "speed_def": 4.09,
-       "miles": 1.8,
-       "drives": 12.9,
-       "drive_fg": 0.559
-      },
-      "defense_zones": [
-       {
-        "zone": "Less Than 6Ft",
-        "label": "Within 6 Ft",
-        "fg_against": 0.597,
-        "normal_fg": 0.626,
-        "diff": -0.029,
-        "attempts_pg": 1.82
-       },
-       {
-        "zone": "Less Than 10Ft",
-        "label": "Within 10 Ft",
-        "fg_against": 0.542,
-        "normal_fg": 0.576,
-        "diff": -0.034,
-        "attempts_pg": 2.63
-       },
-       {
-        "zone": "Greater Than 15Ft",
-        "label": "Beyond 15 Ft",
-        "fg_against": 0.338,
-        "normal_fg": 0.365,
-        "diff": -0.027,
-        "attempts_pg": 4.44
-       },
-       {
-        "zone": "3 Pointers",
-        "label": "Three-Pointers",
-        "fg_against": 0.356,
-        "normal_fg": 0.36,
-        "diff": -0.004,
-        "attempts_pg": 3.97
-       },
-       {
-        "zone": "Overall",
-        "label": "All Shots",
-        "fg_against": 0.417,
-        "normal_fg": 0.452,
-        "diff": -0.035,
-        "attempts_pg": 7.66
-       }
-      ],
-      "three_track_record": {
-       "made": 297,
-       "attempts": 763,
-       "pct": 0.3893,
-       "about": "Three-point record over the previous seasons in the box-score cache"
-      },
-      "defense_onfloor": [
-       {
-        "zone": "rim",
-        "label": "At The Rim",
-        "fg_on": 0.6843,
-        "fg_off": 0.6617,
-        "diff": 0.0226,
-        "attempts_on": 510,
-        "attempts_off": 1555
-       },
-       {
-        "zone": "paint",
-        "label": "Paint",
-        "fg_on": 0.392,
-        "fg_off": 0.4316,
-        "diff": -0.0396,
-        "attempts_on": 352,
-        "attempts_off": 1068
-       },
-       {
-        "zone": "mid",
-        "label": "Mid-Range",
-        "fg_on": 0.3577,
-        "fg_off": 0.4106,
-        "diff": -0.0529,
-        "attempts_on": 137,
-        "attempts_off": 509
-       },
-       {
-        "zone": "three",
-        "label": "Three-Pointers",
-        "fg_on": 0.3687,
-        "fg_off": 0.3583,
-        "diff": 0.0104,
-        "attempts_on": 678,
-        "attempts_off": 2149
-       }
-      ]
-     },
-     {
       "player_id": "4592691",
       "player_name": "Jake LaRavia",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4592691.png",
       "status": null,
-      "mpg": 16.5,
+      "mpg": 17.3,
       "ppg": 5.0,
       "height_in": 79.0,
       "height": "6-7",
@@ -89252,16 +89079,201 @@
         "attempts_off": 1353
        }
       ]
+     },
+     {
+      "player_id": "4277811",
+      "player_name": "Collin Sexton",
+      "position": "G",
+      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4277811.png",
+      "status": null,
+      "mpg": 16.7,
+      "ppg": 9.0,
+      "height_in": 75.0,
+      "height": "6-3",
+      "weight_lb": 190.0,
+      "age": 27.0,
+      "usage": 0.248,
+      "ts": 0.615,
+      "age_change": {
+       "offense": -0.184,
+       "defense": -0.041,
+       "about": "League history: average change in box impact from this age to the next"
+      },
+      "zones": [
+       {
+        "zone": "rim",
+        "label": "At The Rim",
+        "fga": 3.46,
+        "share": 0.3315,
+        "fg": 0.6298
+       },
+       {
+        "zone": "paint",
+        "label": "Paint (Non-RA)",
+        "fga": 2.18,
+        "share": 0.2087,
+        "fg": 0.4527
+       },
+       {
+        "zone": "mid",
+        "label": "Mid-Range",
+        "fga": 0.93,
+        "share": 0.0889,
+        "fg": 0.381
+       },
+       {
+        "zone": "corner3",
+        "label": "Corner Three",
+        "fga": 0.57,
+        "share": 0.055,
+        "fg": 0.4103
+       },
+       {
+        "zone": "above3",
+        "label": "Above-The-Break Three",
+        "fga": 3.29,
+        "share": 0.3159,
+        "fg": 0.3929
+       }
+      ],
+      "play_types": [
+       {
+        "play_type": "PRBallHandler",
+        "label": "Pick-And-Roll Ball Handler",
+        "freq": 0.361,
+        "ppp": 0.834,
+        "percentile": 0.483,
+        "poss": 4.9
+       },
+       {
+        "play_type": "Spotup",
+        "label": "Spot-Up",
+        "freq": 0.219,
+        "ppp": 1.162,
+        "percentile": 0.762,
+        "poss": 3.0
+       },
+       {
+        "play_type": "Transition",
+        "label": "Transition",
+        "freq": 0.209,
+        "ppp": 1.268,
+        "percentile": 0.784,
+        "poss": 2.9
+       },
+       {
+        "play_type": "Isolation",
+        "label": "Isolation",
+        "freq": 0.076,
+        "ppp": 1.375,
+        "percentile": 0.986,
+        "poss": 1.2
+       }
+      ],
+      "tracking": {
+       "speed": 4.46,
+       "speed_off": 4.85,
+       "speed_def": 4.09,
+       "miles": 1.8,
+       "drives": 12.9,
+       "drive_fg": 0.559
+      },
+      "defense_zones": [
+       {
+        "zone": "Less Than 6Ft",
+        "label": "Within 6 Ft",
+        "fg_against": 0.597,
+        "normal_fg": 0.626,
+        "diff": -0.029,
+        "attempts_pg": 1.82
+       },
+       {
+        "zone": "Less Than 10Ft",
+        "label": "Within 10 Ft",
+        "fg_against": 0.542,
+        "normal_fg": 0.576,
+        "diff": -0.034,
+        "attempts_pg": 2.63
+       },
+       {
+        "zone": "Greater Than 15Ft",
+        "label": "Beyond 15 Ft",
+        "fg_against": 0.338,
+        "normal_fg": 0.365,
+        "diff": -0.027,
+        "attempts_pg": 4.44
+       },
+       {
+        "zone": "3 Pointers",
+        "label": "Three-Pointers",
+        "fg_against": 0.356,
+        "normal_fg": 0.36,
+        "diff": -0.004,
+        "attempts_pg": 3.97
+       },
+       {
+        "zone": "Overall",
+        "label": "All Shots",
+        "fg_against": 0.417,
+        "normal_fg": 0.452,
+        "diff": -0.035,
+        "attempts_pg": 7.66
+       }
+      ],
+      "three_track_record": {
+       "made": 297,
+       "attempts": 763,
+       "pct": 0.3893,
+       "about": "Three-point record over the previous seasons in the box-score cache"
+      },
+      "defense_onfloor": [
+       {
+        "zone": "rim",
+        "label": "At The Rim",
+        "fg_on": 0.6843,
+        "fg_off": 0.6617,
+        "diff": 0.0226,
+        "attempts_on": 510,
+        "attempts_off": 1555
+       },
+       {
+        "zone": "paint",
+        "label": "Paint",
+        "fg_on": 0.392,
+        "fg_off": 0.4316,
+        "diff": -0.0396,
+        "attempts_on": 352,
+        "attempts_off": 1068
+       },
+       {
+        "zone": "mid",
+        "label": "Mid-Range",
+        "fg_on": 0.3577,
+        "fg_off": 0.4106,
+        "diff": -0.0529,
+        "attempts_on": 137,
+        "attempts_off": 509
+       },
+       {
+        "zone": "three",
+        "label": "Three-Pointers",
+        "fg_on": 0.3687,
+        "fg_off": 0.3583,
+        "diff": 0.0104,
+        "attempts_on": 678,
+        "attempts_off": 2149
+       }
+      ]
      }
     ],
     "zones_basis": "2025-26 · ESPN Play-By-Play"
    },
    "away_schedule": {
-    "games_last_7": 3,
-    "three_in_four": false,
-    "travel_miles": 589,
+    "games_last_7": 4,
+    "three_in_four": true,
+    "travel_miles": 8,
     "miles_last_7": 1170,
-    "tz_shift": -1,
+    "tz_shift": 0,
     "altitude": false
    },
    "away_injuries": [
@@ -89302,7 +89314,7 @@
       "label": "Points allowed per 100 possessions",
       "value": 104.9375,
       "better": "low",
-      "rank": 8,
+      "rank": 7,
       "of": 30,
       "format": "num"
      },
@@ -89318,7 +89330,7 @@
       "label": "Points allowed per game",
       "value": 109.6667,
       "better": "low",
-      "rank": 9,
+      "rank": 8,
       "of": 30,
       "format": "num"
      },
@@ -89326,7 +89338,7 @@
       "label": "Effective field-goal rate",
       "value": 0.5833,
       "better": "high",
-      "rank": 2,
+      "rank": 3,
       "of": 30,
       "format": "pct"
      },
@@ -89334,7 +89346,7 @@
       "label": "Effective field-goal rate allowed",
       "value": 0.5388,
       "better": "low",
-      "rank": 19,
+      "rank": 18,
       "of": 30,
       "format": "pct"
      },
@@ -89374,7 +89386,7 @@
       "label": "Free throws made per field-goal attempt",
       "value": 0.2114,
       "better": "high",
-      "rank": 17,
+      "rank": 18,
       "of": 30,
       "format": "num2"
      },
@@ -89390,7 +89402,7 @@
       "label": "Share of shots from three",
       "value": 0.4472,
       "better": "neutral",
-      "rank": 10,
+      "rank": 11,
       "of": 30,
       "format": "pct"
      },
@@ -89414,7 +89426,7 @@
       "label": "Three-point rate allowed",
       "value": 0.3571,
       "better": "low",
-      "rank": 21,
+      "rank": 20,
       "of": 30,
       "format": "pct"
      },
@@ -89430,7 +89442,7 @@
       "label": "Two-point rate allowed",
       "value": 0.5402,
       "better": "low",
-      "rank": 17,
+      "rank": 16,
       "of": 30,
       "format": "pct"
      },
@@ -89438,7 +89450,7 @@
       "label": "Free-throw rate made",
       "value": 0.7324,
       "better": "high",
-      "rank": 25,
+      "rank": 24,
       "of": 30,
       "format": "pct"
      },
@@ -89446,7 +89458,7 @@
       "label": "Opponent free-throw rate",
       "value": 0.7286,
       "better": "low",
-      "rank": 8,
+      "rank": 9,
       "of": 30,
       "format": "pct"
      },
@@ -93152,5 +93164,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-28T06:03:51+00:00"
+ "published_at_utc": "2026-10-28T08:20:01+00:00"
 }
