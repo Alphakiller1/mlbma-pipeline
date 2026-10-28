@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-27",
- "generated_at_utc": "2026-10-27T14:32:43+00:00",
+ "generated_at_utc": "2026-10-27T20:42:47+00:00",
  "data_through_utc": "2026-10-27T02:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -121,8 +121,8 @@
    "id": "401909877",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/27 - 7:30 PM EDT",
+   "game_state": "live",
+   "status_detail": "8:08 - 2nd",
    "kickoff_utc": "2026-10-27T23:30Z",
    "away": "BKN",
    "home": "BOS",
@@ -136,8 +136,8 @@
    "home_record": "2-1",
    "away_split_record": "0-1",
    "home_split_record": "2-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 41,
+   "home_score": 35,
    "venue": "TD Garden",
    "venue_city": "Boston, MA",
    "broadcast": "NBA League Pass / DAZN (YES)",
@@ -6815,7 +6815,7 @@
       "player_name": "Derrick White",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3078576.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 29.0,
       "ppg": 11.3,
       "height_in": 76.0,
@@ -8129,6 +8129,15 @@
    },
    "home_injuries": [
     {
+     "player_id": "3078576",
+     "player_name": "Derrick White",
+     "status": "Day-To-Day",
+     "detail": "Right Hip",
+     "comment": "White (right hip) is probable for Tuesday's game against the Nets.",
+     "date": "2026-10-27T16:58Z",
+     "return_date": "2026-10-27"
+    },
+    {
      "player_id": "4433188",
      "player_name": "Devin Carter",
      "status": "Out",
@@ -8143,8 +8152,8 @@
    "id": "401909878",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/27 - 8:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "9:50 - 1st",
    "kickoff_utc": "2026-10-28T00:00Z",
    "away": "DET",
    "home": "NY",
@@ -8158,8 +8167,8 @@
    "home_record": "0-3",
    "away_split_record": "2-0",
    "home_split_record": "0-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 2,
+   "home_score": 4,
    "venue": "Madison Square Garden",
    "venue_city": "New York, NY",
    "broadcast": "NBC",
@@ -12163,21 +12172,21 @@
    },
    "away_injuries": [
     {
+     "player_id": "4684742",
+     "player_name": "Ausar Thompson",
+     "status": "Day-To-Day",
+     "detail": "Right Ankle Sprain",
+     "comment": "Thompson (ankle) was a full participant at Tuesday's shootaround, Coty M. Davis of The Detroit News reports.",
+     "date": "2026-10-27T15:24Z",
+     "return_date": "2026-10-27"
+    },
+    {
      "player_id": "4395702",
      "player_name": "Isaiah Joe",
      "status": "Day-To-Day",
      "detail": "Hip Bruise",
      "comment": "Joe (hip) is questionable for Tuesday's game against the Knicks.",
      "date": "2026-10-26T20:54Z",
-     "return_date": "2026-10-27"
-    },
-    {
-     "player_id": "4684742",
-     "player_name": "Ausar Thompson",
-     "status": "Day-To-Day",
-     "detail": "Right Ankle Sprain",
-     "comment": "Thompson (ankle) is listed as questionable for Tuesday's game against New York.",
-     "date": "2026-10-26T20:50Z",
      "return_date": "2026-10-27"
     },
     {
@@ -16163,8 +16172,8 @@
    "id": "401909879",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/27 - 8:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "8:50 - 1st",
    "kickoff_utc": "2026-10-28T00:00Z",
    "away": "SAC",
    "home": "SA",
@@ -16178,8 +16187,8 @@
    "home_record": "1-2",
    "away_split_record": "0-1",
    "home_split_record": "0-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 4,
+   "home_score": 10,
    "venue": "Frost Bank Center",
    "venue_city": "San Antonio, TX",
    "broadcast": "NBA League Pass",
@@ -27556,15 +27565,6 @@
      "return_date": "2026-10-29"
     },
     {
-     "player_id": "4592435",
-     "player_name": "Branden Carlson",
-     "status": "Day-To-Day",
-     "detail": "Concussion Concussion",
-     "comment": "Carlson (concussion) is listed as questionable for Tuesday's game against the Lakers.",
-     "date": "2026-10-27T00:04Z",
-     "return_date": "2026-10-27"
-    },
-    {
      "player_id": "4683678",
      "player_name": "Scoot Henderson",
      "status": "Day-To-Day",
@@ -31438,5 +31438,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-27T20:37:40+00:00"
+ "published_at_utc": "2026-10-28T00:17:22+00:00"
 }
