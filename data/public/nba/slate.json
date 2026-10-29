@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-28",
- "generated_at_utc": "2026-10-28T16:38:40+00:00",
+ "generated_at_utc": "2026-10-28T22:36:14+00:00",
  "data_through_utc": "2026-10-28T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -121,8 +121,8 @@
    "id": "401909881",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/28 - 7:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "4:21 - 3rd",
    "kickoff_utc": "2026-10-28T23:00Z",
    "away": "MIA",
    "home": "ATL",
@@ -136,8 +136,8 @@
    "home_record": "2-2",
    "away_split_record": "0-1",
    "home_split_record": "0-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 87,
+   "home_score": 75,
    "venue": "State Farm Arena",
    "venue_city": "Atlanta, GA",
    "broadcast": "NBA League Pass",
@@ -6986,7 +6986,7 @@
       "player_name": "Aaron Wiggins",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4397183.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 27.5,
       "ppg": 15.8,
       "height_in": 77.0,
@@ -7973,15 +7973,6 @@
    },
    "home_injuries": [
     {
-     "player_id": "4397183",
-     "player_name": "Aaron Wiggins",
-     "status": "Day-To-Day",
-     "detail": "Left Knee Bruise",
-     "comment": "Wiggins (knee) is probable for Wednesday against Miami.",
-     "date": "2026-10-28T16:25Z",
-     "return_date": "2026-10-28"
-    },
-    {
      "player_id": "4712863",
      "player_name": "Mouhamed Gueye",
      "status": "Out",
@@ -8005,8 +7996,8 @@
    "id": "401909882",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/28 - 7:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "5:22 - 3rd",
    "kickoff_utc": "2026-10-28T23:00Z",
    "away": "WSH",
    "home": "CLE",
@@ -8020,8 +8011,8 @@
    "home_record": "2-1",
    "away_split_record": "1-1",
    "home_split_record": "2-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 82,
+   "home_score": 75,
    "venue": "Rocket Arena",
    "venue_city": "Cleveland, OH",
    "broadcast": "MNMT / NBA League Pass / DAZN CLE",
@@ -11995,9 +11986,9 @@
      "player_name": "Justin Champagnie",
      "status": "Out",
      "detail": "Right Foot Not Specified",
-     "comment": "Champagnie (foot) is out for Wednesday's game versus Cleveland.",
-     "date": "2026-10-27T20:50Z",
-     "return_date": "2026-10-30"
+     "comment": "Champagnie (foot) is expected to miss several months, per Josh Robbins of The Athletic.",
+     "date": "2026-10-28T18:38Z",
+     "return_date": "2027-02-25"
     },
     {
      "player_id": "4997537",
@@ -15643,8 +15634,8 @@
    "id": "401909883",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/28 - 7:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "9:23 - 3rd",
    "kickoff_utc": "2026-10-28T23:00Z",
    "away": "CHA",
    "home": "DET",
@@ -15658,8 +15649,8 @@
    "home_record": "3-1",
    "away_split_record": "1-0",
    "home_split_record": "1-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 54,
+   "home_score": 48,
    "venue": "Little Caesars Arena",
    "venue_city": "Detroit, MI",
    "broadcast": "NBA League Pass",
@@ -23108,7 +23099,7 @@
       "player_name": "Ausar Thompson",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4684742.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 25.7,
       "ppg": 8.7,
       "height_in": 79.0,
@@ -23697,10 +23688,19 @@
     {
      "player_id": "4395702",
      "player_name": "Isaiah Joe",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Right Hip Bruise",
-     "comment": "Joe (hip) has been ruled out for Tuesday's game against the Knicks.",
-     "date": "2026-10-28T05:11Z",
+     "comment": "Joe (hip) is out for Wednesday's game against the Hornets.",
+     "date": "2026-10-28T16:54Z",
+     "return_date": "2026-10-30"
+    },
+    {
+     "player_id": "4684742",
+     "player_name": "Ausar Thompson",
+     "status": "Day-To-Day",
+     "detail": "Ankle",
+     "comment": "Thompson (ankle) is probable for Wednesday against the Hornets.",
+     "date": "2026-10-28T16:50Z",
      "return_date": "2026-10-28"
     },
     {
@@ -23718,8 +23718,8 @@
    "id": "401909884",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/28 - 7:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "Halftime",
    "kickoff_utc": "2026-10-28T23:00Z",
    "away": "PHI",
    "home": "IND",
@@ -23733,8 +23733,8 @@
    "home_record": "2-2",
    "away_split_record": "1-0",
    "home_split_record": "0-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 62,
+   "home_score": 52,
    "venue": "Gainbridge Fieldhouse",
    "venue_city": "Indianapolis, IN",
    "broadcast": "ESPN / DAZN IND",
@@ -30002,7 +30002,7 @@
       "player_name": "Tyrese Haliburton",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4396993.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 33.0,
       "ppg": 21.8,
       "height_in": null,
@@ -30233,7 +30233,7 @@
       "player_name": "Andrew Nembhard",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4395712.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 32.0,
       "ppg": 16.0,
       "height_in": 76.0,
@@ -31369,7 +31369,7 @@
       "player_name": "Aaron Nesmith",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4396909.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 20.0,
       "ppg": 11.7,
       "height_in": 77.0,
@@ -31570,39 +31570,12 @@
    },
    "home_injuries": [
     {
-     "player_id": "4395712",
-     "player_name": "Andrew Nembhard",
-     "status": "Day-To-Day",
-     "detail": "Neck Soreness",
-     "comment": "Nembhard (neck) is listed as questionable for Wednesday's game against Philadelphia.",
-     "date": "2026-10-27T21:21Z",
-     "return_date": "2026-10-28"
-    },
-    {
-     "player_id": "4396993",
-     "player_name": "Tyrese Haliburton",
-     "status": "Day-To-Day",
-     "detail": "Left Hamstring Soreness",
-     "comment": "Haliburton is listed as questionable for Wednesday's game against the 76ers due to left hamstring tightness.",
-     "date": "2026-10-27T21:19Z",
-     "return_date": "2026-10-28"
-    },
-    {
      "player_id": "4278355",
      "player_name": "Obi Toppin",
      "status": "Day-To-Day",
      "detail": "Left Hand Sprain",
-     "comment": "Toppin is probable to play Wednesday against the 76ers due to a left hand sprain.",
-     "date": "2026-10-27T21:17Z",
-     "return_date": "2026-10-28"
-    },
-    {
-     "player_id": "4396909",
-     "player_name": "Aaron Nesmith",
-     "status": "Day-To-Day",
-     "detail": "Left Hamstring Strain",
-     "comment": "Nesmith (hamstring) is probable for Wednesday's game against the 76ers.",
-     "date": "2026-10-27T21:15Z",
+     "comment": "Toppin (hand) is active for Wednesday's game against Philadelphia.",
+     "date": "2026-10-28T22:04Z",
      "return_date": "2026-10-28"
     },
     {
@@ -31610,9 +31583,27 @@
      "player_name": "T.J. McConnell",
      "status": "Out",
      "detail": "Right Hamstring Strain",
-     "comment": "McConnell (hamstring) is out for Wednesday's game against the 76ers.",
-     "date": "2026-10-27T21:15Z",
-     "return_date": "2026-10-30"
+     "comment": "Pacers head coach Rick Carlisle stated McConnell (hamstring) is \"doing better\" and \"getting closer\" to a return, Alex Golden of SI.com reports.",
+     "date": "2026-10-28T21:43Z",
+     "return_date": "2026-11-02"
+    },
+    {
+     "player_id": "4433076",
+     "player_name": "Ben Sheppard",
+     "status": "Out",
+     "detail": "Left Knee",
+     "comment": "Head coach Rick Carlise confirmed Sheppard will miss \"months\" after undergoing surgery to repair a torn meniscus in his left knee, Tony East of Forbes.com reports.",
+     "date": "2026-10-28T21:41Z",
+     "return_date": "2027-01-02"
+    },
+    {
+     "player_id": "4396993",
+     "player_name": "Tyrese Haliburton",
+     "status": "Out",
+     "detail": "Left Hamstring Strain",
+     "comment": "Haliburton (hamstring) will miss at least the next two weeks of action, Shams Charania of ESPN reports.",
+     "date": "2026-10-28T21:30Z",
+     "return_date": "2026-11-13"
     },
     {
      "player_id": "4017837",
@@ -31622,15 +31613,6 @@
      "comment": "Zubac (ankle) is out for Wednesday's game against the 76ers.",
      "date": "2026-10-27T21:13Z",
      "return_date": "2026-10-30"
-    },
-    {
-     "player_id": "4433076",
-     "player_name": "Ben Sheppard",
-     "status": "Out",
-     "detail": "Left Knee",
-     "comment": "Sheppard is scheduled for surgery to repair a torn meniscus in his left knee Wednesday, Dustin Dopirak of The Indianapolis Star reports.",
-     "date": "2026-10-26T23:09Z",
-     "return_date": "2026-12-01"
     },
     {
      "player_id": "5157066",
@@ -31647,8 +31629,8 @@
    "id": "401909885",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/28 - 7:30 PM EDT",
+   "game_state": "live",
+   "status_detail": "3:32 - 2nd",
    "kickoff_utc": "2026-10-28T23:30Z",
    "away": "ORL",
    "home": "TOR",
@@ -31662,8 +31644,8 @@
    "home_record": "2-1",
    "away_split_record": "1-0",
    "home_split_record": "1-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 46,
+   "home_score": 55,
    "venue": "Scotiabank Arena",
    "venue_city": "Toronto, ON",
    "broadcast": "NBA League Pass",
@@ -35214,7 +35196,7 @@
       "player_name": "Anthony Black",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4712849.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 26.0,
       "ppg": 18.0,
       "height_in": 79.0,
@@ -35414,15 +35396,6 @@
     "altitude": false
    },
    "away_injuries": [
-    {
-     "player_id": "4712849",
-     "player_name": "Anthony Black",
-     "status": "Day-To-Day",
-     "detail": "Personal",
-     "comment": "Black (personal) was not present at Wednesday's morning shootaround, Jason Beede of the Orlando Sentinel reports.",
-     "date": "2026-10-28T14:41Z",
-     "return_date": "2026-10-28"
-    },
     {
      "player_id": "4065654",
      "player_name": "Jonathan Isaac",
@@ -39250,8 +39223,8 @@
    "id": "401909886",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/28 - 8:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "18.2 - 1st",
    "kickoff_utc": "2026-10-29T00:00Z",
    "away": "NY",
    "home": "CHI",
@@ -39265,8 +39238,8 @@
    "home_record": "1-3",
    "away_split_record": "0-1",
    "home_split_record": "0-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 33,
+   "home_score": 30,
    "venue": "United Center",
    "venue_city": "Chicago, IL",
    "broadcast": "NBA League Pass",
@@ -43041,7 +43014,7 @@
       "player_name": "Jose Alvarado",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4277869.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 13.5,
       "ppg": 5.0,
       "height_in": 72.0,
@@ -43244,11 +43217,11 @@
     {
      "player_id": "4277869",
      "player_name": "Jose Alvarado",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Left Ankle Sprain",
-     "comment": "Alvarado (ankle) is out for Tuesday's game against the Pistons.",
-     "date": "2026-10-28T05:12Z",
-     "return_date": "2026-10-28"
+     "comment": "Alvarado (ankle) is out for Wednesday's game against the Bulls.",
+     "date": "2026-10-28T18:19Z",
+     "return_date": "2026-10-30"
     }
    ],
    "home_form": {
@@ -47076,22 +47049,22 @@
    },
    "home_injuries": [
     {
-     "player_id": "4431687",
-     "player_name": "Patrick Williams",
-     "status": "Day-To-Day",
-     "detail": "Right Groin Soreness",
-     "comment": "Williams (groin) is questionable for Wednesday's game against the Knicks.",
-     "date": "2026-10-27T21:23Z",
-     "return_date": "2026-10-28"
-    },
-    {
      "player_id": "5105555",
      "player_name": "Tobe Awaka",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Ankle",
-     "comment": "Awaka (ankle) is questionable for Wednesday's game against the Knicks.",
-     "date": "2026-10-27T21:19Z",
-     "return_date": "2026-10-28"
+     "comment": "Awaka (ankle) is out for Wednesday's game against the Knicks, Joel Lorenzi of The Athletic reports.",
+     "date": "2026-10-28T22:24Z",
+     "return_date": "2026-10-30"
+    },
+    {
+     "player_id": "4431687",
+     "player_name": "Patrick Williams",
+     "status": "Out",
+     "detail": "Right Groin Soreness",
+     "comment": "Williams (adductor) won't play in Wednesday's game against the Knicks, Joel Lorenzi of The Athletic reports.",
+     "date": "2026-10-28T22:20Z",
+     "return_date": "2026-10-30"
     },
     {
      "player_id": "4278067",
@@ -47108,8 +47081,8 @@
    "id": "401909887",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/28 - 8:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "End of 1st",
    "kickoff_utc": "2026-10-29T00:00Z",
    "away": "HOU",
    "home": "MIL",
@@ -47123,8 +47096,8 @@
    "home_record": "1-3",
    "away_split_record": "2-0",
    "home_split_record": "1-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 23,
+   "home_score": 21,
    "venue": "Fiserv Forum",
    "venue_city": "Milwaukee, WI",
    "broadcast": "NBA League Pass / MyMi / Bucks App",
@@ -50781,7 +50754,7 @@
       "player_name": "Marcus Smart",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/2990992.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 23.5,
       "ppg": 7.5,
       "height_in": 75.0,
@@ -50984,11 +50957,11 @@
     {
      "player_id": "2990992",
      "player_name": "Marcus Smart",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Left Forearm Strain",
-     "comment": "Smart (forearm) is questionable for Wednesday's game versus the Bucks.",
-     "date": "2026-10-27T20:22Z",
-     "return_date": "2026-10-28"
+     "comment": "Smart (forearm) is out for Wednesday's game against the Bucks.",
+     "date": "2026-10-28T17:34Z",
+     "return_date": "2026-10-30"
     },
     {
      "player_id": "4871144",
@@ -54865,8 +54838,8 @@
    "id": "401909888",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/28 - 8:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "50.5 - 1st",
    "kickoff_utc": "2026-10-29T00:00Z",
    "away": "GS",
    "home": "MIN",
@@ -54880,8 +54853,8 @@
    "home_record": "3-1",
    "away_split_record": "1-2",
    "home_split_record": "1-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 28,
+   "home_score": 23,
    "venue": "Target Center",
    "venue_city": "Minneapolis, MN",
    "broadcast": "NBA League Pass",
@@ -57161,7 +57134,7 @@
       "player_name": "Yaxel Lendeborg",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5175737.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 33.2,
       "ppg": 21.8,
       "height_in": null,
@@ -58587,15 +58560,6 @@
      "comment": "The Warriors are exploring potential trades involving Porzingis (personal), who remains away from the team indefinitely while dealing with ongoing health concerns, Anthony Slater of ESPN.com reports.",
      "date": "2026-10-28T14:25Z",
      "return_date": "2026-12-01"
-    },
-    {
-     "player_id": "5175737",
-     "player_name": "Yaxel Lendeborg",
-     "status": "Day-To-Day",
-     "detail": "Foot",
-     "comment": "Lendeborg (foot) is questionable for Wednesday's game against Minnesota.",
-     "date": "2026-10-27T20:33Z",
-     "return_date": "2026-10-28"
     },
     {
      "player_id": "4432171",
@@ -62389,8 +62353,8 @@
    "id": "401909889",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/28 - 8:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "10:31 - 2nd",
    "kickoff_utc": "2026-10-29T00:00Z",
    "away": "DEN",
    "home": "NO",
@@ -62404,8 +62368,8 @@
    "home_record": "0-3",
    "away_split_record": "0-1",
    "home_split_record": "0-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 39,
+   "home_score": 22,
    "venue": "Smoothie King Center",
    "venue_city": "New Orleans, LA",
    "broadcast": "NBA League Pass / GCSEN / Pelicans.com",
@@ -69427,7 +69391,7 @@
       "player_name": "Jordan Poole",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4277956.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 19.0,
       "ppg": 7.3,
       "height_in": 76.0,
@@ -70005,15 +69969,6 @@
     "altitude": false
    },
    "home_injuries": [
-    {
-     "player_id": "4277956",
-     "player_name": "Jordan Poole",
-     "status": "Day-To-Day",
-     "detail": "Illness",
-     "comment": "Poole (illness) is listed as probable for Wednesday's game against Denver.",
-     "date": "2026-10-27T19:18Z",
-     "return_date": "2026-10-28"
-    },
     {
      "player_id": "5061589",
      "player_name": "Yves Missi",
@@ -74037,9 +73992,9 @@
      "player_name": "Tobias Harris",
      "status": "Out",
      "detail": "Left Calf Strain",
-     "comment": "Harris (calf) has been ruled out for Tuesday's game against the Kings.",
-     "date": "2026-10-26T21:48Z",
-     "return_date": "2026-10-28"
+     "comment": "Harris (calf) is out for Wednesday's game against Utah, Paul Garcia of ProjectSpurs.com reports.",
+     "date": "2026-10-28T18:24Z",
+     "return_date": "2026-10-31"
     },
     {
      "player_id": "5101845",
@@ -81793,6 +81748,15 @@
    },
    "away_injuries": [
     {
+     "player_id": "2991350",
+     "player_name": "Alex Caruso",
+     "status": "Out",
+     "detail": "Right Ankle",
+     "comment": "Caruso (ankle) is expected to miss time due to an ankle sprain, Clemente Almanza of USA Today reports.",
+     "date": "2026-10-28T18:06Z",
+     "return_date": "2026-11-04"
+    },
+    {
      "player_id": "5061603",
      "player_name": "Thomas Sorber",
      "status": "Out",
@@ -81827,15 +81791,6 @@
      "comment": "Mitchell (ankle) is questionable for Wednesday's game against Dallas.",
      "date": "2026-10-27T21:35Z",
      "return_date": "2026-10-28"
-    },
-    {
-     "player_id": "2991350",
-     "player_name": "Alex Caruso",
-     "status": "Out",
-     "detail": "Right Ankle",
-     "comment": "Caruso (ankle) won't play Wednesday in Dallas.",
-     "date": "2026-10-27T21:35Z",
-     "return_date": "2026-10-31"
     },
     {
      "player_id": "4593803",
@@ -85324,12 +85279,12 @@
    },
    "home_injuries": [
     {
-     "player_id": "4593125",
-     "player_name": "Santi Aldama",
-     "status": "Out",
-     "detail": "Right Knee Surgery",
-     "comment": "The Mavericks recalled Aldama (knee) from the G League's Texas Legends on Tuesday.",
-     "date": "2026-10-28T01:05Z",
+     "player_id": "4278594",
+     "player_name": "Naji Marshall",
+     "status": "Day-To-Day",
+     "detail": "Illness",
+     "comment": "Marshall (illness) is now doubtful for Wednesday against the Thunder.",
+     "date": "2026-10-28T18:22Z",
      "return_date": "2026-10-28"
     },
     {
@@ -85337,9 +85292,18 @@
      "player_name": "Tarik Biberovic",
      "status": "Out",
      "detail": "Right Heel Inflammation",
-     "comment": "Biberovic is listed as doubtful for Wednesday's game against the Thunder.",
-     "date": "2026-10-27T22:12Z",
-     "return_date": "2026-10-28"
+     "comment": "Biberovic (knee) is out for Wednesday's game against the Thunder.",
+     "date": "2026-10-28T18:21Z",
+     "return_date": "2026-10-30"
+    },
+    {
+     "player_id": "4593125",
+     "player_name": "Santi Aldama",
+     "status": "Out",
+     "detail": "Right Knee Surgery",
+     "comment": "Aldama (knee) is out for Wednesday's game against the Thunder.",
+     "date": "2026-10-28T18:19Z",
+     "return_date": "2026-10-30"
     },
     {
      "player_id": "5279129",
@@ -85357,15 +85321,6 @@
      "detail": "Right Thumb Sprain",
      "comment": "Martin (thumb) is questionable for Wednesday's game against the Thunder.",
      "date": "2026-10-27T22:07Z",
-     "return_date": "2026-10-28"
-    },
-    {
-     "player_id": "4278594",
-     "player_name": "Naji Marshall",
-     "status": "Day-To-Day",
-     "detail": "Illness",
-     "comment": "Marshall (illness) is questionable for Wednesday's game against the Thunder.",
-     "date": "2026-10-27T22:05Z",
      "return_date": "2026-10-28"
     },
     {
@@ -87788,7 +87743,7 @@
       "player_name": "Luka Doncic",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3945274.png",
-      "status": null,
+      "status": "Out",
       "mpg": 35.5,
       "ppg": 36.0,
       "height_in": 80.0,
@@ -88142,7 +88097,7 @@
       "player_name": "Ziaire Williams",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4433137.png",
-      "status": null,
+      "status": "Out",
       "mpg": 28.5,
       "ppg": 11.2,
       "height_in": 81.0,
@@ -89273,18 +89228,36 @@
      "player_name": "Cameron Carr",
      "status": "Out",
      "detail": "Right Oblique Strain",
-     "comment": "The Lakers recalled Carr (oblique) from the G League's Coachella Valley Lakers on Tuesday, Mark Medina of TheSportingTribune.com reports.",
-     "date": "2026-10-27T23:42Z",
-     "return_date": "2026-10-28"
+     "comment": "Carr (oblique) is out for Wednesday's game against the Clippers.",
+     "date": "2026-10-28T20:12Z",
+     "return_date": "2026-10-30"
     },
     {
      "player_id": "5060631",
      "player_name": "Adou Thiero",
      "status": "Out",
      "detail": "Left Knee Inflammation",
-     "comment": "Thiero (knee) is out for Tuesday's game against Portland.",
-     "date": "2026-10-27T00:08Z",
-     "return_date": "2026-10-28"
+     "comment": "Thiero (knee) is out for Wednesday's game against the Clippers.",
+     "date": "2026-10-28T20:10Z",
+     "return_date": "2026-10-30"
+    },
+    {
+     "player_id": "4433137",
+     "player_name": "Ziaire Williams",
+     "status": "Out",
+     "detail": "Foot",
+     "comment": "Williams (foot) is out for Wednesday's game against the Clippers.",
+     "date": "2026-10-28T20:06Z",
+     "return_date": "2026-10-30"
+    },
+    {
+     "player_id": "3945274",
+     "player_name": "Luka Doncic",
+     "status": "Out",
+     "detail": "Back",
+     "comment": "Doncic (back) is out for Wednesday's game against the Clippers.",
+     "date": "2026-10-28T20:05Z",
+     "return_date": "2026-10-30"
     }
    ],
    "home_form": {
@@ -93155,5 +93128,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-28T22:30:17+00:00"
+ "published_at_utc": "2026-10-29T00:39:28+00:00"
 }
