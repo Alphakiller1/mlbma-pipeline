@@ -3,8 +3,8 @@
   "sport": "cfb",
   "season": 2026,
   "week": 9,
-  "generated_at_utc": "2026-10-29T18:34:56Z",
-  "data_through_utc": "2026-10-29T00:52:15Z",
+  "generated_at_utc": "2026-10-30T00:01:32Z",
+  "data_through_utc": "2026-10-29T19:35:42Z",
   "games": [
     {
       "id": "DEL@WKU",
@@ -12872,7 +12872,7 @@
       "id": "FAU@UNT",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-29T23:30Z",
       "away": "FAU",
       "home": "UNT",
@@ -12886,14 +12886,14 @@
       "home_color": "#00853e",
       "away_record": "5-2",
       "home_record": "5-2",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "7",
+      "home_score": "3",
       "venue": "DATCU Stadium",
       "venue_city": "Denton, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 75,
-      "weather_cond": "Cloudy",
+      "weather_temp": 73,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -14397,12 +14397,12 @@
           {
             "player": "Peter Cannon",
             "position": "TE",
-            "status": "Questionable",
+            "status": "Out",
             "injury": "Undisclosed",
             "updated": "Oct 29 7:30 PM",
             "detail": "Cannon is managing due to an undisclosed injury, and it is unknown if he will play Saturday versus Rice.",
             "source": "RotoWire + Covers",
-            "return": "Oct 29th"
+            "return": "Nov 5th"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -14769,12 +14769,12 @@
           {
             "player": "Drew Clemens",
             "position": "TE",
-            "status": "Questionable",
+            "status": "Out",
             "injury": "Undisclosed",
             "updated": "Oct 29 7:30 PM",
             "detail": "Clemens is dealing with an undisclosed injury, and it remains to be seen if he will be active against Navy on October 24th.",
             "source": "RotoWire + Covers",
-            "return": "Oct 29th"
+            "return": "Nov 7th"
           },
           {
             "player": "V. Aderungboye",
@@ -16497,7 +16497,7 @@
       "id": "TROY@JMU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-29T23:30Z",
       "away": "TROY",
       "home": "JMU",
@@ -16512,13 +16512,13 @@
       "away_record": "3-4",
       "home_record": "7-1",
       "away_score": "0",
-      "home_score": "0",
+      "home_score": "14",
       "venue": "Bridgeforth Stadium",
       "venue_city": "Harrisonburg, VA",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 60,
-      "weather_cond": "Mostly clear",
+      "weather_temp": 64,
+      "weather_cond": "Clear",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -37670,7 +37670,7 @@
       "venue_city": "Kalamazoo, MI",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 55,
+      "weather_temp": 54,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -41307,7 +41307,7 @@
       "venue_city": "Raleigh, NC",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 64,
+      "weather_temp": 63,
       "weather_cond": "Hazy sunshine",
       "away_form": {
         "rates": {
@@ -45137,7 +45137,7 @@
       "venue_city": "College Park, MD",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 58,
+      "weather_temp": 57,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -50784,7 +50784,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "ESPN2",
-      "weather_temp": 49,
+      "weather_temp": 50,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -54433,7 +54433,7 @@
       "venue_city": "Tampa, FL",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 81,
+      "weather_temp": 82,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -59845,7 +59845,7 @@
       "venue_city": "Piscataway, NJ",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 55,
+      "weather_temp": 56,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -63545,7 +63545,7 @@
       "venue_city": "Oxford, MS",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 70,
+      "weather_temp": 71,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -67084,7 +67084,7 @@
       "venue_city": "Norfolk, VA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 63,
+      "weather_temp": 62,
       "weather_cond": "Hazy sunshine",
       "away_form": {
         "rates": {
@@ -70663,7 +70663,7 @@
       "venue_city": "Atlanta, GA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 71,
+      "weather_temp": 72,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -73432,7 +73432,7 @@
       "venue_city": "Boulder, CO",
       "roof": "Outdoor",
       "broadcast": "TNT",
-      "weather_temp": 59,
+      "weather_temp": 57,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -87209,7 +87209,7 @@
       "venue_city": "Louisville, KY",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 69,
+      "weather_temp": 70,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -90048,7 +90048,7 @@
       "venue_city": "Provo, UT",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 58,
+      "weather_temp": 59,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -93677,7 +93677,7 @@
       "venue_city": "Logan, UT",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 56,
+      "weather_temp": 54,
       "weather_cond": "Mostly cloudy w/ showers",
       "away_form": {
         "rates": {
@@ -102979,7 +102979,7 @@
       "venue_city": "Fort Worth, TX",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 69,
+      "weather_temp": 67,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -110154,7 +110154,7 @@
       "venue_city": "Eugene, OR",
       "roof": "Outdoor",
       "broadcast": "Peacock",
-      "weather_temp": 47,
+      "weather_temp": 46,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -113807,7 +113807,7 @@
       "venue_city": "Monroe, LA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 71,
+      "weather_temp": 72,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -117390,7 +117390,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "MW+",
-      "weather_temp": 52,
+      "weather_temp": 51,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -120067,7 +120067,7 @@
       "venue_city": "Cincinnati, OH",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 65,
+      "weather_temp": 66,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -126504,7 +126504,7 @@
       "venue_city": "San Jose, CA",
       "roof": "Outdoor",
       "broadcast": "MW+",
-      "weather_temp": 65,
+      "weather_temp": 66,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -135816,7 +135816,7 @@
       "venue_city": "Norman, OK",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 62,
+      "weather_temp": 64,
       "weather_cond": "Mostly cloudy w/ showers",
       "away_form": {
         "rates": {
@@ -139424,7 +139424,7 @@
       "venue_city": "Statesboro, GA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 73,
+      "weather_temp": 71,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -142238,7 +142238,7 @@
       "venue_city": "Tallahassee, FL",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 76,
+      "weather_temp": 77,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -145090,7 +145090,7 @@
       "venue_city": "Ames, IA",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 62,
+      "weather_temp": 61,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -148598,7 +148598,7 @@
       "venue_city": "San Diego, CA",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 71,
+      "weather_temp": 70,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -152438,7 +152438,7 @@
       "venue_city": "Pittsburgh, PA",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 55,
+      "weather_temp": 57,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -159778,7 +159778,7 @@
       "venue_city": "Austin, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 76,
+      "weather_temp": 75,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -163376,7 +163376,7 @@
       "venue_city": "Los Angeles, CA",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 71,
+      "weather_temp": 68,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -166267,7 +166267,7 @@
       "venue_city": "Fayetteville, AR",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 61,
+      "weather_temp": 65,
       "weather_cond": "Showers",
       "away_form": {
         "rates": {
@@ -171868,7 +171868,7 @@
       "venue_city": "Lincoln, NE",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 59,
+      "weather_temp": 60,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -173869,7 +173869,7 @@
       "venue_city": "Boise, ID",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 52,
+      "weather_temp": 54,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -177345,7 +177345,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "CBSSN",
-      "weather_temp": 66,
+      "weather_temp": 67,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -180113,7 +180113,7 @@
       "venue_city": "Fresno, CA",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 60,
+      "weather_temp": 61,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
