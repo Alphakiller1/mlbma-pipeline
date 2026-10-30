@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 9,
-  "generated_at_utc": "2026-10-30T18:07:25Z",
+  "generated_at_utc": "2026-10-30T23:55:31Z",
   "data_through_utc": "2026-10-30T00:55:14Z",
   "games": [
     {
@@ -20173,7 +20173,7 @@
       "id": "TULN@CLT",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-30T23:00Z",
       "away": "TULN",
       "home": "CLT",
@@ -20187,13 +20187,13 @@
       "home_color": "#005035",
       "away_record": "3-4",
       "home_record": "1-6",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "7",
+      "home_score": "6",
       "venue": "Jerry Richardson Stadium",
       "venue_city": "Charlotte, NC",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 73,
+      "weather_temp": 66,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -21696,33 +21696,34 @@
       "away_injuries": {
         "players": [
           {
+            "player": "Jamauri McClure",
+            "position": "RB",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Oct 30 7:00 PM",
+            "detail": "McClure is managing a foot injury, and there is no timetable for his return.",
+            "source": "RotoWire + Covers",
+            "return": "Nov 7th"
+          },
+          {
             "player": "Ty Thompson",
             "position": "TE",
-            "status": "Questionable",
+            "status": "Out",
             "injury": "Undisclosed",
             "updated": "Oct 30 7:00 PM",
             "detail": "Thompson is battling due to an undisclosed injury, and it is uncertain if he will face UTSA on Saturday, October 24th.",
             "source": "RotoWire + Covers",
-            "return": "Oct 30th"
+            "return": "Nov 7th"
           },
           {
             "player": "Antwaun Parham",
             "position": "WR",
-            "status": "Questionable",
+            "status": "Out",
             "injury": "Undisclosed",
             "updated": "Oct 30 7:00 PM",
             "detail": "Parham is nursing with an undisclosed injury, and it is uncertain if he will face UTSA on Saturday, October 24th.",
             "source": "RotoWire + Covers",
-            "return": "Oct 30th"
-          },
-          {
-            "player": "John Barton",
-            "position": "WR",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "return": "Oct 30th",
-            "updated": "Oct 30 7:00 PM",
-            "source": "RotoWire"
+            "return": "Nov 7th"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -22980,7 +22981,7 @@
       "id": "BAY@UCF",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-10-30T23:30Z",
       "away": "BAY",
       "home": "UCF",
@@ -23000,7 +23001,7 @@
       "venue_city": "Orlando, FL",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 79,
+      "weather_temp": 78,
       "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
@@ -30386,7 +30387,7 @@
       "venue_city": "Lubbock, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 59,
+      "weather_temp": 60,
       "weather_cond": "Fog",
       "away_form": {
         "rates": {
@@ -37656,7 +37657,7 @@
       "venue_city": "Kalamazoo, MI",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 51,
+      "weather_temp": 55,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -41293,7 +41294,7 @@
       "venue_city": "Raleigh, NC",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 63,
+      "weather_temp": 61,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -47982,7 +47983,7 @@
       "venue_city": "Foxborough, MA",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 50,
+      "weather_temp": 49,
       "weather_cond": "Mostly sunny",
       "neutral": true,
       "away_form": {
@@ -50770,7 +50771,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "ESPN2",
-      "weather_temp": 50,
+      "weather_temp": 49,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -56329,7 +56330,7 @@
       "roof": "Outdoor",
       "broadcast": "Fox",
       "weather_temp": 57,
-      "weather_cond": "Cloudy",
+      "weather_cond": "Showers",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -59831,7 +59832,7 @@
       "venue_city": "Piscataway, NJ",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 56,
+      "weather_temp": 55,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -63531,7 +63532,7 @@
       "venue_city": "Oxford, MS",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 70,
+      "weather_temp": 71,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -67070,7 +67071,7 @@
       "venue_city": "Norfolk, VA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 62,
+      "weather_temp": 61,
       "weather_cond": "Hazy sunshine",
       "away_form": {
         "rates": {
@@ -77038,7 +77039,7 @@
       "venue_city": "USAF Academy, CO",
       "roof": "Outdoor",
       "broadcast": "MW+",
-      "weather_temp": 59,
+      "weather_temp": 60,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -84382,7 +84383,7 @@
       "venue_city": "Greenville, NC",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 68,
+      "weather_temp": 67,
       "weather_cond": "Hazy sunshine",
       "away_form": {
         "rates": {
@@ -93664,7 +93665,7 @@
       "roof": "Outdoor",
       "broadcast": "USA Net",
       "weather_temp": 55,
-      "weather_cond": "Mostly cloudy w/ showers",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -97372,7 +97373,7 @@
       "venue_city": "Lynchburg, VA",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 63,
+      "weather_temp": 65,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -101009,7 +101010,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "ABC, Disney+",
-      "weather_temp": 70,
+      "weather_temp": 71,
       "weather_cond": "Cloudy",
       "neutral": true,
       "away_form": {
@@ -102955,7 +102956,7 @@
       "venue_city": "Fort Worth, TX",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 68,
+      "weather_temp": 69,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -113783,7 +113784,7 @@
       "venue_city": "Monroe, LA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 73,
+      "weather_temp": 69,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -117366,7 +117367,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "MW+",
-      "weather_temp": 52,
+      "weather_temp": 53,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -123617,7 +123618,7 @@
       "venue_city": "Winston-Salem, NC",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 63,
+      "weather_temp": 64,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -135792,7 +135793,7 @@
       "venue_city": "Norman, OK",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 64,
+      "weather_temp": 66,
       "weather_cond": "Mostly cloudy w/ showers",
       "away_form": {
         "rates": {
@@ -148574,7 +148575,7 @@
       "venue_city": "San Diego, CA",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 70,
+      "weather_temp": 69,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -152414,7 +152415,7 @@
       "venue_city": "Pittsburgh, PA",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 55,
+      "weather_temp": 57,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -156248,7 +156249,7 @@
       "venue_city": "Chapel Hill, NC",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 59,
+      "weather_temp": 58,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -159754,7 +159755,7 @@
       "venue_city": "Austin, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN, Disney+",
-      "weather_temp": 75,
+      "weather_temp": 76,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -163352,8 +163353,8 @@
       "venue_city": "Los Angeles, CA",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 70,
-      "weather_cond": "Showers",
+      "weather_temp": 69,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -166243,7 +166244,7 @@
       "venue_city": "Fayetteville, AR",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 62,
+      "weather_temp": 63,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -168216,7 +168217,7 @@
       "venue_city": "Memphis, TN",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 70,
+      "weather_temp": 69,
       "weather_cond": "Showers",
       "away_form": {
         "rates": {
@@ -171844,7 +171845,7 @@
       "venue_city": "Lincoln, NE",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 61,
+      "weather_temp": 63,
       "weather_cond": "Showers",
       "away_form": {
         "rates": {
@@ -173844,7 +173845,7 @@
       "venue_city": "Boise, ID",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 54,
+      "weather_temp": 53,
       "weather_cond": "Rain",
       "away_form": {
         "rates": {
@@ -177320,7 +177321,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "CBSSN",
-      "weather_temp": 65,
+      "weather_temp": 67,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -180088,7 +180089,7 @@
       "venue_city": "Fresno, CA",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 60,
+      "weather_temp": 62,
       "weather_cond": "Showers",
       "away_form": {
         "rates": {
