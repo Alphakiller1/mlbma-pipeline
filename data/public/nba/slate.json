@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-30",
- "generated_at_utc": "2026-10-30T12:57:04+00:00",
+ "generated_at_utc": "2026-10-30T19:23:16+00:00",
  "data_through_utc": "2026-10-30T02:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -121,8 +121,8 @@
    "id": "401909277",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/30 - 7:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "End of 1st",
    "kickoff_utc": "2026-10-30T23:00Z",
    "away": "CHA",
    "home": "WSH",
@@ -136,8 +136,8 @@
    "home_record": "2-3",
    "away_split_record": "1-1",
    "home_split_record": "1-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 26,
+   "home_score": 22,
    "venue": "Capital One Arena",
    "venue_city": "Washington, DC",
    "broadcast": "MNMT / NBA League Pass",
@@ -3790,8 +3790,8 @@
      "player_name": "Dennis Schroder",
      "status": "Day-To-Day",
      "detail": "Foot",
-     "comment": "Schroder (foot) is questionable for Friday's game against the Wizards.",
-     "date": "2026-10-29T21:37Z",
+     "comment": "Schroder (foot) is probable for Friday against the Wizards.",
+     "date": "2026-10-30T15:34Z",
      "return_date": "2026-10-30"
     },
     {
@@ -3799,8 +3799,8 @@
      "player_name": "Kon Knueppel",
      "status": "Out",
      "detail": "Left Hamstring",
-     "comment": "Knueppel (hamstring) will practice with the G League's Greensboro Swarm on Thursday, the Hornets announced.",
-     "date": "2026-10-29T18:26Z",
+     "comment": "Knueppel (hamstring) was recalled from the G League's Greensboro Swarm on Friday. He remains out for Friday's contest against the Wizards.",
+     "date": "2026-10-30T15:12Z",
      "return_date": "2026-11-02"
     },
     {
@@ -11171,15 +11171,6 @@
     "altitude": false
    },
    "away_injuries": [
-    {
-     "player_id": "4431687",
-     "player_name": "Patrick Williams",
-     "status": "Out",
-     "detail": "Right Groin Soreness",
-     "comment": "Williams (adductor) is questionable for Friday's game in Boston.",
-     "date": "2026-10-29T18:55Z",
-     "return_date": "2026-10-30"
-    },
     {
      "player_id": "4397189",
      "player_name": "Jalen Smith",
@@ -21766,7 +21757,7 @@
       "player_name": "Noah Clowney",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4712896.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 21.5,
       "ppg": 6.2,
       "height_in": 82.0,
@@ -22298,6 +22289,15 @@
     "altitude": false
    },
    "home_injuries": [
+    {
+     "player_id": "4712896",
+     "player_name": "Noah Clowney",
+     "status": "Day-To-Day",
+     "detail": "Illness",
+     "comment": "Clowney (illness) was downgraded to questionable for Friday's game versus Detroit, Erik Slater of ClutchPoints.com reports.",
+     "date": "2026-10-30T14:16Z",
+     "return_date": "2026-10-30"
+    },
     {
      "player_id": "5175643",
      "player_name": "Egor Demin",
@@ -40370,6 +40370,24 @@
    },
    "away_injuries": [
     {
+     "player_id": "2530530",
+     "player_name": "T.J. McConnell",
+     "status": "Out",
+     "detail": "Right Hamstring Strain",
+     "comment": "McConnell (hamstring) is practicing in the G League at Noblesville Boom training camp, per Alex Golden of SI.com.",
+     "date": "2026-10-30T19:09Z",
+     "return_date": "2026-11-02"
+    },
+    {
+     "player_id": "5157066",
+     "player_name": "Johnny Furphy",
+     "status": "Out",
+     "detail": "Right Knee Surgery",
+     "comment": "Furphy (knee) is practicing with the G League's Noblesville Boom, per Alex Golden of SI.com.",
+     "date": "2026-10-30T19:06Z",
+     "return_date": "2027-01-02"
+    },
+    {
      "player_id": "4395712",
      "player_name": "Andrew Nembhard",
      "status": "Day-To-Day",
@@ -40397,15 +40415,6 @@
      "return_date": "2026-11-01"
     },
     {
-     "player_id": "2530530",
-     "player_name": "T.J. McConnell",
-     "status": "Out",
-     "detail": "Right Hamstring Strain",
-     "comment": "Pacers head coach Rick Carlisle stated McConnell (hamstring) is \"doing better\" and \"getting closer\" to a return, Alex Golden of SI.com reports.",
-     "date": "2026-10-28T21:43Z",
-     "return_date": "2026-11-02"
-    },
-    {
      "player_id": "4433076",
      "player_name": "Ben Sheppard",
      "status": "Out",
@@ -40422,15 +40431,6 @@
      "comment": "Haliburton (hamstring) will miss at least the next two weeks of action, Shams Charania of ESPN reports.",
      "date": "2026-10-28T21:30Z",
      "return_date": "2026-11-13"
-    },
-    {
-     "player_id": "5157066",
-     "player_name": "Johnny Furphy",
-     "status": "Out",
-     "detail": "Right Knee Surgery",
-     "comment": "Furphy was diagnosed with a torn right ACL on Monday and will miss the remainder of the season, Michael Scotto of USA Today reports.",
-     "date": "2026-02-09T21:43Z",
-     "return_date": "2027-01-02"
     }
    ],
    "home_form": {
@@ -54777,8 +54777,8 @@
      "player_name": "Rui Hachimura",
      "status": "Day-To-Day",
      "detail": "Left Quadriceps Soreness",
-     "comment": "Hachimura (quadriceps) is questionable for Friday's game against Minnesota, Tomer Azarly of ClutchPoints.com reports.",
-     "date": "2026-10-29T22:13Z",
+     "comment": "Hachimura (quadriceps) is probable for Friday's game against Minnesota, per Ohm Youngmisuk of ESPN.com.",
+     "date": "2026-10-30T18:00Z",
      "return_date": "2026-10-30"
     },
     {
@@ -61987,15 +61987,6 @@
    },
    "away_injuries": [
     {
-     "player_id": "5113969",
-     "player_name": "Cameron Carr",
-     "status": "Out",
-     "detail": "Right Oblique Strain",
-     "comment": "Carr (oblique) has been ruled out for Friday's game against Golden State.",
-     "date": "2026-10-30T00:07Z",
-     "return_date": "2026-11-01"
-    },
-    {
      "player_id": "5060631",
      "player_name": "Adou Thiero",
      "status": "Out",
@@ -69095,21 +69086,21 @@
    },
    "away_injuries": [
     {
+     "player_id": "3138196",
+     "player_name": "Cameron Johnson",
+     "status": "Out",
+     "detail": "Right Ankle Sprain",
+     "comment": "Johnson (ankle) is expected to play in Friday's game against the Suns, per John Gambadoro of Arizona Sports 98.7 FM.",
+     "date": "2026-10-30T18:41Z",
+     "return_date": "2026-10-30"
+    },
+    {
      "player_id": "4065813",
      "player_name": "Alpha Diallo",
      "status": "Out",
      "detail": "Right Personal",
      "comment": "Diallo (personal) is listed as questionable for Friday's game against the Suns.",
      "date": "2026-10-29T23:50Z",
-     "return_date": "2026-10-30"
-    },
-    {
-     "player_id": "3138196",
-     "player_name": "Cameron Johnson",
-     "status": "Out",
-     "detail": "Right Ankle Sprain",
-     "comment": "Johnson (ankle) is questionable for Friday's game against Phoenix.",
-     "date": "2026-10-29T23:49Z",
      "return_date": "2026-10-30"
     },
     {
@@ -72665,5 +72656,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-30T19:14:33+00:00"
+ "published_at_utc": "2026-10-30T23:39:34+00:00"
 }
