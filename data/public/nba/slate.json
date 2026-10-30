@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-29",
- "generated_at_utc": "2026-10-29T19:39:12+00:00",
+ "generated_at_utc": "2026-10-29T23:57:23+00:00",
  "data_through_utc": "2026-10-29T02:30Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -121,8 +121,8 @@
    "id": "401909893",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/29 - 8:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "10:30 - 2nd",
    "kickoff_utc": "2026-10-30T00:00Z",
    "away": "CLE",
    "home": "ATL",
@@ -136,8 +136,8 @@
    "home_record": "2-3",
    "away_split_record": "0-1",
    "home_split_record": "0-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 31,
+   "home_score": 16,
    "venue": "State Farm Arena",
    "venue_city": "Atlanta, GA",
    "broadcast": "NBA TV",
@@ -3284,7 +3284,7 @@
       "player_name": "Jaylon Tyson",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4683747.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 21.5,
       "ppg": 9.0,
       "height_in": 78.0,
@@ -3510,7 +3510,7 @@
       "player_name": "Meleek Thomas",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5041951.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 19.5,
       "ppg": 13.0,
       "height_in": null,
@@ -3587,20 +3587,11 @@
     {
      "player_id": "5041951",
      "player_name": "Meleek Thomas",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Foot",
-     "comment": "Thomas (foot) is questionable for Thursday's game in Atlanta.",
-     "date": "2026-10-29T17:06Z",
-     "return_date": "2026-10-29"
-    },
-    {
-     "player_id": "4683747",
-     "player_name": "Jaylon Tyson",
-     "status": "Day-To-Day",
-     "detail": "Neck",
-     "comment": "Tyson (neck) is questionable for Thursday's game against the Hawks.",
-     "date": "2026-10-29T17:05Z",
-     "return_date": "2026-10-29"
+     "comment": "Thomas (foot) has been ruled out for Thursday's game against the Hawks, Serena Winters of FanDuel Sports Network Ohio reports.",
+     "date": "2026-10-29T23:21Z",
+     "return_date": "2026-10-31"
     }
    ],
    "home_form": {
@@ -7343,8 +7334,8 @@
    "id": "401909894",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/29 - 8:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "End of 1st",
    "kickoff_utc": "2026-10-30T00:00Z",
    "away": "SAC",
    "home": "NO",
@@ -7358,8 +7349,8 @@
    "home_record": "0-4",
    "away_split_record": "0-2",
    "home_split_record": "0-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 30,
+   "home_score": 24,
    "venue": "Smoothie King Center",
    "venue_city": "New Orleans, LA",
    "broadcast": "NBA League Pass / GCSEN / Pelicans.com",
@@ -13294,7 +13285,7 @@
       "player_name": "Dejounte Murray",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3907497.png",
-      "status": null,
+      "status": "Out",
       "mpg": 32.2,
       "ppg": 17.8,
       "height_in": 76.0,
@@ -14237,7 +14228,7 @@
       "player_name": "Jordan Poole",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4277956.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 16.0,
       "ppg": 6.0,
       "height_in": 76.0,
@@ -14401,13 +14392,22 @@
    },
    "home_injuries": [
     {
+     "player_id": "3907497",
+     "player_name": "Dejounte Murray",
+     "status": "Out",
+     "detail": "Personal",
+     "comment": "Murray (personal) is out for Thursday's game against the Kings, Jim Eichenhofer of the Pelicans' official site reports.",
+     "date": "2026-10-29T22:22Z",
+     "return_date": "2026-10-31"
+    },
+    {
      "player_id": "4277956",
      "player_name": "Jordan Poole",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Left Ankle",
-     "comment": "Poole (ankle) is now doubtful for Thursday against the Kings.",
-     "date": "2026-10-29T16:49Z",
-     "return_date": "2026-10-29"
+     "comment": "Poole (ankle) has been ruled out for Thursday's game against the Kings.",
+     "date": "2026-10-29T22:19Z",
+     "return_date": "2026-10-31"
     },
     {
      "player_id": "5061589",
@@ -21227,5 +21227,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-29T23:54:36+00:00"
+ "published_at_utc": "2026-10-30T00:39:53+00:00"
 }
