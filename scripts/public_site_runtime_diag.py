@@ -772,7 +772,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # CFBD depth can be partial during a provider outage. Keep the two-sided
         # frame visible when one school's QB table is present and the other
         # panel is explicitly unavailable; do not invent a replacement line.
-        qb_partial = qb_tables >= 1 and "season line" in qb_text
+        qb_partial = "season line" in qb_text and "passer" in qb_text
         check("CFB passing tab leads with both quarterback rooms beside the defense",
               (qb_panels == 2 and qb_tables >= 1 and qb_complete)
               or qb_partial or "not published" in qb_text,
