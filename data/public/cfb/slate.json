@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 9,
-  "generated_at_utc": "2026-10-30T23:55:31Z",
+  "generated_at_utc": "2026-10-31T08:01:27Z",
   "data_through_utc": "2026-10-30T00:55:14Z",
   "games": [
     {
@@ -20173,7 +20173,7 @@
       "id": "TULN@CLT",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "live",
+      "game_state": "final",
       "kickoff_utc": "2026-10-30T23:00Z",
       "away": "TULN",
       "home": "CLT",
@@ -20185,16 +20185,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/2429.png",
       "away_color": "#006747",
       "home_color": "#005035",
-      "away_record": "3-4",
-      "home_record": "1-6",
-      "away_score": "7",
-      "home_score": "6",
+      "away_record": "4-4",
+      "home_record": "1-7",
+      "away_score": "38",
+      "home_score": "31",
       "venue": "Jerry Richardson Stadium",
       "venue_city": "Charlotte, NC",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 66,
-      "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -21696,34 +21694,22 @@
       "away_injuries": {
         "players": [
           {
-            "player": "Jamauri McClure",
-            "position": "RB",
-            "status": "Out",
-            "injury": "Undisclosed",
-            "updated": "Oct 30 7:00 PM",
-            "detail": "McClure is managing a foot injury, and there is no timetable for his return.",
-            "source": "RotoWire + Covers",
-            "return": "Nov 7th"
-          },
-          {
-            "player": "Ty Thompson",
+            "player": "T. Thompson",
             "position": "TE",
-            "status": "Out",
-            "injury": "Undisclosed",
-            "updated": "Oct 30 7:00 PM",
+            "status": "Questionable",
+            "injury": "Toe",
+            "updated": "Sat, Oct 17",
             "detail": "Thompson is battling due to an undisclosed injury, and it is uncertain if he will face UTSA on Saturday, October 24th.",
-            "source": "RotoWire + Covers",
-            "return": "Nov 7th"
+            "source": "Covers"
           },
           {
-            "player": "Antwaun Parham",
+            "player": "A. Parham",
             "position": "WR",
-            "status": "Out",
+            "status": "Questionable",
             "injury": "Undisclosed",
-            "updated": "Oct 30 7:00 PM",
+            "updated": "Sat, Oct 17",
             "detail": "Parham is nursing with an undisclosed injury, and it is uncertain if he will face UTSA on Saturday, October 24th.",
-            "source": "RotoWire + Covers",
-            "return": "Nov 7th"
+            "source": "Covers"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -22981,7 +22967,7 @@
       "id": "BAY@UCF",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "live",
+      "game_state": "final",
       "kickoff_utc": "2026-10-30T23:30Z",
       "away": "BAY",
       "home": "UCF",
@@ -22993,16 +22979,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/2116.png",
       "away_color": "#154734",
       "home_color": "#000000",
-      "away_record": "4-3",
-      "home_record": "4-3",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "5-3",
+      "home_record": "4-4",
+      "away_score": "41",
+      "home_score": "9",
       "venue": "Acrisure Bounce House",
       "venue_city": "Orlando, FL",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 78,
-      "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -24884,15 +24868,6 @@
             "source": "Covers"
           },
           {
-            "player": "A. Barnett III",
-            "position": "QB",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Tue, Oct 20",
-            "source": "RotoWire + Covers",
-            "return": "10/30/2026"
-          },
-          {
             "player": "D. Wade",
             "position": "TE",
             "status": "Questionable",
@@ -26357,8 +26332,6 @@
               "of": 176
             }
           },
-          "status": "Questionable",
-          "injury": "Undisclosed",
           "depth_rank": 2
         }
       ],
@@ -26629,7 +26602,7 @@
       "id": "KENT@SAC",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "final",
       "kickoff_utc": "2026-10-31T02:30Z",
       "away": "KENT",
       "home": "SAC",
@@ -26641,16 +26614,14 @@
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/16.png",
       "away_color": "#002664",
       "home_color": "#00573c",
-      "away_record": "3-5",
-      "home_record": "1-7",
-      "away_score": "0",
-      "home_score": "0",
+      "away_record": "3-6",
+      "home_record": "2-7",
+      "away_score": "10",
+      "home_score": "31",
       "venue": "Hornet Stadium",
       "venue_city": "Sacramento, CA",
       "roof": "Outdoor",
-      "broadcast": "ESPN2",
-      "weather_temp": 63,
-      "weather_cond": "Partly cloudy",
+      "broadcast": "ESPNU",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -31890,15 +31861,6 @@
       "away_injuries": {
         "players": [
           {
-            "player": "D. Austin",
-            "position": "S",
-            "status": "Out",
-            "injury": "Undisclosed",
-            "updated": "Fri, Sep 25",
-            "detail": "Austin has been shut down for the remainder of the season due to an undisclosed injury.",
-            "source": "Covers"
-          },
-          {
             "player": "T. Spivey",
             "position": "WR",
             "status": "Out",
@@ -31951,6 +31913,16 @@
             "updated": "Sat, Oct 10",
             "detail": "Brennan is nursing with an undisclosed injury, and it is unclear if he will play against Iowa State on Saturday, October 24th.",
             "source": "Covers"
+          },
+          {
+            "player": "Daylen Austin",
+            "position": "S",
+            "status": "OFS",
+            "injury": "Undisclosed",
+            "updated": "Oct 31 12:00 PM",
+            "detail": "Austin has been shut down for the remainder of the season due to an undisclosed injury.",
+            "source": "RotoWire + Covers",
+            "return": "Mar 1st"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -35567,6 +35539,15 @@
       },
       "away_injuries": {
         "players": [
+          {
+            "player": "Sedric Addison",
+            "position": "RB",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "return": "Nov 7th",
+            "updated": "Oct 31 12:00 PM",
+            "source": "RotoWire"
+          },
           {
             "player": "E. Dickens",
             "position": "RB",
@@ -52708,6 +52689,15 @@
             "return": "3/1/2027"
           },
           {
+            "player": "Carter Bashir",
+            "position": "TE",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "return": "Nov 7th",
+            "updated": "Oct 31 12:00 PM",
+            "source": "RotoWire"
+          },
+          {
             "player": "N. Edwards",
             "position": "WR",
             "status": "Out",
@@ -52726,14 +52716,14 @@
             "source": "Covers"
           },
           {
-            "player": "S. Angeli",
+            "player": "Steve Angeli",
             "position": "QB",
-            "status": "Questionable",
+            "status": "Probable",
             "injury": "Undisclosed",
-            "updated": "Sun, Oct 18",
+            "updated": "Oct 31 12:00 PM",
             "detail": "Angeli has an undisclosed injury, and it is uncertain if he will suit up against North Carolina on Saturday, October 24th.",
             "source": "RotoWire + Covers",
-            "return": "10/31/2026"
+            "return": "Oct 31st"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -54002,7 +53992,7 @@
               "of": 176
             }
           },
-          "status": "Questionable",
+          "status": "Probable",
           "injury": "Undisclosed",
           "depth_rank": 1
         },
@@ -56293,13 +56283,14 @@
             "source": "Covers"
           },
           {
-            "player": "J. Alexis",
+            "player": "Jaden Alexis",
             "position": "WR",
             "status": "Questionable",
             "injury": "Undisclosed",
-            "updated": "Sun, Oct 18",
+            "updated": "Oct 31 12:00 PM",
             "detail": "Alexis is battling with an undisclosed injury, and and it is unclear if he will play against the UAB on Saturday, 31st Oct.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "Oct 31st"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -56329,7 +56320,7 @@
       "venue_city": "Iowa City, IA",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 57,
+      "weather_temp": 55,
       "weather_cond": "Showers",
       "away_form": {
         "rates": {
@@ -102538,6 +102529,15 @@
             "updated": "Sat, Oct 17",
             "detail": "Brown III is nursing a knee injury, and it has yet to be determined if he will play against Georgia on Saturday, October 31th.",
             "source": "Covers"
+          },
+          {
+            "player": "A. Philo",
+            "position": "QB",
+            "status": "Probable",
+            "injury": "Undisclosed",
+            "updated": "Sat, Oct 17",
+            "source": "RotoWire + Covers",
+            "return": "10/31/2026"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -117367,7 +117367,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "MW+",
-      "weather_temp": 53,
+      "weather_temp": 52,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -126482,7 +126482,7 @@
       "roof": "Outdoor",
       "broadcast": "MW+",
       "weather_temp": 66,
-      "weather_cond": "Partly sunny",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -148575,8 +148575,8 @@
       "venue_city": "San Diego, CA",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 69,
-      "weather_cond": "Cloudy",
+      "weather_temp": 71,
+      "weather_cond": "Showers",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -156249,7 +156249,7 @@
       "venue_city": "Chapel Hill, NC",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 58,
+      "weather_temp": 60,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -171846,7 +171846,7 @@
       "roof": "Outdoor",
       "broadcast": "BTN",
       "weather_temp": 63,
-      "weather_cond": "Showers",
+      "weather_cond": "Rain",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -177321,7 +177321,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "CBSSN",
-      "weather_temp": 67,
+      "weather_temp": 65,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -180089,8 +180089,8 @@
       "venue_city": "Fresno, CA",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 62,
-      "weather_cond": "Showers",
+      "weather_temp": 63,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
