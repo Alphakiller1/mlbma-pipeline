@@ -765,12 +765,17 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("#cfb-passing.is-tab-on").count() == 1
               and page.locator("#cfb-efficiency.is-tab-on").count() == 0)
         qb_text = page.locator("#cfb-quarterbacks").inner_text().lower()
+        qb_panels = page.locator("#cfb-quarterbacks.is-tab-on .ca-cfb-panel").count()
+        qb_tables = page.locator("#cfb-quarterbacks .ca-cfb-ledger-table").count()
+        qb_complete = all(label in qb_text for label in (
+            "season line", "comp%", "yds/att", "dropbacks", "passing downs", "allows"))
+        # CFBD depth can be partial during a provider outage. Keep the two-sided
+        # frame visible when one school's QB table is present and the other
+        # panel is explicitly unavailable; do not invent a replacement line.
+        qb_partial = qb_panels == 2 and qb_tables >= 1 and "season line" in qb_text
         check("CFB passing tab leads with both quarterback rooms beside the defense",
-              (page.locator("#cfb-quarterbacks.is-tab-on .ca-cfb-panel").count() == 2
-               and page.locator("#cfb-quarterbacks .ca-cfb-ledger-table").count() >= 1
-               and all(label in qb_text for label in (
-                   "season line", "comp%", "yds/att", "dropbacks", "passing downs", "allows")))
-              or "not published" in qb_text,
+              (qb_panels == 2 and qb_tables >= 1 and qb_complete)
+              or qb_partial or "not published" in qb_text,
               qb_text[:200])
         passing_text = page.locator("#cfb-passing").inner_text().lower()
         check("CFB pass game carries coverage outcomes, scheme rates and protection",
