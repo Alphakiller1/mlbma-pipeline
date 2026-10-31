@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-10-31",
- "generated_at_utc": "2026-10-31T12:30:53+00:00",
+ "generated_at_utc": "2026-10-31T21:18:30+00:00",
  "data_through_utc": "2026-10-31T02:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -121,8 +121,8 @@
    "id": "401909896",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/31 - 3:00 PM EDT",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-10-31T19:00Z",
    "away": "POR",
    "home": "UTAH",
@@ -132,12 +132,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/utah.png",
    "away_color": "#e03a3e",
    "home_color": "#4e008e",
-   "away_record": "3-1",
-   "home_record": "1-4",
+   "away_record": "4-1",
+   "home_record": "1-5",
    "away_split_record": "2-0",
    "home_split_record": "1-3",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 112,
+   "home_score": 90,
    "venue": "Delta Center",
    "venue_city": "Salt Lake City, UT",
    "broadcast": "NBA League Pass / KUNP 16 / BlazerVision / KJZZ-TV / Jazz+",
@@ -2021,7 +2021,7 @@
      "season_with_club": 1,
      "first_season_with_club": true,
      "seasons_as_head_coach": 1,
-     "career_record": "3-0",
+     "career_record": "3-1",
      "career": [],
      "philosophy": {
       "seasons": 0,
@@ -3329,7 +3329,7 @@
       "player_name": "Robert Williams III",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066211.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 18.0,
       "ppg": 9.7,
       "height_in": 81.0,
@@ -3471,24 +3471,6 @@
     "altitude": true
    },
    "away_injuries": [
-    {
-     "player_id": "4066211",
-     "player_name": "Robert Williams III",
-     "status": "Day-To-Day",
-     "detail": "Left Knee",
-     "comment": "Williams (knee) is questionable for Saturday's game against the Jazz.",
-     "date": "2026-10-30T23:11Z",
-     "return_date": "2026-10-31"
-    },
-    {
-     "player_id": "4706557",
-     "player_name": "Chris Youngblood",
-     "status": "Out",
-     "detail": "Left Ankle Soreness",
-     "comment": "Youngblood (ankle) is questionable for Saturday's game against Utah.",
-     "date": "2026-10-30T23:09Z",
-     "return_date": "2026-10-31"
-    },
     {
      "player_id": "4279888",
      "player_name": "Ja Morant",
@@ -6193,7 +6175,7 @@
       "player_name": "Lauri Markkanen",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066336.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 28.5,
       "ppg": 16.0,
       "height_in": 85.0,
@@ -7163,15 +7145,6 @@
    },
    "home_injuries": [
     {
-     "player_id": "4066336",
-     "player_name": "Lauri Markkanen",
-     "status": "Day-To-Day",
-     "detail": "Right Wrist Not Specified",
-     "comment": "Markkanen (wrist) is listed as questionable for Saturday's game against Portland.",
-     "date": "2026-10-30T23:13Z",
-     "return_date": "2026-10-31"
-    },
-    {
      "player_id": "4277961",
      "player_name": "Jaren Jackson Jr.",
      "status": "Out",
@@ -7204,8 +7177,8 @@
    "id": "401909897",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/31 - 6:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "Halftime",
    "kickoff_utc": "2026-10-31T22:00Z",
    "away": "PHI",
    "home": "CHA",
@@ -7219,8 +7192,8 @@
    "home_record": "3-3",
    "away_split_record": "2-0",
    "home_split_record": "2-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 57,
+   "home_score": 54,
    "venue": "Spectrum Center",
    "venue_city": "Charlotte, NC",
    "broadcast": "NBA TV",
@@ -9135,7 +9108,7 @@
      "season_with_club": 4,
      "first_season_with_club": false,
      "seasons_as_head_coach": 9,
-     "career_record": "347-294",
+     "career_record": "348-294",
      "career": [
       {
        "season_label": "2018-19",
@@ -9804,7 +9777,7 @@
       "player_name": "Joel Embiid",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3059318.png",
-      "status": null,
+      "status": "Out",
       "mpg": 35.0,
       "ppg": 19.2,
       "height_in": 84.0,
@@ -9972,7 +9945,7 @@
       "player_name": "LeBron James",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/1966.png",
-      "status": null,
+      "status": "Out",
       "mpg": 33.4,
       "ppg": 16.4,
       "height_in": 81.0,
@@ -10981,31 +10954,49 @@
    },
    "away_injuries": [
     {
-     "player_id": "3917376",
-     "player_name": "Jaylen Brown",
-     "status": "Day-To-Day",
-     "detail": "Knee",
-     "comment": "Brown (knee) is out for Friday's game against the Knicks.",
-     "date": "2026-10-31T04:58Z",
-     "return_date": "2026-10-31"
-    },
-    {
      "player_id": "4432446",
      "player_name": "Jabari Walker",
      "status": "Out",
      "detail": "Left Knee Soreness",
-     "comment": "Walker (knee) has been ruled out for Friday's game versus New York.",
-     "date": "2026-10-29T21:34Z",
+     "comment": "Walker (knee) is questionable for Saturday's game in Charlotte.",
+     "date": "2026-10-31T17:25Z",
      "return_date": "2026-10-31"
+    },
+    {
+     "player_id": "1966",
+     "player_name": "LeBron James",
+     "status": "Out",
+     "detail": "Back",
+     "comment": "James (back) has been ruled out for Saturday's meeting in Charlotte.",
+     "date": "2026-10-31T17:16Z",
+     "return_date": "2026-11-02"
     },
     {
      "player_id": "3904625",
      "player_name": "Tacko Fall",
      "status": "Out",
      "detail": "Left Quadriceps Strain",
-     "comment": "Fall (quadriceps) is out for Wednesday's game in Indiana.",
-     "date": "2026-10-27T21:10Z",
-     "return_date": "2026-11-04"
+     "comment": "Fall (quad) is questionable to face the Hornets on Saturday.",
+     "date": "2026-10-31T17:14Z",
+     "return_date": "2026-10-31"
+    },
+    {
+     "player_id": "3059318",
+     "player_name": "Joel Embiid",
+     "status": "Out",
+     "detail": "Right Foot",
+     "comment": "Embiid (foot) is out for Saturday's game in Charlotte.",
+     "date": "2026-10-31T17:12Z",
+     "return_date": "2026-11-02"
+    },
+    {
+     "player_id": "3917376",
+     "player_name": "Jaylen Brown",
+     "status": "Day-To-Day",
+     "detail": "Left Knee",
+     "comment": "Brown (knee) is questionable for Saturday's game in Charlotte.",
+     "date": "2026-10-31T17:08Z",
+     "return_date": "2026-10-31"
     },
     {
      "player_id": "4870562",
@@ -12936,7 +12927,7 @@
      "season_with_club": 3,
      "first_season_with_club": false,
      "seasons_as_head_coach": 3,
-     "career_record": "66-103",
+     "career_record": "66-104",
      "career": [
       {
        "season_label": "2024-25",
@@ -14743,8 +14734,8 @@
    "id": "401909898",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "10/31 - 7:00 PM EDT",
+   "game_state": "live",
+   "status_detail": "7:02 - 1st",
    "kickoff_utc": "2026-10-31T23:00Z",
    "away": "ATL",
    "home": "NO",
@@ -14758,8 +14749,8 @@
    "home_record": "1-4",
    "away_split_record": "2-1",
    "home_split_record": "1-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 6,
+   "home_score": 10,
    "venue": "Smoothie King Center",
    "venue_city": "New Orleans, LA",
    "broadcast": "NBA League Pass / GCSEN / Pelicans.com",
@@ -16674,7 +16665,7 @@
      "season_with_club": 5,
      "first_season_with_club": false,
      "seasons_as_head_coach": 13,
-     "career_record": "506-402",
+     "career_record": "507-402",
      "career": [
       {
        "season_label": "2018-19",
@@ -20436,7 +20427,7 @@
      "season_with_club": 1,
      "first_season_with_club": true,
      "seasons_as_head_coach": 6,
-     "career_record": "189-225",
+     "career_record": "190-225",
      "career": [
       {
        "season_label": "2021-22",
@@ -24180,7 +24171,7 @@
      "season_with_club": 3,
      "first_season_with_club": false,
      "seasons_as_head_coach": 3,
-     "career_record": "49-88",
+     "career_record": "49-89",
      "career": [
       {
        "season_label": "2024-25",
@@ -27635,7 +27626,7 @@
      "season_with_club": 3,
      "first_season_with_club": false,
      "seasons_as_head_coach": 3,
-     "career_record": "33-62",
+     "career_record": "34-62",
      "career": [
       {
        "season_label": "2024-25",
@@ -31185,7 +31176,7 @@
      "season_with_club": 3,
      "first_season_with_club": false,
      "seasons_as_head_coach": 7,
-     "career_record": "237-239",
+     "career_record": "237-240",
      "career": [
       {
        "season_label": "2018-19",
@@ -32925,6 +32916,15 @@
    },
    "away_injuries": [
     {
+     "player_id": "5041951",
+     "player_name": "Meleek Thomas",
+     "status": "Day-To-Day",
+     "detail": "Foot",
+     "comment": "Thomas (foot) has been upgraded to probable ahead of Saturday's meeting in Milwaukee.",
+     "date": "2026-10-31T18:22Z",
+     "return_date": "2026-10-31"
+    },
+    {
      "player_id": "4683747",
      "player_name": "Jaylon Tyson",
      "status": "Out",
@@ -32932,15 +32932,6 @@
      "comment": "Tyson (ankle) has been ruled out for Saturday's game against the Bucks.",
      "date": "2026-10-30T20:52Z",
      "return_date": "2026-11-02"
-    },
-    {
-     "player_id": "5041951",
-     "player_name": "Meleek Thomas",
-     "status": "Day-To-Day",
-     "detail": "Foot",
-     "comment": "Thomas (foot) is questionable for Saturday's game against the Bucks.",
-     "date": "2026-10-30T20:51Z",
-     "return_date": "2026-10-31"
     }
    ],
    "home_form": {
@@ -38525,7 +38516,7 @@
      "season_with_club": 7,
      "first_season_with_club": false,
      "seasons_as_head_coach": 7,
-     "career_record": "261-195",
+     "career_record": "262-195",
      "career": [
       {
        "season_label": "2020-21",
@@ -39035,7 +39026,7 @@
       "player_name": "Rudy Gobert",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3032976.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 30.0,
       "ppg": 7.0,
       "height_in": 85.0,
@@ -40249,6 +40240,15 @@
     "altitude": false
    },
    "away_injuries": [
+    {
+     "player_id": "3032976",
+     "player_name": "Rudy Gobert",
+     "status": "Day-To-Day",
+     "detail": "Back Spasms",
+     "comment": "Gobert (back) is listed as questionable for Saturday's game at San Antonio.",
+     "date": "2026-10-31T18:03Z",
+     "return_date": "2026-10-31"
+    },
     {
      "player_id": "4594268",
      "player_name": "Anthony Edwards",
@@ -43150,7 +43150,7 @@
       "player_name": "Stephon Castle",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4845367.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 30.8,
       "ppg": 17.4,
       "height_in": 78.0,
@@ -43907,6 +43907,15 @@
     "altitude": false
    },
    "home_injuries": [
+    {
+     "player_id": "4845367",
+     "player_name": "Stephon Castle",
+     "status": "Day-To-Day",
+     "detail": "Head Mild",
+     "comment": "Castle (migraine) is questionable for Saturday's game against the Timberwolves, Paul Garcia of ProjectSpurs.com reports.",
+     "date": "2026-10-31T19:06Z",
+     "return_date": "2026-10-31"
+    },
     {
      "player_id": "6440",
      "player_name": "Tobias Harris",
@@ -44800,25 +44809,6 @@
      "moved": false
     },
     {
-     "player_id": "4397018",
-     "player_name": "Ochai Agbaji",
-     "position": "G",
-     "games": 62,
-     "starts": 13,
-     "mpg": 15.7,
-     "ppg": 5.1,
-     "rpg": 2.3,
-     "apg": 0.8,
-     "spg": 0.4,
-     "bpg": 0.3,
-     "tpg": 0.5,
-     "three_pm": 0.5,
-     "ts_pct": 0.525,
-     "three_pct": 0.266,
-     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4397018.png",
-     "moved": true
-    },
-    {
      "player_id": "4593803",
      "player_name": "Jalen Williams",
      "position": "G",
@@ -44873,6 +44863,25 @@
      "ts_pct": 0.569,
      "three_pct": 0.388,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3133626.png",
+     "moved": false
+    },
+    {
+     "player_id": "4684208",
+     "player_name": "Brooks Barnhizer",
+     "position": "F",
+     "games": 40,
+     "starts": 0,
+     "mpg": 8.7,
+     "ppg": 1.7,
+     "rpg": 1.9,
+     "apg": 0.6,
+     "spg": 0.3,
+     "bpg": 0.1,
+     "tpg": 0.2,
+     "three_pm": 0.2,
+     "ts_pct": 0.451,
+     "three_pct": 0.292,
+     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4684208.png",
      "moved": false
     }
    ],
@@ -49505,7 +49514,7 @@
      "season_with_club": 4,
      "first_season_with_club": false,
      "seasons_as_head_coach": 5,
-     "career_record": "201-132",
+     "career_record": "201-133",
      "career": [
       {
        "season_label": "2021-22",
@@ -50372,7 +50381,7 @@
       "player_name": "Fred VanVleet",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/2991230.png",
-      "status": null,
+      "status": "Out",
       "mpg": 30.6,
       "ppg": 13.0,
       "height_in": null,
@@ -50640,7 +50649,7 @@
       "player_name": "Alperen Sengun",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4871144.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 34.0,
       "ppg": 24.5,
       "height_in": 83.0,
@@ -50799,7 +50808,7 @@
       "player_name": "Reed Sheppard",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4711272.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 23.2,
       "ppg": 10.5,
       "height_in": 74.0,
@@ -51278,20 +51287,20 @@
     {
      "player_id": "4711272",
      "player_name": "Reed Sheppard",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Back",
-     "comment": "Houston picked up Sheppard's (back) fourth-year team option Friday, per Lachard Binkley of SI.com.",
-     "date": "2026-10-31T05:00Z",
-     "return_date": "2026-10-31"
+     "comment": "Sheppard (back) is out for Saturday's game against the Thunder.",
+     "date": "2026-10-31T17:33Z",
+     "return_date": "2026-11-02"
     },
     {
-     "player_id": "4871144",
-     "player_name": "Alperen Sengun",
-     "status": "Day-To-Day",
-     "detail": "Back Soreness",
-     "comment": "Sengun (back) has been ruled out for Friday's game against the Mavericks, Mike Curtis of The Dallas Morning News reports.",
-     "date": "2026-10-31T05:00Z",
-     "return_date": "2026-10-31"
+     "player_id": "2991230",
+     "player_name": "Fred VanVleet",
+     "status": "Out",
+     "detail": "Right Knee",
+     "comment": "VanVleet (knee) won't play Saturday against the Thunder.",
+     "date": "2026-10-31T17:31Z",
+     "return_date": "2026-11-02"
     },
     {
      "player_id": "2991235",
@@ -51305,5 +51314,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-10-31T18:28:02+00:00"
+ "published_at_utc": "2026-10-31T23:18:46+00:00"
 }
