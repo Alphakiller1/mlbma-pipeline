@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-11-01T20:48:25Z",
+  "generated_at_utc": "2026-11-01T23:05:49Z",
   "data_through_utc": "2026-11-01T20:27:44+00:00",
   "season": 2026,
   "week": 8,
@@ -4906,20 +4906,20 @@
   },
   "recent": {
     "ARI": {
-      "games": 7,
-      "through": "2026-10-25"
+      "games": 8,
+      "through": "2026-11-01"
     },
     "ATL": {
-      "games": 7,
-      "through": "2026-10-25"
+      "games": 8,
+      "through": "2026-11-01"
     },
     "BAL": {
-      "games": 7,
-      "through": "2026-10-25"
+      "games": 8,
+      "through": "2026-11-01"
     },
     "BUF": {
-      "games": 6,
-      "through": "2026-10-18"
+      "games": 7,
+      "through": "2026-11-01"
     },
     "CAR": {
       "games": 7,
@@ -4930,36 +4930,36 @@
       "through": "2026-10-23"
     },
     "CIN": {
-      "games": 6,
-      "through": "2026-10-25"
+      "games": 7,
+      "through": "2026-11-01"
     },
     "CLE": {
-      "games": 7,
-      "through": "2026-10-25"
+      "games": 8,
+      "through": "2026-11-01"
     },
     "DAL": {
-      "games": 7,
-      "through": "2026-10-27"
+      "games": 8,
+      "through": "2026-11-01"
     },
     "DEN": {
       "games": 7,
       "through": "2026-10-25"
     },
     "DET": {
-      "games": 6,
-      "through": "2026-10-25"
+      "games": 7,
+      "through": "2026-11-01"
     },
     "GB": {
       "games": 8,
       "through": "2026-10-30"
     },
     "IND": {
-      "games": 7,
-      "through": "2026-10-25"
+      "games": 8,
+      "through": "2026-11-01"
     },
     "JAX": {
-      "games": 6,
-      "through": "2026-10-18"
+      "games": 7,
+      "through": "2026-11-01"
     },
     "KC": {
       "games": 6,
@@ -4974,44 +4974,44 @@
       "through": "2026-10-25"
     },
     "LV": {
-      "games": 7,
-      "through": "2026-10-25"
+      "games": 8,
+      "through": "2026-11-01"
     },
     "MIA": {
       "games": 6,
       "through": "2026-10-25"
     },
     "MIN": {
-      "games": 6,
-      "through": "2026-10-25"
+      "games": 7,
+      "through": "2026-11-01"
     },
     "NE": {
       "games": 7,
       "through": "2026-10-23"
     },
     "NYJ": {
-      "games": 7,
-      "through": "2026-10-25"
+      "games": 8,
+      "through": "2026-11-01"
     },
     "PHI": {
       "games": 7,
       "through": "2026-10-27"
     },
     "PIT": {
-      "games": 7,
-      "through": "2026-10-25"
+      "games": 8,
+      "through": "2026-11-01"
     },
     "SEA": {
       "games": 7,
       "through": "2026-10-26"
     },
     "TB": {
-      "games": 7,
-      "through": "2026-10-25"
+      "games": 8,
+      "through": "2026-11-01"
     },
     "TEN": {
-      "games": 7,
-      "through": "2026-10-25"
+      "games": 8,
+      "through": "2026-11-01"
     },
     "WSH": {
       "games": 6,
