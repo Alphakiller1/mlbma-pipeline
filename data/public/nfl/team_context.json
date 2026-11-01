@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-11-01T17:11:19Z",
-  "data_through_utc": "2026-10-29T21:05:00+00:00",
+  "generated_at_utc": "2026-11-01T19:38:00Z",
+  "data_through_utc": "2026-11-01T17:13:56+00:00",
   "season": 2026,
   "week": 8,
   "note": "Ten observed rates per club with ranks recomputed from each rate against the 32-team pool. No power rating, projected win total or playoff probability is present.",
