@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-01",
- "generated_at_utc": "2026-11-01T06:52:37+00:00",
+ "generated_at_utc": "2026-11-01T17:12:11+00:00",
  "data_through_utc": "2026-11-01T00:30Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -3286,7 +3286,7 @@
       "player_name": "Mitchell Robinson",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4351852.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 20.0,
       "ppg": 6.6,
       "height_in": 84.0,
@@ -3894,11 +3894,11 @@
     {
      "player_id": "4351852",
      "player_name": "Mitchell Robinson",
-     "status": "Day-To-Day",
-     "detail": "Rest",
-     "comment": "Robinson (rest) is questionable for Sunday's game in Orlando, Jay King of The Athletic reports.",
-     "date": "2026-10-31T20:32Z",
-     "return_date": "2026-11-01"
+     "status": "Out",
+     "detail": "Rest Not Specified",
+     "comment": "Robinson (rest) has been ruled out for Sunday's game against the Magic.",
+     "date": "2026-11-01T15:05Z",
+     "return_date": "2026-11-02"
     },
     {
      "player_id": "4433188",
@@ -14786,6 +14786,15 @@
    },
    "home_injuries": [
     {
+     "player_id": "2530530",
+     "player_name": "T.J. McConnell",
+     "status": "Out",
+     "detail": "Right Hamstring Strain",
+     "comment": "Indiana recalled McConnell (hamstring) from the G League's Noblesville Boom on Saturday.",
+     "date": "2026-11-01T16:26Z",
+     "return_date": "2026-11-02"
+    },
+    {
      "player_id": "4017837",
      "player_name": "Ivica Zubac",
      "status": "Out",
@@ -14811,15 +14820,6 @@
      "comment": "Toppin (back) is questionable for Sunday's game against the Nets.",
      "date": "2026-10-31T21:10Z",
      "return_date": "2026-11-01"
-    },
-    {
-     "player_id": "2530530",
-     "player_name": "T.J. McConnell",
-     "status": "Out",
-     "detail": "Right Hamstring Strain",
-     "comment": "McConnell (hamstring) is practicing in the G League at Noblesville Boom training camp, per Alex Golden of SI.com.",
-     "date": "2026-10-30T19:09Z",
-     "return_date": "2026-11-02"
     },
     {
      "player_id": "5157066",
@@ -18554,30 +18554,12 @@
    },
    "away_injuries": [
     {
-     "player_id": "5108024",
-     "player_name": "Yanic Konan Niederhauser",
-     "status": "Out",
-     "detail": "Right Foot Surgery",
-     "comment": "Niederhauser (foot) had his third-year team option picked up Thursday by the Clippers, Ohm Youngmisuk of ESPN.com reports.",
-     "date": "2026-10-29T18:44Z",
-     "return_date": "2026-11-08"
-    },
-    {
      "player_id": "4065778",
      "player_name": "Max Strus",
      "status": "Out",
      "detail": "Right Foot Plantar Fasciitis",
      "comment": "Strus (foot) is making progress but is set to miss at least one more week, Ohm Youngmisuk of ESPN.com reports.",
      "date": "2026-10-29T01:03Z",
-     "return_date": "2026-11-08"
-    },
-    {
-     "player_id": "3913176",
-     "player_name": "Brandon Ingram",
-     "status": "Out",
-     "detail": "Right Achilles Surgery",
-     "comment": "Ingram (Achilles) is making progress but is set to miss at least one more week, Ohm Youngmisuk of ESPN.com reports.",
-     "date": "2026-10-29T01:00Z",
      "return_date": "2026-11-08"
     },
     {
@@ -29457,6 +29439,15 @@
    },
    "home_injuries": [
     {
+     "player_id": "5060631",
+     "player_name": "Adou Thiero",
+     "status": "Out",
+     "detail": "Left Knee Inflammation",
+     "comment": "Thiero (knee) has been ruled out for Sunday's game against the Raptors.",
+     "date": "2026-11-01T15:04Z",
+     "return_date": "2026-11-09"
+    },
+    {
      "player_id": "4433137",
      "player_name": "Ziaire Williams",
      "status": "Day-To-Day",
@@ -29464,18 +29455,9 @@
      "comment": "Williams (foot) is questionable for Sunday's game against the Raptors, Law Murray of The Athletic reports.",
      "date": "2026-11-01T00:04Z",
      "return_date": "2026-11-01"
-    },
-    {
-     "player_id": "5060631",
-     "player_name": "Adou Thiero",
-     "status": "Out",
-     "detail": "Left Knee Inflammation",
-     "comment": "Thiero (knee) has been ruled out for Friday's game against the Warriors.",
-     "date": "2026-10-30T00:05Z",
-     "return_date": "2026-11-01"
     }
    ]
   }
  ],
- "published_at_utc": "2026-11-01T11:43:05+00:00"
+ "published_at_utc": "2026-11-01T18:52:50+00:00"
 }
