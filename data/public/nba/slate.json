@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-01",
- "generated_at_utc": "2026-11-01T23:15:26+00:00",
+ "generated_at_utc": "2026-11-01T23:36:20+00:00",
  "data_through_utc": "2026-11-01T20:30Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -7543,7 +7543,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "Halftime",
+   "status_detail": "7:15 - 4th",
    "kickoff_utc": "2026-11-01T22:00Z",
    "away": "BKN",
    "home": "IND",
@@ -7557,8 +7557,8 @@
    "home_record": "2-4",
    "away_split_record": "0-2",
    "home_split_record": "0-2",
-   "away_score": 43,
-   "home_score": 40,
+   "away_score": 82,
+   "home_score": 74,
    "venue": "Gainbridge Fieldhouse",
    "venue_city": "Indianapolis, IN",
    "broadcast": "NBA League Pass / DAZN (YES) / DAZN IND",
@@ -29590,5 +29590,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-01T23:30:47+00:00"
+ "published_at_utc": "2026-11-02T00:22:40+00:00"
 }
