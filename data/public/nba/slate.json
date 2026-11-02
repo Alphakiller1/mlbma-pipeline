@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-02",
- "generated_at_utc": "2026-11-02T08:20:02+00:00",
+ "generated_at_utc": "2026-11-02T15:54:07+00:00",
  "data_through_utc": "2026-11-02T02:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -37373,8 +37373,8 @@
      "player_name": "Jonathan Isaac",
      "status": "Out",
      "detail": "Left Knee Not Specified",
-     "comment": "Isaac (knee) is out for Friday's game in Toronto.",
-     "date": "2026-10-29T18:29Z",
+     "comment": "Orlando recalled Isaac (knee) from the G League's Osceola Magic on Sunday.",
+     "date": "2026-11-02T15:22Z",
      "return_date": "2026-11-10"
     },
     {
@@ -41144,15 +41144,6 @@
      "detail": "Hamstring",
      "comment": "Claxton (hamstring) is listed as doubtful for Monday's game against Philadelphia.",
      "date": "2026-11-01T21:08Z",
-     "return_date": "2026-11-04"
-    },
-    {
-     "player_id": "4848625",
-     "player_name": "Dailyn Swain",
-     "status": "Day-To-Day",
-     "detail": "Back Soreness",
-     "comment": "Swain (back) has been ruled out for Friday's game against Boston.",
-     "date": "2026-10-31T04:59Z",
      "return_date": "2026-11-02"
     }
    ],
@@ -51921,7 +51912,7 @@
      "detail": "Right Knee Surgery",
      "comment": "Aldama (knee) is listed as doubtful for Monday's game against the Kings.",
      "date": "2026-11-01T22:51Z",
-     "return_date": "2026-11-04"
+     "return_date": "2026-11-02"
     },
     {
      "player_id": "5279129",
@@ -70274,7 +70265,7 @@
       "player_name": "Mitchell Robinson",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4351852.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 20.0,
       "ppg": 6.6,
       "height_in": 84.0,
@@ -70565,10 +70556,10 @@
     {
      "player_id": "4351852",
      "player_name": "Mitchell Robinson",
-     "status": "Out",
+     "status": "Day-To-Day",
      "detail": "Rest Not Specified",
      "comment": "Robinson (rest) has been ruled out for Sunday's game against the Magic.",
-     "date": "2026-11-01T15:05Z",
+     "date": "2026-11-02T14:19Z",
      "return_date": "2026-11-02"
     },
     {
@@ -95164,7 +95155,7 @@
       "player_name": "Draymond Green",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/6589.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 28.6,
       "ppg": 3.0,
       "height_in": 78.0,
@@ -95332,7 +95323,7 @@
       "player_name": "Stephen Curry",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3975.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 28.2,
       "ppg": 29.2,
       "height_in": 74.0,
@@ -95758,7 +95749,7 @@
       "player_name": "Gui Santos",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4997536.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 20.2,
       "ppg": 7.2,
       "height_in": 79.0,
@@ -96109,28 +96100,28 @@
     {
      "player_id": "4997536",
      "player_name": "Gui Santos",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Knee",
      "comment": "Santos did not play in the second half of Sunday's 124-112 win over the Clippers due to a knee injury and will not play against the Suns on Monday, Danny Emerman of SFStandard.com reports.",
-     "date": "2026-11-02T04:49Z",
+     "date": "2026-11-02T14:20Z",
      "return_date": "2026-11-05"
     },
     {
      "player_id": "6589",
      "player_name": "Draymond Green",
-     "status": "Out",
+     "status": "Day-To-Day",
      "detail": "Rest",
      "comment": "Green (back) is out for Sunday's game against the Clippers.",
-     "date": "2026-10-31T19:51Z",
+     "date": "2026-11-02T14:20Z",
      "return_date": "2026-11-02"
     },
     {
      "player_id": "3975",
      "player_name": "Stephen Curry",
-     "status": "Out",
+     "status": "Day-To-Day",
      "detail": "Rest",
      "comment": "Curry (rest) won't play Sunday against the Clippers, Brett Siegel of ClutchPoints.com reports.",
-     "date": "2026-10-31T19:48Z",
+     "date": "2026-11-02T14:20Z",
      "return_date": "2026-11-02"
     },
     {
@@ -111024,5 +111015,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-02T15:37:33+00:00"
+ "published_at_utc": "2026-11-02T23:26:22+00:00"
 }
