@@ -3,8 +3,8 @@
   "sport": "cfb",
   "season": 2026,
   "week": 10,
-  "generated_at_utc": "2026-11-02T21:50:58Z",
-  "data_through_utc": "2026-11-01T19:53:21Z",
+  "generated_at_utc": "2026-11-02T23:27:59Z",
+  "data_through_utc": "2026-11-02T23:11:46Z",
   "games": [
     {
       "id": "OHIO@AKR",
@@ -45162,7 +45162,7 @@
       "venue_city": "Salt Lake City, UT",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 42,
+      "weather_temp": 45,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -48845,7 +48845,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "ESPN2",
-      "weather_temp": 56,
+      "weather_temp": 55,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -52628,7 +52628,7 @@
       "venue_city": "Chestnut Hill, MA",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 62,
+      "weather_temp": 61,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -60121,7 +60121,7 @@
       "venue_city": "Columbia, MO",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 52,
+      "weather_temp": 54,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -63839,7 +63839,7 @@
       "venue_city": "New Orleans, LA",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 72,
+      "weather_temp": 74,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -67584,7 +67584,7 @@
       "venue_city": "Minneapolis, MN",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 46,
+      "weather_temp": 48,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -71416,7 +71416,7 @@
       "venue_city": "East Hartford, CT",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 62,
+      "weather_temp": 64,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -78864,7 +78864,7 @@
       "venue_city": "West Lafayette, IN",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 49,
+      "weather_temp": 51,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -82493,7 +82493,7 @@
       "venue_city": "Auburn, AL",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 66,
+      "weather_temp": 67,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -89992,7 +89992,7 @@
       "venue_city": "Manhattan, KS",
       "roof": "Outdoor",
       "broadcast": "TNT, HBO Max",
-      "weather_temp": 55,
+      "weather_temp": 57,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -101165,7 +101165,7 @@
       "venue_city": "Columbia, SC",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 74,
+      "weather_temp": 75,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -104893,7 +104893,7 @@
       "venue_city": "Jonesboro, AR",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 61,
+      "weather_temp": 63,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -108475,7 +108475,7 @@
       "venue_city": "Baton Rouge, LA",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 75,
+      "weather_temp": 76,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -115871,7 +115871,7 @@
       "venue_city": "Birmingham, AL",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 69,
+      "weather_temp": 70,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -123293,7 +123293,7 @@
       "venue_city": "Columbus, OH",
       "roof": "Outdoor",
       "broadcast": "CBS",
-      "weather_temp": 53,
+      "weather_temp": 56,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -127171,7 +127171,7 @@
       "venue_city": "Seattle, WA",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 51,
+      "weather_temp": 54,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -134714,7 +134714,7 @@
       "venue_city": "Murfreesboro, TN",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 62,
+      "weather_temp": 63,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -138451,7 +138451,7 @@
       "venue_city": "Lawrence, KS",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 53,
+      "weather_temp": 62,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -153430,7 +153430,7 @@
       "venue_city": "Denton, TX",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 67,
+      "weather_temp": 69,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -157211,7 +157211,7 @@
       "venue_city": "Madison, WI",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 51,
+      "weather_temp": 53,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -164630,7 +164630,7 @@
       "venue_city": "Lafayette, LA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 72,
+      "weather_temp": 74,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -168367,7 +168367,7 @@
       "venue_city": "Fort Collins, CO",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 56,
+      "weather_temp": 58,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -172104,7 +172104,7 @@
       "venue_city": "Knoxville, TN",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 58,
+      "weather_temp": 57,
       "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
@@ -175804,7 +175804,7 @@
       "venue_city": "Jacksonville, AL",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 60,
+      "weather_temp": 57,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -179456,7 +179456,7 @@
       "venue_city": "West Point, NY",
       "roof": "Outdoor",
       "broadcast": "CBS",
-      "weather_temp": 56,
+      "weather_temp": 57,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -190852,7 +190852,7 @@
       "venue_city": "Atlanta, GA",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 62,
+      "weather_temp": 60,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -194626,7 +194626,7 @@
       "venue_city": "Notre Dame, IN",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 42,
+      "weather_temp": 44,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -198237,7 +198237,7 @@
       "venue_city": "Ann Arbor, MI",
       "roof": "Outdoor",
       "broadcast": "Peacock",
-      "weather_temp": 41,
+      "weather_temp": 45,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -205666,7 +205666,7 @@
       "venue_city": "Gainesville, FL",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 69,
+      "weather_temp": 70,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -209346,7 +209346,7 @@
       "venue_city": "Las Cruces, NM",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 69,
+      "weather_temp": 61,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -213109,7 +213109,7 @@
       "venue_city": "Logan, UT",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 45,
+      "weather_temp": 44,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -216910,7 +216910,7 @@
       "venue_city": "El Paso, TX",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 66,
+      "weather_temp": 60,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -220608,7 +220608,7 @@
       "venue_city": "Lubbock, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 60,
+      "weather_temp": 54,
       "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
@@ -224308,7 +224308,7 @@
       "venue_city": "Corvallis, OR",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 52,
+      "weather_temp": 49,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
