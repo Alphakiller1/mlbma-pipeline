@@ -3,8 +3,8 @@
   "sport": "cfb",
   "season": 2026,
   "week": 10,
-  "generated_at_utc": "2026-11-04T19:56:19Z",
-  "data_through_utc": "2026-11-04T01:17:55Z",
+  "generated_at_utc": "2026-11-05T00:57:39Z",
+  "data_through_utc": "2026-11-04T20:47:59Z",
   "games": [
     {
       "id": "OHIO@AKR",
@@ -7420,7 +7420,7 @@
       "id": "BALL@MASS",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-05T00:00Z",
       "away": "BALL",
       "home": "MASS",
@@ -7434,14 +7434,14 @@
       "home_color": "#881c1c",
       "away_record": "3-5",
       "home_record": "4-4",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "7",
+      "home_score": "7",
       "venue": "Warren McGuirk Alumni Stadium",
       "venue_city": "Amherst, MA",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 60,
-      "weather_cond": "Mostly clear",
+      "weather_temp": 62,
+      "weather_cond": "Clear",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -9846,13 +9846,14 @@
       "away_injuries": {
         "players": [
           {
-            "player": "C. Coonrod",
+            "player": "Cole Coonrod",
             "position": "TE",
             "status": "Out",
             "injury": "Undisclosed",
-            "updated": "Sat, Oct 10",
+            "updated": "Nov 4 7:00 PM",
             "detail": "Coonrod is nursing with an undisclosed injury, and he will miss an undetermined length of time.",
-            "source": "Covers"
+            "source": "RotoWire + Covers",
+            "return": "Nov 11th"
           },
           {
             "player": "D. Talbert",
@@ -9907,15 +9908,6 @@
             "updated": "Sun, Oct 18",
             "detail": "Smith is nursing with an undisclosed injury, and it is unknown if he will be available against Sacramento State on Saturday.",
             "source": "Covers"
-          },
-          {
-            "player": "TJ Byard",
-            "position": "WR",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "return": "Nov 4th",
-            "updated": "Nov 4 7:00 PM",
-            "source": "RotoWire"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -11191,7 +11183,7 @@
       "id": "TOL@SAC",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-05T00:00Z",
       "away": "TOL",
       "home": "SAC",
@@ -11205,14 +11197,14 @@
       "home_color": "#00573c",
       "away_record": "6-2",
       "home_record": "2-7",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "7",
+      "home_score": "9",
       "venue": "Hornet Stadium",
       "venue_city": "Sacramento, CA",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 67,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 64,
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -14019,131 +14011,121 @@
           "depth_rank": 1
         },
         {
-          "player_id": "4920192",
-          "player_name": "Carson Conklin",
+          "player_id": "5401458",
+          "player_name": "Brian Salazar",
           "position": "QB",
-          "ranked": true,
+          "ranked": false,
           "line": {
-            "attempts": 46,
-            "completions": 25,
-            "interceptions": 1,
+            "attempts": 10,
+            "completions": 7,
+            "interceptions": 0,
             "completion_pct": {
               "label": "Completion %",
-              "value": 0.5435,
+              "value": 0.7,
               "better": "high",
               "format": "pct",
-              "rank": 174,
+              "rank": 18,
               "of": 191
             },
             "yards_per_attempt": {
               "label": "Yards per attempt",
-              "value": 4.8261,
+              "value": 9.9,
               "better": "high",
               "format": "num",
-              "rank": 187,
+              "rank": 7,
               "of": 191
             },
             "td_rate": {
               "label": "TD rate",
-              "value": 0.0,
+              "value": 0.1,
               "better": "high",
               "format": "pct",
-              "rank": 190,
+              "rank": 5,
               "of": 191
             },
             "int_rate": {
               "label": "INT rate",
-              "value": 0.0217,
+              "value": 0.0,
               "better": "low",
               "format": "pct",
-              "rank": 89,
+              "rank": 1,
               "of": 191
             },
             "yards": {
               "label": "Passing yards",
-              "value": 222.0,
+              "value": 99.0,
               "better": "high",
               "format": "int",
-              "rank": 189,
+              "rank": 192,
               "of": 191
             },
             "touchdowns": {
               "label": "Passing TDs",
-              "value": 0.0,
+              "value": 1.0,
               "better": "high",
               "format": "int",
-              "rank": 190,
+              "rank": 183,
               "of": 191
             }
           },
           "epa_splits": {
             "all": {
               "label": "All plays EPA per play",
-              "value": -0.14,
+              "value": -0.775,
               "better": "high",
               "format": "ppa",
-              "rank": 184,
+              "rank": 192,
               "of": 191
             },
             "pass": {
               "label": "Dropbacks EPA per play",
-              "value": -0.137,
+              "value": -0.775,
               "better": "high",
               "format": "ppa",
-              "rank": 179,
+              "rank": 191,
               "of": 190
-            },
-            "rush": {
-              "label": "Rushes EPA per play",
-              "value": -0.262,
-              "better": "high",
-              "format": "ppa",
-              "rank": 155,
-              "of": 188
             },
             "standardDowns": {
               "label": "Standard downs EPA per play",
-              "value": -0.1,
+              "value": -0.643,
               "better": "high",
               "format": "ppa",
-              "rank": 162,
+              "rank": 191,
               "of": 191
             },
             "passingDowns": {
               "label": "Passing downs EPA per play",
-              "value": -0.177,
+              "value": -0.809,
               "better": "high",
               "format": "ppa",
-              "rank": 183,
+              "rank": 191,
               "of": 190
             },
             "firstDown": {
               "label": "1st down EPA per play",
-              "value": -0.141,
+              "value": -0.643,
               "better": "high",
               "format": "ppa",
-              "rank": 159,
+              "rank": 191,
               "of": 190
             },
             "secondDown": {
               "label": "2nd down EPA per play",
-              "value": -0.065,
+              "value": 0.328,
               "better": "high",
               "format": "ppa",
-              "rank": 168,
+              "rank": 58,
               "of": 189
             },
             "thirdDown": {
               "label": "3rd down EPA per play",
-              "value": 0.06,
+              "value": -0.098,
               "better": "high",
               "format": "ppa",
-              "rank": 176,
+              "rank": 184,
               "of": 190
             }
           },
-          "status": "Questionable",
-          "injury": "Wrist",
           "depth_rank": 2
         }
       ],
@@ -14857,6 +14839,15 @@
       "home_injuries": {
         "players": [
           {
+            "player": "Carson Conklin",
+            "position": "QB",
+            "status": "Out",
+            "injury": "Wrist",
+            "return": "Nov 11th",
+            "updated": "Nov 4 7:00 PM",
+            "source": "RotoWire"
+          },
+          {
             "player": "B. Collins",
             "position": "RB",
             "status": "Out",
@@ -14864,6 +14855,26 @@
             "updated": "Sun, Oct 18",
             "detail": "Collins is dealing with an undisclosed injury, and he will miss an extended period.",
             "source": "Covers"
+          },
+          {
+            "player": "Curron Borders",
+            "position": "RB",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Nov 4 7:00 PM",
+            "detail": "Borders is dealing with an undisclosed injury, and there is no timetable for return.",
+            "source": "RotoWire + Covers",
+            "return": "Nov 11th"
+          },
+          {
+            "player": "Ajon Bryant",
+            "position": "WR",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Nov 4 7:00 PM",
+            "detail": "Bryant is dealing with an undisclosed injury, and team officials have yet to provide an exact return date.",
+            "source": "RotoWire + Covers",
+            "return": "Nov 11th"
           },
           {
             "player": "K. Peevy",
@@ -14875,23 +14886,13 @@
             "source": "Covers"
           },
           {
-            "player": "Carson Conklin",
-            "position": "QB",
-            "status": "Questionable",
-            "injury": "Wrist",
-            "return": "Nov 4th",
+            "player": "Matthew Auau",
+            "position": "WR",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "return": "Nov 11th",
             "updated": "Nov 4 7:00 PM",
             "source": "RotoWire"
-          },
-          {
-            "player": "Curron Borders",
-            "position": "RB",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Nov 4 7:00 PM",
-            "detail": "Borders is dealing with an undisclosed injury, and there is no timetable for return.",
-            "source": "RotoWire + Covers",
-            "return": "Nov 4th"
           },
           {
             "player": "J. Williams",
@@ -14901,25 +14902,6 @@
             "updated": "Sun, Oct 18",
             "detail": "Williams is dealing with an undisclosed injury, and it remain to seen if he will face Ball State on Saturday, October 24th.",
             "source": "Covers"
-          },
-          {
-            "player": "Ajon Bryant",
-            "position": "WR",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Nov 4 7:00 PM",
-            "detail": "Bryant is dealing with an undisclosed injury, and team officials have yet to provide an exact return date.",
-            "source": "RotoWire + Covers",
-            "return": "Nov 4th"
-          },
-          {
-            "player": "Matthew Auau",
-            "position": "WR",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "return": "Nov 4th",
-            "updated": "Nov 4 7:00 PM",
-            "source": "RotoWire"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -14931,7 +14913,7 @@
       "id": "CMU@EMU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-05T00:30Z",
       "away": "CMU",
       "home": "EMU",
@@ -14945,15 +14927,15 @@
       "home_color": "#046a38",
       "away_record": "3-5",
       "home_record": "4-5",
-      "away_score": "0",
+      "away_score": "7",
       "home_score": "0",
       "venue": "Ford Field",
       "venue_city": "Detroit, MI",
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "ESPN2",
-      "weather_temp": 61,
-      "weather_cond": "Showers",
+      "weather_temp": 63,
+      "weather_cond": "Cloudy",
       "neutral": true,
       "away_form": {
         "rates": {
@@ -17991,6 +17973,132 @@
           "depth_rank": 1
         },
         {
+          "player_id": "5144207",
+          "player_name": "Jace Stuckey",
+          "position": "QB",
+          "ranked": false,
+          "line": {
+            "attempts": 5,
+            "completions": 4,
+            "interceptions": 0,
+            "completion_pct": {
+              "label": "Completion %",
+              "value": 0.8,
+              "better": "high",
+              "format": "pct",
+              "rank": 2,
+              "of": 191
+            },
+            "yards_per_attempt": {
+              "label": "Yards per attempt",
+              "value": 4.8,
+              "better": "high",
+              "format": "num",
+              "rank": 189,
+              "of": 191
+            },
+            "td_rate": {
+              "label": "TD rate",
+              "value": 0.0,
+              "better": "high",
+              "format": "pct",
+              "rank": 190,
+              "of": 191
+            },
+            "int_rate": {
+              "label": "INT rate",
+              "value": 0.0,
+              "better": "low",
+              "format": "pct",
+              "rank": 1,
+              "of": 191
+            },
+            "yards": {
+              "label": "Passing yards",
+              "value": 24.0,
+              "better": "high",
+              "format": "int",
+              "rank": 192,
+              "of": 191
+            },
+            "touchdowns": {
+              "label": "Passing TDs",
+              "value": 0.0,
+              "better": "high",
+              "format": "int",
+              "rank": 190,
+              "of": 191
+            }
+          },
+          "epa_splits": {
+            "all": {
+              "label": "All plays EPA per play",
+              "value": -1.385,
+              "better": "high",
+              "format": "ppa",
+              "rank": 192,
+              "of": 191
+            },
+            "pass": {
+              "label": "Dropbacks EPA per play",
+              "value": -1.969,
+              "better": "high",
+              "format": "ppa",
+              "rank": 191,
+              "of": 190
+            },
+            "rush": {
+              "label": "Rushes EPA per play",
+              "value": 0.366,
+              "better": "high",
+              "format": "ppa",
+              "rank": 54,
+              "of": 188
+            },
+            "standardDowns": {
+              "label": "Standard downs EPA per play",
+              "value": -1.764,
+              "better": "high",
+              "format": "ppa",
+              "rank": 192,
+              "of": 191
+            },
+            "passingDowns": {
+              "label": "Passing downs EPA per play",
+              "value": -1.006,
+              "better": "high",
+              "format": "ppa",
+              "rank": 191,
+              "of": 190
+            },
+            "firstDown": {
+              "label": "1st down EPA per play",
+              "value": -0.766,
+              "better": "high",
+              "format": "ppa",
+              "rank": 191,
+              "of": 190
+            },
+            "secondDown": {
+              "label": "2nd down EPA per play",
+              "value": -0.968,
+              "better": "high",
+              "format": "ppa",
+              "rank": 190,
+              "of": 189
+            },
+            "thirdDown": {
+              "label": "3rd down EPA per play",
+              "value": 0.366,
+              "better": "high",
+              "format": "ppa",
+              "rank": 121,
+              "of": 190
+            }
+          },
+          "depth_rank": 2
+        },
+        {
           "player_id": "4690158",
           "player_name": "Noah Kim",
           "position": "QB",
@@ -18114,9 +18222,9 @@
               "of": 190
             }
           },
-          "status": "Questionable",
+          "status": "Out",
           "injury": "Undisclosed",
-          "depth_rank": 2
+          "depth_rank": 3
         }
       ],
       "home_defense_splits": {
@@ -18317,7 +18425,7 @@
             "rank": 505,
             "of": 522
           },
-          "status": "Questionable",
+          "status": "Out",
           "injury": "Undisclosed"
         }
       ],
@@ -18831,6 +18939,15 @@
       "home_injuries": {
         "players": [
           {
+            "player": "N. Kim",
+            "position": "QB",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Sun, Oct 18",
+            "source": "RotoWire + Covers",
+            "return": "11/17/2026"
+          },
+          {
             "player": "N. Jones-Davis",
             "position": "RB",
             "status": "Out",
@@ -18901,16 +19018,6 @@
             "updated": "Sun, Oct 18",
             "detail": "Fishwick is tending to an undisclosed injury, and the severity of the injury ailment is unknown etc.",
             "source": "Covers"
-          },
-          {
-            "player": "N. Kim",
-            "position": "QB",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "updated": "Sun, Oct 18",
-            "detail": "Kim is dealing due to an undisclosed injury, and it is uncertain if he will play against Ohio on Saturday, October 24th.",
-            "source": "RotoWire + Covers",
-            "return": "11/4/2026"
           },
           {
             "player": "A. Sharp",
@@ -22581,7 +22688,7 @@
       "venue_city": "Hattiesburg, MS",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 65,
+      "weather_temp": 66,
       "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
@@ -26353,7 +26460,7 @@
       "venue_city": "Dallas, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 63,
+      "weather_temp": 64,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -30051,7 +30158,7 @@
       "venue_city": "Greenville, NC",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 66,
+      "weather_temp": 67,
       "weather_cond": "Showers",
       "away_form": {
         "rates": {
@@ -33744,7 +33851,7 @@
       "venue_city": "Champaign, IL",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 42,
+      "weather_temp": 43,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -37525,7 +37632,7 @@
       "venue_city": "Reno, NV",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 52,
+      "weather_temp": 53,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -41293,7 +41400,7 @@
       "venue_city": "Tucson, AZ",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 65,
+      "weather_temp": 64,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -48710,7 +48817,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "ESPN2",
-      "weather_temp": 51,
+      "weather_temp": 50,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -52493,7 +52600,7 @@
       "venue_city": "Chestnut Hill, MA",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 62,
+      "weather_temp": 59,
       "weather_cond": "Showers",
       "away_form": {
         "rates": {
@@ -56206,7 +56313,7 @@
       "venue_city": "Waco, TX",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 62,
+      "weather_temp": 63,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -59987,7 +60094,7 @@
       "venue_city": "Columbia, MO",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 47,
+      "weather_temp": 48,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -63705,7 +63812,7 @@
       "venue_city": "New Orleans, LA",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 71,
+      "weather_temp": 70,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -67450,7 +67557,7 @@
       "venue_city": "Minneapolis, MN",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 48,
+      "weather_temp": 45,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -71282,7 +71389,7 @@
       "venue_city": "East Hartford, CT",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 65,
+      "weather_temp": 64,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -78730,7 +78837,7 @@
       "venue_city": "West Lafayette, IN",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 49,
+      "weather_temp": 48,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -82359,7 +82466,7 @@
       "venue_city": "Auburn, AL",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 66,
+      "weather_temp": 65,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -89858,7 +89965,7 @@
       "venue_city": "Manhattan, KS",
       "roof": "Outdoor",
       "broadcast": "TNT",
-      "weather_temp": 52,
+      "weather_temp": 53,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -104759,7 +104866,7 @@
       "venue_city": "Jonesboro, AR",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 56,
+      "weather_temp": 57,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -108341,7 +108448,7 @@
       "venue_city": "Baton Rouge, LA",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 74,
+      "weather_temp": 76,
       "weather_cond": "Hazy sunshine",
       "away_form": {
         "rates": {
@@ -112053,7 +112160,7 @@
       "venue_city": "Houston, TX",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 74,
+      "weather_temp": 76,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -123159,7 +123266,7 @@
       "venue_city": "Columbus, OH",
       "roof": "Outdoor",
       "broadcast": "CBS",
-      "weather_temp": 49,
+      "weather_temp": 52,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -130779,7 +130886,7 @@
       "venue_city": "Annapolis, MD",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 61,
+      "weather_temp": 60,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -138317,7 +138424,7 @@
       "venue_city": "Lawrence, KS",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 55,
+      "weather_temp": 57,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -153298,7 +153405,7 @@
       "venue_city": "Denton, TX",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 63,
+      "weather_temp": 64,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -157079,7 +157186,7 @@
       "venue_city": "Madison, WI",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 48,
+      "weather_temp": 50,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -160790,7 +160897,7 @@
       "venue_city": "Starkville, MS",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 61,
+      "weather_temp": 62,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -168235,7 +168342,7 @@
       "venue_city": "Fort Collins, CO",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 59,
+      "weather_temp": 60,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -179324,7 +179431,7 @@
       "venue_city": "West Point, NY",
       "roof": "Outdoor",
       "broadcast": "CBS",
-      "weather_temp": 52,
+      "weather_temp": 50,
       "weather_cond": "Rain",
       "away_form": {
         "rates": {
@@ -183202,7 +183309,7 @@
       "venue_city": "Tempe, AZ",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 80,
+      "weather_temp": 79,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -194496,7 +194603,7 @@
       "venue_city": "Notre Dame, IN",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 44,
+      "weather_temp": 43,
       "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
@@ -201883,7 +201990,7 @@
       "venue_city": "Oxford, MS",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 48,
+      "weather_temp": 50,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -209216,7 +209323,7 @@
       "venue_city": "Las Cruces, NM",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 56,
+      "weather_temp": 54,
       "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
@@ -212979,7 +213086,7 @@
       "venue_city": "Logan, UT",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 44,
+      "weather_temp": 43,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -216780,7 +216887,7 @@
       "venue_city": "El Paso, TX",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 56,
+      "weather_temp": 54,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -220478,7 +220585,7 @@
       "venue_city": "Lubbock, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 49,
+      "weather_temp": 50,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -227811,7 +227918,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "CBSSN",
-      "weather_temp": 66,
+      "weather_temp": 65,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
