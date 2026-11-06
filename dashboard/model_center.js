@@ -252,7 +252,7 @@
   }
 
   function kickoffLabel(g) {
-    var raw = g.kickoff_display || g.time || '';
+    var raw = g.kickoff_display || g.time || g.kickoff_utc || '';
     if (!/^\d{4}-\d{2}-\d{2}T/.test(String(raw))) return raw;
     var date = new Date(raw);
     if (isNaN(date.getTime())) return raw;
@@ -264,6 +264,10 @@
 
   function gameCard(sport, g) {
     var kick = kickoffLabel(g);
+    if (sport === 'cbb') return '<article class="mc-game"><header class="mc-game__head"><div class="mc-teams">' +
+      chip(sport,g.away,g.away_name,g.away_logo,g.away_color) + chip(sport,g.home,g.home_name,g.home_logo,g.home_color) +
+      '</div><span class="mc-game__time">' + esc(kick) + '</span></header>' + projectedScore(g) + cbbScoreSummary(g) +
+      '<a class="mc-cbb-research" href="/cbb/matchup.html?game=' + encodeURIComponent(g.id) + '">Analyze this matchup →</a></article>';
     return '<article class="mc-game">' +
       '<header class="mc-game__head"><div class="mc-teams">' +
       chip(sport, g.away, g.away_name, g.away_logo, g.away_color) +
@@ -283,6 +287,14 @@
       esc(value == null ? 'Not published' : value) + '</strong></div>';
   }
 
+  function cbbScoreSummary(g) {
+    var margin=Number(g.model_margin),leader=margin >= 0 ? g.home : g.away;
+    return '<section class="mc-total"><span class="mc-total__label">Projected total</span><strong>' + esc(fixed(projectedTotal(g),1)) +
+      '</strong><span class="mc-total__detail">Points</span></section><section class="mc-total"><span class="mc-total__label">Scoring margin</span><strong>' +
+      esc(Math.abs(margin)<0.05?'Even':leader+' by '+Math.abs(margin).toFixed(1)) +
+      '</strong><span class="mc-total__detail">Experimental score estimate</span></section>';
+  }
+
   function detailView(sport, rawBoard, g) {
     var html = '<section class="mc-panel"><p class="mc-eyebrow">' +
       esc(sport.toUpperCase()) + ' · Game detail</p><div class="mc-hero">' +
@@ -299,6 +311,9 @@
       '<span class="mc-hero__name">' + esc(g.home_name || g.home || '') + '</span>' +
       (g.home_record ? '<span class="mc-hero__sub">' + esc(g.home_record) + '</span>' : '') +
       '</div></div></section>';
+
+    if (sport === 'cbb') return html + '<section class="mc-panel">' + cbbScoreSummary(g) +
+      '<a class="mc-cbb-research" href="/cbb/matchup.html?game=' + encodeURIComponent(g.id) + '">Analyze this matchup →</a></section>';
 
     html += '<section class="mc-panel"><h2 class="mc-panel__title">Model versus market</h2>' +
       gauge(sport, g.model_margin, g.market_margin) + totalRead(g) + readRow(g) + '</section>';
@@ -698,10 +713,11 @@
       : board;
     var games = (mapped && mapped.games) || (board && board.games) || [];
     var sports = '<nav class="mc-sports" aria-label="Model Center sports">' +
-      [['mlb', 'MLB'], ['nfl', 'NFL'], ['nba', 'NBA'], ['wnba', 'WNBA'], ['cfb', 'CFB']].map(function (pair) {
+      [['nfl', 'NFL'], ['nba', 'NBA'], ['cfb', 'CFB'], ['cbb', 'CBB']].map(function (pair) {
         return '<a href="?sport=' + pair[0] + '"' +
           (pair[0] === sport ? ' aria-current="page"' : '') + '>' + pair[1] + '</a>';
       }).join('') + '</nav>';
+    if (sport === 'cbb') sports += '<p class="mc-cbb-method">Model snapshot: ' + esc(board.as_of_date || 'not published') + ' · Outcomes through ' + esc(String(board.data_through_utc || '').slice(0,10)) + '. ' + esc(board.method_note || '') + '</p>';
     var want = qs().get('game');
     if (want) {
       var one = games.filter(function (g) {
@@ -714,7 +730,7 @@
       }
       var gameProps = WEEKLY_PROPS[sport] || sport === 'wnba'
         ? weeklyGameCards(sport, weeklyPropRows(sport, board, mapped), one) : '';
-      host.innerHTML = '<div class="mc-board">' + detailView(sport, board, one) +
+      host.innerHTML = (sport === 'cbb' ? sports : '') + '<div class="mc-board">' + detailView(sport, board, one) +
         (gameProps ? '<section class="mc-panel"><h2 class="mc-panel__title">Player prop projections</h2>' +
           '<div class="mc-grid mc-props__grid">' + gameProps + '</div></section>' : '') + '</div>';
       return;
@@ -725,7 +741,7 @@
         '<h2 class="mc-board__title">Today\'s Slate</h2></div>' +
         '<div class="mc-board__status"><strong>0/0</strong><span>scores published</span></div>' +
         '</header><div class="ca-card ca-card-pad"><h2>No games today</h2>' +
-        '<p>The producer is current, but this sport has no games on its published board today.</p>' +
+        (sport === 'cbb' ? '<p>No forecasts for this date in the published CBB snapshot.</p>' : '<p>The producer is current, but this sport has no games on its published board today.</p>') +
         '</div></div>';
       return;
     }
@@ -761,15 +777,23 @@
         paintGate('Unavailable', 'Model Center could not load this sport’s published board.');
         return;
       }
-      return r.json().then(function (payload) { renderBoard(sport, payload); });
+      return r.json().then(function (payload) {
+        if (sport === 'cbb' && payload.board) {
+          var day=qs().get('date') || new Date().toLocaleDateString('en-CA',{timeZone:'America/New_York'});
+          if (!qs().get('game')) payload.board.games=(payload.board.games||[]).filter(function(g){return g.slate_date===day;});
+          if (global.ChaseNav && ChaseNav.applyDataStatus) ChaseNav.applyDataStatus({sport:'cbb',state:'ok',publishedAt:payload.board.generated_at_utc,dataCutoff:payload.board.data_through_utc,source:'Chase CBB score model'});
+        }
+        renderBoard(sport, payload);
+      });
     }).catch(function () {
       paintGate('Unavailable', 'Model Center could not reach the board service.');
     });
   }
 
   function boot() {
-    var sport = (qs().get('sport') || 'mlb').toLowerCase();
-    if (['mlb', 'nfl', 'nba', 'wnba', 'cfb'].indexOf(sport) < 0) sport = 'mlb';
+    var sport = (qs().get('sport') || 'nfl').toLowerCase();
+    if (['nfl', 'nba', 'cfb', 'cbb'].indexOf(sport) < 0) sport = 'nfl';
+    if (sport === 'cbb') { var lede=document.querySelector('.ca-public-page__lede');if(lede)lede.textContent='Experimental score estimates, with a direct path to the evidence behind each matchup.'; }
     var game = qs().get('game');
     setContext(game
       ? ('Requested ' + sport.toUpperCase() + ' game ' + game + '.')

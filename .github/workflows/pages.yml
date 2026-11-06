@@ -64,8 +64,9 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Run dashboard deep-link runtime smoke
         run: |
-          python -m http.server 8765 >/tmp/mlbma-http.log 2>&1 &
-          sleep 2
+          npx --yes wrangler@4.40.0 pages dev . --port 8765 >/tmp/chase-worker.log 2>&1 &
+          for attempt in $(seq 1 45); do curl -fsS http://127.0.0.1:8765/ >/dev/null && break || sleep 1; done
+          curl -fsS http://127.0.0.1:8765/ >/dev/null || { cat /tmp/chase-worker.log; exit 1; }
           python scripts/dashboard_runtime_diag.py --base-url "http://127.0.0.1:8765/dashboard/render/team_rankings.html?hubdebug=1&family=scoring&hand=r&window=L30&loc=home" --timeout-ms 45000
           python scripts/dashboard_runtime_diag.py --base-url "http://127.0.0.1:8765/index.html" --timeout-ms 45000
           python scripts/public_site_runtime_diag.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000
@@ -73,8 +74,9 @@ jobs:
           python scripts/platform_ui_diag.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000
       - name: Enforce 360px, 375px, and 390px mobile contract
         run: |
-          python -m http.server 8766 >/tmp/mlbma-http-mobile.log 2>&1 &
-          sleep 2
+          npx --yes wrangler@4.40.0 pages dev . --port 8766 >/tmp/chase-worker-mobile.log 2>&1 &
+          for attempt in $(seq 1 45); do curl -fsS http://127.0.0.1:8766/ >/dev/null && break || sleep 1; done
+          curl -fsS http://127.0.0.1:8766/ >/dev/null || { cat /tmp/chase-worker-mobile.log; exit 1; }
           python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8766" --timeout-ms 45000 --width 360 --height 800 --strict
           python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8766" --timeout-ms 45000 --strict
           python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8766" --timeout-ms 45000 --width 390 --height 844 --strict

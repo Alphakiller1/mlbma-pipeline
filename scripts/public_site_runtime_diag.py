@@ -85,7 +85,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             page.on("pageerror", lambda error: page_errors.append(str(error)))
             page.on("console", lambda message: console_errors.append(message.text) if message.type == "error" else None)
             page.goto(base_url.rstrip("/") + "/", wait_until="domcontentloaded", timeout=timeout_ms)
-            page.wait_for_selector("#openingMlbSlate .ca-matchup-card", timeout=timeout_ms)
+            page.wait_for_selector("#openingCbbSlate .ca-matchup-card", timeout=timeout_ms)
             page.wait_for_selector("#openingNflSlate .ca-matchup-card", timeout=timeout_ms)
             # The crest checks read naturalWidth, which is 0 until the image has
             # decoded. A fixed 300ms pause was winning that race most of the
@@ -95,7 +95,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             try:
                 page.wait_for_function(
                     """() => [...document.querySelectorAll(
-                         '#openingMlbSlate .ca-matchup-card__club img')]
+                         '#openingCbbSlate .ca-matchup-card__club img')]
                        .every(i => i.complete)""",
                     timeout=timeout_ms)
             except Exception:
@@ -103,8 +103,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             page.wait_for_timeout(300)
 
             metrics = page.evaluate("""() => {
-              const cards = [...document.querySelectorAll('#openingMlbSlate .ca-matchup-card')];
-              const grid = document.querySelector('#openingMlbSlate .ca-slate-grid');
+              const cards = [...document.querySelectorAll('#openingCbbSlate .ca-matchup-card')];
+              const grid = document.querySelector('#openingCbbSlate .ca-slate-grid');
               const columns = grid ? getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length : 0;
               return {
                 overflow: document.documentElement.scrollWidth - innerWidth,
@@ -112,20 +112,20 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                 cards: cards.length,
                 minHeight: cards.length ? Math.min(...cards.map(x => Math.round(x.getBoundingClientRect().height))) : 0,
                 maxHeight: cards.length ? Math.max(...cards.map(x => Math.round(x.getBoundingClientRect().height))) : 0,
-                crests: document.querySelectorAll('#openingMlbSlate .ca-matchup-card__club img').length,
-                brokenCrests: [...document.querySelectorAll('#openingMlbSlate .ca-matchup-card__club img')]
+                crests: document.querySelectorAll('#openingCbbSlate .ca-matchup-card__club img').length,
+                brokenCrests: [...document.querySelectorAll('#openingCbbSlate .ca-matchup-card__club img')]
                   .filter(i => i.complete && i.naturalWidth === 0).length,
                 crestDensity: (() => {
                   // Crests below the fold are lazy-loaded, so measure the first
                   // one that has actually decoded rather than the first in DOM
                   // order - at 390px the top card can still be pending.
-                  const loaded = [...document.querySelectorAll('#openingMlbSlate .ca-matchup-card__club img')]
+                  const loaded = [...document.querySelectorAll('#openingCbbSlate .ca-matchup-card__club img')]
                     .find(i => i.naturalWidth > 0);
                   if (!loaded) return 0;
                   return loaded.naturalWidth / Math.max(1, Math.round(loaded.getBoundingClientRect().width));
                 })(),
-                namedTeams: document.querySelectorAll('#openingMlbSlate .ca-matchup-card__name').length,
-                bareAbbr: [...document.querySelectorAll('#openingMlbSlate .ca-matchup-card__club')]
+                namedTeams: document.querySelectorAll('#openingCbbSlate .ca-matchup-card__name').length,
+                bareAbbr: [...document.querySelectorAll('#openingCbbSlate .ca-matchup-card__club')]
                   .filter(c => !c.querySelector('.ca-matchup-card__name')).length,
               };
             }""")
@@ -178,8 +178,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             # Every card carries its expand control. A count of two failed the
             # gate on days with one game on the board (2026-10-01: one Wild
             # Card game), which is a property of the schedule, not the desk.
-            expanders = page.locator("#openingMlbSlate .ca-matchup-card__expand-btn")
-            slate_cards = page.locator("#openingMlbSlate .ca-matchup-card").count()
+            expanders = page.locator("#openingCbbSlate .ca-matchup-card__expand-btn")
+            slate_cards = page.locator("#openingCbbSlate .ca-matchup-card").count()
             check(f"{width}px expand controls",
                   slate_cards >= 1 and expanders.count() == slate_cards,
                   f"{expanders.count()} controls on {slate_cards} cards")
@@ -188,200 +188,23 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                 expanders.nth(0).press("Enter")
                 check(f"{width}px first expansion opens", expanders.nth(0).get_attribute("aria-expanded") == "true")
                 expanders.nth(1).click()
-                open_count = page.locator("#openingMlbSlate .ca-matchup-card.is-expanded").count()
+                open_count = page.locator("#openingCbbSlate .ca-matchup-card.is-expanded").count()
                 check(f"{width}px one expansion at a time", open_count == 1, f"open={open_count}")
             context.close()
 
         context = browser.new_context(viewport={"width": 1440, "height": 900})
         page = context.new_page()
-        page.goto(base_url.rstrip("/") + "/mlb/", wait_until="domcontentloaded", timeout=timeout_ms)
-        page.wait_for_selector(".ca-matchup-card", timeout=timeout_ms)
-        initial_count = page.locator(".ca-matchup-card").count()
-        search = page.locator("#chaseNavSearch")
-        # Search for a club that is actually on the slate being tested. Hard-coding
-        # a team made this check report a filter failure on any date that club did
-        # not play, which is a property of the schedule, not of the filter.
-        target = (page.locator(".ca-matchup-card__name").first.inner_text() or "").strip()
-        search.fill(target)
-        filtered_count = page.locator(".ca-matchup-card").count()
-        # And a name no club carries empties the desk - so the filter is proven
-        # even when only one game is on the board.
-        search.fill("zzzz-no-such-club")
-        none_count = page.locator(".ca-matchup-card").count()
-        check("MLB team search filters the slate",
-              1 <= filtered_count <= initial_count and none_count == 0
-              and (initial_count == 1 or filtered_count < initial_count),
-              f"query={target!r} before={initial_count} after={filtered_count} nonsense={none_count}")
-        search.fill("")
-        mlb_detail = page.locator(".ca-matchup-card__detail-link").first.get_attribute("href") or ""
-        page.goto(base_url.rstrip("/") + mlb_detail, wait_until="domcontentloaded", timeout=timeout_ms)
-        page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
-        check("MLB detail uses team logos", page.locator(".ca-detail-team__logo").count() == 2)
-        # Sources and freshness moved into each section's own note, and the
-        # ballpark section was cut to its weather, which now sits in the
-        # banner. Pitch mix leads the lineup it explains.
-        check("MLB detail has sport-specific sections",
-              page.locator("#starters, #arsenal, #lineups, #pitch-matchup, #bvp, #recent, #series, "
-                           "#form, #radar, #bullpens").count() == 10)
-        check("MLB detail no longer carries a ballpark or sources section",
-              page.locator("#conditions, #sources").count() == 0)
-        try:
-            page.wait_for_selector("#bullpens .ca-bullpen-split-table", timeout=timeout_ms)
-        except Exception:
-            pass
-        bullpen_tables = page.locator("#bullpens .ca-bullpen-split-table")
-        check("MLB bullpen splits render for both clubs", bullpen_tables.count() == 2,
-              f"tables={bullpen_tables.count()}")
-        check("MLB bullpen split table includes season, venue, batter hand and leverage",
-              page.locator("#bullpens .ca-bullpen-split-table tbody tr").count() == 12,
-              f"rows={page.locator('#bullpens .ca-bullpen-split-table tbody tr').count()}")
-        # Playoff depth (2026-09-28): every hitter against the opposing
-        # starter's mix, every active reliever graded, and the pen's own mix.
-        try:
-            page.wait_for_selector("#bullpens .ca-relief-table", timeout=timeout_ms)
-            page.wait_for_selector("#pitch-matchup .ca-pitch-matchup-table", timeout=timeout_ms)
-        except Exception:
-            pass
-        check("MLB reliever table renders for both clubs",
-              page.locator("#bullpens .ca-relief-table").count() == 2)
-        check("MLB bullpen section carries no pen pitch mix",
-              page.locator("#bullpens .ca-arsenal-table").count() == 0)
-        try:
-            page.wait_for_selector("#runs-hand .ca-runs-hand-table", timeout=timeout_ms)
-        except Exception:
-            pass
-        check("MLB runs by starter hand read for both clubs with window and venue filters",
-              page.locator("#runs-hand .ca-form-panel").count() == 2
-              and page.locator("#runs-hand [data-runs-pick]").count() == 7
-              and page.locator("#runs-hand [data-runs-view]:not([hidden])").count() == 2)
-        check("MLB batter vs pitcher reads for both clubs",
-              page.locator("#bvp .ca-bvp").count() == 2)
-        check("MLB club splits carry RISP, two-out RISP and late & close",
-              all(t in page.locator("#club-splits").inner_text()
-                  for t in ("With RISP", "RISP, 2 Outs", "Late & Close")))
-        check("MLB lineup vs pitch mix reads three metrics for both clubs",
-              # Three metric tables per club whose opposing starter is named.
-              page.locator("#pitch-matchup .ca-pitch-matchup-table").count() % 3 == 0,
-              f"tables={page.locator('#pitch-matchup .ca-pitch-matchup-table').count()}")
-        depth = page.evaluate("""() => {
-          const vis = sel => [...document.querySelectorAll(sel)].filter(td => td.offsetParent);
-          const graded = td => /(^|\\s)c-(elite|good|mid|weak|poor)(\\s|$)/.test(td.className);
-          // Owner rule: MLB ranks print on team stats and pitch-mix stats only.
-          const ranked = vis('#pitch-matchup td, #club-splits .ca-index-table td, '
-            + '#bullpens .ca-bullpen-split-table td');
-          const player = vis('#bvp td, #bullpens .ca-relief-table td');
-          return {
-            dashes: ranked.concat(player).filter(td => td.innerText.trim() === '—').length,
-            unpilled: ranked.filter(td => graded(td) && !td.querySelector('.ca-rank')).length,
-            playerRanks: player.filter(td => td.querySelector('.ca-rank')).length,
-            playerGraded: player.filter(graded).length
-          }; }""")
-        check("MLB depth tables have no empty (dash) cells", depth["dashes"] == 0,
-              f"{depth['dashes']} dash cells")
-        check("MLB depth tables pill every graded number", depth["unpilled"] == 0,
-              f"{depth['unpilled']} without a pill")
-        check("MLB player stats (BvP, relievers) are graded by colour with no rank numbers",
-              depth["playerRanks"] == 0 and depth["playerGraded"] > 0,
-              f"{depth['playerRanks']} ranked, {depth['playerGraded']} graded")
-        # A club with no game in the seven days before this one (a pennant
-        # winner waiting on the World Series) has no workload to tabulate; its
-        # panel says so instead. Each club still needs one or the other.
-        workload = page.evaluate("""() => [...document.querySelectorAll(
-            '#bullpens .ca-bullpen-panel')].map(p =>
-            p.querySelector('.ca-pc-table') ? 'table'
-            : /No relief appearances recorded/.test(p.innerText) ? 'rested' : 'missing')""")
-        check("MLB bullpen workload remains available",
-              len(workload) == 2 and "missing" not in workload, str(workload))
-        mlb_overflow = page.evaluate(
-            "Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth")
-        check("MLB detail no horizontal overflow", mlb_overflow <= 1,
-              f"overflow={mlb_overflow}")
-        mlb_ids = page.eval_on_selector_all(
-            ".ca-detail-section", "els => els.map(e => e.id)")
-        check("MLB pitch mix is read before the lineup it explains",
-              mlb_ids.index("arsenal") < mlb_ids.index("lineups"), str(mlb_ids))
-        # Team form is only meaningful if it describes roughly now. The site
-        # once served numbers seven weeks old, correctly labelled and entirely
-        # unnoticed, because the snapshot lives in whichever checkout ran the
-        # pipeline and nothing checked how old it was.
-        age = form_age_days()
-        # The style lock reserves #9A6BFF for active navigation, the 3px card
-        # edge, links and focus - explicitly "not data grading". Every bar that
-        # describes a number must take the metric ramp instead.
-        violet = "rgb(154, 107, 255)"
-        data_bars = page.eval_on_selector_all(
-            ".ca-pct-bar__fill, .ca-arsenal-bar__fill, .ca-mirror__fill, .ca-rate-bar > span",
-            "els => els.map(e => getComputedStyle(e).backgroundColor)")
-        offenders = [c for c in data_bars if c == violet]
-        check("violet is not used for data grading", not offenders,
-              f"{len(offenders)} of {len(data_bars)} data bars are brand violet")
-        form_ok, form_note = form_is_current(age)
-        check("MLB team form is current", form_ok, form_note)
-        check("MLB form panels state when the form was published",
-              "Team form as published" in page.locator("#form").inner_text())
-        # The mirror and the radar both arrive with the league artifact, which
-        # is a separate fetch from the one that paints the section. Wait for the
-        # thing being asserted rather than for a fixed delay - a gate that fails
-        # when a request is slow will fail a deploy for no reason.
-        try:
-            page.wait_for_selector("#form .ca-mirror__row", timeout=timeout_ms)
-            page.wait_for_selector("#radar .ca-radar__area", timeout=timeout_ms)
-        except Exception:
-            pass
-        # The thirty-club board is gone: the mirror above it already grades
-        # both clubs against the same pool, and the radar states the whole
-        # profile at a glance. What replaced the board is checked instead.
-        check("MLB form section no longer carries the full league board",
-              page.locator("#form .ca-league-table").count() == 0)
-        mirror_rows = page.locator("#form [data-form-view='season'] .ca-mirror__row").count()
-        check("MLB mirror grades both clubs row by row", mirror_rows >= 8,
-              f"rows={mirror_rows}")
-        undecided = page.locator(
-            "#form [data-form-view='season'] .ca-mirror__row:not(.is-away):not(.is-home)").count()
-        check("MLB mirror gives every row a side", undecided == 0,
-              f"undecided={undecided}")
-        webs = page.locator("#radar .ca-radar svg").count()
-        shapes = page.locator("#radar .ca-radar__area").count()
-        check("MLB radar draws both webs", webs == 2, f"webs={webs}")
-        check("MLB radar overlays both clubs on each web", shapes == 4,
-              f"shapes={shapes}")
-        form_meters = page.locator("#form [data-form-view='season'] .ca-segment-meter")
-        meter_count = form_meters.count()
-        meter_cells = page.locator("#form [data-form-view='season'] .ca-segment-meter > i").count()
-        check("MLB form uses ten-cell grade meters",
-              meter_count == 20 and meter_cells == meter_count * 10,
-              f"{meter_cells} cells across {meter_count} meters")
-        # Split filters: every split view is a graded mirror of both clubs.
-        page.locator("#form [data-form-split='vr']").click()
-        try:
-            page.wait_for_selector("#form [data-form-view='vr']:not([hidden]) .ca-mirror__row",
-                                   timeout=timeout_ms)
-        except Exception:
-            pass
-        check("MLB form filters read both clubs on a split",
-              page.locator("#form [data-form-view='vr']:not([hidden]) .ca-mirror__row").count() >= 8,
-              str(page.locator("#form [data-form-split]").count()) + " filters")
-        page.locator("#form [data-form-split='season']").click()
-        check("MLB form meters do not use club-brand grading",
-              page.locator("#form [data-club]").count() == 0)
-        mlb_detail_text = page.locator("main").inner_text()
-        match = PROHIBITED.search(mlb_detail_text)
-        check("MLB detail public copy boundary", match is None, match.group(0) if match else "")
-        page.set_viewport_size({"width": 390, "height": 844})
-        phone_overflow = page.evaluate(
-            "Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth")
-        check("MLB phone layout has no horizontal overflow", phone_overflow <= 1,
-              f"overflow={phone_overflow}")
-        check("MLB phone split tables scroll inside their panels",
-              page.locator("#bullpens .ca-lineup-scroll").count() >= 4)
-        legacy_url = base_url.rstrip("/") + "/dashboard/matchup_compare.html?away=MIN&home=DET&date=2026-09-09"
-        page.goto(legacy_url, wait_until="domcontentloaded", timeout=timeout_ms)
-        page.wait_for_url(re.compile(r"/mlb/matchup(?:\.html)?(?:\?|$)"), timeout=timeout_ms)
-        page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
-        check("Legacy matchup URL preserves a working game", "Minnesota Twins" in page.locator("main").inner_text())
-        # Past results are not a public destination; the only place a completed
-        # game is reachable is inside a matchup breakdown.
-        for sport in ("mlb", "nfl", "cfb"):
+        page.goto(base_url.rstrip("/") + "/cbb/matchup.html?game=401909564#shooting", wait_until="domcontentloaded", timeout=timeout_ms)
+        page.wait_for_selector("#cbb-shot-chart .ca-cbb-court", timeout=timeout_ms)
+        check("CBB uses six evidence tabs", page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 6)
+        check("CBB observed shooting counts", "67/121" in page.locator("#cbb-shot-chart").text_content())
+        page.locator('[data-cbb-season="2026"]').click()
+        check("CBB previous season changes the evidence", "1079/2198" in page.locator("#cbb-shot-chart").text_content())
+        page.locator('[data-cbb-season="2027"]').click()
+        check("CBB current season restores the evidence", "67/121" in page.locator("#cbb-shot-chart").text_content())
+        check("CBB public copy boundary", PROHIBITED.search(page.locator("main").inner_text()) is None)
+
+        for sport in ("cbb", "nfl", "cfb", "nba"):
             response = page.request.get(f"{base_url.rstrip('/')}/{sport}/results.html")
             check(f"{sport.upper()} has no public results route", response.status == 404,
                   f"status={response.status}")

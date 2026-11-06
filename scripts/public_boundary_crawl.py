@@ -49,16 +49,16 @@ ENTITLED = ("/api/model-center/", "alphakiller1.github.io")
 
 def routes(base: str, slates: dict) -> list[tuple[str, str]]:
     out = [("home", f"{base}/"),
-           ("mlb slate", f"{base}/mlb/"),
-           ("mlb matchups", f"{base}/mlb/matchups.html"),
+           ("cbb slate", f"{base}/cbb/"),
+           ("cbb matchups", f"{base}/cbb/matchups.html"),
            ("nfl slate", f"{base}/nfl/"),
            ("nfl matchups", f"{base}/nfl/matchups.html"),
            ("glossary", f"{base}/dashboard/glossary.html")]
-    mlb = (slates.get("mlb") or {}).get("games") or []
+    cbb = (slates.get("cbb") or {}).get("games") or []
     nfl = (slates.get("nfl") or {}).get("games") or []
-    if mlb:
-        out.append(("mlb matchup analysis",
-                    f"{base}/mlb/matchup.html?game={mlb[0].get('game_pk') or mlb[0]['id']}"))
+    if cbb:
+        out.append(("cbb matchup analysis",
+                    f"{base}/cbb/matchup.html?game=401909564"))
     if nfl:
         out.append(("nfl matchup analysis", f"{base}/nfl/matchup.html?game={nfl[0]['id']}"))
     return out
@@ -79,7 +79,7 @@ def payload_keys(obj, path="$"):
 def main(argv: list[str]) -> int:
     base = (argv[1] if len(argv) > 1 else "http://127.0.0.1:8765").rstrip("/")
     slates = {}
-    for sport in ("mlb", "nfl"):
+    for sport in ("cbb", "nfl"):
         path = ROOT / "data" / "public" / sport / "slate.json"
         if path.is_file():
             slates[sport] = json.loads(path.read_text(encoding="utf-8"))
@@ -149,7 +149,10 @@ def main(argv: list[str]) -> int:
             page.remove_listener("request", on_request)
 
         # Past results are not a public destination.
-        for sport in ("mlb", "nfl", "wnba", "cfb"):
+        retired = page.request.get(f"{base}/mlb/results.html", max_redirects=0)
+        check("mlb: retired section redirects home", retired.status == 301 and retired.headers.get("location") == "/",
+              f"status={retired.status}, destination={retired.headers.get('location')}")
+        for sport in ("cbb", "nfl", "wnba", "cfb"):
             status = page.request.get(f"{base}/{sport}/results.html").status
             check(f"{sport}: results route is gone", status == 404, f"status={status}")
 

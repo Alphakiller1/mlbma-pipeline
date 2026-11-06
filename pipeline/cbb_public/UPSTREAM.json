@@ -1,0 +1,25 @@
+{
+  "purpose": "Factual collection and export only; scoring model code is not vendored.",
+  "files": [
+    {
+      "source": "cbb-model/cbb_model/__init__.py",
+      "sha256": "9a0f4e04ea23ae36285954553f0573644037272c422f2da6ccddc226c9978f19"
+    },
+    {
+      "source": "cbb-model/cbb_model/data.py",
+      "sha256": "512e979508d59ac43821697daa2d2c2def012a1a3ceace5a869b3e52d967c76f"
+    },
+    {
+      "source": "cbb-model/cbb_model/export.py",
+      "sha256": "d892576b596867a3ebb883f20fea5f2627f693063fde57653a3ea2bd7548c871"
+    },
+    {
+      "source": "cbb-model/scripts/collect_cbb_sources.py",
+      "sha256": "db753db4354405aec19fcb9a40f35489f50855a01519fca3bb81f211242ad291"
+    },
+    {
+      "source": "cbb-model/scripts/collect_bq_shots.py",
+      "sha256": "9a4497bbb341ed6921a19abfd1f1171173ac30ebef12ff2a0d5d5805e3db804d"
+    }
+  ]
+}

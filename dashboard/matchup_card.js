@@ -90,6 +90,7 @@
     if (value === 'final') return { label: 'Final', tone: 'is-final' };
     if (value === 'postponed') return { label: 'Postponed', tone: 'is-watch' };
     if (value === 'delayed') return { label: 'Delayed', tone: 'is-watch' };
+    if (value === 'canceled') return { label: 'Canceled', tone: 'is-muted' };
     return { label: 'Scheduled', tone: 'is-muted' };
   }
 
@@ -268,8 +269,8 @@
     }
     // NBA crests arrive as ESPN URLs on the published slate, like CFB's; the
     // club line keeps its W-L record.
-    if (sport === 'nba') {
-      var nbaName = teamName('nba', game[side], game[side + '_name']);
+    if (sport === 'nba' || sport === 'cbb') {
+      var nbaName = teamName(sport, game[side], game[side + '_name']);
       var nbaColor = game[side + '_color'];
       var nbaLogo = game[side + '_logo'];
       var nbaRecord = game[side + '_record'];
@@ -414,6 +415,9 @@
     // No starter blocks here: the collapsed card already shows both faces, and
     // repeating them made the same two headshots appear twice on expand.
     var html = '<div class="ca-matchup-card__expand" id="' + esc(panelId) + '" hidden>';
+    if (sport === 'cbb') {
+      return html + '<p class="ca-ctx-head">2026–27 observed team shooting · current-season sample</p><div class="ca-matchup-card__detail-grid">'+['away','home'].map(function(side){var r=game[side+'_summary']||{};return miniFact(teamName(sport,game[side],game[side+'_name'])+' eFG%',r.efg_pct==null?'Not published':(100*r.efg_pct).toFixed(1)+'%')+miniFact('Reported games',r.games||0);}).join('')+'</div><p class="ca-cbb-note">Full analysis includes both seasons, opponent allowed rates, shot zones and observed players.</p></div>';
+    }
     if (sport === 'cfb') {
       return html + cfbAnalysis(game, awayName, homeName) + '</div>';
     }
@@ -609,6 +613,9 @@
   }
 
   function armsRow(sport, game) {
+    if (sport === 'cbb') {
+      return '<div class="ca-matchup-card__arms">' + ['away','home'].map(function(side){var r=game[side+'_summary']||{};return '<div>'+miniFact('Offense eFG%',r.efg_pct==null?'Not published':(100*r.efg_pct).toFixed(1)+'%') + '<span class="ca-cbb-card-sample">'+(r.games||0)+' reported games</span></div>';}).join('')+'</div>';
+    }
     if (sport === 'nba') {
       return '<div class="ca-matchup-card__arms" role="group" aria-label="Leading Scorers">' +
         nbaLead(game, 'away') + nbaLead(game, 'home') + '</div>';
@@ -622,6 +629,8 @@
       starterFace(sport, game, 'away') + starterFace(sport, game, 'home') + '</div>';
   }
   function summaryRow(sport, game, statusLine) {
+    if (sport === 'cbb') return '<div class="ca-matchup-card__summary">'+miniFact('Site',game.neutral?'Neutral court':'Home court')+miniFact('Availability','Not collected')+miniFact('Broadcast',game.broadcast||'Not published')+'</div>';
+
     if (sport === 'nba') {
       var rest = (game.away || '') + ' ' + (game.away_rest_short || '--') + ' · ' +
         (game.home || '') + ' ' + (game.home_rest_short || '--');
@@ -726,7 +735,7 @@
     // nothing to say. An empty weather slot says nothing loudly; no slot says
     // nothing quietly, which is the right volume for a fact that is coming.
     var wxText = conditions(game);
-    var hasWx = sport !== 'nba' && wxText && wxText.indexOf('not published') < 0;
+    var hasWx = sport !== 'nba' && sport !== 'cbb' && wxText && wxText.indexOf('not published') < 0;
     var roof = game.roof || (sport === 'mlb' ? null : game.surface);
     return '<article class="ca-matchup-card" id="' + esc(id) + '" data-game="' + esc(game.id) +
       '" data-sport="' + esc(sport) + '">' +
@@ -1150,8 +1159,8 @@
         '<a href="/' + sport + '/">View full ' + sport.toUpperCase() + ' slate <span aria-hidden="true">→</span></a></div>';
     }
     var html = '<div class="ca-desk-toolbar" data-desk-sport="' + esc(sport) + '"><div class="ca-desk-toolbar__primary">';
-    if (sport === 'mlb') {
-      html += '<div class="ca-desk-dates" aria-label="Choose MLB date">' +
+    if (sport === 'mlb' || sport === 'cbb') {
+      html += '<div class="ca-desk-dates" aria-label="Choose matchup date">' +
         '<button type="button" data-date-shift="-1" aria-label="Previous day">←</button>' +
         '<button type="button" class="ca-desk-dates__today" data-date-today>' + longDate(desk.dateIso || easternDateIso()) + '</button>' +
         '<button type="button" data-date-shift="1" aria-label="Next day">→</button></div>';
@@ -1219,8 +1228,10 @@
   function render(host) {
     var desk = host.__desk || {};
     var shown = filterGames(host, desk.games || []);
+    var totalShown = shown.length;
+    if (desk.embedded && desk.sport === 'cbb') shown = shown.slice(0,6);
     host.setAttribute('data-state', shown.length ? 'ready' : 'empty');
-    var toolbar = toolbarHtml(host, desk.sport, shown.length);
+    var toolbar = toolbarHtml(host, desk.sport, totalShown);
     // The date and filter controls belong on the title row, not in a band of
     // their own - a page that carries the mount point gets them there, and the
     // slate holds only the games.
@@ -1257,6 +1268,12 @@
       host.__desk.dateIso = result.dateIso || host.__desk.dateIso;
       if (!host.__desk.embedded) updateStatus(opts.sport, result);
       render(host);
+      if (result.statusReady) result.statusReady.then(function(updated){
+        if(!updated.statusObservedAt || host.__desk.dateIso!==updated.dateIso)return;
+        var open=host.querySelector('[data-expand-matchup][aria-expanded="true"]'),keep=open&&open.getAttribute('aria-controls');
+        host.__desk.games=updated.games;render(host);
+        if(keep){var panel=document.getElementById(keep),button=host.querySelector('[aria-controls="'+keep+'"]');if(panel&&button){panel.hidden=false;button.setAttribute('aria-expanded','true');button.closest('.ca-matchup-card').classList.add('is-expanded');}}
+      });
       return result;
     }).catch(function (error) {
       host.setAttribute('data-state', 'error');

@@ -76,7 +76,7 @@ class DeployReachesTheSiteTests(unittest.TestCase):
         # The CFB slate publisher commits with GITHUB_TOKEN too, so it needs
         # the same trigger.
         self.assertIn('workflows: ["Run MLBMA Pipeline", "Publish CFB Slate", "Publish MLB Slate", '
-                      '"Publish NFL Slate"]', yml)
+                      '"Publish NFL Slate", "Publish CBB Slate"]', yml)
         nfl = (ROOT / ".github" / "workflows" / "publish-nfl-slate.yml").read_text(encoding="utf-8")
         self.assertIn("name: Publish NFL Slate", nfl)
         self.assertIn("--nfl-only", nfl)

@@ -41,11 +41,11 @@ class NbaRouteTests(unittest.TestCase):
             self.assertIn('data-nav="nba"', html)
 
     def test_nav_carries_nba_everywhere_cfb_is(self):
-        for path in ("dashboard/chase_nav.html", "index.html", "nfl/index.html", "mlb/index.html"):
+        for path in ("dashboard/chase_nav.html", "index.html", "nfl/index.html", "cbb/index.html"):
             html = (ROOT / path).read_text(encoding="utf-8")
             self.assertIn('<a href="/nba/" class="chase-sport-tab" data-nav="nba"', html, path)
         js = (ROOT / "dashboard" / "chase_nav.js").read_text(encoding="utf-8")
-        self.assertIn("(mlb|nfl|wnba|cfb|nba)", js)
+        self.assertIn("(mlb|nfl|wnba|cfb|nba|cbb)", js)
 
     def test_adapter_reads_only_the_published_slate(self):
         js = (ROOT / "dashboard" / "sports" / "nba.js").read_text(encoding="utf-8")
@@ -60,7 +60,7 @@ class NbaRouteTests(unittest.TestCase):
         self.assertIn("nba: ['NBA_MODEL_BOARD_URL', 'https://alphakiller1.github.io/nba-model/board.json']", proxy)
         mc = (ROOT / "dashboard" / "model_center.js").read_text(encoding="utf-8")
         self.assertIn("['nba', 'NBA']", mc)
-        self.assertIn("['mlb', 'nfl', 'nba', 'wnba', 'cfb']", mc)
+        self.assertIn("['nfl', 'nba', 'cfb', 'cbb']", mc)
         # NBA player props render in Model Center beside NFL and CFB, keyed by event id.
         mc = (ROOT / "dashboard" / "model_center.js").read_text(encoding="utf-8")
         self.assertIn("['points', 'Pts', 45, 'untoned']", mc)

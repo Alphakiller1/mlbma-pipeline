@@ -1,0 +1,31 @@
+name: CBB release checks
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt playwright
+      - run: python -m playwright install --with-deps chromium
+      - run: python scripts/check_tokens.py
+      - run: python scripts/validate_public_fields.py
+      - run: npx --yes wrangler@4.40.0 pages functions build --outdir /tmp/cbb-functions-build
+      - run: python -m unittest discover -s tests -p 'test_*.py'
+      - name: Browser and responsive release gates
+        run: |
+          npx --yes wrangler@4.40.0 pages dev . --port 8765 >/tmp/chase-worker.log 2>&1 &
+          for attempt in $(seq 1 45); do curl -fsS http://127.0.0.1:8765/ >/dev/null && break || sleep 1; done
+          curl -fsS http://127.0.0.1:8765/ >/dev/null || { cat /tmp/chase-worker.log; exit 1; }
+          python scripts/public_site_runtime_diag.py --base-url http://127.0.0.1:8765 --timeout-ms 45000
+          python scripts/public_boundary_crawl.py http://127.0.0.1:8765
+          python scripts/mobile_overflow_audit.py --base-url http://127.0.0.1:8765 --width 360 --height 800 --strict
+          python scripts/mobile_overflow_audit.py --base-url http://127.0.0.1:8765 --width 390 --height 844 --strict

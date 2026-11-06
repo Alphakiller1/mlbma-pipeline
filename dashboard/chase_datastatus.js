@@ -184,6 +184,7 @@
     mlb: '/data/public/mlb/slate.json',
     nfl: '/data/public/nfl/slate.json',
     nba: '/data/public/nba/slate.json',
+    cbb: '/data/public/cbb/slate.json',
     cfb: 'https://alphakiller1.github.io/cfb-model/slate.json'
   };
 

@@ -34,10 +34,11 @@ from playwright.sync_api import sync_playwright
 # and redirect stubs (matchup_sheet.html) are intentionally excluded.
 DEFAULT_PAGES = [
     "index.html",
-    "mlb/index.html",
+    "cbb/index.html",
     "nfl/index.html",
     "cfb/index.html",
-    "mlb/matchup.html?game=824226&date=2026-09-09",
+    "cbb/matchup.html?game=401909564#shooting",
+    "cbb/shot-charts.html",
     "nfl/matchup.html?game=2026-W01-ne-sea",
     "dashboard/glossary.html",
     "model-center/index.html",
