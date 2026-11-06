@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-06",
- "generated_at_utc": "2026-11-06T09:54:44+00:00",
+ "generated_at_utc": "2026-11-06T15:56:20+00:00",
  "data_through_utc": "2026-11-06T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -11739,7 +11739,7 @@
      "detail": "Illness",
      "comment": "Carter (illness) practiced with the G League's Maine Celtics on Wednesday.",
      "date": "2026-11-04T23:58Z",
-     "return_date": "2026-11-08"
+     "return_date": "2026-11-06"
     }
    ],
    "home_form": {
@@ -27103,7 +27103,7 @@
      "detail": "Left Knee Bruise",
      "comment": "Alexander won't play Wednesday against the Grizzlies due to a left knee bone bruise.",
      "date": "2026-10-24T23:18Z",
-     "return_date": "2026-11-08"
+     "return_date": "2026-11-06"
     }
    ],
    "home_form": {
@@ -45629,11 +45629,11 @@
     {
      "player_id": "4697268",
      "player_name": "Kam Jones",
-     "status": "Out",
+     "status": "Day-To-Day",
      "detail": "Right Ankle",
      "comment": "Jones (ankle/two-way player) is out for Friday's game against Toronto.",
-     "date": "2026-11-06T00:26Z",
-     "return_date": "2026-11-08"
+     "date": "2026-11-06T15:08Z",
+     "return_date": "2026-11-06"
     }
    ]
   },
@@ -68043,5 +68043,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-06T12:00:11+00:00"
+ "published_at_utc": "2026-11-06T19:17:16+00:00"
 }
