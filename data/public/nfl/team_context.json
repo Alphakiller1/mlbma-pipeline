@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-11-06T02:47:27Z",
+  "generated_at_utc": "2026-11-06T06:35:28Z",
   "data_through_utc": "2026-11-05T21:58:40+00:00",
   "season": 2026,
   "week": 9,
@@ -4914,8 +4914,8 @@
       "through": "2026-11-01"
     },
     "BAL": {
-      "games": 8,
-      "through": "2026-11-01"
+      "games": 9,
+      "through": "2026-11-06"
     },
     "BUF": {
       "games": 7,
@@ -4962,8 +4962,8 @@
       "through": "2026-11-01"
     },
     "JAX": {
-      "games": 7,
-      "through": "2026-11-01"
+      "games": 8,
+      "through": "2026-11-06"
     },
     "KC": {
       "games": 7,
