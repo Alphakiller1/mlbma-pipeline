@@ -35,3 +35,8 @@
 /models /model-center 301
 /models/ /model-center/ 301
 
+
+# MLB retired from the public desk by owner decision, 2026-11-06.
+/mlb / 301
+/mlb/ / 301
+/mlb/* / 301

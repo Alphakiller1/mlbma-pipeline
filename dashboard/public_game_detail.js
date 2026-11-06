@@ -46,6 +46,7 @@
       return '<img class="' + esc(cls) + '" src="' + esc(src) + '" width="' + size +
         '" height="' + size + '" alt="' + esc(name) + ' logo" loading="lazy" decoding="async">';
     }
+    if (sport === 'cbb') return '<span class="ca-team-logo-placeholder" aria-hidden="true"></span>';
     return global.ChaseMatchupCard.logoHtml(sport, game[side], game[side + '_name'], size, cls);
   }
 
@@ -59,6 +60,7 @@
     if (state === 'final') return 'Final';
     if (state === 'postponed') return 'Postponed';
     if (state === 'delayed') return 'Delayed';
+    if (state === 'canceled') return 'Canceled';
     return 'Scheduled';
   }
 
@@ -5631,7 +5633,7 @@ function seasonToggle(game) {
   function nflClubSwitch(sport, game) {
     return '<div class="ca-nfl-club" role="group" aria-label="Club in view">' +
       ['away', 'home'].map(function (side) {
-        var full = sport === 'cfb' ? cfbName(sport, game, side) : nflNick(sport, game, side);
+        var full = sport === 'cbb' ? cbbSchool(game,side) : sport === 'cfb' ? cfbName(sport, game, side) : nflNick(sport, game, side);
         var short = sport === 'cfb' ? (game[side] || full) : full;
         return '<button type="button" class="ca-nfl-club__btn" data-club="' + side + '" aria-pressed="false">' +
           '<span class="ca-club-label-full">' + esc(full) + '</span>' +
@@ -5645,6 +5647,7 @@ function seasonToggle(game) {
     var tab = deskTabs(host).filter(function (t) { return t[0] === key; })[0];
     if (!stack || !tab) return;
     stack.setAttribute('data-nfl-tab', key);
+    if (host.querySelector('.ca-cbb-controls')) host.querySelectorAll('[data-cbb-chart-control]').forEach(function(g){g.hidden=key!=='shooting';});
     Array.prototype.forEach.call(stack.querySelectorAll(':scope > .ca-detail-section'), function (sec) {
       sec.classList.toggle('is-tab-on', tab[2].indexOf(sec.id) >= 0);
     });
@@ -7355,8 +7358,87 @@ function seasonToggle(game) {
       .map(function (x) { return x.part; }).join('');
   }
 
+  var CBB_TABS = [
+    ['units','Units',['cbb-efficiency']], ['shooting','Shot Profile',['cbb-shot-chart']],
+    ['rotation','Rotation',['cbb-rotation']], ['availability','Availability',['cbb-availability']],
+    ['games','Games',['cbb-game-log']], ['schedule','Schedule',['cbb-schedule']]
+  ];
+  function cbbYear(game) { return game.__cbbYear || 2027; }
+  function cbbClock(game) { return scoreOrTime(game).replace(/\s+(AM|PM)\s+ET<\/strong>/,'<span class="ca-cbb-meridiem"> $1 ET</span></strong>'); }
+  function cbbTeam(game,side) { return game[side + (cbbYear(game) === 2026 ? '_cbb_prior' : '_cbb')]; }
+  function cbbSchool(game,side) { var c=cbbTeam(game,side);return c && c.identity.short_name || fullName('cbb',game,side); }
+  function cbbSeason(game) { return cbbYear(game)===2027 ? '2026–27' : '2025–26'; }
+  function cbbNumber(n,digits) { return n == null ? '—' : Number(n).toFixed(digits == null ? 1 : digits); }
+  function cbbTable(head,rows,cls) {
+    return '<div class="ca-lineup-scroll"><table class="ca-lineup-table '+(cls||'')+'"><thead><tr>'+head.map(function(h){return '<th>'+esc(h)+'</th>';}).join('')+'</tr></thead><tbody>'+rows.map(function(row){return '<tr>'+row.map(function(v,i){return '<td'+(i?' class="num"':'')+'>'+v+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>';
+  }
+  function cbbPanel(title,caption,body) { return '<section class="ca-form-panel ca-cfb-panel ca-cfb-ledger"><h3>'+esc(title)+'</h3><p class="ca-lineup-context">'+esc(caption)+'</p>'+body+'</section>'; }
+  function cbbControls(game) {
+    return '<div class="ca-analysis-scope ca-cbb-controls" aria-label="CBB evidence controls"><div><span class="ca-lineup-context">Evidence window</span><strong class="ca-cbb-control-title">Choose the season in view</strong></div>'+cbbOptions('season',[['2027','2026–27'],['2026','2025–26']],String(cbbYear(game)))+
+      '<div data-cbb-chart-control>'+cbbOptions('metric',[['fg','FG%'],['share','Shot share']],game.__cbbMetric||'fg')+'</div><div data-cbb-chart-control>'+cbbOptions('view',[['offense','Offense'],['defense','Opponent allowed']],game.__cbbView||'offense')+'</div></div>';
+  }
+  function cbbOptions(kind,items,selected) { return '<div class="ca-cbb-options" role="group" aria-label="'+esc(kind)+'">'+items.map(function(x){return '<button type="button" data-cbb-'+kind+'="'+x[0]+'" class="'+(selected===x[0]?'is-on':'')+'" aria-pressed="'+(selected===x[0])+'">'+x[1]+'</button>';}).join('')+'</div>'; }
+  function cbbEfficiency(sport,game,side) {
+    var opp=side==='away'?'home':'away',a=cbbTeam(game,side),b=cbbTeam(game,opp),pct=global.ChaseCbbCharts.pct;
+    if(!a)return cbbPanel(cbbSchool(game,side),'Team evidence',pending('This opponent is outside the collected team-stat cohort.'));
+    var x=a.rates,y=b?b.rates:{};
+    var rows=[['Points/100',cbbNumber(x.ppp_off_all==null?null:100*x.ppp_off_all),cbbNumber(y.ppp_def_all==null?null:100*y.ppp_def_all)],
+      ['eFG%',pct(x.efg_o_all),pct(y.efg_d_all)],['TOV%',pct(x.tov_pct_o_all),pct(y.tov_pct_d_all)],
+      ['ORB%',pct(x.orb_pct_all),pct(y.drb_pct_all==null?null:1-y.drb_pct_all)],['FTA/FGA',cbbNumber(x.ftr_o_all,3),cbbNumber(y.ftr_d_all,3)]];
+    return cbbPanel(cbbSchool(game,side)+' Offense vs '+cbbSchool(game,opp)+' Defense',cbbSeason(game)+' · '+(x.games_all||0)+' / '+(y.games_all==null?'not covered':y.games_all)+' reported games · Basketball Quant',cbbTable(['Stat','Offense','Allowed / forced'],rows,'ca-cbb-factor-table')+
+      '<p class="ca-cbb-note">Turnovers: committed / forced. Rebounds: offensive share / opponent share allowed. Free throws: attempts per field-goal attempt. Through '+esc(a.data_through||'not published')+' / '+esc(b&&b.data_through||'not covered')+'.</p>');
+  }
+  function cbbShotPanel(sport,game,side) {
+    var opp=side==='away'?'home':'away',a=cbbTeam(game,side),b=cbbTeam(game,opp),chart=global.ChaseCbbCharts;
+    if(!a)return cbbPanel(cbbSchool(game,side),'Shot evidence',pending('This opponent is outside the collected team-stat cohort.'));
+    if(!b){var alone=a.shots.cbb?a.shots.cbb.offense:a.shots.coordinates.offense;return cbbPanel(cbbSchool(game,side)+' Shooting',cbbSeason(game)+' · '+alone.source,game.__cbbView==='defense'?pending('Opponent allowed-zone coverage is unavailable.'):chart.court(alone,cbbSchool(game,side)+' offense',{metric:game.__cbbMetric||'fg'})+chart.legend(false,game.__cbbMetric||'fg')+'<p class="ca-cbb-note">Opponent zone evidence is not covered. No matchup gap is calculated.</p>');}
+    var schema=a.shots.cbb&&b.shots.cbb?'cbb':'coordinates',off=a.shots[schema].offense,def=b.shots[schema].defense;
+    var defense=game.__cbbView==='defense',shown=defense?def:off,metric=game.__cbbMetric||'fg';
+    var rows=off.zones.map(function(z){var q=def.zones.find(function(x){return x.id===z.id;}),gap=z.fg_pct!=null&&q.fg_pct!=null?100*(z.fg_pct-q.fg_pct):null;
+      return [esc(z.label),chart.pct(z.fg_pct)+'<small class="ca-cbb-count">'+z.made+'/'+z.attempts+'</small>',chart.pp(gap),chart.pct(q.fg_pct)+'<small class="ca-cbb-count">'+q.made+'/'+q.attempts+'</small>'];});
+    return cbbPanel(cbbSchool(game,side)+' Shots vs '+cbbSchool(game,opp)+' Defense',cbbSeason(game)+' · '+off.totals.games+' / '+def.totals.games+' games · '+shown.source,
+      '<p class="ca-cbb-note">Court: '+esc(cbbSchool(game,defense?opp:side))+(defense?' allowed':' offense')+'</p>'+chart.court(shown,cbbSchool(game,side)+' against '+cbbSchool(game,opp),{metric:metric,defense:defense})+chart.legend(defense,metric)+
+      '<div class="ca-cbb-summary"><span><strong>'+shown.totals.made+'/'+shown.totals.attempts+'</strong> FGM/FGA</span><span><strong>'+chart.pct(shown.totals.efg_pct)+'</strong> eFG</span></div>'+
+      cbbTable(['Zone','Offense','FG% gap','Allowed'],rows,'ca-cbb-zone-table')+
+      '<p class="ca-cbb-note">Gap is the observed offense-minus-allowed difference. '+(cbbYear(game)===2027?'Early-season sample.':'Prior-season roster and opponents differ.')+' '+(schema==='coordinates'?'Chase coordinate zones; counts reflect available shot events.':'CBB Analytics six-zone definitions.')+' Through '+esc(shown.totals.data_through||'not published')+'.</p>');
+  }
+  function cbbRotation(sport,game,side) {
+    var c=cbbTeam(game,side);if(!c)return pending('Player evidence is unavailable.');
+    var players=(c.players||[]).slice().sort(function(a,b){return (b.Min_pct||0)-(a.Min_pct||0);}).slice(0,12);
+    var rows=players.map(function(p){return [esc(String(p.Name||'').replace(/\s*\(\d+\).*$/,'')),cbbNumber(p.G,0),cbbNumber(p.Min_pct,0),cbbNumber(p.Pts),cbbNumber(p.Reb),cbbNumber(p.Ast),p.TS==null?'—':cbbNumber(p.TS)+'%'];});
+    return cbbPanel(cbbSchool(game,side)+' Observed Players',cbbSeason(game)+' · Basketball Quant · per-game output',cbbTable(['Player','GP','MIN%','PTS','REB','AST','TS%'],rows)+
+      '<p class="ca-cbb-note">Top 12 by reported MIN%. MIN% is retained as reported. '+(cbbYear(game)===2026?'Prior-season players; this is not the current roster. ':'')+'Starting assignments and availability are not verified.</p>');
+  }
+  function cbbGames(sport,game,side,upcoming) {
+    var c=cbbTeam(game,side);if(!c)return pending('Game history is unavailable.');
+    var games=(c.games||[]).filter(function(g){return upcoming?g.state==='pre'&&g.date>=String(game.slate_date):g.points!=null;});
+    games.sort(function(a,b){return upcoming?a.date.localeCompare(b.date):b.date.localeCompare(a.date);});
+    var rows=games.map(function(g){return [esc(g.date),esc(g.opponent),esc(g.site),g.points==null?'Scheduled':esc(g.points+'–'+g.opponent_points)];});
+    return cbbPanel(cbbSchool(game,side)+(upcoming?' Remaining Schedule':' Game Log'),cbbSeason(game)+' · '+games.length+' games',rows.length?cbbTable(['Date','Opponent','Site','Score / state'],rows):pending(upcoming?'No remaining fixtures in this evidence window.':'No completed games in this evidence window.'));
+  }
+  function cbbSections(sport,game) {
+    return section('cbb-efficiency','Efficiency','Each Offense Against The Defense It Meets',nflDuo(cbbEfficiency,sport,game))+
+      section('cbb-shot-chart','Shot Chart','Shooting By Zone And Opponent Allowed',nflDuo(cbbShotPanel,sport,game))+
+      section('cbb-rotation','Rotation','Observed Player Output',nflDuo(cbbRotation,sport,game))+
+      section('cbb-availability','Availability','Published Participation Evidence',pending('Availability reports have not been collected. An absent report does not confirm that a player is healthy or starting.'))+
+      section('cbb-game-log','Game Log','Completed Games In The Selected Season',nflDuo(cbbGames,sport,game,false))+
+      section('cbb-schedule','Schedule','Listed Upcoming Opponents',nflDuo(cbbGames,sport,game,true));
+  }
+  function wireCbbControls(host,game) {
+    host.addEventListener('click',function(event){
+      var b=event.target.closest('[data-cbb-season],[data-cbb-metric],[data-cbb-view]');if(!b)return;
+      var stack=host.querySelector('.ca-detail-stack'),tab=stack.getAttribute('data-nfl-tab'),club=stack.getAttribute('data-club');
+      if(b.dataset.cbbSeason)game.__cbbYear=Number(b.dataset.cbbSeason);
+      if(b.dataset.cbbMetric)game.__cbbMetric=b.dataset.cbbMetric;
+      if(b.dataset.cbbView)game.__cbbView=b.dataset.cbbView;
+      stack.innerHTML=cbbSections('cbb',game);
+      host.querySelector('.ca-cbb-controls').outerHTML=cbbControls(game);
+      nflSetTab(host,tab);nflSetClub(host,club);
+    });
+  }
+
   function deskTabsFor(sport) {
-    return sport === 'cfb' ? CFB_TABS : (sport === 'nba' ? NBA_TABS : NFL_TABS);
+    return sport === 'cbb' ? CBB_TABS : (sport === 'cfb' ? CFB_TABS : (sport === 'nba' ? NBA_TABS : NFL_TABS));
   }
 
   function cfbSections(sport, game) {
@@ -7428,11 +7510,13 @@ function seasonToggle(game) {
       '<p class="ca-detail-eyebrow">' + sport.toUpperCase() + ' · Matchup Analysis</p>' +
       '</header>' +
       '<div class="ca-detail-hero__teams">' + teamHero(sport, game, 'away') + '<div class="ca-detail-center">' +
-      scoreOrTime(game) + '</div>' + teamHero(sport, game, 'home') + '</div>' +
+      (sport === 'cbb' ? cbbClock(game) : scoreOrTime(game)) + (sport === 'cbb' && game.kickoff_utc ? '<p>' + esc(new Date(game.kickoff_utc).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'America/New_York'})) + '</p>' : '') + '</div>' + teamHero(sport, game, 'home') + '</div>' +
       // Conditions live in the banner now: they are read once, at the top,
       // beside where and when - not as their own section of dimensions and
       // capacities nobody came for.
-      '<div class="ca-detail-facts">' + (sport === 'nba'
+      '<div class="ca-detail-facts">' + (sport === 'cbb'
+        ? fact('Arena', venue(game)) + fact('Site', game.neutral ? 'Neutral court' : 'Home court') + fact('Broadcast', value(game.broadcast)) + fact('Status', gameStatus(game))
+        : sport === 'nba'
         ? fact('Arena', venue(game)) +
           fact('Broadcast', value(game.broadcast)) +
           fact('Rest', (game.away || '') + ' ' + value(game.away_rest_label) + ' · ' +
@@ -7447,14 +7531,14 @@ function seasonToggle(game) {
           wxFact(game) + fact('Broadcast', value(game.broadcast)) +
           fact('Status', gameStatus(game))) + '</div>' +
       '</article>' +
-      (sport === 'nfl' || sport === 'cfb' || sport === 'nba'
+      (sport === 'nfl' || sport === 'cfb' || sport === 'nba' || sport === 'cbb'
         ? '<div class="ca-nfl-bar"><nav class="ca-detail-nav ca-nfl-tabs" aria-label="Matchup sections" role="tablist">' +
           deskTabsFor(sport).map(function (tab) {
             var glyph = SECTION_ICON[tab[2][0]] ? ico(SECTION_ICON[tab[2][0]], 'ca-detail-nav__ico', 14) : '';
             return '<a href="#' + tab[0] + '" role="tab" data-nfl-tab="' + tab[0] + '" aria-selected="false">' +
               glyph + tab[1] + '</a>';
           }).join('') + '</nav>' + nflClubSwitch(sport, game) + '</div>' +
-          (sport === 'nfl' ? seasonToggle(game) : '')
+          (sport === 'nfl' ? seasonToggle(game) : sport === 'cbb' ? cbbControls(game) : '')
         : '<nav class="ca-detail-nav" aria-label="Matchup sections">' + nav.map(function (item) {
           var glyph = item[0] === 'overview' ? ico('info', 'ca-detail-nav__ico', 14)
             : (SECTION_ICON[item[0]] ? ico(SECTION_ICON[item[0]], 'ca-detail-nav__ico', 14) : '');
@@ -7463,6 +7547,7 @@ function seasonToggle(game) {
       '<div class="ca-detail-stack">' +
       (sport === 'mlb' ? mlbSections(sport, game, extra)
         : sport === 'cfb' ? cfbSections(sport, game)
+        : sport === 'cbb' ? cbbSections(sport, game)
         : sport === 'nba' ? nbaOrdered(nbaSections(sport, game))
         : nflSections(sport, game, (result && result.games) || [])) +
       '</div>';
@@ -7473,12 +7558,13 @@ function seasonToggle(game) {
       host.style.setProperty('--nba-away', pair.away || 'var(--viz-away)');
       host.style.setProperty('--nba-home', pair.home || 'var(--viz-home)');
     }
-    if (sport === 'nfl' || sport === 'cfb' || sport === 'nba') nflInitDesk(host);
+    if (sport === 'nfl' || sport === 'cfb' || sport === 'nba' || sport === 'cbb') nflInitDesk(host);
     host.setAttribute('data-state', 'ready');
     host.__caRadar = { sport: sport, game: game };
     fitRadar(host);
     // Delegated once on the host, so a repainted section keeps working.
     if (!host.dataset.seasonWired) {
+      if (sport === 'cbb') wireCbbControls(host,game);
       wireSeasonToggle(host);
       wireLineupTabs(host);
       wireRadarReadout(host);
@@ -7486,7 +7572,7 @@ function seasonToggle(game) {
       wireBvpView(host);
       wireFormSplit(host);
       wireRunsHand(host);
-      if (sport === 'nfl' || sport === 'cfb' || sport === 'nba') wireNflDesk(host);
+      if (sport === 'nfl' || sport === 'cfb' || sport === 'nba' || sport === 'cbb') wireNflDesk(host);
       if (global.ResizeObserver) {
         new global.ResizeObserver(function () { fitRadar(host); }).observe(host);
       }
@@ -7530,6 +7616,20 @@ function seasonToggle(game) {
       // repaints only its own section so the reader never loses their place.
       var extra = {};
       render(host, sport, game, extra, result);
+      if (sport === 'cbb' && result.statusReady) result.statusReady.then(function(updated){
+        if(!updated.statusObservedAt)return;
+        var center=host.querySelector('.ca-detail-center');
+        if(center)center.innerHTML=cbbClock(game)+'<p>'+esc(new Date(game.kickoff_utc).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'America/New_York'}))+'</p>';
+        ['away','home'].forEach(function(side){var record=host.querySelector('.ca-detail-team--'+side+' p');if(record)record.textContent=value(game[side+'_record'],'Record not published');});
+        var status=host.querySelector('.ca-detail-facts .ca-detail-fact:last-child strong');if(status)status.textContent=gameStatus(game);
+      });
+      return (sport === 'cbb' ? adapter.detail(game) : Promise.resolve(game)).then(function () {
+      if (sport === 'cbb') {
+        var cbbStack=host.querySelector('.ca-detail-stack'),cbbTab=cbbStack.getAttribute('data-nfl-tab'),cbbClub=cbbStack.getAttribute('data-club');
+        host.querySelector('.ca-nfl-club').outerHTML=nflClubSwitch(sport,game);
+        cbbStack.innerHTML=cbbSections(sport,game);nflSetTab(host,cbbTab);nflSetClub(host,cbbClub);
+      }
+
 
       if (sport === 'mlb') {
         var dateIso = result.dateIso || params().get('date') ||
@@ -7742,6 +7842,7 @@ function seasonToggle(game) {
         context.setAttribute('data-state', 'ok');
       }
       return game;
+      });
     }).catch(function (error) {
       host.setAttribute('data-state', 'error');
       host.innerHTML = '<div class="ca-error-state" role="alert"><h1>Matchup unavailable</h1><p>' +

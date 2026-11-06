@@ -6,7 +6,9 @@
   'use strict';
 
   var ALL = [
-    { id: 'mlb', enabled: true, href: '/mlb/', label: 'MLB', searchEnabled: true,
+    { id: 'cbb', enabled: true, href: '/cbb/', label: 'CBB', searchEnabled: true,
+      previewTabs: ['units','shooting','rotation','availability','games','schedule'] },
+    { id: 'mlb', enabled: false, href: '/mlb/', label: 'MLB', searchEnabled: true,
       previewTabs: ['overview', 'lineups', 'starters', 'bullpens', 'conditions'] },
     { id: 'nfl', enabled: true, href: '/nfl/', label: 'NFL', searchEnabled: true,
       previewTabs: ['overview', 'availability', 'quarterbacks', 'trenches', 'scheme', 'conditions'] },

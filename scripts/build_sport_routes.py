@@ -13,9 +13,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 STAMP = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
 NAV = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8").strip()
-PUBLIC_SPORTS = ("mlb", "nfl", "cfb", "nba")
+PUBLIC_SPORTS = ("nfl", "cfb", "nba", "cbb")
 PARKED_SPORTS = ("wnba",)
 SPORTS = {
+    "cbb": {"title":"CBB — Chase Analytics", "adapter":"cbb", "global":"ChaseSportCBB", "picks_label":"Public slate", "gems_label":None, "lede":"Every Matchup, With The Shooting, Possession Battle And Players Behind It.", "matchups_href":"/cbb/matchups.html"},
     "mlb": {
         "title": "MLB — Chase Analytics",
         "adapter": "mlb",
@@ -91,6 +92,8 @@ def model_nav() -> str:
 
 def parked_page(sport: str) -> str:
     label = sport.upper()
+    if sport == "mlb":
+        return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=/"><link rel="canonical" href="https://chase-analytics.com/"><title>Chase Analytics</title></head><body><a href="/">Continue to matchup analysis</a></body></html>'
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -172,6 +175,7 @@ def page(sport: str, *, kind: str = "index") -> str:
       </div>
       <div class="ca-public-page__controls" data-desk-toolbar-host></div>
 {more_html}
+{'<a class="ca-cbb-tool-link" href="/cbb/shot-charts.html">Compare team shot charts →</a>' if sport == "cbb" else ""}
     </header>
     <div class="ca-public-page__content"><div id="slate" class="ca-async" data-state="loading">Loading {sport.upper()} slate…</div></div>
   </main>
@@ -220,6 +224,7 @@ MATCHUPS_JS = r"""
 
 def matchup_page(sport: str) -> str:
     spec = SPORTS[sport]
+    cbb_runtime = f'  <script src="/dashboard/cbb_charts.js?v={STAMP}"></script>' if sport == "cbb" else ""
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -252,6 +257,7 @@ def matchup_page(sport: str) -> str:
   <script src="/dashboard/matchup_card.js?v={STAMP}"></script>
   <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
   <script src="/dashboard/chase_shell.js?v={STAMP}"></script>
+{cbb_runtime}
   <script src="/dashboard/public_game_detail.js?v={STAMP}"></script>
   <script>
     window.CHASE_SPORT_PAGE = {spec['global']};
@@ -263,6 +269,18 @@ def matchup_page(sport: str) -> str:
 </body>
 </html>
 """
+
+
+def shot_charts_page() -> str:
+    html = page("cbb")
+    html = html.replace("CBB — Chase Analytics", "CBB Shot Charts — Chase Analytics").replace(">CBB Matchups</h1>", ">CBB Shot Charts</h1>")
+    html = html.replace(SPORTS["cbb"]["lede"], "Shooting By Zone, With Exact Makes, Attempts And The Same-Season D-I Baseline.")
+    html = re.sub(r'<div class="ca-public-page__controls" data-desk-toolbar-host></div>', '', html)
+    html = html.replace('<a class="ca-cbb-tool-link" href="/cbb/shot-charts.html">Compare team shot charts →</a>', '<a class="ca-cbb-tool-link" href="/cbb/">← Back to matchup analysis</a>')
+    html = html.replace('<div id="slate" class="ca-async" data-state="loading">Loading CBB slate…</div>', '<div class="ca-cbb-controls" id="cbbChartControls"></div><p class="ca-cbb-note" id="cbbChartStatus" role="status">Loading team evidence…</p><div class="ca-slate-grid" id="cbbShotMatrix" aria-busy="true"></div>')
+    start = html.index('  <script>\n  window.CHASE_SPORT_PAGE')
+    end = html.index('  </script>', start) + len('  </script>')
+    return html[:start] + f'<script src="/dashboard/cbb_charts.js?v={STAMP}"></script><script src="/dashboard/cbb_shot_charts.js?v={STAMP}"></script>' + html[end:]
 
 
 def models_page() -> str:
@@ -318,12 +336,14 @@ def main() -> int:
             parked = parked_page(sport)
             (dest / "index.html").write_text(parked, encoding="utf-8")
             (dest / "matchups.html").write_text(parked, encoding="utf-8")
+            if sport == "mlb": (dest / "matchup.html").write_text(parked, encoding="utf-8")
             print("wrote", sport, "parked (not on public desk)")
             continue
         (dest / "index.html").write_text(page(sport, kind="index"), encoding="utf-8")
         (dest / "matchups.html").write_text(page(sport, kind="matchups"), encoding="utf-8")
         (dest / "matchup.html").write_text(matchup_page(sport), encoding="utf-8")
         print("wrote", sport, "index/matchups/matchup")
+    (ROOT / "cbb" / "shot-charts.html").write_text(shot_charts_page(), encoding="utf-8")
     (ROOT / "models").mkdir(parents=True, exist_ok=True)
     models = models_page()
     (ROOT / "models" / "index.html").write_text(models, encoding="utf-8")

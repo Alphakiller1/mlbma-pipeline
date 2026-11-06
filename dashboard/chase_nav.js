@@ -123,7 +123,7 @@
 
   function sportNavKey() {
     var path = window.location.pathname || '';
-    var m = path.match(/^\/(mlb|nfl|wnba|cfb|nba)(\/|$)/i);
+    var m = path.match(/^\/(mlb|nfl|wnba|cfb|nba|cbb)(\/|$)/i);
     if (m) return m[1].toLowerCase();
     if (/^\/models(\/|$)/i.test(path)) return 'models';
     if (/^\/model-center(\/|$)/i.test(path)) return 'models';
@@ -155,7 +155,7 @@
     // carries data-sport="mlb" for its adapters but shows both slates, so it
     // must not light a tab — hence pathname rather than the body attribute.
     var seg = String(location.pathname || '').split('/').filter(Boolean)[0] || '';
-    var routeSport = /^(mlb|nfl|wnba|cfb|nba)$/.test(seg) ? seg : '';
+    var routeSport = /^(mlb|nfl|wnba|cfb|nba|cbb)$/.test(seg) ? seg : '';
     document.querySelectorAll('.chase-sport-tab').forEach(function (tab) {
       var key = tab.getAttribute('data-nav');
       if (routeSport && key === routeSport) {
@@ -448,8 +448,9 @@
     var sport = String((document.body && document.body.getAttribute('data-sport')) || 'mlb').toLowerCase();
     // Model Center shows one sport at a time, named in ?sport=.
     if (/^\/model-center\//.test(location.pathname)) {
-      var picked = String(new URLSearchParams(location.search).get('sport') || 'mlb').toLowerCase();
-      if (/^(mlb|nfl|nba|wnba|cfb)$/.test(picked)) sport = picked;
+      var picked = String(new URLSearchParams(location.search).get('sport') || 'nfl').toLowerCase();
+      if (picked === 'cbb') return Promise.resolve();
+      if (/^(mlb|nfl|nba|wnba|cfb|cbb)$/.test(picked)) sport = picked;
     }
     var publicResearch = document.body && document.body.getAttribute('data-ca-product') === 'research';
     return ChaseDataStatus.fetchLastUpdated({

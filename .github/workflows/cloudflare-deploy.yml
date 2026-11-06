@@ -20,7 +20,7 @@ on:
   # finishes rather than waiting for an unrelated commit to carry it.
   # The CFB and MLB slate publishers commit the same way.
   workflow_run:
-    workflows: ["Run MLBMA Pipeline", "Publish CFB Slate", "Publish MLB Slate", "Publish NFL Slate"]
+    workflows: ["Run MLBMA Pipeline", "Publish CFB Slate", "Publish MLB Slate", "Publish NFL Slate", "Publish CBB Slate"]
     types: [completed]
     branches: [master]
   workflow_dispatch:
@@ -88,6 +88,9 @@ jobs:
           grep -q 'ChasePublicGameDetail' _site/dashboard/public_game_detail.js
           test -f _site/data/public/mlb/slate.json
           test -f _site/data/public/nfl/slate.json
+          test -f _site/data/public/cbb/slate.json
+          test -f _site/cbb/shot-charts.html
+          test -f _site/functions/api/cbb-fixtures.js
           test -f _site/mlb/matchup.html
           test -f _site/nfl/matchup.html
 

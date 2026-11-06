@@ -1,0 +1,31 @@
+name: Publish CBB Slate
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '20 14 * 11,12,1,2,3,4 *'
+permissions:
+  contents: write
+concurrency:
+  group: publish-cbb-slate
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - run: python scripts/refresh_public_cbb.py
+      - run: python scripts/validate_public_fields.py
+      - name: Commit verified CBB facts
+        run: |
+          git add -- data/public/cbb
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'data: refresh public CBB evidence'
+          git pull --rebase origin master
+          git push origin HEAD:master

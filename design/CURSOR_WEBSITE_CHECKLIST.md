@@ -1,14 +1,14 @@
 # Chase Analytics public website release contract
 
 This is the implementation gate for `chase-analytics.com`. The canonical public
-experience is the root homepage plus `/mlb/`, `/nfl/`, and each sport's
+experience is the root homepage plus `/nfl/`, `/cfb/`, `/nba/`, `/cbb/`, and each sport's
 `matchup.html`. The old `/dashboard/` and `/dashboard/matchup_compare.html`
 documents are compatibility redirects, not alternate products.
 
 ## 1. Product boundary
 
-- [ ] Public navigation exposes Home, Matchups, MLB, NFL, Glossary, and one Model Center destination.
-- [ ] WNBA and CFB remain registered for future work but are disabled, `noindex`, and absent from public navigation and homepage content.
+- [ ] Public navigation exposes Home, Matchups, NFL, CFB, NBA, CBB, Glossary, and one Model Center destination.
+- [ ] WNBA remains registered for future work but is disabled, `noindex`, and absent from public navigation and homepage content.
 - [ ] Public `<main>` content never shows predicted scores/runs/points, win probability, picks, recommendations, confidence, performance records, or model-versus-market comparisons.
 - [ ] Public JSON is allowlist-only and contains no sportsbook, price, line, or private-analysis fields.
 - [ ] Model Center remains a separate authenticated destination. Public cards never repeat a Model Center call to action.
@@ -16,7 +16,7 @@ documents are compatibility redirects, not alternate products.
 
 ## 2. Matchup-first information architecture
 
-- [ ] `/` opens with one H1 and immediately presents MLB and NFL matchup slates.
+- [ ] `/` opens with one H1 and immediately presents CBB and NFL matchup slates.
 - [ ] The same `ChaseMatchupCard` anatomy renders both sports.
 - [ ] Every collapsed card includes status/time, official team logos, full team names, records when available, sport-specific participants, availability, venue, and two actions.
 - [ ] Visible team abbreviations are forbidden; abbreviations remain internal identity keys only.
@@ -40,7 +40,7 @@ documents are compatibility redirects, not alternate products.
 
 ## 4. Data and generators
 
-- [ ] `scripts/build_sport_routes.py` deterministically emits MLB/NFL index, matchups, results, and matchup-detail routes plus parked future routes.
+- [ ] `scripts/build_sport_routes.py` deterministically emits NFL/CFB/NBA/CBB index, matchups, results, and matchup-detail routes plus parked future routes.
 - [ ] `dashboard/sports/chase_public_slate.js` and `scripts/project_public_slate.py` share the factual allowlist.
 - [ ] MLB combines the official schedule with matching published context without overwriting a valid official `gamePk`.
 - [ ] NFL uses its published public slate and never imports MLB labels.

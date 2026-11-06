@@ -23,8 +23,8 @@ def visible_main(html: str) -> str:
 class SportRouteBuilderTests(unittest.TestCase):
     _GENERATED = tuple(
         ROOT / sport / name
-        for sport in ("mlb", "nfl", "wnba", "cfb")
-        for name in (("index.html", "matchups.html", "matchup.html") if sport in ("mlb", "nfl", "cfb") else ("index.html", "matchups.html"))
+        for sport in ("mlb", "nfl", "wnba", "cfb", "nba", "cbb")
+        for name in (("index.html", "matchups.html", "matchup.html") if sport != "wnba" else ("index.html", "matchups.html"))
     )
 
     @classmethod
@@ -41,7 +41,7 @@ class SportRouteBuilderTests(unittest.TestCase):
                 path.write_bytes(original)
 
     def test_public_sport_indexes_and_matchups(self):
-        for sport in ("mlb", "nfl", "cfb"):
+        for sport in ("cbb", "nfl", "cfb", "nba"):
             path = ROOT / sport / "index.html"
             self.assertTrue(path.is_file(), path)
             text = path.read_text(encoding="utf-8")
@@ -84,7 +84,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertNotIn("ChaseSportSelect", text)
 
     def test_every_sport_has_matchups(self):
-        for sport in ("mlb", "nfl", "cfb"):
+        for sport in ("cbb", "nfl", "cfb", "nba"):
             matchups = (ROOT / sport / "matchups.html").read_text(encoding="utf-8")
             self.assertIn("ChaseShell", matchups)
             self.assertIn("sport: sport", matchups)
@@ -136,7 +136,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("SP+ Opponent-Adjusted Efficiency By Unit", js)
         self.assertIn("game.away_adjusted_efficiency", js)
         self.assertIn("host.__deskTabs = deskTabsFor(sport)", js)
-        self.assertIn("return sport === 'cfb' ? CFB_TABS : (sport === 'nba' ? NBA_TABS : NFL_TABS);", js)
+        self.assertIn("return sport === 'cbb' ? CBB_TABS : (sport === 'cfb' ? CFB_TABS : (sport === 'nba' ? NBA_TABS : NFL_TABS));", js)
         self.assertIn("Matchup Analysis", js)
         self.assertNotIn("function nflScriptLens", js)
         # Evidence, never verdicts: CFB no longer ranks the widest gaps for the reader.
@@ -232,13 +232,13 @@ class SportRouteBuilderTests(unittest.TestCase):
         The route, its generator branch and any link to it are all gone, so
         this asserts the absence three ways rather than trusting one.
         """
-        for sport in ("mlb", "nfl", "wnba", "cfb"):
+        for sport in ("mlb", "nfl", "wnba", "cfb", "nba", "cbb"):
             self.assertFalse((ROOT / sport / "results.html").exists(),
                              f"{sport}/results.html is a public results destination")
         src = (ROOT / "scripts" / "build_sport_routes.py").read_text(encoding="utf-8")
         self.assertNotIn("results.html", src)
         self.assertNotIn("RESULTS_JS", src)
-        for sport in ("mlb", "nfl", "cfb"):
+        for sport in ("cbb", "nfl", "cfb", "nba"):
             for name in ("index.html", "matchups.html", "matchup.html"):
                 page = (ROOT / sport / name).read_text(encoding="utf-8")
                 self.assertNotIn("results.html", page, f"{sport}/{name} links a results route")
@@ -247,7 +247,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         home = (ROOT / "index.html").read_text(encoding="utf-8")
         self.assertIn('data-mode="entry"', home)
         self.assertIn('id="matchupDesk"', home)
-        self.assertIn('id="openingMlbSlate"', home)
+        self.assertIn('id="openingCbbSlate"', home)
         self.assertIn('id="openingNflSlate"', home)
         self.assertNotIn("location.replace('dashboard/", home)
         self.assertNotIn("http-equiv=\"refresh\"", home)
@@ -317,16 +317,16 @@ class SportRouteBuilderTests(unittest.TestCase):
     def test_sport_home_is_the_matchup_card_slate(self):
         src = (ROOT / "scripts" / "build_sport_routes.py").read_text(encoding="utf-8")
         card = (ROOT / "dashboard" / "matchup_card.js").read_text(encoding="utf-8")
-        mlb_home = (ROOT / "mlb" / "index.html").read_text(encoding="utf-8")
-        self.assertIn("matchup_card.js", mlb_home)
-        self.assertIn("chase_public_slate.js", mlb_home)
+        cbb_home = (ROOT / "cbb" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("matchup_card.js", cbb_home)
+        self.assertIn("chase_public_slate.js", cbb_home)
         self.assertIn("data/public/mlb/slate.json", (ROOT / "dashboard" / "sports" / "mlb.js").read_text(encoding="utf-8"))
         self.assertIn("ca-matchup-card", card)
         self.assertIn("Expand Matchup", card)
         self.assertIn("Full Matchup Analysis", card)
         self.assertIn("ca-desk-toolbar", card)
         self.assertIn("var officialRequest", card)
-        self.assertNotIn("Board overview", mlb_home)
+        self.assertNotIn("Board overview", cbb_home)
         patterns = (ROOT / "dashboard" / "styles" / "chase-public.css").read_text(
             encoding="utf-8"
         )
@@ -339,7 +339,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         for path in self._GENERATED:
             text = path.read_text(encoding="utf-8")
             self.assertNotIn("= None;", text, path)
-            if path.parent.name in ("mlb", "nfl", "cfb"):
+            if path.parent.name in ("cbb", "nfl", "cfb", "nba"):
                 self.assertIn("chase_shell.js", text, path)
             else:
                 self.assertIn("noindex", text, path)
@@ -404,7 +404,7 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("box-shadow: inset 3px 0 0 var(--club, var(--accent));", css)
         self.assertIn("function totalRead(g)", js)
         self.assertIn("Market total not published · no lean available", js)
-        self.assertIn("['mlb', 'MLB'], ['nfl', 'NFL'], ['nba', 'NBA'], ['wnba', 'WNBA'], ['cfb', 'CFB']", js)
+        self.assertIn("['nfl', 'NFL'], ['nba', 'NBA'], ['cfb', 'CFB'], ['cbb', 'CBB']", js)
 
     def test_public_adapters_do_not_fetch_performance_ledgers(self):
         for sport in ("mlb", "nfl", "wnba", "cfb", "nba"):
@@ -485,7 +485,7 @@ class AdapterHoleTests(unittest.TestCase):
         shell = (ROOT / "dashboard" / "chase_shell.js").read_text(encoding="utf-8")
         self.assertEqual(opening.count("<h1"), 1)
         self.assertIn("Every Game. The Context That Decides It.", opening)
-        self.assertIn('id="openingMlbSlate"', opening)
+        self.assertIn('id="openingCbbSlate"', opening)
         self.assertIn('id="openingNflSlate"', opening)
         self.assertIn('id="matchupDesk"', opening)
         self.assertIn("styles/chase-public.css", opening)
@@ -514,11 +514,11 @@ class AdapterHoleTests(unittest.TestCase):
             (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8"),
         )
         diag = (ROOT / "scripts" / "dashboard_runtime_diag.py").read_text(encoding="utf-8")
-        self.assertIn("openingMlbSlate", diag)
+        self.assertIn("openingCbbSlate", diag)
 
     def test_public_game_detail_script_is_design_stamped(self):
         stamp = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
-        for sport in ("mlb", "nfl", "cfb"):
+        for sport in ("cbb", "nfl", "cfb", "nba"):
             html = (ROOT / sport / "matchup.html").read_text(encoding="utf-8")
             self.assertIn("public_game_detail.js?v=" + stamp, html)
             self.assertNotIn("matchup_compare.js", html)
@@ -758,9 +758,9 @@ class AdapterHoleTests(unittest.TestCase):
         deploy_job = workflow.split("\n  deploy:", 1)[1][:400]
         self.assertIn("if: false", deploy_job)
         audit = (ROOT / "scripts" / "mobile_overflow_audit.py").read_text(encoding="utf-8")
-        self.assertIn('"mlb/index.html"', audit)
+        self.assertIn('"cbb/index.html"', audit)
         self.assertIn('"nfl/index.html"', audit)
-        self.assertIn('"mlb/matchup.html?', audit)
+        self.assertIn('"cbb/matchup.html?', audit)
         self.assertNotIn("scope=team&team=NYY", audit)
 
     def test_brand_assets_resolve_from_dashboard_root(self):

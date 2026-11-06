@@ -23,10 +23,10 @@ PUBLIC_ENTRIES = (
     ROOT / "index.html",
     # NBA reads only its published slate, so it is held to the same graph as
     # MLB/NFL. CFB is not: its adapter reads the cfb-model board directly.
-    *(ROOT / sport / name for sport in ("mlb", "nfl", "nba") for name in ("index.html", "matchups.html", "matchup.html")),
+    *(ROOT / sport / name for sport in ("nfl", "nba", "cbb") for name in ("index.html", "matchups.html", "matchup.html")),
 )
 
-PUBLIC_SLATES = tuple(ROOT / "data" / "public" / sport / "slate.json" for sport in ("mlb", "nfl", "nba"))
+PUBLIC_SLATES = tuple(ROOT / "data" / "public" / sport / "slate.json" for sport in ("nfl", "nba", "cbb"))
 
 
 def published_artifacts() -> list:
