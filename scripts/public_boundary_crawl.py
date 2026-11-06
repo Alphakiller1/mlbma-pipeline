@@ -149,7 +149,10 @@ def main(argv: list[str]) -> int:
             page.remove_listener("request", on_request)
 
         # Past results are not a public destination.
-        for sport in ("mlb", "nfl", "wnba", "cfb"):
+        retired = page.request.get(f"{base}/mlb/results.html", max_redirects=0)
+        check("mlb: retired section redirects home", retired.status == 301 and retired.headers.get("location") == "/",
+              f"status={retired.status}, destination={retired.headers.get('location')}")
+        for sport in ("cbb", "nfl", "wnba", "cfb"):
             status = page.request.get(f"{base}/{sport}/results.html").status
             check(f"{sport}: results route is gone", status == 404, f"status={status}")
 
