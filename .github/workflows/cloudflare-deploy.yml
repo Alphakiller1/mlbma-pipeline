@@ -50,8 +50,9 @@ jobs:
         run: python -m unittest discover -s tests -p "test_*.py"
       - name: Run public browser and responsive contracts
         run: |
-          python -m http.server 8765 >/tmp/chase-http.log 2>&1 &
-          sleep 2
+          npx --yes wrangler@4.40.0 pages dev . --port 8765 >/tmp/chase-worker.log 2>&1 &
+          for attempt in $(seq 1 45); do curl -fsS http://127.0.0.1:8765/ >/dev/null && break || sleep 1; done
+          curl -fsS http://127.0.0.1:8765/ >/dev/null || { cat /tmp/chase-worker.log; exit 1; }
           python scripts/public_site_runtime_diag.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000
           python scripts/public_boundary_crawl.py "http://127.0.0.1:8765"
           python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000 --width 360 --height 800 --strict
