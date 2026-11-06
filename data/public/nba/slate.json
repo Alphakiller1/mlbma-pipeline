@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-05",
- "generated_at_utc": "2026-11-05T23:38:59+00:00",
+ "generated_at_utc": "2026-11-06T01:49:31+00:00",
  "data_through_utc": "2026-11-05T03:30Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -121,8 +121,8 @@
    "id": "401909936",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/5 - 9:00 PM EST",
+   "game_state": "live",
+   "status_detail": "8:23 - 1st",
    "kickoff_utc": "2026-11-06T02:00Z",
    "away": "ORL",
    "home": "PHX",
@@ -136,8 +136,8 @@
    "home_record": "1-5",
    "away_split_record": "2-1",
    "home_split_record": "1-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 11,
+   "home_score": 8,
    "venue": "Mortgage Matchup Center",
    "venue_city": "Phoenix, AZ",
    "broadcast": "Suns Live / Arizona's Family 3TV",
@@ -15145,5 +15145,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-06T01:24:34+00:00"
+ "published_at_utc": "2026-11-06T02:17:34+00:00"
 }
