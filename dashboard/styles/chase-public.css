@@ -6192,6 +6192,25 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-cfb-panel .ca-lineup-table.ca-nba-evidence-table td:first-child{width:28%;min-width:0;white-space:normal;overflow:visible}
 @media(max-width:560px){.ca-cfb-panel .ca-nba-evidence-table th,.ca-cfb-panel .ca-nba-evidence-table td{padding-inline:4px;min-width:0;font-size:12px}.ca-cfb-panel .ca-nba-evidence-table th{font-size:10px}.ca-nba-evidence-table .ca-cbb-count{font-size:10px}}
 .ca-cbb-summary strong .ca-basketball-value{color:var(--grade,var(--text-primary))}
+/* Basketball headers share the numeric cell's edge and padding. */
+.ca-lineup-table.ca-basketball-table th.num,
+.ca-lineup-table.ca-basketball-table td.num { text-align: right; }
+.ca-lineup-table.ca-basketball-table th:first-child,
+.ca-lineup-table.ca-basketball-table td:first-child { text-align: left; }
+.ca-lineup-table.ca-basketball-table th { vertical-align: bottom; white-space: normal; }
+/* Frequency is a single fixed 0–50% scale, independent of performance grades. */
+.ca-cbb-court[data-court-metric="share"] .ca-court-zone {
+  fill: color-mix(in srgb, var(--series-6) var(--shot-volume, 0%), var(--surface-2));
+  fill-opacity: 1;
+}
+.ca-cbb-court[data-court-metric="share"] .ca-court-zone:hover,
+.ca-cbb-court[data-court-metric="share"] .ca-court-zone:focus-visible {
+  fill-opacity: 1; stroke: var(--text-secondary); stroke-width: 2;
+}
+.ca-cbb-legend--share .ca-cbb-legend__ramp { background: linear-gradient(90deg, var(--surface-2), var(--series-6)); }
+.ca-basketball-volume { display: inline-block; min-width: 44px; font-variant-numeric: tabular-nums; }
+.ca-basketball-volume > span { display: block; height: 3px; margin-top: 4px; border-radius: var(--radius-pill); background: var(--surface-3); }
+.ca-basketball-volume > span::after { content: ''; display: block; width: var(--volume); height: 100%; border-radius: inherit; background: var(--series-6); }
 .ca-cbb-matrix-card{padding:var(--space-4)}.ca-cbb-matrix-title{display:flex;align-items:center;gap:var(--space-3);margin-top:var(--space-3)}
 .ca-cbb-matrix-title img{object-fit:contain;flex-shrink:0}.ca-cbb-matrix-title h2{font:700 19px var(--font-display);margin:0;color:var(--text-primary)}
 .ca-cbb-matrix-title p{font-size:12px;color:var(--text-muted);margin:3px 0 0}

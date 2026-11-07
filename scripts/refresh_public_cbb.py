@@ -7,7 +7,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 
 def main():
-    from pipeline.cbb_public import data,export
+    from pipeline.cbb_public import data,export,possession_data,factual_tactics
     from scripts.publish_public_cbb import publish
     day=datetime.now(ZoneInfo('America/New_York')).date().isoformat()
     with tempfile.TemporaryDirectory(prefix='chase-cbb-') as scratch:
@@ -19,7 +19,10 @@ def main():
                 raise ValueError('Collection incomplete; existing CBB publication retained')
         data.ROOT=temp
         conn=data.warehouse(snapshot)
-        export.export_public(snapshot,conn,temp/'public',day)
+        possession_data.DATA=ROOT/'.cache/cbb-tactics/sdv'
+        for year in (2026,2027):possession_data.refresh(year)
+        facts=factual_tactics.build(snapshot,day)
+        export.export_public(snapshot,conn,temp/'public',day,facts)
         conn.close();publish(temp/'public')
 
 if __name__=='__main__':main()

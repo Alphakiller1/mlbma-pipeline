@@ -20,9 +20,23 @@ def validate_context(value,old=None):
                 expected=z['made']/z['attempts'] if z['attempts'] else None
                 if expected is None and z['fg_pct'] is not None:raise ValueError('Zero-attempt zone must be null')
                 if expected is not None and abs(z['fg_pct']-expected)>1e-9:raise ValueError('Zone FG% does not match its counts')
+    tactics=value.get('observed_tactics')
+    if tactics:
+        if tactics.get('season')!=value['season']:raise ValueError('Tactical season mismatch')
+        for family in ('personnel','situations'):
+            for row in tactics[family]:
+                n=row['possessions'];points=row['points']
+                if n<0 or points<0 or (n and abs(row['ppp']-points/n)>1e-9):raise ValueError('Invalid tactical efficiency')
+                if not n and row['ppp'] is not None:raise ValueError('Zero tactical sample must be null')
+                if row.get('ppp_grade') and not row['sample_qualified']:raise ValueError('Thin tactical sample graded')
+        for row in tactics['position_size']:
+            if row['players']<1 or not 55<=row['mean_height_inches']<=100:raise ValueError('Invalid roster height')
     if old:
         if (value['rates'].get('games_all') or 0)<(old['rates'].get('games_all') or 0):raise ValueError('Team game count regressed; existing publication retained')
         if old.get('players') and not value.get('players'):raise ValueError('Player coverage regressed; existing publication retained')
+        prior=old.get('observed_tactics') or {}
+        if tactics and prior.get('data_through') and (tactics.get('data_through') or '')<prior['data_through']:
+            raise ValueError('Tactical evidence regressed; existing publication retained')
 
 def publish(source):
     source=Path(source).resolve();manifest=json.loads((source/'manifest.json').read_text(encoding='utf-8'))
