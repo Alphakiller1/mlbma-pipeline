@@ -121,8 +121,8 @@
    "id": "401909287",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/6 - 7:00 PM EST",
+   "game_state": "live",
+   "status_detail": "10:21 - 2nd",
    "kickoff_utc": "2026-11-07T00:00Z",
    "away": "WSH",
    "home": "ATL",
@@ -136,8 +136,8 @@
    "home_record": "5-4",
    "away_split_record": "2-2",
    "home_split_record": "1-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 34,
+   "home_score": 34,
    "venue": "State Farm Arena",
    "venue_city": "Atlanta, GA",
    "broadcast": "MNMT",
@@ -7832,8 +7832,8 @@
    "id": "401909288",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/6 - 7:00 PM EST",
+   "game_state": "live",
+   "status_detail": "11:49 - 2nd",
    "kickoff_utc": "2026-11-07T00:00Z",
    "away": "BOS",
    "home": "CHA",
@@ -7847,8 +7847,8 @@
    "home_record": "3-6",
    "away_split_record": "1-2",
    "home_split_record": "2-3",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 42,
+   "home_score": 20,
    "venue": "Spectrum Center",
    "venue_city": "Charlotte, NC",
    "broadcast": "",
@@ -68060,5 +68060,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-07T00:04:24+00:00"
+ "published_at_utc": "2026-11-07T00:40:59+00:00"
 }
