@@ -7402,11 +7402,11 @@ function seasonToggle(game) {
     if(!a||!b||!a.offense||!b.defense)return cbbPanel(title,'Measured coverage',pending('Measured coverage is unavailable for this evidence window.'));
     var rows=b.defense.rows.map(function(d){
       var o=a.offense.rows.find(function(r){return r.id===d.id;})||{};
-      function ppp(r){return nbaGraded(r.ppp==null?'—':Number(r.ppp).toFixed(3),r.ppp_grade)+(r.possessions>0&&!r.sample_qualified?'<small class="ca-cbb-count">Thin sample</small>':'');}
-      return [esc(d.label),nbaPct(d.frequency),String(d.possessions),ppp(d),String(o.possessions==null?'—':o.possessions),ppp(o)];
+      function ppp(r){return nbaGraded(r.ppp==null?'—':Number(r.ppp).toFixed(3),r.ppp_grade)+'<small class="ca-cbb-count ca-coverage-sample">'+(r.possessions==null?'—':r.possessions)+' poss</small>'+(r.possessions>0&&!r.sample_qualified?'<small class="ca-cbb-count">Thin sample</small>':'');}
+      return [esc(d.label),nbaPct(d.frequency),ppp(d),ppp(o)];
     });
     return cbbPanel(title,(a.season-1)+'–'+String(a.season).slice(2)+' · NBA Inside the Game · '+a.offense.games+' offense / '+b.defense.games+' defense games',
-      cbbTable(['Coverage','Defense use','D poss','D PPP allowed','O poss','O PPP'],rows,'ca-nba-evidence-table')+nbaColorLegend()+
+      cbbTable(['Coverage','Defense use','D PPP allowed','O PPP vs'],rows,'ca-nba-evidence-table')+nbaColorLegend()+
       '<p class="ca-cbb-note">Offense PPP is scored against that coverage; defense PPP is allowed while using it. Grade requires 20 coverage possessions; raw thin-sample values remain visible. Non-zone is the source label and does not verify man defense. Retrieved '+esc(nbaEvidenceStamp(a.offense.retrieved_at_utc))+' / '+esc(nbaEvidenceStamp(b.defense.retrieved_at_utc))+'. The feed does not supply its last included game date.</p><p class="ca-cbb-note">Drop, switch, blitz, press and named offensive formations are not tagged by these connected free feeds. The tendencies below are inferences.</p>');
   }
   function nbaDataballrPanel(sport,game,side) {

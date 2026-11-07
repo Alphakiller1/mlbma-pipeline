@@ -6187,6 +6187,10 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-nba-evidence-table th{white-space:normal;min-width:64px}
 .ca-nba-evidence-table td:first-child{white-space:normal}
 .ca-nba-evidence-table .ca-cbb-count{font-size:11px}
+.ca-cfb-panel .ca-lineup-table.ca-nba-evidence-table{width:100%;min-width:0;table-layout:fixed}
+.ca-cfb-panel .ca-lineup-table.ca-nba-evidence-table th:first-child,
+.ca-cfb-panel .ca-lineup-table.ca-nba-evidence-table td:first-child{width:28%;min-width:0;white-space:normal;overflow:visible}
+@media(max-width:560px){.ca-cfb-panel .ca-nba-evidence-table th,.ca-cfb-panel .ca-nba-evidence-table td{padding-inline:4px;min-width:0;font-size:12px}.ca-cfb-panel .ca-nba-evidence-table th{font-size:10px}.ca-nba-evidence-table .ca-cbb-count{font-size:10px}}
 .ca-cbb-summary strong .ca-basketball-value{color:var(--grade,var(--text-primary))}
 .ca-cbb-matrix-card{padding:var(--space-4)}.ca-cbb-matrix-title{display:flex;align-items:center;gap:var(--space-3);margin-top:var(--space-3)}
 .ca-cbb-matrix-title img{object-fit:contain;flex-shrink:0}.ca-cbb-matrix-title h2{font:700 19px var(--font-display);margin:0;color:var(--text-primary)}

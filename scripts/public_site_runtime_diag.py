@@ -210,7 +210,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             page.goto(base_url.rstrip('/') + '/nba/matchup.html?game=' + str(fixture['id']) + '#defense',
                       wait_until='domcontentloaded', timeout=timeout_ms)
             page.wait_for_selector('[data-nba-season="2027"]', timeout=timeout_ms)
-            check('NBA measured coverage includes exact samples', 'D POSS' in page.locator('#nba-coverage').inner_text())
+            check('NBA measured coverage includes exact samples', page.locator('#nba-coverage .ca-coverage-sample').count() >= 4)
             page.locator('[data-nba-season="2026"]').click()
             check('NBA prior season changes measured coverage', '2025–26' in page.locator('#nba-coverage').inner_text())
             check('NBA season selection preserves active tab', page.locator('.ca-detail-stack').get_attribute('data-nfl-tab') == 'defense')
