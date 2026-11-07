@@ -7413,9 +7413,10 @@ function seasonToggle(game) {
     var other=side==='away'?'home':'away',a=game[side+'_databallr'],b=game[other+'_databallr'];
     var title=fullName(sport,game,side)+' Shots vs '+fullName(sport,game,other)+' Allowed';
     if(!a||!b)return cbbPanel(title,'Databallr',pending('Databallr context is unavailable for this evidence window.'));
+    function cell(z){return nbaGraded(nbaPct(z.fg_pct),z.fg_grade)+'<small class="ca-cbb-count">'+z.made+'/'+z.attempts+'</small><small class="ca-cbb-count">'+nbaPct(z.shot_share)+' of FGA</small>';}
     var rows=a.offense.zones.map(function(o){var d=b.defense.zones.find(function(z){return z.id===o.id;});
-      return [esc(o.label),nbaPct(o.shot_share),nbaGraded(nbaPct(o.fg_pct),o.fg_grade)+'<small class="ca-cbb-count">'+o.made+'/'+o.attempts+'</small>',nbaPct(d.shot_share),nbaGraded(nbaPct(d.fg_pct),d.fg_grade)+'<small class="ca-cbb-count">'+d.made+'/'+d.attempts+'</small>'];});
-    return cbbPanel(title,(a.season-1)+'–'+String(a.season).slice(2)+' · Databallr · all possessions',cbbTable(['Zone','O share','O FG%','D share','D FG%'],rows,'ca-nba-evidence-table')+nbaColorLegend()+
+      return [esc(o.label),cell(o),cell(d)];});
+    return cbbPanel(title,(a.season-1)+'–'+String(a.season).slice(2)+' · Databallr · all possessions',cbbTable(['Zone','Offense FG%','Allowed FG%'],rows,'ca-nba-evidence-table')+nbaColorLegend()+
       '<p class="ca-cbb-note">Provider-defined zones: short mid-range is not the geometric paint zone on the court above. FGM/FGA is shown under FG%. Grades require 20 attempts; lower allowed FG% is favorable. Source updated '+esc(nbaEvidenceStamp(a.offense.source_updated_at))+' / '+esc(nbaEvidenceStamp(b.defense.source_updated_at))+'. Last included game date is not exposed by this response.</p>');
   }
 
