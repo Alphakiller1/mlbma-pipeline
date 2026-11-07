@@ -194,14 +194,23 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
 
         context = browser.new_context(viewport={"width": 1440, "height": 900})
         page = context.new_page()
+        # Collection grows daily. Verify rendered denominators against the
+        # published source, not the launch day's frozen shot totals.
+        cbb_counts = {}
+        for year in (2026, 2027):
+            a = page.request.get(base_url.rstrip('/') + f'/data/public/cbb/{year}/teams/127.json').json()
+            h = page.request.get(base_url.rstrip('/') + f'/data/public/cbb/{year}/teams/150.json').json()
+            schema = 'cbb' if a['shots'].get('cbb') and h['shots'].get('cbb') else 'coordinates'
+            total = h['shots'][schema]['offense']['totals']
+            cbb_counts[year] = f"{total['made']}/{total['attempts']}"
         page.goto(base_url.rstrip("/") + "/cbb/matchup.html?game=401909564#shooting", wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector("#cbb-shot-chart .ca-cbb-court", timeout=timeout_ms)
         check("CBB uses seven evidence tabs", page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 7)
-        check("CBB observed shooting counts", "67/121" in page.locator("#cbb-shot-chart").text_content())
+        check("CBB observed shooting counts", cbb_counts[2027] in page.locator("#cbb-shot-chart").text_content())
         page.locator('[data-cbb-season="2026"]').click()
-        check("CBB previous season changes the evidence", "1079/2198" in page.locator("#cbb-shot-chart").text_content())
+        check("CBB previous season changes the evidence", cbb_counts[2026] in page.locator("#cbb-shot-chart").text_content())
         page.locator('[data-cbb-season="2027"]').click()
-        check("CBB current season restores the evidence", "67/121" in page.locator("#cbb-shot-chart").text_content())
+        check("CBB current season restores the evidence", cbb_counts[2027] in page.locator("#cbb-shot-chart").text_content())
         check("CBB public copy boundary", PROHIBITED.search(page.locator("main").inner_text()) is None)
 
         nba = page.request.get(base_url.rstrip('/') + '/data/public/nba/slate.json').json()
