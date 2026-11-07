@@ -69,9 +69,9 @@ def season(year, cohort, cutoff, raw=None):
     seen = set()
     for r in source.iter_rows(year, "team_rosters"):
         team = cross.get(source.identifier(r["team_id"]))
-        position = source.role(r["position"])
+        position = source.role(r["position"]) or "unlisted"
         key = (team, r["player_id"] or source.normal(r["player"]))
-        if team not in cohort or not position or key in seen:
+        if team not in cohort or key in seen:
             continue
         seen.add(key)
         height = source.number(r["ht_inches"])
@@ -186,7 +186,7 @@ def season(year, cohort, cutoff, raw=None):
                     "players": len(values),
                 }
                 for p, values in sorted(heights[team].items())
-                if values
+                if values and p != "unlisted"
             ],
             "starter_position_size": [
                 {
@@ -197,7 +197,7 @@ def season(year, cohort, cutoff, raw=None):
                     "recorded_starts": sum(n for _, n in values),
                 }
                 for p, values in sorted(starts[team].items())
-                if values
+                if values and p != "unlisted"
             ],
             "size_summary": {
                 "whole_team": {

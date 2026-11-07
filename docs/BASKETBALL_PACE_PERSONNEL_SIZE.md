@@ -10,7 +10,8 @@ Rotation adds separate **starter** and **whole-team** height averages overall
 and by G/F/C position. Starter height is weighted by reported season starts;
 whole-team height is an unweighted mean of known reported heights. Player and
 start counts accompany the averages. This describes a season's recorded starter
-pool and does not confirm the next game's five. Weight/wingspan are unavailable.
+pool and does not confirm the next game's five. Heights with no listed position
+still count in the overall averages. Weight/wingspan are unavailable.
 
 The new observed layer comes from free SportsDataverse NCAA possessions,
 official boxes and rosters for 2025–26 and 2026–27. Team identity uses explicit
