@@ -48,3 +48,4 @@ outputs/reading_list/
 dashboard/_site/
 dashboard/_site.staging/
 dashboard/_site.old/
+.cache/cbb-tactics/

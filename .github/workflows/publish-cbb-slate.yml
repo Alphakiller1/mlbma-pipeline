@@ -18,6 +18,11 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install requests
+      - uses: actions/cache@v4
+        with:
+          path: .cache/cbb-tactics
+          key: cbb-observed-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: cbb-observed-${{ runner.os }}-
       - run: python scripts/refresh_public_cbb.py
       - run: python scripts/validate_public_fields.py
       - name: Commit verified CBB facts

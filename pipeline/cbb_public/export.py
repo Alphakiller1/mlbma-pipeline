@@ -11,7 +11,7 @@ RATE_FIELDS=['games_all','efg_o_all','efg_d_all','tov_pct_o_all','tov_pct_d_all'
              'fg2_pct_d_all','fg3_pct_o_all','fg3_pct_d_all','ast_rate_o_all','ast_rate_d_all']
 PLAYER_FIELDS=['id','pid','athlete_id','Name','Team','G','Min_pct','Usg','Pts','Reb','Ast','eFG','TS',
                'FGM','FGA','3PM','3PA','FTM','FTA','3PP','FTR','Ht']
-FORBIDDEN={'predicted_score','predicted_margin','home_probability','home_win_probability','win_probability','confidence','pick','edge','odds','spread','moneyline','away_points','home_points','home_margin','total_points','power','rating'}
+FORBIDDEN={'predicted_score','predicted_margin','home_probability','home_win_probability','win_probability','confidence','pick','edge','odds','spread','moneyline','away_points','home_points','home_margin','total_points','power','rating','model_diagnostics','shooting_reversion','recent_shooting_reversion','shooting_scenario','regression_pressure_pp100','progression_pressure_pp100','net_reversion_pp100','geometric_sets','prior_reference_weight','tracking_tactics','posterior_per_regulation','posterior_mean'}
 
 def distribution(values):
     values=[float(v) for v in values if v is not None and math.isfinite(float(v))]
@@ -53,7 +53,7 @@ def profile(rows,league,schema,through,games):
             'league_efg_pct':(lg_made+.5*lg_threes)/lg_attempts if lg_attempts else None,
             'games':games,'data_through':through},'source':'CBB Analytics' if schema=='cbb-analytics-zones6' else 'Chase zones from Basketball Quant shot coordinates'}
 
-def export_public(snapshot,conn,out,as_of):
+def export_public(snapshot,conn,out,as_of,observed_tactics=None):
     out=Path(out); generated=datetime.now(timezone.utc).isoformat()
     cross=read(snapshot/'data/bq-mbb_institution_crosswalk-all.json');identity={}
     for r in cross:
@@ -86,6 +86,7 @@ def export_public(snapshot,conn,out,as_of):
             c={'identity':ident,'season':year,'rates':{k:s.get(k) for k in RATE_FIELDS},'players':roster,
                'source':'Basketball Quant','data_through':max((g['game_date'] for g in schedules[year] if g.get('status_type_name')=='STATUS_FINAL' and tid in [g.get('home_id'),g.get('away_id')] and g['game_date']<=as_of),default=None),
                'record':f'{int(s.get("wins") or 0)}–{int(s.get("losses") or 0)}','shots':{}}
+            if observed_tactics:c['observed_tactics']=observed_tactics.get(year,{}).get(str(tid))
             own={}
             for role in ('offense','defense'):
                 rows=aggregates[role][tid];games,through=game_summaries[role].get(tid,(0,None))
@@ -146,7 +147,7 @@ def export_public(snapshot,conn,out,as_of):
     through=max((c['data_through'] for (y,_),c in all_context.items() if y==current and c['data_through']),default=None)
     manifest={'schema_version':1,'sport':'cbb','season':current,'seasons':[2027,2026], 'slate_date':as_of,
               'generated_at_utc':generated,'data_through_utc':through+'T23:59:59-05:00' if through else None,
-              'sources':['Basketball Quant','CBB Analytics public reference charts'],'source_snapshot':snapshot.name,
+              'sources':['Basketball Quant','CBB Analytics public reference charts']+(['SportsDataverse NCAA possessions and rosters'] if observed_tactics else []),'source_snapshot':snapshot.name,
               'reference_teams':['96','150','127','12','2305','2509'],
               'zone_policy':'Prefer matched CBB Analytics schemas for both teams; otherwise use matched Chase coordinate zones for both.',
               'games':games}
