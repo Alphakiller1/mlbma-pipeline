@@ -196,13 +196,27 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page = context.new_page()
         page.goto(base_url.rstrip("/") + "/cbb/matchup.html?game=401909564#shooting", wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector("#cbb-shot-chart .ca-cbb-court", timeout=timeout_ms)
-        check("CBB uses six evidence tabs", page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 6)
+        check("CBB uses seven evidence tabs", page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 7)
         check("CBB observed shooting counts", "67/121" in page.locator("#cbb-shot-chart").text_content())
         page.locator('[data-cbb-season="2026"]').click()
         check("CBB previous season changes the evidence", "1079/2198" in page.locator("#cbb-shot-chart").text_content())
         page.locator('[data-cbb-season="2027"]').click()
         check("CBB current season restores the evidence", "67/121" in page.locator("#cbb-shot-chart").text_content())
         check("CBB public copy boundary", PROHIBITED.search(page.locator("main").inner_text()) is None)
+
+        nba = page.request.get(base_url.rstrip('/') + '/data/public/nba/slate.json').json()
+        if nba.get('games'):
+            fixture = nba['games'][0]
+            page.goto(base_url.rstrip('/') + '/nba/matchup.html?game=' + str(fixture['id']) + '#defense',
+                      wait_until='domcontentloaded', timeout=timeout_ms)
+            page.wait_for_selector('[data-nba-season="2027"]', timeout=timeout_ms)
+            check('NBA measured coverage includes exact samples', page.locator('#nba-coverage .ca-coverage-sample').count() >= 4)
+            page.locator('[data-nba-season="2026"]').click()
+            check('NBA prior season changes measured coverage', '2025–26' in page.locator('#nba-coverage').inner_text())
+            check('NBA season selection preserves active tab', page.locator('.ca-detail-stack').get_attribute('data-nfl-tab') == 'defense')
+            page.locator('[data-nba-season="2027"]').click()
+            check('NBA current season restores measured coverage', '2026–27' in page.locator('#nba-coverage').inner_text())
+            check('NBA measured and inferred coverage remain distinct', 'Inferred Defensive Tendencies' in page.locator('#nba-scheme').inner_text())
 
         for sport in ("cbb", "nfl", "cfb", "nba"):
             response = page.request.get(f"{base_url.rstrip('/')}/{sport}/results.html")

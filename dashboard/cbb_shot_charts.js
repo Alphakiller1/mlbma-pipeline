@@ -18,7 +18,7 @@
         if(!c)return '<article class="ca-matchup-card ca-cbb-matrix-card">'+select+'<p class="ca-cbb-note">This team has no evidence in the selected season.</p></article>';
         var p=c.shots[schema][view],t=p.totals;
         return '<article class="ca-matchup-card ca-cbb-matrix-card">'+select+'<div class="ca-cbb-matrix-title"><img src="'+chart.esc(c.identity.logo)+'" width="40" height="40" alt=""><div><h2>'+chart.esc(c.identity.name)+'</h2><p>'+ (year===2027?'2026–27':'2025–26')+' · '+(view==='offense'?'Offense':'Defense allowed')+' · '+t.games+' '+(t.games===1?'game':'games')+'</p></div></div>'+chart.court(p,c.identity.name,{compact:true,defense:view==='defense',metric:metric})+chart.legend(view==='defense',metric)+
-          '<div class="ca-cbb-summary"><span><strong>'+t.made+'/'+t.attempts+'</strong> FGM/FGA</span><span><strong>'+chart.pct(t.efg_pct)+'</strong> eFG</span></div><p class="ca-cbb-note">Through '+chart.esc(t.data_through||'not published')+(year===2027?' · Early-season sample':'')+'</p></article>';
+          '<div class="ca-cbb-summary"><span><strong>'+t.made+'/'+t.attempts+'</strong> FGM/FGA</span><span><strong>'+chart.efg(p,view==='defense')+'</strong> eFG</span></div><p class="ca-cbb-note">Through '+chart.esc(t.data_through||'not published')+(year===2027?' · Early-season sample':'')+'</p></article>';
       }).join('');
       status.textContent=(schema==='cbb'?'CBB Analytics six-zone definitions.':'Chase coordinate zones from Basketball Quant. Event coverage can differ from box scores.')+' Every selected team uses the same definitions and same-season D-I baseline.';
       host.setAttribute('aria-busy','false');

@@ -13,6 +13,21 @@ PLAYER_FIELDS=['id','pid','athlete_id','Name','Team','G','Min_pct','Usg','Pts','
                'FGM','FGA','3PM','3PA','FTM','FTA','3PP','FTR','Ht']
 FORBIDDEN={'predicted_score','predicted_margin','home_probability','home_win_probability','win_probability','confidence','pick','edge','odds','spread','moneyline','away_points','home_points','home_margin','total_points','power','rating'}
 
+def distribution(values):
+    values=[float(v) for v in values if v is not None and math.isfinite(float(v))]
+    if not values:return {'mean':None,'std':None,'sample_size':0}
+    mean=sum(values)/len(values)
+    return {'mean':mean,'std':math.sqrt(sum((v-mean)**2 for v in values)/len(values)),'sample_size':len(values)}
+
+def grade_baselines(contexts,year):
+    cohort=[c for (y,_),c in contexts.items() if y==year and (c['rates'].get('games_all') or 0)>0]
+    team={k:distribution(c['rates'].get(k) for c in cohort) for k in RATE_FIELDS if k!='games_all'}
+    players=[p for c in cohort for p in c['players'] if (p.get('G') or 0)>0 and (p.get('Min_pct') or 0)>=10]
+    player={k:distribution(p.get(k) for p in players if k!='TS' or (p.get('FGA') or 0)+(p.get('FTA') or 0)>0)
+            for k in ['Pts','Reb','Ast','TS']}
+    return {'team':team,'player':player,'team_policy':'Same-season D-I teams with a reported game; equal team weighting.',
+            'player_policy':'Same-season players with a reported game and at least 10% reported MIN%; TS requires shooting attempts.'}
+
 def assert_public(value):
     if isinstance(value,dict):
         for k,v in value.items():
@@ -32,7 +47,10 @@ def profile(rows,league,schema,through,games):
         zones.append({'id':code,'label':'Heaves' if schema=='cbb-analytics-zones6' and code=='heave3' else label,
                       'made':m,'attempts':n,'fg_pct':fg,'shot_share':n/attempts if attempts else None,
                       'league_fg_pct':lgfg,'delta_pp':100*(fg-lgfg) if fg is not None and lgfg is not None else None})
+    lg_attempts=sum(r.get('attempts',0) for r in league.values());lg_made=sum(r.get('made',0) for r in league.values())
+    lg_threes=sum(league.get(z,{}).get('made',0) for z in ['c3','atb3','heave3'])
     return {'schema':schema,'zones':zones,'totals':{'made':made,'attempts':attempts,'efg_pct':(made+.5*three)/attempts if attempts else None,
+            'league_efg_pct':(lg_made+.5*lg_threes)/lg_attempts if lg_attempts else None,
             'games':games,'data_through':through},'source':'CBB Analytics' if schema=='cbb-analytics-zones6' else 'Chase zones from Basketball Quant shot coordinates'}
 
 def export_public(snapshot,conn,out,as_of):
@@ -132,6 +150,8 @@ def export_public(snapshot,conn,out,as_of):
               'reference_teams':['96','150','127','12','2305','2509'],
               'zone_policy':'Prefer matched CBB Analytics schemas for both teams; otherwise use matched Chase coordinate zones for both.',
               'games':games}
-    assert_public(manifest);write(out/'slate.json',manifest);write(out/'teams.json',{'teams':index})
+    assert_public(manifest);write(out/'slate.json',manifest)
+    baselines={str(y):grade_baselines(all_context,y) for y in [2026,2027]}
+    write(out/'teams.json',{'teams':index,'grade_baselines':baselines})
     write(out/'manifest.json',{k:v for k,v in manifest.items() if k!='games'})
     return {'team_season_contexts':len(all_context),'scheduled_game_rows':len(games),'data_through':through,'team_index':len(index)}

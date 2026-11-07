@@ -15,6 +15,8 @@
   'use strict';
 
   var SLATE_URL = '/data/public/nba/slate.json';
+  var EVIDENCE_URL = '/data/public/nba/evidence.json';
+  var evidenceReady;
   var MIN_GAMES = 5;
   var MIN_ROTATION_GAMES = 3;
 
@@ -162,6 +164,38 @@
     });
   }
 
+  function selectSeason(game, year) {
+    var window = game.__nbaEvidence && game.__nbaEvidence.seasons[String(year)];
+    if (!window) return false;
+    game.__nbaYear = Number(year);
+    game.__nbaWindow = window;
+    ['away', 'home'].forEach(function (side) {
+      var team = window.teams[game[side]] || {}, form = team.form || {};
+      game[side + '_rates'] = form.rates || {};
+      game[side + '_rates_basis'] = seasonLabel(year) + ' · ' + (form.games || 0) + ' Games';
+      game[side + '_profile'] = team.profile || null;
+      game[side + '_rotation'] = team.players || [];
+      game[side + '_rotation_basis'] = seasonLabel(year) + ' Per Game · Historical Club';
+      game[side + '_measured_coverage'] = team.measured_coverage || null;
+      game[side + '_databallr'] = team.databallr || null;
+    });
+    return true;
+  }
+
+  function detail(game) {
+    if (!evidenceReady) evidenceReady = loadJson(EVIDENCE_URL).then(function (data) {
+      if (data.schema !== 'chase-basketball-evidence/1' || data.sport !== 'nba' || !data.seasons) {
+        throw new Error('NBA evidence is not published.');
+      }
+      return data;
+    });
+    return evidenceReady.then(function (data) {
+      game.__nbaEvidence = data;
+      selectSeason(game, game.__nbaYear || game.season);
+      return game;
+    }).catch(function () { game.__nbaEvidenceError = true; return game; });
+  }
+
   // ChaseMatchupCard.loadGames() calls load(); it returns the desk result shape.
   function load() {
     return loadJson(SLATE_URL).then(function (slate) {
@@ -180,9 +214,12 @@
 
   global.ChaseSportNBA = {
     SLATE_URL: SLATE_URL,
+    EVIDENCE_URL: EVIDENCE_URL,
     MIN_GAMES: MIN_GAMES,
     load: load,
     mapGame: mapGame,
+    detail: detail,
+    selectSeason: selectSeason,
     chooseForm: chooseForm
   };
 })(typeof window !== 'undefined' ? window : this);
