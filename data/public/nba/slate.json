@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-07",
- "generated_at_utc": "2026-11-07T08:47:54+00:00",
+ "generated_at_utc": "2026-11-07T16:28:26+00:00",
  "data_through_utc": "2026-11-07T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -10931,7 +10931,7 @@
       "player_name": "Noah Clowney",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4712896.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 21.1,
       "ppg": 5.6,
       "height_in": 82.0,
@@ -11537,6 +11537,15 @@
    },
    "away_injuries": [
     {
+     "player_id": "4712896",
+     "player_name": "Noah Clowney",
+     "status": "Day-To-Day",
+     "detail": "Illness",
+     "comment": "Clowney is listed as questionable for Saturday's game against the Hawks due to an illness.",
+     "date": "2026-11-07T15:19Z",
+     "return_date": "2026-11-07"
+    },
+    {
      "player_id": "4432194",
      "player_name": "Day'Ron Sharpe",
      "status": "Day-To-Day",
@@ -11561,7 +11570,7 @@
      "detail": "Right Shoulder Sprain",
      "comment": "Bilodeau (shoulder) has been ruled out for Sunday's game against Indiana.",
      "date": "2026-10-25T17:19Z",
-     "return_date": "2026-11-06"
+     "return_date": "2026-11-07"
     }
    ],
    "home_form": {
@@ -15532,30 +15541,30 @@
    },
    "home_injuries": [
     {
+     "player_id": "4585618",
+     "player_name": "Keshon Gilbert",
+     "status": "Day-To-Day",
+     "detail": "Left Knee Inflammation",
+     "comment": "Gilbert is out for Friday's game against the Wizards due to left knee inflammation.",
+     "date": "2026-11-07T15:08Z",
+     "return_date": "2026-11-07"
+    },
+    {
+     "player_id": "4873201",
+     "player_name": "Asa Newell",
+     "status": "Day-To-Day",
+     "detail": "Left Toe",
+     "comment": "Newell (toe) is out for Friday's game against Washington.",
+     "date": "2026-11-07T15:07Z",
+     "return_date": "2026-11-07"
+    },
+    {
      "player_id": "4701230",
      "player_name": "Jalen Johnson",
      "status": "Out",
      "detail": "Left Ankle",
      "comment": "Johnson (ankle) is out for Friday's game against the Wizards.",
      "date": "2026-11-06T22:06Z",
-     "return_date": "2026-11-07"
-    },
-    {
-     "player_id": "4585618",
-     "player_name": "Keshon Gilbert",
-     "status": "Out",
-     "detail": "Left Knee Inflammation",
-     "comment": "Gilbert is out for Friday's game against the Wizards due to left knee inflammation.",
-     "date": "2026-11-05T22:41Z",
-     "return_date": "2026-11-07"
-    },
-    {
-     "player_id": "4873201",
-     "player_name": "Asa Newell",
-     "status": "Out",
-     "detail": "Left Toe",
-     "comment": "Newell (toe) is out for Friday's game against Washington.",
-     "date": "2026-11-05T22:33Z",
      "return_date": "2026-11-07"
     },
     {
@@ -22181,7 +22190,7 @@
       "player_name": "Sam Merrill",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066757.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 23.1,
       "ppg": 7.7,
       "height_in": 76.0,
@@ -22333,7 +22342,7 @@
       "player_name": "Jarrett Allen",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066328.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 25.1,
       "ppg": 13.2,
       "height_in": 81.0,
@@ -23109,19 +23118,19 @@
     {
      "player_id": "4066757",
      "player_name": "Sam Merrill",
-     "status": "Out",
+     "status": "Day-To-Day",
      "detail": "Right Elbow",
      "comment": "Merrill (elbow) won't return to Friday's game against the 76ers, Dave McMenamin of ESPN.com reports.",
-     "date": "2026-11-07T02:10Z",
+     "date": "2026-11-07T15:08Z",
      "return_date": "2026-11-07"
     },
     {
      "player_id": "4066328",
      "player_name": "Jarrett Allen",
-     "status": "Out",
+     "status": "Day-To-Day",
      "detail": "Right Knee",
      "comment": "Allen (knee) is out for Friday's game against the 76ers.",
-     "date": "2026-11-06T23:55Z",
+     "date": "2026-11-07T15:07Z",
      "return_date": "2026-11-07"
     },
     {
@@ -25863,7 +25872,7 @@
       "player_name": "Anthony Davis",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/6583.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 33.1,
       "ppg": 23.4,
       "height_in": 82.0,
@@ -26961,10 +26970,10 @@
     {
      "player_id": "6583",
      "player_name": "Anthony Davis",
-     "status": "Out",
+     "status": "Day-To-Day",
      "detail": "Right Ankle Sprain",
      "comment": "Davis (ankle) is listed as out for Friday's game against the Hawks.",
-     "date": "2026-11-06T22:37Z",
+     "date": "2026-11-07T15:05Z",
      "return_date": "2026-11-07"
     },
     {
@@ -30484,7 +30493,7 @@
       "player_name": "Jaylin Williams",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4432823.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 18.4,
       "ppg": 2.9,
       "height_in": 81.0,
@@ -30748,20 +30757,11 @@
     {
      "player_id": "4432823",
      "player_name": "Jaylin Williams",
-     "status": "Out",
+     "status": "Day-To-Day",
      "detail": "Back Spasms",
      "comment": "Williams (back) has been ruled out for Friday's game against the Grizzlies.",
-     "date": "2026-11-05T23:20Z",
+     "date": "2026-11-07T15:04Z",
      "return_date": "2026-11-07"
-    },
-    {
-     "player_id": "5159925",
-     "player_name": "Nikola Topic",
-     "status": "Out",
-     "detail": "Back",
-     "comment": "Topic (back) is listed as out for Wednesday's game against Cleveland.",
-     "date": "2026-11-03T22:49Z",
-     "return_date": "2026-11-13"
     },
     {
      "player_id": "5061603",
@@ -53192,5 +53192,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-07T12:52:16+00:00"
+ "published_at_utc": "2026-11-07T18:41:08+00:00"
 }
