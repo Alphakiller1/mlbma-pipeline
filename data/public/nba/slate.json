@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-07",
- "generated_at_utc": "2026-11-07T16:28:26+00:00",
+ "generated_at_utc": "2026-11-07T21:52:42+00:00",
  "data_through_utc": "2026-11-07T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -121,8 +121,8 @@
    "id": "401909938",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/7 - 5:00 PM EST",
+   "game_state": "live",
+   "status_detail": "8:40 - 3rd",
    "kickoff_utc": "2026-11-07T22:00Z",
    "away": "DEN",
    "home": "IND",
@@ -136,8 +136,8 @@
    "home_record": "3-6",
    "away_split_record": "2-1",
    "home_split_record": "0-4",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 74,
+   "home_score": 49,
    "venue": "Arena CDMX",
    "venue_city": "Mexico City",
    "broadcast": "NBA TV / DAZN IND",
@@ -3281,7 +3281,7 @@
       "player_name": "DeMar DeRozan",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3978.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 25.2,
       "ppg": 10.7,
       "height_in": 78.0,
@@ -3848,15 +3848,6 @@
     "altitude": false
    },
    "away_injuries": [
-    {
-     "player_id": "3978",
-     "player_name": "DeMar DeRozan",
-     "status": "Day-To-Day",
-     "detail": "Back Spasms",
-     "comment": "DeRozan (back) is probable for Saturday's game against the Pacers.",
-     "date": "2026-11-06T22:48Z",
-     "return_date": "2026-11-07"
-    },
     {
      "player_id": "4432181",
      "player_name": "Julian Strawther",
@@ -7084,7 +7075,7 @@
       "player_name": "Kelly Oubre Jr.",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3133603.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 23.3,
       "ppg": 9.4,
       "height_in": 79.0,
@@ -7690,22 +7681,13 @@
    },
    "home_injuries": [
     {
-     "player_id": "2530530",
-     "player_name": "T.J. McConnell",
+     "player_id": "4396993",
+     "player_name": "Tyrese Haliburton",
      "status": "Out",
-     "detail": "Right Hamstring Strain",
-     "comment": "McConnell (hamstring) is questionable for Saturday's game against Denver.",
-     "date": "2026-11-06T23:06Z",
-     "return_date": "2026-11-07"
-    },
-    {
-     "player_id": "3133603",
-     "player_name": "Kelly Oubre Jr.",
-     "status": "Day-To-Day",
-     "detail": "Left Calf Bruise",
-     "comment": "Oubre (calf) is questionable for Saturday's game against Denver.",
-     "date": "2026-11-06T23:04Z",
-     "return_date": "2026-11-07"
+     "detail": "Left Hamstring Strain",
+     "comment": "Haliburton (hamstring) is progressing well but does not have a timetable to return, Dustin Dopirak of The Indianapolis Star reports.",
+     "date": "2026-11-07T20:46Z",
+     "return_date": "2026-11-13"
     },
     {
      "player_id": "5157066",
@@ -7724,15 +7706,6 @@
      "comment": "Head coach Rick Carlise confirmed Sheppard will miss \"months\" after undergoing surgery to repair a torn meniscus in his left knee, Tony East of Forbes.com reports.",
      "date": "2026-10-28T21:41Z",
      "return_date": "2027-01-02"
-    },
-    {
-     "player_id": "4396993",
-     "player_name": "Tyrese Haliburton",
-     "status": "Out",
-     "detail": "Left Hamstring Strain",
-     "comment": "Haliburton (hamstring) will miss at least the next two weeks of action, Shams Charania of ESPN reports.",
-     "date": "2026-10-28T21:30Z",
-     "return_date": "2026-11-13"
     }
    ]
   },
@@ -11562,15 +11535,6 @@
      "comment": "The Nets exercised Demin's third-year team option for the 2027-28 season, Sharif Phillips-Keaton of USA Today reports Thursday.",
      "date": "2026-10-29T17:09Z",
      "return_date": "2026-11-11"
-    },
-    {
-     "player_id": "5105626",
-     "player_name": "Tyler Bilodeau",
-     "status": "Out",
-     "detail": "Right Shoulder Sprain",
-     "comment": "Bilodeau (shoulder) has been ruled out for Sunday's game against Indiana.",
-     "date": "2026-10-25T17:19Z",
-     "return_date": "2026-11-07"
     }
    ],
    "home_form": {
@@ -15543,37 +15507,37 @@
     {
      "player_id": "4585618",
      "player_name": "Keshon Gilbert",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Left Knee Inflammation",
-     "comment": "Gilbert is out for Friday's game against the Wizards due to left knee inflammation.",
-     "date": "2026-11-07T15:08Z",
-     "return_date": "2026-11-07"
+     "comment": "Gilbert (knee) is out for Saturday's game against Brooklyn.",
+     "date": "2026-11-07T18:17Z",
+     "return_date": "2026-11-09"
     },
     {
      "player_id": "4873201",
      "player_name": "Asa Newell",
-     "status": "Day-To-Day",
-     "detail": "Left Toe",
-     "comment": "Newell (toe) is out for Friday's game against Washington.",
-     "date": "2026-11-07T15:07Z",
-     "return_date": "2026-11-07"
-    },
-    {
-     "player_id": "4701230",
-     "player_name": "Jalen Johnson",
      "status": "Out",
-     "detail": "Left Ankle",
-     "comment": "Johnson (ankle) is out for Friday's game against the Wizards.",
-     "date": "2026-11-06T22:06Z",
-     "return_date": "2026-11-07"
+     "detail": "Left Toe",
+     "comment": "Newell (toe)  is out for Saturday's game against the Nets.",
+     "date": "2026-11-07T18:16Z",
+     "return_date": "2026-11-09"
     },
     {
      "player_id": "3146557",
      "player_name": "Jock Landale",
      "status": "Out",
      "detail": "Left Hip",
-     "comment": "Landale (hip) has been ruled out for Friday's game against the Wizards.",
-     "date": "2026-11-05T22:12Z",
+     "comment": "Landale (hip) has been ruled out for Saturday's game against the Nets.",
+     "date": "2026-11-07T18:14Z",
+     "return_date": "2026-11-09"
+    },
+    {
+     "player_id": "4701230",
+     "player_name": "Jalen Johnson",
+     "status": "Out",
+     "detail": "Left Ankle",
+     "comment": "Johnson (ankle) is probable for Saturday's game against Brooklyn.",
+     "date": "2026-11-07T18:10Z",
      "return_date": "2026-11-07"
     },
     {
@@ -22190,7 +22154,7 @@
       "player_name": "Sam Merrill",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066757.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 23.1,
       "ppg": 7.7,
       "height_in": 76.0,
@@ -22342,7 +22306,7 @@
       "player_name": "Jarrett Allen",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066328.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 25.1,
       "ppg": 13.2,
       "height_in": 81.0,
@@ -23116,31 +23080,31 @@
    },
    "home_injuries": [
     {
-     "player_id": "4066757",
-     "player_name": "Sam Merrill",
-     "status": "Day-To-Day",
-     "detail": "Right Elbow",
-     "comment": "Merrill (elbow) won't return to Friday's game against the 76ers, Dave McMenamin of ESPN.com reports.",
-     "date": "2026-11-07T15:08Z",
-     "return_date": "2026-11-07"
-    },
-    {
-     "player_id": "4066328",
-     "player_name": "Jarrett Allen",
-     "status": "Day-To-Day",
-     "detail": "Right Knee",
-     "comment": "Allen (knee) is out for Friday's game against the 76ers.",
-     "date": "2026-11-07T15:07Z",
-     "return_date": "2026-11-07"
-    },
-    {
      "player_id": "4683747",
      "player_name": "Jaylon Tyson",
      "status": "Out",
      "detail": "Right Ankle Sprain",
-     "comment": "Tyson (ankle) is out for Friday's game against the 76ers.",
-     "date": "2026-11-05T22:23Z",
-     "return_date": "2026-11-07"
+     "comment": "Tyson (ankle) is out for Saturday's game against the Knicks.",
+     "date": "2026-11-07T18:14Z",
+     "return_date": "2026-11-09"
+    },
+    {
+     "player_id": "4066757",
+     "player_name": "Sam Merrill",
+     "status": "Out",
+     "detail": "Right Elbow",
+     "comment": "Merrill (elbow) is out for Saturday's game against the Knicks.",
+     "date": "2026-11-07T18:13Z",
+     "return_date": "2026-11-09"
+    },
+    {
+     "player_id": "4066328",
+     "player_name": "Jarrett Allen",
+     "status": "Out",
+     "detail": "Right Knee",
+     "comment": "Allen (knee) is out for Saturday's game against the Knicks",
+     "date": "2026-11-07T18:11Z",
+     "return_date": "2026-11-09"
     }
    ]
   },
@@ -26972,8 +26936,8 @@
      "player_name": "Anthony Davis",
      "status": "Day-To-Day",
      "detail": "Right Ankle Sprain",
-     "comment": "Davis (ankle) is listed as out for Friday's game against the Hawks.",
-     "date": "2026-11-07T15:05Z",
+     "comment": "Davis (ankle) is questionable for Saturday's game against the Thunder.",
+     "date": "2026-11-07T19:13Z",
      "return_date": "2026-11-07"
     },
     {
@@ -30493,7 +30457,7 @@
       "player_name": "Jaylin Williams",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4432823.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 18.4,
       "ppg": 2.9,
       "height_in": 81.0,
@@ -30757,11 +30721,11 @@
     {
      "player_id": "4432823",
      "player_name": "Jaylin Williams",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Back Spasms",
-     "comment": "Williams (back) has been ruled out for Friday's game against the Grizzlies.",
-     "date": "2026-11-07T15:04Z",
-     "return_date": "2026-11-07"
+     "comment": "Williams (back) has been ruled out for Saturday's game against the Wizards, Brandon Rahbar of DailyThunder.com reports.",
+     "date": "2026-11-07T19:10Z",
+     "return_date": "2026-11-10"
     },
     {
      "player_id": "5061603",
@@ -33119,7 +33083,7 @@
       "player_name": "Desmond Bane",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066320.png",
-      "status": null,
+      "status": "Out",
       "mpg": 34.5,
       "ppg": 17.5,
       "height_in": 78.0,
@@ -34346,6 +34310,15 @@
     "altitude": false
    },
    "away_injuries": [
+    {
+     "player_id": "4066320",
+     "player_name": "Desmond Bane",
+     "status": "Out",
+     "detail": "Illness",
+     "comment": "Bane (illness) has been ruled out for Saturday's game against the Warriors.",
+     "date": "2026-11-07T19:36Z",
+     "return_date": "2026-11-10"
+    },
     {
      "player_id": "4065654",
      "player_name": "Jonathan Isaac",
@@ -52885,7 +52858,7 @@
       "player_name": "Robert Williams III",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066211.png",
-      "status": null,
+      "status": "Out",
       "mpg": 16.4,
       "ppg": 7.4,
       "height_in": 81.0,
@@ -53163,6 +53136,15 @@
    },
    "home_injuries": [
     {
+     "player_id": "4066211",
+     "player_name": "Robert Williams III",
+     "status": "Out",
+     "detail": "Rest",
+     "comment": "Williams (rest) won't play in Saturday's game against the Spurs.",
+     "date": "2026-11-07T21:12Z",
+     "return_date": "2026-11-10"
+    },
+    {
      "player_id": "4578893",
      "player_name": "Vit Krejci",
      "status": "Out",
@@ -53192,5 +53174,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-07T18:41:08+00:00"
+ "published_at_utc": "2026-11-07T23:37:00+00:00"
 }
