@@ -4,10 +4,8 @@ name: Deploy to Cloudflare (chase-analytics.com)
 # chase-analytics.com is attached to) on every push to master.
 # Requires repo secrets CLOUDFLARE_API_TOKEN (with Pages:Edit) + CLOUDFLARE_ACCOUNT_ID.
 #
-# Git-integrated Pages treats wrangler direct uploads as branch previews, so the custom
-# domain kept serving a stale Git production build. After uploading a clean _site build,
-# we trigger a production deployment from master via the Pages API so canonical
-# production (and chase-analytics.com) receives the latest commit.
+# Verify the exact uploaded revision on the custom domain. A Git production
+# deployment is a fallback when the direct upload has not reached the domain.
 
 on:
   push:
@@ -82,6 +80,7 @@ jobs:
             --exclude='wrangler.toml' \
             --exclude='.assetsignore' --exclude='_site' \
             ./ _site/
+          git rev-parse HEAD > _site/_release-revision.txt
           echo "files to publish: $(find _site -type f | wc -l)"
           test -f _site/dashboard/matchup_card.js
           grep -q 'Expand matchup' _site/dashboard/matchup_card.js
@@ -119,7 +118,24 @@ jobs:
             --commit-message="$(git -C .. log -1 --pretty=%s)" \
             --commit-dirty=true
 
-      - name: Trigger production deployment from master
+      - name: Check whether the uploaded revision is live
+        id: direct
+        run: |
+          EXPECTED=$(cat _site/_release-revision.txt)
+          for delay in 2 3 5 8 10; do
+            sleep "$delay"
+            LIVE=$(curl -fsSL --max-time 10 "https://${LIVE_DOMAIN}/_release-revision.txt?run=${GITHUB_RUN_ID}&probe=$delay" || true)
+            if [ "$LIVE" = "$EXPECTED" ]; then
+              echo "live=true" >> "$GITHUB_OUTPUT"
+              echo "Direct upload serves revision $EXPECTED"
+              exit 0
+            fi
+          done
+          echo "live=false" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger fallback production deployment from master
+        id: fallback
+        if: steps.direct.outputs.live != 'true'
         run: |
           python3 <<'PY'
           import json, os, sys, time, urllib.error, urllib.request
@@ -172,7 +188,7 @@ jobs:
                   print("Production deployment succeeded:", info.get("url"))
                   sys.exit(0)
               if status in {"failure", "canceled"}:
-                  print(json.dumps(info, indent=2), file=sys.stderr)
+                  print(f"Production deployment {dep_id} failed at {name}: {status}", file=sys.stderr)
                   sys.exit(1)
           print("Timed out waiting for production deployment", file=sys.stderr)
           sys.exit(1)
@@ -181,15 +197,31 @@ jobs:
       - name: Verify chase-analytics.com serves the matchup-first release
         run: |
           URL="https://${LIVE_DOMAIN}/"
+          EXPECTED=$(cat _site/_release-revision.txt)
           for i in 1 2 3 4 5 6 8 10; do
             sleep "$i"
-            BODY=$(curl -fsSL "$URL" || true)
+            BODY=$(curl -fsSL --max-time 15 "$URL" || true)
+            LIVE=$(curl -fsSL --max-time 10 "${URL}_release-revision.txt?run=${GITHUB_RUN_ID}&probe=final-$i" || true)
+            MATCH=0
+            if [ "$LIVE" = "$EXPECTED" ]; then
+              MATCH=1
+            elif [ "${{ steps.fallback.outcome }}" = "success" ]; then
+              # A Git build does not contain the marker written in _site.
+              # Verify the live public assets against the same checkout.
+              MATCH=1
+              for asset in dashboard/public_game_detail.js dashboard/cbb_charts.js data/public/cbb/slate.json data/public/nba/slate.json; do
+                if ! curl -fsSL --max-time 10 "${URL}${asset}?run=${GITHUB_RUN_ID}" | cmp -s - "_site/${asset}"; then
+                  MATCH=0
+                  break
+                fi
+              done
+            fi
             BYTES=$(printf '%s' "$BODY" | wc -c | tr -d ' ')
             HAS=$(printf '%s' "$BODY" | grep -c 'id="matchupDesk"' || true)
             PUBLIC=$(printf '%s' "$BODY" | grep -c 'chase-public.css' || true)
             echo "attempt $i: bytes=$BYTES matchupDesk=$HAS publicLayer=$PUBLIC"
-            if [ "$BYTES" -gt 4000 ] && [ "$HAS" -ge 1 ] && [ "$PUBLIC" -ge 1 ]; then
-              echo "Live site updated."
+            if [ "$MATCH" -eq 1 ] && [ "$BYTES" -gt 4000 ] && [ "$HAS" -ge 1 ] && [ "$PUBLIC" -ge 1 ]; then
+              echo "Live public release verified for $EXPECTED"
               exit 0
             fi
           done
