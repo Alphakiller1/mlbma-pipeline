@@ -8,6 +8,15 @@
   function pct(v) { return v == null ? '—' : (100 * v).toFixed(1) + '%'; }
   function pp(v) { return v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(1) + ' pp'; }
   function grade(v,defense) { if (v == null) return 'c-na'; v = defense ? -v : v; return v >= 8 ? 'c-elite' : v >= 3 ? 'c-good' : v <= -8 ? 'c-poor' : v <= -3 ? 'c-weak' : 'c-mid'; }
+  function value(text,tone,tip) { return '<span class="ca-basketball-value '+(tone||'c-na')+'"'+(tip?' title="'+esc(tip)+'"':'')+'>'+text+'</span>'; }
+  function metric(n,text,year,group,key,higher) {
+    var b=global.ChaseSportCBB&&global.ChaseSportCBB.baseline(year,group,key),A=global.MLBMAAssets;
+    var tone=A&&A.baselineChipClass?A.baselineChipClass(n,b,higher):'';
+    return value(text,tone,(b?b.sample_size+' same-season D-I '+(group==='player'?'rotation players':'teams')+' · ':'')+(higher?'Higher':'Lower')+' is favorable for this statistic');
+  }
+  function efg(profile,defense) { var t=profile.totals,d=t.efg_pct!=null&&t.league_efg_pct!=null?100*(t.efg_pct-t.league_efg_pct):null;
+    return value(pct(t.efg_pct),grade(d,defense),'eFG% vs matching-source D-I baseline · '+pp(d)); }
+  function metricLegend() { return '<p class="ca-basketball-legend"><span class="c-elite">Elite</span><span class="c-good">Strong</span><span class="c-mid">Average</span><span class="c-weak">Weak</span><span class="c-poor">Poor</span><span>Same-season distribution · gray = ungraded</span></p>'; }
   function court(profile,title,options) {
     options = options || {};
     if (!profile || !profile.totals.attempts) return '<p class="ca-cbb-note">Shot coverage is not available for this evidence window.</p>';
@@ -19,7 +28,7 @@
         esc(z.label + ': ' + pct(z.fg_pct) + ', ' + z.made + '/' + z.attempts + '; share ' + pct(z.shot_share) + '; D-I ' + pct(z.league_fg_pct) + '; ' + pp(z.delta_pp)) + '</title></path>';
     }).join('');
     function badge(id,x,y,rotate) {
-      var z = by[id]; return '<g class="ca-court-badge' + (rotate ? ' ca-cbb-corner' : '') + '" transform="translate(' + x + ' ' + y + ')' + (rotate ? ' rotate(90)' : '') + '"><rect x="' + (rotate ? -40 : -55) + '" y="' + (rotate ? -18 : -28) + '" width="' + (rotate ? 80 : 110) + '" height="' + (rotate ? 36 : 56) + '" rx="7"></rect><text class="ca-court-badge__big" y="-2">' +
+      var z = by[id],tone=share?'':grade(z.attempts?z.delta_pp:null,options.defense); return '<g class="ca-court-badge '+tone + (rotate ? ' ca-cbb-corner' : '') + '" transform="translate(' + x + ' ' + y + ')' + (rotate ? ' rotate(90)' : '') + '"><rect x="' + (rotate ? -40 : -55) + '" y="' + (rotate ? -18 : -28) + '" width="' + (rotate ? 80 : 110) + '" height="' + (rotate ? 36 : 56) + '" rx="7"></rect><text class="ca-court-badge__big" y="-2">' +
         (share ? pct(z.shot_share) : pct(z.fg_pct)) + '</text><text class="ca-court-badge__small" y="' + (rotate ? 14 : 20) + '">' +
         (share ? z.attempts + ' FGA' : z.made + '/' + z.attempts) + '</text></g>';
     }
@@ -32,5 +41,5 @@
     if (metric === 'share') return '<p class="ca-cbb-legend">Fill intensity shows frequency.</p>';
     return '<div class="ca-cbb-legend"><span>Zone FG% vs same-season D-I average</span><div class="ca-cbb-legend__ramp"></div><div class="ca-cbb-legend__labels"><span>' + (defense ? '+10 pp allowed' : '−10 pp') + '</span><span>D-I average</span><span>' + (defense ? '−10 pp allowed' : '+10 pp') + '</span></div></div>';
   }
-  global.ChaseCbbCharts = { court:court,legend:legend,pct:pct,pp:pp,esc:esc };
+  global.ChaseCbbCharts = { court:court,legend:legend,pct:pct,pp:pp,esc:esc,grade:grade,value:value,metric:metric,efg:efg,metricLegend:metricLegend };
 })(typeof window !== 'undefined' ? window : this);

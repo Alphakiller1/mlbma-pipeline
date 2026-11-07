@@ -6367,11 +6367,11 @@ function seasonToggle(game) {
    * ------------------------------------------------------------------ */
   var NBA_TABS = [
     ['units', 'Matchup', ['nba-edge-map', 'nba-ratings', 'nba-efficiency']],
-    ['shots', 'Shot Profile', ['nba-shot-chart', 'nba-shot-maps', 'nba-shot-kinds', 'nba-shooting']],
+    ['shots', 'Shot Profile', ['nba-shot-chart', 'nba-databallr', 'nba-shot-maps', 'nba-shot-kinds', 'nba-shooting']],
     ['playtypes', 'Play Types', ['nba-fingerprint', 'nba-play-types']],
-    ['defense', 'Defense', ['nba-defenders', 'nba-onfloor']],
+    ['defense', 'Defense', ['nba-coverage', 'nba-scheme', 'nba-defenders', 'nba-onfloor']],
     ['athletic', 'Size And Speed', ['nba-tape', 'nba-size', 'nba-tracking']],
-    ['style', 'Coach And Style', ['nba-style', 'nba-scheme']],
+    ['style', 'Coach And Style', ['nba-style']],
     ['regression', 'Regression Watch', ['nba-aging', 'nba-regression', 'nba-shooter-regression']],
     ['players', 'Players', ['nba-player-types', 'nba-player-zones', 'nba-player-bio']],
     ['rotation', 'Rotation', ['nba-rotation']],
@@ -6466,22 +6466,25 @@ function seasonToggle(game) {
   }
 
   function nbaRotationPanel(sport, game, side) {
-    var list = (game[side + '_rotation'] || []).slice(0, 10);
+    var list = (game[side + '_rotation'] || []).slice().sort(function(a,b){return (b.mpg||0)-(a.mpg||0);}).slice(0, 10);
     var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' +
       esc(fullName(sport, game, side) + ' Rotation') + '</h3>';
     if (!list.length) return head + pending('Player lines are not published for this club yet.') + '</section>';
     var status = {};
-    ((game[side + '_injuries'] || {}).players || []).forEach(function (i) {
+    if (!game.__nbaYear || game.__nbaYear === Number(game.season)) ((game[side + '_injuries'] || {}).players || []).forEach(function (i) {
       if (i.player_id) status[i.player_id] = i.status;
     });
     var rows = list.map(function (pl) {
       return '<tr>' + nbaPlayerCell(pl, status[pl.player_id]) + NBA_ROTATION.map(function (col) {
-        return '<td class="num">' + esc(nbaFigure(pl[col[0]], col[2])) + '</td>';
+        var text=esc(nbaFigure(pl[col[0]], col[2])), baseline=game.__nbaWindow && game.__nbaWindow.player_baselines[col[0]];
+        var tone=baseline && pl.mpg>=10 ? global.MLBMAAssets.baselineChipClass(pl[col[0]],baseline,true) : '';
+        return '<td class="num"><span class="ca-basketball-value '+tone+'">' + text + '</span></td>';
       }).join('') + '</tr>';
     });
     return head + '<p class="ca-lineup-context">' +
       esc((game[side + '_rotation_basis'] || 'Per Game') + ' · Most Minutes First') + '</p>' +
-      nflSplitTable(NBA_ROTATION.map(function (c) { return c[1]; }), rows, 'Player') + '</section>';
+      nflSplitTable(NBA_ROTATION.map(function (c) { return c[1]; }), rows, 'Player') +
+      '<p class="ca-cbb-note">Production colors compare same-season players with 10+ MPG; higher output is not an overall player grade. GP and minutes are neutral. Players are listed with their last club in that season; per-game lines cover the whole season.</p>' + nbaColorLegend() + '</section>';
   }
 
   function nbaShortDate(iso) {
@@ -6576,14 +6579,14 @@ function seasonToggle(game) {
       var share = (zone.share || {}).value, fg = zone.fg || {};
       if (share == null && fg.value == null) return '';
       var y = z === 'rim' ? 98 : z === 'paint' ? 160 : pos[1];
-      return '<g class="ca-court-badge" transform="translate(' + pos[0] + ' ' + y + ')">' +
+      return '<g class="ca-court-badge '+(fg.rank ? rankTone(fg.rank,fg.of) : 'c-na')+'" transform="translate(' + pos[0] + ' ' + y + ')">' +
         '<rect x="-46" y="-26" width="92" height="50" rx="10"></rect>' +
         '<text class="ca-court-badge__big" y="-2">' + esc(nbaPct(share, 0)) + '</text>' +
         '<text class="ca-court-badge__small" y="16">' + esc(nbaPct(fg.value)) + (fg.rank ? ' · ' + fg.rank +
           ordinal(fg.rank) : '') + '</text></g>';
     }).join('');
     var c3 = off.corner3 || {};
-    return '<figure class="ca-court"><svg viewBox="0 0 500 470" role="img" aria-label="' + esc(title) + '">' +
+    return '<figure class="ca-court ca-nba-court"><svg viewBox="0 0 500 470" role="img" aria-label="' + esc(title) + '">' +
       '<rect class="ca-court-floor" x="0" y="0" width="500" height="470"></rect>' + shapes + lines + badges + '</svg>' +
       '<figcaption>Share of shots · FG% · FG% rank, zones shaded by rank · Corner 3: ' +
       esc(nbaPct((c3.share || {}).value, 0) + ' · ' + nbaPct((c3.fg || {}).value)) + '</figcaption></figure>';
@@ -6606,9 +6609,10 @@ function seasonToggle(game) {
       }) }
     ];
     var zb = nbaProf(game, offSide).zones_basis;
-    return head + nbaProfBasis(sport, game) + (zb ? '<p class="ca-lineup-context">' + esc('Zones: ' + zb) + '</p>' : '') +
+    return head + (zb ? '<p class="ca-lineup-context">' + esc('ESPN geometric zones: ' + zb) + '</p>' : '') +
       nbaCourt(off, offName + ' shot chart') +
-      cfbLedgerTable([offName, 'Offense'], [defName, 'Allowed'], groups) + '</section>';
+      cfbLedgerTable([offName, 'Offense'], [defName, 'Allowed'], groups) +
+      '<p class="ca-cbb-note">Offense FGM/FGA: '+esc(NBA_ZONES.map(function(z){var x=off[z[0]]||{};return z[1]+' '+(x.made==null?'—':x.made+'/'+x.attempts);}).join(' · '))+'</p>' + '</section>';
   }
 
   var NBA_KINDS = [['drive', 'Drives'], ['rim_finish', 'Rim Finishes'], ['cut', 'Cuts'], ['putback', 'Putbacks'],
@@ -6649,7 +6653,8 @@ function seasonToggle(game) {
       }) },
       { title: 'How Well (Points Per Possession)', rows: keys.map(function (k) {
         return cfbLedgerRow(NBA_PT_SHORT[k] || off[k].label, off[k].ppp, (dfn[k] || {}).ppp);
-      }) }
+      }) },
+      {title:'Sample (Possessions Per Game)',rows:keys.map(function(k){return cfbLedgerRow(NBA_PT_SHORT[k]||off[k].label,{value:off[k].possessions_per_game,format:'num',better:'neutral'},{value:(dfn[k]||{}).possessions_per_game,format:'num',better:'neutral'});})}
     ];
     return head + nbaProfBasis(sport, game) + '<p class="ca-lineup-context">Synergy Play Types · stats.nba.com</p>' +
       cfbLedgerTable([offName, 'Offense'], [defName, 'Defense Faced'], groups) + '</section>';
@@ -6811,7 +6816,7 @@ function seasonToggle(game) {
   function nbaSchemePanel(sport, game, side) {
     var p = nbaProf(game, side), ds = p.defense_scheme || {}, coach = (p.coach || {}).head_coach;
     var head = '<section class="ca-form-panel ca-cfb-panel ca-scheme-panel"><h3>' + esc(fullName(sport, game, side) +
-      ' Defensive Scheme') + '</h3>';
+      ' Inferred Defensive Tendencies') + '</h3>';
     var idx = ds.indices || {};
     if (!Object.keys(idx).length) return head + pending('Scheme figures are not published for this club yet.') + '</section>';
     var under = ds.measured_under && coach && ds.measured_under !== coach ?
@@ -6819,7 +6824,7 @@ function seasonToggle(game) {
         '). ' + coach + ' is new to the club, so this is the defense inherited, not yet the new staff’s own.') + '</p>' : '';
     var reads = (ds.reads || []).map(function (r) {
       return '<li class="ca-scheme-read is-' + esc(r.strength) + '"><div class="ca-scheme-read__head"><b>' + esc(r.scheme) +
-        '</b><span>' + esc(r.strength === 'strong' ? 'Strong Read' : 'Clear Read') + '</span></div>' +
+        '</b><span>' + esc(r.strength === 'strong' ? 'Strong Signal' : 'Clear Signal') + '</span></div>' +
         (r.note ? '<p>' + esc(r.note) + '</p>' : '') + '<p class="ca-scheme-read__ev">' + esc((r.evidence || []).map(function (e) {
           return e.label + ' ' + Math.round(e.percentile) + ordinal(Math.round(e.percentile));
         }).join(' · ')) + '</p></li>';
@@ -6827,8 +6832,7 @@ function seasonToggle(game) {
     var rows = NBA_SCHEME_ORDER.filter(function (k) { return idx[k]; }).map(function (k) {
       return { label: idx[k].label, percentile: idx[k].percentile };
     });
-    return head + '<p class="ca-lineup-context">' + esc((ds.basis || '') + ' · Read From What The Coverage Leaves ' +
-      'Behind · stats.nba.com Matchups And Synergy, Basketball-Reference') + '</p>' + under +
+    return head + '<p class="ca-lineup-context">' + esc((ds.basis || '') + ' · Inferred From Statistical Outcomes · Not Tagged Coverage Usage Or Efficiency') + '</p>' + under +
       (reads ? '<ul class="ca-scheme-reads">' + reads + '</ul>' :
         '<p class="ca-coach-summary">No coverage stands out clearly (75th percentile or beyond) on this basis.</p>') +
       '<h4 class="ca-coach-h">The Figures Behind It</h4>' + nbaPctlRows(rows, side) +
@@ -7032,7 +7036,7 @@ function seasonToggle(game) {
     var axis = '<div class="ca-edge-row ca-edge-row--axis" aria-hidden="true"><span></span><span class="ca-edge-axis">' +
       ['30th', '20th', '10th', '1st'].map(function (t, i) {
         return '<b style="left:' + [0, 34.5, 69, 100][i] + '%">' + t + '</b>';
-      }).join('') + '</span><span class="ca-edge-axis__edge">Edge</span></div>';
+      }).join('') + '</span><span class="ca-edge-axis__edge">Rank gap</span></div>';
     var body = rows.map(function (r, i) {
       var ox = nbaRankX(r.off.rank, r.off.of), dx = nbaRankX(r.def.rank, r.def.of);
       var lo = Math.min(ox, dx), hi = Math.max(ox, dx);
@@ -7052,7 +7056,7 @@ function seasonToggle(game) {
     }).join('');
     var more = rows.length > 10 ? '<button type="button" class="ca-edge-more" data-edge-more aria-expanded="false">' +
       'Show All ' + rows.length + ' Categories</button>' : '';
-    return head + '<p class="ca-lineup-context">' + esc('Offense Rank ● Against Defense Rank ○ · Widest Gaps First') +
+    return head + '<p class="ca-lineup-context">' + esc('Offense Rank ● Against Defense Rank ○ · Gap In Rank Places, Not Points') +
       '</p>' + '<div class="ca-edge-rows" role="list">' + axis + body + '</div>' + more + '</section>';
   }
 
@@ -7292,6 +7296,8 @@ function seasonToggle(game) {
         nflDuo(nbaKindsPanel, sport, game)),
       section('nba-play-types', 'Play Types', 'Pick-And-Roll, Isolation, Post-Up, Spot-Up, Transition And More',
         nflDuo(nbaPlayTypePanel, sport, game)),
+      section('nba-coverage', 'Coverage Matchup', 'Measured Zone And Non-Zone: Usage, Efficiency And Sample', nflDuo(nbaCoveragePanel, sport, game)),
+      section('nba-databallr', 'Databallr Shot Context', 'A Second Source With Its Own Zone Definitions', nflDuo(nbaDataballrPanel, sport, game)),
       section('nba-defenders', 'Defenders By Zone', 'Who Holds Shooters Below Their Normal, And Where',
         nflDuo(nbaDefendersPanel, sport, game)),
       section('nba-onfloor', 'On-Floor Defense By Zone', 'How Opponents Shoot With Each Player On The Floor And Off It',
@@ -7301,7 +7307,7 @@ function seasonToggle(game) {
         nbaTrackingBody(sport, game)),
       section('nba-style', 'Coach And Style', 'Tenure, Career And The Fingerprint The Coach’s Teams Carry',
         nflDuo(nbaStylePanel, sport, game)),
-      section('nba-scheme', 'Defensive Scheme', 'Switching, Pick-And-Roll Coverage And Rim Protection',
+      section('nba-scheme', 'Inferred Defensive Tendencies', 'Statistical Signals, Separate From Measured Coverage',
         nflDuo(nbaSchemePanel, sport, game)),
       section('nba-regression', 'Regression Watch', 'The Gaps That Tend To Close', nbaRegressionBody(sport, game)),
       section('nba-shooter-regression', 'Shooters And Age', 'Shooting Against Track Record, And Where Each Player Sits On The Age Curve',
@@ -7334,7 +7340,7 @@ function seasonToggle(game) {
       section('nba-shooting', 'Shooting', 'Shot Mix, Accuracy And Ball Movement',
         nflDuo(nbaLedgerPanel, sport, game, 'shooting')),
       section('nba-rotation', 'Rotation', 'Per-Game Lines, Most Minutes First', nflDuo(nbaRotationPanel, sport, game)),
-      section('nba-availability', 'Injury Report', 'Every Listed Player, Out First',
+      section('nba-availability', 'Current Injury Report', 'Current Fixture Availability, Independent Of Selected Stats Season',
         nflDuo(cfbInjuryPanel, sport, game)),
       section('nba-game-log', 'Game Log', 'This Season, Most Recent First', nflDuo(nbaGameLogPanel, sport, game)),
       section('team-context', 'Schedule And Rest', 'Factual Scheduling Context',
@@ -7358,8 +7364,64 @@ function seasonToggle(game) {
       .map(function (x) { return x.part; }).join('');
   }
 
+
+  function nbaColorLegend() {
+    return '<p class="ca-basketball-legend"><span class="c-elite">Elite</span><span class="c-good">Strong</span><span class="c-mid">Average</span><span class="c-weak">Weak</span><span class="c-poor">Poor</span><span>Same-season comparison · gray = ungraded</span></p>';
+  }
+  function nbaEvidenceStamp(iso) {
+    var d=new Date(iso);
+    return isNaN(d.getTime())?'not published':d.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:'America/New_York'})+' ET';
+  }
+  function nbaControls(game) {
+    var years=game.__nbaEvidence ? Object.keys(game.__nbaEvidence.seasons).sort().reverse() : [];
+    return '<div class="ca-analysis-scope ca-cbb-controls ca-nba-controls"><div><span class="ca-lineup-context">Team and player statistics</span><strong>Choose the season in view</strong></div><div class="ca-cbb-options" role="group" aria-label="NBA evidence season">'+years.map(function(y){return '<button type="button" data-nba-season="'+y+'" aria-pressed="'+(Number(y)===game.__nbaYear)+'" class="'+(Number(y)===game.__nbaYear?'is-on':'')+'">'+(Number(y)-1)+'–'+y.slice(2)+'</button>';}).join('')+'</div><p class="ca-cbb-note">'+(game.__nbaWindow?'ESPN games through '+esc(nbaEvidenceStamp(game.__nbaWindow.data_through_utc))+'. Fixture and availability remain current.':game.__nbaEvidenceError?'Two-season evidence is temporarily unavailable. Panels retain their stated slate basis.':'Loading two-season evidence…')+'</p></div>';
+  }
+  function repaintNba(host,game) {
+    var stack=host.querySelector('.ca-detail-stack');
+    if(!stack)return;
+    var tab=stack.getAttribute('data-nfl-tab'),club=stack.getAttribute('data-club');
+    var y=global.scrollY;
+    stack.innerHTML=nbaOrdered(nbaSections('nba',game));
+    host.querySelector('.ca-nba-controls').outerHTML=nbaControls(game);
+    nflSetTab(host,tab);nflSetClub(host,club);
+    global.scrollTo({top:y,behavior:'instant'});
+  }
+  function wireNbaControls(host,game) {
+    host.addEventListener('click',function(event){
+      var button=event.target.closest('[data-nba-season]');
+      if(button && global.ChaseSportNBA.selectSeason(game,Number(button.dataset.nbaSeason))) repaintNba(host,game);
+    });
+  }
+  function nbaGraded(value,entry) {
+    var tone=entry && entry.rank ? rankTone(entry.rank,entry.of) : 'c-na';
+    return '<span class="ca-basketball-value '+tone+'"'+(entry?' title="Same-season rank '+entry.rank+' of '+entry.of+'; '+(entry.better==='low'?'lower':'higher')+' is favorable"':'')+'>'+esc(value)+'</span>';
+  }
+  function nbaCoveragePanel(sport,game,side) {
+    var other=side==='away'?'home':'away',a=game[side+'_measured_coverage'],b=game[other+'_measured_coverage'];
+    var title=fullName(sport,game,side)+' Offense vs '+fullName(sport,game,other)+' Coverage';
+    if(!a||!b||!a.offense||!b.defense)return cbbPanel(title,'Measured coverage',pending('Measured coverage is unavailable for this evidence window.'));
+    var rows=b.defense.rows.map(function(d){
+      var o=a.offense.rows.find(function(r){return r.id===d.id;})||{};
+      function ppp(r){return nbaGraded(r.ppp==null?'—':Number(r.ppp).toFixed(3),r.ppp_grade)+(r.possessions>0&&!r.sample_qualified?'<small class="ca-cbb-count">Thin sample</small>':'');}
+      return [esc(d.label),nbaPct(d.frequency),String(d.possessions),ppp(d),String(o.possessions==null?'—':o.possessions),ppp(o)];
+    });
+    return cbbPanel(title,(a.season-1)+'–'+String(a.season).slice(2)+' · NBA Inside the Game · '+a.offense.games+' offense / '+b.defense.games+' defense games',
+      cbbTable(['Coverage','Defense use','D poss','D PPP allowed','O poss','O PPP'],rows,'ca-nba-evidence-table')+nbaColorLegend()+
+      '<p class="ca-cbb-note">Offense PPP is scored against that coverage; defense PPP is allowed while using it. Grade requires 20 coverage possessions; raw thin-sample values remain visible. Non-zone is the source label and does not verify man defense. Retrieved '+esc(nbaEvidenceStamp(a.offense.retrieved_at_utc))+' / '+esc(nbaEvidenceStamp(b.defense.retrieved_at_utc))+'. The feed does not supply its last included game date.</p><p class="ca-cbb-note">Drop, switch, blitz, press and named offensive formations are not tagged by these connected free feeds. The tendencies below are inferences.</p>');
+  }
+  function nbaDataballrPanel(sport,game,side) {
+    var other=side==='away'?'home':'away',a=game[side+'_databallr'],b=game[other+'_databallr'];
+    var title=fullName(sport,game,side)+' Shots vs '+fullName(sport,game,other)+' Allowed';
+    if(!a||!b)return cbbPanel(title,'Databallr',pending('Databallr context is unavailable for this evidence window.'));
+    var rows=a.offense.zones.map(function(o){var d=b.defense.zones.find(function(z){return z.id===o.id;});
+      return [esc(o.label),nbaPct(o.shot_share),nbaGraded(nbaPct(o.fg_pct),o.fg_grade)+'<small class="ca-cbb-count">'+o.made+'/'+o.attempts+'</small>',nbaPct(d.shot_share),nbaGraded(nbaPct(d.fg_pct),d.fg_grade)+'<small class="ca-cbb-count">'+d.made+'/'+d.attempts+'</small>'];});
+    return cbbPanel(title,(a.season-1)+'–'+String(a.season).slice(2)+' · Databallr · all possessions',cbbTable(['Zone','O share','O FG%','D share','D FG%'],rows,'ca-nba-evidence-table')+nbaColorLegend()+
+      '<p class="ca-cbb-note">Provider-defined zones: short mid-range is not the geometric paint zone on the court above. FGM/FGA is shown under FG%. Grades require 20 attempts; lower allowed FG% is favorable. Source updated '+esc(nbaEvidenceStamp(a.offense.source_updated_at))+' / '+esc(nbaEvidenceStamp(b.defense.source_updated_at))+'. Last included game date is not exposed by this response.</p>');
+  }
+
   var CBB_TABS = [
     ['units','Units',['cbb-efficiency']], ['shooting','Shot Profile',['cbb-shot-chart']],
+    ['defense','Defense',['cbb-defense']],
     ['rotation','Rotation',['cbb-rotation']], ['availability','Availability',['cbb-availability']],
     ['games','Games',['cbb-game-log']], ['schedule','Schedule',['cbb-schedule']]
   ];
@@ -7369,6 +7431,7 @@ function seasonToggle(game) {
   function cbbSchool(game,side) { var c=cbbTeam(game,side);return c && c.identity.short_name || fullName('cbb',game,side); }
   function cbbSeason(game) { return cbbYear(game)===2027 ? '2026–27' : '2025–26'; }
   function cbbNumber(n,digits) { return n == null ? '—' : Number(n).toFixed(digits == null ? 1 : digits); }
+  function cbbMetric(game,n,text,key,higher,group) { return global.ChaseCbbCharts.metric(n,text,cbbYear(game),group||'team',key,higher); }
   function cbbTable(head,rows,cls) {
     return '<div class="ca-lineup-scroll"><table class="ca-lineup-table '+(cls||'')+'"><thead><tr>'+head.map(function(h){return '<th>'+esc(h)+'</th>';}).join('')+'</tr></thead><tbody>'+rows.map(function(row){return '<tr>'+row.map(function(v,i){return '<td'+(i?' class="num"':'')+'>'+v+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>';
   }
@@ -7382,11 +7445,13 @@ function seasonToggle(game) {
     var opp=side==='away'?'home':'away',a=cbbTeam(game,side),b=cbbTeam(game,opp),pct=global.ChaseCbbCharts.pct;
     if(!a)return cbbPanel(cbbSchool(game,side),'Team evidence',pending('This opponent is outside the collected team-stat cohort.'));
     var x=a.rates,y=b?b.rates:{};
-    var rows=[['Points/100',cbbNumber(x.ppp_off_all==null?null:100*x.ppp_off_all),cbbNumber(y.ppp_def_all==null?null:100*y.ppp_def_all)],
-      ['eFG%',pct(x.efg_o_all),pct(y.efg_d_all)],['TOV%',pct(x.tov_pct_o_all),pct(y.tov_pct_d_all)],
-      ['ORB%',pct(x.orb_pct_all),pct(y.drb_pct_all==null?null:1-y.drb_pct_all)],['FTA/FGA',cbbNumber(x.ftr_o_all,3),cbbNumber(y.ftr_d_all,3)]];
+    function m(r,k,h,format){return cbbMetric(game,r[k],format(r[k]),k,h);}
+    var rows=[['Points/100',m(x,'ppp_off_all',true,function(n){return cbbNumber(n==null?null:100*n);}),m(y,'ppp_def_all',false,function(n){return cbbNumber(n==null?null:100*n);})],
+      ['eFG%',m(x,'efg_o_all',true,pct),m(y,'efg_d_all',false,pct)],['TOV%',m(x,'tov_pct_o_all',false,pct),m(y,'tov_pct_d_all',true,pct)],
+      ['ORB%',m(x,'orb_pct_all',true,pct),m(y,'drb_pct_all',true,function(n){return pct(n==null?null:1-n);})],
+      ['FTA/FGA',m(x,'ftr_o_all',true,function(n){return cbbNumber(n,3);}),m(y,'ftr_d_all',false,function(n){return cbbNumber(n,3);})]];
     return cbbPanel(cbbSchool(game,side)+' Offense vs '+cbbSchool(game,opp)+' Defense',cbbSeason(game)+' · '+(x.games_all||0)+' / '+(y.games_all==null?'not covered':y.games_all)+' reported games · Basketball Quant',cbbTable(['Stat','Offense','Allowed / forced'],rows,'ca-cbb-factor-table')+
-      '<p class="ca-cbb-note">Turnovers: committed / forced. Rebounds: offensive share / opponent share allowed. Free throws: attempts per field-goal attempt. Through '+esc(a.data_through||'not published')+' / '+esc(b&&b.data_through||'not covered')+'.</p>');
+      global.ChaseCbbCharts.metricLegend()+'<p class="ca-cbb-note">Turnovers: committed / forced. Rebounds: offensive share / opponent share allowed. Free throws: attempts per field-goal attempt. Through '+esc(a.data_through||'not published')+' / '+esc(b&&b.data_through||'not covered')+'.</p>');
   }
   function cbbShotPanel(sport,game,side) {
     var opp=side==='away'?'home':'away',a=cbbTeam(game,side),b=cbbTeam(game,opp),chart=global.ChaseCbbCharts;
@@ -7395,19 +7460,34 @@ function seasonToggle(game) {
     var schema=a.shots.cbb&&b.shots.cbb?'cbb':'coordinates',off=a.shots[schema].offense,def=b.shots[schema].defense;
     var defense=game.__cbbView==='defense',shown=defense?def:off,metric=game.__cbbMetric||'fg';
     var rows=off.zones.map(function(z){var q=def.zones.find(function(x){return x.id===z.id;}),gap=z.fg_pct!=null&&q.fg_pct!=null?100*(z.fg_pct-q.fg_pct):null;
-      return [esc(z.label),chart.pct(z.fg_pct)+'<small class="ca-cbb-count">'+z.made+'/'+z.attempts+'</small>',chart.pp(gap),chart.pct(q.fg_pct)+'<small class="ca-cbb-count">'+q.made+'/'+q.attempts+'</small>'];});
+      return [esc(z.label),chart.value(chart.pct(z.fg_pct),chart.grade(z.attempts?z.delta_pp:null,false),'FG% vs same-source D-I baseline')+'<small class="ca-cbb-count">'+z.made+'/'+z.attempts+'</small>',chart.value(chart.pp(gap),chart.grade(gap,false),'Observed offense minus opposing allowance; positive favors offense'),chart.value(chart.pct(q.fg_pct),chart.grade(q.attempts?q.delta_pp:null,true),'FG% allowed vs same-source D-I baseline; lower is favorable')+'<small class="ca-cbb-count">'+q.made+'/'+q.attempts+'</small>'];});
     return cbbPanel(cbbSchool(game,side)+' Shots vs '+cbbSchool(game,opp)+' Defense',cbbSeason(game)+' · '+off.totals.games+' / '+def.totals.games+' games · '+shown.source,
       '<p class="ca-cbb-note">Court: '+esc(cbbSchool(game,defense?opp:side))+(defense?' allowed':' offense')+'</p>'+chart.court(shown,cbbSchool(game,side)+' against '+cbbSchool(game,opp),{metric:metric,defense:defense})+chart.legend(defense,metric)+
-      '<div class="ca-cbb-summary"><span><strong>'+shown.totals.made+'/'+shown.totals.attempts+'</strong> FGM/FGA</span><span><strong>'+chart.pct(shown.totals.efg_pct)+'</strong> eFG</span></div>'+
+      '<div class="ca-cbb-summary"><span><strong>'+shown.totals.made+'/'+shown.totals.attempts+'</strong> FGM/FGA</span><span><strong>'+chart.efg(shown,defense)+'</strong> eFG</span></div>'+
       cbbTable(['Zone','Offense','FG% gap','Allowed'],rows,'ca-cbb-zone-table')+
       '<p class="ca-cbb-note">Gap is the observed offense-minus-allowed difference. '+(cbbYear(game)===2027?'Early-season sample.':'Prior-season roster and opponents differ.')+' '+(schema==='coordinates'?'Chase coordinate zones; counts reflect available shot events.':'CBB Analytics six-zone definitions.')+' Through '+esc(shown.totals.data_through||'not published')+'.</p>');
   }
   function cbbRotation(sport,game,side) {
     var c=cbbTeam(game,side);if(!c)return pending('Player evidence is unavailable.');
     var players=(c.players||[]).slice().sort(function(a,b){return (b.Min_pct||0)-(a.Min_pct||0);}).slice(0,12);
-    var rows=players.map(function(p){return [esc(String(p.Name||'').replace(/\s*\(\d+\).*$/,'')),cbbNumber(p.G,0),cbbNumber(p.Min_pct,0),cbbNumber(p.Pts),cbbNumber(p.Reb),cbbNumber(p.Ast),p.TS==null?'—':cbbNumber(p.TS)+'%'];});
+    var rows=players.map(function(p){return [esc(String(p.Name||'').replace(/\s*\(\d+\).*$/,'')),cbbNumber(p.G,0),cbbNumber(p.Min_pct,0)].concat(['Pts','Reb','Ast','TS'].map(function(k){var qualified=(p.G||0)>0&&(p.Min_pct||0)>=10&&(k!=='TS'||(p.FGA||0)+(p.FTA||0)>0);return qualified?cbbMetric(game,p[k],cbbNumber(p[k])+(k==='TS'?'%':''),k,true,'player'):cbbNumber(p[k])+(k==='TS'&&p[k]!=null?'%':'');}));});
     return cbbPanel(cbbSchool(game,side)+' Observed Players',cbbSeason(game)+' · Basketball Quant · per-game output',cbbTable(['Player','GP','MIN%','PTS','REB','AST','TS%'],rows)+
-      '<p class="ca-cbb-note">Top 12 by reported MIN%. MIN% is retained as reported. '+(cbbYear(game)===2026?'Prior-season players; this is not the current roster. ':'')+'Starting assignments and availability are not verified.</p>');
+      global.ChaseCbbCharts.metricLegend()+'<p class="ca-cbb-note">Production colors compare same-season players with at least 10% reported MIN%; higher means more output, not an overall player grade. Games and MIN% remain neutral. '+(cbbYear(game)===2026?'Prior-season players; this is not the current roster. ':'')+'Starting assignments and availability are not verified.</p>');
+  }
+  function cbbDefense(sport,game,side) {
+    var opp=side==='away'?'home':'away',a=cbbTeam(game,side),b=cbbTeam(game,opp),chart=global.ChaseCbbCharts;
+    if(!a||!b)return cbbPanel(cbbSchool(game,side)+' Defensive Matchup','Coverage evidence',pending('Both team evidence windows are needed for this comparison.'));
+    var x=a.rates,y=b.rates,schema=a.shots.cbb&&b.shots.cbb?'cbb':'coordinates';
+    var rim=a.shots[schema].offense.zones.find(function(z){return z.id==='atr2';}),allowed=b.shots[schema].defense.zones.find(function(z){return z.id==='atr2';});
+    function m(r,k,h){return cbbMetric(game,r[k],chart.pct(r[k]),k,h);}
+    var rows=[['3P attempt share',chart.pct(x.tpr_o_all),chart.pct(y.tpr_d_all)],
+      ['3P accuracy',m(x,'fg3_pct_o_all',true),m(y,'fg3_pct_d_all',false)],
+      ['At-rim share',chart.pct(rim.shot_share),chart.pct(allowed.shot_share)],
+      ['At-rim accuracy',chart.value(chart.pct(rim.fg_pct),chart.grade(rim.delta_pp,false)),chart.value(chart.pct(allowed.fg_pct),chart.grade(allowed.delta_pp,true))],
+      ['Turnovers',m(x,'tov_pct_o_all',false),m(y,'tov_pct_d_all',true)]];
+    return cbbPanel(cbbSchool(game,side)+' Offense vs '+cbbSchool(game,opp)+' Defensive Tendencies',cbbSeason(game)+' · Observed shooting and possession patterns',
+      cbbTable(['Evidence','Offense','Allowed / forced'],rows,'ca-cbb-factor-table')+chart.metricLegend()+
+      '<p class="ca-cbb-note">Shares describe style; accuracy and turnover colors describe the favorable direction. These are observed statistical tendencies. The connected free CBB feeds do not tag man/zone, press, pick-and-roll coverage, or named formations, so coverage usage and efficiency are unavailable.</p>');
   }
   function cbbGames(sport,game,side,upcoming) {
     var c=cbbTeam(game,side);if(!c)return pending('Game history is unavailable.');
@@ -7419,6 +7499,7 @@ function seasonToggle(game) {
   function cbbSections(sport,game) {
     return section('cbb-efficiency','Efficiency','Each Offense Against The Defense It Meets',nflDuo(cbbEfficiency,sport,game))+
       section('cbb-shot-chart','Shot Chart','Shooting By Zone And Opponent Allowed',nflDuo(cbbShotPanel,sport,game))+
+      section('cbb-defense','Defensive Matchup','Observed Tendencies And Coverage Availability',nflDuo(cbbDefense,sport,game))+
       section('cbb-rotation','Rotation','Observed Player Output',nflDuo(cbbRotation,sport,game))+
       section('cbb-availability','Availability','Published Participation Evidence',pending('Availability reports have not been collected. An absent report does not confirm that a player is healthy or starting.'))+
       section('cbb-game-log','Game Log','Completed Games In The Selected Season',nflDuo(cbbGames,sport,game,false))+
@@ -7538,7 +7619,7 @@ function seasonToggle(game) {
             return '<a href="#' + tab[0] + '" role="tab" data-nfl-tab="' + tab[0] + '" aria-selected="false">' +
               glyph + tab[1] + '</a>';
           }).join('') + '</nav>' + nflClubSwitch(sport, game) + '</div>' +
-          (sport === 'nfl' ? seasonToggle(game) : sport === 'cbb' ? cbbControls(game) : '')
+          (sport === 'nfl' ? seasonToggle(game) : sport === 'cbb' ? cbbControls(game) : sport === 'nba' ? nbaControls(game) : '')
         : '<nav class="ca-detail-nav" aria-label="Matchup sections">' + nav.map(function (item) {
           var glyph = item[0] === 'overview' ? ico('info', 'ca-detail-nav__ico', 14)
             : (SECTION_ICON[item[0]] ? ico(SECTION_ICON[item[0]], 'ca-detail-nav__ico', 14) : '');
@@ -7565,6 +7646,7 @@ function seasonToggle(game) {
     // Delegated once on the host, so a repainted section keeps working.
     if (!host.dataset.seasonWired) {
       if (sport === 'cbb') wireCbbControls(host,game);
+      if (sport === 'nba') wireNbaControls(host,game);
       wireSeasonToggle(host);
       wireLineupTabs(host);
       wireRadarReadout(host);
@@ -7623,7 +7705,8 @@ function seasonToggle(game) {
         ['away','home'].forEach(function(side){var record=host.querySelector('.ca-detail-team--'+side+' p');if(record)record.textContent=value(game[side+'_record'],'Record not published');});
         var status=host.querySelector('.ca-detail-facts .ca-detail-fact:last-child strong');if(status)status.textContent=gameStatus(game);
       });
-      return (sport === 'cbb' ? adapter.detail(game) : Promise.resolve(game)).then(function () {
+      return ((sport === 'cbb' || sport === 'nba') && adapter.detail ? adapter.detail(game) : Promise.resolve(game)).then(function () {
+      if (sport === 'nba') repaintNba(host,game);
       if (sport === 'cbb') {
         var cbbStack=host.querySelector('.ca-detail-stack'),cbbTab=cbbStack.getAttribute('data-nfl-tab'),cbbClub=cbbStack.getAttribute('data-club');
         host.querySelector('.ca-nfl-club').outerHTML=nflClubSwitch(sport,game);

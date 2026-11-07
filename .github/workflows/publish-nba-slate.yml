@@ -48,7 +48,7 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/validate_public_fields.py
-          git add -- data/public/nba/slate.json
+          git add -- data/public/nba/slate.json data/public/nba/evidence.json
           if git diff --cached --quiet; then
             echo "NBA slate is already current; no commit needed."
             exit 0

@@ -31,6 +31,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import validate_public_fields as vpf  # noqa: E402
 OUT = ROOT / "data" / "public" / "nba" / "slate.json"
 SOURCE = os.environ.get("NBA_PUBLIC_SLATE_URL", "https://alphakiller1.github.io/nba-model/slate.json")
+EVIDENCE_SOURCE = os.environ.get("NBA_PUBLIC_EVIDENCE_URL", "https://alphakiller1.github.io/nba-model/evidence.json")
+EVIDENCE_OUT = OUT.with_name("evidence.json")
 SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates={date}"
 MAX_AGE = timedelta(hours=36)
 HEADERS = {"User-Agent": "Mozilla/5.0 (chase-analytics slate publisher)", "Accept": "application/json"}
@@ -163,7 +165,61 @@ def merge_live(slate: dict) -> dict:
     return slate
 
 
+def validate_evidence(data: dict, now: datetime) -> list[str]:
+    """Require explicit, complete season cohorts; classify every nested field."""
+    problems = []
+    year = now.year + (1 if now.month >= 10 else 0)
+    if data.get("schema") != "chase-basketball-evidence/1" or data.get("sport") != "nba":
+        return ["unexpected basketball evidence schema/sport"]
+    seasons = data.get("seasons") or {}
+    if set(seasons) != {str(year - 1), str(year)}:
+        problems.append("evidence must contain current and previous NBA season")
+    try:
+        made = datetime.fromisoformat(str(data.get("generated_at_utc")).replace("Z", "+00:00"))
+        if now - made > MAX_AGE or made > now + timedelta(minutes=10):
+            problems.append("evidence build timestamp is stale or in the future")
+    except (ValueError, TypeError):
+        problems.append("evidence has no valid build timestamp")
+    for key, window in seasons.items():
+        clubs = window.get("teams") or {}
+        if set(clubs) != TEAMS or str(window.get("season")) != key:
+            problems.append(f"incomplete or mixed-season evidence cohort {key}")
+        for code, club in clubs.items():
+            for field in ("form", "measured_coverage", "databallr"):
+                block = club.get(field)
+                if block and str(block.get("season")) != key:
+                    problems.append(f"wrong season in {key}/{code}/{field}")
+    spec = json.loads(vpf.CLASSIFICATION.read_text(encoding="utf-8"))
+    problems.extend(vpf.classify_artifact(spec, data, "NBA evidence"))
+    return problems
+
+
+def publish_evidence(source: str = EVIDENCE_SOURCE) -> bool:
+    """An evidence outage must not freeze the independently valid fixture slate."""
+    try:
+        data = fetch(source)
+        problems = validate_evidence(data, datetime.now(timezone.utc))
+        if problems:
+            raise ValueError("; ".join(problems[:8]))
+        if EVIDENCE_OUT.is_file():
+            old = json.loads(EVIDENCE_OUT.read_text(encoding="utf-8"))
+            for year, window in data["seasons"].items():
+                prior = old.get("seasons", {}).get(year, {})
+                if str(window.get("data_through_utc") or "") < str(prior.get("data_through_utc") or ""):
+                    raise ValueError(f"observed games cutoff regressed for {year}")
+        EVIDENCE_OUT.parent.mkdir(parents=True, exist_ok=True)
+        temp = EVIDENCE_OUT.with_suffix(".tmp")
+        temp.write_text(json.dumps(data, separators=(",", ":"), ensure_ascii=False) + "\n", encoding="utf-8")
+        temp.replace(EVIDENCE_OUT)
+        print("NBA two-season evidence published: 60 team-seasons")
+        return True
+    except Exception as exc:
+        print(f"::warning::NBA evidence rejected; keeping the dated last snapshot: {exc}")
+        return False
+
+
 def main() -> int:
+    publish_evidence()
     now = datetime.now(timezone.utc)
     try:
         slate = fetch(SOURCE)

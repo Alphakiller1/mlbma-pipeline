@@ -11,7 +11,7 @@
     },
     {
       "source": "cbb-model/cbb_model/export.py",
-      "sha256": "d892576b596867a3ebb883f20fea5f2627f693063fde57653a3ea2bd7548c871"
+      "sha256": "15b7267fb0c8d207fd82406777f30ed3fcdf992b76bc19c65368a54857f871c6"
     },
     {
       "source": "cbb-model/scripts/collect_cbb_sources.py",

@@ -24,9 +24,11 @@ Needs a running static server (same as the runtime smoke):
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from dataclasses import dataclass, field
 from typing import List
+from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
@@ -37,6 +39,7 @@ DEFAULT_PAGES = [
     "cbb/index.html",
     "nfl/index.html",
     "cfb/index.html",
+    "nba/index.html",
     "cbb/matchup.html?game=401909564#shooting",
     "cbb/shot-charts.html",
     "nfl/matchup.html?game=2026-W01-ne-sea",
@@ -191,6 +194,13 @@ def main() -> int:
     ap.add_argument("--pages", nargs="*", default=DEFAULT_PAGES)
     ap.add_argument("--channel", default="", help='browser channel, e.g. "chrome" for system Chrome')
     args = ap.parse_args()
+
+    if args.pages is DEFAULT_PAGES:
+        args.pages = list(args.pages)
+        slate = json.loads((Path(__file__).resolve().parents[1] / 'data/public/nba/slate.json').read_text(encoding='utf-8'))
+        if slate.get('games'):
+            first = str(slate['games'][0]['id'])
+            args.pages.extend('nba/matchup.html?game=' + first + '#' + tab for tab in ('defense', 'shots', 'rotation'))
 
     results = audit(
         args.base_url,

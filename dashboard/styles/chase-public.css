@@ -6178,6 +6178,16 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-cbb-summary{display:flex;justify-content:center;gap:var(--space-4);font-size:13px;color:var(--text-secondary);margin:var(--space-3) 0}
 .ca-cbb-summary strong{color:var(--text-primary);font-variant-numeric:tabular-nums}
 .ca-cbb-count{display:block;color:var(--text-muted);font-size:12px;margin-top:2px}
+.ca-basketball-value{color:var(--grade,var(--text-primary));font-weight:700;font-variant-numeric:tabular-nums}
+.ca-basketball-legend{display:flex;flex-wrap:wrap;gap:var(--space-3);font-size:12px;line-height:1.5;color:var(--text-muted);margin:var(--space-3) 0;text-transform:none}
+.ca-cbb-court .ca-court-badge__big{fill:var(--grade,var(--text-primary))}
+.ca-cbb-court .ca-court-badge__small{fill:var(--text-secondary)}
+.ca-nba-court .ca-court-badge__small{fill:var(--grade,var(--text-secondary))}
+.ca-nba-controls .ca-cbb-note{flex-basis:100%;margin:0}
+.ca-nba-evidence-table th{white-space:normal;min-width:64px}
+.ca-nba-evidence-table td:first-child{white-space:normal}
+.ca-nba-evidence-table .ca-cbb-count{font-size:11px}
+.ca-cbb-summary strong .ca-basketball-value{color:var(--grade,var(--text-primary))}
 .ca-cbb-matrix-card{padding:var(--space-4)}.ca-cbb-matrix-title{display:flex;align-items:center;gap:var(--space-3);margin-top:var(--space-3)}
 .ca-cbb-matrix-title img{object-fit:contain;flex-shrink:0}.ca-cbb-matrix-title h2{font:700 19px var(--font-display);margin:0;color:var(--text-primary)}
 .ca-cbb-matrix-title p{font-size:12px;color:var(--text-muted);margin:3px 0 0}

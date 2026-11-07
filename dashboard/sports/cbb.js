@@ -1,7 +1,8 @@
 /** CBB research adapter: factual, versioned two-season exports only. */
 (function (global) {
   'use strict';
-  var ROOT = '/data/public/cbb/', cache = {};
+  var ROOT = '/data/public/cbb/', cache = {}, baselines = {};
+  function rememberIndex(value) { baselines=value.grade_baselines||{};return value; }
   function json(url) {
     return fetch(url, { cache: 'no-cache' }).then(function (r) {
       if (!r.ok) throw new Error('CBB evidence is unavailable (' + r.status + ').');
@@ -56,6 +57,7 @@
   }
   function load(date) {
     return Promise.all([json(ROOT + 'slate.json'), json(ROOT + 'teams.json')]).then(function (parts) {
+      rememberIndex(parts[1]);
       var slate = parts[0], teams = parts[1].teams || {}, requested = new URLSearchParams(global.location.search).get('game');
       if (slate.sport !== 'cbb' || !Array.isArray(slate.games)) throw new Error('The CBB slate is malformed.');
       var today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
@@ -89,5 +91,7 @@
       return game;
     });
   }
-  global.ChaseSportCBB = { load: load, context: context, detail: detail, SLATE_URL: ROOT + 'slate.json', teamIndex: function () { return json(ROOT + 'teams.json'); } };
+  global.ChaseSportCBB = { load: load, context: context, detail: detail, SLATE_URL: ROOT + 'slate.json',
+    baseline:function(year,group,key){return ((baselines[String(year)]||{})[group]||{})[key]||null;},
+    teamIndex: function () { return json(ROOT + 'teams.json').then(rememberIndex); } };
 })(typeof window !== 'undefined' ? window : this);

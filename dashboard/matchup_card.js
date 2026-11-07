@@ -416,7 +416,7 @@
     // repeating them made the same two headshots appear twice on expand.
     var html = '<div class="ca-matchup-card__expand" id="' + esc(panelId) + '" hidden>';
     if (sport === 'cbb') {
-      return html + '<p class="ca-ctx-head">2026–27 observed team shooting · current-season sample</p><div class="ca-matchup-card__detail-grid">'+['away','home'].map(function(side){var r=game[side+'_summary']||{};return miniFact(teamName(sport,game[side],game[side+'_name'])+' eFG%',r.efg_pct==null?'Not published':(100*r.efg_pct).toFixed(1)+'%')+miniFact('Reported games',r.games||0);}).join('')+'</div><p class="ca-cbb-note">Full analysis includes both seasons, opponent allowed rates, shot zones and observed players.</p></div>';
+      return html + '<p class="ca-ctx-head">2026–27 observed team shooting · current-season sample</p><div class="ca-matchup-card__detail-grid">'+['away','home'].map(function(side){var r=game[side+'_summary']||{};return miniFact(teamName(sport,game[side],game[side+'_name'])+' eFG%',r.efg_pct==null?'Not published':(100*r.efg_pct).toFixed(1)+'%',global.MLBMAAssets.baselineChipClass(r.efg_pct,global.ChaseSportCBB.baseline(game.season||2027,'team','efg_o_all'),true))+miniFact('Reported games',r.games||0);}).join('')+'</div><p class="ca-cbb-note">Full analysis includes both seasons, opponent allowed rates, shot zones and observed players.</p></div>';
     }
     if (sport === 'cfb') {
       return html + cfbAnalysis(game, awayName, homeName) + '</div>';
@@ -614,7 +614,7 @@
 
   function armsRow(sport, game) {
     if (sport === 'cbb') {
-      return '<div class="ca-matchup-card__arms">' + ['away','home'].map(function(side){var r=game[side+'_summary']||{};return '<div>'+miniFact('Offense eFG%',r.efg_pct==null?'Not published':(100*r.efg_pct).toFixed(1)+'%') + '<span class="ca-cbb-card-sample">'+(r.games||0)+' reported games</span></div>';}).join('')+'</div>';
+      return '<div class="ca-matchup-card__arms">' + ['away','home'].map(function(side){var r=game[side+'_summary']||{};return '<div>'+miniFact('Offense eFG%',r.efg_pct==null?'Not published':(100*r.efg_pct).toFixed(1)+'%',global.MLBMAAssets.baselineChipClass(r.efg_pct,global.ChaseSportCBB.baseline(game.season||2027,'team','efg_o_all'),true)) + '<span class="ca-cbb-card-sample">'+(r.games||0)+' reported games</span></div>';}).join('')+'</div>';
     }
     if (sport === 'nba') {
       return '<div class="ca-matchup-card__arms" role="group" aria-label="Leading Scorers">' +
