@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-06",
- "generated_at_utc": "2026-11-06T15:56:20+00:00",
+ "generated_at_utc": "2026-11-06T21:30:37+00:00",
  "data_through_utc": "2026-11-06T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2025-26",
@@ -10736,7 +10736,7 @@
       "player_name": "Payton Pritchard",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066354.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 26.8,
       "ppg": 13.0,
       "height_in": 73.0,
@@ -11723,15 +11723,6 @@
     "altitude": false
    },
    "away_injuries": [
-    {
-     "player_id": "4066354",
-     "player_name": "Payton Pritchard",
-     "status": "Day-To-Day",
-     "detail": "Right Eye Abrasion",
-     "comment": "Pritchard (eye) is questionable for Friday against Charlotte, Taylor Snow of the Celtics' official site reports.",
-     "date": "2026-11-05T21:09Z",
-     "return_date": "2026-11-06"
-    },
     {
      "player_id": "4433188",
      "player_name": "Devin Carter",
@@ -14216,7 +14207,7 @@
       "player_name": "Dennis Schroder",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3032979.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 30.0,
       "ppg": 10.2,
       "height_in": 73.0,
@@ -14566,7 +14557,7 @@
       "player_name": "Moussa Diabate",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4433249.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 28.8,
       "ppg": 8.9,
       "height_in": 82.0,
@@ -15548,20 +15539,20 @@
     {
      "player_id": "3032979",
      "player_name": "Dennis Schroder",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Thigh",
-     "comment": "Schroder (thigh) is questionable for Friday's game against the Celtics.",
-     "date": "2026-11-05T22:11Z",
-     "return_date": "2026-11-06"
+     "comment": "Schroder (thigh) is out for Friday's game versus Boston.",
+     "date": "2026-11-06T18:09Z",
+     "return_date": "2026-11-09"
     },
     {
      "player_id": "4433249",
      "player_name": "Moussa Diabate",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Quadriceps",
-     "comment": "Diabate (quadriceps) is questionable for Friday's game against the Celtics.",
-     "date": "2026-11-05T22:08Z",
-     "return_date": "2026-11-06"
+     "comment": "Diabate (quadriceps) has been ruled out for Friday's game against Boston, according to the Hornets' official injury report.",
+     "date": "2026-11-06T18:08Z",
+     "return_date": "2026-11-09"
     },
     {
      "player_id": "5061575",
@@ -27083,9 +27074,9 @@
      "player_name": "Jusuf Nurkic",
      "status": "Out",
      "detail": "Right Foot Strain",
-     "comment": "Nurkic (foot) is out for Wednesday's game against the Pelicans.",
-     "date": "2026-11-03T23:07Z",
-     "return_date": "2026-11-13"
+     "comment": "Nurkic (toe) has begun participating in on-court activities as he continues recovering from a right foot injury sustained during an Oct. 4 preseason game against Denver. He will be re-evaluated in two weeks, the Jazz announced Friday.",
+     "date": "2026-11-06T18:20Z",
+     "return_date": "2026-11-20"
     },
     {
      "player_id": "4277961",
@@ -29861,7 +29852,7 @@
       "player_name": "Kyrie Irving",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/6442.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 30.0,
       "ppg": 22.7,
       "height_in": null,
@@ -30581,6 +30572,15 @@
     "altitude": false
    },
    "home_injuries": [
+    {
+     "player_id": "6442",
+     "player_name": "Kyrie Irving",
+     "status": "Day-To-Day",
+     "detail": "Illness",
+     "comment": "Irving (illness) is probable for Friday's game against Utah.",
+     "date": "2026-11-06T19:05Z",
+     "return_date": "2026-11-06"
+    },
     {
      "player_id": "5279129",
      "player_name": "Sergio de Larrea",
@@ -40740,7 +40740,7 @@
       "player_name": "Immanuel Quickley",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4395724.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 31.8,
       "ppg": 17.4,
       "height_in": 74.0,
@@ -41566,7 +41566,7 @@
       "player_name": "Jakob Poeltl",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3134908.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 20.0,
       "ppg": 5.2,
       "height_in": 84.0,
@@ -41828,12 +41828,39 @@
    },
    "away_injuries": [
     {
+     "player_id": "3134908",
+     "player_name": "Jakob Poeltl",
+     "status": "Day-To-Day",
+     "detail": "Left Shoulder",
+     "comment": "Poeltl (shoulder) is listed as probable for Friday's game against Milwaukee.",
+     "date": "2026-11-06T18:03Z",
+     "return_date": "2026-11-06"
+    },
+    {
+     "player_id": "4395724",
+     "player_name": "Immanuel Quickley",
+     "status": "Day-To-Day",
+     "detail": "Right Hamstring",
+     "comment": "Quickley (hamstring) is questionable for Friday against the Bucks.",
+     "date": "2026-11-06T17:59Z",
+     "return_date": "2026-11-06"
+    },
+    {
      "player_id": "4433134",
      "player_name": "Scottie Barnes",
      "status": "Day-To-Day",
      "detail": "Left Groin Soreness",
-     "comment": "Barnes (groin) is questionable to play Friday's game against the Bucks.",
-     "date": "2026-11-06T01:26Z",
+     "comment": "Barnes (adductor) was not present at the morning shootaround, Michael Grange of Sportsnet.careports.",
+     "date": "2026-11-06T17:47Z",
+     "return_date": "2026-11-06"
+    },
+    {
+     "player_id": "2993874",
+     "player_name": "Kyle Anderson",
+     "status": "Day-To-Day",
+     "detail": "Illness",
+     "comment": "Anderson is questionable for Friday against the Bucks due to illness.",
+     "date": "2026-11-06T16:06Z",
      "return_date": "2026-11-06"
     },
     {
@@ -48936,7 +48963,7 @@
       "player_name": "Terrence Shannon Jr.",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4432847.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 22.0,
       "ppg": 12.0,
       "height_in": 78.0,
@@ -49380,11 +49407,11 @@
     {
      "player_id": "4432847",
      "player_name": "Terrence Shannon Jr.",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Left Hip Bruise",
-     "comment": "Shannon (hip) is questionable for Friday's game against New Orleans.",
-     "date": "2026-11-05T22:58Z",
-     "return_date": "2026-11-06"
+     "comment": "Shannon (hip) has been ruled out for Friday's game against New Orleans.",
+     "date": "2026-11-06T18:06Z",
+     "return_date": "2026-11-08"
     },
     {
      "player_id": "4594268",
@@ -51859,7 +51886,7 @@
       "player_name": "Trey Murphy III",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4397688.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 33.0,
       "ppg": 14.9,
       "height_in": 80.0,
@@ -53262,15 +53289,6 @@
      "comment": "Missi (knee) is out for Friday's game against Minnesota.",
      "date": "2026-11-05T20:47Z",
      "return_date": "2026-11-09"
-    },
-    {
-     "player_id": "4397688",
-     "player_name": "Trey Murphy III",
-     "status": "Day-To-Day",
-     "detail": "Knee",
-     "comment": "Murphy (knee) is probable for Friday's game against Minnesota.",
-     "date": "2026-11-05T20:19Z",
-     "return_date": "2026-11-06"
     }
    ]
   },
@@ -59918,7 +59936,7 @@
       "player_name": "Sandro Mamukelashvili",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4278580.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 23.6,
       "ppg": 9.0,
       "height_in": 81.0,
@@ -60635,17 +60653,7 @@
     "tz_shift": 0,
     "altitude": false
    },
-   "home_injuries": [
-    {
-     "player_id": "4278580",
-     "player_name": "Sandro Mamukelashvili",
-     "status": "Day-To-Day",
-     "detail": "Illness",
-     "comment": "Mamukelashvili (illness) is listed as questionable for Friday's game against Portland.",
-     "date": "2026-11-06T01:03Z",
-     "return_date": "2026-11-06"
-    }
-   ]
+   "home_injuries": []
   },
   {
    "id": "401909295",
@@ -67153,7 +67161,7 @@
       "player_name": "De'Andre Hunter",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4065732.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 31.2,
       "ppg": 13.0,
       "height_in": 79.0,
@@ -68014,6 +68022,15 @@
    },
    "home_injuries": [
     {
+     "player_id": "4065732",
+     "player_name": "De'Andre Hunter",
+     "status": "Day-To-Day",
+     "detail": "Illness",
+     "comment": "Hunter is questionable for Friday against the Spurs due to an illness.",
+     "date": "2026-11-06T21:07Z",
+     "return_date": "2026-11-06"
+    },
+    {
      "player_id": "4898371",
      "player_name": "Maxime Raynaud",
      "status": "Out",
@@ -68043,5 +68060,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-06T19:17:16+00:00"
+ "published_at_utc": "2026-11-07T00:04:24+00:00"
 }
