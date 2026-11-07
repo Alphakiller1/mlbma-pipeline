@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from functools import lru_cache
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -112,14 +113,20 @@ def visible_main(html: str) -> str:
     return SCRIPT_RE.sub("", match.group(1))
 
 
+@lru_cache(maxsize=512)
+def _path_regex(pattern: str, suffix: bool = False) -> re.Pattern:
+    """Compile each immutable path rule once, including for large season exports."""
+    regex = "".join(
+        r"[^.\[\]]+" if part == "*" else re.escape(part)
+        for part in re.split(r"(\*)", pattern)
+    )
+    return re.compile(regex + ("$" if suffix else ""))
+
+
 def path_class(suffixes: dict, path: str) -> str | None:
     """Resolve a path against the suffix rules. `*` matches one path segment."""
     for pattern, name in suffixes.items():
-        regex = "".join(
-            r"[^.\[\]]+" if part == "*" else re.escape(part)
-            for part in re.split(r"(\*)", pattern)
-        )
-        if re.search(regex + "$", path):
+        if _path_regex(pattern, True).search(path):
             return name
     return None
 
@@ -142,11 +149,7 @@ def is_id_map(id_maps: list, path: str) -> bool:
     into and still classified.
     """
     for pattern in id_maps:
-        regex = "".join(
-            r"[^.\[\]]+" if part == "*" else re.escape(part)
-            for part in re.split(r"(\*)", pattern)
-        )
-        if re.fullmatch(regex, path):
+        if _path_regex(pattern).fullmatch(path):
             return True
     return False
 
