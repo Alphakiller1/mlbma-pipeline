@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-08",
- "generated_at_utc": "2026-11-08T16:41:54+00:00",
+ "generated_at_utc": "2026-11-08T22:07:09+00:00",
  "data_through_utc": "2026-11-08T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -121,8 +121,8 @@
    "id": "401909945",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/8 - 3:30 PM EST",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-11-08T20:30Z",
    "away": "PHI",
    "home": "CHI",
@@ -132,12 +132,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/chi.png",
    "away_color": "#1d428a",
    "home_color": "#ce1141",
-   "away_record": "8-2",
-   "home_record": "1-7",
+   "away_record": "9-2",
+   "home_record": "1-8",
    "away_split_record": "4-1",
    "home_split_record": "0-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 127,
+   "home_score": 121,
    "venue": "United Center",
    "venue_city": "Chicago, IL",
    "broadcast": "",
@@ -3244,7 +3244,7 @@
       "player_name": "Joel Embiid",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3059318.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 32.2,
       "ppg": 17.9,
       "height_in": 84.0,
@@ -4026,15 +4026,6 @@
     "altitude": false
    },
    "away_injuries": [
-    {
-     "player_id": "3059318",
-     "player_name": "Joel Embiid",
-     "status": "Day-To-Day",
-     "detail": "Right Foot Plantar Fasciitis",
-     "comment": "Embiid (foot) is probable for Sunday's game against the Bulls.",
-     "date": "2026-11-07T23:12Z",
-     "return_date": "2026-11-08"
-    },
     {
      "player_id": "5105637",
      "player_name": "Adem Bona",
@@ -6602,7 +6593,7 @@
       "player_name": "Norman Powell",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/2595516.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 28.9,
       "ppg": 19.2,
       "height_in": 76.0,
@@ -7095,7 +7086,7 @@
       "player_name": "Jalen Smith",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4397189.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 22.4,
       "ppg": 11.0,
       "height_in": 81.0,
@@ -7847,38 +7838,11 @@
     {
      "player_id": "2595516",
      "player_name": "Norman Powell",
-     "status": "Day-To-Day",
-     "detail": "Right Shoulder Inflammation",
-     "comment": "Powell (shoulder) is listed as questionable for Sunday's game against the 76ers.",
-     "date": "2026-11-08T15:07Z",
-     "return_date": "2026-11-08"
-    },
-    {
-     "player_id": "5105555",
-     "player_name": "Tobe Awaka",
-     "status": "Day-To-Day",
-     "detail": "Left Knee Sprain",
-     "comment": "Awaka (knee) is questionable for Sundays' game against the 76ers.",
-     "date": "2026-11-07T21:36Z",
-     "return_date": "2026-11-08"
-    },
-    {
-     "player_id": "4397189",
-     "player_name": "Jalen Smith",
-     "status": "Day-To-Day",
-     "detail": "Left Finger Sprain",
-     "comment": "Smith (finger) is probable for Sunday's game against Philadelphia.",
-     "date": "2026-11-07T21:31Z",
-     "return_date": "2026-11-08"
-    },
-    {
-     "player_id": "4278067",
-     "player_name": "Nic Claxton",
      "status": "Out",
-     "detail": "Left Hamstring Strain",
-     "comment": "Claxton (hamstring) has been downgraded to questionable for Sunday's game against the 76ers.",
-     "date": "2026-11-07T21:25Z",
-     "return_date": "2026-11-08"
+     "detail": "Right Shoulder Inflammation",
+     "comment": "Powell (shoulder) has been ruled out for Sunday's game against the 76ers, Adam Aaronson of PhillyVoice.com reports.",
+     "date": "2026-11-08T18:55Z",
+     "return_date": "2026-11-11"
     },
     {
      "player_id": "4066650",
@@ -7895,8 +7859,8 @@
    "id": "401909946",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/8 - 6:00 PM EST",
+   "game_state": "live",
+   "status_detail": "10:08 - 2nd",
    "kickoff_utc": "2026-11-08T23:00Z",
    "away": "LAL",
    "home": "DET",
@@ -7910,8 +7874,8 @@
    "home_record": "6-2",
    "away_split_record": "3-1",
    "home_split_record": "2-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 40,
+   "home_score": 20,
    "venue": "Little Caesars Arena",
    "venue_city": "Detroit, MI",
    "broadcast": "NBA TV / Spectrum Sports Net / Spectrum Sports Net +",
@@ -10441,7 +10405,7 @@
       "player_name": "Luka Doncic",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3945274.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 35.9,
       "ppg": 40.1,
       "height_in": 80.0,
@@ -11765,11 +11729,11 @@
     {
      "player_id": "3945274",
      "player_name": "Luka Doncic",
-     "status": "Day-To-Day",
-     "detail": "Back",
-     "comment": "Doncic (back) is questionable for Sunday's game against the Pistons.",
-     "date": "2026-11-07T22:11Z",
-     "return_date": "2026-11-08"
+     "status": "Out",
+     "detail": "Back Soreness",
+     "comment": "Doncic has been ruled out for Sunday's game at Detroit due to lower-back tightness, Trevor Lane of LakersNation.com reports.",
+     "date": "2026-11-08T18:19Z",
+     "return_date": "2026-11-09"
     }
    ],
    "home_form": {
@@ -22871,7 +22835,7 @@
       "player_name": "Joan Beringer",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5279133.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 16.5,
       "ppg": 5.8,
       "height_in": 84.0,
@@ -23341,15 +23305,6 @@
     "altitude": false
    },
    "home_injuries": [
-    {
-     "player_id": "5279133",
-     "player_name": "Joan Beringer",
-     "status": "Day-To-Day",
-     "detail": "Fracture",
-     "comment": "Beringer (nose) is questionable for Sunday's game against the Jazz.",
-     "date": "2026-11-07T23:10Z",
-     "return_date": "2026-11-08"
-    },
     {
      "player_id": "4594268",
      "player_name": "Anthony Edwards",
@@ -34530,7 +34485,7 @@
       "player_name": "Mitchell Robinson",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4351852.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 18.8,
       "ppg": 5.8,
       "height_in": 84.0,
@@ -34794,7 +34749,17 @@
     "tz_shift": -1,
     "altitude": false
    },
-   "away_injuries": [],
+   "away_injuries": [
+    {
+     "player_id": "4351852",
+     "player_name": "Mitchell Robinson",
+     "status": "Day-To-Day",
+     "detail": "Illness",
+     "comment": "Robinson (illness) is questionable for Sunday's game versus Milwaukee, Bobby Krivitsky of Forbes.com reports.",
+     "date": "2026-11-08T18:21Z",
+     "return_date": "2026-11-08"
+    }
+   ],
    "home_form": {
     "source": "espn-box",
     "season": 2027,
@@ -38579,7 +38544,17 @@
     "tz_shift": 0,
     "altitude": false
    },
-   "home_injuries": []
+   "home_injuries": [
+    {
+     "player_id": "4277843",
+     "player_name": "Gary Trent Jr.",
+     "status": "Day-To-Day",
+     "detail": "Illness",
+     "comment": "Trent (illness) has been downgraded to questionable for Sunday's game against Boston.",
+     "date": "2026-11-08T18:23Z",
+     "return_date": "2026-11-08"
+    }
+   ]
   },
   {
    "id": "401909950",
@@ -50868,22 +50843,22 @@
      "moved": false
     },
     {
-     "player_id": "4702384",
-     "player_name": "Nique Clifford",
-     "position": "G",
-     "games": 8,
+     "player_id": "4917149",
+     "player_name": "Alex Karaban",
+     "position": "F",
+     "games": 5,
      "starts": 0,
-     "mpg": 6.2,
-     "ppg": 1.6,
-     "rpg": 0.9,
-     "apg": 1.0,
+     "mpg": 9.8,
+     "ppg": 1.4,
+     "rpg": 0.8,
+     "apg": 0.4,
      "spg": 0.2,
      "bpg": 0.0,
-     "tpg": 0.6,
-     "three_pm": 0.1,
-     "ts_pct": 0.382,
-     "three_pct": 0.125,
-     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4702384.png",
+     "tpg": 1.0,
+     "three_pm": 0.4,
+     "ts_pct": 0.509,
+     "three_pct": 0.4,
+     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4917149.png",
      "moved": false
     }
    ],
@@ -50905,25 +50880,6 @@
      "ts_pct": 0.619,
      "three_pct": 0.324,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4898371.png",
-     "moved": false
-    },
-    {
-     "player_id": "4702384",
-     "player_name": "Nique Clifford",
-     "position": "G",
-     "games": 75,
-     "starts": 28,
-     "mpg": 25.1,
-     "ppg": 8.6,
-     "rpg": 3.8,
-     "apg": 2.4,
-     "spg": 0.9,
-     "bpg": 0.3,
-     "tpg": 1.5,
-     "three_pm": 1.0,
-     "ts_pct": 0.505,
-     "three_pct": 0.333,
-     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4702384.png",
      "moved": false
     },
     {
@@ -51114,6 +51070,25 @@
      "ts_pct": 0.608,
      "three_pct": 0.0,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5107897.png",
+     "moved": true
+    },
+    {
+     "player_id": "4709131",
+     "player_name": "Sean Pedulla",
+     "position": "G",
+     "games": 7,
+     "starts": 0,
+     "mpg": 4.4,
+     "ppg": 1.9,
+     "rpg": 0.4,
+     "apg": 0.7,
+     "spg": 0.0,
+     "bpg": 0.0,
+     "tpg": 0.1,
+     "three_pm": 0.4,
+     "ts_pct": 0.433,
+     "three_pct": 0.3,
+     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4709131.png",
      "moved": true
     }
    ],
@@ -52117,7 +52092,7 @@
     "size": {
      "height": {
       "label": "Rotation Height (in, minutes-weighted)",
-      "value": 78.2299,
+      "value": 78.2551,
       "better": "neutral",
       "rank": 22,
       "of": 30,
@@ -52125,7 +52100,7 @@
      },
      "weight": {
       "label": "Rotation Weight (lb, minutes-weighted)",
-      "value": 218.1957,
+      "value": 218.3634,
       "better": "neutral",
       "rank": 14,
       "of": 30,
@@ -52133,7 +52108,7 @@
      },
      "age": {
       "label": "Rotation Age (minutes-weighted)",
-      "value": 26.1976,
+      "value": 26.2426,
       "better": "neutral",
       "rank": 15,
       "of": 30,
@@ -53843,15 +53818,6 @@
    },
    "home_injuries": [
     {
-     "player_id": "4594327",
-     "player_name": "Keegan Murray",
-     "status": "Out",
-     "detail": "Left Ankle",
-     "comment": "Murray (ankle) is questionable for Sunday's game against the Heat.",
-     "date": "2026-11-08T01:30Z",
-     "return_date": "2026-11-08"
-    },
-    {
      "player_id": "4898371",
      "player_name": "Maxime Raynaud",
      "status": "Out",
@@ -53872,5 +53838,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-08T18:47:05+00:00"
+ "published_at_utc": "2026-11-08T23:39:15+00:00"
 }
