@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-08",
- "generated_at_utc": "2026-11-08T09:00:58+00:00",
+ "generated_at_utc": "2026-11-08T16:41:54+00:00",
  "data_through_utc": "2026-11-08T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -6602,7 +6602,7 @@
       "player_name": "Norman Powell",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/2595516.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 28.9,
       "ppg": 19.2,
       "height_in": 76.0,
@@ -7844,6 +7844,15 @@
     "altitude": false
    },
    "home_injuries": [
+    {
+     "player_id": "2595516",
+     "player_name": "Norman Powell",
+     "status": "Day-To-Day",
+     "detail": "Right Shoulder Inflammation",
+     "comment": "Powell (shoulder) is listed as questionable for Sunday's game against the 76ers.",
+     "date": "2026-11-08T15:07Z",
+     "return_date": "2026-11-08"
+    },
     {
      "player_id": "5105555",
      "player_name": "Tobe Awaka",
@@ -15528,39 +15537,21 @@
    },
    "home_injuries": [
     {
+     "player_id": "4433621",
+     "player_name": "Jalen Duren",
+     "status": "Out",
+     "detail": "Right Hamstring Strain",
+     "comment": "Duren (hamstring) has begun on-court activity and will be re-evaluated in two weeks, Hunter Patterson of The Athletic reports.",
+     "date": "2026-11-08T16:05Z",
+     "return_date": "2026-11-24"
+    },
+    {
      "player_id": "4395702",
      "player_name": "Isaiah Joe",
      "status": "Out",
      "detail": "Right Hip Bruise",
      "comment": "Joe (hip) has been ruled out for Sunday's game against the Lakers.",
      "date": "2026-11-07T21:59Z",
-     "return_date": "2026-11-09"
-    },
-    {
-     "player_id": "5107818",
-     "player_name": "Isaac Jones",
-     "status": "Day-To-Day",
-     "detail": "Not Injury Related",
-     "comment": "Jones posted 18 points (6-14 FG, 0-3 3Pt, 3-3 FT), 10 rebounds, an assist, two steals and two blocks in Wednesday's 100-88 Summer League loss to the Suns.",
-     "date": "2026-11-07T21:57Z",
-     "return_date": "2026-11-08"
-    },
-    {
-     "player_id": "4397449",
-     "player_name": "Elijah Harkless",
-     "status": "Day-To-Day",
-     "detail": "Not Injury Related",
-     "comment": "Harkless signed a two-way contract with the Pistons, Keith Smith of Spotrac.com reports.",
-     "date": "2026-11-07T21:57Z",
-     "return_date": "2026-11-08"
-    },
-    {
-     "player_id": "4433621",
-     "player_name": "Jalen Duren",
-     "status": "Out",
-     "detail": "Right Hamstring Strain",
-     "comment": "Duren will be re-evaluated in two weeks due to a right hamstring strain, Eric Vincent of ClutchPoints.com reports.",
-     "date": "2026-10-25T14:56Z",
      "return_date": "2026-11-09"
     }
    ]
@@ -17993,7 +17984,7 @@
       "player_name": "Keyonte George",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4433627.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 32.3,
       "ppg": 21.3,
       "height_in": 77.0,
@@ -19477,6 +19468,15 @@
     "altitude": false
    },
    "away_injuries": [
+    {
+     "player_id": "4433627",
+     "player_name": "Keyonte George",
+     "status": "Day-To-Day",
+     "detail": "Illness",
+     "comment": "George (illness) has been downgraded to questionable for Sunday's game against Minnesota.",
+     "date": "2026-11-08T16:20Z",
+     "return_date": "2026-11-08"
+    },
     {
      "player_id": "4066336",
      "player_name": "Lauri Markkanen",
@@ -27208,6 +27208,15 @@
     "altitude": false
    },
    "away_injuries": [
+    {
+     "player_id": "4702670",
+     "player_name": "Grant Nelson",
+     "status": "Day-To-Day",
+     "detail": "Left Knee",
+     "comment": "Nelson signed a two-way contract with the Nets on Friday, Michael Scotto of HoopsHype.com reports.",
+     "date": "2026-11-08T16:21Z",
+     "return_date": "2026-11-10"
+    },
     {
      "player_id": "5101761",
      "player_name": "Mikel Brown Jr.",
@@ -53863,5 +53872,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-08T13:14:34+00:00"
+ "published_at_utc": "2026-11-08T18:47:05+00:00"
 }
