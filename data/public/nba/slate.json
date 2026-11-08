@@ -3,8 +3,8 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-07",
- "generated_at_utc": "2026-11-07T21:52:42+00:00",
- "data_through_utc": "2026-11-07T03:00Z",
+ "generated_at_utc": "2026-11-08T01:28:10+00:00",
+ "data_through_utc": "2026-11-07T22:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
   "stats_nba_as_of": "2026-11-07T03:30:13+00:00",
@@ -121,8 +121,8 @@
    "id": "401909938",
    "sport": "nba",
    "season": 2027,
-   "game_state": "live",
-   "status_detail": "7:23 - 4th",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-11-07T22:00Z",
    "away": "DEN",
    "home": "IND",
@@ -132,12 +132,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/ind.png",
    "away_color": "#0e2240",
    "home_color": "#002d62",
-   "away_record": "4-3",
-   "home_record": "3-6",
-   "away_split_record": "2-1",
-   "home_split_record": "0-4",
-   "away_score": 102,
-   "home_score": 92,
+   "away_record": "5-3",
+   "home_record": "3-7",
+   "away_split_record": "3-1",
+   "home_split_record": "0-5",
+   "away_score": 114,
+   "home_score": 102,
    "venue": "Arena CDMX",
    "venue_city": "Mexico City",
    "broadcast": "NBA TV / DAZN IND",
@@ -145,12 +145,12 @@
    "away_form": {
     "source": "espn-box",
     "season": 2027,
-    "games": 7,
-    "record": "4-3",
+    "games": 8,
+    "record": "5-3",
     "rates": {
      "off_rtg": {
       "label": "Points per 100 possessions",
-      "value": 114.6587,
+      "value": 114.6167,
       "better": "high",
       "rank": 5,
       "of": 30,
@@ -158,15 +158,15 @@
      },
      "def_rtg": {
       "label": "Points allowed per 100 possessions",
-      "value": 113.9492,
+      "value": 112.5034,
       "better": "low",
-      "rank": 24,
+      "rank": 23,
       "of": 30,
       "format": "num"
      },
      "off_ppg": {
       "label": "Points per game",
-      "value": 115.4286,
+      "value": 115.25,
       "better": "high",
       "rank": 13,
       "of": 30,
@@ -174,111 +174,111 @@
      },
      "def_ppg": {
       "label": "Points allowed per game",
-      "value": 114.7143,
+      "value": 113.125,
       "better": "low",
-      "rank": 20,
+      "rank": 17,
       "of": 30,
       "format": "num"
      },
      "off_efg": {
       "label": "Effective field-goal rate",
-      "value": 0.5612,
+      "value": 0.554,
       "better": "high",
-      "rank": 4,
+      "rank": 5,
       "of": 30,
       "format": "pct"
      },
      "def_efg": {
       "label": "Effective field-goal rate allowed",
-      "value": 0.5452,
+      "value": 0.5429,
       "better": "low",
-      "rank": 20,
+      "rank": 19,
       "of": 30,
       "format": "pct"
      },
      "off_tov": {
       "label": "Turnover rate",
-      "value": 0.1561,
+      "value": 0.143,
       "better": "low",
-      "rank": 17,
+      "rank": 7,
       "of": 30,
       "format": "pct"
      },
      "def_tov": {
       "label": "Turnover rate forced",
-      "value": 0.1618,
+      "value": 0.1541,
       "better": "high",
-      "rank": 9,
+      "rank": 15,
       "of": 30,
       "format": "pct"
      },
      "off_orb": {
       "label": "Offensive rebound rate",
-      "value": 0.2676,
+      "value": 0.256,
       "better": "high",
-      "rank": 16,
+      "rank": 20,
       "of": 30,
       "format": "pct"
      },
      "def_orb": {
       "label": "Offensive rebound rate allowed",
-      "value": 0.3109,
+      "value": 0.2861,
       "better": "low",
-      "rank": 26,
+      "rank": 23,
       "of": 30,
       "format": "pct"
      },
      "off_ftr": {
       "label": "Free throws made per field-goal attempt",
-      "value": 0.2707,
+      "value": 0.2559,
       "better": "high",
-      "rank": 5,
+      "rank": 6,
       "of": 30,
       "format": "num2"
      },
      "def_ftr": {
       "label": "Free throws allowed per field-goal attempt",
-      "value": 0.1823,
+      "value": 0.166,
       "better": "low",
-      "rank": 4,
+      "rank": 1,
       "of": 30,
       "format": "num2"
      },
      "off_three_rate": {
       "label": "Share of shots from three",
-      "value": 0.3845,
+      "value": 0.3817,
       "better": "neutral",
-      "rank": 25,
+      "rank": 26,
       "of": 30,
       "format": "pct"
      },
      "def_three_rate": {
       "label": "Opponent share of shots from three",
-      "value": 0.4311,
+      "value": 0.4426,
       "better": "neutral",
-      "rank": 14,
+      "rank": 8,
       "of": 30,
       "format": "pct"
      },
      "off_three_pct": {
       "label": "Three-point rate made",
-      "value": 0.3722,
+      "value": 0.3605,
       "better": "high",
-      "rank": 9,
+      "rank": 12,
       "of": 30,
       "format": "pct"
      },
      "def_three_pct": {
       "label": "Three-point rate allowed",
-      "value": 0.3529,
+      "value": 0.3469,
       "better": "low",
-      "rank": 18,
+      "rank": 16,
       "of": 30,
       "format": "pct"
      },
      "off_two_pct": {
       "label": "Two-point rate made",
-      "value": 0.563,
+      "value": 0.5622,
       "better": "high",
       "rank": 6,
       "of": 30,
@@ -286,15 +286,15 @@
      },
      "def_two_pct": {
       "label": "Two-point rate allowed",
-      "value": 0.5571,
+      "value": 0.5608,
       "better": "low",
-      "rank": 21,
+      "rank": 23,
       "of": 30,
       "format": "pct"
      },
      "off_ft_pct": {
       "label": "Free-throw rate made",
-      "value": 0.8093,
+      "value": 0.8122,
       "better": "high",
       "rank": 8,
       "of": 30,
@@ -302,7 +302,7 @@
      },
      "def_ft_pct": {
       "label": "Opponent free-throw rate",
-      "value": 0.8156,
+      "value": 0.8108,
       "better": "low",
       "rank": 27,
       "of": 30,
@@ -310,7 +310,7 @@
      },
      "off_ast_rate": {
       "label": "Assisted field goals",
-      "value": 0.6796,
+      "value": 0.6768,
       "better": "high",
       "rank": 7,
       "of": 30,
@@ -318,7 +318,7 @@
      },
      "def_ast_rate": {
       "label": "Opponent assisted field goals",
-      "value": 0.6723,
+      "value": 0.6795,
       "better": "low",
       "rank": 24,
       "of": 30,
@@ -326,15 +326,15 @@
      },
      "net_rtg": {
       "label": "Net points per 100 possessions",
-      "value": 0.7095,
+      "value": 2.1133,
       "better": "high",
-      "rank": 18,
+      "rank": 16,
       "of": 30,
       "format": "signed"
      },
      "pace": {
       "label": "Possessions per game",
-      "value": 100.6714,
+      "value": 100.5525,
       "better": "neutral",
       "rank": 26,
       "of": 30,
@@ -546,6 +546,18 @@
    "away_b2b": false,
    "away_game_log": [
     {
+     "date": "2026-11-07",
+     "event_id": "401909938",
+     "opponent": "IND",
+     "home": false,
+     "result": "W",
+     "score": "114-102",
+     "margin": 12,
+     "possessions": 99.7,
+     "off_rtg": 114.3,
+     "def_rtg": 102.3
+    },
+    {
      "date": "2026-11-05",
      "event_id": "401909931",
      "opponent": "TOR",
@@ -635,18 +647,18 @@
      "player_id": "3936299",
      "player_name": "Jamal Murray",
      "position": "G",
-     "games": 7,
-     "starts": 7,
-     "mpg": 36.9,
-     "ppg": 25.4,
-     "rpg": 5.4,
-     "apg": 5.9,
-     "spg": 1.1,
-     "bpg": 0.7,
-     "tpg": 2.9,
-     "three_pm": 4.1,
-     "ts_pct": 0.651,
-     "three_pct": 0.509,
+     "games": 8,
+     "starts": 8,
+     "mpg": 36.5,
+     "ppg": 24.2,
+     "rpg": 5.5,
+     "apg": 6.1,
+     "spg": 1.0,
+     "bpg": 0.6,
+     "tpg": 2.6,
+     "three_pm": 3.9,
+     "ts_pct": 0.644,
+     "three_pct": 0.492,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3936299.png",
      "moved": false
     },
@@ -654,18 +666,18 @@
      "player_id": "3112335",
      "player_name": "Nikola Jokic",
      "position": "C",
-     "games": 7,
-     "starts": 7,
+     "games": 8,
+     "starts": 8,
      "mpg": 35.9,
-     "ppg": 23.4,
-     "rpg": 9.7,
-     "apg": 9.3,
-     "spg": 2.1,
+     "ppg": 22.9,
+     "rpg": 10.1,
+     "apg": 9.1,
+     "spg": 2.0,
      "bpg": 1.1,
-     "tpg": 3.6,
+     "tpg": 3.2,
      "three_pm": 1.0,
-     "ts_pct": 0.579,
-     "three_pct": 0.219,
+     "ts_pct": 0.56,
+     "three_pct": 0.229,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3112335.png",
      "moved": false
     },
@@ -673,18 +685,18 @@
      "player_id": "4431767",
      "player_name": "Christian Braun",
      "position": "G",
-     "games": 7,
-     "starts": 7,
-     "mpg": 35.0,
-     "ppg": 14.6,
+     "games": 8,
+     "starts": 8,
+     "mpg": 34.2,
+     "ppg": 13.5,
      "rpg": 3.9,
-     "apg": 2.3,
-     "spg": 2.1,
+     "apg": 2.1,
+     "spg": 2.0,
      "bpg": 0.1,
-     "tpg": 1.6,
-     "three_pm": 2.0,
-     "ts_pct": 0.669,
-     "three_pct": 0.424,
+     "tpg": 1.4,
+     "three_pm": 1.8,
+     "ts_pct": 0.634,
+     "three_pct": 0.378,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4431767.png",
      "moved": false
     },
@@ -692,132 +704,132 @@
      "player_id": "3064290",
      "player_name": "Aaron Gordon",
      "position": "F",
-     "games": 7,
-     "starts": 7,
-     "mpg": 29.4,
-     "ppg": 12.3,
-     "rpg": 5.3,
-     "apg": 2.4,
-     "spg": 1.3,
+     "games": 8,
+     "starts": 8,
+     "mpg": 29.1,
+     "ppg": 12.2,
+     "rpg": 5.2,
+     "apg": 2.1,
+     "spg": 1.1,
      "bpg": 0.4,
-     "tpg": 1.4,
-     "three_pm": 1.4,
-     "ts_pct": 0.579,
-     "three_pct": 0.357,
+     "tpg": 1.2,
+     "three_pm": 1.2,
+     "ts_pct": 0.55,
+     "three_pct": 0.294,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3064290.png",
-     "moved": false
-    },
-    {
-     "player_id": "4698719",
-     "player_name": "Trevon Brazile",
-     "position": "F",
-     "games": 7,
-     "starts": 1,
-     "mpg": 22.1,
-     "ppg": 8.0,
-     "rpg": 6.4,
-     "apg": 0.4,
-     "spg": 0.9,
-     "bpg": 0.6,
-     "tpg": 0.9,
-     "three_pm": 0.9,
-     "ts_pct": 0.624,
-     "three_pct": 0.316,
-     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4698719.png",
      "moved": false
     },
     {
      "player_id": "3978",
      "player_name": "DeMar DeRozan",
      "position": "G",
-     "games": 6,
+     "games": 7,
      "starts": 0,
-     "mpg": 25.2,
+     "mpg": 24.7,
      "ppg": 10.7,
-     "rpg": 2.0,
-     "apg": 2.7,
-     "spg": 1.0,
-     "bpg": 0.2,
-     "tpg": 1.5,
+     "rpg": 1.9,
+     "apg": 3.0,
+     "spg": 0.9,
+     "bpg": 0.1,
+     "tpg": 1.3,
      "three_pm": 0.3,
-     "ts_pct": 0.512,
-     "three_pct": 0.222,
+     "ts_pct": 0.518,
+     "three_pct": 0.182,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3978.png",
+     "moved": false
+    },
+    {
+     "player_id": "4698719",
+     "player_name": "Trevon Brazile",
+     "position": "F",
+     "games": 8,
+     "starts": 1,
+     "mpg": 21.1,
+     "ppg": 7.4,
+     "rpg": 6.1,
+     "apg": 0.6,
+     "spg": 0.8,
+     "bpg": 0.5,
+     "tpg": 0.8,
+     "three_pm": 0.9,
+     "ts_pct": 0.617,
+     "three_pct": 0.333,
+     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4698719.png",
      "moved": false
     },
     {
      "player_id": "3138196",
      "player_name": "Cameron Johnson",
      "position": "F",
-     "games": 4,
-     "starts": 4,
-     "mpg": 27.2,
-     "ppg": 9.0,
+     "games": 5,
+     "starts": 5,
+     "mpg": 27.6,
+     "ppg": 10.8,
      "rpg": 4.2,
-     "apg": 2.0,
+     "apg": 1.8,
      "spg": 1.0,
      "bpg": 0.0,
-     "tpg": 1.5,
+     "tpg": 1.4,
      "three_pm": 2.0,
-     "ts_pct": 0.549,
+     "ts_pct": 0.603,
      "three_pct": 0.4,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3138196.png",
-     "moved": false
-    },
-    {
-     "player_id": "4565698",
-     "player_name": "Bryce Hopkins",
-     "position": "F",
-     "games": 5,
-     "starts": 2,
-     "mpg": 18.8,
-     "ppg": 6.6,
-     "rpg": 2.6,
-     "apg": 0.6,
-     "spg": 0.4,
-     "bpg": 0.0,
-     "tpg": 1.0,
-     "three_pm": 0.4,
-     "ts_pct": 0.737,
-     "three_pct": 0.4,
-     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4565698.png",
      "moved": false
     },
     {
      "player_id": "4277848",
      "player_name": "Marvin Bagley III",
      "position": "F",
-     "games": 7,
+     "games": 8,
      "starts": 0,
      "mpg": 12.4,
-     "ppg": 5.4,
-     "rpg": 3.6,
-     "apg": 0.7,
-     "spg": 0.3,
+     "ppg": 6.0,
+     "rpg": 3.5,
+     "apg": 0.6,
+     "spg": 0.2,
      "bpg": 0.4,
-     "tpg": 0.7,
+     "tpg": 0.6,
      "three_pm": 0.0,
-     "ts_pct": 0.61,
+     "ts_pct": 0.617,
      "three_pct": 0.0,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4277848.png",
+     "moved": false
+    },
+    {
+     "player_id": "4565698",
+     "player_name": "Bryce Hopkins",
+     "position": "F",
+     "games": 6,
+     "starts": 2,
+     "mpg": 16.2,
+     "ppg": 6.0,
+     "rpg": 2.3,
+     "apg": 0.5,
+     "spg": 0.3,
+     "bpg": 0.0,
+     "tpg": 0.8,
+     "three_pm": 0.3,
+     "ts_pct": 0.725,
+     "three_pct": 0.4,
+     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4565698.png",
      "moved": false
     },
     {
      "player_id": "3135046",
      "player_name": "Tyus Jones",
      "position": "G",
-     "games": 7,
+     "games": 8,
      "starts": 0,
-     "mpg": 11.0,
+     "mpg": 11.2,
      "ppg": 2.9,
-     "rpg": 0.1,
-     "apg": 1.7,
-     "spg": 0.7,
+     "rpg": 0.6,
+     "apg": 2.0,
+     "spg": 0.8,
      "bpg": 0.1,
      "tpg": 0.4,
-     "three_pm": 0.3,
-     "ts_pct": 0.563,
-     "three_pct": 0.286,
+     "three_pm": 0.4,
+     "ts_pct": 0.528,
+     "three_pct": 0.3,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3135046.png",
      "moved": false
     },
@@ -841,22 +853,22 @@
      "moved": false
     },
     {
-     "player_id": "5105592",
-     "player_name": "Cam Whitmore",
+     "player_id": "4592427",
+     "player_name": "Spencer Jones",
      "position": "F",
-     "games": 2,
+     "games": 1,
      "starts": 0,
-     "mpg": 7.5,
-     "ppg": 4.0,
-     "rpg": 1.0,
-     "apg": 0.5,
-     "spg": 0.5,
-     "bpg": 0.0,
-     "tpg": 0.5,
-     "three_pm": 0.0,
-     "ts_pct": 0.538,
-     "three_pct": 0.0,
-     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5105592.png",
+     "mpg": 21.0,
+     "ppg": 13.0,
+     "rpg": 6.0,
+     "apg": 0.0,
+     "spg": 0.0,
+     "bpg": 1.0,
+     "tpg": 0.0,
+     "three_pm": 3.0,
+     "ts_pct": 1.083,
+     "three_pct": 1.0,
+     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4592427.png",
      "moved": false
     }
    ],
@@ -1099,7 +1111,7 @@
        "label": "At The Rim",
        "share": {
         "label": "At The Rim Share Of Shots",
-        "value": 0.2694,
+        "value": 0.2696,
         "better": "neutral",
         "rank": 19,
         "of": 30,
@@ -1113,35 +1125,35 @@
         "of": 30,
         "format": "pct"
        },
-       "attempts": 156,
-       "made": 108
+       "attempts": 182,
+       "made": 126
       },
       "paint": {
        "label": "Paint (Non-RA)",
        "share": {
         "label": "Paint (Non-RA) Share Of Shots",
-        "value": 0.2003,
+        "value": 0.2044,
         "better": "neutral",
-        "rank": 10,
+        "rank": 9,
         "of": 30,
         "format": "pct"
        },
        "fg": {
         "label": "Paint (Non-RA) FG%",
-        "value": 0.5172,
+        "value": 0.5,
         "better": "high",
         "rank": 4,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 116,
-       "made": 60
+       "attempts": 138,
+       "made": 69
       },
       "mid": {
        "label": "Mid-Range",
        "share": {
         "label": "Mid-Range Share Of Shots",
-        "value": 0.1451,
+        "value": 0.1437,
         "better": "neutral",
         "rank": 2,
         "of": 30,
@@ -1149,41 +1161,41 @@
        },
        "fg": {
         "label": "Mid-Range FG%",
-        "value": 0.381,
+        "value": 0.4021,
         "better": "high",
-        "rank": 17,
+        "rank": 15,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 84,
-       "made": 32
+       "attempts": 97,
+       "made": 39
       },
       "corner3": {
        "label": "Corner Three",
        "share": {
         "label": "Corner Three Share Of Shots",
-        "value": 0.0933,
+        "value": 0.0978,
         "better": "neutral",
-        "rank": 12,
+        "rank": 9,
         "of": 30,
         "format": "pct"
        },
        "fg": {
         "label": "Corner Three FG%",
-        "value": 0.3889,
+        "value": 0.3485,
         "better": "high",
-        "rank": 8,
+        "rank": 16,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 54,
-       "made": 21
+       "attempts": 66,
+       "made": 23
       },
       "above3": {
        "label": "Above-The-Break Three",
        "share": {
         "label": "Above-The-Break Three Share Of Shots",
-        "value": 0.2919,
+        "value": 0.2844,
         "better": "neutral",
         "rank": 29,
         "of": 30,
@@ -1191,14 +1203,14 @@
        },
        "fg": {
         "label": "Above-The-Break Three FG%",
-        "value": 0.3669,
+        "value": 0.3646,
         "better": "high",
         "rank": 11,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 169,
-       "made": 62
+       "attempts": 192,
+       "made": 70
       }
      },
      "defense": {
@@ -1206,106 +1218,106 @@
        "label": "At The Rim",
        "share": {
         "label": "At The Rim Share Of Shots Allowed",
-        "value": 0.3333,
+        "value": 0.3213,
         "better": "neutral",
-        "rank": 5,
+        "rank": 6,
         "of": 30,
         "format": "pct"
        },
        "fg": {
         "label": "At The Rim FG% Allowed",
-        "value": 0.6619,
+        "value": 0.681,
         "better": "low",
-        "rank": 18,
+        "rank": 23,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 210,
-       "made": 139
+       "attempts": 232,
+       "made": 158
       },
       "paint": {
        "label": "Paint (Non-RA)",
        "share": {
         "label": "Paint (Non-RA) Share Of Shots Allowed",
-        "value": 0.1667,
+        "value": 0.1593,
+        "better": "neutral",
+        "rank": 26,
+        "of": 30,
+        "format": "pct"
+       },
+       "fg": {
+        "label": "Paint (Non-RA) FG% Allowed",
+        "value": 0.3739,
+        "better": "low",
+        "rank": 5,
+        "of": 30,
+        "format": "pct"
+       },
+       "attempts": 115,
+       "made": 43
+      },
+      "mid": {
+       "label": "Mid-Range",
+       "share": {
+        "label": "Mid-Range Share Of Shots Allowed",
+        "value": 0.0776,
         "better": "neutral",
         "rank": 25,
         "of": 30,
         "format": "pct"
        },
        "fg": {
-        "label": "Paint (Non-RA) FG% Allowed",
-        "value": 0.381,
-        "better": "low",
-        "rank": 6,
-        "of": 30,
-        "format": "pct"
-       },
-       "attempts": 105,
-       "made": 40
-      },
-      "mid": {
-       "label": "Mid-Range",
-       "share": {
-        "label": "Mid-Range Share Of Shots Allowed",
-        "value": 0.0698,
-        "better": "neutral",
-        "rank": 27,
-        "of": 30,
-        "format": "pct"
-       },
-       "fg": {
         "label": "Mid-Range FG% Allowed",
-        "value": 0.4545,
+        "value": 0.4286,
         "better": "low",
-        "rank": 23,
+        "rank": 18,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 44,
-       "made": 20
+       "attempts": 56,
+       "made": 24
       },
       "corner3": {
        "label": "Corner Three",
        "share": {
         "label": "Corner Three Share Of Shots Allowed",
-        "value": 0.0952,
+        "value": 0.1053,
         "better": "neutral",
-        "rank": 11,
+        "rank": 7,
         "of": 30,
         "format": "pct"
        },
        "fg": {
         "label": "Corner Three FG% Allowed",
-        "value": 0.3167,
+        "value": 0.3421,
         "better": "low",
-        "rank": 9,
+        "rank": 16,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 60,
-       "made": 19
+       "attempts": 76,
+       "made": 26
       },
       "above3": {
        "label": "Above-The-Break Three",
        "share": {
         "label": "Above-The-Break Three Share Of Shots Allowed",
-        "value": 0.3349,
+        "value": 0.3366,
         "better": "neutral",
-        "rank": 20,
+        "rank": 19,
         "of": 30,
         "format": "pct"
        },
        "fg": {
         "label": "Above-The-Break Three FG% Allowed",
-        "value": 0.3649,
+        "value": 0.3498,
         "better": "low",
-        "rank": 21,
+        "rank": 19,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 211,
-       "made": 77
+       "attempts": 243,
+       "made": 85
       }
      }
     },
@@ -1314,7 +1326,7 @@
       "label": "Drives",
       "share": {
        "label": "Drives Share Of Shots",
-       "value": 0.1587,
+       "value": 0.1628,
        "better": "neutral",
        "rank": 23,
        "of": 30,
@@ -1322,9 +1334,9 @@
       },
       "efg": {
        "label": "Drives Effective FG%",
-       "value": 0.5914,
+       "value": 0.6126,
        "better": "high",
-       "rank": 13,
+       "rank": 7,
        "of": 30,
        "format": "pct"
       }
@@ -1333,17 +1345,17 @@
       "label": "Rim Finishes",
       "share": {
        "label": "Rim Finishes Share Of Shots",
-       "value": 0.0392,
+       "value": 0.0425,
        "better": "neutral",
-       "rank": 6,
+       "rank": 2,
        "of": 30,
        "format": "pct"
       },
       "efg": {
        "label": "Rim Finishes Effective FG%",
-       "value": 0.4783,
+       "value": 0.5172,
        "better": "high",
-       "rank": 25,
+       "rank": 23,
        "of": 26,
        "format": "pct"
       }
@@ -1352,17 +1364,17 @@
       "label": "Cuts",
       "share": {
        "label": "Cuts Share Of Shots",
-       "value": 0.0597,
+       "value": 0.0557,
        "better": "neutral",
-       "rank": 13,
+       "rank": 17,
        "of": 30,
        "format": "pct"
       },
       "efg": {
        "label": "Cuts Effective FG%",
-       "value": 0.8,
+       "value": 0.7895,
        "better": "high",
-       "rank": 9,
+       "rank": 11,
        "of": 30,
        "format": "pct"
       }
@@ -1371,17 +1383,17 @@
       "label": "Putbacks",
       "share": {
        "label": "Putbacks Share Of Shots",
-       "value": 0.0461,
+       "value": 0.0455,
        "better": "neutral",
-       "rank": 18,
+       "rank": 19,
        "of": 30,
        "format": "pct"
       },
       "efg": {
        "label": "Putbacks Effective FG%",
-       "value": 0.7778,
+       "value": 0.7419,
        "better": "high",
-       "rank": 1,
+       "rank": 2,
        "of": 30,
        "format": "pct"
       }
@@ -1390,7 +1402,7 @@
       "label": "Post Moves",
       "share": {
        "label": "Post Moves Share Of Shots",
-       "value": 0.0717,
+       "value": 0.0689,
        "better": "neutral",
        "rank": 4,
        "of": 30,
@@ -1398,7 +1410,7 @@
       },
       "efg": {
        "label": "Post Moves Effective FG%",
-       "value": 0.4048,
+       "value": 0.4043,
        "better": "high",
        "rank": 18,
        "of": 30,
@@ -1409,7 +1421,7 @@
       "label": "Floaters",
       "share": {
        "label": "Floaters Share Of Shots",
-       "value": 0.0887,
+       "value": 0.0865,
        "better": "neutral",
        "rank": 13,
        "of": 30,
@@ -1417,7 +1429,7 @@
       },
       "efg": {
        "label": "Floaters Effective FG%",
-       "value": 0.5769,
+       "value": 0.5763,
        "better": "high",
        "rank": 2,
        "of": 30,
@@ -1428,17 +1440,17 @@
       "label": "Pull-Ups",
       "share": {
        "label": "Pull-Ups Share Of Shots",
-       "value": 0.1041,
+       "value": 0.1129,
        "better": "neutral",
-       "rank": 29,
+       "rank": 28,
        "of": 30,
        "format": "pct"
       },
       "efg": {
        "label": "Pull-Ups Effective FG%",
-       "value": 0.4754,
+       "value": 0.4286,
        "better": "high",
-       "rank": 14,
+       "rank": 19,
        "of": 30,
        "format": "pct"
       }
@@ -1447,7 +1459,7 @@
       "label": "Step-Backs",
       "share": {
        "label": "Step-Backs Share Of Shots",
-       "value": 0.0631,
+       "value": 0.0601,
        "better": "neutral",
        "rank": 8,
        "of": 30,
@@ -1455,9 +1467,9 @@
       },
       "efg": {
        "label": "Step-Backs Effective FG%",
-       "value": 0.4189,
+       "value": 0.4878,
        "better": "high",
-       "rank": 24,
+       "rank": 15,
        "of": 28,
        "format": "pct"
       }
@@ -1466,7 +1478,7 @@
       "label": "Other Jumpers",
       "share": {
        "label": "Other Jumpers Share Of Shots",
-       "value": 0.3686,
+       "value": 0.3651,
        "better": "neutral",
        "rank": 17,
        "of": 30,
@@ -1474,9 +1486,9 @@
       },
       "efg": {
        "label": "Other Jumpers Effective FG%",
-       "value": 0.5463,
+       "value": 0.5281,
        "better": "high",
-       "rank": 9,
+       "rank": 12,
        "of": 30,
        "format": "pct"
       }
@@ -1485,7 +1497,7 @@
       "label": "Transition",
       "share": {
        "label": "Transition Share Of Shots",
-       "value": 0.1075,
+       "value": 0.107,
        "better": "neutral",
        "rank": 28,
        "of": 30,
@@ -1493,7 +1505,7 @@
       },
       "efg": {
        "label": "Transition Effective FG%",
-       "value": 0.5952,
+       "value": 0.5959,
        "better": "high",
        "rank": 18,
        "of": 30,
@@ -1504,9 +1516,9 @@
       "label": "Assisted",
       "share": {
        "label": "Share Of Made Shots Assisted",
-       "value": 0.6784,
+       "value": 0.6758,
        "better": "neutral",
-       "rank": 8,
+       "rank": 9,
        "of": 30,
        "format": "pct"
       },
@@ -2090,15 +2102,15 @@
     "size": {
      "height": {
       "label": "Rotation Height (in, minutes-weighted)",
-      "value": 79.1822,
+      "value": 79.1797,
       "better": "neutral",
-      "rank": 8,
+      "rank": 7,
       "of": 30,
       "format": "num"
      },
      "weight": {
       "label": "Rotation Weight (lb, minutes-weighted)",
-      "value": 227.8903,
+      "value": 227.9449,
       "better": "neutral",
       "rank": 2,
       "of": 30,
@@ -2106,7 +2118,7 @@
      },
      "age": {
       "label": "Rotation Age (minutes-weighted)",
-      "value": 28.555,
+      "value": 28.6125,
       "better": "neutral",
       "rank": 5,
       "of": 30,
@@ -2335,7 +2347,15 @@
       "key": "pace",
       "tag": "Plays Slow",
       "label": "Possessions per game",
-      "value": 100.6714,
+      "value": 100.5525,
+      "rank": 26,
+      "of": 30
+     },
+     {
+      "key": "three_share",
+      "tag": "Avoids The Three",
+      "label": "Share of shots from three",
+      "value": 0.3817,
       "rank": 26,
       "of": 30
      },
@@ -2343,7 +2363,7 @@
       "key": "mid_share",
       "tag": "Mid-Range Heavy",
       "label": "Mid-Range Share Of Shots",
-      "value": 0.1451,
+      "value": 0.1437,
       "rank": 2,
       "of": 30
      },
@@ -2361,14 +2381,6 @@
       "label": "Transition Frequency",
       "value": 0.152,
       "rank": 26,
-      "of": 30
-     },
-     {
-      "key": "rim_allowed",
-      "tag": "Concedes The Rim",
-      "label": "At The Rim Share Of Shots Allowed",
-      "value": 0.3333,
-      "rank": 5,
       "of": 30
      }
     ],
@@ -2433,23 +2445,23 @@
     "regression": {
      "opp_three_luck": {
       "label": "Opponent 3P% Minus League",
-      "value": 0.0047,
+      "value": -0.001,
       "better": "low",
-      "rank": 18,
+      "rank": 16,
       "of": 30,
       "format": "pct"
      },
      "own_three_vs_league": {
       "label": "Own 3P% Minus League",
-      "value": 0.024,
+      "value": 0.0126,
       "better": "high",
-      "rank": 9,
+      "rank": 12,
       "of": 30,
       "format": "pct"
      },
      "opp_ft_luck": {
       "label": "Opponent FT% Minus League",
-      "value": 0.0401,
+      "value": 0.0352,
       "better": "low",
       "rank": 27,
       "of": 30,
@@ -2457,13 +2469,13 @@
      },
      "wins_over_pythag": {
       "label": "Wins Above Point-Differential Wins",
-      "value": 0.348,
+      "value": 0.4818,
       "better": "high",
       "rank": 5,
       "of": 30,
       "format": "signed"
      },
-     "games": 7,
+     "games": 8,
      "close_record": "0-0"
     },
     "regression_basis": "2026-27",
@@ -2474,8 +2486,8 @@
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3936299.png",
       "status": null,
-      "mpg": 36.9,
-      "ppg": 25.4,
+      "mpg": 36.5,
+      "ppg": 24.2,
       "height_in": 76.0,
       "height": "6-4",
       "weight_lb": 215.0,
@@ -2491,37 +2503,37 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 3.29,
-        "share": 0.1983,
-        "fg": 0.6087
+        "fga": 3.12,
+        "share": 0.1938,
+        "fg": 0.64
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
-        "fga": 2.29,
-        "share": 0.1379,
-        "fg": 0.5
+        "fga": 2.38,
+        "share": 0.1473,
+        "fg": 0.4737
        },
        {
         "zone": "mid",
         "label": "Mid-Range",
-        "fga": 2.86,
-        "share": 0.1724,
-        "fg": 0.2
+        "fga": 2.75,
+        "share": 0.1705,
+        "fg": 0.2273
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 1.0,
-        "share": 0.0603,
+        "fga": 0.88,
+        "share": 0.0543,
         "fg": 0.4286
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
-        "fga": 7.14,
-        "share": 0.431,
-        "fg": 0.52
+        "fga": 7.0,
+        "share": 0.4341,
+        "fg": 0.5
        }
       ],
       "play_types": [
@@ -2626,11 +2638,11 @@
        {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.3284,
-        "fg_off": 0.4328,
-        "diff": -0.1044,
-        "attempts_on": 204,
-        "attempts_off": 67
+        "fg_on": 0.3263,
+        "fg_off": 0.4096,
+        "diff": -0.0834,
+        "attempts_on": 236,
+        "attempts_off": 83
        }
       ]
      },
@@ -2641,7 +2653,7 @@
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3112335.png",
       "status": null,
       "mpg": 35.9,
-      "ppg": 23.4,
+      "ppg": 22.9,
       "height_in": 83.0,
       "height": "6-11",
       "weight_lb": 284.0,
@@ -2657,37 +2669,37 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 4.0,
-        "share": 0.2205,
-        "fg": 0.7857
+        "fga": 4.25,
+        "share": 0.2313,
+        "fg": 0.7353
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
-        "fga": 7.14,
-        "share": 0.3937,
-        "fg": 0.56
+        "fga": 7.12,
+        "share": 0.3878,
+        "fg": 0.5263
        },
        {
         "zone": "mid",
         "label": "Mid-Range",
-        "fga": 2.43,
-        "share": 0.1339,
-        "fg": 0.4118
+        "fga": 2.62,
+        "share": 0.1429,
+        "fg": 0.381
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 0.14,
-        "share": 0.0079,
+        "fga": 0.12,
+        "share": 0.0068,
         "fg": 1.0
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
-        "fga": 4.43,
-        "share": 0.2441,
-        "fg": 0.1935
+        "fga": 4.25,
+        "share": 0.2313,
+        "fg": 0.2059
        }
       ],
       "play_types": [
@@ -2790,13 +2802,22 @@
       },
       "defense_onfloor": [
        {
+        "zone": "rim",
+        "label": "At The Rim",
+        "fg_on": 0.6941,
+        "fg_off": 0.6452,
+        "diff": 0.049,
+        "attempts_on": 170,
+        "attempts_off": 62
+       },
+       {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.3447,
-        "fg_off": 0.3846,
-        "diff": -0.04,
-        "attempts_on": 206,
-        "attempts_off": 65
+        "fg_on": 0.3347,
+        "fg_off": 0.3896,
+        "diff": -0.0549,
+        "attempts_on": 242,
+        "attempts_off": 77
        }
       ]
      },
@@ -2806,8 +2827,8 @@
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4431767.png",
       "status": null,
-      "mpg": 35.0,
-      "ppg": 14.6,
+      "mpg": 34.2,
+      "ppg": 13.5,
       "height_in": 78.0,
       "height": "6-6",
       "weight_lb": 220.0,
@@ -2823,36 +2844,36 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 3.57,
-        "share": 0.3521,
-        "fg": 0.76
+        "fga": 3.38,
+        "share": 0.3418,
+        "fg": 0.7407
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
-        "fga": 1.14,
-        "share": 0.1127,
-        "fg": 0.375
+        "fga": 1.25,
+        "share": 0.1266,
+        "fg": 0.4
        },
        {
         "zone": "mid",
         "label": "Mid-Range",
-        "fga": 0.71,
-        "share": 0.0704,
+        "fga": 0.62,
+        "share": 0.0633,
         "fg": 0.6
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 1.86,
-        "share": 0.1831,
-        "fg": 0.3077
+        "fga": 2.12,
+        "share": 0.2152,
+        "fg": 0.2353
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
-        "fga": 2.86,
-        "share": 0.2817,
+        "fga": 2.5,
+        "share": 0.2532,
         "fg": 0.5
        }
       ],
@@ -2948,13 +2969,22 @@
       },
       "defense_onfloor": [
        {
+        "zone": "rim",
+        "label": "At The Rim",
+        "fg_on": 0.6867,
+        "fg_off": 0.6667,
+        "diff": 0.0201,
+        "attempts_on": 166,
+        "attempts_off": 66
+       },
+       {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.3384,
-        "fg_off": 0.3973,
-        "diff": -0.0589,
-        "attempts_on": 198,
-        "attempts_off": 73
+        "fg_on": 0.3304,
+        "fg_off": 0.3895,
+        "diff": -0.0591,
+        "attempts_on": 224,
+        "attempts_off": 95
        }
       ]
      },
@@ -2964,8 +2994,8 @@
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3064290.png",
       "status": null,
-      "mpg": 29.4,
-      "ppg": 12.3,
+      "mpg": 29.1,
+      "ppg": 12.2,
       "height_in": 80.0,
       "height": "6-8",
       "weight_lb": 235.0,
@@ -2981,37 +3011,37 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 2.29,
-        "share": 0.2581,
-        "fg": 0.625
+        "fga": 2.75,
+        "share": 0.2933,
+        "fg": 0.6364
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
-        "fga": 1.29,
-        "share": 0.1452,
-        "fg": 0.2222
+        "fga": 1.25,
+        "share": 0.1333,
+        "fg": 0.3
        },
        {
         "zone": "mid",
         "label": "Mid-Range",
-        "fga": 1.29,
-        "share": 0.1452,
+        "fga": 1.12,
+        "share": 0.12,
         "fg": 0.4444
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 0.57,
-        "share": 0.0645,
-        "fg": 0.5
+        "fga": 0.88,
+        "share": 0.0933,
+        "fg": 0.2857
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
-        "fga": 3.43,
-        "share": 0.3871,
-        "fg": 0.3333
+        "fga": 3.38,
+        "share": 0.36,
+        "fg": 0.2963
        }
       ],
       "play_types": [
@@ -3108,171 +3138,20 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fg_on": 0.6589,
-        "fg_off": 0.6667,
-        "diff": -0.0078,
-        "attempts_on": 129,
-        "attempts_off": 81
+        "fg_on": 0.6809,
+        "fg_off": 0.6813,
+        "diff": -0.0005,
+        "attempts_on": 141,
+        "attempts_off": 91
        },
        {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.3563,
-        "fg_off": 0.3514,
-        "diff": 0.0049,
-        "attempts_on": 160,
-        "attempts_off": 111
-       }
-      ]
-     },
-     {
-      "player_id": "4698719",
-      "player_name": "Trevon Brazile",
-      "position": "F",
-      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4698719.png",
-      "status": null,
-      "mpg": 22.1,
-      "ppg": 8.0,
-      "height_in": 82.0,
-      "height": "6-10",
-      "weight_lb": 220.0,
-      "age": 23.0,
-      "usage": 0.135,
-      "ts": 0.624,
-      "age_change": {
-       "offense": 0.311,
-       "defense": 0.066,
-       "about": "League history: average change in box impact from this age to the next"
-      },
-      "zones": [
-       {
-        "zone": "rim",
-        "label": "At The Rim",
-        "fga": 2.43,
-        "share": 0.425,
-        "fg": 0.8235
-       },
-       {
-        "zone": "paint",
-        "label": "Paint (Non-RA)",
-        "fga": 0.43,
-        "share": 0.075,
-        "fg": 0.6667
-       },
-       {
-        "zone": "mid",
-        "label": "Mid-Range",
-        "fga": 0.14,
-        "share": 0.025,
-        "fg": 0.0
-       },
-       {
-        "zone": "corner3",
-        "label": "Corner Three",
-        "fga": 1.0,
-        "share": 0.175,
-        "fg": 0.4286
-       },
-       {
-        "zone": "above3",
-        "label": "Above-The-Break Three",
-        "fga": 1.71,
-        "share": 0.3,
-        "fg": 0.25
-       }
-      ],
-      "play_types": [
-       {
-        "play_type": "Spotup",
-        "label": "Spot-Up",
-        "freq": 0.392,
-        "ppp": 0.7,
-        "percentile": 0.141,
-        "poss": 2.9
-       },
-       {
-        "play_type": "Transition",
-        "label": "Transition",
-        "freq": 0.235,
-        "ppp": 1.583,
-        "percentile": 0.956,
-        "poss": 1.7
-       }
-      ],
-      "tracking": {
-       "speed": 4.39,
-       "speed_off": 4.54,
-       "speed_def": 4.24,
-       "miles": 1.6,
-       "drives": 0.9,
-       "drive_fg": 0.333
-      },
-      "defense_zones": [
-       {
-        "zone": "Less Than 6Ft",
-        "label": "Within 6 Ft",
-        "fg_against": 0.667,
-        "normal_fg": 0.57,
-        "diff": 0.097,
-        "attempts_pg": 2.14
-       },
-       {
-        "zone": "Less Than 10Ft",
-        "label": "Within 10 Ft",
-        "fg_against": 0.579,
-        "normal_fg": 0.545,
-        "diff": 0.034,
-        "attempts_pg": 2.71
-       },
-       {
-        "zone": "Greater Than 15Ft",
-        "label": "Beyond 15 Ft",
-        "fg_against": 0.194,
-        "normal_fg": 0.344,
-        "diff": -0.15,
-        "attempts_pg": 5.14
-       },
-       {
-        "zone": "3 Pointers",
-        "label": "Three-Pointers",
-        "fg_against": 0.176,
-        "normal_fg": 0.34,
-        "diff": -0.164,
-        "attempts_pg": 4.86
-       },
-       {
-        "zone": "Overall",
-        "label": "All Shots",
-        "fg_against": 0.333,
-        "normal_fg": 0.45,
-        "diff": -0.117,
-        "attempts_pg": 8.57
-       }
-      ],
-      "three_track_record": {
-       "made": 0,
-       "attempts": 0,
-       "pct": null,
-       "about": "Three-point record over the previous seasons in the box-score cache"
-      },
-      "defense_onfloor": [
-       {
-        "zone": "rim",
-        "label": "At The Rim",
-        "fg_on": 0.6703,
-        "fg_off": 0.6555,
-        "diff": 0.0149,
-        "attempts_on": 91,
-        "attempts_off": 119
-       },
-       {
-        "zone": "three",
-        "label": "Three-Pointers",
-        "fg_on": 0.3175,
-        "fg_off": 0.3862,
-        "diff": -0.0687,
-        "attempts_on": 126,
-        "attempts_off": 145
+        "fg_on": 0.3497,
+        "fg_off": 0.3456,
+        "diff": 0.0041,
+        "attempts_on": 183,
+        "attempts_off": 136
        }
       ]
      },
@@ -3282,7 +3161,7 @@
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3978.png",
       "status": null,
-      "mpg": 25.2,
+      "mpg": 24.7,
       "ppg": 10.7,
       "height_in": 78.0,
       "height": "6-6",
@@ -3299,36 +3178,36 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 1.17,
-        "share": 0.1346,
+        "fga": 1.0,
+        "share": 0.1148,
         "fg": 0.5714
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
         "fga": 2.0,
-        "share": 0.2308,
+        "share": 0.2295,
         "fg": 0.5
        },
        {
         "zone": "mid",
         "label": "Mid-Range",
-        "fga": 4.0,
-        "share": 0.4615,
-        "fg": 0.375
+        "fga": 4.14,
+        "share": 0.4754,
+        "fg": 0.4483
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 1.17,
-        "share": 0.1346,
-        "fg": 0.2857
+        "fga": 1.29,
+        "share": 0.1475,
+        "fg": 0.2222
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
-        "fga": 0.33,
-        "share": 0.0385,
+        "fga": 0.29,
+        "share": 0.0328,
         "fg": 0.0
        }
       ],
@@ -3418,20 +3297,171 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fg_on": 0.6353,
-        "fg_off": 0.68,
-        "diff": -0.0447,
-        "attempts_on": 85,
-        "attempts_off": 125
+        "fg_on": 0.6526,
+        "fg_off": 0.7007,
+        "diff": -0.0481,
+        "attempts_on": 95,
+        "attempts_off": 137
        },
        {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.344,
-        "fg_off": 0.363,
-        "diff": -0.019,
-        "attempts_on": 125,
-        "attempts_off": 146
+        "fg_on": 0.3377,
+        "fg_off": 0.3571,
+        "diff": -0.0194,
+        "attempts_on": 151,
+        "attempts_off": 168
+       }
+      ]
+     },
+     {
+      "player_id": "4698719",
+      "player_name": "Trevon Brazile",
+      "position": "F",
+      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4698719.png",
+      "status": null,
+      "mpg": 21.1,
+      "ppg": 7.4,
+      "height_in": 82.0,
+      "height": "6-10",
+      "weight_lb": 220.0,
+      "age": 23.0,
+      "usage": 0.135,
+      "ts": 0.624,
+      "age_change": {
+       "offense": 0.311,
+       "defense": 0.066,
+       "about": "League history: average change in box impact from this age to the next"
+      },
+      "zones": [
+       {
+        "zone": "rim",
+        "label": "At The Rim",
+        "fga": 2.12,
+        "share": 0.3953,
+        "fg": 0.8235
+       },
+       {
+        "zone": "paint",
+        "label": "Paint (Non-RA)",
+        "fga": 0.5,
+        "share": 0.093,
+        "fg": 0.5
+       },
+       {
+        "zone": "mid",
+        "label": "Mid-Range",
+        "fga": 0.12,
+        "share": 0.0233,
+        "fg": 0.0
+       },
+       {
+        "zone": "corner3",
+        "label": "Corner Three",
+        "fga": 1.0,
+        "share": 0.186,
+        "fg": 0.375
+       },
+       {
+        "zone": "above3",
+        "label": "Above-The-Break Three",
+        "fga": 1.62,
+        "share": 0.3023,
+        "fg": 0.3077
+       }
+      ],
+      "play_types": [
+       {
+        "play_type": "Spotup",
+        "label": "Spot-Up",
+        "freq": 0.392,
+        "ppp": 0.7,
+        "percentile": 0.141,
+        "poss": 2.9
+       },
+       {
+        "play_type": "Transition",
+        "label": "Transition",
+        "freq": 0.235,
+        "ppp": 1.583,
+        "percentile": 0.956,
+        "poss": 1.7
+       }
+      ],
+      "tracking": {
+       "speed": 4.39,
+       "speed_off": 4.54,
+       "speed_def": 4.24,
+       "miles": 1.6,
+       "drives": 0.9,
+       "drive_fg": 0.333
+      },
+      "defense_zones": [
+       {
+        "zone": "Less Than 6Ft",
+        "label": "Within 6 Ft",
+        "fg_against": 0.667,
+        "normal_fg": 0.57,
+        "diff": 0.097,
+        "attempts_pg": 2.14
+       },
+       {
+        "zone": "Less Than 10Ft",
+        "label": "Within 10 Ft",
+        "fg_against": 0.579,
+        "normal_fg": 0.545,
+        "diff": 0.034,
+        "attempts_pg": 2.71
+       },
+       {
+        "zone": "Greater Than 15Ft",
+        "label": "Beyond 15 Ft",
+        "fg_against": 0.194,
+        "normal_fg": 0.344,
+        "diff": -0.15,
+        "attempts_pg": 5.14
+       },
+       {
+        "zone": "3 Pointers",
+        "label": "Three-Pointers",
+        "fg_against": 0.176,
+        "normal_fg": 0.34,
+        "diff": -0.164,
+        "attempts_pg": 4.86
+       },
+       {
+        "zone": "Overall",
+        "label": "All Shots",
+        "fg_against": 0.333,
+        "normal_fg": 0.45,
+        "diff": -0.117,
+        "attempts_pg": 8.57
+       }
+      ],
+      "three_track_record": {
+       "made": 0,
+       "attempts": 0,
+       "pct": null,
+       "about": "Three-point record over the previous seasons in the box-score cache"
+      },
+      "defense_onfloor": [
+       {
+        "zone": "rim",
+        "label": "At The Rim",
+        "fg_on": 0.6667,
+        "fg_off": 0.6912,
+        "diff": -0.0245,
+        "attempts_on": 96,
+        "attempts_off": 136
+       },
+       {
+        "zone": "three",
+        "label": "Three-Pointers",
+        "fg_on": 0.3379,
+        "fg_off": 0.3563,
+        "diff": -0.0184,
+        "attempts_on": 145,
+        "attempts_off": 174
        }
       ]
      },
@@ -3441,8 +3471,8 @@
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3138196.png",
       "status": null,
-      "mpg": 27.2,
-      "ppg": 9.0,
+      "mpg": 27.6,
+      "ppg": 10.8,
       "height_in": 80.0,
       "height": "6-8",
       "weight_lb": 210.0,
@@ -3458,37 +3488,37 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 1.25,
-        "share": 0.1613,
-        "fg": 0.4
+        "fga": 2.0,
+        "share": 0.2326,
+        "fg": 0.7
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
-        "fga": 0.75,
-        "share": 0.0968,
-        "fg": 0.6667
+        "fga": 1.0,
+        "share": 0.1163,
+        "fg": 0.6
        },
        {
         "zone": "mid",
         "label": "Mid-Range",
-        "fga": 0.75,
-        "share": 0.0968,
+        "fga": 0.6,
+        "share": 0.0698,
         "fg": 0.3333
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 2.0,
-        "share": 0.2581,
+        "fga": 1.6,
+        "share": 0.186,
         "fg": 0.375
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
-        "fga": 3.0,
-        "share": 0.3871,
-        "fg": 0.4167
+        "fga": 3.4,
+        "share": 0.3953,
+        "fg": 0.4118
        }
       ],
       "play_types": [
@@ -3569,20 +3599,154 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fg_on": 0.6269,
-        "fg_off": 0.6783,
-        "diff": -0.0515,
-        "attempts_on": 67,
-        "attempts_off": 143
+        "fg_on": 0.6867,
+        "fg_off": 0.6779,
+        "diff": 0.0089,
+        "attempts_on": 83,
+        "attempts_off": 149
        },
        {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.4,
-        "fg_off": 0.3315,
-        "diff": 0.0685,
-        "attempts_on": 90,
-        "attempts_off": 181
+        "fg_on": 0.3894,
+        "fg_off": 0.3252,
+        "diff": 0.0641,
+        "attempts_on": 113,
+        "attempts_off": 206
+       }
+      ]
+     },
+     {
+      "player_id": "4277848",
+      "player_name": "Marvin Bagley III",
+      "position": "F",
+      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4277848.png",
+      "status": null,
+      "mpg": 12.4,
+      "ppg": 6.0,
+      "height_in": 82.0,
+      "height": "6-10",
+      "weight_lb": 235.0,
+      "age": 27.0,
+      "usage": 0.19,
+      "ts": 0.61,
+      "age_change": {
+       "offense": -0.184,
+       "defense": -0.041,
+       "about": "League history: average change in box impact from this age to the next"
+      },
+      "zones": [
+       {
+        "zone": "rim",
+        "label": "At The Rim",
+        "fga": 2.43,
+        "share": 0.5667,
+        "fg": 0.5882
+       },
+       {
+        "zone": "paint",
+        "label": "Paint (Non-RA)",
+        "fga": 1.14,
+        "share": 0.2667,
+        "fg": 0.625
+       },
+       {
+        "zone": "mid",
+        "label": "Mid-Range",
+        "fga": 0.14,
+        "share": 0.0333,
+        "fg": 1.0
+       },
+       {
+        "zone": "corner3",
+        "label": "Corner Three",
+        "fga": 0.14,
+        "share": 0.0333,
+        "fg": 0.0
+       },
+       {
+        "zone": "above3",
+        "label": "Above-The-Break Three",
+        "fga": 0.43,
+        "share": 0.1,
+        "fg": 0.0
+       }
+      ],
+      "play_types": [],
+      "tracking": {
+       "speed": 4.43,
+       "speed_off": 4.56,
+       "speed_def": 4.29,
+       "miles": 0.9,
+       "drives": 1.0,
+       "drive_fg": 0.75
+      },
+      "defense_zones": [
+       {
+        "zone": "Less Than 6Ft",
+        "label": "Within 6 Ft",
+        "fg_against": 0.56,
+        "normal_fg": 0.667,
+        "diff": -0.107,
+        "attempts_pg": 3.57
+       },
+       {
+        "zone": "Less Than 10Ft",
+        "label": "Within 10 Ft",
+        "fg_against": 0.485,
+        "normal_fg": 0.611,
+        "diff": -0.126,
+        "attempts_pg": 4.71
+       },
+       {
+        "zone": "Greater Than 15Ft",
+        "label": "Beyond 15 Ft",
+        "fg_against": 0.357,
+        "normal_fg": 0.359,
+        "diff": -0.002,
+        "attempts_pg": 2.0
+       },
+       {
+        "zone": "3 Pointers",
+        "label": "Three-Pointers",
+        "fg_against": 0.308,
+        "normal_fg": 0.339,
+        "diff": -0.031,
+        "attempts_pg": 1.86
+       },
+       {
+        "zone": "Overall",
+        "label": "All Shots",
+        "fg_against": 0.438,
+        "normal_fg": 0.492,
+        "diff": -0.054,
+        "attempts_pg": 6.86
+       }
+      ],
+      "three_track_record": {
+       "made": 55,
+       "attempts": 160,
+       "pct": 0.3438,
+       "about": "Three-point record over the previous seasons in the box-score cache"
+      },
+      "defense_onfloor": [
+       {
+        "zone": "rim",
+        "label": "At The Rim",
+        "fg_on": 0.6721,
+        "fg_off": 0.6842,
+        "diff": -0.0121,
+        "attempts_on": 61,
+        "attempts_off": 171
+       },
+       {
+        "zone": "three",
+        "label": "Three-Pointers",
+        "fg_on": 0.3462,
+        "fg_off": 0.3485,
+        "diff": -0.0024,
+        "attempts_on": 78,
+        "attempts_off": 241
        }
       ]
      },
@@ -3592,8 +3756,8 @@
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4565698.png",
       "status": null,
-      "mpg": 18.8,
-      "ppg": 6.6,
+      "mpg": 16.2,
+      "ppg": 6.0,
       "height_in": 79.0,
       "height": "6-7",
       "weight_lb": 225.0,
@@ -3609,36 +3773,36 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 2.67,
-        "share": 0.4444,
-        "fg": 0.875
+        "fga": 2.5,
+        "share": 0.5,
+        "fg": 0.8
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
-        "fga": 1.0,
-        "share": 0.1667,
+        "fga": 0.75,
+        "share": 0.15,
         "fg": 0.6667
        },
        {
         "zone": "mid",
         "label": "Mid-Range",
-        "fga": 0.67,
-        "share": 0.1111,
+        "fga": 0.5,
+        "share": 0.1,
         "fg": 0.5
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 1.0,
-        "share": 0.1667,
+        "fga": 0.75,
+        "share": 0.15,
         "fg": 0.6667
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
-        "fga": 0.67,
-        "share": 0.1111,
+        "fga": 0.5,
+        "share": 0.1,
         "fg": 0.0
        }
       ],
@@ -3703,136 +3867,11 @@
        {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.3731,
-        "fg_off": 0.348,
-        "diff": 0.0251,
-        "attempts_on": 67,
-        "attempts_off": 204
-       }
-      ]
-     },
-     {
-      "player_id": "4277848",
-      "player_name": "Marvin Bagley III",
-      "position": "F",
-      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4277848.png",
-      "status": null,
-      "mpg": 12.4,
-      "ppg": 5.4,
-      "height_in": 82.0,
-      "height": "6-10",
-      "weight_lb": 235.0,
-      "age": 27.0,
-      "usage": 0.19,
-      "ts": 0.61,
-      "age_change": {
-       "offense": -0.184,
-       "defense": -0.041,
-       "about": "League history: average change in box impact from this age to the next"
-      },
-      "zones": [
-       {
-        "zone": "rim",
-        "label": "At The Rim",
-        "fga": 2.33,
-        "share": 0.5833,
-        "fg": 0.5714
-       },
-       {
-        "zone": "paint",
-        "label": "Paint (Non-RA)",
-        "fga": 1.0,
-        "share": 0.25,
-        "fg": 0.6667
-       },
-       {
-        "zone": "mid",
-        "label": "Mid-Range",
-        "fga": 0.17,
-        "share": 0.0417,
-        "fg": 1.0
-       },
-       {
-        "zone": "corner3",
-        "label": "Corner Three",
-        "fga": 0.17,
-        "share": 0.0417,
-        "fg": 0.0
-       },
-       {
-        "zone": "above3",
-        "label": "Above-The-Break Three",
-        "fga": 0.33,
-        "share": 0.0833,
-        "fg": 0.0
-       }
-      ],
-      "play_types": [],
-      "tracking": {
-       "speed": 4.43,
-       "speed_off": 4.56,
-       "speed_def": 4.29,
-       "miles": 0.9,
-       "drives": 1.0,
-       "drive_fg": 0.75
-      },
-      "defense_zones": [
-       {
-        "zone": "Less Than 6Ft",
-        "label": "Within 6 Ft",
-        "fg_against": 0.56,
-        "normal_fg": 0.667,
-        "diff": -0.107,
-        "attempts_pg": 3.57
-       },
-       {
-        "zone": "Less Than 10Ft",
-        "label": "Within 10 Ft",
-        "fg_against": 0.485,
-        "normal_fg": 0.611,
-        "diff": -0.126,
-        "attempts_pg": 4.71
-       },
-       {
-        "zone": "Greater Than 15Ft",
-        "label": "Beyond 15 Ft",
-        "fg_against": 0.357,
-        "normal_fg": 0.359,
-        "diff": -0.002,
-        "attempts_pg": 2.0
-       },
-       {
-        "zone": "3 Pointers",
-        "label": "Three-Pointers",
-        "fg_against": 0.308,
-        "normal_fg": 0.339,
-        "diff": -0.031,
-        "attempts_pg": 1.86
-       },
-       {
-        "zone": "Overall",
-        "label": "All Shots",
-        "fg_against": 0.438,
-        "normal_fg": 0.492,
-        "diff": -0.054,
-        "attempts_pg": 6.86
-       }
-      ],
-      "three_track_record": {
-       "made": 55,
-       "attempts": 160,
-       "pct": 0.3438,
-       "about": "Three-point record over the previous seasons in the box-score cache"
-      },
-      "defense_onfloor": [
-       {
-        "zone": "three",
-        "label": "Three-Pointers",
-        "fg_on": 0.3333,
-        "fg_off": 0.361,
-        "diff": -0.0276,
-        "attempts_on": 66,
-        "attempts_off": 205
+        "fg_on": 0.3562,
+        "fg_off": 0.3455,
+        "diff": 0.0106,
+        "attempts_on": 73,
+        "attempts_off": 246
        }
       ]
      }
@@ -3861,12 +3900,12 @@
    "home_form": {
     "source": "espn-box",
     "season": 2027,
-    "games": 9,
-    "record": "3-6",
+    "games": 10,
+    "record": "3-7",
     "rates": {
      "off_rtg": {
       "label": "Points per 100 possessions",
-      "value": 107.5696,
+      "value": 107.0583,
       "better": "high",
       "rank": 21,
       "of": 30,
@@ -3874,39 +3913,39 @@
      },
      "def_rtg": {
       "label": "Points allowed per 100 possessions",
-      "value": 110.4711,
+      "value": 110.8437,
       "better": "low",
-      "rank": 18,
+      "rank": 19,
       "of": 30,
       "format": "num"
      },
      "off_ppg": {
       "label": "Points per game",
-      "value": 111.2222,
+      "value": 110.3,
       "better": "high",
-      "rank": 20,
+      "rank": 21,
       "of": 30,
       "format": "num"
      },
      "def_ppg": {
       "label": "Points allowed per game",
-      "value": 114.2222,
+      "value": 114.2,
       "better": "low",
-      "rank": 17,
+      "rank": 18,
       "of": 30,
       "format": "num"
      },
      "off_efg": {
       "label": "Effective field-goal rate",
-      "value": 0.5348,
+      "value": 0.534,
       "better": "high",
-      "rank": 16,
+      "rank": 18,
       "of": 30,
       "format": "pct"
      },
      "def_efg": {
       "label": "Effective field-goal rate allowed",
-      "value": 0.5311,
+      "value": 0.5289,
       "better": "low",
       "rank": 15,
       "of": 30,
@@ -3914,95 +3953,95 @@
      },
      "off_tov": {
       "label": "Turnover rate",
-      "value": 0.1526,
+      "value": 0.1475,
       "better": "low",
-      "rank": 13,
+      "rank": 11,
       "of": 30,
       "format": "pct"
      },
      "def_tov": {
       "label": "Turnover rate forced",
-      "value": 0.1547,
+      "value": 0.1446,
       "better": "high",
-      "rank": 15,
+      "rank": 19,
       "of": 30,
       "format": "pct"
      },
      "off_orb": {
       "label": "Offensive rebound rate",
-      "value": 0.2198,
+      "value": 0.2097,
       "better": "high",
-      "rank": 28,
+      "rank": 29,
       "of": 30,
       "format": "pct"
      },
      "def_orb": {
       "label": "Offensive rebound rate allowed",
-      "value": 0.2825,
+      "value": 0.2723,
       "better": "low",
-      "rank": 20,
+      "rank": 15,
       "of": 30,
       "format": "pct"
      },
      "off_ftr": {
       "label": "Free throws made per field-goal attempt",
-      "value": 0.2219,
+      "value": 0.2042,
       "better": "high",
-      "rank": 15,
+      "rank": 22,
       "of": 30,
       "format": "num2"
      },
      "def_ftr": {
       "label": "Free throws allowed per field-goal attempt",
-      "value": 0.2149,
+      "value": 0.2098,
       "better": "low",
-      "rank": 16,
+      "rank": 13,
       "of": 30,
       "format": "num2"
      },
      "off_three_rate": {
       "label": "Share of shots from three",
-      "value": 0.4284,
+      "value": 0.4383,
       "better": "neutral",
-      "rank": 17,
+      "rank": 14,
       "of": 30,
       "format": "pct"
      },
      "def_three_rate": {
       "label": "Opponent share of shots from three",
-      "value": 0.4435,
+      "value": 0.4351,
       "better": "neutral",
-      "rank": 8,
+      "rank": 12,
       "of": 30,
       "format": "pct"
      },
      "off_three_pct": {
       "label": "Three-point rate made",
-      "value": 0.3283,
+      "value": 0.3263,
       "better": "high",
-      "rank": 24,
+      "rank": 25,
       "of": 30,
       "format": "pct"
      },
      "def_three_pct": {
       "label": "Three-point rate allowed",
-      "value": 0.3613,
+      "value": 0.3546,
       "better": "low",
-      "rank": 22,
+      "rank": 21,
       "of": 30,
       "format": "pct"
      },
      "off_two_pct": {
       "label": "Two-point rate made",
-      "value": 0.5666,
+      "value": 0.5688,
       "better": "high",
-      "rank": 5,
+      "rank": 4,
       "of": 30,
       "format": "pct"
      },
      "def_two_pct": {
       "label": "Two-point rate allowed",
-      "value": 0.5223,
+      "value": 0.5265,
       "better": "low",
       "rank": 11,
       "of": 30,
@@ -4010,7 +4049,7 @@
      },
      "off_ft_pct": {
       "label": "Free-throw rate made",
-      "value": 0.7511,
+      "value": 0.75,
       "better": "high",
       "rank": 23,
       "of": 30,
@@ -4018,31 +4057,31 @@
      },
      "def_ft_pct": {
       "label": "Opponent free-throw rate",
-      "value": 0.79,
+      "value": 0.7941,
       "better": "low",
-      "rank": 22,
+      "rank": 23,
       "of": 30,
       "format": "pct"
      },
      "off_ast_rate": {
       "label": "Assisted field goals",
-      "value": 0.6667,
+      "value": 0.6733,
       "better": "high",
-      "rank": 13,
+      "rank": 9,
       "of": 30,
       "format": "pct"
      },
      "def_ast_rate": {
       "label": "Opponent assisted field goals",
-      "value": 0.6694,
+      "value": 0.6683,
       "better": "low",
-      "rank": 21,
+      "rank": 20,
       "of": 30,
       "format": "pct"
      },
      "net_rtg": {
       "label": "Net points per 100 possessions",
-      "value": -2.9015,
+      "value": -3.7854,
       "better": "high",
       "rank": 20,
       "of": 30,
@@ -4050,7 +4089,7 @@
      },
      "pace": {
       "label": "Possessions per game",
-      "value": 103.3956,
+      "value": 103.028,
       "better": "neutral",
       "rank": 13,
       "of": 30,
@@ -4262,6 +4301,18 @@
    "home_b2b": false,
    "home_game_log": [
     {
+     "date": "2026-11-07",
+     "event_id": "401909938",
+     "opponent": "DEN",
+     "home": true,
+     "result": "L",
+     "score": "102-114",
+     "margin": -12,
+     "possessions": 99.7,
+     "off_rtg": 102.3,
+     "def_rtg": 114.3
+    },
+    {
      "date": "2026-11-05",
      "event_id": "401909927",
      "opponent": "MEM",
@@ -4375,18 +4426,18 @@
      "player_id": "3149673",
      "player_name": "Pascal Siakam",
      "position": "F",
-     "games": 8,
-     "starts": 8,
+     "games": 9,
+     "starts": 9,
      "mpg": 32.0,
-     "ppg": 21.2,
-     "rpg": 7.1,
-     "apg": 3.8,
-     "spg": 1.0,
+     "ppg": 21.4,
+     "rpg": 6.6,
+     "apg": 3.9,
+     "spg": 0.9,
      "bpg": 0.1,
-     "tpg": 2.6,
-     "three_pm": 1.2,
-     "ts_pct": 0.576,
-     "three_pct": 0.303,
+     "tpg": 2.3,
+     "three_pm": 1.3,
+     "ts_pct": 0.58,
+     "three_pct": 0.3,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3149673.png",
      "moved": false
     },
@@ -4394,18 +4445,18 @@
      "player_id": "4395712",
      "player_name": "Andrew Nembhard",
      "position": "G",
-     "games": 7,
-     "starts": 7,
-     "mpg": 33.4,
-     "ppg": 19.0,
-     "rpg": 2.1,
-     "apg": 6.9,
-     "spg": 0.7,
+     "games": 8,
+     "starts": 8,
+     "mpg": 33.1,
+     "ppg": 17.8,
+     "rpg": 2.0,
+     "apg": 7.0,
+     "spg": 0.6,
      "bpg": 0.1,
-     "tpg": 2.4,
-     "three_pm": 2.4,
-     "ts_pct": 0.612,
-     "three_pct": 0.395,
+     "tpg": 2.2,
+     "three_pm": 2.5,
+     "ts_pct": 0.601,
+     "three_pct": 0.408,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4395712.png",
      "moved": false
     },
@@ -4413,18 +4464,18 @@
      "player_id": "5106060",
      "player_name": "Jarace Walker",
      "position": "F",
-     "games": 9,
+     "games": 10,
      "starts": 2,
-     "mpg": 24.0,
-     "ppg": 7.2,
-     "rpg": 6.3,
+     "mpg": 23.6,
+     "ppg": 7.4,
+     "rpg": 6.2,
      "apg": 2.0,
-     "spg": 0.7,
-     "bpg": 0.4,
-     "tpg": 1.8,
+     "spg": 0.6,
+     "bpg": 0.6,
+     "tpg": 1.6,
      "three_pm": 1.1,
-     "ts_pct": 0.46,
-     "three_pct": 0.312,
+     "ts_pct": 0.471,
+     "three_pct": 0.297,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5106060.png",
      "moved": false
     },
@@ -4432,18 +4483,18 @@
      "player_id": "4592829",
      "player_name": "Quenton Jackson",
      "position": "G",
-     "games": 9,
+     "games": 10,
      "starts": 1,
-     "mpg": 21.9,
-     "ppg": 10.4,
-     "rpg": 3.4,
-     "apg": 2.7,
-     "spg": 1.4,
+     "mpg": 21.4,
+     "ppg": 10.0,
+     "rpg": 3.5,
+     "apg": 2.5,
+     "spg": 1.3,
      "bpg": 0.3,
-     "tpg": 1.2,
-     "three_pm": 1.1,
-     "ts_pct": 0.59,
-     "three_pct": 0.333,
+     "tpg": 1.3,
+     "three_pm": 1.0,
+     "ts_pct": 0.598,
+     "three_pct": 0.323,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4592829.png",
      "moved": false
     },
@@ -4451,18 +4502,18 @@
      "player_id": "4396909",
      "player_name": "Aaron Nesmith",
      "position": "G",
-     "games": 7,
-     "starts": 6,
-     "mpg": 24.0,
-     "ppg": 12.7,
-     "rpg": 2.0,
-     "apg": 1.9,
-     "spg": 1.0,
-     "bpg": 0.3,
+     "games": 8,
+     "starts": 7,
+     "mpg": 24.4,
+     "ppg": 12.1,
+     "rpg": 2.4,
+     "apg": 1.8,
+     "spg": 0.9,
+     "bpg": 0.2,
      "tpg": 1.6,
-     "three_pm": 1.7,
-     "ts_pct": 0.542,
-     "three_pct": 0.308,
+     "three_pm": 1.8,
+     "ts_pct": 0.521,
+     "three_pct": 0.304,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4396909.png",
      "moved": false
     },
@@ -4470,18 +4521,18 @@
      "player_id": "3133603",
      "player_name": "Kelly Oubre Jr.",
      "position": "G",
-     "games": 7,
+     "games": 8,
      "starts": 5,
-     "mpg": 23.3,
-     "ppg": 9.4,
-     "rpg": 2.6,
-     "apg": 1.6,
-     "spg": 0.3,
-     "bpg": 0.7,
-     "tpg": 0.7,
-     "three_pm": 1.0,
-     "ts_pct": 0.523,
-     "three_pct": 0.259,
+     "mpg": 22.4,
+     "ppg": 8.5,
+     "rpg": 2.4,
+     "apg": 1.4,
+     "spg": 0.2,
+     "bpg": 0.9,
+     "tpg": 0.6,
+     "three_pm": 0.9,
+     "ts_pct": 0.5,
+     "three_pct": 0.233,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3133603.png",
      "moved": false
     },
@@ -4489,18 +4540,18 @@
      "player_id": "4065731",
      "player_name": "Jay Huff",
      "position": "C",
-     "games": 8,
+     "games": 9,
      "starts": 5,
-     "mpg": 19.4,
-     "ppg": 8.0,
-     "rpg": 3.9,
-     "apg": 1.1,
+     "mpg": 18.3,
+     "ppg": 7.1,
+     "rpg": 3.8,
+     "apg": 1.0,
      "spg": 0.0,
-     "bpg": 0.9,
-     "tpg": 0.8,
-     "three_pm": 1.0,
-     "ts_pct": 0.641,
-     "three_pct": 0.308,
+     "bpg": 0.8,
+     "tpg": 0.7,
+     "three_pm": 0.9,
+     "ts_pct": 0.604,
+     "three_pct": 0.286,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4065731.png",
      "moved": false
     },
@@ -4508,19 +4559,57 @@
      "player_id": "4278355",
      "player_name": "Obi Toppin",
      "position": "F",
-     "games": 6,
+     "games": 7,
      "starts": 0,
      "mpg": 22.3,
-     "ppg": 14.5,
-     "rpg": 5.2,
-     "apg": 1.2,
+     "ppg": 13.9,
+     "rpg": 5.4,
+     "apg": 1.3,
      "spg": 0.3,
      "bpg": 0.3,
-     "tpg": 0.8,
+     "tpg": 0.9,
      "three_pm": 2.0,
-     "ts_pct": 0.66,
-     "three_pct": 0.414,
+     "ts_pct": 0.631,
+     "three_pct": 0.378,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4278355.png",
+     "moved": false
+    },
+    {
+     "player_id": "2580365",
+     "player_name": "Larry Nance Jr.",
+     "position": "F",
+     "games": 9,
+     "starts": 0,
+     "mpg": 15.7,
+     "ppg": 4.7,
+     "rpg": 3.1,
+     "apg": 0.7,
+     "spg": 0.9,
+     "bpg": 0.2,
+     "tpg": 0.8,
+     "three_pm": 1.1,
+     "ts_pct": 0.58,
+     "three_pct": 0.417,
+     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/2580365.png",
+     "moved": false
+    },
+    {
+     "player_id": "4398207",
+     "player_name": "Jalen Slawson",
+     "position": "F",
+     "games": 9,
+     "starts": 1,
+     "mpg": 14.9,
+     "ppg": 3.8,
+     "rpg": 3.1,
+     "apg": 1.1,
+     "spg": 0.9,
+     "bpg": 0.8,
+     "tpg": 1.0,
+     "three_pm": 0.2,
+     "ts_pct": 0.577,
+     "three_pct": 0.2,
+     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4398207.png",
      "moved": false
     },
     {
@@ -4543,58 +4632,20 @@
      "moved": false
     },
     {
-     "player_id": "2580365",
-     "player_name": "Larry Nance Jr.",
-     "position": "F",
-     "games": 8,
-     "starts": 0,
-     "mpg": 16.0,
-     "ppg": 3.4,
-     "rpg": 3.2,
-     "apg": 0.6,
-     "spg": 1.0,
-     "bpg": 0.2,
-     "tpg": 0.8,
-     "three_pm": 0.6,
-     "ts_pct": 0.462,
-     "three_pct": 0.294,
-     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/2580365.png",
-     "moved": false
-    },
-    {
-     "player_id": "4398207",
-     "player_name": "Jalen Slawson",
-     "position": "F",
-     "games": 8,
-     "starts": 1,
-     "mpg": 15.2,
-     "ppg": 3.8,
-     "rpg": 3.4,
-     "apg": 1.0,
-     "spg": 0.9,
-     "bpg": 0.9,
-     "tpg": 1.1,
-     "three_pm": 0.2,
-     "ts_pct": 0.566,
-     "three_pct": 0.222,
-     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4398207.png",
-     "moved": false
-    },
-    {
      "player_id": "4017837",
      "player_name": "Ivica Zubac",
      "position": "C",
-     "games": 4,
-     "starts": 4,
-     "mpg": 21.0,
-     "ppg": 7.0,
-     "rpg": 7.8,
-     "apg": 1.5,
+     "games": 5,
+     "starts": 5,
+     "mpg": 20.6,
+     "ppg": 7.6,
+     "rpg": 8.6,
+     "apg": 2.2,
      "spg": 0.0,
-     "bpg": 0.8,
+     "bpg": 0.6,
      "tpg": 1.8,
      "three_pm": 0.0,
-     "ts_pct": 0.491,
+     "ts_pct": 0.552,
      "three_pct": null,
      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4017837.png",
      "moved": false
@@ -4839,91 +4890,91 @@
        "label": "At The Rim",
        "share": {
         "label": "At The Rim Share Of Shots",
-        "value": 0.2773,
+        "value": 0.2732,
         "better": "neutral",
-        "rank": 15,
+        "rank": 16,
         "of": 30,
         "format": "pct"
        },
        "fg": {
         "label": "At The Rim FG%",
-        "value": 0.6971,
+        "value": 0.713,
         "better": "high",
         "rank": 4,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 208,
-       "made": 145
+       "attempts": 230,
+       "made": 164
       },
       "paint": {
        "label": "Paint (Non-RA)",
        "share": {
         "label": "Paint (Non-RA) Share Of Shots",
-        "value": 0.2093,
+        "value": 0.1983,
         "better": "neutral",
-        "rank": 7,
+        "rank": 14,
         "of": 30,
         "format": "pct"
        },
        "fg": {
         "label": "Paint (Non-RA) FG%",
-        "value": 0.4841,
+        "value": 0.4731,
         "better": "high",
-        "rank": 5,
+        "rank": 6,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 157,
-       "made": 76
+       "attempts": 167,
+       "made": 79
       },
       "mid": {
        "label": "Mid-Range",
        "share": {
         "label": "Mid-Range Share Of Shots",
-        "value": 0.0853,
+        "value": 0.0903,
         "better": "neutral",
-        "rank": 15,
+        "rank": 14,
         "of": 30,
         "format": "pct"
        },
        "fg": {
         "label": "Mid-Range FG%",
-        "value": 0.3281,
+        "value": 0.3289,
         "better": "high",
         "rank": 25,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 64,
-       "made": 21
+       "attempts": 76,
+       "made": 25
       },
       "corner3": {
        "label": "Corner Three",
        "share": {
         "label": "Corner Three Share Of Shots",
-        "value": 0.1147,
+        "value": 0.1211,
         "better": "neutral",
-        "rank": 2,
+        "rank": 1,
         "of": 30,
         "format": "pct"
        },
        "fg": {
         "label": "Corner Three FG%",
-        "value": 0.3721,
+        "value": 0.3824,
         "better": "high",
-        "rank": 13,
+        "rank": 10,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 86,
-       "made": 32
+       "attempts": 102,
+       "made": 39
       },
       "above3": {
        "label": "Above-The-Break Three",
        "share": {
         "label": "Above-The-Break Three Share Of Shots",
-        "value": 0.3133,
+        "value": 0.3171,
         "better": "neutral",
         "rank": 24,
         "of": 30,
@@ -4931,14 +4982,14 @@
        },
        "fg": {
         "label": "Above-The-Break Three FG%",
-        "value": 0.3191,
+        "value": 0.3109,
         "better": "high",
-        "rank": 26,
+        "rank": 27,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 235,
-       "made": 75
+       "attempts": 267,
+       "made": 83
       }
      },
      "defense": {
@@ -4946,7 +4997,7 @@
        "label": "At The Rim",
        "share": {
         "label": "At The Rim Share Of Shots Allowed",
-        "value": 0.2603,
+        "value": 0.2614,
         "better": "neutral",
         "rank": 20,
         "of": 30,
@@ -4954,20 +5005,20 @@
        },
        "fg": {
         "label": "At The Rim FG% Allowed",
-        "value": 0.6256,
+        "value": 0.6332,
         "better": "low",
-        "rank": 7,
+        "rank": 9,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 203,
-       "made": 127
+       "attempts": 229,
+       "made": 145
       },
       "paint": {
        "label": "Paint (Non-RA)",
        "share": {
         "label": "Paint (Non-RA) Share Of Shots Allowed",
-        "value": 0.1962,
+        "value": 0.1998,
         "better": "neutral",
         "rank": 13,
         "of": 30,
@@ -4975,77 +5026,77 @@
        },
        "fg": {
         "label": "Paint (Non-RA) FG% Allowed",
-        "value": 0.4444,
+        "value": 0.44,
         "better": "low",
         "rank": 23,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 153,
-       "made": 68
+       "attempts": 175,
+       "made": 77
       },
       "mid": {
        "label": "Mid-Range",
        "share": {
         "label": "Mid-Range Share Of Shots Allowed",
-        "value": 0.1026,
+        "value": 0.1062,
         "better": "neutral",
-        "rank": 9,
+        "rank": 7,
         "of": 30,
         "format": "pct"
        },
        "fg": {
         "label": "Mid-Range FG% Allowed",
-        "value": 0.4,
+        "value": 0.4194,
         "better": "low",
-        "rank": 14,
+        "rank": 16,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 80,
-       "made": 32
+       "attempts": 93,
+       "made": 39
       },
       "corner3": {
        "label": "Corner Three",
        "share": {
         "label": "Corner Three Share Of Shots Allowed",
-        "value": 0.109,
+        "value": 0.1107,
         "better": "neutral",
-        "rank": 6,
+        "rank": 5,
         "of": 30,
         "format": "pct"
        },
        "fg": {
         "label": "Corner Three FG% Allowed",
-        "value": 0.4235,
+        "value": 0.3918,
         "better": "low",
-        "rank": 26,
+        "rank": 24,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 85,
-       "made": 36
+       "attempts": 97,
+       "made": 38
       },
       "above3": {
        "label": "Above-The-Break Three",
        "share": {
         "label": "Above-The-Break Three Share Of Shots Allowed",
-        "value": 0.3321,
+        "value": 0.3219,
         "better": "neutral",
-        "rank": 21,
+        "rank": 24,
         "of": 30,
         "format": "pct"
        },
        "fg": {
         "label": "Above-The-Break Three FG% Allowed",
-        "value": 0.332,
+        "value": 0.3333,
         "better": "low",
-        "rank": 12,
+        "rank": 13,
         "of": 30,
         "format": "pct"
        },
-       "attempts": 259,
-       "made": 86
+       "attempts": 282,
+       "made": 94
       }
      }
     },
@@ -5054,15 +5105,15 @@
       "label": "Drives",
       "share": {
        "label": "Drives Share Of Shots",
-       "value": 0.2184,
+       "value": 0.2147,
        "better": "neutral",
-       "rank": 2,
+       "rank": 6,
        "of": 30,
        "format": "pct"
       },
       "efg": {
        "label": "Drives Effective FG%",
-       "value": 0.6159,
+       "value": 0.6243,
        "better": "high",
        "rank": 4,
        "of": 30,
@@ -5073,7 +5124,7 @@
       "label": "Rim Finishes",
       "share": {
        "label": "Rim Finishes Share Of Shots",
-       "value": 0.032,
+       "value": 0.0332,
        "better": "neutral",
        "rank": 10,
        "of": 30,
@@ -5081,7 +5132,7 @@
       },
       "efg": {
        "label": "Rim Finishes Effective FG%",
-       "value": 0.7917,
+       "value": 0.7857,
        "better": "high",
        "rank": 3,
        "of": 26,
@@ -5092,17 +5143,17 @@
       "label": "Cuts",
       "share": {
        "label": "Cuts Share Of Shots",
-       "value": 0.0533,
+       "value": 0.0498,
        "better": "neutral",
-       "rank": 21,
+       "rank": 24,
        "of": 30,
        "format": "pct"
       },
       "efg": {
        "label": "Cuts Effective FG%",
-       "value": 0.7,
+       "value": 0.7143,
        "better": "high",
-       "rank": 24,
+       "rank": 21,
        "of": 30,
        "format": "pct"
       }
@@ -5111,7 +5162,7 @@
       "label": "Putbacks",
       "share": {
        "label": "Putbacks Share Of Shots",
-       "value": 0.0333,
+       "value": 0.0332,
        "better": "neutral",
        "rank": 29,
        "of": 30,
@@ -5119,9 +5170,9 @@
       },
       "efg": {
        "label": "Putbacks Effective FG%",
-       "value": 0.44,
+       "value": 0.5,
        "better": "high",
-       "rank": 30,
+       "rank": 24,
        "of": 30,
        "format": "pct"
       }
@@ -5130,15 +5181,15 @@
       "label": "Post Moves",
       "share": {
        "label": "Post Moves Share Of Shots",
-       "value": 0.0506,
+       "value": 0.0474,
        "better": "neutral",
-       "rank": 17,
+       "rank": 18,
        "of": 30,
        "format": "pct"
       },
       "efg": {
        "label": "Post Moves Effective FG%",
-       "value": 0.5263,
+       "value": 0.525,
        "better": "high",
        "rank": 4,
        "of": 30,
@@ -5149,17 +5200,17 @@
       "label": "Floaters",
       "share": {
        "label": "Floaters Share Of Shots",
-       "value": 0.0759,
+       "value": 0.0688,
        "better": "neutral",
-       "rank": 17,
+       "rank": 21,
        "of": 30,
        "format": "pct"
       },
       "efg": {
        "label": "Floaters Effective FG%",
-       "value": 0.4912,
+       "value": 0.4828,
        "better": "high",
-       "rank": 11,
+       "rank": 13,
        "of": 30,
        "format": "pct"
       }
@@ -5168,7 +5219,7 @@
       "label": "Pull-Ups",
       "share": {
        "label": "Pull-Ups Share Of Shots",
-       "value": 0.1318,
+       "value": 0.1352,
        "better": "neutral",
        "rank": 15,
        "of": 30,
@@ -5176,9 +5227,9 @@
       },
       "efg": {
        "label": "Pull-Ups Effective FG%",
-       "value": 0.5051,
+       "value": 0.5132,
        "better": "high",
-       "rank": 8,
+       "rank": 7,
        "of": 30,
        "format": "pct"
       }
@@ -5187,7 +5238,7 @@
       "label": "Step-Backs",
       "share": {
        "label": "Step-Backs Share Of Shots",
-       "value": 0.0559,
+       "value": 0.0558,
        "better": "neutral",
        "rank": 13,
        "of": 30,
@@ -5195,7 +5246,7 @@
       },
       "efg": {
        "label": "Step-Backs Effective FG%",
-       "value": 0.369,
+       "value": 0.3298,
        "better": "high",
        "rank": 27,
        "of": 28,
@@ -5206,17 +5257,17 @@
       "label": "Other Jumpers",
       "share": {
        "label": "Other Jumpers Share Of Shots",
-       "value": 0.3489,
+       "value": 0.3618,
        "better": "neutral",
-       "rank": 22,
+       "rank": 19,
        "of": 30,
        "format": "pct"
       },
       "efg": {
        "label": "Other Jumpers Effective FG%",
-       "value": 0.4962,
+       "value": 0.4885,
        "better": "high",
-       "rank": 23,
+       "rank": 24,
        "of": 30,
        "format": "pct"
       }
@@ -5225,17 +5276,17 @@
       "label": "Transition",
       "share": {
        "label": "Transition Share Of Shots",
-       "value": 0.1704,
+       "value": 0.1673,
        "better": "neutral",
-       "rank": 2,
+       "rank": 4,
        "of": 30,
        "format": "pct"
       },
       "efg": {
        "label": "Transition Effective FG%",
-       "value": 0.5977,
+       "value": 0.6277,
        "better": "high",
-       "rank": 17,
+       "rank": 10,
        "of": 30,
        "format": "pct"
       }
@@ -5244,9 +5295,9 @@
       "label": "Assisted",
       "share": {
        "label": "Share Of Made Shots Assisted",
-       "value": 0.6648,
+       "value": 0.6718,
        "better": "neutral",
-       "rank": 14,
+       "rank": 11,
        "of": 30,
        "format": "pct"
       },
@@ -5830,7 +5881,7 @@
     "size": {
      "height": {
       "label": "Rotation Height (in, minutes-weighted)",
-      "value": 78.757,
+      "value": 78.7508,
       "better": "neutral",
       "rank": 17,
       "of": 30,
@@ -5838,7 +5889,7 @@
      },
      "weight": {
       "label": "Rotation Weight (lb, minutes-weighted)",
-      "value": 214.1667,
+      "value": 214.1985,
       "better": "neutral",
       "rank": 22,
       "of": 30,
@@ -5846,7 +5897,7 @@
      },
      "age": {
       "label": "Rotation Age (minutes-weighted)",
-      "value": 27.548,
+      "value": 27.5468,
       "better": "neutral",
       "rank": 8,
       "of": 30,
@@ -6072,8 +6123,8 @@
       "key": "oreb",
       "tag": "Gets Back Instead Of Crashing",
       "label": "Offensive rebound rate",
-      "value": 0.2198,
-      "rank": 28,
+      "value": 0.2097,
+      "rank": 29,
       "of": 30
      }
     ],
@@ -6155,25 +6206,25 @@
     "regression": {
      "opp_three_luck": {
       "label": "Opponent 3P% Minus League",
-      "value": 0.0131,
+      "value": 0.0067,
       "better": "low",
-      "rank": 22,
+      "rank": 21,
       "of": 30,
       "format": "pct"
      },
      "own_three_vs_league": {
       "label": "Own 3P% Minus League",
-      "value": -0.0199,
+      "value": -0.0215,
       "better": "high",
-      "rank": 24,
+      "rank": 25,
       "of": 30,
       "format": "pct"
      },
      "opp_ft_luck": {
       "label": "Opponent FT% Minus League",
-      "value": 0.0144,
+      "value": 0.0185,
       "better": "low",
-      "rank": 22,
+      "rank": 23,
       "of": 30,
       "format": "pct"
      },
@@ -6187,13 +6238,13 @@
      },
      "wins_over_pythag": {
       "label": "Wins Above Point-Differential Wins",
-      "value": -0.6712,
+      "value": -0.8073,
       "better": "high",
-      "rank": 23,
+      "rank": 25,
       "of": 30,
       "format": "signed"
      },
-     "games": 9,
+     "games": 10,
      "close_record": "2-2"
     },
     "regression_basis": "2026-27",
@@ -6205,7 +6256,7 @@
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3149673.png",
       "status": null,
       "mpg": 32.0,
-      "ppg": 21.2,
+      "ppg": 21.4,
       "height_in": 81.0,
       "height": "6-9",
       "weight_lb": 245.0,
@@ -6221,37 +6272,37 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 4.38,
-        "share": 0.2823,
-        "fg": 0.7143
+        "fga": 4.56,
+        "share": 0.2887,
+        "fg": 0.7561
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
-        "fga": 4.62,
-        "share": 0.2984,
-        "fg": 0.6486
+        "fga": 4.44,
+        "share": 0.2817,
+        "fg": 0.625
        },
        {
         "zone": "mid",
         "label": "Mid-Range",
-        "fga": 2.62,
-        "share": 0.1694,
-        "fg": 0.2857
+        "fga": 2.56,
+        "share": 0.162,
+        "fg": 0.3043
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 1.12,
-        "share": 0.0726,
-        "fg": 0.2222
+        "fga": 1.22,
+        "share": 0.0775,
+        "fg": 0.2727
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
-        "fga": 2.75,
-        "share": 0.1774,
-        "fg": 0.3636
+        "fga": 3.0,
+        "share": 0.1901,
+        "fg": 0.3333
        }
       ],
       "play_types": [
@@ -6356,29 +6407,29 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fg_on": 0.6803,
-        "fg_off": 0.5432,
-        "diff": 0.1371,
-        "attempts_on": 122,
-        "attempts_off": 81
+        "fg_on": 0.6861,
+        "fg_off": 0.5543,
+        "diff": 0.1318,
+        "attempts_on": 137,
+        "attempts_off": 92
        },
        {
         "zone": "paint",
         "label": "Paint",
-        "fg_on": 0.4674,
-        "fg_off": 0.4098,
-        "diff": 0.0576,
-        "attempts_on": 92,
-        "attempts_off": 61
+        "fg_on": 0.4679,
+        "fg_off": 0.3939,
+        "diff": 0.074,
+        "attempts_on": 109,
+        "attempts_off": 66
        },
        {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.3402,
-        "fg_off": 0.3733,
-        "diff": -0.0331,
-        "attempts_on": 194,
-        "attempts_off": 150
+        "fg_on": 0.3349,
+        "fg_off": 0.3659,
+        "diff": -0.031,
+        "attempts_on": 215,
+        "attempts_off": 164
        }
       ]
      },
@@ -6388,8 +6439,8 @@
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4395712.png",
       "status": null,
-      "mpg": 33.4,
-      "ppg": 19.0,
+      "mpg": 33.1,
+      "ppg": 17.8,
       "height_in": 76.0,
       "height": "6-4",
       "weight_lb": 191.0,
@@ -6405,37 +6456,37 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 2.43,
-        "share": 0.1789,
+        "fga": 2.12,
+        "share": 0.1635,
         "fg": 0.7647
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
-        "fga": 2.71,
-        "share": 0.2,
-        "fg": 0.5263
+        "fga": 2.62,
+        "share": 0.2019,
+        "fg": 0.4762
        },
        {
         "zone": "mid",
         "label": "Mid-Range",
-        "fga": 2.29,
-        "share": 0.1684,
-        "fg": 0.25
+        "fga": 2.12,
+        "share": 0.1635,
+        "fg": 0.2353
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 0.14,
-        "share": 0.0105,
+        "fga": 0.12,
+        "share": 0.0096,
         "fg": 1.0
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
         "fga": 6.0,
-        "share": 0.4421,
-        "fg": 0.381
+        "share": 0.4615,
+        "fg": 0.3958
        }
       ],
       "play_types": [
@@ -6532,29 +6583,29 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fg_on": 0.7,
-        "fg_off": 0.5181,
-        "diff": 0.1819,
-        "attempts_on": 120,
-        "attempts_off": 83
+        "fg_on": 0.7101,
+        "fg_off": 0.5165,
+        "diff": 0.1937,
+        "attempts_on": 138,
+        "attempts_off": 91
        },
        {
         "zone": "paint",
         "label": "Paint",
-        "fg_on": 0.4773,
-        "fg_off": 0.4,
-        "diff": 0.0773,
-        "attempts_on": 88,
-        "attempts_off": 65
+        "fg_on": 0.49,
+        "fg_off": 0.3733,
+        "diff": 0.1167,
+        "attempts_on": 100,
+        "attempts_off": 75
        },
        {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.356,
-        "fg_off": 0.3529,
-        "diff": 0.0031,
-        "attempts_on": 191,
-        "attempts_off": 153
+        "fg_on": 0.346,
+        "fg_off": 0.3512,
+        "diff": -0.0052,
+        "attempts_on": 211,
+        "attempts_off": 168
        }
       ]
      },
@@ -6564,8 +6615,8 @@
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5106060.png",
       "status": null,
-      "mpg": 24.0,
-      "ppg": 7.2,
+      "mpg": 23.6,
+      "ppg": 7.4,
       "height_in": 79.0,
       "height": "6-7",
       "weight_lb": 235.0,
@@ -6581,37 +6632,37 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 2.11,
-        "share": 0.2969,
-        "fg": 0.5263
+        "fga": 2.0,
+        "share": 0.2817,
+        "fg": 0.55
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
-        "fga": 1.22,
-        "share": 0.1719,
+        "fga": 1.1,
+        "share": 0.1549,
         "fg": 0.3636
        },
        {
         "zone": "mid",
         "label": "Mid-Range",
-        "fga": 0.22,
-        "share": 0.0312,
-        "fg": 0.0
+        "fga": 0.3,
+        "share": 0.0423,
+        "fg": 0.3333
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 0.67,
-        "share": 0.0938,
-        "fg": 0.1667
+        "fga": 0.8,
+        "share": 0.1127,
+        "fg": 0.25
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
-        "fga": 2.89,
-        "share": 0.4062,
-        "fg": 0.3462
+        "fga": 2.9,
+        "share": 0.4085,
+        "fg": 0.3103
        }
       ],
       "play_types": [
@@ -6700,29 +6751,29 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fg_on": 0.5253,
-        "fg_off": 0.7212,
-        "diff": -0.1959,
-        "attempts_on": 99,
-        "attempts_off": 104
+        "fg_on": 0.5283,
+        "fg_off": 0.7236,
+        "diff": -0.1953,
+        "attempts_on": 106,
+        "attempts_off": 123
        },
        {
         "zone": "paint",
         "label": "Paint",
-        "fg_on": 0.4605,
-        "fg_off": 0.4286,
-        "diff": 0.032,
-        "attempts_on": 76,
-        "attempts_off": 77
+        "fg_on": 0.4432,
+        "fg_off": 0.4368,
+        "diff": 0.0064,
+        "attempts_on": 88,
+        "attempts_off": 87
        },
        {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.3622,
-        "fg_off": 0.3459,
-        "diff": 0.0163,
-        "attempts_on": 185,
-        "attempts_off": 159
+        "fg_on": 0.3636,
+        "fg_off": 0.3315,
+        "diff": 0.0321,
+        "attempts_on": 198,
+        "attempts_off": 181
        }
       ]
      },
@@ -6732,8 +6783,8 @@
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4592829.png",
       "status": null,
-      "mpg": 21.9,
-      "ppg": 10.4,
+      "mpg": 21.4,
+      "ppg": 10.0,
       "height_in": 76.0,
       "height": "6-4",
       "weight_lb": 173.0,
@@ -6749,37 +6800,37 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 2.33,
-        "share": 0.3,
-        "fg": 0.6667
+        "fga": 2.4,
+        "share": 0.3243,
+        "fg": 0.7083
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
-        "fga": 1.67,
-        "share": 0.2143,
+        "fga": 1.5,
+        "share": 0.2027,
         "fg": 0.3333
        },
        {
         "zone": "mid",
         "label": "Mid-Range",
-        "fga": 0.44,
-        "share": 0.0571,
+        "fga": 0.4,
+        "share": 0.0541,
         "fg": 0.75
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 1.0,
-        "share": 0.1286,
+        "fga": 0.9,
+        "share": 0.1216,
         "fg": 0.5556
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
-        "fga": 2.33,
-        "share": 0.3,
-        "fg": 0.2381
+        "fga": 2.2,
+        "share": 0.2973,
+        "fg": 0.2273
        }
       ],
       "play_types": [
@@ -6868,29 +6919,29 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fg_on": 0.5769,
-        "fg_off": 0.656,
-        "diff": -0.0791,
-        "attempts_on": 78,
-        "attempts_off": 125
+        "fg_on": 0.5783,
+        "fg_off": 0.6644,
+        "diff": -0.0861,
+        "attempts_on": 83,
+        "attempts_off": 146
        },
        {
         "zone": "paint",
         "label": "Paint",
         "fg_on": 0.4167,
-        "fg_off": 0.4624,
-        "diff": -0.0457,
-        "attempts_on": 60,
-        "attempts_off": 93
+        "fg_off": 0.4563,
+        "diff": -0.0396,
+        "attempts_on": 72,
+        "attempts_off": 103
        },
        {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.314,
-        "fg_off": 0.3953,
-        "diff": -0.0814,
-        "attempts_on": 172,
-        "attempts_off": 172
+        "fg_on": 0.3135,
+        "fg_off": 0.3814,
+        "diff": -0.0679,
+        "attempts_on": 185,
+        "attempts_off": 194
        }
       ]
      },
@@ -6900,8 +6951,8 @@
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4396909.png",
       "status": null,
-      "mpg": 24.0,
-      "ppg": 12.7,
+      "mpg": 24.4,
+      "ppg": 12.1,
       "height_in": 77.0,
       "height": "6-5",
       "weight_lb": 215.0,
@@ -6917,37 +6968,37 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 2.29,
-        "share": 0.2388,
-        "fg": 0.625
+        "fga": 2.25,
+        "share": 0.2308,
+        "fg": 0.6111
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
-        "fga": 1.43,
-        "share": 0.1493,
+        "fga": 1.25,
+        "share": 0.1282,
         "fg": 0.4
        },
        {
         "zone": "mid",
         "label": "Mid-Range",
-        "fga": 0.71,
-        "share": 0.0746,
-        "fg": 0.4
+        "fga": 0.88,
+        "share": 0.0897,
+        "fg": 0.2857
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 2.29,
-        "share": 0.2388,
-        "fg": 0.3125
+        "fga": 2.25,
+        "share": 0.2308,
+        "fg": 0.2778
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
-        "fga": 2.86,
-        "share": 0.2985,
-        "fg": 0.3
+        "fga": 3.12,
+        "share": 0.3205,
+        "fg": 0.32
        }
       ],
       "play_types": [
@@ -7044,29 +7095,29 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fg_on": 0.6857,
-        "fg_off": 0.594,
-        "diff": 0.0917,
-        "attempts_on": 70,
-        "attempts_off": 133
+        "fg_on": 0.6932,
+        "fg_off": 0.5957,
+        "diff": 0.0974,
+        "attempts_on": 88,
+        "attempts_off": 141
        },
        {
         "zone": "paint",
         "label": "Paint",
-        "fg_on": 0.4776,
-        "fg_off": 0.4186,
-        "diff": 0.059,
-        "attempts_on": 67,
-        "attempts_off": 86
+        "fg_on": 0.4737,
+        "fg_off": 0.4141,
+        "diff": 0.0595,
+        "attempts_on": 76,
+        "attempts_off": 99
        },
        {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.3628,
-        "fg_off": 0.3506,
-        "diff": 0.0122,
-        "attempts_on": 113,
-        "attempts_off": 231
+        "fg_on": 0.3433,
+        "fg_off": 0.351,
+        "diff": -0.0077,
+        "attempts_on": 134,
+        "attempts_off": 245
        }
       ]
      },
@@ -7076,8 +7127,8 @@
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3133603.png",
       "status": null,
-      "mpg": 23.3,
-      "ppg": 9.4,
+      "mpg": 22.4,
+      "ppg": 8.5,
       "height_in": 79.0,
       "height": "6-7",
       "weight_lb": 210.0,
@@ -7093,37 +7144,37 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 2.43,
-        "share": 0.3091,
-        "fg": 0.5882
+        "fga": 2.25,
+        "share": 0.3,
+        "fg": 0.5556
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
-        "fga": 1.14,
-        "share": 0.1455,
+        "fga": 1.0,
+        "share": 0.1333,
         "fg": 0.5
        },
        {
         "zone": "mid",
         "label": "Mid-Range",
-        "fga": 0.43,
-        "share": 0.0545,
-        "fg": 0.6667
+        "fga": 0.5,
+        "share": 0.0667,
+        "fg": 0.75
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 1.71,
-        "share": 0.2182,
-        "fg": 0.25
+        "fga": 1.62,
+        "share": 0.2167,
+        "fg": 0.2308
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
-        "fga": 2.14,
-        "share": 0.2727,
-        "fg": 0.2667
+        "fga": 2.12,
+        "share": 0.2833,
+        "fg": 0.2353
        }
       ],
       "play_types": [
@@ -7204,20 +7255,29 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fg_on": 0.686,
-        "fg_off": 0.5812,
-        "diff": 0.1048,
-        "attempts_on": 86,
-        "attempts_off": 117
+        "fg_on": 0.6848,
+        "fg_off": 0.5985,
+        "diff": 0.0862,
+        "attempts_on": 92,
+        "attempts_off": 137
+       },
+       {
+        "zone": "paint",
+        "label": "Paint",
+        "fg_on": 0.4516,
+        "fg_off": 0.4336,
+        "diff": 0.018,
+        "attempts_on": 62,
+        "attempts_off": 113
        },
        {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.3629,
-        "fg_off": 0.35,
-        "diff": 0.0129,
-        "attempts_on": 124,
-        "attempts_off": 220
+        "fg_on": 0.365,
+        "fg_off": 0.3388,
+        "diff": 0.0261,
+        "attempts_on": 137,
+        "attempts_off": 242
        }
       ]
      },
@@ -7227,8 +7287,8 @@
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4065731.png",
       "status": null,
-      "mpg": 19.4,
-      "ppg": 8.0,
+      "mpg": 18.3,
+      "ppg": 7.1,
       "height_in": 85.0,
       "height": "7-1",
       "weight_lb": 240.0,
@@ -7244,30 +7304,37 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 1.62,
-        "share": 0.2955,
+        "fga": 1.44,
+        "share": 0.2766,
         "fg": 0.8462
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
-        "fga": 0.62,
-        "share": 0.1136,
+        "fga": 0.56,
+        "share": 0.1064,
         "fg": 0.6
+       },
+       {
+        "zone": "mid",
+        "label": "Mid-Range",
+        "fga": 0.11,
+        "share": 0.0213,
+        "fg": 0.0
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 1.12,
-        "share": 0.2045,
-        "fg": 0.5556
+        "fga": 1.11,
+        "share": 0.2128,
+        "fg": 0.5
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
-        "fga": 2.12,
-        "share": 0.3864,
-        "fg": 0.1765
+        "fga": 2.0,
+        "share": 0.383,
+        "fg": 0.1667
        }
       ],
       "play_types": [
@@ -7354,22 +7421,31 @@
       },
       "defense_onfloor": [
        {
+        "zone": "rim",
+        "label": "At The Rim",
+        "fg_on": 0.5373,
+        "fg_off": 0.6728,
+        "diff": -0.1355,
+        "attempts_on": 67,
+        "attempts_off": 162
+       },
+       {
         "zone": "paint",
         "label": "Paint",
-        "fg_on": 0.3913,
-        "fg_off": 0.4881,
-        "diff": -0.0968,
-        "attempts_on": 69,
-        "attempts_off": 84
+        "fg_on": 0.3649,
+        "fg_off": 0.495,
+        "diff": -0.1302,
+        "attempts_on": 74,
+        "attempts_off": 101
        },
        {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.373,
-        "fg_off": 0.344,
-        "diff": 0.029,
-        "attempts_on": 126,
-        "attempts_off": 218
+        "fg_on": 0.3684,
+        "fg_off": 0.3374,
+        "diff": 0.031,
+        "attempts_on": 133,
+        "attempts_off": 246
        }
       ]
      },
@@ -7380,7 +7456,7 @@
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4278355.png",
       "status": null,
       "mpg": 22.3,
-      "ppg": 14.5,
+      "ppg": 13.9,
       "height_in": 81.0,
       "height": "6-9",
       "weight_lb": 220.0,
@@ -7396,30 +7472,30 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 3.67,
-        "share": 0.4,
-        "fg": 0.7727
+        "fga": 3.43,
+        "share": 0.3636,
+        "fg": 0.7917
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
-        "fga": 0.83,
+        "fga": 0.86,
         "share": 0.0909,
         "fg": 0.0
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 1.17,
-        "share": 0.1273,
-        "fg": 0.4286
+        "fga": 1.14,
+        "share": 0.1212,
+        "fg": 0.375
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
-        "fga": 3.5,
-        "share": 0.3818,
-        "fg": 0.4286
+        "fga": 4.0,
+        "share": 0.4242,
+        "fg": 0.3929
        }
       ],
       "play_types": [
@@ -7500,171 +7576,163 @@
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fg_on": 0.6026,
-        "fg_off": 0.64,
-        "diff": -0.0374,
-        "attempts_on": 78,
-        "attempts_off": 125
+        "fg_on": 0.5955,
+        "fg_off": 0.6571,
+        "diff": -0.0616,
+        "attempts_on": 89,
+        "attempts_off": 140
        },
        {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.3,
-        "fg_off": 0.377,
-        "diff": -0.077,
-        "attempts_on": 100,
-        "attempts_off": 244
+        "fg_on": 0.3077,
+        "fg_off": 0.3664,
+        "diff": -0.0587,
+        "attempts_on": 117,
+        "attempts_off": 262
        }
       ]
      },
      {
-      "player_id": "4396993",
-      "player_name": "Tyrese Haliburton",
-      "position": "G",
-      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4396993.png",
-      "status": "Out",
-      "mpg": 33.0,
-      "ppg": 21.8,
-      "height_in": 77.0,
-      "height": "6-5",
-      "weight_lb": 185.0,
-      "age": 26.0,
-      "usage": 0.231,
-      "ts": 0.634,
+      "player_id": "2580365",
+      "player_name": "Larry Nance Jr.",
+      "position": "F",
+      "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/2580365.png",
+      "status": null,
+      "mpg": 15.7,
+      "ppg": 4.7,
+      "height_in": 80.0,
+      "height": "6-8",
+      "weight_lb": 245.0,
+      "age": 33.0,
+      "usage": 0.116,
+      "ts": 0.462,
       "age_change": {
-       "offense": -0.086,
-       "defense": -0.021,
+       "offense": -0.418,
+       "defense": -0.076,
        "about": "League history: average change in box impact from this age to the next"
       },
       "zones": [
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fga": 2.5,
-        "share": 0.1754,
-        "fg": 1.0
+        "fga": 0.75,
+        "share": 0.1875,
+        "fg": 0.6667
        },
        {
         "zone": "paint",
         "label": "Paint (Non-RA)",
-        "fga": 5.25,
-        "share": 0.3684,
-        "fg": 0.5238
+        "fga": 0.12,
+        "share": 0.0312,
+        "fg": 0.0
        },
        {
         "zone": "mid",
         "label": "Mid-Range",
-        "fga": 0.75,
-        "share": 0.0526,
-        "fg": 0.3333
+        "fga": 0.25,
+        "share": 0.0625,
+        "fg": 0.0
        },
        {
         "zone": "corner3",
         "label": "Corner Three",
-        "fga": 1.0,
-        "share": 0.0702,
-        "fg": 0.25
+        "fga": 1.38,
+        "share": 0.3438,
+        "fg": 0.7273
        },
        {
         "zone": "above3",
         "label": "Above-The-Break Three",
-        "fga": 4.75,
-        "share": 0.3333,
-        "fg": 0.4211
+        "fga": 1.5,
+        "share": 0.375,
+        "fg": 0.1667
        }
       ],
       "play_types": [
        {
-        "play_type": "PRBallHandler",
-        "label": "Pick-And-Roll Ball Handler",
-        "freq": 0.408,
-        "ppp": 1.161,
-        "percentile": 0.891,
-        "poss": 7.8
-       },
-       {
-        "play_type": "Transition",
-        "label": "Transition",
-        "freq": 0.237,
-        "ppp": 1.111,
-        "percentile": 0.488,
-        "poss": 4.5
+        "play_type": "Spotup",
+        "label": "Spot-Up",
+        "freq": 0.343,
+        "ppp": 0.75,
+        "percentile": 0.188,
+        "poss": 1.5
        }
       ],
       "tracking": {
        "speed": 4.49,
-       "speed_off": 5.06,
-       "speed_def": 3.93,
-       "miles": 2.5,
-       "drives": 18.0,
-       "drive_fg": 0.586
+       "speed_off": 4.9,
+       "speed_def": 4.1,
+       "miles": 1.2,
+       "drives": 0.6,
+       "drive_fg": 0.333
       },
       "defense_zones": [
        {
         "zone": "Less Than 6Ft",
         "label": "Within 6 Ft",
-        "fg_against": 0.818,
-        "normal_fg": 0.639,
-        "diff": 0.179,
-        "attempts_pg": 2.75
+        "fg_against": 0.611,
+        "normal_fg": 0.597,
+        "diff": 0.014,
+        "attempts_pg": 2.57
        },
        {
         "zone": "Less Than 10Ft",
         "label": "Within 10 Ft",
-        "fg_against": 0.688,
-        "normal_fg": 0.61,
-        "diff": 0.078,
-        "attempts_pg": 4.0
+        "fg_against": 0.565,
+        "normal_fg": 0.561,
+        "diff": 0.004,
+        "attempts_pg": 3.29
        },
        {
         "zone": "Greater Than 15Ft",
         "label": "Beyond 15 Ft",
-        "fg_against": 0.353,
-        "normal_fg": 0.311,
-        "diff": 0.042,
-        "attempts_pg": 4.25
+        "fg_against": 0.316,
+        "normal_fg": 0.338,
+        "diff": -0.022,
+        "attempts_pg": 2.71
        },
        {
         "zone": "3 Pointers",
         "label": "Three-Pointers",
-        "fg_against": 0.353,
-        "normal_fg": 0.302,
-        "diff": 0.051,
-        "attempts_pg": 4.25
+        "fg_against": 0.231,
+        "normal_fg": 0.341,
+        "diff": -0.11,
+        "attempts_pg": 1.86
        },
        {
         "zone": "Overall",
         "label": "All Shots",
-        "fg_against": 0.486,
-        "normal_fg": 0.439,
-        "diff": 0.047,
-        "attempts_pg": 8.75
+        "fg_against": 0.479,
+        "normal_fg": 0.464,
+        "diff": 0.015,
+        "attempts_pg": 6.86
        }
       ],
       "three_track_record": {
-       "made": 576,
-       "attempts": 1507,
-       "pct": 0.3822,
+       "made": 96,
+       "attempts": 246,
+       "pct": 0.3902,
        "about": "Three-point record over the previous seasons in the box-score cache"
       },
       "defense_onfloor": [
        {
         "zone": "rim",
         "label": "At The Rim",
-        "fg_on": 0.5949,
-        "fg_off": 0.6452,
-        "diff": -0.0502,
-        "attempts_on": 79,
-        "attempts_off": 124
+        "fg_on": 0.6667,
+        "fg_off": 0.6205,
+        "diff": 0.0462,
+        "attempts_on": 63,
+        "attempts_off": 166
        },
        {
         "zone": "three",
         "label": "Three-Pointers",
-        "fg_on": 0.3523,
-        "fg_off": 0.3555,
-        "diff": -0.0032,
-        "attempts_on": 88,
-        "attempts_off": 256
+        "fg_on": 0.2797,
+        "fg_off": 0.3793,
+        "diff": -0.0996,
+        "attempts_on": 118,
+        "attempts_off": 261
        }
       ]
      }
@@ -7713,8 +7781,8 @@
    "id": "401909939",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/7 - 7:30 PM EST",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-11-08T00:30Z",
    "away": "BKN",
    "home": "ATL",
@@ -7724,12 +7792,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/atl.png",
    "away_color": "#000000",
    "home_color": "#c8102e",
-   "away_record": "2-6",
-   "home_record": "6-4",
+   "away_record": "2-7",
+   "home_record": "7-4",
    "away_split_record": "1-3",
    "home_split_record": "2-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 121,
+   "home_score": 124,
    "venue": "State Farm Arena",
    "venue_city": "Atlanta, GA",
    "broadcast": "DAZN (YES)",
@@ -9015,7 +9083,7 @@
        "label": "Floaters Share Of Shots",
        "value": 0.0735,
        "better": "neutral",
-       "rank": 18,
+       "rank": 17,
        "of": 30,
        "format": "pct"
       },
@@ -9061,7 +9129,7 @@
        "label": "Step-Backs Effective FG%",
        "value": 0.4531,
        "better": "high",
-       "rank": 19,
+       "rank": 20,
        "of": 28,
        "format": "pct"
       }
@@ -10062,7 +10130,7 @@
     "regression": {
      "opp_three_luck": {
       "label": "Opponent 3P% Minus League",
-      "value": 0.0063,
+      "value": 0.0067,
       "better": "low",
       "rank": 20,
       "of": 30,
@@ -10070,7 +10138,7 @@
      },
      "own_three_vs_league": {
       "label": "Own 3P% Minus League",
-      "value": 0.0049,
+      "value": 0.0053,
       "better": "high",
       "rank": 15,
       "of": 30,
@@ -10078,7 +10146,7 @@
      },
      "opp_ft_luck": {
       "label": "Opponent FT% Minus League",
-      "value": 0.0126,
+      "value": 0.0125,
       "better": "low",
       "rank": 20,
       "of": 30,
@@ -10904,7 +10972,7 @@
       "player_name": "Noah Clowney",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4712896.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 21.1,
       "ppg": 5.6,
       "height_in": 82.0,
@@ -11510,15 +11578,6 @@
    },
    "away_injuries": [
     {
-     "player_id": "4712896",
-     "player_name": "Noah Clowney",
-     "status": "Day-To-Day",
-     "detail": "Illness",
-     "comment": "Clowney is listed as questionable for Saturday's game against the Hawks due to an illness.",
-     "date": "2026-11-07T15:19Z",
-     "return_date": "2026-11-07"
-    },
-    {
      "player_id": "4432194",
      "player_name": "Day'Ron Sharpe",
      "status": "Day-To-Day",
@@ -11579,7 +11638,7 @@
       "label": "Effective field-goal rate",
       "value": 0.5343,
       "better": "high",
-      "rank": 18,
+      "rank": 17,
       "of": 30,
       "format": "pct"
      },
@@ -12785,7 +12844,7 @@
        "label": "Cuts Share Of Shots",
        "value": 0.0581,
        "better": "neutral",
-       "rank": 15,
+       "rank": 14,
        "of": 30,
        "format": "pct"
       },
@@ -13930,7 +13989,7 @@
     "regression": {
      "opp_three_luck": {
       "label": "Opponent 3P% Minus League",
-      "value": -0.0229,
+      "value": -0.0225,
       "better": "low",
       "rank": 9,
       "of": 30,
@@ -13938,7 +13997,7 @@
      },
      "own_three_vs_league": {
       "label": "Own 3P% Minus League",
-      "value": 0.0089,
+      "value": 0.0093,
       "better": "high",
       "rank": 14,
       "of": 30,
@@ -13946,7 +14005,7 @@
      },
      "opp_ft_luck": {
       "label": "Opponent FT% Minus League",
-      "value": 0.0291,
+      "value": 0.029,
       "better": "low",
       "rank": 26,
       "of": 30,
@@ -15010,7 +15069,7 @@
       "player_name": "Jalen Johnson",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4701230.png",
-      "status": "Out",
+      "status": null,
       "mpg": 32.7,
       "ppg": 18.3,
       "height_in": 80.0,
@@ -15532,15 +15591,6 @@
      "return_date": "2026-11-09"
     },
     {
-     "player_id": "4701230",
-     "player_name": "Jalen Johnson",
-     "status": "Out",
-     "detail": "Left Ankle",
-     "comment": "Johnson (ankle) is probable for Saturday's game against Brooklyn.",
-     "date": "2026-11-07T18:10Z",
-     "return_date": "2026-11-07"
-    },
-    {
      "player_id": "4712863",
      "player_name": "Mouhamed Gueye",
      "status": "Out",
@@ -15564,8 +15614,8 @@
    "id": "401909940",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/7 - 8:00 PM EST",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-11-08T01:00Z",
    "away": "NY",
    "home": "CLE",
@@ -15575,12 +15625,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/cle.png",
    "away_color": "#1d428a",
    "home_color": "#860038",
-   "away_record": "4-4",
-   "home_record": "5-4",
+   "away_record": "5-4",
+   "home_record": "5-5",
    "away_split_record": "1-2",
    "home_split_record": "4-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 109,
+   "home_score": 97,
    "venue": "Rocket Arena",
    "venue_city": "Cleveland, OH",
    "broadcast": "NBA TV / DAZN CLE",
@@ -15643,7 +15693,7 @@
       "label": "Turnover rate",
       "value": 0.1536,
       "better": "low",
-      "rank": 14,
+      "rank": 15,
       "of": 30,
       "format": "pct"
      },
@@ -15675,7 +15725,7 @@
       "label": "Free throws made per field-goal attempt",
       "value": 0.2189,
       "better": "high",
-      "rank": 19,
+      "rank": 18,
       "of": 30,
       "format": "num2"
      },
@@ -15707,7 +15757,7 @@
       "label": "Three-point rate made",
       "value": 0.3656,
       "better": "high",
-      "rank": 12,
+      "rank": 11,
       "of": 30,
       "format": "pct"
      },
@@ -16627,7 +16677,7 @@
         "label": "Corner Three FG%",
         "value": 0.3676,
         "better": "high",
-        "rank": 14,
+        "rank": 13,
         "of": 30,
         "format": "pct"
        },
@@ -16713,7 +16763,7 @@
         "label": "Mid-Range FG% Allowed",
         "value": 0.4384,
         "better": "low",
-        "rank": 19,
+        "rank": 20,
         "of": 30,
         "format": "pct"
        },
@@ -16734,7 +16784,7 @@
         "label": "Corner Three FG% Allowed",
         "value": 0.4098,
         "better": "low",
-        "rank": 25,
+        "rank": 26,
         "of": 30,
         "format": "pct"
        },
@@ -16840,7 +16890,7 @@
        "label": "Post Moves Share Of Shots",
        "value": 0.0503,
        "better": "neutral",
-       "rank": 18,
+       "rank": 17,
        "of": 30,
        "format": "pct"
       },
@@ -16886,7 +16936,7 @@
        "label": "Pull-Ups Effective FG%",
        "value": 0.4573,
        "better": "high",
-       "rank": 16,
+       "rank": 15,
        "of": 30,
        "format": "pct"
       }
@@ -16905,7 +16955,7 @@
        "label": "Step-Backs Effective FG%",
        "value": 0.4756,
        "better": "high",
-       "rank": 15,
+       "rank": 16,
        "of": 28,
        "format": "pct"
       }
@@ -16943,7 +16993,7 @@
        "label": "Transition Effective FG%",
        "value": 0.5988,
        "better": "high",
-       "rank": 16,
+       "rank": 17,
        "of": 30,
        "format": "pct"
       }
@@ -17868,7 +17918,7 @@
     "regression": {
      "opp_three_luck": {
       "label": "Opponent 3P% Minus League",
-      "value": -0.0128,
+      "value": -0.0124,
       "better": "low",
       "rank": 11,
       "of": 30,
@@ -17876,15 +17926,15 @@
      },
      "own_three_vs_league": {
       "label": "Own 3P% Minus League",
-      "value": 0.0174,
+      "value": 0.0178,
       "better": "high",
-      "rank": 12,
+      "rank": 11,
       "of": 30,
       "format": "pct"
      },
      "opp_ft_luck": {
       "label": "Opponent FT% Minus League",
-      "value": -0.0506,
+      "value": -0.0508,
       "better": "low",
       "rank": 2,
       "of": 30,
@@ -19322,7 +19372,7 @@
       "label": "Points allowed per game",
       "value": 114.6667,
       "better": "low",
-      "rank": 19,
+      "rank": 20,
       "of": 30,
       "format": "num"
      },
@@ -19362,7 +19412,7 @@
       "label": "Offensive rebound rate",
       "value": 0.258,
       "better": "high",
-      "rank": 20,
+      "rank": 19,
       "of": 30,
       "format": "pct"
      },
@@ -19378,7 +19428,7 @@
       "label": "Free throws made per field-goal attempt",
       "value": 0.2191,
       "better": "high",
-      "rank": 17,
+      "rank": 16,
       "of": 30,
       "format": "num2"
      },
@@ -19410,7 +19460,7 @@
       "label": "Three-point rate made",
       "value": 0.37,
       "better": "high",
-      "rank": 10,
+      "rank": 9,
       "of": 30,
       "format": "pct"
      },
@@ -20222,22 +20272,22 @@
      "moved": false
     },
     {
-     "player_id": "4431734",
-     "player_name": "Tristan Enaruna",
+     "player_id": "5177362",
+     "player_name": "Riley Minix",
      "position": "F",
      "games": 9,
      "starts": 0,
-     "mpg": 9.6,
-     "ppg": 4.1,
-     "rpg": 1.6,
-     "apg": 0.8,
-     "spg": 0.6,
-     "bpg": 0.0,
+     "mpg": 6.6,
+     "ppg": 3.9,
+     "rpg": 0.7,
+     "apg": 0.6,
+     "spg": 0.2,
+     "bpg": 0.1,
      "tpg": 0.3,
-     "three_pm": 0.3,
-     "ts_pct": 0.587,
-     "three_pct": 0.3,
-     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4431734.png",
+     "three_pm": 0.4,
+     "ts_pct": 0.72,
+     "three_pct": 0.333,
+     "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5177362.png",
      "moved": false
     },
     {
@@ -20342,7 +20392,7 @@
         "label": "Corner Three FG%",
         "value": 0.3529,
         "better": "high",
-        "rank": 16,
+        "rank": 15,
         "of": 30,
         "format": "pct"
        },
@@ -20449,7 +20499,7 @@
         "label": "Corner Three FG% Allowed",
         "value": 0.3333,
         "better": "low",
-        "rank": 11,
+        "rank": 10,
         "of": 30,
         "format": "pct"
        },
@@ -20494,7 +20544,7 @@
        "label": "Drives Effective FG%",
        "value": 0.6,
        "better": "high",
-       "rank": 9,
+       "rank": 10,
        "of": 30,
        "format": "pct"
       }
@@ -20646,7 +20696,7 @@
        "label": "Other Jumpers Effective FG%",
        "value": 0.5444,
        "better": "high",
-       "rank": 10,
+       "rank": 9,
        "of": 30,
        "format": "pct"
       }
@@ -20665,7 +20715,7 @@
        "label": "Transition Effective FG%",
        "value": 0.6075,
        "better": "high",
-       "rank": 13,
+       "rank": 14,
        "of": 30,
        "format": "pct"
       }
@@ -21260,7 +21310,7 @@
     "size": {
      "height": {
       "label": "Rotation Height (in, minutes-weighted)",
-      "value": 77.8918,
+      "value": 77.8759,
       "better": "neutral",
       "rank": 28,
       "of": 30,
@@ -21268,7 +21318,7 @@
      },
      "weight": {
       "label": "Rotation Weight (lb, minutes-weighted)",
-      "value": 221.6644,
+      "value": 221.9028,
       "better": "neutral",
       "rank": 10,
       "of": 30,
@@ -21276,7 +21326,7 @@
      },
      "age": {
       "label": "Rotation Age (minutes-weighted)",
-      "value": 27.4868,
+      "value": 27.5438,
       "better": "neutral",
       "rank": 9,
       "of": 30,
@@ -21589,7 +21639,7 @@
     "regression": {
      "opp_three_luck": {
       "label": "Opponent 3P% Minus League",
-      "value": -0.0082,
+      "value": -0.0078,
       "better": "low",
       "rank": 13,
       "of": 30,
@@ -21597,15 +21647,15 @@
      },
      "own_three_vs_league": {
       "label": "Own 3P% Minus League",
-      "value": 0.0217,
+      "value": 0.0221,
       "better": "high",
-      "rank": 10,
+      "rank": 9,
       "of": 30,
       "format": "pct"
      },
      "opp_ft_luck": {
       "label": "Opponent FT% Minus League",
-      "value": 0.0018,
+      "value": 0.0016,
       "better": "low",
       "rank": 18,
       "of": 30,
@@ -21623,7 +21673,7 @@
       "label": "Wins Above Point-Differential Wins",
       "value": -0.6977,
       "better": "high",
-      "rank": 24,
+      "rank": 23,
       "of": 30,
       "format": "signed"
      },
@@ -23112,8 +23162,8 @@
    "id": "401909941",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/7 - 8:00 PM EST",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-11-08T01:00Z",
    "away": "WSH",
    "home": "OKC",
@@ -23123,12 +23173,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/okc.png",
    "away_color": "#e31837",
    "home_color": "#007ac1",
-   "away_record": "4-5",
-   "home_record": "7-2",
+   "away_record": "4-6",
+   "home_record": "8-2",
    "away_split_record": "2-3",
    "home_split_record": "4-0",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 75,
+   "home_score": 114,
    "venue": "Paycom Center",
    "venue_city": "Oklahoma City, OK",
    "broadcast": "MNMT / KSBI / Thunder App",
@@ -23191,7 +23241,7 @@
       "label": "Turnover rate",
       "value": 0.1451,
       "better": "low",
-      "rank": 8,
+      "rank": 9,
       "of": 30,
       "format": "pct"
      },
@@ -23207,7 +23257,7 @@
       "label": "Offensive rebound rate",
       "value": 0.2172,
       "better": "high",
-      "rank": 29,
+      "rank": 28,
       "of": 30,
       "format": "pct"
      },
@@ -23223,7 +23273,7 @@
       "label": "Free throws made per field-goal attempt",
       "value": 0.2563,
       "better": "high",
-      "rank": 6,
+      "rank": 5,
       "of": 30,
       "format": "num2"
      },
@@ -23231,7 +23281,7 @@
       "label": "Free throws allowed per field-goal attempt",
       "value": 0.17,
       "better": "low",
-      "rank": 1,
+      "rank": 2,
       "of": 30,
       "format": "num2"
      },
@@ -23271,7 +23321,7 @@
       "label": "Two-point rate made",
       "value": 0.5676,
       "better": "high",
-      "rank": 4,
+      "rank": 5,
       "of": 30,
       "format": "pct"
      },
@@ -24137,7 +24187,7 @@
         "label": "Paint (Non-RA) Share Of Shots",
         "value": 0.205,
         "better": "neutral",
-        "rank": 9,
+        "rank": 8,
         "of": 30,
         "format": "pct"
        },
@@ -24273,7 +24323,7 @@
         "label": "Mid-Range FG% Allowed",
         "value": 0.44,
         "better": "low",
-        "rank": 21,
+        "rank": 22,
         "of": 30,
         "format": "pct"
        },
@@ -24339,7 +24389,7 @@
        "label": "Drives Effective FG%",
        "value": 0.598,
        "better": "high",
-       "rank": 10,
+       "rank": 11,
        "of": 30,
        "format": "pct"
       }
@@ -25390,7 +25440,7 @@
       "tag": "Gets Back Instead Of Crashing",
       "label": "Offensive rebound rate",
       "value": 0.2172,
-      "rank": 29,
+      "rank": 28,
       "of": 30
      }
     ],
@@ -25455,7 +25505,7 @@
     "regression": {
      "opp_three_luck": {
       "label": "Opponent 3P% Minus League",
-      "value": -0.0352,
+      "value": -0.0349,
       "better": "low",
       "rank": 5,
       "of": 30,
@@ -25463,7 +25513,7 @@
      },
      "own_three_vs_league": {
       "label": "Own 3P% Minus League",
-      "value": -0.0247,
+      "value": -0.0243,
       "better": "high",
       "rank": 26,
       "of": 30,
@@ -25471,7 +25521,7 @@
      },
      "opp_ft_luck": {
       "label": "Opponent FT% Minus League",
-      "value": 0.0825,
+      "value": 0.0823,
       "better": "low",
       "rank": 30,
       "of": 30,
@@ -25836,7 +25886,7 @@
       "player_name": "Anthony Davis",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/6583.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 33.1,
       "ppg": 23.4,
       "height_in": 82.0,
@@ -26934,11 +26984,11 @@
     {
      "player_id": "6583",
      "player_name": "Anthony Davis",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Right Ankle Sprain",
-     "comment": "Davis (ankle) is questionable for Saturday's game against the Thunder.",
-     "date": "2026-11-07T19:13Z",
-     "return_date": "2026-11-07"
+     "comment": "Davis (ankle) won't play Saturday against the Thunder.",
+     "date": "2026-11-07T23:33Z",
+     "return_date": "2026-11-09"
     },
     {
      "player_id": "4432187",
@@ -27043,7 +27093,7 @@
       "label": "Turnover rate forced",
       "value": 0.1481,
       "better": "high",
-      "rank": 18,
+      "rank": 17,
       "of": 30,
       "format": "pct"
      },
@@ -27051,7 +27101,7 @@
       "label": "Offensive rebound rate",
       "value": 0.2653,
       "better": "high",
-      "rank": 17,
+      "rank": 16,
       "of": 30,
       "format": "pct"
      },
@@ -28109,7 +28159,7 @@
         "label": "Mid-Range Share Of Shots Allowed",
         "value": 0.1026,
         "better": "neutral",
-        "rank": 8,
+        "rank": 9,
         "of": 30,
         "format": "pct"
        },
@@ -28117,7 +28167,7 @@
         "label": "Mid-Range FG% Allowed",
         "value": 0.4189,
         "better": "low",
-        "rank": 16,
+        "rank": 15,
         "of": 30,
         "format": "pct"
        },
@@ -28130,7 +28180,7 @@
         "label": "Corner Three Share Of Shots Allowed",
         "value": 0.1096,
         "better": "neutral",
-        "rank": 5,
+        "rank": 6,
         "of": 30,
         "format": "pct"
        },
@@ -28159,7 +28209,7 @@
         "label": "Above-The-Break Three FG% Allowed",
         "value": 0.3507,
         "better": "low",
-        "rank": 19,
+        "rank": 20,
         "of": 30,
         "format": "pct"
        },
@@ -28316,7 +28366,7 @@
        "label": "Step-Backs Effective FG%",
        "value": 0.4273,
        "better": "high",
-       "rank": 22,
+       "rank": 23,
        "of": 28,
        "format": "pct"
       }
@@ -29331,7 +29381,7 @@
     "regression": {
      "opp_three_luck": {
       "label": "Opponent 3P% Minus League",
-      "value": -0.0045,
+      "value": -0.0041,
       "better": "low",
       "rank": 14,
       "of": 30,
@@ -29339,7 +29389,7 @@
      },
      "own_three_vs_league": {
       "label": "Own 3P% Minus League",
-      "value": -0.0003,
+      "value": 0.0001,
       "better": "high",
       "rank": 16,
       "of": 30,
@@ -29347,7 +29397,7 @@
      },
      "opp_ft_luck": {
       "label": "Opponent FT% Minus League",
-      "value": 0.0134,
+      "value": 0.0133,
       "better": "low",
       "rank": 21,
       "of": 30,
@@ -30769,8 +30819,8 @@
    "id": "401909942",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/7 - 8:30 PM EST",
+   "game_state": "final",
+   "status_detail": "Final/OT",
    "kickoff_utc": "2026-11-08T01:30Z",
    "away": "ORL",
    "home": "GS",
@@ -30780,12 +30830,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/gs.png",
    "away_color": "#0077c0",
    "home_color": "#fdb927",
-   "away_record": "2-6",
-   "home_record": "6-3",
+   "away_record": "2-7",
+   "home_record": "7-3",
    "away_split_record": "2-2",
    "home_split_record": "4-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 119,
+   "home_score": 126,
    "venue": "Chase Center",
    "venue_city": "San Francisco, CA",
    "broadcast": "",
@@ -30872,7 +30922,7 @@
       "label": "Offensive rebound rate allowed",
       "value": 0.2814,
       "better": "low",
-      "rank": 19,
+      "rank": 20,
       "of": 30,
       "format": "pct"
      },
@@ -30880,7 +30930,7 @@
       "label": "Free throws made per field-goal attempt",
       "value": 0.219,
       "better": "high",
-      "rank": 18,
+      "rank": 17,
       "of": 30,
       "format": "num2"
      },
@@ -31832,7 +31882,7 @@
         "label": "Corner Three FG%",
         "value": 0.3651,
         "better": "high",
-        "rank": 15,
+        "rank": 14,
         "of": 30,
         "format": "pct"
        },
@@ -31876,7 +31926,7 @@
         "label": "At The Rim FG% Allowed",
         "value": 0.6742,
         "better": "low",
-        "rank": 22,
+        "rank": 21,
         "of": 30,
         "format": "pct"
        },
@@ -31939,7 +31989,7 @@
         "label": "Corner Three FG% Allowed",
         "value": 0.3396,
         "better": "low",
-        "rank": 14,
+        "rank": 13,
         "of": 30,
         "format": "pct"
        },
@@ -31984,7 +32034,7 @@
        "label": "Drives Effective FG%",
        "value": 0.5941,
        "better": "high",
-       "rank": 12,
+       "rank": 13,
        "of": 30,
        "format": "pct"
       }
@@ -32007,7 +32057,7 @@
        "label": "Cuts Share Of Shots",
        "value": 0.0519,
        "better": "neutral",
-       "rank": 22,
+       "rank": 21,
        "of": 30,
        "format": "pct"
       },
@@ -32072,7 +32122,7 @@
        "label": "Floaters Effective FG%",
        "value": 0.4861,
        "better": "high",
-       "rank": 12,
+       "rank": 11,
        "of": 30,
        "format": "pct"
       }
@@ -32129,7 +32179,7 @@
        "label": "Other Jumpers Effective FG%",
        "value": 0.5327,
        "better": "high",
-       "rank": 11,
+       "rank": 10,
        "of": 30,
        "format": "pct"
       }
@@ -32885,7 +32935,7 @@
     "regression": {
      "opp_three_luck": {
       "label": "Opponent 3P% Minus League",
-      "value": 0.019,
+      "value": 0.0194,
       "better": "low",
       "rank": 23,
       "of": 30,
@@ -32893,7 +32943,7 @@
      },
      "own_three_vs_league": {
       "label": "Own 3P% Minus League",
-      "value": -0.0051,
+      "value": -0.0047,
       "better": "high",
       "rank": 17,
       "of": 30,
@@ -32901,7 +32951,7 @@
      },
      "opp_ft_luck": {
       "label": "Opponent FT% Minus League",
-      "value": -0.0139,
+      "value": -0.014,
       "better": "low",
       "rank": 12,
       "of": 30,
@@ -34383,7 +34433,7 @@
       "label": "Points allowed per 100 possessions",
       "value": 110.6252,
       "better": "low",
-      "rank": 19,
+      "rank": 18,
       "of": 30,
       "format": "num"
      },
@@ -34407,7 +34457,7 @@
       "label": "Effective field-goal rate",
       "value": 0.5552,
       "better": "high",
-      "rank": 5,
+      "rank": 4,
       "of": 30,
       "format": "pct"
      },
@@ -34447,7 +34497,7 @@
       "label": "Offensive rebound rate allowed",
       "value": 0.2727,
       "better": "low",
-      "rank": 15,
+      "rank": 16,
       "of": 30,
       "format": "pct"
      },
@@ -34543,7 +34593,7 @@
       "label": "Opponent assisted field goals",
       "value": 0.6694,
       "better": "low",
-      "rank": 20,
+      "rank": 21,
       "of": 30,
       "format": "pct"
      },
@@ -35369,7 +35419,7 @@
         "label": "Paint (Non-RA) Share Of Shots",
         "value": 0.1997,
         "better": "neutral",
-        "rank": 12,
+        "rank": 11,
         "of": 30,
         "format": "pct"
        },
@@ -35411,7 +35461,7 @@
         "label": "Corner Three Share Of Shots",
         "value": 0.1211,
         "better": "neutral",
-        "rank": 1,
+        "rank": 2,
         "of": 30,
         "format": "pct"
        },
@@ -35518,7 +35568,7 @@
         "label": "Corner Three Share Of Shots Allowed",
         "value": 0.1024,
         "better": "neutral",
-        "rank": 8,
+        "rank": 9,
         "of": 30,
         "format": "pct"
        },
@@ -35539,7 +35589,7 @@
         "label": "Above-The-Break Three Share Of Shots Allowed",
         "value": 0.3241,
         "better": "neutral",
-        "rank": 23,
+        "rank": 22,
         "of": 30,
         "format": "pct"
        },
@@ -35685,7 +35735,7 @@
        "label": "Pull-Ups Effective FG%",
        "value": 0.4396,
        "better": "high",
-       "rank": 18,
+       "rank": 17,
        "of": 30,
        "format": "pct"
       }
@@ -35742,7 +35792,7 @@
        "label": "Transition Effective FG%",
        "value": 0.6207,
        "better": "high",
-       "rank": 11,
+       "rank": 12,
        "of": 30,
        "format": "pct"
       }
@@ -36699,7 +36749,7 @@
     "regression": {
      "opp_three_luck": {
       "label": "Opponent 3P% Minus League",
-      "value": -0.0028,
+      "value": -0.0024,
       "better": "low",
       "rank": 15,
       "of": 30,
@@ -36707,7 +36757,7 @@
      },
      "own_three_vs_league": {
       "label": "Own 3P% Minus League",
-      "value": 0.0405,
+      "value": 0.0409,
       "better": "high",
       "rank": 1,
       "of": 30,
@@ -36715,7 +36765,7 @@
      },
      "opp_ft_luck": {
       "label": "Opponent FT% Minus League",
-      "value": 0.0125,
+      "value": 0.0124,
       "better": "low",
       "rank": 19,
       "of": 30,
@@ -37433,7 +37483,7 @@
       "player_name": "Draymond Green",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/6589.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 26.7,
       "ppg": 3.0,
       "height_in": 78.0,
@@ -38198,24 +38248,6 @@
    },
    "home_injuries": [
     {
-     "player_id": "6589",
-     "player_name": "Draymond Green",
-     "status": "Day-To-Day",
-     "detail": "Right Elbow Inflammation",
-     "comment": "Green (elbow) is listed as questionable ahead of Saturday's game against Orlando.",
-     "date": "2026-11-06T22:21Z",
-     "return_date": "2026-11-07"
-    },
-    {
-     "player_id": "3134903",
-     "player_name": "Gary Payton II",
-     "status": "Day-To-Day",
-     "detail": "Right Calf",
-     "comment": "Payton is questionable to play Saturday against the Magic due to right calf tightness.",
-     "date": "2026-11-06T22:21Z",
-     "return_date": "2026-11-07"
-    },
-    {
      "player_id": "3102531",
      "player_name": "Kristaps Porzingis",
      "status": "Out",
@@ -38223,15 +38255,6 @@
      "comment": "Porzingis announced on his social media that he's stepping away from basketball.",
      "date": "2026-11-06T21:26Z",
      "return_date": "2027-01-02"
-    },
-    {
-     "player_id": "4997536",
-     "player_name": "Gui Santos",
-     "status": "Day-To-Day",
-     "detail": "Knee",
-     "comment": "Santos (knee) is questionable for Saturday's game versus Orlando, per Nick Friedell of The Athletic.",
-     "date": "2026-11-06T20:49Z",
-     "return_date": "2026-11-07"
     },
     {
      "player_id": "4432171",
@@ -38257,8 +38280,8 @@
    "id": "401909943",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/7 - 9:00 PM EST",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-11-08T02:00Z",
    "away": "HOU",
    "home": "PHX",
@@ -38268,12 +38291,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/phx.png",
    "away_color": "#ce1141",
    "home_color": "#29127a",
-   "away_record": "7-2",
-   "home_record": "2-5",
+   "away_record": "7-3",
+   "home_record": "3-5",
    "away_split_record": "3-1",
    "home_split_record": "2-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 99,
+   "home_score": 102,
    "venue": "Mortgage Matchup Center",
    "venue_city": "Phoenix, AZ",
    "broadcast": "Arizona's Family 3TV / Suns Live",
@@ -38344,7 +38367,7 @@
       "label": "Turnover rate forced",
       "value": 0.1605,
       "better": "high",
-      "rank": 12,
+      "rank": 11,
       "of": 30,
       "format": "pct"
      },
@@ -38376,7 +38399,7 @@
       "label": "Free throws allowed per field-goal attempt",
       "value": 0.1772,
       "better": "low",
-      "rank": 2,
+      "rank": 3,
       "of": 30,
       "format": "num2"
      },
@@ -38448,7 +38471,7 @@
       "label": "Assisted field goals",
       "value": 0.6702,
       "better": "high",
-      "rank": 9,
+      "rank": 10,
       "of": 30,
       "format": "pct"
      },
@@ -39376,7 +39399,7 @@
         "label": "At The Rim FG% Allowed",
         "value": 0.6796,
         "better": "low",
-        "rank": 23,
+        "rank": 22,
         "of": 30,
         "format": "pct"
        },
@@ -39418,7 +39441,7 @@
         "label": "Mid-Range FG% Allowed",
         "value": 0.4462,
         "better": "low",
-        "rank": 22,
+        "rank": 23,
         "of": 30,
         "format": "pct"
        },
@@ -39514,7 +39537,7 @@
        "label": "Cuts Share Of Shots",
        "value": 0.0574,
        "better": "neutral",
-       "rank": 16,
+       "rank": 15,
        "of": 30,
        "format": "pct"
       },
@@ -40243,15 +40266,15 @@
     "size": {
      "height": {
       "label": "Rotation Height (in, minutes-weighted)",
-      "value": 79.2526,
+      "value": 79.1722,
       "better": "neutral",
-      "rank": 6,
+      "rank": 8,
       "of": 30,
       "format": "num"
      },
      "weight": {
       "label": "Rotation Weight (lb, minutes-weighted)",
-      "value": 233.253,
+      "value": 233.2058,
       "better": "neutral",
       "rank": 1,
       "of": 30,
@@ -40259,7 +40282,7 @@
      },
      "age": {
       "label": "Rotation Age (minutes-weighted)",
-      "value": 28.0571,
+      "value": 28.001,
       "better": "neutral",
       "rank": 7,
       "of": 30,
@@ -40574,7 +40597,7 @@
     "regression": {
      "opp_three_luck": {
       "label": "Opponent 3P% Minus League",
-      "value": -0.0361,
+      "value": -0.0357,
       "better": "low",
       "rank": 2,
       "of": 30,
@@ -40582,7 +40605,7 @@
      },
      "own_three_vs_league": {
       "label": "Own 3P% Minus League",
-      "value": 0.0379,
+      "value": 0.0383,
       "better": "high",
       "rank": 2,
       "of": 30,
@@ -40590,7 +40613,7 @@
      },
      "opp_ft_luck": {
       "label": "Opponent FT% Minus League",
-      "value": -0.0463,
+      "value": -0.0465,
       "better": "low",
       "rank": 3,
       "of": 30,
@@ -42110,7 +42133,7 @@
       "label": "Turnover rate",
       "value": 0.1442,
       "better": "low",
-      "rank": 7,
+      "rank": 8,
       "of": 30,
       "format": "pct"
      },
@@ -42126,7 +42149,7 @@
       "label": "Offensive rebound rate",
       "value": 0.2623,
       "better": "high",
-      "rank": 18,
+      "rank": 17,
       "of": 30,
       "format": "pct"
      },
@@ -42198,7 +42221,7 @@
       "label": "Two-point rate allowed",
       "value": 0.5579,
       "better": "low",
-      "rank": 22,
+      "rank": 21,
       "of": 30,
       "format": "pct"
      },
@@ -42222,7 +42245,7 @@
       "label": "Assisted field goals",
       "value": 0.6667,
       "better": "high",
-      "rank": 13,
+      "rank": 14,
       "of": 30,
       "format": "pct"
      },
@@ -43040,7 +43063,7 @@
         "label": "Paint (Non-RA) FG%",
         "value": 0.4786,
         "better": "high",
-        "rank": 6,
+        "rank": 5,
         "of": 30,
         "format": "pct"
        },
@@ -44322,7 +44345,7 @@
     "regression": {
      "opp_three_luck": {
       "label": "Opponent 3P% Minus League",
-      "value": 0.0459,
+      "value": 0.0463,
       "better": "low",
       "rank": 28,
       "of": 30,
@@ -44330,7 +44353,7 @@
      },
      "own_three_vs_league": {
       "label": "Own 3P% Minus League",
-      "value": 0.0119,
+      "value": 0.0123,
       "better": "high",
       "rank": 13,
       "of": 30,
@@ -44338,7 +44361,7 @@
      },
      "opp_ft_luck": {
       "label": "Opponent FT% Minus League",
-      "value": -0.0172,
+      "value": -0.0173,
       "better": "low",
       "rank": 10,
       "of": 30,
@@ -45719,22 +45742,13 @@
    },
    "home_injuries": [
     {
-     "player_id": "5105977",
-     "player_name": "Rasheer Fleming",
-     "status": "Day-To-Day",
-     "detail": "Left Ankle Sprain",
-     "comment": "Fleming (ankle) is questionable for Saturday's game against the Rockets.",
-     "date": "2026-11-07T00:20Z",
-     "return_date": "2026-11-07"
-    },
-    {
      "player_id": "4278402",
      "player_name": "Jordan Goodwin",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Left Calf Not Specified",
-     "comment": "Goodwin (calf) is doubtful for Saturday's game against the Rockets.",
-     "date": "2026-11-07T00:20Z",
-     "return_date": "2026-11-07"
+     "comment": "Goodwin (calf) is out for Saturday's game against the Rockets.",
+     "date": "2026-11-08T01:08Z",
+     "return_date": "2026-11-09"
     },
     {
      "player_id": "4701232",
@@ -45751,8 +45765,8 @@
    "id": "401909944",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/7 - 10:00 PM EST",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-11-08T03:00Z",
    "away": "SA",
    "home": "POR",
@@ -45762,12 +45776,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/por.png",
    "away_color": "#c4ced4",
    "home_color": "#e03a3e",
-   "away_record": "7-2",
-   "home_record": "6-2",
+   "away_record": "8-2",
+   "home_record": "6-3",
    "away_split_record": "3-0",
    "home_split_record": "1-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 125,
+   "home_score": 103,
    "venue": "Moda Center",
    "venue_city": "Portland, OR",
    "broadcast": "KUNP 16 / BlazerVision / DAZN SAS",
@@ -45870,7 +45884,7 @@
       "label": "Free throws allowed per field-goal attempt",
       "value": 0.1809,
       "better": "low",
-      "rank": 3,
+      "rank": 4,
       "of": 30,
       "format": "num2"
      },
@@ -45878,7 +45892,7 @@
       "label": "Share of shots from three",
       "value": 0.3835,
       "better": "neutral",
-      "rank": 26,
+      "rank": 25,
       "of": 30,
       "format": "pct"
      },
@@ -46891,7 +46905,7 @@
         "label": "Paint (Non-RA) FG% Allowed",
         "value": 0.3787,
         "better": "low",
-        "rank": 5,
+        "rank": 6,
         "of": 30,
         "format": "pct"
        },
@@ -46978,7 +46992,7 @@
        "label": "Drives Effective FG%",
        "value": 0.6093,
        "better": "high",
-       "rank": 7,
+       "rank": 8,
        "of": 30,
        "format": "pct"
       }
@@ -47111,7 +47125,7 @@
        "label": "Step-Backs Effective FG%",
        "value": 0.4524,
        "better": "high",
-       "rank": 20,
+       "rank": 21,
        "of": 28,
        "format": "pct"
       }
@@ -47971,14 +47985,6 @@
     },
     "style": [
      {
-      "key": "three_share",
-      "tag": "Avoids The Three",
-      "label": "Share of shots from three",
-      "value": 0.3835,
-      "rank": 26,
-      "of": 30
-     },
-     {
       "key": "rim_share",
       "tag": "Attacks The Rim",
       "label": "At The Rim Share Of Shots",
@@ -48093,7 +48099,7 @@
     "regression": {
      "opp_three_luck": {
       "label": "Opponent 3P% Minus League",
-      "value": 0.033,
+      "value": 0.0334,
       "better": "low",
       "rank": 26,
       "of": 30,
@@ -48101,7 +48107,7 @@
      },
      "own_three_vs_league": {
       "label": "Own 3P% Minus League",
-      "value": -0.0096,
+      "value": -0.0092,
       "better": "high",
       "rank": 19,
       "of": 30,
@@ -48109,7 +48115,7 @@
      },
      "opp_ft_luck": {
       "label": "Opponent FT% Minus League",
-      "value": 0.0288,
+      "value": 0.0287,
       "better": "low",
       "rank": 25,
       "of": 30,
@@ -49664,7 +49670,7 @@
       "label": "Three-point rate made",
       "value": 0.366,
       "better": "high",
-      "rank": 11,
+      "rank": 10,
       "of": 30,
       "format": "pct"
      },
@@ -49712,7 +49718,7 @@
       "label": "Assisted field goals",
       "value": 0.6677,
       "better": "high",
-      "rank": 12,
+      "rank": 13,
       "of": 30,
       "format": "pct"
      },
@@ -50576,7 +50582,7 @@
         "label": "Corner Three Share Of Shots",
         "value": 0.0958,
         "better": "neutral",
-        "rank": 9,
+        "rank": 10,
         "of": 30,
         "format": "pct"
        },
@@ -50584,7 +50590,7 @@
         "label": "Corner Three FG%",
         "value": 0.3871,
         "better": "high",
-        "rank": 9,
+        "rank": 8,
         "of": 30,
         "format": "pct"
        },
@@ -50670,7 +50676,7 @@
         "label": "Mid-Range FG% Allowed",
         "value": 0.4384,
         "better": "low",
-        "rank": 19,
+        "rank": 20,
         "of": 30,
         "format": "pct"
        },
@@ -50691,7 +50697,7 @@
         "label": "Corner Three FG% Allowed",
         "value": 0.3333,
         "better": "low",
-        "rank": 11,
+        "rank": 10,
         "of": 30,
         "format": "pct"
        },
@@ -50793,7 +50799,7 @@
        "label": "Putbacks Effective FG%",
        "value": 0.4815,
        "better": "high",
-       "rank": 29,
+       "rank": 30,
        "of": 30,
        "format": "pct"
       }
@@ -50869,7 +50875,7 @@
        "label": "Step-Backs Effective FG%",
        "value": 0.4712,
        "better": "high",
-       "rank": 17,
+       "rank": 18,
        "of": 28,
        "format": "pct"
       }
@@ -50918,7 +50924,7 @@
        "label": "Share Of Made Shots Assisted",
        "value": 0.6699,
        "better": "neutral",
-       "rank": 11,
+       "rank": 12,
        "of": 30,
        "format": "pct"
       },
@@ -51681,7 +51687,7 @@
     "regression": {
      "opp_three_luck": {
       "label": "Opponent 3P% Minus League",
-      "value": -0.0357,
+      "value": -0.0353,
       "better": "low",
       "rank": 3,
       "of": 30,
@@ -51689,15 +51695,15 @@
      },
      "own_three_vs_league": {
       "label": "Own 3P% Minus League",
-      "value": 0.0178,
+      "value": 0.0181,
       "better": "high",
-      "rank": 11,
+      "rank": 10,
       "of": 30,
       "format": "pct"
      },
      "opp_ft_luck": {
       "label": "Opponent FT% Minus League",
-      "value": 0.0541,
+      "value": 0.054,
       "better": "low",
       "rank": 28,
       "of": 30,
@@ -53174,5 +53180,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-08T00:14:18+00:00"
+ "published_at_utc": "2026-11-08T05:51:45+00:00"
 }
