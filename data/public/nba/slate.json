@@ -122,7 +122,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "8:40 - 3rd",
+   "status_detail": "7:23 - 4th",
    "kickoff_utc": "2026-11-07T22:00Z",
    "away": "DEN",
    "home": "IND",
@@ -136,8 +136,8 @@
    "home_record": "3-6",
    "away_split_record": "2-1",
    "home_split_record": "0-4",
-   "away_score": 74,
-   "home_score": 49,
+   "away_score": 102,
+   "home_score": 92,
    "venue": "Arena CDMX",
    "venue_city": "Mexico City",
    "broadcast": "NBA TV / DAZN IND",
@@ -53174,5 +53174,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-07T23:37:00+00:00"
+ "published_at_utc": "2026-11-08T00:14:18+00:00"
 }
