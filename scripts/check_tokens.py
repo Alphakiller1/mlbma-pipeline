@@ -43,6 +43,7 @@ STAMPED = (
     "mlbma_ui.js",
     "matchup_shared.js",
     "matchup_compare.js",
+    "player_availability_shared.js",
     "matchup_card.js",
     "mlbma_auth_ui.js",
     "model_center.js",

@@ -571,8 +571,12 @@
     var rows = (mapped && mapped.player_projections) || (board && board.player_projections) || [];
     if (sport === 'wnba') return wnbaPlayers(rows);
     return rows.filter(function (p) {
-      return p && p.stats && Object.keys(p.stats).length && propGameKey(sport, p);
+      return propPlayerAvailable(p) && p.stats && Object.keys(p.stats).length && propGameKey(sport, p);
     });
+  }
+
+  function propPlayerAvailable(player) {
+    return player && !global.ChasePlayerAvailability.isOut(player.injury_status || player.status);
   }
 
   function weeklyCovered(sport, rows, games) {
@@ -675,7 +679,7 @@
   function propsSection(sport, board, mapped, games) {
     if (WEEKLY_PROPS[sport] || sport === 'wnba') return weeklyPropsSection(sport, board, mapped, games || []);
     var rows = (mapped && mapped.player_projections) || (board && board.player_projections) || [];
-    rows = rows.filter(function (p) { return p && p.stats; });
+    rows = rows.filter(function (p) { return propPlayerAvailable(p) && p.stats; });
     if (sport !== 'mlb' || !rows.length) return '';
     var slate = String((board && board.slate_date) || '');
     var end = MLB_REGULAR_SEASON_END[Number(slate.slice(0, 4))];

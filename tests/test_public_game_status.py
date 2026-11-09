@@ -24,12 +24,23 @@ globalThis.fetch = async () => ({ok:true,json:async () => ({events:[
 const request = query => onRequestGet({request:new Request('https://chase.test/api/game-status?' + query)});
 const valid = await request('sport=nfl');
 const invalid = await request('sport=nba&date=2026-02-30');
+const nbaEvent = (id, date) => ({
+  id, date, odds: [{spread: 9}], status: {type: {state: 'pre'}},
+  competitions: [{venue: {fullName: 'Example Arena'}, competitors: [
+    {...sides[0], team: {abbreviation: 'LAL', displayName: 'Los Angeles Lakers'}},
+    {...sides[1], team: {abbreviation: 'ATL', displayName: 'Atlanta Hawks'}}
+  ]}]
+});
+globalThis.fetch = async () => ({ok:true,json:async () => ({events:[
+  nbaEvent('3', '2026-11-10T00:00Z'), nbaEvent('4', '2026-11-10T12:00Z')
+]})});
+const tonight = await request('sport=nba&fixtures=1&date=2026-11-09');
 globalThis.fetch = async () => ({ok:false, status:503});
-console.log(JSON.stringify([valid,invalid,await request('sport=nfl')]));
+console.log(JSON.stringify([valid,invalid,tonight,await request('sport=nfl')]));
 """
         process = subprocess.run(["node", "--input-type=module", "-e", source + harness],
                                  text=True, capture_output=True, check=True)
-        valid, invalid, outage = json.loads(process.stdout)
+        valid, invalid, tonight, outage = json.loads(process.stdout)
         self.assertEqual(valid, {"status": 200, "body": {"games": [
             {"id": "1", "state": "final", "away": {"score": 0, "record": "3-5"},
              "home": {"score": 24, "record": None}},
@@ -37,4 +48,10 @@ console.log(JSON.stringify([valid,invalid,await request('sport=nfl')]));
              "home": {"score": None, "record": None}},
         ]}})
         self.assertEqual(invalid, {"status": 400, "body": {"error": "invalid_date"}})
+        self.assertEqual(tonight, {"status": 200, "body": {"games": [{
+            "id": "3", "kickoff_utc": "2026-11-10T00:00:00.000Z", "game_state": "scheduled",
+            "away": "LAL", "home": "ATL", "away_name": "Los Angeles Lakers", "home_name": "Atlanta Hawks",
+            "away_score": None, "home_score": None, "away_record": "3-5", "home_record": None,
+            "venue": "Example Arena", "venue_city": None, "broadcast": None, "neutral": False,
+        }]}})
         self.assertEqual(outage, {"status": 200, "body": {"games": [], "status": "unavailable"}})

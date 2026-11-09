@@ -142,6 +142,7 @@ global.cancelAnimationFrame = noop;
 global.matchMedia = () => ({ matches: false });
 global.setTimeout = noop;
 for (const f of ['dashboard/sports/public_sport_registry.js', 'dashboard/sports/chase_public_slate.js',
+                 'dashboard/player_availability_shared.js',
                  'dashboard/matchup_card.js', 'dashboard/sports/nba.js', 'dashboard/public_game_detail.js']) {
   vm.runInThisContext(fs.readFileSync(root + '/' + f, 'utf8'), { filename: f });
 }
@@ -161,6 +162,47 @@ ChasePublicGameDetail.mount({ sport: 'nba', adapter: ChaseSportNBA, host: host }
 
 def _node():
     return shutil.which("node")
+
+
+@unittest.skipUnless(_node(), "requires Node")
+class NbaSlateDateTests(unittest.TestCase):
+    def test_late_snapshot_uses_the_selected_eastern_schedule(self):
+        process = subprocess.run([_node(), "-e", r"""
+const assert = require('node:assert/strict');
+const Clock = Date;
+global.Date = class extends Clock {
+  constructor(...args) { super(...(args.length ? args : ['2026-11-10T02:30:00Z'])); }
+};
+global.window = global;
+global.location = {search: ''};
+require('./dashboard/sports/nba.js');
+const stale = {sport:'nba', season:2027, slate_date:'2026-11-08', games:[{id:'1', away:'PHI', home:'CHI'}]};
+const tonight = {id:'2', away:'LAL', home:'ATL', kickoff_utc:'2026-11-10T00:00:00Z'};
+let status = {games:[tonight]};
+global.fetch = async (url) => {
+  if (url.endsWith('/slate.json')) return {ok:true, json:async () => stale};
+  if (url.endsWith('/evidence.json')) return {ok:true, json:async () => ({
+    schema:'chase-basketball-evidence/1', sport:'nba', seasons:{}
+  })};
+  assert.match(url, /sport=nba&fixtures=1&date=2026-11-(09|10)$/);
+  return {ok:true, json:async () => status};
+};
+(async () => {
+  const active = await ChaseSportNBA.load();
+  assert.equal(active.dateIso, '2026-11-09');
+  assert.deepEqual(active.games.map(g => g.id), ['2']);
+  assert.equal(active.games[0].away_injuries, null);
+  assert.equal(active.games[0].away_rest_label, 'Not Published');
+  assert.equal(active.scoreboardLoaded, true);
+  const archived = await ChaseSportNBA.load('2026-11-08');
+  assert.deepEqual(archived.games.map(g => g.id), ['1']);
+  status = {games:[]};
+  assert.deepEqual((await ChaseSportNBA.load('2026-11-10')).games, []);
+  status = {games:[], status:'unavailable'};
+  await assert.rejects(ChaseSportNBA.load(), /could not be verified/);
+})().catch(err => { console.error(err); process.exit(1); });
+"""], cwd=ROOT, capture_output=True, text=True, timeout=15)
+        self.assertEqual(process.returncode, 0, process.stderr)
 
 
 @unittest.skipIf(_node() is None or not SLATE.exists(), "node or the NBA slate is unavailable")

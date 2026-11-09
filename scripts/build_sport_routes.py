@@ -185,6 +185,7 @@ def page(sport: str, *, kind: str = "index") -> str:
   <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
   <script src="/dashboard/sports/public_sport_registry.js?v={STAMP}"></script>
   <script src="/dashboard/sports/chase_public_slate.js?v={STAMP}"></script>
+  <script src="/dashboard/player_availability_shared.js?v={STAMP}"></script>
   <script src="/dashboard/matchup_card.js?v={STAMP}"></script>
   <script src="/dashboard/sports/{spec["adapter"]}.js?v={STAMP}"></script>
   <script src="/dashboard/chase_asyncstate.js?v={STAMP}"></script>
@@ -254,6 +255,7 @@ def matchup_page(sport: str) -> str:
   <script src="/dashboard/sports/public_sport_registry.js?v={STAMP}"></script>
   <script src="/dashboard/sports/chase_public_slate.js?v={STAMP}"></script>
   <script src="/dashboard/sports/{spec['adapter']}.js?v={STAMP}"></script>
+  <script src="/dashboard/player_availability_shared.js?v={STAMP}"></script>
   <script src="/dashboard/matchup_card.js?v={STAMP}"></script>
   <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
   <script src="/dashboard/chase_shell.js?v={STAMP}"></script>
@@ -322,6 +324,7 @@ def models_page() -> str:
   <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
   <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
   <script src="/dashboard/sports/chase_board.js?v={STAMP}"></script>
+  <script src="/dashboard/player_availability_shared.js?v={STAMP}"></script>
   <script src="/dashboard/model_center.js?v={STAMP}"></script>
 </body>
 </html>

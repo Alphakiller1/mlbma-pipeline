@@ -27,6 +27,10 @@
     });
   }
 
+  function easternToday() {
+    return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+  }
+
   function seasonLabel(season) {
     var end = Number(season);
     return isFinite(end) && end > 2000 ? (end - 1) + '-' + String(end).slice(2) : 'Season';
@@ -128,7 +132,8 @@
       home_score: g.home_score != null ? g.home_score : null,
       venue: g.venue || null, venue_city: g.venue_city || null, broadcast: g.broadcast || null,
       neutral: g.neutral === true,
-      availability_summary: availabilitySummary(g),
+      nba_fixture_only: slate.fixture_only === true,
+      availability_summary: slate.fixture_only ? 'Injury Report Pending' : availabilitySummary(g),
       // League history, shared by every game: drawn as the age-curve chart.
       aging_curve: ((slate.profile_sources || {}).aging_curve) || null
     };
@@ -141,8 +146,8 @@
       var rot = chooseRotation(g, side);
       mapped[side + '_rotation'] = rot.players;
       mapped[side + '_rotation_basis'] = rot.basis;
-      mapped[side + '_injuries'] = injuryReport(g[side + '_injuries']);
-      mapped[side + '_availability_list'] = availabilityList(g[side + '_injuries'], positionsOf(g, side));
+      mapped[side + '_injuries'] = slate.fixture_only ? null : injuryReport(g[side + '_injuries']);
+      mapped[side + '_availability_list'] = slate.fixture_only ? null : availabilityList(g[side + '_injuries'], positionsOf(g, side));
       mapped[side + '_game_log'] = g[side + '_game_log'] || [];
       // How the club plays and who it plays (nba-model profiles.py), and the
       // schedule's toll into tonight.
@@ -150,8 +155,8 @@
       mapped[side + '_schedule'] = g[side + '_schedule'] || null;
       mapped[side + '_rest_days'] = g[side + '_rest_days'] != null ? g[side + '_rest_days'] : null;
       mapped[side + '_b2b'] = g[side + '_b2b'] === true;
-      mapped[side + '_rest_label'] = restLabel(g[side + '_rest_days'], g[side + '_b2b'] === true);
-      mapped[side + '_rest_short'] = restShort(g[side + '_rest_days'], g[side + '_b2b'] === true);
+      mapped[side + '_rest_label'] = slate.fixture_only ? 'Not Published' : restLabel(g[side + '_rest_days'], g[side + '_b2b'] === true);
+      mapped[side + '_rest_short'] = slate.fixture_only ? 'Rest Pending' : restShort(g[side + '_rest_days'], g[side + '_b2b'] === true);
     });
     return mapped;
   }
@@ -174,41 +179,83 @@
       game[side + '_rates'] = form.rates || {};
       game[side + '_rates_basis'] = seasonLabel(year) + ' · ' + (form.games || 0) + ' Games';
       game[side + '_profile'] = team.profile || null;
-      game[side + '_rotation'] = team.players || [];
-      game[side + '_rotation_basis'] = seasonLabel(year) + ' Per Game · Historical Club';
+      game[side + '_rotation'] = game.nba_fixture_only ? [] : team.players || [];
+      game[side + '_rotation_basis'] = game.nba_fixture_only ? 'Availability Report Pending'
+        : seasonLabel(year) + ' Per Game · Historical Club';
       game[side + '_measured_coverage'] = team.measured_coverage || null;
       game[side + '_databallr'] = team.databallr || null;
     });
     return true;
   }
 
-  function detail(game) {
+  function evidence() {
     if (!evidenceReady) evidenceReady = loadJson(EVIDENCE_URL).then(function (data) {
       if (data.schema !== 'chase-basketball-evidence/1' || data.sport !== 'nba' || !data.seasons) {
         throw new Error('NBA evidence is not published.');
       }
       return data;
+    }).catch(function (error) {
+      evidenceReady = null;
+      throw error;
     });
-    return evidenceReady.then(function (data) {
+    return evidenceReady;
+  }
+
+  function detail(game) {
+    if (game.nba_fixture_only && game.slate_date !== easternToday()) return Promise.resolve(game);
+    return evidence().then(function (data) {
       game.__nbaEvidence = data;
       selectSeason(game, game.__nbaYear || game.season);
       return game;
     }).catch(function () { game.__nbaEvidenceError = true; return game; });
   }
 
+  function desk(slate, source) {
+    return {
+      games: sortGames(slate.games.map(function (g) { return mapGame(g, slate); })),
+      generatedAt: slate.generated_at_utc || null,
+      dataThrough: slate.data_through_utc || null,
+      dateIso: slate.slate_date,
+      source: source,
+      scoreboardLoaded: slate.fixture_only === true
+    };
+  }
+
+  function loadFixtures(date, today) {
+    return loadJson('/api/game-status?sport=nba&fixtures=1&date=' + encodeURIComponent(date)).then(function (feed) {
+      if (feed.status === 'unavailable' || !Array.isArray(feed.games)) {
+        throw new Error('The NBA schedule for this date could not be verified.');
+      }
+      var season = Number(date.slice(0, 4)) + (Number(date.slice(5, 7)) >= 10 ? 1 : 0);
+      var context = date === today && feed.games.length ? evidence().catch(function () { return null; }) : Promise.resolve(null);
+      return context.then(function (data) {
+        var windows = data && data.seasons || {};
+        var current = windows[season] || {}, prior = windows[season - 1] || {};
+        feed.games.forEach(function (game) {
+          ['away', 'home'].forEach(function (side) {
+            game[side + '_form'] = ((current.teams || {})[game[side]] || {}).form;
+            game[side + '_form_prior'] = ((prior.teams || {})[game[side]] || {}).form;
+          });
+        });
+        return desk({
+          season: season, slate_date: date, games: feed.games, fixture_only: true,
+          generated_at_utc: new Date().toISOString(), data_through_utc: current.data_through_utc
+        }, 'ESPN schedule');
+      });
+    });
+  }
+
   // ChaseMatchupCard.loadGames() calls load(); it returns the desk result shape.
-  function load() {
-    return loadJson(SLATE_URL).then(function (slate) {
-      slate = slate || {};
-      if (slate.sport && slate.sport !== 'nba') throw new Error('The NBA slate is not published.');
-      var games = sortGames((slate.games || []).map(function (g) { return mapGame(g, slate); }));
-      return {
-        games: games,
-        generatedAt: slate.generated_at_utc || null,
-        dataThrough: slate.data_through_utc || null,
-        dateIso: slate.slate_date || null,
-        source: 'Published slate'
-      };
+  function load(date) {
+    var today = easternToday();
+    var day = date || today;
+    var gameId = new URLSearchParams(global.location.search).get('game');
+    return loadJson(SLATE_URL).catch(function () { return null; }).then(function (slate) {
+      if (slate && slate.sport === 'nba' && Array.isArray(slate.games) &&
+          (slate.slate_date === day || (!date && gameId && slate.games.some(function (game) {
+            return String(game.id) === gameId;
+          })))) return desk(slate, 'Published slate');
+      return loadFixtures(day, today);
     });
   }
 
