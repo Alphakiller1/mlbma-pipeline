@@ -2,6 +2,7 @@
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
+from html import unescape
 import json
 from pathlib import Path
 import re
@@ -21,12 +22,28 @@ ET = ZoneInfo("America/New_York")
 ROTOWIRE = "https://www.rotowire.com/cbasketball/injury-report.php"
 ACTION = "https://www.actionnetwork.com/ncaab/injury-report"
 COVERS = "https://www.covers.com/sport/basketball/ncaab/injuries"
+COVERS_SCHEDULE = "https://www.covers.com/sports/ncaab/matchups"
+COVERS_GAME = "https://www.covers.com/sport/basketball/ncaab/matchup/"
+COVERS_FIXTURE_ALIASES = {
+    "appalachianstatemountaineers": "appstatemountaineers",
+    "bethesdalionangels": "bethesdaflames",
+    "covenantscots": "covenantfightingscots",
+    "gramblingstatetigers": "gramblingtigers",
+    "liusharks": "longislanduniversitysharks",
+    "louisianamonroewarhawks": "ulmonroewarhawks",
+    "miamiflhurricanes": "miamihurricanes",
+    "pennquakers": "pennsylvaniaquakers",
+    "simpsonstorm": "simpsoniastorm",
+    "southernuniversityatneworleansknights": "southernneworleansknights",
+    "uscupstatespartans": "southcarolinaupstatespartans",
+    "washingtoncollegemdshoremen": "washingtonmarylandshoremen",
+}
 STATUSES = {s.lower(): s for s in ("Out", "Doubtful", "Questionable", "Probable", "Game Time Decision",
                                     "Available", "Out for season", "Out indefinitely", "Suspended")}
 
 
 def key(name):
-    return re.sub(r"[^a-z0-9]", "", unicodedata.normalize("NFKD", name).lower())
+    return re.sub(r"[^a-z0-9]", "", unicodedata.normalize("NFKD", unescape(name)).lower())
 
 
 def get(url):
@@ -88,6 +105,107 @@ def covers(now):
     return result
 
 
+def covers_fixture(url, fixtures, now):
+    soup = BeautifulSoup(get(url).content, "html.parser")
+    event = None
+    for tag in soup.select('script[type="application/ld+json"]'):
+        try:
+            row, _ = json.JSONDecoder().raw_decode((tag.string or "").lstrip())
+        except ValueError:
+            continue
+        if isinstance(row, dict) and row.get("@type") == "SportsEvent":
+            event = row
+            break
+    if not event:
+        return None
+    kickoff = datetime.strptime(unescape(event["startDate"]), "%m/%d/%Y %H:%M:%S %z")
+    if kickoff.astimezone(ET).date() != now.date():
+        return None
+    away, home = (key(event[side + "Team"]["name"]) for side in ("away", "home"))
+    away, home = (COVERS_FIXTURE_ALIASES.get(name, name) for name in (away, home))
+    matched = [game for game, a, h in fixtures if away in a and home in h]
+    if len(matched) != 1:
+        return None
+
+    check = {"game_id": str(matched[0]["id"]), "source": "Covers",
+             "source_url": url + "#injuries"}
+    entries = []
+    for side in ("away", "home"):
+        sections = soup.select(f"section.{side}-team-section")
+        section = next((s for s in sections if s.find(["h2", "h3", "h4"])
+                        and s.find(["h2", "h3", "h4"]).get_text(" ", strip=True).endswith("Injuries")), None)
+        if not section:
+            continue
+        rows = section.select("tbody tr")
+        if len(rows) == 1 and rows[0].get_text(" ", strip=True) == "No injuries to report.":
+            check[side + "_listings"] = 0
+            continue
+        parsed = 0
+        for row in rows:
+            cells = row.find_all("td")
+            if len(cells) != 5:
+                continue
+            link = cells[0].find("a", href=True)
+            status, _, reason = cells[2].get_text(" ", strip=True).partition(" - ")
+            status = STATUSES.get(status.lower().strip())
+            if not link or not status:
+                continue
+            updated = None
+            for fmt in ("%m/%d/%Y", "%m/%d/%y", "%b %d, %Y", "%b %d, '%y"):
+                try:
+                    updated = datetime.strptime(cells[3].get_text(" ", strip=True), fmt).replace(tzinfo=ET)
+                    break
+                except ValueError:
+                    continue
+            if updated and not now - timedelta(days=14) <= updated <= now + timedelta(hours=2):
+                continue
+            note = cells[4].get_text(" ", strip=True)
+            entries.append((str(matched[0][side]), {
+                "player": link["href"].rstrip("/").rsplit("/", 1)[-1],
+                "status": status, "injury": reason or None,
+                "detail": " ".join(note.split()[:20]) if note else None,
+                "updated": updated.astimezone(timezone.utc).isoformat() if updated else None,
+                "source": "Covers", "source_url": check["source_url"],
+            }))
+            parsed += 1
+        if parsed:
+            check[side + "_listings"] = parsed
+    return (check, entries) if "away_listings" in check or "home_listings" in check else None
+
+
+def covers_fixtures(teams, slate, now):
+    day = now.date().isoformat()
+
+    def names(game, side):
+        identity = teams.get(str(game[side]), {}).get("identity", {})
+        return {key(value) for value in (game.get(side + "_name"), identity.get("name"),
+                                        identity.get("short_name"), identity.get("abbr")) if value}
+
+    fixtures = [(g, names(g, "away"), names(g, "home")) for g in slate["games"] if g["slate_date"] == day]
+    if not fixtures:
+        return []
+    soup = BeautifulSoup(get(COVERS_SCHEDULE).content, "html.parser")
+    links = {COVERS_GAME + match.group(1) for tag in soup.select("a[href]")
+             if (match := re.fullmatch(r"(?:https://www\.covers\.com)?/sport/basketball/ncaab/matchup/(\d+)", tag["href"]))}
+
+    def fetch(url):
+        try:
+            return covers_fixture(url, fixtures, now)
+        except (requests.RequestException, ValueError, TypeError, KeyError, AttributeError) as error:
+            print(f"::warning::Covers matchup availability skipped for {url}: {error}")
+            return None
+
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        return [report for report in pool.map(fetch, sorted(links)[:100]) if report]
+
+
+def publish_report(path, payload):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp = path.with_suffix(".tmp")
+    temp.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+    temp.replace(path)
+
+
 def main():
     season = json.loads((ROOT / "manifest.json").read_text(encoding="utf-8"))["season"]
     teams = json.loads((ROOT / "teams.json").read_text(encoding="utf-8"))["teams"]
@@ -99,6 +217,8 @@ def main():
     aliases["wichitastate"].update(aliases["wichitast"])
 
     now = datetime.now(ET)
+    day = now.date().isoformat()
+    archive = ROOT / "availability" / f"{day}.json"
     retrieved = now.astimezone(timezone.utc).isoformat()
     sources = (("RotoWire", ROTOWIRE, rotowire), ("Covers", COVERS, covers),
                ("Action Network", ACTION, action))
@@ -125,6 +245,20 @@ def main():
             row.update(source=name, source_url=url, status=status, retrieved_at_utc=retrieved,
                        updated=stamp.astimezone(timezone.utc).isoformat() if stamp else None)
             candidates[next(iter(clubs))].append(row)
+    checks = {}
+    if archive.is_file():
+        prior = json.loads(archive.read_text(encoding="utf-8"))
+        if prior.get("season") == season and prior.get("slate_date") == day:
+            checks.update((row["game_id"], row) for row in prior.get("game_checks", []))
+    try:
+        slate = json.loads((ROOT / "slate.json").read_text(encoding="utf-8"))
+        for check, rows in covers_fixtures(teams, slate, now):
+            checks[check["game_id"]] = {**check, "retrieved_at_utc": retrieved}
+            for team_id, row in rows:
+                if team_id in teams:
+                    candidates[team_id].append({**row, "retrieved_at_utc": retrieved})
+    except (requests.RequestException, ValueError, TypeError, KeyError) as error:
+        print(f"::warning::Covers fixture availability skipped: {error}")
     if not received:
         raise ValueError("All public injury reports failed")
 
@@ -145,6 +279,7 @@ def main():
             if len(matching) == 1:
                 pid, player = next(iter(matching.items()))
                 result.append(((team_id, pid), {**row, "player": player["displayName"], "team_id": team_id,
+                                               "player_id": pid,
                                                "position": (player.get("position") or {}).get("abbreviation")}))
         return result
 
@@ -154,18 +289,17 @@ def main():
             for player_id, row in group:
                 previous = reports.get(player_id)
                 if not previous or (row["updated"] or "") >= (previous["updated"] or ""):
-                    row.pop("team")
+                    row.pop("team", None)
                     reports[player_id] = row
     if any(received.values()) and not reports:
         raise ValueError("No public designations matched a current roster")
-    payload = {"schema": "chase-cbb-availability/1", "sport": "cbb", "season": season,
-               "sources": sorted(received), "retrieved_at_utc": retrieved,
-               "reports": [reports[k] for k in sorted(reports)]}
-    target = ROOT / "availability.json"
-    temp = target.with_suffix(".tmp")
-    temp.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
-    temp.replace(target)
+    payload = {"schema": "chase-cbb-availability/1", "sport": "cbb", "season": season, "slate_date": day,
+               "sources": sorted(set(received) | ({"Covers"} if checks else set())), "retrieved_at_utc": retrieved,
+               "reports": [reports[k] for k in sorted(reports)], "game_checks": [checks[k] for k in sorted(checks)]}
+    publish_report(archive, payload)
+    publish_report(ROOT / "availability.json", payload)
     print(f"Matched {len(reports)} CBB designations for {len({k[0] for k in reports})} schools from {received}.")
+    print(f"Verified {len(checks)} same-day Covers fixture injury reports.")
 
 
 if __name__ == "__main__":

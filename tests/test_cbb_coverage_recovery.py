@@ -1,14 +1,41 @@
 import json
+from datetime import datetime
 from pathlib import Path
 import subprocess
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 from pipeline.cbb_public.espn_boxes import parse_box, rate_rows
+from scripts import publish_public_cbb_availability as cbb_availability
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 class CbbCoverageRecoveryTests(unittest.TestCase):
+    def test_covers_fixture_report_requires_the_correct_day_and_pairing(self):
+        event = {
+            "@type": "SportsEvent", "startDate": "11/09/2026 23:00:00 &#x2B;00:00",
+            "awayTeam": {"name": "Marshall"}, "homeTeam": {"name": "Ohio State"},
+        }
+        source = '<script type="application/ld+json">' + json.dumps(event) + '\n{}</script>'
+        source += "".join(
+            f'<section class="{side}-team-section"><h3>{school} Injuries</h3>'
+            '<table><tbody><tr><td>No injuries to report.</td></tr></tbody></table></section>'
+            for side, school in (("away", "Marshall"), ("home", "Ohio State"))
+        )
+        game = {"id": "401916315", "away": "276", "home": "194"}
+        pairing = (game, {"marshall"}, {"ohiostate"})
+        now = datetime(2026, 11, 9, 14, tzinfo=cbb_availability.ET)
+        url = cbb_availability.COVERS_GAME + "390159"
+        with patch.object(cbb_availability, "get", return_value=SimpleNamespace(content=source.encode())):
+            check, rows = cbb_availability.covers_fixture(url, [pairing], now)
+            self.assertEqual((check["game_id"], check["away_listings"], check["home_listings"]),
+                             ("401916315", 0, 0))
+            self.assertEqual(rows, [])
+            self.assertIsNone(cbb_availability.covers_fixture(url, [pairing], now.replace(day=10)))
+            self.assertIsNone(cbb_availability.covers_fixture(url, [(game, {"ohiostate"}, {"marshall"})], now))
+
     def test_box_rates_require_a_reconciled_final(self):
         names = ("fieldGoalsMade-fieldGoalsAttempted", "threePointFieldGoalsMade-threePointFieldGoalsAttempted",
                  "freeThrowsMade-freeThrowsAttempted", "offensiveRebounds", "defensiveRebounds", "assists", "totalTurnovers")

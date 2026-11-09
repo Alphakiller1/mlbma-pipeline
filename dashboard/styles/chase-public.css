@@ -6183,6 +6183,21 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-basketball-legend{display:flex;flex-wrap:wrap;gap:var(--space-3);font-size:12px;line-height:1.5;color:var(--text-muted);margin:var(--space-3) 0;text-transform:none}
 .ca-cbb-court .ca-court-badge__big{fill:var(--grade,var(--text-primary))}
 .ca-cbb-court .ca-court-badge__small{fill:var(--text-secondary)}
+.ca-cbb-court[data-court-metric="share"] .ca-court-badge__small{
+  fill:color-mix(in srgb,var(--series-6) var(--shot-volume,0%),var(--text-secondary));
+  font-weight:700
+}
+.ca-pace-icons{display:inline-flex;align-items:center;gap:1px;margin-inline-start:var(--space-1);vertical-align:middle;white-space:nowrap}
+.ca-pace-icons[data-pace-direction="fast"]{color:var(--accent-text)}
+.ca-pace-icons[data-pace-direction="slow"]{color:var(--series-6)}
+.ca-pace-legend{margin-block:var(--space-2)}
+.ca-pace-legend .ca-ico{vertical-align:middle}
+.ca-cbb-usage{display:inline-flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:4px}
+.ca-cbb-usage .ca-usage{min-width:0;gap:4px;justify-content:flex-end}
+.ca-cbb-usage .ca-usage__grid{gap:2px}
+.ca-cbb-usage .ca-usage__grid>i{width:clamp(2px,.4vw,6px);height:10px}
+.ca-cbb-usage .ca-freq-mark{margin-inline-start:0}
+@media(max-width:560px){.ca-cbb-usage .ca-usage{flex-wrap:wrap}.ca-cbb-usage .ca-usage__grid>i{height:7px}}
 .ca-nba-court .ca-court-badge__small{fill:var(--grade,var(--text-secondary))}
 .ca-nba-controls .ca-cbb-note{flex-basis:100%;margin:0}
 .ca-nba-evidence-table th{white-space:normal;min-width:64px}
