@@ -597,7 +597,7 @@ class AdapterHoleTests(unittest.TestCase):
                      "data-matchup-side", "data-scheme-direction", "data-player-side"):
             self.assertNotIn(gone, nfl)
         # Tendencies are how often, not how well: that table carries no grade.
-        tendency = nfl[nfl.index("function nflTendencyPanel"):nfl.index("function nflStarter")]
+        tendency = nfl[nfl.index("function nflTendencyPanel"):nfl.index("var NFL_BACK")]
         self.assertNotIn("rankTone", tendency)
         self.assertNotIn("nflResultCell", tendency)
         # Frequencies carry their league rank as a tier-coloured pill (owner

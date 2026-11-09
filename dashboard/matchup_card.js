@@ -2,6 +2,8 @@
 (function (global) {
   'use strict';
 
+  var availability = global.ChasePlayerAvailability;
+
   function esc(value) {
     return String(value == null ? '' : value)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -113,45 +115,9 @@
     return value == null || value === '' ? fallback : value;
   }
 
-  /* Designations that take a quarterback off the field. Questionable does not:
-     a questionable QB1 still starts far more often than not, so the card names
-     him and shows the designation rather than promoting his backup. */
-  var UNAVAILABLE = { out: 1, doubtful: 1, 'injured reserve': 1, ir: 1, pup: 1,
-    suspension: 1, suspended: 1, 'non football injury': 1 };
-
-  /* The card always names a quarterback. Every club has a depth chart, so
-     "not published" was never the truth - it meant nobody had looked past the
-     first field. The published depth order is walked in order and the first
-     quarterback not ruled out is the one who takes the snap, with his own
-     designation shown beside him if he carries one. */
-  function quarterback(game, side) {
-    var players = game[side + '_players'] || [];
-    var designations = {};
-    (game[side + '_availability_list'] || []).forEach(function (entry) {
-      designations[String(entry.name || '').toLowerCase()] = entry.status;
-    });
-    var arms = players.filter(function (pl) { return pl.position === 'QB'; })
-      .sort(function (a, b) { return (a.depth_rank || 99) - (b.depth_rank || 99); });
-    for (var i = 0; i < arms.length; i++) {
-      var status = designations[String(arms[i].name || '').toLowerCase()];
-      if (status && UNAVAILABLE[String(status).toLowerCase()]) continue;
-      return {
-        name: arms[i].name,
-        depth: arms[i].depth_rank,
-        headshot: arms[i].headshot_url,
-        status: status || '',
-        // Say so when the man taking the snap is not the man at the top of the
-        // chart; that is the fact a reader wants, not the depth number.
-        promoted: arms[i].depth_rank > 1
-      };
-    }
-    var named = game[side + '_starter'];
-    return named ? { name: named, depth: null, headshot: null, status: '', promoted: false } : null;
-  }
-
   function starterName(game, side, sport) {
     if (sport === 'nfl') {
-      var qb = quarterback(game, side);
+      var qb = availability.nflStarter(game, side, 'QB');
       return qb ? qb.name : 'Quarterback Not Published';
     }
     return sideValue(game, side, 'starter', 'Probable Starter Not Published');
@@ -169,11 +135,11 @@
 
   function starterMeta(game, side, sport) {
     if (sport === 'nfl') {
-      var qb = quarterback(game, side);
+      var qb = availability.nflStarter(game, side, 'QB');
       if (!qb) return '';
-      if (qb.status) return 'QB' + (qb.depth || 1) + ' · ' + qb.status;
-      if (qb.promoted) return 'QB' + qb.depth + ' · Starting';
-      return 'QB1';
+      var designation = availability.status(game, side, qb);
+      var depth = 'QB' + (qb.depth_rank || '');
+      return depth + (designation ? ' · ' + designation : qb.depth_rank > 1 ? ' · Next on depth chart' : '');
     }
     var bits = [];
     var role = starterRole(game, side);
@@ -381,9 +347,8 @@
   }
 
 
-  /* NFL availability. The list is factual roster status - designation and
-     injury type as reported - with no projection, snap share or confidence.
-     Capped at five per side on the card; the rest are counted. */
+  /* Matchup previews show undecided designations and a count of ruled-out
+     players. Names and reasons remain in the full injury report. */
   function availabilityPanel(game, side, teamLabel) {
     var list = game[side + '_availability_list'];
     if (!list) return '';
@@ -391,10 +356,10 @@
       return '<section class="ca-avail"><h4 class="ca-ctx-head">' + esc(teamLabel) +
         '</h4><p class="ca-avail-empty">No designations reported</p></section>';
     }
-    var shown = list.slice(0, 5);
+    var remaining = list.filter(function (p) { return !availability.isOut(p.status); });
+    var shown = remaining.slice(0, 5);
     var rows = shown.map(function (p) {
-      var tone = p.status === 'Out' ? 'is-out'
-        : (p.status === 'Doubtful' ? 'is-doubtful' : 'is-questionable');
+      var tone = p.status === 'Doubtful' ? 'is-doubtful' : 'is-questionable';
       return '<li class="ca-avail-row">' +
         '<span class="ca-avail-pos">' + esc(p.position || '--') + '</span>' +
         '<span class="ca-avail-name">' + esc(p.name) + '</span>' +
@@ -402,10 +367,13 @@
         '<span class="ca-avail-status ' + tone + '">' + esc(p.status) + '</span>' +
         '</li>';
     }).join('');
-    var more = list.length - shown.length;
+    var more = remaining.length - shown.length;
+    var ruledOut = list.length - remaining.length;
+    var summary = [more > 0 ? '+' + more + ' more designated' : '',
+      ruledOut ? ruledOut + ' ruled out' : ''].filter(Boolean).join(' · ');
     return '<section class="ca-avail"><h4 class="ca-ctx-head">' + esc(teamLabel) +
-      '</h4><ul class="ca-avail-list">' + rows + '</ul>' +
-      (more > 0 ? '<p class="ca-avail-more">+' + more + ' more designated</p>' : '') +
+      '</h4>' + (rows ? '<ul class="ca-avail-list">' + rows + '</ul>' : '') +
+      (summary ? '<p class="ca-avail-more">' + esc(summary) + '</p>' : '') +
       '</section>';
   }
 
@@ -473,8 +441,9 @@
     var id = sideValue(game, side, 'starter_id', '');
     var shotUrl = null;
     if (sport === 'nfl') {
-      var qb = quarterback(game, side);
-      shotUrl = qb && qb.headshot;
+      var qb = availability.nflStarter(game, side, 'QB');
+      shotUrl = qb && qb.headshot_url;
+      id = null;
     }
     var meta = starterMeta(game, side, sport);
     var era = sport === 'mlb' ? safeNumber(sideValue(game, side, 'era', ''), 2) : '';
@@ -530,7 +499,7 @@
   }
 
   function cfbArm(game, side) {
-    var qb = (game[side + '_qbs'] || [])[0];
+    var qb = availability.available(game, side, game[side + '_qbs'])[0];
     if (!qb || !qb.player_name) {
       return '<div class="ca-matchup-card__arm">' +
         '<span class="ca-matchup-card__shot ca-matchup-card__shot--empty" aria-hidden="true"></span>' +
@@ -550,7 +519,7 @@
       ? (Number(line.completion_pct.value) * 100).toFixed(1) + '%' : null;
     var tds = line.touchdowns && line.touchdowns.value != null ? Math.round(Number(line.touchdowns.value)) + ' TD' : null;
     // A questionable starter is still named, with the designation beside him.
-    var meta = ['QB', qb.status].concat([pct, tds]).filter(Boolean).join(' · ');
+    var meta = ['QB', availability.status(game, side, qb)].concat([pct, tds]).filter(Boolean).join(' · ');
     var ypa = line.yards_per_attempt;
     var tone = ypa && ypa.rank && ypa.of && global.MLBMAAssets && MLBMAAssets.rankChipClass
       ? MLBMAAssets.rankChipClass(ypa.rank, ypa.of) : '';
@@ -583,8 +552,10 @@
      line is this season's once the club has played a few games, and last
      season's (for players on the current roster) until then. */
   function nbaLead(game, side) {
-    var players = (game[side + '_rotation'] || []).filter(function (p) { return p && p.player_name; });
-    var lead = players.slice().sort(function (a, b) { return (b.ppg || 0) - (a.ppg || 0); })[0];
+    var players = availability.available(game, side, game[side + '_rotation']).filter(function (p) {
+      return p.player_name;
+    });
+    var lead = players.sort(function (a, b) { return (b.ppg || 0) - (a.ppg || 0); })[0];
     if (!lead) {
       return '<div class="ca-matchup-card__arm">' +
         '<span class="ca-matchup-card__shot ca-matchup-card__shot--empty" aria-hidden="true"></span>' +
@@ -592,10 +563,7 @@
         esc(teamName('nba', game[side], game[side + '_name'])) +
         '</span><span class="ca-matchup-card__arm-meta is-absent">Player Lines Not Published</span></div></div>';
     }
-    var listed = ((game[side + '_injuries'] || {}).players || []).filter(function (i) {
-      return i.player_id && i.player_id === lead.player_id;
-    })[0];
-    var meta = [lead.position, listed ? listed.status : null,
+    var meta = [lead.position, availability.status(game, side, lead),
       lead.rpg != null ? Number(lead.rpg).toFixed(1) + ' RPG' : null,
       lead.apg != null ? Number(lead.apg).toFixed(1) + ' APG' : null].filter(Boolean).join(' · ');
     var shot = lead.headshot
@@ -921,7 +889,9 @@
     // same desk result shape the SLATE_URL path does.
     if (adapter && typeof adapter.load === 'function') {
       var loaded = adapter.load(dateIso);
-      return sport === 'nba' ? loaded.then(function (result) { return withScoreboard(result, sport); }) : loaded;
+      return sport === 'nba' ? loaded.then(function (result) {
+        return result.scoreboardLoaded ? result : withScoreboard(result, sport);
+      }) : loaded;
     }
     if (!adapter || !adapter.SLATE_URL) return Promise.reject(new Error('Public slate URL missing.'));
     // Chips are graded as cards and game pages paint, so this season's league
@@ -1177,9 +1147,14 @@
       if (desk.results && String(game.game_state || '').toLowerCase() !== 'final') return false;
       if (filter === 'confirmed' && sportLineupState(game).indexOf('Confirmed') < 0) return false;
       if (!term) return true;
+      function starter(side) {
+        if (desk.sport === 'nfl') return (availability.nflStarter(game, side, 'QB') || {}).name;
+        if (desk.sport === 'cfb') return (availability.available(game, side, game[side + '_qbs'])[0] || {}).player_name;
+        return game[side + '_starter'];
+      }
       var text = [game.away, game.home, teamName(desk.sport, game.away, game.away_name),
         teamName(desk.sport, game.home, game.home_name), game.venue, game.broadcast,
-        game.away_starter, game.home_starter].join(' ').toLowerCase();
+        starter('away'), starter('home')].join(' ').toLowerCase();
       return text.indexOf(term) >= 0;
     });
   }
@@ -1202,7 +1177,8 @@
         '<button type="button" data-date-shift="1" aria-label="Next day">→</button></div>';
     } else {
       html += '<strong class="ca-desk-window-label">' +
-        (desk.results ? 'Completed games' : (sport === 'nfl' ? 'NFL Weeks' : (sport === 'nba' ? 'Tip-Off Times' : 'Kickoff windows'))) + '</strong>';
+        (desk.results ? 'Completed games' : (sport === 'nfl' ? 'NFL Weeks' :
+          (sport === 'nba' ? esc(longDate(desk.dateIso)) + ' · Tip-Off Times' : 'Kickoff windows'))) + '</strong>';
     }
     // Search moved to the header (#chaseNavSearch drives the same filter), so
     // the toolbar no longer carries a duplicate field.

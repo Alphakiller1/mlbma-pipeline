@@ -2,6 +2,8 @@
 (function (global) {
   'use strict';
 
+  var availability = global.ChasePlayerAvailability;
+
   function esc(value) {
     return String(value == null ? '' : value)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -3473,21 +3475,6 @@
       .map(function (part) { return part.charAt(0); }).join('').toUpperCase() || '—';
   }
 
-  function designationMap(entries) {
-    var out = {};
-    (entries || []).forEach(function (entry) {
-      out[playerNameKey(entry.name)] = entry;
-    });
-    return out;
-  }
-
-  function designationFor(player, entries, byName) {
-    return byName[playerNameKey(player.name)] || {
-      status: Array.isArray(entries) ? 'Active' : 'Report pending',
-      detail: ''
-    };
-  }
-
   function playerGroup(player, unit) {
     if (player.group) return player.group;
     var pos = String(player.position || '').toUpperCase();
@@ -3546,43 +3533,48 @@
   function lineupUnit(game, side, unit, entries, tabId, panelId) {
     var data = unitData(game, side, unit);
     var hidden = unit === 'defense' ? ' hidden' : '';
-    if (!data || !data.players || !data.players.length) {
+    var players = availability.available(game, side, data && data.players);
+    if (unit === 'offense' && data && data.players) {
+      ['QB', 'RB'].forEach(function (position) {
+        function inSlot(p) { return p.position === position; }
+        if (!data.players.some(inSlot) || players.some(inSlot)) return;
+        var replacement = availability.nflStarter(game, side, position);
+        if (replacement) players.push(replacement);
+      });
+    }
+    if (!players.length) {
       return '<section class="ca-lineup-unit" role="tabpanel" id="' + panelId +
         '" aria-labelledby="' + tabId + '" data-lineup-panel="' + unit + '"' + hidden + '>' +
         pending((unit === 'offense' ? 'Offensive' : 'Defensive') +
           ' starters are not published for this club.') + '</section>';
     }
     var groups = {};
-    data.players.forEach(function (player) {
+    players.forEach(function (player) {
       var group = playerGroup(player, unit);
       (groups[group] = groups[group] || []).push(player);
     });
     var order = unit === 'offense'
       ? ['Receivers', 'Offensive Line', 'Backfield']
       : ['Secondary', 'Linebackers', 'Front'];
-    var byName = designationMap(entries);
+    var fallback = { status: Array.isArray(entries) ? 'Active' : 'Report pending' };
     var content = order.filter(function (group) { return groups[group] && groups[group].length; })
       .map(function (group) {
         return '<section class="ca-lineup-group" data-lineup-group="' +
           esc(group.toLowerCase().replace(/\s+/g, '-')) + '"><header><h4>' + esc(group) + '</h4><span>' +
           groups[group].length + '</span></header><div class="ca-lineup-group__players">' +
           groups[group].map(function (player) {
-            return lineupPlayer(player, designationFor(player, entries, byName));
+            var report = availability.designation(game, side, player);
+            return lineupPlayer(player, {
+              status: (report || {}).status || player.injury_status || player.status || fallback.status,
+              detail: report && report.detail
+            });
           }).join('') + '</div></section>';
       }).join('');
     return '<section class="ca-lineup-unit" role="tabpanel" id="' + panelId +
       '" aria-labelledby="' + tabId + '" data-lineup-panel="' + unit + '"' + hidden + '>' +
       '<div class="ca-lineup-unit__meta"><strong>' + esc(data.package || titleCase(unit)) +
-      '</strong><span>' + data.players.length + ' Published Starters</span></div>' +
+      '</strong><span>' + players.length + ' Listed Players</span></div>' +
       '<div class="ca-lineup-groups">' + content + '</div></section>';
-  }
-
-  function namedQuarterback(game, side) {
-    var players = game[side + '_players'] || [];
-    for (var i = 0; i < players.length; i++) {
-      if (players[i].position === 'QB' && players[i].depth_rank === 1) return players[i].name;
-    }
-    return game[side + '_starter'] || '';
   }
 
   function injuryReport(entries) {
@@ -3604,7 +3596,7 @@
   function lineupBoard(sport, game, side) {
     var entries = game[side + '_availability_list'];
     var label = fullName(sport, game, side);
-    var qb = namedQuarterback(game, side);
+    var qb = (availability.nflStarter(game, side, 'QB') || {}).name;
     var key = side === 'away' ? 'away' : 'home';
     var offenseTab = key + '-offense-tab';
     var defenseTab = key + '-defense-tab';
@@ -3918,7 +3910,7 @@ function seasonToggle(game) {
           '</tr>';
       });
     var defenders = nflWindow.pool === 'schemeCurrent'
-      ? nflDefendersTable(game[defSide + '_defenders_current']) : '';
+      ? nflDefendersTable(availability.available(game, defSide, game[defSide + '_defenders_current'])) : '';
     if (!rows.length && defenders) return head + defenders + '</section>';
     if (!rows.length) return head + pending('Coverage charting is not published for this defense.') + '</section>';
     var context = [
@@ -4349,31 +4341,6 @@ function seasonToggle(game) {
 
   /* ---- starter panels: the quarterback and the lead back ---- */
 
-  function nflStarter(game, side, position) {
-    var unit = unitData(game, side, 'offense') || {};
-    var hit = (unit.players || []).filter(function (p) {
-      return String(p.position || '').toUpperCase() === position;
-    })[0];
-    if (hit) return hit;
-    return (game[side + '_players'] || []).filter(function (p) {
-      return String(p.position || '').toUpperCase() === position;
-    })[0] || null;
-  }
-
-  function nflAvailability(game, side) {
-    var out = {};
-    (game[side + '_availability_list'] || []).forEach(function (entry) {
-      out[playerNameKey(entry.name)] = entry;
-    });
-    return out;
-  }
-
-  function nflStatusText(entry) {
-    if (!entry) return '';
-    var st = String(entry.status || '');
-    return st === 'Injured Reserve' ? 'IR' : st;
-  }
-
   var NFL_BACK = {
     QB: {
       family: 'passing', volume: 'dropbacks', unit: 'Dropbacks', minimum: 10, floor: 10, opponent: true,
@@ -4580,8 +4547,8 @@ function seasonToggle(game) {
 
   function nflBackPanel(sport, game, side, position) {
     var spec = NFL_BACK[position];
-    var starter = nflStarter(game, side, position);
-    var name = starter ? starter.name : (position === 'QB' ? game[side + '_starter'] : null);
+    var starter = availability.nflStarter(game, side, position);
+    var name = starter && starter.name;
     var key = playerNameKey(name);
     var profiles = (game[side + '_player_scheme'] || []).filter(function (p) {
       return p.play_family === spec.family && playerNameKey(p.player_name) === key;
@@ -4591,16 +4558,16 @@ function seasonToggle(game) {
     }
     var stats = statsFor(game[side + '_player_stats']);
     var prior = statsFor(game[side + '_player_stats_prior']);
-    var status = nflAvailability(game, side)[key];
+    var status = availability.status(game, side, starter);
     var shot = starter && starter.headshot_url
       ? '<img class="ca-starter-shot" src="' + esc(starter.headshot_url) + '" width="72" height="72" alt="' +
         esc(name || '') + '" loading="lazy" decoding="async">' : '';
     var head = '<section class="ca-starter-panel"><header class="ca-starter-head">' + shot +
       '<div><p class="ca-starter-team">' +
       esc(nflVs(sport, game, side, position, position === 'RB' ? 'Run Defense' : 'Defense')) +
-      (status ? ' · ' + esc(nflStatusText(status)) : '') + '</p>' +
+      (status ? ' · ' + esc(status) : '') + '</p>' +
       '<h3 class="ca-starter-name">' + esc(name || 'Starter Not Published') + '</h3></div></header>';
-    if (!name) return head + pending('No ' + position + ' is published on the depth chart.') + '</section>';
+    if (!name) return head + pending('No available ' + position + ' is listed on the depth chart.') + '</section>';
 
     var current = profiles[0] || null;
     // Tracking is NFL Next Gen, published for the current season only; it
@@ -4792,7 +4759,7 @@ function seasonToggle(game) {
     }
     var pools = { yards_per_carry: pool('yards_per_carry'), epa_per_carry: pool('epa_per_carry'),
       success_rate: pool('success_rate') };
-    var carriers = (mine.carriers || []).filter(function (c) { return c.carries > 0; });
+    var carriers = availability.available(game, offSide, mine.carriers).filter(function (c) { return c.carries > 0; });
     if (carriers.length) {
       var rows = carriers.map(function (c) {
         // Carriers are placed among every carrier on the slate (a pool near a
@@ -4959,7 +4926,7 @@ function seasonToggle(game) {
      once it holds a real sample, otherwise the latest season that does, and
      the heading always says which one it is. */
   function nflRunProfile(game, side) {
-    var back = nflStarter(game, side, 'RB');
+    var back = availability.nflStarter(game, side, 'RB');
     if (!back) return null;
     var key = playerNameKey(back.name);
     var seasons = (game[side + '_player_scheme'] || []).filter(function (p) {
@@ -5053,8 +5020,7 @@ function seasonToggle(game) {
 
   function nflCatchersPanel(sport, game, side) {
     var defSide = nflOther(side);
-    var status = nflAvailability(game, side);
-    var players = (game[side + '_player_stats'] || []).filter(function (p) {
+    var players = availability.available(game, side, game[side + '_player_stats']).filter(function (p) {
       return Number(p.targets) > 0;
     }).sort(function (a, b) { return Number(b.targets) - Number(a.targets); });
     var head = '<section class="ca-form-panel"><h3>' +
@@ -5085,8 +5051,7 @@ function seasonToggle(game) {
     // trick-play catch is not a receiving line.
     list = (list || []).filter(function (p) { return ['WR', 'TE', 'RB', 'FB'].indexOf(p.position) >= 0; });
     var rows = list.map(function (p) {
-      var st = status[playerNameKey(p.player_name)];
-      var stText = nflStatusText(st);
+      var stText = availability.status(game, side, p);
       // Every row is graded (owner rule): a player under the target floor is
       // placed against the players above it; his targets are in the row.
       var thin = false;
@@ -5174,7 +5139,7 @@ function seasonToggle(game) {
   }
 
   function nflReceiverMatrices(sport, game, side, statRows) {
-    var profiles = game[side + '_player_coverage'] || [];
+    var profiles = availability.available(game, side, game[side + '_player_coverage']);
     if (!profiles.length) return '';
     // The leading receivers this season, by targets, who have a split profile.
     var order = (statRows || []).map(function (p) { return playerNameKey(p.player_name); });
@@ -5348,7 +5313,7 @@ function seasonToggle(game) {
         nflMixTable('Position', [dNick + ' Allow', dNick + ' TD / G Allowed'], posRows) + '</div>';
     }
 
-    var players = own.players || [];
+    var players = availability.available(game, offSide, own.players);
     function shareCell(p, metric) {
       var rank = (p.ranks || {})[metric];
       var thin = !rank;
@@ -6168,15 +6133,13 @@ function seasonToggle(game) {
       esc(initials(name)) + '</span>';
   }
 
-  function cfbPlayerCell(player, position, volume) {
+  function cfbPlayerCell(player, position, volume, status) {
     var url = cfbHeadshotUrl(player.player_id);
     var shot = url
       ? '<img class="ca-cfb-player__shot" src="' + esc(url) + '" alt="" width="40" height="40" ' +
         'loading="lazy" decoding="async" data-initials="' + esc(initials(player.player_name)) + '">'
       : cfbInitials(player.player_name);
-    // The injury report's designation rides beside the position, so a ruled-out
-    // passer is never read as the man taking the snap.
-    var label = [position, player.status].filter(Boolean).join(' · ');
+    var label = [position, status].filter(Boolean).join(' · ');
     return '<td><span class="ca-cfb-player">' + shot + '<span class="ca-cfb-player__id">' +
       esc(player.player_name) + ' <span class="ca-lineup-player__position">' + esc(label) +
       '</span><small class="ca-qb-volume">' + esc(volume) + '</small></span></span></td>';
@@ -6205,7 +6168,7 @@ function seasonToggle(game) {
 
   function cfbQbPanel(sport, game, offSide) {
     var defSide = offSide === 'away' ? 'home' : 'away';
-    var qbs = game[offSide + '_qbs'] || [];
+    var qbs = availability.available(game, offSide, game[offSide + '_qbs']);
     var defense = game[defSide + '_defense_splits'] || {};
     var defName = cfbName(sport, game, defSide);
     var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' +
@@ -6214,7 +6177,8 @@ function seasonToggle(game) {
     var lineRows = qbs.map(function (q) {
       var line = q.line || {};
       var volume = line.attempts != null ? line.completions + '/' + line.attempts : '';
-      return '<tr>' + cfbPlayerCell(q, q.depth_rank === 1 ? 'QB · Starting' : 'QB', volume) +
+      return '<tr>' + cfbPlayerCell(q, q.depth_rank === 1 ? 'QB · Starting' : 'QB', volume,
+        availability.status(game, offSide, q)) +
         CFB_QB_LINE.map(function (c) {
           return line[c[0]] ? cfbCell(line[c[0]]) : '<td class="num ca-vs-none">Not Rated</td>';
         }).join('') + '</tr>';
@@ -6238,12 +6202,12 @@ function seasonToggle(game) {
     ['touchdowns', 'TD'], ['long', 'Long']];
 
   function cfbRushersPanel(sport, game, side) {
-    var list = game[side + '_rushers'] || [];
+    var list = availability.available(game, side, game[side + '_rushers']);
     var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' +
       esc(cfbName(sport, game, side) + ' Ball Carriers') + '</h3>';
     if (!list.length) return head + pending('Rushing lines are not published yet.') + '</section>';
     var rows = list.map(function (r) {
-      return '<tr>' + cfbPlayerCell(r, r.position || '', r.carries + ' car') +
+      return '<tr>' + cfbPlayerCell(r, r.position || '', r.carries + ' car', availability.status(game, side, r)) +
         CFB_RUSHER_COLS.map(function (c) {
           return r[c[0]] ? cfbCell(r[c[0]]) : '<td class="num ca-vs-none">Not Rated</td>';
         }).join('') + '</tr>';
@@ -6470,16 +6434,14 @@ function seasonToggle(game) {
   }
 
   function nbaRotationPanel(sport, game, side) {
-    var list = (game[side + '_rotation'] || []).slice().sort(function(a,b){return (b.mpg||0)-(a.mpg||0);}).slice(0, 10);
+    var list = availability.available(game, side, game[side + '_rotation'])
+      .sort(function (a, b) { return (b.mpg || 0) - (a.mpg || 0); }).slice(0, 10);
     var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' +
       esc(fullName(sport, game, side) + ' Rotation') + '</h3>';
     if (!list.length) return head + pending('Player lines are not published for this club yet.') + '</section>';
-    var status = {};
-    if (!game.__nbaYear || game.__nbaYear === Number(game.season)) ((game[side + '_injuries'] || {}).players || []).forEach(function (i) {
-      if (i.player_id) status[i.player_id] = i.status;
-    });
+    var current = !game.__nbaYear || game.__nbaYear === Number(game.season);
     var rows = list.map(function (pl) {
-      return '<tr>' + nbaPlayerCell(pl, status[pl.player_id]) + NBA_ROTATION.map(function (col) {
+      return '<tr>' + nbaPlayerCell(pl, current ? availability.status(game, side, pl) : '') + NBA_ROTATION.map(function (col) {
         var text=esc(nbaFigure(pl[col[0]], col[2])), baseline=game.__nbaWindow && game.__nbaWindow.player_baselines[col[0]];
         var tone=baseline && pl.mpg>=10 ? global.MLBMAAssets.baselineChipClass(pl[col[0]],baseline,true) : '';
         return '<td class="num"><span class="ca-basketball-value '+tone+'">' + text + '</span></td>';
@@ -6532,6 +6494,10 @@ function seasonToggle(game) {
    * ------------------------------------------------------------------ */
   function nbaProf(game, side) {
     return game[side + '_profile'] || {};
+  }
+
+  function nbaPlayers(game, side) {
+    return game.nba_fixture_only ? [] : availability.available(game, side, nbaProf(game, side).players);
   }
 
   function nbaProfBasis(sport, game) {
@@ -6675,7 +6641,7 @@ function seasonToggle(game) {
   }
 
   function nbaDefendersPanel(sport, game, side) {
-    var players = nbaProf(game, side).players || [];
+    var players = nbaPlayers(game, side);
     var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' + esc(fullName(sport, game, side) +
       ' Defenders By Zone') + '</h3>';
     var withD = players.filter(function (p) { return (p.defense_zones || []).length; });
@@ -6685,7 +6651,7 @@ function seasonToggle(game) {
     var rows = withD.map(function (p) {
       var by = {};
       p.defense_zones.forEach(function (z) { by[z.zone] = z; });
-      return '<tr>' + nbaPlayerCell(p, p.status) + cols.map(function (c) { return nbaDiffCell(by[c[0]]); }).join('') +
+      return '<tr>' + nbaPlayerCell(p, availability.status(game, side, p)) + cols.map(function (c) { return nbaDiffCell(by[c[0]]); }).join('') +
         '<td class="num">' + esc(p.tracking && p.tracking.speed_def != null ? Number(p.tracking.speed_def).toFixed(2) : '—') +
         '</td></tr>';
     });
@@ -6711,7 +6677,7 @@ function seasonToggle(game) {
 
   function nbaOnFloorPanel(sport, game, side) {
     var prof = nbaProf(game, side);
-    var players = (prof.players || []).filter(function (p) { return (p.defense_onfloor || []).length; });
+    var players = nbaPlayers(game, side).filter(function (p) { return (p.defense_onfloor || []).length; });
     var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' + esc(fullName(sport, game, side) +
       ' On-Floor Defense By Zone') + '</h3>';
     if (!players.length) return head + pending('Not enough on-floor shots for this club yet.') + '</section>';
@@ -6719,7 +6685,7 @@ function seasonToggle(game) {
     var rows = players.map(function (p) {
       var by = {};
       p.defense_onfloor.forEach(function (z) { by[z.zone] = z; });
-      return '<tr>' + nbaPlayerCell(p, p.status) + cols.map(function (c) { return nbaOnFloorCell(by[c[0]]); }).join('') +
+      return '<tr>' + nbaPlayerCell(p, availability.status(game, side, p)) + cols.map(function (c) { return nbaOnFloorCell(by[c[0]]); }).join('') +
         '</tr>';
     });
     return head + '<p class="ca-lineup-context">' + esc('Opponents’ FG% With Him On The Floor Minus With Him ' +
@@ -6862,8 +6828,8 @@ function seasonToggle(game) {
 
   function nbaShooterRegressionPanel(sport, game, side) {
     var prof = {};
-    (nbaProf(game, side).players || []).forEach(function (p) { prof[p.player_id] = p; });
-    var rot = (game[side + '_rotation'] || []).filter(function (p) { return prof[p.player_id]; });
+    nbaPlayers(game, side).forEach(function (p) { prof[p.player_id] = p; });
+    var rot = availability.available(game, side, game[side + '_rotation']).filter(function (p) { return prof[p.player_id]; });
     var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' + esc(fullName(sport, game, side) +
       ' Shooters And Age') + '</h3>';
     if (!rot.length) return head + pending('Player profiles are not published for this club yet.') + '</section>';
@@ -6872,7 +6838,7 @@ function seasonToggle(game) {
       var gap = p.three_pct != null && rec.pct != null ? (p.three_pct - rec.pct) * 100 : null;
       var ageO = age.offense, ageD = age.defense;
       var ageTone = ageO == null ? '' : ageO >= 0.3 ? 'c-good' : ageO <= -0.3 ? 'c-weak' : 'c-mid';
-      return '<tr>' + nbaPlayerCell(p, pr.status) +
+      return '<tr>' + nbaPlayerCell(p, availability.status(game, side, p)) +
         '<td class="num">' + esc(nbaPct(p.three_pct)) + '</td>' +
         '<td class="num">' + esc(rec.pct != null ? nbaPct(rec.pct) + ' (' + rec.attempts + ')' : '—') + '</td>' +
         '<td class="num">' + esc(gap == null ? '—' : (gap > 0 ? '+' : '') + gap.toFixed(1)) + '</td>' +
@@ -6887,7 +6853,7 @@ function seasonToggle(game) {
   }
 
   function nbaPlayerTypesPanel(sport, game, side) {
-    var players = (nbaProf(game, side).players || []).filter(function (p) { return (p.play_types || []).length; });
+    var players = nbaPlayers(game, side).filter(function (p) { return (p.play_types || []).length; });
     var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' + esc(fullName(sport, game, side) +
       ' How Each Player Scores') + '</h3>';
     if (!players.length) return head + pending('Player play types are not published yet.') + '</section>';
@@ -6904,21 +6870,21 @@ function seasonToggle(game) {
           '<small class="ca-qb-volume">' + esc(nbaPct(t.freq, 0) + ' · ' + (t.ppp != null ? Number(t.ppp).toFixed(2) : '—') +
           ' PPP' + (pct != null ? ' · ' + pct + ordinal(pct) + ' Pct' : '')) + '</small></td>';
       }).join('');
-      return '<tr>' + nbaPlayerCell(p, p.status) + cells + '</tr>';
+      return '<tr>' + nbaPlayerCell(p, availability.status(game, side, p)) + cells + '</tr>';
     });
     return head + '<p class="ca-lineup-context">Synergy Play Types · Share Of His Possessions · Points Per Possession' +
       ' · League Percentile</p>' + nflSplitTable(['Most Used', 'Second', 'Third'], rows, 'Player', false) + '</section>';
   }
 
   function nbaPlayerZonesPanel(sport, game, side) {
-    var players = (nbaProf(game, side).players || []).filter(function (p) { return (p.zones || []).length; });
+    var players = nbaPlayers(game, side).filter(function (p) { return (p.zones || []).length; });
     var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' + esc(fullName(sport, game, side) +
       ' Where Each Player Shoots') + '</h3>';
     if (!players.length) return head + pending('Player shot locations are not published yet.') + '</section>';
     var rows = players.map(function (p) {
       var by = {};
       p.zones.forEach(function (z) { by[z.zone] = z; });
-      return '<tr>' + nbaPlayerCell(p, p.status) + NBA_ZONES.map(function (z) {
+      return '<tr>' + nbaPlayerCell(p, availability.status(game, side, p)) + NBA_ZONES.map(function (z) {
         var e = by[z[0]];
         if (!e || !e.fga) return '<td class="num ca-vs-none">—</td>';
         return '<td class="num" title="' + esc(z[1] + ': ' + Number(e.fga).toFixed(1) + ' attempts per game') + '">' +
@@ -6930,13 +6896,13 @@ function seasonToggle(game) {
   }
 
   function nbaPlayerBioPanel(sport, game, side) {
-    var players = nbaProf(game, side).players || [];
+    var players = nbaPlayers(game, side);
     var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' + esc(fullName(sport, game, side) +
       ' Bodies And Engines') + '</h3>';
     if (!players.length) return head + pending('Player bio is not published yet.') + '</section>';
     var rows = players.map(function (p) {
       var t = p.tracking || {};
-      return '<tr>' + nbaPlayerCell(p, p.status) +
+      return '<tr>' + nbaPlayerCell(p, availability.status(game, side, p)) +
         '<td class="num">' + esc(p.height || '—') + '</td>' +
         '<td class="num">' + esc(p.weight_lb != null ? String(Math.round(p.weight_lb)) : '—') + '</td>' +
         '<td class="num">' + esc(p.age != null ? String(Math.round(p.age)) : '—') + '</td>' +
@@ -7173,7 +7139,7 @@ function seasonToggle(game) {
       return ty;
     }
     ['away', 'home'].forEach(function (side, si) {
-      (nbaProf(game, side).players || []).forEach(function (p, i) {
+      nbaPlayers(game, side).forEach(function (p, i) {
         var ch = p.age_change || {};
         if (p.age == null || ch.offense == null) return;
         var v = ch.offense + ch.defense;
@@ -7204,7 +7170,7 @@ function seasonToggle(game) {
   /* One bar per rotation player, split by zone (rim to above-break three),
      in shades of the club's colour: the shot diet reads down the column. */
   function nbaShotMapsPanel(sport, game, side) {
-    var players = (nbaProf(game, side).players || []).filter(function (p) { return (p.zones || []).length; });
+    var players = nbaPlayers(game, side).filter(function (p) { return (p.zones || []).length; });
     var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' + esc(nflNick(sport, game, side) +
       ' Shot Distribution') + '</h3>';
     if (!players.length) return head + pending('Player shot locations are not published yet.') + '</section>';
@@ -7379,7 +7345,9 @@ function seasonToggle(game) {
   }
   function nbaControls(game) {
     var years=game.__nbaEvidence ? Object.keys(game.__nbaEvidence.seasons).sort().reverse() : [];
-    return '<div class="ca-analysis-scope ca-cbb-controls ca-nba-controls"><div><span class="ca-lineup-context">Team and player statistics</span><strong>Choose the season in view</strong></div><div class="ca-cbb-options" role="group" aria-label="NBA evidence season">'+years.map(function(y){return '<button type="button" data-nba-season="'+y+'" aria-pressed="'+(Number(y)===game.__nbaYear)+'" class="'+(Number(y)===game.__nbaYear?'is-on':'')+'">'+(Number(y)-1)+'–'+y.slice(2)+'</button>';}).join('')+'</div><p class="ca-cbb-note">'+(game.__nbaWindow?'ESPN games through '+esc(nbaEvidenceStamp(game.__nbaWindow.data_through_utc))+'. Fixture and availability remain current.':game.__nbaEvidenceError?'Two-season evidence is temporarily unavailable. Panels retain their stated slate basis.':'Loading two-season evidence…')+'</p></div>';
+    var freshness = game.nba_fixture_only ? 'Fixture from ESPN. Current availability is pending.'
+      : 'Fixture and availability remain current.';
+    return '<div class="ca-analysis-scope ca-cbb-controls ca-nba-controls"><div><span class="ca-lineup-context">Team and player statistics</span><strong>Choose the season in view</strong></div><div class="ca-cbb-options" role="group" aria-label="NBA evidence season">'+years.map(function(y){return '<button type="button" data-nba-season="'+y+'" aria-pressed="'+(Number(y)===game.__nbaYear)+'" class="'+(Number(y)===game.__nbaYear?'is-on':'')+'">'+(Number(y)-1)+'–'+y.slice(2)+'</button>';}).join('')+'</div><p class="ca-cbb-note">'+(game.__nbaWindow?'ESPN games through '+esc(nbaEvidenceStamp(game.__nbaWindow.data_through_utc))+'. '+freshness:game.__nbaEvidenceError?'Two-season evidence is temporarily unavailable. Panels retain their stated slate basis.':game.nba_fixture_only?freshness:'Loading two-season evidence…')+'</p></div>';
   }
   function repaintNba(host,game) {
     var stack=host.querySelector('.ca-detail-stack');
@@ -7506,11 +7474,13 @@ function seasonToggle(game) {
       '<p class="ca-cbb-note">Gap is the observed offense-minus-allowed difference. '+(cbbYear(game)===2027?'Early-season sample.':'Prior-season roster and opponents differ.')+' '+(schema==='coordinates'?'Chase coordinate zones; counts reflect available shot events.':'CBB Analytics six-zone definitions.')+' Through '+esc(shown.totals.data_through||'not published')+'.</p>');
   }
   function cbbRotation(sport,game,side) {
+    if (game.cbb_availability_pending) return pending('Checking the current availability report…');
     var c=cbbTeam(game,side);if(!c)return pending('Player evidence is unavailable.');
-    var players=(c.players||[]).slice().sort(function(a,b){return (b.Min_pct||0)-(a.Min_pct||0);}).slice(0,12);
+    var players=availability.available(game,side,c.players).sort(function(a,b){return (b.Min_pct||0)-(a.Min_pct||0);}).slice(0,12);
+    if (!players.length) return pending('No player lines are available for this matchup and season.');
     var rows=players.map(function(p){return [esc(String(p.Name||'').replace(/\s*\(\d+\).*$/,'')),cbbNumber(p.G,0),cbbNumber(p.Min_pct,0)].concat(['Pts','Reb','Ast','TS'].map(function(k){var qualified=(p.G||0)>0&&(p.Min_pct||0)>=10&&(k!=='TS'||(p.FGA||0)+(p.FTA||0)>0);return qualified?cbbMetric(game,p[k],cbbNumber(p[k])+(k==='TS'?'%':''),k,true,'player'):cbbNumber(p[k])+(k==='TS'&&p[k]!=null?'%':'');}));});
     return cbbPanel(cbbSchool(game,side)+' Observed Players',cbbSeason(game)+' · Basketball Quant · per-game output',cbbTable(['Player','GP','MIN%','PTS','REB','AST','TS%'],rows)+
-      global.ChaseCbbCharts.metricLegend()+'<p class="ca-cbb-note">Production colors compare same-season players with at least 10% reported MIN%; higher means more output, not an overall player grade. Games and MIN% remain neutral. '+(cbbYear(game)===2026?'Prior-season players; this is not the current roster. ':'')+'Starting assignments and availability are not verified.</p>');
+      global.ChaseCbbCharts.metricLegend()+'<p class="ca-cbb-note">Production colors compare same-season players with at least 10% reported MIN%; higher means more output, not an overall player grade. Games and MIN% remain neutral. '+(cbbYear(game)===2026?'Prior-season production. ':'')+(game.cbb_availability_as_of?'Current injury designations are in Availability.':'A current availability report is unavailable.')+'</p>');
   }
   function cbbDefense(sport,game,side) {
     var opp=side==='away'?'home':'away',a=cbbTeam(game,side),b=cbbTeam(game,opp),chart=global.ChaseCbbCharts;
@@ -7697,6 +7667,11 @@ function seasonToggle(game) {
   }
 
   function cfbSections(sport, game) {
+    function quarterbackName(side) {
+      var qbs = game[side + '_qbs'] || [];
+      if (qbs.length) return (availability.available(game, side, qbs)[0] || {}).player_name;
+      return availability.available(game, side, [game[side + '_starter']])[0];
+    }
     return [
       section('cfb-efficiency', 'Efficiency', 'Scoring, Yardage And Per-Play Production',
         nflDuo(cfbLedgerPanel, sport, game, 'efficiency')),
@@ -7733,12 +7708,12 @@ function seasonToggle(game) {
         '<div class="ca-detail-duo">' + teamPanel(sport, game, 'away', [
           ['Record', value(game.away_record)],
           ['Conference', value(game.away_conference || game.away_conf)],
-          ['Quarterback', value(game.away_starter)],
+          ['Quarterback', value(quarterbackName('away'))],
           ['Travel', value(game.away_travel)]
         ]) + teamPanel(sport, game, 'home', [
           ['Record', value(game.home_record)],
           ['Conference', value(game.home_conference || game.home_conf)],
-          ['Quarterback', value(game.home_starter)],
+          ['Quarterback', value(quarterbackName('home'))],
           ['Travel', value(game.home_travel)]
         ]) + '</div>')
     ].join('');
@@ -7879,7 +7854,10 @@ function seasonToggle(game) {
       var extra = {};
       render(host, sport, game, extra, result);
       if (result.statusReady) result.statusReady.then(function(updated){
-        if (sport === 'cbb' && updated.availabilityChecked) paintSection(host,'cbb-availability',nflDuo(cbbAvailability,sport,game));
+        if (sport === 'cbb' && updated.availabilityChecked) {
+          paintSection(host, 'cbb-availability', nflDuo(cbbAvailability, sport, game));
+          paintSection(host, 'cbb-rotation', nflDuo(cbbRotation, sport, game));
+        }
         if(!updated.statusObservedAt)return;
         if (sport === 'cbb' && (game.away_cbb || game.home_cbb)) {
           paintSection(host,'cbb-game-log',nflDuo(cbbGames,sport,game,false));

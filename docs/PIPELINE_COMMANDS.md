@@ -483,6 +483,10 @@ C:\Users\chase\crawl_env\Scripts\python.exe scripts\integrate_chase_nav.py
 
 The Publish CBB Slate workflow refreshes the current team and shot evidence daily during the season. It checks the public Action Network, Covers and RotoWire injury reports at additional scheduled times and verifies each listed player against the current ESPN roster.
 
+Public matchup views use the fixture's published availability to exclude ruled-out players from previews, lineups, and player-level analysis in both evidence seasons. The full injury reports retain the source designations. Season statistics and grading baselines keep their original samples.
+
+The NBA matchup desk checks its published slate against the selected Eastern date. When the dated snapshot is delayed, it uses the ESPN schedule and labels fixture-specific player evidence as pending. The current slate keeps its published injury and rest data when the daily snapshot arrives.
+
 Current gaps in team rates and starter heights use matching ESPN finals. Pace distinguishes counted NCAA possessions from ESPN box estimates. The possession-start table uses SportsDataverse events from score-reconciled games. The 2025–26 zone and press reference uses the public Synergy tables published by Action Network on March 17, 2026.
 
 The private CBB model workflow publishes the existing score-estimate contract to the dedicated board repository after a successful analysis. Model Center validates that snapshot before serving it and keeps its bundled board as an outage fallback.

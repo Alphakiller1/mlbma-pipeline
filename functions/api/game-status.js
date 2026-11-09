@@ -22,7 +22,23 @@ function team(side, scored) {
   };
 }
 
-function scores(events) {
+function nbaFixture(event, comp, day, status, away, home) {
+  const kickoff = new Date(event.date);
+  if (!Number.isFinite(kickoff.valueOf()) ||
+      kickoff.toLocaleDateString('en-CA', { timeZone: 'America/New_York' }) !== day ||
+      !away.team?.abbreviation || !home.team?.abbreviation) return null;
+  return {
+    id: status.id, kickoff_utc: kickoff.toISOString(), game_state: status.state,
+    away: away.team.abbreviation, home: home.team.abbreviation,
+    away_name: away.team.displayName || null, home_name: home.team.displayName || null,
+    away_score: status.away.score, home_score: status.home.score,
+    away_record: status.away.record, home_record: status.home.record,
+    venue: comp.venue?.fullName || null, venue_city: comp.venue?.address?.city || null,
+    broadcast: comp.broadcasts?.[0]?.names?.join(' / ') || null, neutral: comp.neutralSite === true
+  };
+}
+
+function scores(events, fixtureDay) {
   return events.flatMap(event => {
     const comp = event.competitions?.[0];
     const state = gameState((event.status || comp?.status)?.type || {});
@@ -30,20 +46,24 @@ function scores(events) {
     const home = comp?.competitors?.find(c => c.homeAway === 'home');
     if (!state || !away || !home || !/^\d+$/.test(String(event.id))) return [];
     const scored = state === 'live' || state === 'final';
-    return [{ id: String(event.id), state, away: team(away, scored), home: team(home, scored) }];
+    const status = { id: String(event.id), state, away: team(away, scored), home: team(home, scored) };
+    if (!fixtureDay) return [status];
+    const fixture = nbaFixture(event, comp, fixtureDay, status, away, home);
+    return fixture ? [fixture] : [];
   });
 }
 
 export async function onRequestGet({ request }) {
   const params = new URL(request.url).searchParams;
   const sport = params.get('sport');
-  let source;
+  let source, fixtureDay;
   if (sport === 'nfl') {
     source = ESPN + 'football/nfl/scoreboard?limit=100';
   } else if (sport === 'nba') {
     const day = params.get('date') || '';
     if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !Number.isFinite(Date.parse(day)) ||
         new Date(day).toISOString().slice(0, 10) !== day) return json({ error: 'invalid_date' }, 400);
+    if (params.get('fixtures') === '1') fixtureDay = day;
     source = ESPN + 'basketball/nba/scoreboard?limit=100&dates=' + day.replace(/-/g, '');
   } else {
     return json({ error: 'invalid_sport' }, 400);
@@ -56,7 +76,7 @@ export async function onRequestGet({ request }) {
     });
     if (upstream.ok) {
       const { events } = await upstream.json();
-      if (Array.isArray(events)) return json({ games: scores(events) }, 200, { 'cache-control': 'public, max-age=30' });
+      if (Array.isArray(events)) return json({ games: scores(events, fixtureDay) }, 200, { 'cache-control': 'public, max-age=30' });
     }
   } catch (_) { /* Keep the published slate during a scoreboard outage. */ }
   return json({ games: [], status: 'unavailable' });
