@@ -489,7 +489,7 @@ Public matchup views use the fixture's published availability to exclude ruled-o
 
 The NBA matchup desk checks its published slate against the selected Eastern date. When the dated snapshot is delayed, it uses the ESPN schedule and labels fixture-specific player evidence as pending. The current slate keeps its published injury and rest data when the daily snapshot arrives.
 
-Pace icons compare the displayed metric within its own league and evidence window. The fastest and slowest 10% get three icons, the next 10% get two, and the remainder of each outer third gets one. NFL speed uses seconds per snap. NBA uses the published possessions per game. CBB uses possessions per 40, with separate counts and estimates and separate recent and season comparisons.
+Pace icons compare the displayed metric within its own league and evidence window. The fastest and slowest 10% get three icons, the next 10% get two, and the remainder of each outer third gets one. NFL speed uses seconds per snap. NBA uses the published possessions per game. CBB compares both teams in one table and uses possessions per 40, with separate cohorts for counts and estimates. A team's last-five pace appears once it has a distinct five-game window.
 
 CBB usage segments encode observed share. Their rank chips use same-season, same-definition peers. Provisional possession-efficiency colors require 10 possessions and 20 peer teams. They add 40 league-average possessions for the color calculation while the table displays the observed PPP.
 

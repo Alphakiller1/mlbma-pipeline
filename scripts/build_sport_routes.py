@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 STAMP = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
+MATCHUP_DETAIL_REV = "20261109matchup2"
 NAV = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8").strip()
 PUBLIC_SPORTS = ("nfl", "cfb", "nba", "cbb")
 PARKED_SPORTS = ("wnba",)
@@ -262,7 +263,7 @@ def matchup_page(sport: str) -> str:
   <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
   <script src="/dashboard/chase_shell.js?v={STAMP}"></script>
 {cbb_runtime}
-  <script src="/dashboard/public_game_detail.js?v={STAMP}"></script>
+  <script src="/dashboard/public_game_detail.js?v={MATCHUP_DETAIL_REV}"></script>
   <script>
     window.CHASE_SPORT_PAGE = {spec['global']};
     if (window.ChaseShell) ChaseShell.mount({{ sport: {json.dumps(sport)}, mode: 'evidence', surface: 'matchup', search: false, context: false }});
