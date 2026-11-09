@@ -7860,7 +7860,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "10:08 - 2nd",
+   "status_detail": "6:30 - 3rd",
    "kickoff_utc": "2026-11-08T23:00Z",
    "away": "LAL",
    "home": "DET",
@@ -7874,8 +7874,8 @@
    "home_record": "6-2",
    "away_split_record": "3-1",
    "home_split_record": "2-1",
-   "away_score": 40,
-   "home_score": 20,
+   "away_score": 78,
+   "home_score": 61,
    "venue": "Little Caesars Arena",
    "venue_city": "Detroit, MI",
    "broadcast": "NBA TV / Spectrum Sports Net / Spectrum Sports Net +",
@@ -15524,8 +15524,8 @@
    "id": "401909947",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/8 - 7:00 PM EST",
+   "game_state": "live",
+   "status_detail": "End of 1st",
    "kickoff_utc": "2026-11-09T00:00Z",
    "away": "UTAH",
    "home": "MIN",
@@ -15539,8 +15539,8 @@
    "home_record": "7-3",
    "away_split_record": "0-4",
    "home_split_record": "3-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 25,
+   "home_score": 28,
    "venue": "Target Center",
    "venue_city": "Minneapolis, MN",
    "broadcast": "DAZN MIN / KJZZ-TV / Jazz+",
@@ -53838,5 +53838,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-08T23:39:15+00:00"
+ "published_at_utc": "2026-11-09T00:36:53+00:00"
 }
