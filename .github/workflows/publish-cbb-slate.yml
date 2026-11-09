@@ -24,6 +24,9 @@ jobs:
           key: cbb-observed-${{ runner.os }}-${{ github.run_id }}
           restore-keys: cbb-observed-${{ runner.os }}-
       - run: python scripts/refresh_public_cbb.py
+      - name: Refresh public CBB availability
+        continue-on-error: true
+        run: python scripts/publish_public_cbb_availability.py
       - run: python scripts/validate_public_fields.py
       - name: Commit verified CBB facts
         run: |

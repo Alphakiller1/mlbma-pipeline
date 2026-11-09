@@ -5,7 +5,10 @@ import argparse,json,math
 ROOT=Path(__file__).resolve().parents[1]
 
 def publish(source):
-    source=Path(source);pred=json.loads((source/'predictions.json').read_text(encoding='utf-8'));model=json.loads((source/'model.json').read_text(encoding='utf-8'))
+    source=Path(source)
+    prefix='live_' if (source/'live_predictions.json').is_file() else ''
+    pred=json.loads((source/(prefix+'predictions.json')).read_text(encoding='utf-8'))
+    model=json.loads((source/(prefix+'model.json')).read_text(encoding='utf-8'))
     if pred['as_of_date']!=model['as_of_date'] or model['training_through']>=pred['as_of_date']:raise ValueError('Model cutoff mismatch')
     raw=json.loads((ROOT/'data/public/cbb/slate.json').read_text(encoding='utf-8'));fixtures={g['id']:g for g in raw['games']}
     end=(date.fromisoformat(pred['as_of_date'])+timedelta(days=14)).isoformat();games=[]
@@ -24,11 +27,15 @@ def publish(source):
             'away_record':g['away_record'],'home_record':g['home_record'],
             'projected_away':p['away_points'],'projected_home':p['home_points'],'projected_total':p['total_points'],
             'model_margin':p['home_margin'],'priced':False,'evidence':'Experimental score-based estimate; roster and availability adjustments are not included.'})
+    if not games:raise ValueError('No current CBB forecasts match the published fixtures')
     value={'board':{'schema':'chase-board/1','sport':'cbb','generated_at_utc':datetime.now(timezone.utc).isoformat(),
            'data_through_utc':model['training_through']+'T23:59:59-05:00','as_of_date':pred['as_of_date'],
            'method':'chase-cbb-score-ridge-v1','method_note':'Experimental score-based estimates. Roster and availability adjustments are not included.',
            'may_bet':False,'games':games}}
     path=ROOT/'functions/api/model-center/cbb-board.json';path.parent.mkdir(parents=True,exist_ok=True)
+    if path.exists():
+        previous=json.loads(path.read_text(encoding='utf-8'))['board']
+        if previous.get('as_of_date','')>pred['as_of_date']:raise ValueError('CBB forecast cutoff regressed')
     path.write_text(json.dumps(value,ensure_ascii=False,allow_nan=False,separators=(',',':')),encoding='utf-8')
     print(f'Published {len(games)} CBB score estimates to Model Center only.')
 

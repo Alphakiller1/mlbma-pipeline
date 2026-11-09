@@ -49,9 +49,16 @@ def grade(rows):
                     }
 
 
-def season(year, cohort, cutoff, raw=None):
+def season(year, cohort, cutoff, raw=None, same_day_finals=()):
     games, forms, situations, quality = raw or source.normalize(year, cohort)
-    eligible = [r for r in games if datetime.fromisoformat(r["available_at"]) < cutoff]
+    # The feed timestamps games at the end of their calendar day. Admit a
+    # same-day game only when the published final matches both clubs and scores.
+    eligible = [
+        r for r in games
+        if datetime.fromisoformat(r["available_at"]) < cutoff
+        or (r["date"][:10] == cutoff.date().isoformat()
+            and (r["team"], r["opponent"], r["pts"], r["d_pts"]) in same_day_finals)
+    ]
     allowed = {r["game_id"] for r in eligible}
     team_games = defaultdict(list)
     for row in eligible:
@@ -246,6 +253,13 @@ def build(snapshot, as_of, normalized=None):
     result = {}
     for year in (2026, 2027):
         cohort = {str(r["team_id"]) for r in table(snapshot, "mbb_team_seasons", year)}
+        same_day_finals = set()
+        for g in table(snapshot, "mbb_sched", year):
+            if g["game_date"] != as_of or g.get("status_type_name") != "STATUS_FINAL":
+                continue
+            for side, opponent in (("home", "away"), ("away", "home")):
+                same_day_finals.add((str(g[side + "_id"]), str(g[opponent + "_id"]),
+                                     source.number(g[side + "_score"]), source.number(g[opponent + "_score"])))
         part = normalized.get(year) if normalized else None
         raw = (
             (
@@ -257,5 +271,5 @@ def build(snapshot, as_of, normalized=None):
             if part
             else None
         )
-        result[year] = season(year, cohort, cutoff, raw)
+        result[year] = season(year, cohort, cutoff, raw, same_day_finals)
     return result

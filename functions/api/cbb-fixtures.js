@@ -11,11 +11,16 @@ export function factualEvents(payload) {
       competitions: [{
         neutralSite: comp.neutralSite === true,
         venue: { fullName: (comp.venue || {}).fullName, address: { city: ((comp.venue || {}).address || {}).city } },
-        competitors: (comp.competitors || []).filter(c => c.homeAway === 'home' || c.homeAway === 'away').map(c => ({
-          homeAway: c.homeAway, score: c.score,
-          team: { id: String((c.team || {}).id), displayName: (c.team || {}).displayName },
-          records: (c.records || []).filter(r => r.type === 'total').map(r => ({ type: 'total', summary: r.summary }))
-        }))
+        competitors: (comp.competitors || []).filter(c => c.homeAway === 'home' || c.homeAway === 'away').map(c => {
+          const team = c.team || {};
+          return {
+            homeAway: c.homeAway, score: c.score,
+            team: { id: String(team.id), displayName: team.displayName,
+              logo: /^https:\/\/a\.espncdn\.com\//.test(team.logo || '') ? team.logo : null,
+              color: /^[a-f0-9]{6}$/i.test(team.color || '') ? '#' + team.color : null },
+            records: (c.records || []).filter(r => r.type === 'total').map(r => ({ type: 'total', summary: r.summary }))
+          };
+        })
       }]
     };
   });
@@ -28,8 +33,8 @@ export async function onRequestGet({ request }) {
     return json({ error: 'invalid_date' }, 400);
   try {
     const upstream = await fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?groups=50&limit=1000&dates=' + day,
-      { cf: { cacheTtl: 30, cacheEverything: true } });
-    if (!upstream.ok) return json({ error: 'fixture_unavailable' }, 503);
-    return json({ events: factualEvents(await upstream.json()) }, 200, { 'cache-control': 'public, max-age=30' });
-  } catch (_) { return json({ error: 'fixture_unavailable' }, 503); }
+      { cf: { cacheTtl: 30, cacheEverything: true }, signal: AbortSignal.timeout(6000) });
+    if (upstream.ok) return json({ events: factualEvents(await upstream.json()) }, 200, { 'cache-control': 'public, max-age=30' });
+  } catch (_) { /* The published fixtures still render. */ }
+  return json({ events: [], status: 'unavailable' });
 }

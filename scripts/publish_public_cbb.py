@@ -1,5 +1,6 @@
 """Validate and port a cbb-model factual export. Raw inputs and forecasts are refused."""
 from pathlib import Path
+from datetime import datetime
 import argparse,json,math,sys
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts'))
@@ -56,13 +57,23 @@ def publish(source):
         if issues:raise ValueError('\n'.join(issues[:40]))
         if file.parent.name=='teams':
             old=ROOT/'data/public/cbb'/file.relative_to(source)
-            validate_context(value,json.loads(old.read_text(encoding='utf-8')) if old.is_file() else None)
+            previous=json.loads(old.read_text(encoding='utf-8')) if old.is_file() else None
+            validate_context(value,previous)
+            if previous and value['season']<manifest['season']:
+                before=previous.get('observed_tactics') or {}
+                after=value.get('observed_tactics') or {}
+                if before and after and previous=={**value,'observed_tactics':{
+                    **after,'retrieved_at_utc':before.get('retrieved_at_utc')}}:
+                    continue
         staged.append((file.relative_to(source),value))
     for year in [2026,2027]:
         if len(list((source/f'{year}/teams').glob('*.json')))!=365:raise ValueError('Incomplete CBB cohort; retaining existing publication')
     target=ROOT/'data/public/cbb';old=target/'manifest.json'
-    if old.exists() and json.loads(old.read_text()).get('data_through_utc','')>manifest.get('data_through_utc',''):
-        raise ValueError('Older evidence would replace newer evidence')
+    if old.exists():
+        previous_cutoff=json.loads(old.read_text(encoding='utf-8')).get('data_through_utc')
+        cutoff=manifest.get('data_through_utc')
+        if previous_cutoff and (not cutoff or datetime.fromisoformat(previous_cutoff)>datetime.fromisoformat(cutoff)):
+            raise ValueError('Older evidence would replace newer evidence')
     # Validate every file first; each destination replacement is atomic.
     for rel,value in staged:
         dest=target/rel;dest.parent.mkdir(parents=True,exist_ok=True);temp=dest.with_suffix('.json.tmp')

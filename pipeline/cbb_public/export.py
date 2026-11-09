@@ -1,8 +1,9 @@
 """Factual public projection. Model outputs never enter this directory."""
 from __future__ import annotations
 from collections import Counter, defaultdict
-from datetime import datetime, timezone
+from datetime import date, datetime, time, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 import gzip,json,math
 from .data import ZONES,read,write,table
 
@@ -53,8 +54,8 @@ def profile(rows,league,schema,through,games):
             'league_efg_pct':(lg_made+.5*lg_threes)/lg_attempts if lg_attempts else None,
             'games':games,'data_through':through},'source':'CBB Analytics' if schema=='cbb-analytics-zones6' else 'Chase zones from Basketball Quant shot coordinates'}
 
-def export_public(snapshot,conn,out,as_of,observed_tactics=None):
-    out=Path(out); generated=datetime.now(timezone.utc).isoformat()
+def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordinates=None):
+    out=Path(out); generated=datetime.now(timezone.utc)
     cross=read(snapshot/'data/bq-mbb_institution_crosswalk-all.json');identity={}
     for r in cross:
         if r.get('espn_team_id') is None:continue
@@ -88,9 +89,15 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None):
                'record':f'{int(s.get("wins") or 0)}–{int(s.get("losses") or 0)}','shots':{}}
             if observed_tactics:c['observed_tactics']=observed_tactics.get(year,{}).get(str(tid))
             own={}
-            for role in ('offense','defense'):
-                rows=aggregates[role][tid];games,through=game_summaries[role].get(tid,(0,None))
-                own[role]=profile(rows,lg,'chase-coordinates-v1',through,games)
+            if year in (archived_coordinates or {}):
+                previous=read(archived_coordinates[year]/f'{year}/teams/{tid}.json')
+                if previous['season']!=year or previous['identity']['id']!=str(tid):
+                    raise ValueError('Retained shot profile identity mismatch')
+                own=previous['shots']['coordinates']
+            else:
+                for role in ('offense','defense'):
+                    rows=aggregates[role][tid];games,through=game_summaries[role].get(tid,(0,None))
+                    own[role]=profile(rows,lg,'chase-coordinates-v1',through,games)
             c['shots']['coordinates']=own
             logs=[]
             for g in schedules[year]:
@@ -145,8 +152,10 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None):
              'availability_summary':'Availability not collected'}
         assert_public(row);games.append(row)
     through=max((c['data_through'] for (y,_),c in all_context.items() if y==current and c['data_through']),default=None)
+    cutoff = min(generated, datetime.combine(date.fromisoformat(through), time(23,59,59),
+                                             ZoneInfo('America/New_York'))) if through else None
     manifest={'schema_version':1,'sport':'cbb','season':current,'seasons':[2027,2026], 'slate_date':as_of,
-              'generated_at_utc':generated,'data_through_utc':through+'T23:59:59-05:00' if through else None,
+              'generated_at_utc':generated.isoformat(),'data_through_utc':cutoff.astimezone(timezone.utc).isoformat() if cutoff else None,
               'sources':['Basketball Quant','CBB Analytics public reference charts']+(['SportsDataverse NCAA possessions and rosters'] if observed_tactics else []),'source_snapshot':snapshot.name,
               'reference_teams':['96','150','127','12','2305','2509'],
               'zone_policy':'Prefer matched CBB Analytics schemas for both teams; otherwise use matched Chase coordinate zones for both.',

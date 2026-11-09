@@ -122,6 +122,7 @@
 
   function mergePublic(mapped, pub) {
     if (!pub) return mapped;
+    mapped.public_game_id = pub.id || mapped.public_game_id;
     ['away', 'home'].forEach(function (side) {
       var form = pub[side + '_form'];
       if (form) {
