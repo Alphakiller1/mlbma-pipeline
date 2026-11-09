@@ -95,14 +95,14 @@
       if (checkAvailability) games.forEach(function (game) { game.cbb_availability_pending = true; });
       var reportPath = archived ? 'availability/' + selected + '.json' : 'availability.json';
       var availability = checkAvailability ? json(ROOT + reportPath).catch(function () { return null; }) : Promise.resolve(null);
-      result.statusReady = Promise.all([refreshFixtures(result,teams,slate), availability]).then(function(parts) {
+      function applyAvailability(report) {
         if (!checkAvailability) return result;
         result.availabilityChecked = true;
         result.games.forEach(function (game) {
           game.cbb_availability_pending = false;
           game.cbb_availability_archived = archived;
         });
-        var report = parts[1], stamp = report && Date.parse(report.retrieved_at_utc);
+        var stamp = report && Date.parse(report.retrieved_at_utc);
         if (!report || report.season !== slate.season || !Array.isArray(report.reports) ||
             !Number.isFinite(stamp) || (archived ? report.slate_date !== selected :
               Date.now() - stamp > 36 * 60 * 60 * 1000)) return result;
@@ -120,6 +120,10 @@
           game.home_cbb_availability = byTeam.get(String(game.home)) || [];
         });
         return result;
+      }
+      result.availabilityReady = availability.then(applyAvailability);
+      result.statusReady = Promise.all([refreshFixtures(result,teams,slate), availability]).then(function(parts) {
+        return applyAvailability(parts[1]);
       });
       return result;
     });

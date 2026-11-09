@@ -7568,15 +7568,16 @@ function seasonToggle(game) {
         tone = global.MLBMAAssets.baselineChipClass(adjusted, baseline, row.side === 'offense');
       }
       if (tone) {
-        qualifier = ' · provisional';
+        qualifier = 'provisional';
         text = global.ChaseCbbCharts.value(text, tone, 'Provisional color · '+baseline.sample_size+
           ' same-season teams · 40 league-average possessions stabilize the grade');
       } else {
-        qualifier = ' · ungraded';
+        qualifier = 'ungraded';
         text = nbaGraded(text, null);
       }
     } else text = nbaGraded(text, grade);
-    return text+'<small class="ca-cbb-count">'+row.possessions+' poss · '+row.games+' GP'+qualifier+'</small>';
+    var status = qualifier ? ' <span class="ca-cbb-count__status">'+qualifier+'</span>' : '';
+    return text+'<small class="ca-cbb-count">'+row.possessions+' poss · '+row.games+' GP'+status+'</small>';
   }
   var CBB_TACTIC_NOTE = 'Segments show usage. Rank 1 means most use. Lower allowed PPP grades higher. Full grades require 100 possessions and five games. Provisional colors require 10 possessions and 20 peer teams and add 40 league-average possessions for the grade. The printed PPP is observed.';
   function cbbRestarts(sport,game,side) {
@@ -7937,11 +7938,11 @@ function seasonToggle(game) {
       // repaints only its own section so the reader never loses their place.
       var extra = {};
       render(host, sport, game, extra, result);
+      if (result.availabilityReady) result.availabilityReady.then(function() {
+        paintSection(host, 'cbb-availability', nflDuo(cbbAvailability, sport, game));
+        paintSection(host, 'cbb-rotation', nflDuo(cbbRotation, sport, game));
+      });
       if (result.statusReady) result.statusReady.then(function(updated){
-        if (sport === 'cbb' && updated.availabilityChecked) {
-          paintSection(host, 'cbb-availability', nflDuo(cbbAvailability, sport, game));
-          paintSection(host, 'cbb-rotation', nflDuo(cbbRotation, sport, game));
-        }
         if(!updated.statusObservedAt)return;
         if (sport === 'cbb' && (game.away_cbb || game.home_cbb)) {
           paintSection(host,'cbb-game-log',nflDuo(cbbGames,sport,game,false));
