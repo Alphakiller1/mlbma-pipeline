@@ -3360,8 +3360,9 @@ body[data-ca-product="research"] {
 .c-weak  { --grade: var(--metric-weak); }
 .c-poor  { --grade: var(--metric-poor); }
 .c-na    { --grade: var(--text-muted); }
+.c-volume { --grade: var(--series-6); }
 
-.c-elite, .c-good, .c-mid, .c-weak, .c-poor, .c-na {
+.c-elite, .c-good, .c-mid, .c-weak, .c-poor, .c-na, .c-volume {
   color: var(--grade);
   border-color: var(--grade);
 }
@@ -6177,7 +6178,7 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-cbb-legend__labels{display:flex;justify-content:space-between;gap:var(--space-2)}
 .ca-cbb-summary{display:flex;justify-content:center;gap:var(--space-4);font-size:13px;color:var(--text-secondary);margin:var(--space-3) 0}
 .ca-cbb-summary strong{color:var(--text-primary);font-variant-numeric:tabular-nums}
-.ca-cbb-count{display:block;color:var(--text-muted);font-size:12px;margin-top:2px}
+.ca-cbb-count{display:block;color:var(--grade,var(--text-muted));font-size:12px;margin-top:2px}
 .ca-basketball-value{color:var(--grade,var(--text-primary));font-weight:700;font-variant-numeric:tabular-nums}
 .ca-basketball-legend{display:flex;flex-wrap:wrap;gap:var(--space-3);font-size:12px;line-height:1.5;color:var(--text-muted);margin:var(--space-3) 0;text-transform:none}
 .ca-cbb-court .ca-court-badge__big{fill:var(--grade,var(--text-primary))}
@@ -6208,7 +6209,7 @@ body[data-sport="nfl"] .ca-detail-nav {
   fill-opacity: 1; stroke: var(--text-secondary); stroke-width: 2;
 }
 .ca-cbb-legend--share .ca-cbb-legend__ramp { background: linear-gradient(90deg, var(--surface-2), var(--series-6)); }
-.ca-basketball-volume { display: inline-block; min-width: 44px; font-variant-numeric: tabular-nums; }
+.ca-basketball-volume { display: inline-block; min-width: 44px; color: var(--series-6); font-variant-numeric: tabular-nums; }
 .ca-basketball-volume > span { display: block; height: 3px; margin-top: 4px; border-radius: var(--radius-pill); background: var(--surface-3); }
 .ca-basketball-volume > span::after { content: ''; display: block; width: var(--volume); height: 100%; border-radius: inherit; background: var(--series-6); }
 .ca-cbb-matrix-card{padding:var(--space-4)}.ca-cbb-matrix-title{display:flex;align-items:center;gap:var(--space-3);margin-top:var(--space-3)}

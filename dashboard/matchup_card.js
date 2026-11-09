@@ -629,7 +629,14 @@
       starterFace(sport, game, 'away') + starterFace(sport, game, 'home') + '</div>';
   }
   function summaryRow(sport, game, statusLine) {
-    if (sport === 'cbb') return '<div class="ca-matchup-card__summary">'+miniFact('Site',game.neutral?'Neutral court':'Home court')+miniFact('Availability','Not collected')+miniFact('Broadcast',game.broadcast||'Not published')+'</div>';
+    if (sport === 'cbb') {
+      var listed = (game.away_cbb_availability || []).length + (game.home_cbb_availability || []).length;
+      var report = listed ? listed + (listed === 1 ? ' player listed' : ' players listed') :
+        game.cbb_availability_pending ? 'Checking report' : 'No current listing';
+      return '<div class="ca-matchup-card__summary">'+miniFact('Site',game.neutral?'Neutral court':'Home court')+
+        miniFact('Availability',report)+
+        miniFact('Broadcast',game.broadcast||'Not published')+'</div>';
+    }
 
     if (sport === 'nba') {
       var rest = (game.away || '') + ' ' + (game.away_rest_short || '--') + ' · ' +
@@ -883,11 +890,39 @@
     });
   }
 
+  function withScoreboard(result, sport) {
+    if (!result.games.length || (sport === 'nba' && !result.dateIso)) return result;
+    var url = '/api/game-status?sport=' + sport + (sport === 'nba' ? '&date=' + encodeURIComponent(result.dateIso) : '');
+    result.statusReady = loadJson(url).then(function (payload) {
+      var byId = new Map((payload.games || []).map(function (row) { return [row.id, row]; }));
+      var observed = false;
+      result.games.forEach(function (game) {
+        var current = byId.get(String(game.id));
+        if (!current || (game.game_state === 'final' && current.state !== 'final') ||
+            (game.game_state === 'live' && current.state === 'scheduled')) return;
+        var scored = current.state === 'live' || current.state === 'final';
+        if (scored && (current.away.score == null || current.home.score == null)) return;
+        game.game_state = current.state;
+        game.away_score = current.away.score;
+        game.home_score = current.home.score;
+        if (current.away.record) game.away_record = current.away.record;
+        if (current.home.record) game.home_record = current.home.record;
+        observed = true;
+      });
+      if (observed) result.statusObservedAt = new Date().toISOString();
+      return result;
+    }).catch(function () { return result; });
+    return result;
+  }
+
   function loadGames(sport, adapter, dateIso) {
     // Sports whose producer publishes a model board instead of an ops slate
     // (CFB) own their fetch + mapping through adapter.load(); it returns the
     // same desk result shape the SLATE_URL path does.
-    if (adapter && typeof adapter.load === 'function') return adapter.load(dateIso);
+    if (adapter && typeof adapter.load === 'function') {
+      var loaded = adapter.load(dateIso);
+      return sport === 'nba' ? loaded.then(function (result) { return withScoreboard(result, sport); }) : loaded;
+    }
     if (!adapter || !adapter.SLATE_URL) return Promise.reject(new Error('Public slate URL missing.'));
     // Chips are graded as cards and game pages paint, so this season's league
     // baselines must be in the registry first. It never rejects: a failed fetch
@@ -901,10 +936,11 @@
       return Promise.all([publicRequest, baselines]).then(function (parts) {
         var result = parts[0];
         if (result.error && !result.normalized.games.length) throw result.error;
-        return {
+        var desk = {
           games: result.normalized.games, generatedAt: result.normalized.generated_at,
           dataThrough: result.normalized.data_through, source: 'Published slate'
         };
+        return sport === 'nfl' ? withScoreboard(desk, sport) : desk;
       });
     }
     var explicit = dateIso || query().get('date');
@@ -1269,7 +1305,7 @@
       if (!host.__desk.embedded) updateStatus(opts.sport, result);
       render(host);
       if (result.statusReady) result.statusReady.then(function(updated){
-        if(!updated.statusObservedAt || host.__desk.dateIso!==updated.dateIso)return;
+        if(!(updated.statusObservedAt || updated.availabilityChecked) || (updated.dateIso && host.__desk.dateIso!==updated.dateIso))return;
         var open=host.querySelector('[data-expand-matchup][aria-expanded="true"]'),keep=open&&open.getAttribute('aria-controls');
         host.__desk.games=updated.games;render(host);
         if(keep){var panel=document.getElementById(keep),button=host.querySelector('[aria-controls="'+keep+'"]');if(panel&&button){panel.hidden=false;button.setAttribute('aria-expanded','true');button.closest('.ca-matchup-card').classList.add('is-expanded');}}

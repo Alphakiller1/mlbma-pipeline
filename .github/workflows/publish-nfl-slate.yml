@@ -14,6 +14,8 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "41 */2 * * *"
+    # nflverse play-by-play can lag the scoreboard. Check the completed game log daily.
+    - cron: "29 15 * * *"
     # Sunday 15:00-04:41 UTC (11 AM - 12:41 AM ET), and the Monday and Thursday
     # night windows (22:00-03:41 UTC).
     - cron: "11,41 15-23 * * 0"
@@ -47,13 +49,18 @@ jobs:
       - name: Build the NFL slate
         run: python -m outputs.publish_public_slate --nfl-only
 
+      - name: Refresh completed NFL game logs
+        if: github.event_name == 'workflow_dispatch' || github.event.schedule == '29 15 * * *'
+        continue-on-error: true
+        run: python scripts/publish_public_nfl_game_logs.py
+
       - name: Commit the refreshed slate to master
         env:
           TARGET_BRANCH: master
         run: |
           set -euo pipefail
           python scripts/validate_public_fields.py
-          git add -- data/public/nfl/slate.json data/public/nfl/team_context.json
+          git add -- data/public/nfl/slate.json data/public/nfl/team_context.json data/public/nfl/game_logs.json
           if git diff --cached --quiet; then
             echo "NFL slate is already current; no commit needed."
             exit 0

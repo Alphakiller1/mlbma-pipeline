@@ -27,26 +27,37 @@
         if(!sides.home||!sides.away)return;
         var a=String(sides.away.team.id),h=String(sides.home.team.id);
         if(!teams[a]&&!teams[h])return;
+        var type=(event.status||comp.status||{}).type||{},state=type.state;
+        var nextState=/CANCEL/.test(type.name||'')?'canceled':/POSTPON/.test(type.name||'')?'postponed':/DELAY|SUSPEND/.test(type.name||'')?'delayed':state==='in'?'live':state==='post'?'final':'scheduled';
+        var scored=nextState==='live'||nextState==='final';
+        if(scored&&['away','home'].some(function(side){
+          var score=sides[side].score;
+          return score==null||score===''||!Number.isInteger(Number(score))||Number(score)<0;
+        }))return;
         var g=result.games.find(function(x){return x.id===String(event.id);});
         if(!g){
-          g={id:String(event.id),sport:'cbb',season:slate.season,slate_date:result.dateIso,away:a,home:h,availability_summary:'Availability not collected'};
+          g={id:String(event.id),sport:'cbb',season:slate.season,slate_date:result.dateIso,away:a,home:h};
           ['away','home'].forEach(function(side){
             var id=side==='away'?a:h,meta=teams[id]||{},ident=meta.identity||{},source=sides[side].team||{};
-            g[side+'_name']=ident.name||source.displayName;g[side+'_logo']=ident.logo||null;g[side+'_color']=ident.color||null;
+            g[side+'_name']=ident.name||source.displayName;
+            g[side+'_logo']=ident.logo||source.logo||null;
+            g[side+'_color']=ident.color||source.color||null;
             g[side+'_summary']=(meta.seasons||{})[String(slate.season)]||{};g[side+'_evidence_seasons']=Object.keys(meta.seasons||{});
           });
           result.games.push(g);
         }
         if(String(g.away)!==a||String(g.home)!==h)return;
-        var type=(event.status||comp.status||{}).type||{},state=type.state;
-        g.game_state=/CANCEL/.test(type.name||'')?'canceled':/POSTPON/.test(type.name||'')?'postponed':/DELAY/.test(type.name||'')?'delayed':state==='in'?'live':state==='post'?'final':'scheduled';
+        if ((g.game_state === 'final' && nextState !== 'final') || (g.game_state === 'live' && nextState === 'scheduled')) return;
+        g.game_state=nextState;
         g.kickoff_utc=event.date||g.kickoff_utc;g.venue=(comp.venue||{}).fullName||g.venue;
         g.venue_city=((comp.venue||{}).address||{}).city||g.venue_city;
         if(comp.neutralSite!=null)g.neutral=comp.neutralSite===true;
         ['away','home'].forEach(function(side){
           var c=sides[side],score=Number(c.score),record=(c.records||[]).find(function(r){return r.type==='total';});
-          g[side+'_score']=(g.game_state==='live'||g.game_state==='final')&&c.score!=null&&Number.isFinite(score)?score:null;
+          g[side+'_score']=scored?score:null;
           if(record&&record.summary)g[side+'_record']=record.summary;
+          if(!g[side+'_logo']&&c.team.logo)g[side+'_logo']=c.team.logo;
+          if(!g[side+'_color']&&c.team.color)g[side+'_color']=c.team.color;
         });
         observed++;
       });
@@ -79,7 +90,28 @@
       }).sort(function (a,b) { return String(a.kickoff_utc).localeCompare(String(b.kickoff_utc)) || a.id.localeCompare(b.id); });
       var result={ games: games, generatedAt: slate.generated_at_utc, dataThrough: slate.data_through_utc,
         dateIso: selected, source: 'Basketball Quant · two-season CBB evidence' };
-      result.statusReady=refreshFixtures(result,teams,slate);
+      var checkAvailability = selected >= today;
+      if (checkAvailability) games.forEach(function (game) { game.cbb_availability_pending = true; });
+      var availability = checkAvailability ? json(ROOT + 'availability.json').catch(function () { return null; }) : Promise.resolve(null);
+      result.statusReady = Promise.all([refreshFixtures(result,teams,slate), availability]).then(function(parts) {
+        if (!checkAvailability) return result;
+        result.availabilityChecked = true;
+        result.games.forEach(function (game) { game.cbb_availability_pending = false; });
+        var report = parts[1], stamp = report && Date.parse(report.retrieved_at_utc);
+        if (!report || report.season !== slate.season || !Array.isArray(report.reports) ||
+            !Number.isFinite(stamp) || Date.now() - stamp > 36 * 60 * 60 * 1000) return result;
+        var byTeam = new Map();
+        report.reports.forEach(function (row) {
+          if (!byTeam.has(row.team_id)) byTeam.set(row.team_id, []);
+          byTeam.get(row.team_id).push(row);
+        });
+        result.games.forEach(function (game) {
+          game.cbb_availability_as_of = report.retrieved_at_utc;
+          game.away_cbb_availability = byTeam.get(String(game.away)) || [];
+          game.home_cbb_availability = byTeam.get(String(game.home)) || [];
+        });
+        return result;
+      });
       return result;
     });
   }
