@@ -4,18 +4,51 @@ This module is vendored with the factual ingestion adapter in the website.
 It intentionally has no model/scipy import and emits only explicit fields.
 """
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import datetime, time
 from statistics import mean
 
 from . import possession_data as source
 from .data import read, table
 
+STARTS = {"Defensive Rebound": "defensive_rebound", "Steal": "steal",
+          "Turnover": "turnover", "Timeout": "timeout"}
+
+
+def possession_starts(year, opponents):
+    counts, points, total = Counter(), Counter(), Counter()
+    games = defaultdict(set)
+    seen = set()
+    for row in source.iter_rows(year, "possessions"):
+        game = row["contest_id"]
+        offense = source.identifier(row["poss_team_espn_team_id"])
+        defense = opponents.get((game, offense))
+        identity = (game, row["period"], row["poss_num"], offense)
+        if not defense or identity in seen:
+            continue
+        seen.add(identity)
+        kind = STARTS.get(row["start_event_type"])
+        for team, side in ((offense, "offense"), (defense, "defense")):
+            total[(team, side)] += 1
+            if kind:
+                k = (team, side, kind)
+                counts[k] += 1
+                points[k] += float(row["pts"])
+                games[k].add(game)
+    output = defaultdict(list)
+    for (team, side, kind), possessions in sorted(counts.items()):
+        k = (team, side, kind)
+        n = len(games[k])
+        output[team].append({"side": side, "kind": kind, "possessions": possessions,
+                             "points": points[k], "games": n, "usage": possessions / total[(team, side)],
+                             "ppp": points[k] / possessions, "sample_qualified": possessions >= 100 and n >= 5})
+    return output
+
 
 def grade(rows):
     pools = defaultdict(list)
     for team in rows.values():
-        for family in ("personnel", "situations"):
+        for family in ("personnel", "situations", "restart_contexts"):
             for r in team[family]:
                 if r["sample_qualified"]:
                     key = (
@@ -26,7 +59,7 @@ def grade(rows):
                     )
                     pools[key].append(r["ppp"])
     for team in rows.values():
-        for family in ("personnel", "situations"):
+        for family in ("personnel", "situations", "restart_contexts"):
             for r in team[family]:
                 key = (
                     family,
@@ -109,6 +142,7 @@ def season(year, cohort, cutoff, raw=None, same_day_finals=()):
                 v["points"] += r["points"]
                 v["games"].add(r["game_id"])
     peers = {(r["game_id"], r["team"]): r["opponent"] for r in eligible}
+    restarts = possession_starts(year, peers)
     sit = defaultdict(
         lambda: defaultdict(lambda: {"possessions": 0, "points": 0, "games": set()})
     )
@@ -186,6 +220,7 @@ def season(year, cohort, cutoff, raw=None, same_day_finals=()):
             },
             "personnel": records,
             "situations": situational,
+            "restart_contexts": restarts[team],
             "position_size": [
                 {
                     "position": p,

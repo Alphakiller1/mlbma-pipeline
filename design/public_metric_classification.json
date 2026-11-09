@@ -269,6 +269,9 @@
     "comment"
   ],
   "descriptive": [
+    "official_box",
+    "restart_contexts",
+    "reported_rank",
     "3PA",
     "3PM",
     "3PP",
@@ -919,6 +922,8 @@
     "zones"
   ],
   "derived_descriptive": [
+    "estimated_per40",
+    "recent5_estimated_per40",
     "age_change",
     "aging_curve",
     "assisted_threes",
@@ -1158,7 +1163,8 @@
       "_game_log[].margin": "descriptive",
       ".seasons.*.teams": "descriptive",
       ".observed_tactics.personnel[].ppp_grade.rank": "derived_descriptive",
-      ".observed_tactics.situations[].ppp_grade.rank": "derived_descriptive"
+      ".observed_tactics.situations[].ppp_grade.rank": "derived_descriptive",
+      ".observed_tactics.restart_contexts[].ppp_grade.rank": "derived_descriptive"
     },
     "id_map_note": "Paths whose immediate children are identifiers - a team code, an MLB person id, a normalised player name, a pitch-type code - rather than field names. The classifier descends into their values but does not try to classify the identifier itself: 'aaronjudge' is not a metric, and demanding a class for it would mean re-editing this file every time a club calls somebody up.",
     "id_maps": [

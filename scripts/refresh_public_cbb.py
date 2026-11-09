@@ -26,7 +26,7 @@ def export_snapshot(snapshot, temp, day):
     facts=factual_tactics.build(snapshot,day)
     filled=espn_roster.fill_missing_heights(facts[2027],2027)
     print(f'ESPN roster heights filled for {len(filled)} current-season teams.')
-    export.export_public(snapshot,conn,temp/'public',day,facts,retained)
+    export.export_public(snapshot,conn,temp/'public',day,facts,retained,ROOT/'.cache/cbb-tactics/espn-box')
     conn.close()
     publish(temp/'public')
 
