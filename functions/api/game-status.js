@@ -59,5 +59,5 @@ export async function onRequestGet({ request }) {
       if (Array.isArray(events)) return json({ games: scores(events) }, 200, { 'cache-control': 'public, max-age=30' });
     }
   } catch (_) { /* Keep the published slate during a scoreboard outage. */ }
-  return json({ error: 'scoreboard_unavailable' }, 503);
+  return json({ games: [], status: 'unavailable' });
 }

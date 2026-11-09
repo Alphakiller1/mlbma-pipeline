@@ -22,11 +22,14 @@ globalThis.fetch = async () => ({ok:true,json:async () => ({events:[
   event('2',{name:'STATUS_POSTPONED',state:'post',completed:false})
 ]})});
 const request = query => onRequestGet({request:new Request('https://chase.test/api/game-status?' + query)});
-console.log(JSON.stringify([await request('sport=nfl'),await request('sport=nba&date=2026-02-30')]));
+const valid = await request('sport=nfl');
+const invalid = await request('sport=nba&date=2026-02-30');
+globalThis.fetch = async () => ({ok:false, status:503});
+console.log(JSON.stringify([valid,invalid,await request('sport=nfl')]));
 """
         process = subprocess.run(["node", "--input-type=module", "-e", source + harness],
                                  text=True, capture_output=True, check=True)
-        valid, invalid = json.loads(process.stdout)
+        valid, invalid, outage = json.loads(process.stdout)
         self.assertEqual(valid, {"status": 200, "body": {"games": [
             {"id": "1", "state": "final", "away": {"score": 0, "record": "3-5"},
              "home": {"score": 24, "record": None}},
@@ -34,3 +37,4 @@ console.log(JSON.stringify([await request('sport=nfl'),await request('sport=nba&
              "home": {"score": None, "record": None}},
         ]}})
         self.assertEqual(invalid, {"status": 400, "body": {"error": "invalid_date"}})
+        self.assertEqual(outage, {"status": 200, "body": {"games": [], "status": "unavailable"}})

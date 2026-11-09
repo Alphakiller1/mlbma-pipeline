@@ -34,7 +34,7 @@ export async function onRequestGet({ request }) {
   try {
     const upstream = await fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?groups=50&limit=1000&dates=' + day,
       { cf: { cacheTtl: 30, cacheEverything: true }, signal: AbortSignal.timeout(6000) });
-    if (!upstream.ok) return json({ error: 'fixture_unavailable' }, 503);
-    return json({ events: factualEvents(await upstream.json()) }, 200, { 'cache-control': 'public, max-age=30' });
-  } catch (_) { return json({ error: 'fixture_unavailable' }, 503); }
+    if (upstream.ok) return json({ events: factualEvents(await upstream.json()) }, 200, { 'cache-control': 'public, max-age=30' });
+  } catch (_) { /* The published fixtures still render. */ }
+  return json({ events: [], status: 'unavailable' });
 }
