@@ -117,9 +117,11 @@
   }
   function detail(game) {
     function covered(year,side) { return (game[side+'_evidence_seasons']||[]).indexOf(String(year))<0 ? Promise.resolve(null) : context(year,game[side]).catch(function(){return null;}); }
-    return Promise.all([covered(2027,'away'),covered(2027,'home'),covered(2026,'away'),covered(2026,'home')]).then(function (items) {
+    return Promise.all([covered(2027,'away'),covered(2027,'home'),covered(2026,'away'),covered(2026,'home'),
+      json(ROOT+'tagged-schemes-2026.json').catch(function(){return null;})]).then(function (items) {
       game.away_cbb = items[0]; game.home_cbb = items[1];
       game.away_cbb_prior = items[2]; game.home_cbb_prior = items[3];
+      game.cbb_tagged_schemes = items[4];
       return game;
     });
   }

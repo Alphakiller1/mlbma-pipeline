@@ -54,7 +54,7 @@ def profile(rows,league,schema,through,games):
             'league_efg_pct':(lg_made+.5*lg_threes)/lg_attempts if lg_attempts else None,
             'games':games,'data_through':through},'source':'CBB Analytics' if schema=='cbb-analytics-zones6' else 'Chase zones from Basketball Quant shot coordinates'}
 
-def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordinates=None):
+def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordinates=None,box_cache=None):
     out=Path(out); generated=datetime.now(timezone.utc)
     cross=read(snapshot/'data/bq-mbb_institution_crosswalk-all.json');identity={}
     for r in cross:
@@ -109,6 +109,9 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
                              'opponent_points':g.get(opp+'_score') if g.get('status_type_name')=='STATUS_FINAL' else None})
             c['games']=sorted(logs,key=lambda g:(g['date'],g['id']))
             all_context[(year,tid)]=c
+        if year==2027 and observed_tactics and box_cache:
+            from .espn_boxes import supplement
+            supplement({tid:all_context[(year,tid)] for tid in cohort},schedules[year],year,as_of,box_cache)
         # Published shortcut metadata maps the provider IDs to the validated institution IDs.
         reference={103765:96,103549:150,103903:127,103296:12,103757:2305,103257:2509}
         for file in (snapshot/'data').glob(f'cbb-shots-{year}-*-offense.ndjson.gz'):
@@ -125,8 +128,13 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
         for s in stats:
             tid=s['team_id'];c=all_context[(year,tid)];assert_public(c)
             write(out/f'{year}/teams/{tid}.json',c)
-            index.setdefault(str(tid),{'identity':c['identity'],'seasons':{}})['seasons'][str(year)]={'record':c['record'],'games':c['rates'].get('games_all'),
+            summary={'record':c['record'],'games':c['rates'].get('games_all'),
                 'efg_pct':c['rates'].get('efg_o_all'),'data_through':c['data_through']}
+            box=c.get('official_box',{})
+            if box.get('rates'):
+                summary.update(games=box['games'],efg_pct=box['rates']['efg_o_all'],
+                               data_through=box['data_through'],source=box['source'])
+            index.setdefault(str(tid),{'identity':c['identity'],'seasons':{}})['seasons'][str(year)]=summary
     current=2027;games=[]
     for g in schedules[current]:
         h,a=g.get('home_id'),g.get('away_id')
@@ -156,7 +164,7 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
                                              ZoneInfo('America/New_York'))) if through else None
     manifest={'schema_version':1,'sport':'cbb','season':current,'seasons':[2027,2026], 'slate_date':as_of,
               'generated_at_utc':generated.isoformat(),'data_through_utc':cutoff.astimezone(timezone.utc).isoformat() if cutoff else None,
-              'sources':['Basketball Quant','CBB Analytics public reference charts']+(['SportsDataverse NCAA possessions and rosters'] if observed_tactics else []),'source_snapshot':snapshot.name,
+              'sources':['Basketball Quant','CBB Analytics public reference charts']+(['SportsDataverse NCAA possessions and rosters'] if observed_tactics else [])+(['ESPN final box scores and rosters'] if box_cache else []),'source_snapshot':snapshot.name,
               'reference_teams':['96','150','127','12','2305','2509'],
               'zone_policy':'Prefer matched CBB Analytics schemas for both teams; otherwise use matched Chase coordinate zones for both.',
               'games':games}

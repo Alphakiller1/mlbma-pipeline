@@ -479,6 +479,14 @@ C:\Users\chase\crawl_env\Scripts\python.exe scripts\integrate_chase_nav.py
 
 ---
 
+## College basketball evidence
+
+The Publish CBB Slate workflow refreshes the current team and shot evidence daily during the season. It checks the public Action Network, Covers and RotoWire injury reports at additional scheduled times and verifies each listed player against the current ESPN roster.
+
+Current gaps in team rates and starter heights use matching ESPN finals. Pace distinguishes counted NCAA possessions from ESPN box estimates. The possession-start table uses SportsDataverse events from score-reconciled games. The 2025–26 zone and press reference uses the public Synergy tables published by Action Network on March 17, 2026.
+
+The private CBB model workflow publishes the existing score-estimate contract to the dedicated board repository after a successful analysis. Model Center validates that snapshot before serving it and keeps its bundled board as an outage fallback.
+
 ## Pipeline order reference (orchestrator)
 
 `pipeline/main.py` runs steps in this order:

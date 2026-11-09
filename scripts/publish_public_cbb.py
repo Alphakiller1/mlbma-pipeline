@@ -12,6 +12,12 @@ def validate_context(value,old=None):
         if n is not None and (not isinstance(n,(int,float)) or not math.isfinite(n) or n<0):raise ValueError('Invalid CBB rate: '+k)
         if n is not None and k.startswith('efg_') and n>1.5:raise ValueError('eFG uses a fraction, not a 0–100 percentage')
         if n is not None and k.startswith(('fg2_pct','fg3_pct')) and n>1:raise ValueError('FG percentage uses a fraction')
+    if (box:=value.get('official_box')):
+        if value['season']!=2027 or box['games']<1:raise ValueError('Invalid supplemental box score sample')
+        if box.get('rates') and (set(box['rates'])!=set(value['rates']) or box['rates']['games_all']!=box['games']):
+            raise ValueError('Supplemental team-rate contract mismatch')
+        for n in (box.get('pace') or {}).values():
+            if not 20<=n<=120:raise ValueError('Box-estimated pace outside range')
     for family in value['shots'].values():
         for p in family.values():
             if {z['id'] for z in p['zones']}!={'atr2','paint2','mid2','c3','atb3','heave3'}:raise ValueError('Incomplete zone schema')
@@ -24,8 +30,8 @@ def validate_context(value,old=None):
     tactics=value.get('observed_tactics')
     if tactics:
         if tactics.get('season')!=value['season']:raise ValueError('Tactical season mismatch')
-        for family in ('personnel','situations'):
-            for row in tactics[family]:
+        for family in ('personnel','situations','restart_contexts'):
+            for row in tactics.get(family,[]):
                 n=row['possessions'];points=row['points']
                 if n<0 or points<0 or (n and abs(row['ppp']-points/n)>1e-9):raise ValueError('Invalid tactical efficiency')
                 if not n and row['ppp'] is not None:raise ValueError('Zero tactical sample must be null')

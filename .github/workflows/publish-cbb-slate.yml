@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '20 14 * 11,12,1,2,3,4 *'
+    - cron: '47 1,17,21 * 11,12,1,2,3,4 *'
 permissions:
   contents: write
 concurrency:
@@ -17,13 +18,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install requests
+      - run: pip install requests beautifulsoup4
       - uses: actions/cache@v4
+        if: github.event_name != 'schedule' || github.event.schedule == '20 14 * 11,12,1,2,3,4 *'
         with:
           path: .cache/cbb-tactics
           key: cbb-observed-${{ runner.os }}-${{ github.run_id }}
           restore-keys: cbb-observed-${{ runner.os }}-
       - run: python scripts/refresh_public_cbb.py
+        if: github.event_name != 'schedule' || github.event.schedule == '20 14 * 11,12,1,2,3,4 *'
       - name: Refresh public CBB availability
         continue-on-error: true
         run: python scripts/publish_public_cbb_availability.py

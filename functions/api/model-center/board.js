@@ -12,6 +12,7 @@
  * none, and it is marked with its source; a board's own line is never replaced.
  */
 import cbbBoard from './cbb-board.json';
+import { loadCbbScoreBoard } from '../../_shared/cbb-model-center.js';
 import { json, errorResponse, HttpError } from '../../_shared/http.js';
 
 const SPORTS = {
@@ -163,7 +164,7 @@ export async function onRequestGet({ request, env }) {
   try {
     const url = new URL(request.url);
     const sport = String(url.searchParams.get('sport') || 'mlb').toLowerCase();
-    if (sport === 'cbb') return json({sport:'cbb',schema:'chase-board/1',board:cbbBoard.board});
+    if (sport === 'cbb') return json({ sport: 'cbb', schema: 'chase-board/1', ...await loadCbbScoreBoard(cbbBoard.board) });
     const source = SPORTS[sport];
     if (!source) throw new HttpError(400, 'bad_sport', 'sport must be mlb, nfl, nba, wnba, or cfb');
     const boardUrl = (env && env[source[0]]) || source[1];
