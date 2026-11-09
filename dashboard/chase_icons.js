@@ -77,6 +77,10 @@
       '<line x1="3" x2="21" y1="10" y2="10"/>',
 
     /* --- Readings -------------------------------------------------------- */
+    zap: '<path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/>',
+    snail: '<path d="M2 13a6 6 0 1 0 12 0 4 4 0 1 0-8 0 2 2 0 0 0 4 0"/>' +
+      '<circle cx="10" cy="13" r="8"/><path d="M2 21h12c4.4 0 8-3.6 8-8V7a2 2 0 1 0-4 0v6"/>' +
+      '<path d="M18 3 19.1 5.2M22 3 20.9 5.2"/>',
     trend: '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
     trendDown: '<polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/>',
     gauge: '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
@@ -138,10 +142,44 @@
 
   function has(name) { return Object.prototype.hasOwnProperty.call(GLYPHS, name); }
 
+  function paceIcon(percentile, of, cohort, sample) {
+    if (!(percentile >= 0 && percentile <= 1) || of < 10) return '';
+    var fast = percentile > .5;
+    var tail = fast ? 1 - percentile : percentile;
+    var count = tail <= .1 ? 3 : tail <= .2 ? 2 : tail < 1 / 3 ? 1 : 0;
+    if (!count) return '';
+    var words = [(fast ? 'Fast' : 'Slow') + ' pace', count + ' of 3 ' + (fast ? 'lightning' : 'snail') + ' icons',
+      (percentile * 100).toFixed(1) + 'th speed percentile', of + ' ' + cohort, sample].filter(Boolean).join(' · ');
+    words = words.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return '<span class="ca-pace-icons" data-pace-direction="' + (fast ? 'fast' : 'slow') + '" data-pace-tier="' + count +
+      '" role="img" aria-label="' + words + '" title="' + words + '">' +
+      icon(fast ? 'zap' : 'snail', '', 12).repeat(count) + '</span>';
+  }
+
+  function rankedPace(rank, of, lowerIsFaster, cohort, sample) {
+    if (!Number.isInteger(rank) || !Number.isInteger(of) || rank < 1 || rank > of) return '';
+    return paceIcon((lowerIsFaster ? rank - 1 : of - rank) / (of - 1), of, cohort, sample);
+  }
+
+  function observedPace(value, peers, cohort, sample) {
+    if (!Number.isFinite(value) || !Array.isArray(peers)) return '';
+    var lower = peers.filter(function (n) { return n < value; }).length;
+    var tied = peers.filter(function (n) { return n === value; }).length;
+    return tied ? paceIcon((lower + (tied - 1) / 2) / (peers.length - 1), peers.length, cohort, sample) : '';
+  }
+
+  function paceLegend() {
+    return '<p class="ca-cbb-note ca-pace-legend">' + icon('zap', '', 12) + ' Faster · ' + icon('snail', '', 12) +
+      ' Slower · Three marks the outer 10%, two the next 10%, and one the rest of the outer third. The middle third has no icon.</p>';
+  }
+
   global.ChaseIcons = {
     icon: icon,
     weatherIcon: weatherIcon,
     weatherGlyphKey: weatherGlyphKey,
+    rankedPace: rankedPace,
+    observedPace: observedPace,
+    paceLegend: paceLegend,
     has: has,
     names: function () { return Object.keys(GLYPHS); }
   };

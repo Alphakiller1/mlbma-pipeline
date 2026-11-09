@@ -141,6 +141,7 @@
       var pick = chooseForm(g[side + '_form'], g[side + '_form_prior']);
       mapped[side + '_rates'] = (pick.form && pick.form.rates) || {};
       mapped[side + '_rates_basis'] = pick.basis;
+      mapped[side + '_rates_games'] = pick.form && pick.form.games || null;
       mapped[side + '_rates_current'] = pick.current;
       mapped[side + '_season_games'] = Number((g[side + '_form'] || {}).games || 0);
       var rot = chooseRotation(g, side);
@@ -178,6 +179,7 @@
       var team = window.teams[game[side]] || {}, form = team.form || {};
       game[side + '_rates'] = form.rates || {};
       game[side + '_rates_basis'] = seasonLabel(year) + ' · ' + (form.games || 0) + ' Games';
+      game[side + '_rates_games'] = form.games || null;
       game[side + '_profile'] = team.profile || null;
       game[side + '_rotation'] = game.nba_fixture_only ? [] : team.players || [];
       game[side + '_rotation_basis'] = game.nba_fixture_only ? 'Availability Report Pending'

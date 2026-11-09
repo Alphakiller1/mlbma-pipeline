@@ -6183,15 +6183,40 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-basketball-legend{display:flex;flex-wrap:wrap;gap:var(--space-3);font-size:12px;line-height:1.5;color:var(--text-muted);margin:var(--space-3) 0;text-transform:none}
 .ca-cbb-court .ca-court-badge__big{fill:var(--grade,var(--text-primary))}
 .ca-cbb-court .ca-court-badge__small{fill:var(--text-secondary)}
+.ca-cbb-court[data-court-metric="share"] .ca-court-badge__small{
+  fill:color-mix(in srgb,var(--series-6) var(--shot-volume,0%),var(--text-secondary));
+  font-weight:700
+}
+.ca-pace-icons{display:inline-flex;align-items:center;gap:1px;margin-inline-start:var(--space-1);vertical-align:middle;white-space:nowrap}
+.ca-pace-icons[data-pace-direction="fast"]{color:var(--accent-text)}
+.ca-pace-icons[data-pace-direction="slow"]{color:var(--series-6)}
+.ca-pace-legend{margin-block:var(--space-2)}
+.ca-pace-legend .ca-ico{vertical-align:middle}
+.ca-cbb-usage{display:inline-flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:4px}
+.ca-cbb-usage .ca-usage{min-width:0;gap:4px;justify-content:flex-end}
+.ca-cbb-usage .ca-usage__grid{gap:2px}
+.ca-cbb-usage .ca-usage__grid>i{width:clamp(2px,.4vw,6px);height:10px}
+.ca-cbb-usage .ca-freq-mark{margin-inline-start:0}
+@media(max-width:560px){
+  .ca-cbb-usage .ca-usage{flex-wrap:wrap}
+  .ca-cbb-usage .ca-usage__grid{gap:1px}
+  .ca-cbb-usage .ca-usage__grid>i{width:3px;height:7px}
+}
 .ca-nba-court .ca-court-badge__small{fill:var(--grade,var(--text-secondary))}
 .ca-nba-controls .ca-cbb-note{flex-basis:100%;margin:0}
 .ca-nba-evidence-table th{white-space:normal;min-width:64px}
 .ca-nba-evidence-table td:first-child{white-space:normal}
-.ca-nba-evidence-table .ca-cbb-count{font-size:11px}
+.ca-nba-evidence-table .ca-cbb-count{line-height:1.35;white-space:normal;overflow-wrap:anywhere}
+.ca-cbb-count__games::before,.ca-cbb-count__status::before{content:" · "}
 .ca-cfb-panel .ca-lineup-table.ca-nba-evidence-table{width:100%;min-width:0;table-layout:fixed}
 .ca-cfb-panel .ca-lineup-table.ca-nba-evidence-table th:first-child,
 .ca-cfb-panel .ca-lineup-table.ca-nba-evidence-table td:first-child{width:28%;min-width:0;white-space:normal;overflow:visible}
-@media(max-width:560px){.ca-cfb-panel .ca-nba-evidence-table th,.ca-cfb-panel .ca-nba-evidence-table td{padding-inline:4px;min-width:0;font-size:12px}.ca-cfb-panel .ca-nba-evidence-table th{font-size:10px}.ca-nba-evidence-table .ca-cbb-count{font-size:10px}}
+@media(max-width:560px){
+  .ca-cfb-panel .ca-nba-evidence-table th,.ca-cfb-panel .ca-nba-evidence-table td{padding-inline:4px;min-width:0;font-size:12px}
+  .ca-cfb-panel .ca-nba-evidence-table th{font-size:10px}
+  .ca-cbb-count__games,.ca-cbb-count__status{display:block}
+  .ca-cbb-count__games::before,.ca-cbb-count__status::before{content:none}
+}
 .ca-cbb-summary strong .ca-basketball-value{color:var(--grade,var(--text-primary))}
 /* Basketball headers share the numeric cell's edge and padding. */
 .ca-lineup-table.ca-basketball-table th.num,

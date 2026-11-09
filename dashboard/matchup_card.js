@@ -305,10 +305,10 @@
   /* A fact reads as symbol, then label, then value. The symbol is what makes a
      row of three cells scannable at a glance instead of three grey captions
      that all look alike. */
-  function miniFact(label, value, tone, glyph) {
+  function miniFact(label, value, tone, glyph, suffix) {
     return '<div class="ca-matchup-card__fact"><span>' +
       (glyph ? ico(glyph, 'ca-matchup-card__ico') : '') + esc(label) + '</span><strong class="' +
-      esc(tone || '') + '">' + esc(value || 'Not published') + '</strong></div>';
+      esc(tone || '') + '">' + esc(value || 'Not published') + (suffix || '') + '</strong></div>';
   }
 
 
@@ -600,7 +600,7 @@
     if (sport === 'cbb') {
       var listed = (game.away_cbb_availability || []).length + (game.home_cbb_availability || []).length;
       var report = listed ? listed + (listed === 1 ? ' player listed' : ' players listed') :
-        game.cbb_availability_pending ? 'Checking report' : 'No current listing';
+        game.cbb_availability_pending ? 'Checking report' : game.cbb_fixture_check ? 'Matchup report checked' : 'No verified listing';
       return '<div class="ca-matchup-card__summary">'+miniFact('Site',game.neutral?'Neutral court':'Home court')+
         miniFact('Availability',report)+
         miniFact('Broadcast',game.broadcast||'Not published')+'</div>';
@@ -678,10 +678,13 @@
   function nbaAnalysis(game, awayName, homeName) {
     function facts(side, name) {
       var r = game[side + '_rates'] || {};
+      var pace = r.pace || {}, games = game[side + '_rates_games'];
+      var indicator = global.ChaseIcons && ChaseIcons.rankedPace(pace.rank, pace.of, false, 'NBA teams',
+        games ? games + ' games · possessions per game' : 'Possessions per game');
       return miniFact(name + ' net rating', cfbFact(r.net_rtg, true)) +
         miniFact(name + ' offense /100', cfbFact(r.off_rtg)) +
         miniFact(name + ' defense /100', cfbFact(r.def_rtg)) +
-        miniFact(name + ' pace', cfbFact(r.pace));
+        miniFact(name + ' pace', cfbFact(r.pace), '', '', indicator);
     }
     var basis = game.away_rates_basis === game.home_rates_basis
       ? game.away_rates_basis

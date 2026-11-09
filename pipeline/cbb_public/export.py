@@ -21,13 +21,55 @@ def distribution(values):
     return {'mean':mean,'std':math.sqrt(sum((v-mean)**2 for v in values)/len(values)),'sample_size':len(values)}
 
 def grade_baselines(contexts,year):
-    cohort=[c for (y,_),c in contexts.items() if y==year and (c['rates'].get('games_all') or 0)>0]
+    season=[c for (y,_),c in contexts.items() if y==year]
+    cohort=[c for c in season if (c['rates'].get('games_all') or 0)>0]
     team={k:distribution(c['rates'].get(k) for c in cohort) for k in RATE_FIELDS if k!='games_all'}
     players=[p for c in cohort for p in c['players'] if (p.get('G') or 0)>0 and (p.get('Min_pct') or 0)>=10]
     player={k:distribution(p.get(k) for p in players if k!='TS' or (p.get('FGA') or 0)+(p.get('FTA') or 0)>0)
             for k in ['Pts','Reb','Ast','TS']}
-    return {'team':team,'player':player,'team_policy':'Same-season D-I teams with a reported game; equal team weighting.',
+    return {'team':team,'player':player, **matchup_baselines(season),
+            'team_policy':'Same-season D-I teams with a reported game; equal team weighting.',
             'player_policy':'Same-season players with a reported game and at least 10% reported MIN%; TS requires shooting attempts.'}
+
+def matchup_baselines(contexts):
+    pace_samples = defaultdict(list)
+    frequency = defaultdict(list)
+    efficiency = defaultdict(list)
+
+    def record(values, key, value):
+        if isinstance(value, (int, float)) and math.isfinite(value):
+            values[key].append(value)
+
+    for context in contexts:
+        observed = context.get('observed_tactics') or {}
+        box = context.get('official_box') or {}
+        for pace, keys in (
+            (observed.get('pace') or {}, ('observed_per40', 'recent5_per40')),
+            (box.get('pace') or {}, ('estimated_per40', 'recent5_estimated_per40')),
+        ):
+            for key in keys:
+                record(pace_samples, key, pace.get(key))
+        for family in ('situations', 'restart_contexts', 'personnel'):
+            for row in observed.get(family, []):
+                key = (family, row['side'], row.get('basis') or '', row.get('personnel') or row.get('kind'))
+                record(frequency, key, row.get('usage'))
+                if row['possessions'] >= 10:
+                    record(efficiency, key, row.get('ppp'))
+        for role, side in (('offense', 'o'), ('defense', 'd')):
+            key = ('shot_share', role, '', 'three')
+            record(frequency, key, context['rates'].get(f'tpr_{side}_all'))
+            for schema, block in context['shots'].items():
+                rim = next((z for z in block[role]['zones'] if z['id'] == 'atr2'), {})
+                record(frequency, ('shot_share', role, schema, 'rim'), rim.get('shot_share'))
+    return {
+        'pace_samples': {key: sorted(values) for key, values in sorted(pace_samples.items())},
+        'matchup_comparisons': [
+            {'family': family, 'side': side, 'basis': basis, 'kind': kind,
+             'usage_samples': sorted(values), 'ppp_baseline': distribution(efficiency[key])}
+            for key, values in sorted(frequency.items())
+            for family, side, basis, kind in [key]
+        ],
+    }
 
 def assert_public(value):
     if isinstance(value,dict):

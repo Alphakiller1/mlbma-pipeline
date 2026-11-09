@@ -483,9 +483,15 @@ C:\Users\chase\crawl_env\Scripts\python.exe scripts\integrate_chase_nav.py
 
 The Publish CBB Slate workflow refreshes the current team and shot evidence daily during the season. It checks the public Action Network, Covers and RotoWire injury reports at additional scheduled times and verifies each listed player against the current ESPN roster.
 
+The injury refresh also joins Covers fixture reports by date and both school identities. The matchup Availability tab links those checks, including explicit zero listings. A dated public snapshot preserves the source date for earlier fixtures.
+
 Public matchup views use the fixture's published availability to exclude ruled-out players from previews, lineups, and player-level analysis in both evidence seasons. The full injury reports retain the source designations. Season statistics and grading baselines keep their original samples.
 
 The NBA matchup desk checks its published slate against the selected Eastern date. When the dated snapshot is delayed, it uses the ESPN schedule and labels fixture-specific player evidence as pending. The current slate keeps its published injury and rest data when the daily snapshot arrives.
+
+Pace icons compare the displayed metric within its own league and evidence window. The fastest and slowest 10% get three icons, the next 10% get two, and the remainder of each outer third gets one. NFL speed uses seconds per snap. NBA uses the published possessions per game. CBB uses possessions per 40, with separate counts and estimates and separate recent and season comparisons.
+
+CBB usage segments encode observed share. Their rank chips use same-season, same-definition peers. Provisional possession-efficiency colors require 10 possessions and 20 peer teams. They add 40 league-average possessions for the color calculation while the table displays the observed PPP.
 
 Current gaps in team rates and starter heights use matching ESPN finals. Pace distinguishes counted NCAA possessions from ESPN box estimates. The possession-start table uses SportsDataverse events from score-reconciled games. The 2025–26 zone and press reference uses the public Synergy tables published by Action Network on March 17, 2026.
 

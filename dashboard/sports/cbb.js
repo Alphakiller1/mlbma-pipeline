@@ -90,27 +90,40 @@
       }).sort(function (a,b) { return String(a.kickoff_utc).localeCompare(String(b.kickoff_utc)) || a.id.localeCompare(b.id); });
       var result={ games: games, generatedAt: slate.generated_at_utc, dataThrough: slate.data_through_utc,
         dateIso: selected, source: 'Basketball Quant · two-season CBB evidence' };
-      var checkAvailability = selected >= today;
+      var archived = selected < today;
+      var checkAvailability = /^\d{4}-\d{2}-\d{2}$/.test(selected);
       if (checkAvailability) games.forEach(function (game) { game.cbb_availability_pending = true; });
-      var availability = checkAvailability ? json(ROOT + 'availability.json').catch(function () { return null; }) : Promise.resolve(null);
-      result.statusReady = Promise.all([refreshFixtures(result,teams,slate), availability]).then(function(parts) {
+      var reportPath = archived ? 'availability/' + selected + '.json' : 'availability.json';
+      var availability = checkAvailability ? json(ROOT + reportPath).catch(function () { return null; }) : Promise.resolve(null);
+      function applyAvailability(report) {
         if (!checkAvailability) return result;
         result.availabilityChecked = true;
-        result.games.forEach(function (game) { game.cbb_availability_pending = false; });
-        var report = parts[1], stamp = report && Date.parse(report.retrieved_at_utc);
+        result.games.forEach(function (game) {
+          game.cbb_availability_pending = false;
+          game.cbb_availability_archived = archived;
+        });
+        var stamp = report && Date.parse(report.retrieved_at_utc);
         if (!report || report.season !== slate.season || !Array.isArray(report.reports) ||
-            !Number.isFinite(stamp) || Date.now() - stamp > 36 * 60 * 60 * 1000) return result;
+            !Number.isFinite(stamp) || (archived ? report.slate_date !== selected :
+              Date.now() - stamp > 36 * 60 * 60 * 1000)) return result;
         var byTeam = new Map();
         report.reports.forEach(function (row) {
           if (!byTeam.has(row.team_id)) byTeam.set(row.team_id, []);
           byTeam.get(row.team_id).push(row);
         });
+        var byGame = new Map((report.game_checks || []).map(function (row) { return [String(row.game_id), row]; }));
         result.games.forEach(function (game) {
           game.cbb_availability_as_of = report.retrieved_at_utc;
+          game.cbb_availability_sources = report.sources || [];
+          game.cbb_fixture_check = byGame.get(String(game.id)) || null;
           game.away_cbb_availability = byTeam.get(String(game.away)) || [];
           game.home_cbb_availability = byTeam.get(String(game.home)) || [];
         });
         return result;
+      }
+      result.availabilityReady = availability.then(applyAvailability);
+      result.statusReady = Promise.all([refreshFixtures(result,teams,slate), availability]).then(function(parts) {
+        return applyAvailability(parts[1]);
       });
       return result;
     });
@@ -127,5 +140,11 @@
   }
   global.ChaseSportCBB = { load: load, context: context, detail: detail, SLATE_URL: ROOT + 'slate.json',
     baseline:function(year,group,key){return ((baselines[String(year)]||{})[group]||{})[key]||null;},
+    comparison: function (year, family, row) {
+      return ((baselines[String(year)] || {}).matchup_comparisons || []).find(function (p) {
+        return p.family === family && p.side === row.side && p.basis === (row.basis || '') &&
+          p.kind === (row.personnel || row.kind);
+      });
+    },
     teamIndex: function () { return json(ROOT + 'teams.json').then(rememberIndex); } };
 })(typeof window !== 'undefined' ? window : this);
