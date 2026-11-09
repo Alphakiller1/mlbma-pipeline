@@ -7577,7 +7577,8 @@ function seasonToggle(game) {
       }
     } else text = nbaGraded(text, grade);
     var status = qualifier ? ' <span class="ca-cbb-count__status">'+qualifier+'</span>' : '';
-    return text+'<small class="ca-cbb-count">'+row.possessions+' poss · '+row.games+' GP'+status+'</small>';
+    return text+'<small class="ca-cbb-count">'+row.possessions+' poss '+
+      '<span class="ca-cbb-count__games">'+row.games+' GP</span>'+status+'</small>';
   }
   var CBB_TACTIC_NOTE = 'Segments show usage. Rank 1 means most use. Lower allowed PPP grades higher. Full grades require 100 possessions and five games. Provisional colors require 10 possessions and 20 peer teams and add 40 league-average possessions for the grade. The printed PPP is observed.';
   function cbbRestarts(sport,game,side) {

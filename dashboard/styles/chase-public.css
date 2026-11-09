@@ -6207,15 +6207,15 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-nba-evidence-table th{white-space:normal;min-width:64px}
 .ca-nba-evidence-table td:first-child{white-space:normal}
 .ca-nba-evidence-table .ca-cbb-count{line-height:1.35;white-space:normal;overflow-wrap:anywhere}
-.ca-cbb-count__status::before{content:" · "}
+.ca-cbb-count__games::before,.ca-cbb-count__status::before{content:" · "}
 .ca-cfb-panel .ca-lineup-table.ca-nba-evidence-table{width:100%;min-width:0;table-layout:fixed}
 .ca-cfb-panel .ca-lineup-table.ca-nba-evidence-table th:first-child,
 .ca-cfb-panel .ca-lineup-table.ca-nba-evidence-table td:first-child{width:28%;min-width:0;white-space:normal;overflow:visible}
 @media(max-width:560px){
   .ca-cfb-panel .ca-nba-evidence-table th,.ca-cfb-panel .ca-nba-evidence-table td{padding-inline:4px;min-width:0;font-size:12px}
   .ca-cfb-panel .ca-nba-evidence-table th{font-size:10px}
-  .ca-cbb-count__status{display:block}
-  .ca-cbb-count__status::before{content:none}
+  .ca-cbb-count__games,.ca-cbb-count__status{display:block}
+  .ca-cbb-count__games::before,.ca-cbb-count__status::before{content:none}
 }
 .ca-cbb-summary strong .ca-basketball-value{color:var(--grade,var(--text-primary))}
 /* Basketball headers share the numeric cell's edge and padding. */
