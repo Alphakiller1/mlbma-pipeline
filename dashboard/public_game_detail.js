@@ -7892,7 +7892,8 @@ function seasonToggle(game) {
       var value = global.ChaseCbbCharts.value(text, place && rankTone(place.rank, place.of));
       return cbbRanked(value, place, 'same-season D-I '+(starter?'starter groups':'rosters')+' · '+
         (labels[position] || 'all positions')+' · tallest first')+
-        '<small class="ca-cbb-count">'+r.players+' players'+(starter?' · '+r.recorded_starts+' starts':'')+'</small>';
+        '<small class="ca-cbb-count">'+r.players+' players'+
+        (starter?'<span class="ca-cbb-count__games">'+r.recorded_starts+' starts</span>':'')+'</small>';
     }
     var rows=[];
     if(summary.whole_team||summary.starters)rows.push(['All positions',height(summary.starters,'starters','all'),height(summary.whole_team,'whole_team','all')]);
