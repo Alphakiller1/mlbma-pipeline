@@ -194,6 +194,25 @@ def validate_evidence(data: dict, now: datetime) -> list[str]:
     return problems
 
 
+def preserve_coverage(window: dict, prior: dict) -> bool:
+    """Keep the complete prior coverage cohort if an upstream refresh trails it."""
+    current, previous = window.get("teams", {}), prior.get("teams", {})
+    sides = ("offense", "defense")
+
+    def games(club, side):
+        row = ((club.get("measured_coverage") or {}).get(side) or {})
+        count = row.get("games")
+        return count if isinstance(count, int) and count > 0 else 0
+
+    if set(previous) != TEAMS or any(not games(previous[team], side) for team in TEAMS for side in sides):
+        return False
+    if all(games(current[team], side) >= games(previous[team], side) for team in TEAMS for side in sides):
+        return False
+    for team in TEAMS:
+        current[team]["measured_coverage"] = previous[team]["measured_coverage"]
+    return True
+
+
 def publish_evidence(source: str = EVIDENCE_SOURCE) -> bool:
     """An evidence outage must not freeze the independently valid fixture slate."""
     try:
@@ -207,6 +226,8 @@ def publish_evidence(source: str = EVIDENCE_SOURCE) -> bool:
                 prior = old.get("seasons", {}).get(year, {})
                 if str(window.get("data_through_utc") or "") < str(prior.get("data_through_utc") or ""):
                     raise ValueError(f"observed games cutoff regressed for {year}")
+                if preserve_coverage(window, prior):
+                    print(f"Retained newer {year} measured coverage while other NBA evidence refreshed")
         EVIDENCE_OUT.parent.mkdir(parents=True, exist_ok=True)
         temp = EVIDENCE_OUT.with_suffix(".tmp")
         temp.write_text(json.dumps(data, separators=(",", ":"), ensure_ascii=False) + "\n", encoding="utf-8")

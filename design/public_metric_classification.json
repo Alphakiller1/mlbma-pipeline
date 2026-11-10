@@ -81,6 +81,7 @@
     "pool",
     "profile_sources",
     "published_at_utc",
+    "ppp_decimals",
     "ranked",
     "regression_basis",
     "retrieved_at_utc",
