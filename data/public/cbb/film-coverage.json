@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "film_samples": [
+    {
+      "game_id": "401909717",
+      "season": 2027,
+      "game_date": "2026-11-05",
+      "away": {
+        "team_id": "2115",
+        "team_name": "Central Connecticut"
+      },
+      "home": {
+        "team_id": "183",
+        "team_name": "Syracuse"
+      },
+      "film_url": "https://www.youtube.com/watch?v=l5_PHxP4IbM",
+      "film_source": "ACC Digital Network",
+      "results_url": "https://www.espn.com/mens-college-basketball/playbyplay/_/gameId/401909717",
+      "film_scope": "Opening possessions · first half",
+      "film_possessions": [
+        {
+          "side": "home",
+          "kind": "man",
+          "film_offset_seconds": 6,
+          "start_play_id": "401909717120723301",
+          "end_play_id": "401909717120723538",
+          "period": 1,
+          "game_clock": "19:24",
+          "points": 2,
+          "film_note": "Blue defenders follow individual cuts across the lane and recover to the same assignments. Offensive rebound stays in this possession."
+        },
+        {
+          "side": "away",
+          "kind": "man",
+          "film_offset_seconds": 64,
+          "start_play_id": "401909717120723538",
+          "end_play_id": "401909717120723778",
+          "period": 1,
+          "game_clock": "18:48",
+          "points": 0,
+          "film_note": "White defenders track individual cutters; the on-ball defender pursues through the screen and recovers to the handler."
+        },
+        {
+          "side": "home",
+          "kind": "man",
+          "film_offset_seconds": 95,
+          "start_play_id": "401909717120723778",
+          "end_play_id": "401909717120723825",
+          "period": 1,
+          "game_clock": "18:29",
+          "points": 2,
+          "film_note": "Blue defenders track the wing and interior cuts; the big follows the rolling screener rather than handing him through a zone."
+        },
+        {
+          "side": "away",
+          "kind": "man",
+          "film_offset_seconds": 119,
+          "start_play_id": "401909717120723825",
+          "end_play_id": "401909717120724095",
+          "period": 1,
+          "game_clock": "18:00",
+          "points": 3,
+          "film_note": "White defenders follow the weak-side cutter and chase perimeter assignments through the reversal."
+        },
+        {
+          "side": "home",
+          "kind": "man",
+          "film_offset_seconds": 148,
+          "start_play_id": "401909717120724095",
+          "end_play_id": "401909717120724642",
+          "period": 1,
+          "game_clock": "17:37",
+          "points": 1,
+          "film_note": "Blue stays attached to individual cutters and contests the drive. One made free throw is included before the defensive rebound."
+        },
+        {
+          "side": "away",
+          "kind": "man",
+          "film_offset_seconds": 224,
+          "start_play_id": "401909717120724642",
+          "end_play_id": "401909717120724778",
+          "period": 1,
+          "game_clock": "17:18",
+          "points": 0,
+          "film_note": "White follows individual cuts and the on-ball defender recovers after screen help."
+        },
+        {
+          "side": "home",
+          "kind": "unclassified",
+          "film_offset_seconds": 242,
+          "start_play_id": "401909717120724778",
+          "end_play_id": "401909717120724848",
+          "period": 1,
+          "game_clock": "17:10",
+          "points": 0,
+          "film_note": "Quick drive and offensive foul before a sustained coverage read."
+        },
+        {
+          "side": "away",
+          "kind": "man",
+          "film_offset_seconds": 264,
+          "start_play_id": "401909717120724848",
+          "end_play_id": "401909717120724935",
+          "period": 1,
+          "game_clock": "16:59",
+          "points": 0,
+          "film_note": "White follows the weak-side exchange while the screen defender recovers to the roller and the guard pursues the ball."
+        },
+        {
+          "side": "home",
+          "kind": "man",
+          "film_offset_seconds": 275,
+          "start_play_id": "401909717120724935",
+          "end_play_id": "401909717120724954",
+          "period": 1,
+          "game_clock": "16:45",
+          "points": 2,
+          "film_note": "Blue matches the cutters across the lane and follows the post entry. The half-court action is established before the layup."
+        },
+        {
+          "side": "away",
+          "kind": "man",
+          "film_offset_seconds": 293,
+          "start_play_id": "401909717120724954",
+          "end_play_id": "401909717120725207",
+          "period": 1,
+          "game_clock": "16:22",
+          "points": 2,
+          "film_note": "White guards track their perimeter assignments and the big returns to his screener before the drive."
+        }
+      ]
+    },
+    {
+      "game_id": "401921727",
+      "season": 2027,
+      "game_date": "2026-11-06",
+      "away": {
+        "team_id": "2473",
+        "team_name": "Oakland"
+      },
+      "home": {
+        "team_id": "24",
+        "team_name": "Stanford"
+      },
+      "film_url": "https://www.youtube.com/watch?v=edO_z-xCSZU",
+      "film_source": "ACC Digital Network",
+      "results_url": "https://www.espn.com/mens-college-basketball/playbyplay/_/gameId/401921727",
+      "film_scope": "Opening possessions · first half",
+      "film_possessions": [
+        {
+          "side": "home",
+          "kind": "zone",
+          "film_offset_seconds": 11,
+          "start_play_id": "401921727120856910",
+          "end_play_id": "401921727120856952",
+          "period": 1,
+          "game_clock": "19:35",
+          "points": 2,
+          "film_note": "Oakland's high defender shifts with the ball and hands the wing off; the baseline and interior defenders retain their areas."
+        },
+        {
+          "side": "away",
+          "kind": "man",
+          "film_offset_seconds": 57,
+          "start_play_id": "401921727120856952",
+          "end_play_id": "401921727120857017",
+          "period": 1,
+          "game_clock": "19:06",
+          "points": 0,
+          "film_note": "Stanford defenders follow Oakland's stacked cuts and stay with the post on the rebound. Both shots are in the same possession."
+        },
+        {
+          "side": "home",
+          "kind": "zone",
+          "film_offset_seconds": 74,
+          "start_play_id": "401921727120857017",
+          "end_play_id": "401921727120857067",
+          "period": 1,
+          "game_clock": "18:57",
+          "points": 0,
+          "film_note": "Oakland holds interior and wing areas through the reversal; the high defender closes as the pass changes sides."
+        },
+        {
+          "side": "away",
+          "kind": "unclassified",
+          "film_offset_seconds": 86,
+          "start_play_id": "401921727120857067",
+          "end_play_id": "401921727120857088",
+          "period": 1,
+          "game_clock": "18:48",
+          "points": 0,
+          "film_note": "Early attack off a defensive rebound; no sustained half-court assignment read before the shot."
+        },
+        {
+          "side": "home",
+          "kind": "unclassified",
+          "film_offset_seconds": 95,
+          "start_play_id": "401921727120857088",
+          "end_play_id": "401921727120857089",
+          "period": 1,
+          "game_clock": "18:46",
+          "points": 0,
+          "film_note": "Live-ball turnover on the advance before a half-court scheme is established."
+        },
+        {
+          "side": "away",
+          "kind": "unclassified",
+          "film_offset_seconds": 99,
+          "start_play_id": "401921727120857089",
+          "end_play_id": "401921727120857105",
+          "period": 1,
+          "game_clock": "18:41",
+          "points": 2,
+          "film_note": "Transition layup off the steal."
+        },
+        {
+          "side": "home",
+          "kind": "zone",
+          "film_offset_seconds": 107,
+          "start_play_id": "401921727120857105",
+          "end_play_id": "401921727120857109",
+          "period": 1,
+          "game_clock": "18:27",
+          "points": 3,
+          "film_note": "Two Oakland defenders pressure the handler and middle outlet in the backcourt; the defense settles into an area-based shell before the three.",
+          "press_observed": true
+        },
+        {
+          "side": "away",
+          "kind": "man",
+          "film_offset_seconds": 123,
+          "start_play_id": "401921727120857109",
+          "end_play_id": "401921727120857164",
+          "period": 1,
+          "game_clock": "18:14",
+          "points": 2,
+          "film_note": "Stanford matches the guards and tracks the screener into the lane; the perimeter assignments travel with their cutters."
+        },
+        {
+          "side": "home",
+          "kind": "zone",
+          "film_offset_seconds": 132,
+          "start_play_id": "401921727120857164",
+          "end_play_id": "401921727120857211",
+          "period": 1,
+          "game_clock": "17:55",
+          "points": 0,
+          "film_note": "Oakland presses the inbound outlets before midcourt, then forms a zone that rotates to passes and leaves the baseline defender in his area.",
+          "press_observed": true
+        },
+        {
+          "side": "away",
+          "kind": "man",
+          "film_offset_seconds": 151,
+          "start_play_id": "401921727120857211",
+          "end_play_id": "401921727120857243",
+          "period": 1,
+          "game_clock": "17:46",
+          "points": 0,
+          "film_note": "Stanford follows individual cutters through exchanges before the traveling violation."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "film_samples": [
+    {
+      "game_id": "401873049",
+      "pbp_game_id": "2026_09_GB_NE",
+      "season": 2026,
+      "game_date": "2026-11-08",
+      "week": 9,
+      "away": {"team_id": "GB", "team_name": "Green Bay"},
+      "home": {"team_id": "NE", "team_name": "New England"},
+      "film_source": "New England Patriots",
+      "film_url": "https://www.patriots.com/news/after-further-review-drake-maye-film-breakdown-patriots-coverage-issues-quick-hit-film-notes-from-week-9-loss-to-the-packers",
+      "results_url": "https://www.espn.com/nfl/playbyplay/_/gameId/401873049",
+      "film_plays": [
+        {"end_play_id": "1022", "side": "away", "kind": "Cover 1", "period": 1, "game_clock": "1:09", "yards": 43, "result": "43 yd completion", "play_epa": 2.882363},
+        {"end_play_id": "1111", "side": "away", "kind": "Match quarters (poach)", "period": 2, "game_clock": "14:23", "yards": -9, "result": "9 yd sack", "play_epa": -1.695639},
+        {"end_play_id": "1762", "side": "home", "kind": "Cover 6", "period": 2, "game_clock": "5:47", "yards": 0, "result": "Interception", "play_epa": -3.676335}
+      ]
+    }
+  ]
+}
