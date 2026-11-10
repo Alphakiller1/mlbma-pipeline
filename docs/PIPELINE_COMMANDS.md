@@ -487,6 +487,8 @@ The injury refresh also joins Covers fixture reports by date and both school ide
 
 Public matchup views use the fixture's published availability to exclude ruled-out players from previews, lineups, and player-level analysis in both evidence seasons. The full injury reports retain the source designations. Season statistics and grading baselines keep their original samples.
 
+NFL matchup analysis opens on the current season. The Sharp Football Analysis matchup export supplies man and zone rates among classified dropbacks, EPA and sample counts. The middle-of-field report carries its own publication date. The current personnel table joins Sharp's charted offensive snaps to the scheduled opponent and shows usage and EPA per play for each grouping. FTN DVOA preserves the source's edition suffix when a weekly release has one.
+
 The NBA matchup desk checks its published slate against the selected Eastern date. When the dated snapshot is delayed, it uses the ESPN schedule and labels fixture-specific player evidence as pending. The current slate keeps its published injury and rest data when the daily snapshot arrives.
 
 Pace icons compare the displayed metric within its own league and evidence window. The fastest and slowest 10% get three icons, the next 10% get two, and the remainder of each outer third gets one. NFL speed uses seconds per snap. NBA uses the published possessions per game. CBB compares both teams in one table and uses possessions per 40, with separate cohorts for counts and estimates. A team's last-five pace appears once it has a distinct five-game window.

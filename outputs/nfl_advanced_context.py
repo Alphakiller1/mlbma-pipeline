@@ -871,7 +871,7 @@ def team_scheme_current(season: int) -> dict[str, dict]:
     # Coverage, man/zone and personnel for the current season come from Sharp
     # Football Analysis charting (used with permission); see outputs/sharp_nfl.
     sharp = sharp_nfl.current_season(season)
-    sharp.pop("_source", None)
+    sharp_source = sharp.pop("_source", None)
     for team, phases in sharp.items():
         club = out.get(_team(team))
         if not club:
@@ -883,6 +883,8 @@ def team_scheme_current(season: int) -> dict[str, dict]:
                 club[phase].setdefault(group, {}).update(values)
         if (phases.get("defense") or {}).get("coverage"):
             club["participation_source_seasons"] = [season]
+        if sharp_source:
+            club["sharp_source"] = sharp_source
     pressure = pfr_pressure(season)
     for phase in ("offense", "defense"):
         for team, rate in pressure[phase].items():

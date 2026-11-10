@@ -19,9 +19,11 @@ from __future__ import annotations
 
 import html
 import json
+import math
 import re
 import urllib.request
 from collections import Counter, defaultdict
+from datetime import datetime, timezone
 
 COVERAGE_URL = "https://www.sharpfootballanalysis.com/stats-nfl/nfl-coverage-schemes/"
 DATA_URL = "https://rmsummerlin.github.io/SFAStatsPages/data/{name}_{season}.json"
@@ -59,23 +61,25 @@ def _json(name: str, season: int) -> dict | None:
     return data if int(data.get("season") or 0) == season else None
 
 
-def coverage_table(names: dict[str, str]) -> dict[str, dict[str, float]]:
-    """Each defense's man, zone, middle-closed and middle-open rate (0-1)."""
+def coverage_table(names: dict[str, str], season: int) -> tuple[dict[str, dict[str, float]], str | None]:
+    """The published middle-of-field rates and their own report date."""
     raw = _get(COVERAGE_URL)
     if not raw:
-        return {}
+        return {}, None
     page = raw.decode("utf-8", errors="ignore")
+    date = re.search(r'"dateModified"\s*:\s*"(\d{4}-\d{2}-\d{2})T', page)
+    if not date or int(date[1][:4]) not in (season, season + 1):
+        return {}, None
     start = page.find('id="table_1"')
     if start < 0:
-        return {}
+        return {}, None
     body = page[start:page.find("</table>", start)]
     heads = [html.unescape(re.sub(r"<[^>]+>", "", h)).strip().lower()
              for h in re.findall(r"<th[^>]*>(.*?)</th>", body, re.S)]
-    wanted = {"man rate": "man_rate", "zone rate": "zone_rate",
-              "middle closed rate": "single_high_rate", "middle open rate": "two_high_rate"}
+    wanted = {"middle closed rate": "single_high_rate", "middle open rate": "two_high_rate"}
     if heads[:1] != ["team"] or not all(h in heads for h in wanted):
         print("  WARNING: Sharp coverage table changed shape; skipped")
-        return {}
+        return {}, None
     code_of = {full.lower(): code for code, full in names.items()}
     out: dict[str, dict[str, float]] = {}
     for row in re.findall(r"<tr[^>]*>(.*?)</tr>", body, re.S):
@@ -94,9 +98,9 @@ def coverage_table(names: dict[str, str]) -> dict[str, dict[str, float]]:
                 continue
             if 0 <= value <= 1:
                 rates[key] = round(value, 4)
-        if rates:
+        if len(rates) == len(wanted):
             out[_code(code)] = rates
-    return out if len(out) >= 30 else {}
+    return (out, date[1]) if len(out) == 32 else ({}, None)
 
 
 TENDENCIES_URL = "https://www.sharpfootballanalysis.com/stats-nfl/nfl-defensive-tendencies/"
@@ -134,68 +138,87 @@ def sub_package_table(names: dict[str, str]) -> dict[str, float]:
     return out if len(out) >= 30 else {}
 
 
-def _unit_values(unit: dict) -> tuple[dict, dict]:
-    """(coverage rates, EPA responses) from one matchup unit's current-season values."""
+def _unit_values(unit: dict) -> tuple[dict, dict, dict]:
+    """Coverage frequencies, EPA and the corresponding dropback samples."""
     metrics = (unit or {}).get("m") or {}
-    coverage, response = {}, {}
+    coverage, response, samples = {}, {}, {}
 
     def current(key):
         entry = metrics.get(key)
         # [shrunk, current season, sample, league place, prior season]
         if not isinstance(entry, list) or len(entry) < 3 or entry[1] is None:
             return None, 0
-        return float(entry[1]), int(entry[2] or 0)
+        try:
+            value, sample = float(entry[1]), int(entry[2] or 0)
+        except (ValueError, TypeError, OverflowError):
+            return None, 0
+        return (value, sample) if math.isfinite(value) and sample > 0 else (None, 0)
 
     man, n = current("man")
-    if man is not None and n:
+    if man is not None and 0 <= man <= 1:
         coverage["man_rate"] = round(man, 4)
         # The man rate's sample is every charted coverage snap; the zone EPA's
         # sample is the zone snaps among them, so their ratio is the zone rate.
         _, zone_n = current("zone_epa")
-        if zone_n:
+        if 0 < zone_n <= n:
             coverage["zone_rate"] = round(zone_n / n, 4)
     for key in ("man_epa", "zone_epa"):
         value, n = current(key)
         if value is not None and n >= MIN_EPA_DROPBACKS:
-            response["pass_epa_" + key[:-4]] = round(value, 4)
-    return coverage, response
+            field = "pass_epa_" + key[:-4]
+            response[field] = round(value, 4)
+            samples[field] = n
+    return coverage, response, samples
 
 
-def _personnel(season: int, schedule: list[dict]) -> dict[str, dict[str, dict[str, float]]]:
-    """Personnel grouping rates: each offense's own, and what each defense has faced."""
+def _personnel(season: int, schedule: list[dict]) -> tuple[dict, int | None]:
+    """Personnel usage and EPA on the same charted plays, on both sides."""
     data = _json("personnel_grouping", season)
     if not data:
-        return {}
-    alphabet = data["alphabet"]
-    index = {ch: i for i, ch in enumerate(alphabet)}
-    col = lambda key: [index[ch] for ch in data["cols"][key]]
-    teams = [_code(t) for t in data["teams"]]
-    team_col, week_col, pers_col = col("t"), col("w"), col("p")
+        return {}, None
+    try:
+        alphabet = data["alphabet"]
+        index = {ch: i for i, ch in enumerate(alphabet)}
+        columns = [[index[ch] for ch in data["cols"][key]] for key in ("t", "w", "p", "eh", "el")]
+        teams = [_code(t) for t in data["teams"]]
+        groups = [f"{value // 100}{(value // 10) % 10}" for value in data["pers"]]
+        offset, scale = int(data["epa_offset"]), int(data["epa_scale"])
+    except (KeyError, TypeError, ValueError):
+        return {}, None
+    if (len(set(teams)) != 32 or scale <= 0 or
+            not all(len(column) == data.get("plays") and column for column in columns)):
+        return {}, None
     opponent = {}
     for game in schedule:
         away, home, week = _code(game.get("away")), _code(game.get("home")), game.get("w")
         opponent[(away, week)] = home
         opponent[(home, week)] = away
-    own: dict[str, Counter] = defaultdict(Counter)
-    faced: dict[str, Counter] = defaultdict(Counter)
-    for t, w, p in zip(team_col, week_col, pers_col):
-        code = int(data["pers"][p])
-        group = f"{code // 100}{(code // 10) % 10}"
-        team = teams[t]
-        own[team][group] += 1
-        own[team]["_plays"] += 1
+    count = {phase: defaultdict(Counter) for phase in ("offense", "defense")}
+    points = {phase: defaultdict(Counter) for phase in count}
+    for t, w, p, hi, lo in zip(*columns):
+        if t >= len(teams) or p >= len(groups):
+            return {}, None
+        team, group = teams[t], groups[p]
         opp = opponent.get((team, w))
-        if opp:
-            faced[opp][group] += 1
-            faced[opp]["_plays"] += 1
+        if opp not in teams:
+            return {}, None
+        epa = (hi * len(alphabet) + lo - offset) / scale
+        for phase, club in (("offense", team), ("defense", opp)):
+            count[phase][club][group] += 1
+            points[phase][club][group] += epa
 
-    def rates(counts: Counter) -> dict[str, float]:
-        plays = counts["_plays"]
-        return {f"personnel_{g}_rate": round(counts[g] / plays, 4)
-                for g in PERSONNEL_GROUPS if plays} if plays else {}
-
-    return {"offense": {t: rates(c) for t, c in own.items()},
-            "defense": {t: rates(c) for t, c in faced.items()}}
+    result = {}
+    for phase, clubs in count.items():
+        result[phase] = {}
+        for club, counts in clubs.items():
+            total = sum(counts.values())
+            result[phase][club] = {
+                "personnel": {f"personnel_{g}_rate": round(counts[g] / total, 4) for g in PERSONNEL_GROUPS},
+                "response": {f"epa_personnel_{g}": round(points[phase][club][g] / counts[g], 4)
+                             for g in PERSONNEL_GROUPS if counts[g]},
+                "response_samples": {f"epa_personnel_{g}": counts[g] for g in PERSONNEL_GROUPS if counts[g]},
+            }
+    return result, max(columns[1])
 
 
 def offense_coverage(season: int) -> dict[str, dict[str, dict]]:
@@ -229,28 +252,44 @@ def current_season(season: int) -> dict[str, dict]:
     if not matchup:
         return {}
     names = {code: full for code, full in (matchup.get("names") or {}).items()}
+    units = (matchup.get("latest") or {}).get("units") or {}
+    through_week = matchup.get("latest_played_week")
+    if len(units) != 32 or not isinstance(through_week, int) or not 1 <= through_week <= 18:
+        return {}
+    try:
+        published = datetime.fromisoformat(matchup["generated_utc"])
+    except (KeyError, TypeError, ValueError):
+        return {}
+    if published.tzinfo is None:
+        published = published.replace(tzinfo=timezone.utc)
     out: dict[str, dict] = defaultdict(lambda: {"offense": {}, "defense": {}})
-    for code, unit in ((matchup.get("latest") or {}).get("units") or {}).items():
+    for code, unit in units.items():
         for phase, side in (("offense", "off"), ("defense", "def")):
-            coverage, response = _unit_values(unit.get(side))
+            coverage, response, samples = _unit_values(unit.get(side))
             if coverage:
                 out[_code(code)][phase]["coverage"] = coverage
             if response:
                 out[_code(code)][phase]["response"] = response
-    # The published Coverage Schemes table is the defense's own usage.
-    for code, rates in coverage_table(names).items():
-        out[code]["defense"]["coverage"] = rates
+                out[_code(code)][phase]["response_samples"] = samples
+    # The site's separate middle-of-field table can lag the matchup export.
+    # Keep its dates separate and preserve the matchup export's man/zone denominator.
+    middle, middle_date = coverage_table(names, season)
+    for code, rates in middle.items():
+        out[code]["defense"].setdefault("coverage", {}).update(rates)
     for code, rate in sub_package_table(names).items():
         out[code]["defense"]["package"] = {"sub_package_rate": rate}
-    for phase, by_team in _personnel(season, matchup.get("schedule") or []).items():
-        for code, rates in by_team.items():
-            if rates:
-                out[code][phase]["personnel"] = rates
+    personnel, personnel_week = _personnel(season, matchup.get("schedule") or [])
+    for phase, by_team in personnel.items():
+        for code, groups in by_team.items():
+            for group, values in groups.items():
+                out[code][phase].setdefault(group, {}).update(values)
     result = {team: dict(value) for team, value in out.items()}
     if result:
         result["_source"] = {
-            "provider": "Sharp Football Analysis",
-            "through_week": (matchup.get("latest_played_week")),
-            "generated_utc": matchup.get("generated_utc"),
+            "source": "Sharp Football Analysis",
+            "through_week": through_week,
+            "published_at_utc": published.astimezone(timezone.utc).isoformat(),
+            "middle_report_date": middle_date,
+            "personnel_through_week": personnel_week,
         }
     return result

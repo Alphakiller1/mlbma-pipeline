@@ -306,6 +306,9 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.evaluate("document.querySelector('.ca-detail-stack').setAttribute('data-nfl-tab', 'all')")
         page.evaluate("() => { const r = document.getElementById('radar'); r && r.scrollIntoView(); }")
         page.wait_for_timeout(300)
+        check("NFL opens on current-season data",
+              page.locator("[data-season-scope='current']").get_attribute("aria-pressed") == "true")
+        page.locator("[data-season-scope='combined']").click()
 
         def section_unpublished(selector: str) -> bool:
             return "not published" in page.locator(selector).inner_text().lower()
@@ -363,8 +366,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                   "time of possession", "sec/snap", "snaps/g"))
               and page.locator("#pace .ca-freq-mark").filter(visible=True).count() >= 10,
               pace_text[:200])
-        check("NFL tendencies are never graded",
-              page.locator("#tendencies td[class*='c-']").count() == 0)
+        check("NFL tendency frequencies are never graded as performance",
+              page.locator("#tendencies :is(td:nth-child(2),td:nth-child(3))[class*='c-']").count() == 0)
         cov_usage = page.locator("#coverage .ca-arsenal-table td:has(.ca-usage)").count()
         cov_marks = page.locator("#coverage .ca-arsenal-table td:has(.ca-usage) .ca-freq-mark").count()
         check("NFL coverage usage carries a league marker on every row",

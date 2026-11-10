@@ -2,9 +2,27 @@ from __future__ import annotations
 
 import json
 import unittest
+from io import BytesIO
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+class NflDvoaRefreshTests(unittest.TestCase):
+    def test_ftn_suffixed_week_does_not_block_the_slate(self):
+        from outputs.publish_public_slate import fetch_ftn_dvoa
+
+        row = {"year": 2026, "week": "9M", "total_dvoa": "5.1%", "total_dvoa_rank": 11,
+               "offense_dvoa": "2.3%", "offense_rank": 15, "defense_dvoa": "-2.0%",
+               "defense_rank": 14, "special_teams_dvoa": "0.8%", "special_teams_rank": 10}
+        payload = json.dumps({"2026": {f"CLUB{club}": row for club in range(32)}}).encode()
+        with patch("urllib.request.urlopen", return_value=BytesIO(payload)):
+            profiles = fetch_ftn_dvoa(2026)
+        self.assertEqual(len(profiles), 32)
+        self.assertEqual((profiles["CLUB0"]["week"], profiles["CLUB0"]["week_edition"]), (9, "9M"))
+        with patch("urllib.request.urlopen", return_value=BytesIO(payload)):
+            self.assertEqual(fetch_ftn_dvoa(2027), {})
 
 
 class PublicSlateProjectionTests(unittest.TestCase):

@@ -3670,8 +3670,8 @@ function seasonToggle(game) {
       return all.indexOf(year) === index;
     }).sort();
     var options = [
-      ['combined', shown.join(' + '), 'Prior-season charting and current-season form'],
-      ['current', String(now) + ' Only', 'Current-season evidence only']
+      ['current', String(now) + ' Only', 'Current-season evidence only'],
+      ['combined', shown.join(' + '), 'Prior-season charting and current-season form']
     ];
     return '<aside class="ca-analysis-scope" aria-label="Analysis scope"><div>' +
       '<span class="ca-analysis-scope__eyebrow">Evidence Window</span>' +
@@ -3847,11 +3847,12 @@ function seasonToggle(game) {
   /* Every result is coloured and chipped, both clubs alike. (MLB's Pitch Mix
      leaves the opposing lineup's number plain beside its chip; on the NFL desk
      that read as an ungraded number, so both columns carry the tier.) */
-  function nflResultCell(raw, entry, own, isRate) {
+  function nflResultCell(raw, entry, own, isRate, sample) {
     if (raw == null || !isFinite(Number(raw))) return '<td class="num">&mdash;</td>';
     var tone = entry ? rankTone(entry.rank, entry.of) : '';
     return '<td class="num' + (tone ? ' ' + tone : '') + '">' +
-      esc(epaText(raw, isRate)) + rankBadge(entry) + '</td>';
+      esc(epaText(raw, isRate)) + rankBadge(entry) +
+      (sample ? '<small class="ca-cbb-count">' + esc(sample) + '</small>' : '') + '</td>';
   }
 
   function nflMixTable(firstHead, heads, rows) {
@@ -3865,6 +3866,11 @@ function seasonToggle(game) {
     var seasons = ((scheme || {})[participation ? 'participation_source_seasons' : 'source_seasons']) ||
       (scheme || {}).source_seasons || [];
     return seasons.length ? seasons.join(' + ') + ' charting' : '';
+  }
+
+  function nflSharpWeek(scheme, field) {
+    var source = scheme.sharp_source;
+    return source && Number.isInteger(source[field]) ? 'Sharp Football Analysis · through Week ' + source[field] : '';
   }
 
   function nflOther(side) { return side === 'away' ? 'home' : 'away'; }
@@ -3999,8 +4005,8 @@ function seasonToggle(game) {
   ];
 
   // A charted look this club has not run a play into has no result to show.
-  function nflLookResult(raw, entry, own) {
-    return raw == null ? '<td class="num is-low-cell">No plays</td>' : nflResultCell(raw, entry, own);
+  function nflLookResult(raw, entry, own, sample) {
+    return raw == null ? '<td class="num is-low-cell">No plays</td>' : nflResultCell(raw, entry, own, false, sample);
   }
 
   function nflLooksPanel(sport, game, defSide) {
@@ -4010,6 +4016,8 @@ function seasonToggle(game) {
     var unit = dScheme.defense || {};
     var allowed = nflResponse(dScheme, 'defense');
     var faced = nflResponse(oScheme, 'offense');
+    var allowedSamples = unit.response_samples || {};
+    var facedSamples = (oScheme.offense || {}).response_samples || {};
     var head = '<section class="ca-arsenal-panel"><h3>' +
       esc(nflVs(sport, game, defSide, 'Defense', 'Offense')) + '</h3>';
     var rows = NFL_LOOKS.map(function (spec) {
@@ -4018,15 +4026,17 @@ function seasonToggle(game) {
       if (allowed[spec[3]] == null && faced[spec[3]] == null) return '';
       return '<tr><td class="ca-lineup-name">' + esc(spec[0]) + '</td>' +
         nflUsageCell(rate, nflFreqRank(dScheme, 'defense', spec[1], spec[2])) +
-        nflLookResult(allowed[spec[3]], nflResultRank(dScheme, 'defense', spec[3], allowed[spec[3]]), true) +
-        nflLookResult(faced[spec[3]], nflResultRank(oScheme, 'offense', spec[3], faced[spec[3]]), false) +
+        nflLookResult(allowed[spec[3]], nflResultRank(dScheme, 'defense', spec[3], allowed[spec[3]]), true,
+          allowedSamples[spec[3]] ? allowedSamples[spec[3]] + ' dropbacks' : '') +
+        nflLookResult(faced[spec[3]], nflResultRank(oScheme, 'offense', spec[3], faced[spec[3]]), false,
+          facedSamples[spec[3]] ? facedSamples[spec[3]] + ' dropbacks' : '') +
         '</tr>';
     }).filter(Boolean);
     if (!rows.length) return head + pending('Defensive charting is not published for this club.') + '</section>';
     var box = (unit.pressure || {}).avg_box;
     return head + '<p class="ca-lineup-context">' +
       esc([box != null ? 'Average box ' + Number(box).toFixed(1) + ' defenders' : '',
-        nflSampleLabel(dScheme, true)].filter(Boolean).join(' · ') || 'Charted defensive snaps') +
+        nflSampleLabel(dScheme, true), dScheme.sharp_source ? 'Man and zone from ' + nflSharpWeek(dScheme, 'through_week') : ''].filter(Boolean).join(' · ') || 'Charted defensive snaps') +
       '</p>' + nflMixTable('Look', ['EPA Allowed', fullName(sport, game, offSide) + ' EPA'], rows) +
       '</section>';
   }
@@ -4051,19 +4061,41 @@ function seasonToggle(game) {
     var seen = ((dScheme.defense || {}).personnel) || {};
     var head = '<section class="ca-arsenal-panel"><h3>' +
       esc(nflVs(sport, game, offSide, 'Offense', 'Defense')) + '</h3>';
-    var rows = NFL_TENDENCIES.map(function (spec) {
+    var personnelWeek = nflSharpWeek(oScheme, 'personnel_through_week');
+    function row(spec, responseKey) {
       if (mine[spec[1]] == null) return '';
-      return '<tr><td class="ca-lineup-name">' + esc(spec[0]) + '</td>' +
+      var cells = '<tr><td class="ca-lineup-name">' + esc(spec[0]) + '</td>' +
         nflUsageCell(mine[spec[1]], nflFreqRank(oScheme, 'offense', 'personnel', spec[1])) +
-        nflRateCell(seen[spec[1]], nflFreqRank(dScheme, 'defense', 'personnel', spec[1])) + '</tr>';
-    }).filter(Boolean);
-    if (!rows.length) return head + pending('Offensive tendencies are not published for this club.') + '</section>';
+        nflRateCell(seen[spec[1]], nflFreqRank(dScheme, 'defense', 'personnel', spec[1]));
+      if (responseKey) {
+        var offense = nflResponse(oScheme, 'offense')[responseKey];
+        var defense = nflResponse(dScheme, 'defense')[responseKey];
+        var offenseN = (oScheme.offense.response_samples || {})[responseKey];
+        var defenseN = ((dScheme.defense || {}).response_samples || {})[responseKey];
+        cells += nflLookResult(offense, nflResultRank(oScheme, 'offense', responseKey, offense), false,
+          offenseN ? offenseN + ' plays' : '');
+        cells += nflLookResult(defense, nflResultRank(dScheme, 'defense', responseKey, defense), true,
+          defenseN ? defenseN + ' plays' : '');
+      }
+      return cells + '</tr>';
+    }
+    var tendencyRows = [], personnelRows = [];
+    NFL_TENDENCIES.forEach(function (spec) {
+      var group = /^personnel_(\d\d)_rate$/.exec(spec[1]);
+      var result = group && personnelWeek ? 'epa_personnel_' + group[1] : '';
+      var html = row(spec, result);
+      if (html) (result ? personnelRows : tendencyRows).push(html);
+    });
+    if (!tendencyRows.length && !personnelRows.length) return head + pending('Offensive tendencies are not published for this club.') + '</section>';
     var stats = game[offSide + '_team_stats'] || {};
     var pace = stats.offensive_plays_per_game;
+    var facedHead = fullName(sport, game, defSide) + ' Faced';
     return head + '<p class="ca-lineup-context">' +
       esc([pace != null ? Number(pace).toFixed(1) + ' plays per game' : '',
         nflSampleLabel(oScheme, false)].filter(Boolean).join(' · ') || 'Charted offensive snaps') + '</p>' +
-      nflMixTable('Tendency', [fullName(sport, game, defSide) + ' Faced'], rows) + '</section>';
+      (personnelRows.length ? '<p class="ca-lineup-context">' + esc(personnelWeek) + '</p>' +
+        nflMixTable('Personnel', [facedHead, 'Offense EPA/Play', 'Allowed EPA/Play'], personnelRows) : '') +
+      (tendencyRows.length ? nflMixTable('Tendency', [facedHead], tendencyRows) : '') + '</section>';
   }
 
 
@@ -4175,7 +4207,10 @@ function seasonToggle(game) {
     if (!paired.length && !solo.length) return '';
     // Looks charted only from the defense's side read without a Faced column.
     return head + '<p class="ca-lineup-context">' +
-      esc(nflSampleLabel(dScheme, true) || 'Charted defensive snaps') + '</p>' +
+      esc([nflSampleLabel(dScheme, true), nflSharpWeek(dScheme, 'through_week'),
+        dScheme.sharp_source && dScheme.sharp_source.middle_report_date ?
+          'Middle-of-field rates published ' + dScheme.sharp_source.middle_report_date : ''].filter(Boolean).join(' · ') ||
+        'Charted defensive snaps') + '</p>' +
       (paired.length ? nflMixTable('Tendency', [fullName(sport, game, offSide) + ' Faced'], paired) : '') +
       (solo.length ? '<div class="ca-split-block"><h4>Defense Only</h4>' +
         nflMixTable('Tendency', [], solo) + '</div>' : '') + '</section>';
@@ -4336,10 +4371,10 @@ function seasonToggle(game) {
     return out;
   }
 
-  // Both views of one block: combined shown, current-season held back.
+  // Keep the current season visible on first load.
   function nflSeasonViews(combined, current) {
-    return '<div data-season-view="combined">' + combined + '</div>' +
-      '<div data-season-view="current" hidden>' + current + '</div>';
+    return '<div data-season-view="combined" hidden>' + combined + '</div>' +
+      '<div data-season-view="current">' + current + '</div>';
   }
 
   /* ---- starter panels: the quarterback and the lead back ---- */
@@ -5786,7 +5821,7 @@ function seasonToggle(game) {
     });
     var source = feed.source || 'FTN Data';
     var context = published
-      ? [feed.season, feed.week != null ? 'Week ' + feed.week : null, source].filter(Boolean).join(' · ')
+      ? [feed.season, feed.week != null ? 'Week ' + (feed.week_edition || feed.week) : null, source].filter(Boolean).join(' · ')
       : 'Licensed FTN DVOA feed required';
     var rows = displayRows.map(function (row) {
       var entry = feed[row[0]];
