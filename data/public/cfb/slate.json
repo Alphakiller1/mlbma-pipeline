@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 11,
-  "generated_at_utc": "2026-11-10T00:12:56Z",
+  "generated_at_utc": "2026-11-10T19:53:45Z",
   "data_through_utc": "2026-11-09T23:50:33Z",
   "games": [
     {
@@ -3819,7 +3819,7 @@
       "venue_city": "Akron, OH",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 51,
+      "weather_temp": 50,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -4003,7 +4003,7 @@
             "label": "Sacks taken per game",
             "value": 1.5556,
             "better": "low",
-            "rank": 42,
+            "rank": 43,
             "of": 138,
             "format": "num"
           },
@@ -7842,7 +7842,7 @@
             "label": "Sacks taken per game",
             "value": 1.5556,
             "better": "low",
-            "rank": 42,
+            "rank": 43,
             "of": 138,
             "format": "num"
           },
@@ -11482,7 +11482,7 @@
       "venue_city": "Muncie, IN",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 56,
+      "weather_temp": 55,
       "weather_cond": "Showers",
       "away_form": {
         "rates": {
@@ -11746,7 +11746,7 @@
             "label": "Kick-return average",
             "value": 23.1538,
             "better": "high",
-            "rank": 34,
+            "rank": 35,
             "of": 138,
             "format": "num"
           },
@@ -11859,7 +11859,7 @@
             "value": 0.0594,
             "better": "high",
             "format": "pct",
-            "rank": 88,
+            "rank": 87,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -15274,7 +15274,7 @@
       "venue_city": "Toledo, OH",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 49,
+      "weather_temp": 50,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -16057,7 +16057,7 @@
             "label": "Kick-return average",
             "value": 14.5625,
             "better": "high",
-            "rank": 131,
+            "rank": 132,
             "of": 138,
             "format": "num"
           },
@@ -19043,7 +19043,7 @@
       "venue_city": "Mount Pleasant, MI",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 46,
+      "weather_temp": 45,
       "weather_cond": "Rain",
       "away_form": {
         "rates": {
@@ -19388,7 +19388,7 @@
             "value": 63.0,
             "better": "neutral",
             "format": "num",
-            "rank": 118,
+            "rank": 119,
             "of": 138
           },
           "off_pass_rate": {
@@ -19939,7 +19939,7 @@
             "value": 0.0602,
             "better": "high",
             "format": "pct",
-            "rank": 86,
+            "rank": 85,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -20075,7 +20075,7 @@
             "value": 0.0505,
             "better": "high",
             "format": "pct",
-            "rank": 69,
+            "rank": 68,
             "of": 138
           }
         },
@@ -22902,8 +22902,8 @@
       "venue_city": "Tampa, FL",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 72,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 70,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -26943,7 +26943,7 @@
             "label": "Kick-return average",
             "value": 23.05,
             "better": "high",
-            "rank": 35,
+            "rank": 36,
             "of": 138,
             "format": "num"
           },
@@ -27575,7 +27575,7 @@
             "value": 0.0615,
             "better": "high",
             "format": "pct",
-            "rank": 82,
+            "rank": 81,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -27703,7 +27703,7 @@
             "value": 28.8889,
             "better": "neutral",
             "format": "num",
-            "rank": 108,
+            "rank": 109,
             "of": 138
           },
           "def_disruption_rate": {
@@ -27711,7 +27711,7 @@
             "value": 0.0397,
             "better": "high",
             "format": "pct",
-            "rank": 115,
+            "rank": 116,
             "of": 138
           }
         },
@@ -31317,7 +31317,7 @@
             "value": 0.2604,
             "better": "low",
             "format": "pct",
-            "rank": 25,
+            "rank": 24,
             "of": 138
           },
           "off_plays_pg": {
@@ -34465,8 +34465,8 @@
       "venue_city": "Pasadena, CA",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 67,
-      "weather_cond": "Mostly clear",
+      "weather_temp": 65,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -34657,7 +34657,7 @@
             "label": "Sacks per game",
             "value": 1.2222,
             "better": "high",
-            "rank": 119,
+            "rank": 120,
             "of": 138,
             "format": "num"
           },
@@ -35176,7 +35176,7 @@
             "label": "Sacks per game",
             "value": 2.2222,
             "better": "high",
-            "rank": 55,
+            "rank": 54,
             "of": 138,
             "format": "num"
           },
@@ -35353,7 +35353,7 @@
             "value": 0.0486,
             "better": "low",
             "format": "pct",
-            "rank": 43,
+            "rank": 44,
             "of": 138
           },
           "def_sack_rate": {
@@ -38378,7 +38378,7 @@
       "venue_city": "Boulder, CO",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 50,
+      "weather_temp": 48,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -38891,7 +38891,7 @@
             "value": 0.0514,
             "better": "high",
             "format": "pct",
-            "rank": 66,
+            "rank": 65,
             "of": 138
           }
         },
@@ -39161,7 +39161,7 @@
             "label": "Kick-return average",
             "value": 14.4,
             "better": "high",
-            "rank": 133,
+            "rank": 134,
             "of": 138,
             "format": "num"
           },
@@ -42284,7 +42284,7 @@
           },
           "off_ypg": {
             "label": "Yards per game",
-            "value": 367.8,
+            "value": 367.7,
             "better": "high",
             "rank": 82,
             "of": 138,
@@ -42444,7 +42444,7 @@
           },
           "off_sacks": {
             "label": "Sacks taken per game",
-            "value": 3.8889,
+            "value": 4.0,
             "better": "low",
             "rank": 136,
             "of": 138,
@@ -42476,7 +42476,7 @@
           },
           "off_rush_ypg": {
             "label": "Rushing yards per game",
-            "value": 156.0,
+            "value": 155.9,
             "better": "high",
             "rank": 67,
             "of": 138,
@@ -42548,10 +42548,10 @@
           },
           "off_points_per_play": {
             "label": "Points per offensive play",
-            "value": 0.3278,
+            "value": 0.3274,
             "better": "high",
             "format": "num",
-            "rank": 105,
+            "rank": 106,
             "of": 138
           },
           "def_points_per_play": {
@@ -42564,10 +42564,10 @@
           },
           "off_yards_per_play": {
             "label": "Yards per offensive play",
-            "value": 4.9551,
+            "value": 4.9462,
             "better": "high",
             "format": "num",
-            "rank": 117,
+            "rank": 119,
             "of": 138
           },
           "def_yards_per_play": {
@@ -42580,10 +42580,10 @@
           },
           "off_first_down_rate": {
             "label": "First downs per offensive play",
-            "value": 0.2889,
+            "value": 0.2885,
             "better": "high",
             "format": "pct",
-            "rank": 87,
+            "rank": 88,
             "of": 138
           },
           "def_first_down_rate": {
@@ -42596,10 +42596,10 @@
           },
           "off_plays_pg": {
             "label": "Offensive plays per game",
-            "value": 74.2222,
+            "value": 74.3333,
             "better": "neutral",
             "format": "num",
-            "rank": 13,
+            "rank": 12,
             "of": 138
           },
           "def_plays_pg": {
@@ -42612,7 +42612,7 @@
           },
           "off_pass_rate": {
             "label": "Dropback share",
-            "value": 0.5,
+            "value": 0.5007,
             "better": "neutral",
             "format": "pct",
             "rank": 43,
@@ -42628,10 +42628,10 @@
           },
           "off_sack_rate": {
             "label": "Sacks allowed per dropback",
-            "value": 0.1048,
+            "value": 0.1075,
             "better": "low",
             "format": "pct",
-            "rank": 133,
+            "rank": 134,
             "of": 138
           },
           "def_sack_rate": {
@@ -42644,7 +42644,7 @@
           },
           "off_sack_yards_pg": {
             "label": "Sack yards lost per game",
-            "value": 19.7778,
+            "value": 19.8889,
             "better": "low",
             "format": "num",
             "rank": 121,
@@ -42756,10 +42756,10 @@
           },
           "off_dropbacks_pg": {
             "label": "Dropbacks per game",
-            "value": 37.1111,
+            "value": 37.2222,
             "better": "neutral",
             "format": "num",
-            "rank": 23,
+            "rank": 21,
             "of": 138
           },
           "def_dropbacks_pg": {
@@ -46054,7 +46054,7 @@
       "venue_city": "Ames, IA",
       "roof": "Outdoor",
       "broadcast": "TNT",
-      "weather_temp": 39,
+      "weather_temp": 37,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -46950,7 +46950,7 @@
             "value": 0.044,
             "better": "high",
             "format": "pct",
-            "rank": 114,
+            "rank": 115,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -49871,7 +49871,7 @@
       "venue_city": "Miami Gardens, FL",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 68,
+      "weather_temp": 69,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -54500,7 +54500,7 @@
             "value": 0.0455,
             "better": "high",
             "format": "pct",
-            "rank": 111,
+            "rank": 112,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -54636,7 +54636,7 @@
             "value": 0.039,
             "better": "high",
             "format": "pct",
-            "rank": 117,
+            "rank": 118,
             "of": 138
           }
         },
@@ -57436,7 +57436,7 @@
       "roof": "Outdoor",
       "broadcast": "Fox",
       "weather_temp": 42,
-      "weather_cond": "Intermittent clouds",
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -57812,7 +57812,7 @@
             "value": 0.0442,
             "better": "high",
             "format": "pct",
-            "rank": 113,
+            "rank": 114,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -57978,7 +57978,7 @@
             "label": "Yards per game",
             "value": 467.9,
             "better": "high",
-            "rank": 14,
+            "rank": 15,
             "of": 138,
             "format": "num"
           },
@@ -58146,7 +58146,7 @@
             "label": "Sacks per game",
             "value": 1.2222,
             "better": "high",
-            "rank": 119,
+            "rank": 120,
             "of": 138,
             "format": "num"
           },
@@ -61412,8 +61412,8 @@
       "venue_city": "Raleigh, NC",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 48,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 49,
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -62308,7 +62308,7 @@
             "value": 0.0428,
             "better": "high",
             "format": "pct",
-            "rank": 119,
+            "rank": 120,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -62444,7 +62444,7 @@
             "value": 0.0393,
             "better": "high",
             "format": "pct",
-            "rank": 116,
+            "rank": 117,
             "of": 138
           }
         },
@@ -65310,8 +65310,8 @@
       "venue_city": "Dallas, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN, Disney+",
-      "weather_temp": 63,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 62,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -65679,7 +65679,7 @@
             "value": 0.0459,
             "better": "low",
             "format": "pct",
-            "rank": 37,
+            "rank": 38,
             "of": 138
           },
           "def_sack_rate": {
@@ -66182,7 +66182,7 @@
             "value": 0.5,
             "better": "neutral",
             "format": "pct",
-            "rank": 43,
+            "rank": 44,
             "of": 138
           },
           "def_pass_rate": {
@@ -66198,7 +66198,7 @@
             "value": 0.0475,
             "better": "low",
             "format": "pct",
-            "rank": 41,
+            "rank": 42,
             "of": 138
           },
           "def_sack_rate": {
@@ -69108,7 +69108,7 @@
       "roof": "Outdoor",
       "broadcast": "FS1",
       "weather_temp": 47,
-      "weather_cond": "Cloudy",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -73683,7 +73683,7 @@
             "label": "Kick-return average",
             "value": 23.8824,
             "better": "high",
-            "rank": 28,
+            "rank": 29,
             "of": 138,
             "format": "num"
           },
@@ -76822,7 +76822,7 @@
       "venue_city": "Piscataway, NJ",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 48,
+      "weather_temp": 47,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -77533,7 +77533,7 @@
             "label": "Sacks per game",
             "value": 1.2222,
             "better": "high",
-            "rank": 119,
+            "rank": 120,
             "of": 138,
             "format": "num"
           },
@@ -77718,7 +77718,7 @@
             "value": 0.043,
             "better": "high",
             "format": "pct",
-            "rank": 118,
+            "rank": 119,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -80652,7 +80652,7 @@
       "venue_city": "Nashville, TN",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 46,
+      "weather_temp": 45,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -80916,7 +80916,7 @@
             "label": "Kick-return average",
             "value": 23.8,
             "better": "high",
-            "rank": 29,
+            "rank": 30,
             "of": 138,
             "format": "num"
           },
@@ -84424,8 +84424,8 @@
       "venue_city": "Conway, SC",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 56,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 55,
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -84688,7 +84688,7 @@
             "label": "Kick-return average",
             "value": 23.4375,
             "better": "high",
-            "rank": 32,
+            "rank": 33,
             "of": 138,
             "format": "num"
           },
@@ -84769,7 +84769,7 @@
             "value": 63.0,
             "better": "neutral",
             "format": "num",
-            "rank": 118,
+            "rank": 119,
             "of": 138
           },
           "off_pass_rate": {
@@ -84937,7 +84937,7 @@
             "value": 0.0388,
             "better": "high",
             "format": "pct",
-            "rank": 118,
+            "rank": 119,
             "of": 138
           }
         },
@@ -85135,7 +85135,7 @@
             "label": "Sacks per game",
             "value": 2.2222,
             "better": "high",
-            "rank": 55,
+            "rank": 54,
             "of": 138,
             "format": "num"
           },
@@ -88098,8 +88098,8 @@
       "venue_city": "Charlotte, NC",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 51,
-      "weather_cond": "Partly sunny",
+      "weather_temp": 52,
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -88362,7 +88362,7 @@
             "label": "Kick-return average",
             "value": 23.0,
             "better": "high",
-            "rank": 36,
+            "rank": 37,
             "of": 138,
             "format": "num"
           },
@@ -88994,7 +88994,7 @@
             "value": 0.0442,
             "better": "high",
             "format": "pct",
-            "rank": 112,
+            "rank": 113,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -89130,7 +89130,7 @@
             "value": 0.0401,
             "better": "high",
             "format": "pct",
-            "rank": 112,
+            "rank": 113,
             "of": 138
           }
         },
@@ -91914,7 +91914,7 @@
       "venue_city": "Philadelphia, PA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 46,
+      "weather_temp": 47,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -92283,7 +92283,7 @@
             "value": 0.1055,
             "better": "low",
             "format": "pct",
-            "rank": 134,
+            "rank": 133,
             "of": 138
           },
           "def_sack_rate": {
@@ -92299,7 +92299,7 @@
             "value": 19.8889,
             "better": "low",
             "format": "num",
-            "rank": 122,
+            "rank": 121,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -99607,8 +99607,8 @@
       "venue_city": "Fort Worth, TX",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 68,
-      "weather_cond": "Partly sunny",
+      "weather_temp": 69,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -100390,7 +100390,7 @@
             "label": "Kick-return average",
             "value": 15.3333,
             "better": "high",
-            "rank": 128,
+            "rank": 129,
             "of": 138,
             "format": "num"
           },
@@ -103456,7 +103456,7 @@
       "venue_city": "Houston, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 74,
+      "weather_temp": 71,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -103720,7 +103720,7 @@
             "label": "Kick-return average",
             "value": 23.8,
             "better": "high",
-            "rank": 29,
+            "rank": 30,
             "of": 138,
             "format": "num"
           },
@@ -103745,7 +103745,7 @@
             "value": 0.3276,
             "better": "high",
             "format": "num",
-            "rank": 106,
+            "rank": 105,
             "of": 138
           },
           "def_points_per_play": {
@@ -103841,7 +103841,7 @@
             "value": 19.8889,
             "better": "low",
             "format": "num",
-            "rank": 122,
+            "rank": 121,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -107319,7 +107319,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN+",
       "weather_temp": 50,
-      "weather_cond": "Mostly cloudy",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -107502,7 +107502,7 @@
             "label": "Sacks taken per game",
             "value": 1.5556,
             "better": "low",
-            "rank": 42,
+            "rank": 43,
             "of": 138,
             "format": "num"
           },
@@ -107510,7 +107510,7 @@
             "label": "Sacks per game",
             "value": 2.2222,
             "better": "high",
-            "rank": 55,
+            "rank": 54,
             "of": 138,
             "format": "num"
           },
@@ -111133,9 +111133,8 @@
       "venue": "Robert W. Plaster Stadium",
       "venue_city": "Springfield, MO",
       "roof": "Outdoor",
-      "broadcast": "ESPN+",
-      "weather_temp": 55,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 50,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -111326,7 +111325,7 @@
             "label": "Sacks per game",
             "value": 2.2222,
             "better": "high",
-            "rank": 55,
+            "rank": 54,
             "of": 138,
             "format": "num"
           },
@@ -111647,7 +111646,7 @@
             "value": 0.0508,
             "better": "high",
             "format": "pct",
-            "rank": 68,
+            "rank": 67,
             "of": 138
           }
         },
@@ -114989,8 +114988,8 @@
       "venue_city": "College Station, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 77,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 72,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -118790,7 +118789,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN2",
       "weather_temp": 65,
-      "weather_cond": "Sunny",
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -119286,7 +119285,7 @@
             "value": 37.1111,
             "better": "neutral",
             "format": "num",
-            "rank": 23,
+            "rank": 24,
             "of": 138
           },
           "def_dropbacks_pg": {
@@ -122651,8 +122650,8 @@
       "venue_city": "Provo, UT",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 57,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 49,
+      "weather_cond": "Showers",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -123200,7 +123199,7 @@
           },
           "def_ypg": {
             "label": "Yards allowed per game",
-            "value": 302.0,
+            "value": 302.222,
             "better": "low",
             "rank": 21,
             "of": 138,
@@ -123360,9 +123359,9 @@
           },
           "def_sacks": {
             "label": "Sacks per game",
-            "value": 2.3333,
+            "value": 2.2222,
             "better": "high",
-            "rank": 49,
+            "rank": 54,
             "of": 138,
             "format": "num"
           },
@@ -123376,7 +123375,7 @@
           },
           "def_ypc": {
             "label": "Yards per rush allowed",
-            "value": 3.329,
+            "value": 3.336,
             "better": "low",
             "rank": 25,
             "of": 138,
@@ -123392,7 +123391,7 @@
           },
           "def_rush_ypg": {
             "label": "Rushing yards allowed per game",
-            "value": 102.444,
+            "value": 102.667,
             "better": "low",
             "rank": 20,
             "of": 138,
@@ -123464,7 +123463,7 @@
           },
           "def_points_per_play": {
             "label": "Points allowed per defensive play",
-            "value": 0.2894,
+            "value": 0.2899,
             "better": "low",
             "format": "num",
             "rank": 27,
@@ -123480,7 +123479,7 @@
           },
           "def_yards_per_play": {
             "label": "Yards allowed per defensive play",
-            "value": 4.4195,
+            "value": 4.43,
             "better": "low",
             "format": "num",
             "rank": 14,
@@ -123496,10 +123495,10 @@
           },
           "def_first_down_rate": {
             "label": "First downs allowed per defensive play",
-            "value": 0.2602,
+            "value": 0.2606,
             "better": "low",
             "format": "pct",
-            "rank": 24,
+            "rank": 25,
             "of": 138
           },
           "off_plays_pg": {
@@ -123512,7 +123511,7 @@
           },
           "def_plays_pg": {
             "label": "Defensive plays faced per game",
-            "value": 68.3333,
+            "value": 68.2222,
             "better": "neutral",
             "format": "num",
             "rank": 61,
@@ -123528,7 +123527,7 @@
           },
           "def_pass_rate": {
             "label": "Opponent dropback share",
-            "value": 0.5496,
+            "value": 0.5489,
             "better": "neutral",
             "format": "pct",
             "rank": 8,
@@ -123544,10 +123543,10 @@
           },
           "def_sack_rate": {
             "label": "Sacks generated per opponent dropback",
-            "value": 0.0621,
+            "value": 0.0593,
             "better": "high",
             "format": "pct",
-            "rank": 80,
+            "rank": 88,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -123560,10 +123559,10 @@
           },
           "def_sack_yards_pg": {
             "label": "Opponent sack yards lost per game",
-            "value": 14.5556,
+            "value": 14.4444,
             "better": "high",
             "format": "num",
-            "rank": 60,
+            "rank": 64,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -123672,7 +123671,7 @@
           },
           "def_dropbacks_pg": {
             "label": "Opponent dropbacks per game",
-            "value": 37.5556,
+            "value": 37.4444,
             "better": "neutral",
             "format": "num",
             "rank": 12,
@@ -123680,10 +123679,10 @@
           },
           "def_disruption_rate": {
             "label": "Sacks plus takeaways per defensive play",
-            "value": 0.052,
+            "value": 0.0505,
             "better": "high",
             "format": "pct",
-            "rank": 65,
+            "rank": 69,
             "of": 138
           }
         },
@@ -126412,8 +126411,8 @@
       "venue_city": "Notre Dame, IN",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 44,
-      "weather_cond": "Rain",
+      "weather_temp": 45,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -126789,7 +126788,7 @@
             "value": 0.0606,
             "better": "high",
             "format": "pct",
-            "rank": 85,
+            "rank": 84,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -130200,8 +130199,8 @@
       "venue_city": "Charlottesville, VA",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 48,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 52,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -130505,7 +130504,7 @@
             "value": 4.9508,
             "better": "high",
             "format": "num",
-            "rank": 119,
+            "rank": 118,
             "of": 138
           },
           "def_yards_per_play": {
@@ -134115,7 +134114,7 @@
       "venue_city": "Tulsa, OK",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 60,
+      "weather_temp": 57,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -138788,7 +138787,7 @@
             "value": 0.0471,
             "better": "low",
             "format": "pct",
-            "rank": 39,
+            "rank": 40,
             "of": 138
           },
           "def_sack_rate": {
@@ -141729,7 +141728,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN+",
       "weather_temp": 50,
-      "weather_cond": "Intermittent clouds",
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -142241,7 +142240,7 @@
             "value": 0.0398,
             "better": "high",
             "format": "pct",
-            "rank": 114,
+            "rank": 115,
             "of": 138
           }
         },
@@ -142439,7 +142438,7 @@
             "label": "Sacks per game",
             "value": 1.2222,
             "better": "high",
-            "rank": 119,
+            "rank": 120,
             "of": 138,
             "format": "num"
           },
@@ -145488,7 +145487,7 @@
       "venue_city": "Eugene, OR",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 56,
+      "weather_temp": 58,
       "weather_cond": "Rain",
       "away_form": {
         "rates": {
@@ -149632,7 +149631,7 @@
             "label": "Kick-return average",
             "value": 23.0,
             "better": "high",
-            "rank": 36,
+            "rank": 37,
             "of": 138,
             "format": "num"
           },
@@ -153222,7 +153221,7 @@
       "venue_city": "Lynchburg, VA",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 50,
+      "weather_temp": 49,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -153414,7 +153413,7 @@
             "label": "Sacks per game",
             "value": 1.2222,
             "better": "high",
-            "rank": 119,
+            "rank": 120,
             "of": 138,
             "format": "num"
           },
@@ -153486,7 +153485,7 @@
             "label": "Kick-return average",
             "value": 22.95,
             "better": "high",
-            "rank": 38,
+            "rank": 39,
             "of": 138,
             "format": "num"
           },
@@ -153599,7 +153598,7 @@
             "value": 0.0433,
             "better": "high",
             "format": "pct",
-            "rank": 117,
+            "rank": 118,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -153933,7 +153932,7 @@
             "label": "Sacks per game",
             "value": 2.2222,
             "better": "high",
-            "rank": 55,
+            "rank": 54,
             "of": 138,
             "format": "num"
           },
@@ -157050,7 +157049,7 @@
       "roof": "Outdoor",
       "broadcast": "MW+",
       "weather_temp": 45,
-      "weather_cond": "Intermittent clouds",
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -157241,7 +157240,7 @@
             "label": "Sacks per game",
             "value": 2.2222,
             "better": "high",
-            "rank": 55,
+            "rank": 54,
             "of": 138,
             "format": "num"
           },
@@ -157832,7 +157831,7 @@
             "label": "Kick-return average",
             "value": 14.6667,
             "better": "high",
-            "rank": 129,
+            "rank": 130,
             "of": 138,
             "format": "num"
           },
@@ -160853,7 +160852,7 @@
       "roof": "Outdoor",
       "broadcast": "CBS",
       "weather_temp": 47,
-      "weather_cond": "Intermittent clouds",
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -164691,8 +164690,8 @@
       "venue_city": "San Marcos, TX",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 68,
-      "weather_cond": "Partly sunny w/ showers",
+      "weather_temp": 69,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -165579,7 +165578,7 @@
             "value": 0.0471,
             "better": "low",
             "format": "pct",
-            "rank": 39,
+            "rank": 40,
             "of": 138
           },
           "def_sack_rate": {
@@ -168484,7 +168483,7 @@
       "roof": "Outdoor",
       "broadcast": "SEC Network",
       "weather_temp": 63,
-      "weather_cond": "Intermittent clouds",
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -168860,7 +168859,7 @@
             "value": 0.0612,
             "better": "high",
             "format": "pct",
-            "rank": 83,
+            "rank": 82,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -169307,7 +169306,7 @@
             "value": 4.9528,
             "better": "high",
             "format": "num",
-            "rank": 118,
+            "rank": 117,
             "of": 138
           },
           "def_yards_per_play": {
@@ -172161,7 +172160,7 @@
       "roof": "Outdoor",
       "broadcast": "BTN",
       "weather_temp": 42,
-      "weather_cond": "Cloudy",
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -172481,7 +172480,7 @@
             "value": 0.2888,
             "better": "high",
             "format": "pct",
-            "rank": 88,
+            "rank": 87,
             "of": 138
           },
           "def_first_down_rate": {
@@ -172537,7 +172536,7 @@
             "value": 0.0608,
             "better": "high",
             "format": "pct",
-            "rank": 84,
+            "rank": 83,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -176019,8 +176018,8 @@
       "venue_city": "Ruston, LA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 61,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 59,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -179854,7 +179853,7 @@
       "venue_city": "Morgantown, WV",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 37,
+      "weather_temp": 40,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -180191,7 +180190,7 @@
             "value": 74.2222,
             "better": "neutral",
             "format": "num",
-            "rank": 13,
+            "rank": 14,
             "of": 138
           },
           "def_plays_pg": {
@@ -180565,7 +180564,7 @@
             "label": "Sacks per game",
             "value": 2.2222,
             "better": "high",
-            "rank": 55,
+            "rank": 54,
             "of": 138,
             "format": "num"
           },
@@ -183694,7 +183693,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN+",
       "weather_temp": 42,
-      "weather_cond": "Cloudy",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -184404,7 +184403,7 @@
             "label": "Sacks per game",
             "value": 1.2222,
             "better": "high",
-            "rank": 119,
+            "rank": 120,
             "of": 138,
             "format": "num"
           },
@@ -187477,7 +187476,7 @@
       "venue_city": "Boise, ID",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 55,
+      "weather_temp": 53,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -187990,7 +187989,7 @@
             "value": 0.051,
             "better": "high",
             "format": "pct",
-            "rank": 67,
+            "rank": 66,
             "of": 138
           }
         },
@@ -188188,7 +188187,7 @@
             "label": "Sacks per game",
             "value": 2.2222,
             "better": "high",
-            "rank": 55,
+            "rank": 54,
             "of": 138,
             "format": "num"
           },
@@ -191245,7 +191244,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN",
       "weather_temp": 41,
-      "weather_cond": "Mostly cloudy",
+      "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -195290,7 +195289,7 @@
             "label": "Kick-return average",
             "value": 23.6,
             "better": "high",
-            "rank": 31,
+            "rank": 32,
             "of": 138,
             "format": "num"
           },
@@ -199017,7 +199016,7 @@
       "venue_city": "Chapel Hill, NC",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 41,
+      "weather_temp": 42,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -199201,7 +199200,7 @@
             "label": "Sacks taken per game",
             "value": 1.5556,
             "better": "low",
-            "rank": 42,
+            "rank": 43,
             "of": 138,
             "format": "num"
           },
@@ -202810,7 +202809,7 @@
       "roof": "Outdoor",
       "broadcast": "FS1",
       "weather_temp": 36,
-      "weather_cond": "Mostly cloudy",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -203071,9 +203070,9 @@
           },
           "off_kr": {
             "label": "Kick-return average",
-            "value": 22.6471,
+            "value": 24.0625,
             "better": "high",
-            "rank": 41,
+            "rank": 28,
             "of": 138,
             "format": "num"
           },
@@ -203520,7 +203519,7 @@
             "label": "Sacks per game",
             "value": 1.2222,
             "better": "high",
-            "rank": 119,
+            "rank": 120,
             "of": 138,
             "format": "num"
           },
@@ -203705,7 +203704,7 @@
             "value": 0.0438,
             "better": "high",
             "format": "pct",
-            "rank": 115,
+            "rank": 116,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -206583,7 +206582,7 @@
       "venue_city": "Mobile, AL",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 52,
+      "weather_temp": 51,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -206960,7 +206959,7 @@
             "value": 0.0619,
             "better": "high",
             "format": "pct",
-            "rank": 81,
+            "rank": 80,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -210419,7 +210418,7 @@
       "roof": "Outdoor",
       "broadcast": "NBC",
       "weather_temp": 39,
-      "weather_cond": "Clear",
+      "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -210610,7 +210609,7 @@
             "label": "Sacks per game",
             "value": 1.2222,
             "better": "high",
-            "rank": 119,
+            "rank": 120,
             "of": 138,
             "format": "num"
           },
@@ -214155,8 +214154,8 @@
       "venue_city": "Blacksburg, VA",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 35,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 36,
+      "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -214524,7 +214523,7 @@
             "value": 0.0476,
             "better": "low",
             "format": "pct",
-            "rank": 42,
+            "rank": 43,
             "of": 138
           },
           "def_sack_rate": {
@@ -217923,8 +217922,8 @@
       "venue_city": "Baton Rouge, LA",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 54,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 55,
+      "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -218187,7 +218186,7 @@
             "label": "Kick-return average",
             "value": 14.5556,
             "better": "high",
-            "rank": 132,
+            "rank": 133,
             "of": 138,
             "format": "num"
           },
@@ -218811,7 +218810,7 @@
             "value": 0.0467,
             "better": "low",
             "format": "pct",
-            "rank": 38,
+            "rank": 39,
             "of": 138
           },
           "def_sack_rate": {
@@ -221732,8 +221731,8 @@
       "venue_city": "Albuquerque, NM",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 60,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 57,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -221996,7 +221995,7 @@
             "label": "Kick-return average",
             "value": 22.9231,
             "better": "high",
-            "rank": 39,
+            "rank": 40,
             "of": 138,
             "format": "num"
           },
@@ -225594,8 +225593,8 @@
       "venue_city": "Tucson, AZ",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 70,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 68,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -225616,7 +225615,7 @@
           },
           "off_ypg": {
             "label": "Yards per game",
-            "value": 467.9,
+            "value": 468.1,
             "better": "high",
             "rank": 14,
             "of": 138,
@@ -225776,9 +225775,9 @@
           },
           "off_sacks": {
             "label": "Sacks taken per game",
-            "value": 1.5556,
+            "value": 1.4444,
             "better": "low",
-            "rank": 42,
+            "rank": 36,
             "of": 138,
             "format": "num"
           },
@@ -225808,7 +225807,7 @@
           },
           "off_rush_ypg": {
             "label": "Rushing yards per game",
-            "value": 215.2,
+            "value": 215.4,
             "better": "high",
             "rank": 12,
             "of": 138,
@@ -225880,7 +225879,7 @@
           },
           "off_points_per_play": {
             "label": "Points per offensive play",
-            "value": 0.5305,
+            "value": 0.5313,
             "better": "high",
             "format": "num",
             "rank": 11,
@@ -225896,7 +225895,7 @@
           },
           "off_yards_per_play": {
             "label": "Yards per offensive play",
-            "value": 6.59,
+            "value": 6.6034,
             "better": "high",
             "format": "num",
             "rank": 14,
@@ -225912,7 +225911,7 @@
           },
           "off_first_down_rate": {
             "label": "First downs per offensive play",
-            "value": 0.3521,
+            "value": 0.3527,
             "better": "high",
             "format": "pct",
             "rank": 7,
@@ -225928,10 +225927,10 @@
           },
           "off_plays_pg": {
             "label": "Offensive plays per game",
-            "value": 71.0,
+            "value": 70.8889,
             "better": "neutral",
             "format": "num",
-            "rank": 37,
+            "rank": 41,
             "of": 138
           },
           "def_plays_pg": {
@@ -225944,7 +225943,7 @@
           },
           "off_pass_rate": {
             "label": "Dropback share",
-            "value": 0.4507,
+            "value": 0.4498,
             "better": "neutral",
             "format": "pct",
             "rank": 95,
@@ -225960,10 +225959,10 @@
           },
           "off_sack_rate": {
             "label": "Sacks allowed per dropback",
-            "value": 0.0486,
+            "value": 0.0453,
             "better": "low",
             "format": "pct",
-            "rank": 44,
+            "rank": 36,
             "of": 138
           },
           "def_sack_rate": {
@@ -225976,10 +225975,10 @@
           },
           "off_sack_yards_pg": {
             "label": "Sack yards lost per game",
-            "value": 7.2222,
+            "value": 7.1111,
             "better": "low",
             "format": "num",
-            "rank": 20,
+            "rank": 18,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -226088,10 +226087,10 @@
           },
           "off_dropbacks_pg": {
             "label": "Dropbacks per game",
-            "value": 32.0,
+            "value": 31.8889,
             "better": "neutral",
             "format": "num",
-            "rank": 77,
+            "rank": 78,
             "of": 138
           },
           "def_dropbacks_pg": {
@@ -229432,8 +229431,8 @@
       "venue_city": "Fayetteville, AR",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 49,
-      "weather_cond": "Mostly cloudy",
+      "weather_temp": 46,
+      "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -229981,9 +229980,9 @@
           },
           "def_ypg": {
             "label": "Yards allowed per game",
-            "value": 361.889,
+            "value": 361.778,
             "better": "low",
-            "rank": 74,
+            "rank": 73,
             "of": 138,
             "format": "num"
           },
@@ -230141,9 +230140,9 @@
           },
           "def_sacks": {
             "label": "Sacks per game",
-            "value": 1.2222,
+            "value": 1.3333,
             "better": "high",
-            "rank": 119,
+            "rank": 113,
             "of": 138,
             "format": "num"
           },
@@ -230157,7 +230156,7 @@
           },
           "def_ypc": {
             "label": "Yards per rush allowed",
-            "value": 4.583,
+            "value": 4.58,
             "better": "low",
             "rank": 96,
             "of": 138,
@@ -230173,7 +230172,7 @@
           },
           "def_rush_ypg": {
             "label": "Rushing yards allowed per game",
-            "value": 156.333,
+            "value": 156.222,
             "better": "low",
             "rank": 86,
             "of": 138,
@@ -230245,7 +230244,7 @@
           },
           "def_points_per_play": {
             "label": "Points allowed per defensive play",
-            "value": 0.4356,
+            "value": 0.4349,
             "better": "low",
             "format": "num",
             "rank": 111,
@@ -230261,7 +230260,7 @@
           },
           "def_yards_per_play": {
             "label": "Yards allowed per defensive play",
-            "value": 5.7443,
+            "value": 5.7324,
             "better": "low",
             "format": "num",
             "rank": 103,
@@ -230277,7 +230276,7 @@
           },
           "def_first_down_rate": {
             "label": "First downs allowed per defensive play",
-            "value": 0.3034,
+            "value": 0.3028,
             "better": "low",
             "format": "pct",
             "rank": 105,
@@ -230293,7 +230292,7 @@
           },
           "def_plays_pg": {
             "label": "Defensive plays faced per game",
-            "value": 63.0,
+            "value": 63.1111,
             "better": "neutral",
             "format": "num",
             "rank": 118,
@@ -230309,7 +230308,7 @@
           },
           "def_pass_rate": {
             "label": "Opponent dropback share",
-            "value": 0.4586,
+            "value": 0.4595,
             "better": "neutral",
             "format": "pct",
             "rank": 90,
@@ -230325,10 +230324,10 @@
           },
           "def_sack_rate": {
             "label": "Sacks generated per opponent dropback",
-            "value": 0.0423,
+            "value": 0.046,
             "better": "high",
             "format": "pct",
-            "rank": 120,
+            "rank": 111,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -230341,10 +230340,10 @@
           },
           "def_sack_yards_pg": {
             "label": "Opponent sack yards lost per game",
-            "value": 10.5556,
+            "value": 10.6667,
             "better": "high",
             "format": "num",
-            "rank": 99,
+            "rank": 98,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -230453,7 +230452,7 @@
           },
           "def_dropbacks_pg": {
             "label": "Opponent dropbacks per game",
-            "value": 28.8889,
+            "value": 29.0,
             "better": "neutral",
             "format": "num",
             "rank": 108,
@@ -230461,10 +230460,10 @@
           },
           "def_disruption_rate": {
             "label": "Sacks plus takeaways per defensive play",
-            "value": 0.0388,
+            "value": 0.0405,
             "better": "high",
             "format": "pct",
-            "rank": 118,
+            "rank": 111,
             "of": 138
           }
         },
@@ -233295,8 +233294,8 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "ESPNU",
-      "weather_temp": 60,
-      "weather_cond": "Rain",
+      "weather_temp": 62,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -233557,9 +233556,9 @@
           },
           "off_kr": {
             "label": "Kick-return average",
-            "value": 13.7778,
+            "value": 15.5,
             "better": "high",
-            "rank": 134,
+            "rank": 128,
             "of": 138,
             "format": "num"
           },
@@ -237066,7 +237065,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN",
       "weather_temp": 53,
-      "weather_cond": "Partly cloudy",
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -237961,7 +237960,7 @@
             "value": 0.0599,
             "better": "high",
             "format": "pct",
-            "rank": 87,
+            "rank": 86,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -240817,8 +240816,8 @@
       "venue_city": "San Diego, CA",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 67,
-      "weather_cond": "Mostly cloudy",
+      "weather_temp": 65,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -244783,7 +244782,7 @@
       "venue_city": "El Paso, TX",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 60,
+      "weather_temp": 64,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -245047,7 +245046,7 @@
             "label": "Kick-return average",
             "value": 23.1667,
             "better": "high",
-            "rank": 33,
+            "rank": 34,
             "of": 138,
             "format": "num"
           },
@@ -249005,7 +249004,7 @@
             "value": 0.0437,
             "better": "high",
             "format": "pct",
-            "rank": 116,
+            "rank": 117,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -249141,7 +249140,7 @@
             "value": 0.0401,
             "better": "high",
             "format": "pct",
-            "rank": 111,
+            "rank": 112,
             "of": 138
           }
         },
@@ -252481,7 +252480,7 @@
       "venue_city": "Honolulu, HI",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 79,
+      "weather_temp": 77,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
