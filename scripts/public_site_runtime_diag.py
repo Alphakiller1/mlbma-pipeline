@@ -205,7 +205,19 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             cbb_counts[year] = f"{total['made']}/{total['attempts']}"
         page.goto(base_url.rstrip("/") + "/cbb/matchup.html?game=401909564#shooting", wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector("#cbb-shot-chart .ca-cbb-court", timeout=timeout_ms)
-        check("CBB uses seven evidence tabs", page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 7)
+        check("CBB uses six evidence tabs", page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 6)
+        page.locator('[data-cbb-view="defense"]').click()
+        # The court, its badges and the table read one tone per zone; on the
+        # allowed view a low FG% is the favorable end.
+        agree = page.evaluate("""() => [...document.querySelectorAll('#cbb-shot-chart .ca-cfb-ledger')].every(panel => {
+          const tones = [...panel.querySelectorAll('.ca-court-zone')].map(z => (z.getAttribute('class').match(/c-[a-z]+/) || [''])[0]);
+          const legend = panel.querySelector('.ca-cbb-legend__labels');
+          return tones.length === 5 && legend && /allowed/.test(legend.textContent) &&
+            !panel.querySelector('th') .textContent.includes('gap') &&
+            ![...panel.querySelectorAll('th')].some(th => /gap/i.test(th.textContent));
+        })""")
+        check("CBB allowed view reads low as favorable with no gap column", agree)
+        page.locator('[data-cbb-view="offense"]').click()
         check("CBB observed shooting counts", cbb_counts[2027] in page.locator("#cbb-shot-chart").text_content())
         page.locator('[data-cbb-season="2026"]').click()
         check("CBB previous season changes the evidence", cbb_counts[2026] in page.locator("#cbb-shot-chart").text_content())

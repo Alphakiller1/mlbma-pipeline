@@ -47,4 +47,55 @@ class CbbDeskTests(unittest.TestCase):
             for forbidden in ['"projected_home"','"win_probability"','"model_margin"']:
                 self.assertNotIn(forbidden,raw)
 
+class CbbMatchupLayoutTests(unittest.TestCase):
+    """The owner's desk rules, held for the CBB matchup page."""
+    def setUp(self):
+        js=(ROOT/'dashboard/public_game_detail.js').read_text(encoding='utf-8')
+        self.block=js[js.index('  var CBB_TABS = ['):js.index('  function deskTabsFor(sport) {')]
+
+    def test_tabs_read_in_matchup_order_and_hold_every_section_once(self):
+        import re
+        tabs=re.findall(r"\['(\w+)','[^']+',\[([^\]]*)\]\]",self.block[:self.block.index('];')])
+        self.assertEqual([t for t,_ in tabs],['units','shooting','possessions','defense','roster','games'])
+        ids=[i for _,body in tabs for i in re.findall(r"'(cbb-[\w-]+)'",body)]
+        self.assertEqual(len(ids),len(set(ids)))
+        rendered=re.findall(r"part\('(cbb-[\w-]+)'",self.block)
+        self.assertEqual(rendered,ids,'sections render in tab order')
+        self.assertLess(ids.index('cbb-availability'),ids.index('cbb-rotation'))
+
+    def test_no_explanations_or_verdict_columns(self):
+        import re
+        panels=self.block[self.block.index('  function cbbControls('):]
+        for para in re.findall(r'<p class="ca-cbb-note[^"]*"',panels):
+            self.assertIn('ca-cbb-cite',para,'CBB notes are citation links only')
+        self.assertNotIn('FG% gap',self.block)
+        self.assertNotIn('Share gap',self.block)
+        self.assertNotIn('League film reference',self.block)
+
+    def test_one_tone_per_zone_on_court_and_table(self):
+        charts=(ROOT/'dashboard/cbb_charts.js').read_text(encoding='utf-8')
+        self.assertIn('options.tones',charts)
+        self.assertIn('tones:tones',self.block)
+        # Allowed FG% ranks favor the low end; shares are tendencies and stay neutral.
+        self.assertIn("cbbComparison(game,'shot_accuracy',key,z.fg_pct,!onDefense)",self.block)
+        self.assertIn("share?'c-na':''",self.block)
+        css=(ROOT/'dashboard/styles/chase-public.css').read_text(encoding='utf-8')
+        self.assertNotIn('.ca-cbb-zone-table td:nth-child(3){display:none}',css)
+
+    def test_season_samples_share_one_game_basis(self):
+        export=(ROOT/'pipeline/cbb_public/export.py').read_text(encoding='utf-8')
+        self.assertIn("AND home_id IN ({division}) AND away_id IN ({division})",export)
+        teams=json.loads((ROOT/'data/public/cbb/teams.json').read_text(encoding='utf-8'))['teams']
+        aligned=total=0
+        for f in (ROOT/'data/public/cbb/2027/teams').glob('*.json'):
+            c=json.loads(f.read_text(encoding='utf-8'))
+            if not c['rates'].get('games_all'):continue
+            total+=1
+            shots=c['shots']['coordinates']['offense']['totals']['games']
+            pace=((c.get('official_box') or {}).get('pace') or {}).get('games')
+            aligned+=shots==c['rates']['games_all'] and pace in (c['rates']['games_all'],c['rates']['games_all']-1)
+        self.assertGreaterEqual(aligned/total,0.97)
+        for key in ('fb_pts_per100_all','stl_pct_d_all','pts_off_to_per_dposs_all'):
+            self.assertIn(key,json.loads((ROOT/'data/public/cbb/2027/teams/150.json').read_text(encoding='utf-8'))['rates'])
+
 if __name__=='__main__':unittest.main()

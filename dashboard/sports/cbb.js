@@ -1,8 +1,8 @@
 /** CBB research adapter: factual, versioned two-season exports only. */
 (function (global) {
   'use strict';
-  var ROOT = '/data/public/cbb/', cache = {}, baselines = {}, ranks = {};
-  function rememberIndex(value) { baselines=value.grade_baselines||{};return value; }
+  var ROOT = '/data/public/cbb/', cache = {}, baselines = {}, ranks = {}, division = null;
+  function rememberIndex(value) { baselines=value.grade_baselines||{};division=value.teams||null;return value; }
   function json(url) {
     return fetch(url, { cache: 'no-cache' }).then(function (r) {
       if (!r.ok) throw new Error('CBB evidence is unavailable (' + r.status + ').');
@@ -157,5 +157,7 @@
     rankSamples:function(year,group,key){return ((ranks[String(year)]||{})[group]||{})[key]||null;},
     comparison:function(year,family,row){return comparison(baselines,year,family,row);},
     comparisonRanks:function(year,family,row){var p=comparison(ranks,year,family,row);return p&&p.rank_samples;},
+    // Every published team is D-I; an opponent outside the index is not.
+    isDivisionI:function(id){return !division || Object.prototype.hasOwnProperty.call(division,String(id));},
     teamIndex: function () { return json(ROOT + 'teams.json').then(rememberIndex); } };
 })(typeof window !== 'undefined' ? window : this);

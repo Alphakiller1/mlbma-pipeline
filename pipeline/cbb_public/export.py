@@ -10,6 +10,12 @@ from .data import ZONES,read,write,table
 RATE_FIELDS=['games_all','efg_o_all','efg_d_all','tov_pct_o_all','tov_pct_d_all','orb_pct_all','drb_pct_all',
              'ftr_o_all','ftr_d_all','tpr_o_all','tpr_d_all','ppp_off_all','ppp_def_all','fg2_pct_o_all',
              'fg2_pct_d_all','fg3_pct_o_all','fg3_pct_d_all','ast_rate_o_all','ast_rate_d_all']
+# Complete D-I-game rates from the same Basketball Quant row. They replace no
+# possession-tagged evidence; they cover every D-I game that evidence misses.
+EXTRA_RATE_FIELDS=['ft_pct_o_all','ft_pct_d_all','fb_pts_per100_all','fb_pts_per100_d_all',
+                   'pitp_per100_all','pitp_per100_d_all','pts_off_to_per_dposs_all','pts_off_to_per_dposs_d_all',
+                   'stl_pct_o_all','stl_pct_d_all','blk_pct_o_all','blk_pct_d_all']
+RATE_FIELDS=RATE_FIELDS+EXTRA_RATE_FIELDS
 PLAYER_FIELDS=['id','pid','athlete_id','Name','Team','G','Min_pct','Usg','Pts','Reb','Ast','eFG','TS',
                'FGM','FGA','3PM','3PA','FTM','FTA','3PP','FTR','Ht']
 FORBIDDEN={'predicted_score','predicted_margin','home_probability','home_win_probability','win_probability','confidence','pick','edge','odds','spread','moneyline','away_points','home_points','home_margin','total_points','power','rating','model_diagnostics','shooting_reversion','recent_shooting_reversion','shooting_scenario','regression_pressure_pp100','progression_pressure_pp100','net_reversion_pp100','geometric_sets','prior_reference_weight','tracking_tactics','posterior_per_regulation','posterior_mean'}
@@ -58,7 +64,8 @@ def matchup_baselines(contexts):
         counted = observed.get('pace') or {}
         for pace, games, keys in (
             (counted, counted.get('games'), ('observed_per40', 'recent5_per40')),
-            (box.get('pace') or {}, box.get('games'), ('estimated_per40', 'recent5_estimated_per40')),
+            (box.get('pace') or {}, (box.get('pace') or {}).get('games') or box.get('games'),
+             ('estimated_per40', 'recent5_estimated_per40')),
         ):
             record(pace_samples, keys[0], pace.get(keys[0]))
             if (games or 0) >= 6:
@@ -168,13 +175,17 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
         cbb_lg={r['zoneName']:{'made':r['fgm'],'attempts':r['fga']} for r in read(snapshot/f'data/cbb-league-zones-{year}.json') if r.get('zoneSchema')=='zones6' and r.get('divisionId')==1}
         lg=defaultdict(lambda:{'made':0,'attempts':0})
         aggregates={'offense':defaultdict(list),'defense':defaultdict(list)}
-        for tid,z,n,m in conn.execute('SELECT team_id,zone,COUNT(*),SUM(made) FROM shots WHERE season=? AND zone IS NOT NULL GROUP BY team_id,zone',(year,)):
+        # Team rates count D-I opponents only. Shots use the same games, so a
+        # shot chart and the efficiency table beside it describe one sample.
+        division=','.join(str(int(t)) for t in sorted(cohort))
+        d1=f' AND home_id IN ({division}) AND away_id IN ({division})'
+        for tid,z,n,m in conn.execute('SELECT team_id,zone,COUNT(*),SUM(made) FROM shots WHERE season=? AND zone IS NOT NULL'+d1+' GROUP BY team_id,zone',(year,)):
             aggregates['offense'][tid].append({'id':z,'attempts':n,'made':m})
             if tid in cohort:lg[z]['attempts']+=n;lg[z]['made']+=m
         defender='CASE WHEN team_id=home_id THEN away_id WHEN team_id=away_id THEN home_id END'
-        for tid,z,n,m in conn.execute(f'SELECT {defender},zone,COUNT(*),SUM(made) FROM shots WHERE season=? AND zone IS NOT NULL GROUP BY 1,2',(year,)):
+        for tid,z,n,m in conn.execute(f'SELECT {defender},zone,COUNT(*),SUM(made) FROM shots WHERE season=? AND zone IS NOT NULL{d1} GROUP BY 1,2',(year,)):
             aggregates['defense'][tid].append({'id':z,'attempts':n,'made':m})
-        game_summaries={role:{tid:(n,through) for tid,n,through in conn.execute(f'SELECT {owner},COUNT(DISTINCT game_id),MAX(game_date) FROM shots WHERE season=? AND zone IS NOT NULL GROUP BY 1',(year,))} for role,owner in [('offense','team_id'),('defense',defender)]}
+        game_summaries={role:{tid:(n,through) for tid,n,through in conn.execute(f'SELECT {owner},COUNT(DISTINCT game_id),MAX(game_date) FROM shots WHERE season=? AND zone IS NOT NULL{d1} GROUP BY 1',(year,))} for role,owner in [('offense','team_id'),('defense',defender)]}
         for s in stats:
             tid=s['team_id'];ident=identity.get(tid,{})
             name=s.get('torvik_team_name') or ident.get('barttorvik_team_name')
