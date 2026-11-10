@@ -14,11 +14,42 @@ BOX_SOURCE = "ESPN final box scores"
 COUNT_SOURCE = "SportsDataverse NCAA possessions matched to ESPN finals"
 START_SOURCE = "ESPN starting lineups and rosters"
 SIDES = ("home", "away")
+BOX_CONTEXT = {"fast_break_points": "fastBreakPoints", "points_off_turnovers": "turnoverPoints"}
 
 
 def fixture_key(game):
     return [game["game_date"], *(str(game[s + "_id"]) for s in SIDES),
             *(int(game[s + "_score"]) for s in SIDES)]
+
+
+def player_lines(units, minutes, team_points):
+    """Use complete, score-reconciled player boxes only."""
+    rows = {}
+    required = {"MIN", "PTS", "REB", "AST", "FG", "3PT", "FT"}
+    for unit in units:
+        labels = unit.get("labels") or []
+        if not required.issubset(labels):
+            continue
+        for player in unit.get("athletes", []):
+            stats = player.get("stats") or []
+            if player.get("didNotPlay") or not stats:
+                continue
+            athlete = player.get("athlete") or {}
+            pid, name = athlete.get("id"), athlete.get("displayName")
+            fields = dict(zip(labels, stats))
+            try:
+                mins, pts, reb, ast = (int(fields[k]) for k in ("MIN", "PTS", "REB", "AST"))
+                fgm, fga = map(int, fields["FG"].split("-"))
+                tpm, _ = map(int, fields["3PT"].split("-"))
+                ftm, fta = map(int, fields["FT"].split("-"))
+            except (KeyError, ValueError):
+                return []
+            if (not pid or not name or str(pid) in rows or not 0 <= mins <= minutes or min(reb, ast) < 0
+                    or not 0 <= tpm <= fgm <= fga or not 0 <= ftm <= fta or pts != 2 * fgm + tpm + ftm):
+                return []
+            rows[str(pid)] = {"athlete_id": str(pid), "Name": name, "minutes": mins,
+                              "Pts": pts, "Reb": reb, "Ast": ast, "FGA": fga, "FTA": fta}
+    return list(rows.values()) if sum(row["Pts"] for row in rows.values()) == team_points else []
 
 
 def parse_box(payload, game):
@@ -62,6 +93,9 @@ def parse_box(payload, game):
             "fgm": fgm, "fga": fga, "tpm": tpm, "tpa": tpa, "fta": fta, "orb": orb,
             "drb": drb, "ast": ast, "tov": tov, "pts": points, "poss": possessions,
             "starters": starters if len(starters) == 5 else {},
+            "player_lines": player_lines(players.get(team, []), minutes, points),
+            "box_context": {key: n for key, field in BOX_CONTEXT.items()
+                            if (n := ncaa.number(v.get(field))) is not None and 0 <= n <= points},
         }
     return result
 
@@ -70,7 +104,9 @@ def load_box(game, cache):
     file = cache / (str(game["game_id"]) + ".json")
     if file.exists():
         cached = read(file)
-        if cached.get("fixture") == fixture_key(game):
+        if cached.get("fixture") == fixture_key(game) and all(
+            "player_lines" in row and "box_context" in row for row in cached["teams"].values()
+        ):
             return cached
     response = requests.get(BOX_URL, params={"event": game["game_id"]}, timeout=15)
     response.raise_for_status()
@@ -168,10 +204,53 @@ def starting_heights(games, roster):
     return size, [{"position": k, **summary(heights[k])} for k in ("G", "F", "C") if heights[k]]
 
 
+def add_box_context(context, box, games):
+    """Publish alternate measured stats where possession tags or rotation lines are absent."""
+    tactics = context["observed_tactics"]
+    if not any(p.get("G") for p in context["players"]):
+        players = {}
+        sample_minutes = 0
+        for _, minutes, own, _, _ in games:
+            if not own["player_lines"]:
+                continue
+            sample_minutes += minutes
+            for row in own["player_lines"]:
+                count = players.setdefault(row["athlete_id"], Counter())
+                count.update({k: row[k] for k in ("minutes", "Pts", "Reb", "Ast", "FGA", "FTA")})
+                count.update({"G": 1})
+                count["Name"] = row["Name"]
+        if players:
+            box["players"] = []
+            for pid, row in players.items():
+                attempts = row["FGA"] + .475 * row["FTA"]
+                box["players"].append({"athlete_id": pid, "Name": row["Name"], "G": row["G"],
+                    "Min_pct": 100 * row["minutes"] / sample_minutes,
+                    **{k: row[k] / row["G"] for k in ("Pts", "Reb", "Ast")},
+                    "TS": 100 * row["Pts"] / (2 * attempts) if attempts else None})
+    if not tactics.get("situations") or not tactics.get("restart_contexts"):
+        for key in BOX_CONTEXT:
+            pairs = [(own["box_context"][key], opp["box_context"][key])
+                     for _, _, own, opp, _ in games if key in own["box_context"] and key in opp["box_context"]]
+            if pairs:
+                scored, allowed = zip(*pairs)
+                box[key] = {"scored": mean(scored), "allowed": mean(allowed), "games": len(pairs)}
+    if not tactics.get("personnel"):
+        groups = Counter()
+        for _, _, own, _, _ in games:
+            starts = Counter(own["starters"].values())
+            if sum(starts[k] for k in ("G", "F", "C")) == 5:
+                groups[f'{starts["G"]}G-{starts["F"]}F-{starts["C"]}C'] += 1
+        total = sum(groups.values())
+        if total:
+            box["starter_groups"] = [{"personnel": k, "games": n, "usage": n / total} for k, n in groups.most_common()]
+
+
 def supplement(contexts, schedule, year, as_of, cache):
     targets = {str(team): c for team, c in contexts.items() if not c["rates"].get("games_all")
                or not c["observed_tactics"]["pace"]["games"]
-               or not c["observed_tactics"]["size_summary"]["starters"]["players"]}
+               or not c["observed_tactics"]["size_summary"]["starters"]["players"]
+               or not all(c["observed_tactics"].get(k) for k in ("situations", "restart_contexts", "personnel"))
+               or not any(p.get("G") for p in c["players"])}
     if not targets:
         return
     fixtures = {g["game_id"]: g for g in schedule if g["game_date"] <= as_of
@@ -232,6 +311,7 @@ def supplement(contexts, schedule, year, as_of, cache):
             if found:
                 tactics["size_summary"]["starters"], tactics["starter_position_size"] = found
                 filled["starter size"] += 1
-        if "rates" in box or "pace" in box:
+        add_box_context(context, box, games)
+        if len(box) > 3:
             context["official_box"] = box
     print(f"Matched ESPN finals filled CBB evidence {dict(filled)}.")

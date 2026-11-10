@@ -14,18 +14,29 @@ PLAYER_FIELDS=['id','pid','athlete_id','Name','Team','G','Min_pct','Usg','Pts','
                'FGM','FGA','3PM','3PA','FTM','FTA','3PP','FTR','Ht']
 FORBIDDEN={'predicted_score','predicted_margin','home_probability','home_win_probability','win_probability','confidence','pick','edge','odds','spread','moneyline','away_points','home_points','home_margin','total_points','power','rating','model_diagnostics','shooting_reversion','recent_shooting_reversion','shooting_scenario','regression_pressure_pp100','progression_pressure_pp100','net_reversion_pp100','geometric_sets','prior_reference_weight','tracking_tactics','posterior_per_regulation','posterior_mean'}
 
-def distribution(values):
+def distribution(values, *, rank_samples=False):
     values=[float(v) for v in values if v is not None and math.isfinite(float(v))]
     if not values:return {'mean':None,'std':None,'sample_size':0}
     mean=sum(values)/len(values)
-    return {'mean':mean,'std':math.sqrt(sum((v-mean)**2 for v in values)/len(values)),'sample_size':len(values)}
+    result = {'mean':mean,'std':math.sqrt(sum((v-mean)**2 for v in values)/len(values)),'sample_size':len(values)}
+    if rank_samples:
+        result['rank_samples'] = sorted(values)
+    return result
 
 def grade_baselines(contexts,year):
     season=[c for (y,_),c in contexts.items() if y==year]
     cohort=[c for c in season if (c['rates'].get('games_all') or 0)>0]
-    team={k:distribution(c['rates'].get(k) for c in cohort) for k in RATE_FIELDS if k!='games_all'}
+    fallback=[(c.get('official_box') or {}).get('rates',{}) for c in season if not c['rates'].get('games_all')]
+    team={}
+    for key in RATE_FIELDS:
+        if key=='games_all':
+            continue
+        values=[c['rates'].get(key) for c in cohort]
+        if key.startswith(('efg_', 'fg2_pct_', 'fg3_pct_', 'ftr_')):
+            values.extend(box.get(key) for box in fallback)
+        team[key]=distribution(values,rank_samples=True)
     players=[p for c in cohort for p in c['players'] if (p.get('G') or 0)>0 and (p.get('Min_pct') or 0)>=10]
-    player={k:distribution(p.get(k) for p in players if k!='TS' or (p.get('FGA') or 0)+(p.get('FTA') or 0)>0)
+    player={k:distribution((p.get(k) for p in players if k!='TS' or (p.get('FGA') or 0)+(p.get('FTA') or 0)>0), rank_samples=True)
             for k in ['Pts','Reb','Ast','TS']}
     return {'team':team,'player':player, **matchup_baselines(season),
             'team_policy':'Same-season D-I teams with a reported game; equal team weighting.',
@@ -35,6 +46,7 @@ def matchup_baselines(contexts):
     pace_samples = defaultdict(list)
     frequency = defaultdict(list)
     efficiency = defaultdict(list)
+    ranked = defaultdict(list)
 
     def record(values, key, value):
         if isinstance(value, (int, float)) and math.isfinite(value):
@@ -43,12 +55,14 @@ def matchup_baselines(contexts):
     for context in contexts:
         observed = context.get('observed_tactics') or {}
         box = context.get('official_box') or {}
-        for pace, keys in (
-            (observed.get('pace') or {}, ('observed_per40', 'recent5_per40')),
-            (box.get('pace') or {}, ('estimated_per40', 'recent5_estimated_per40')),
+        counted = observed.get('pace') or {}
+        for pace, games, keys in (
+            (counted, counted.get('games'), ('observed_per40', 'recent5_per40')),
+            (box.get('pace') or {}, box.get('games'), ('estimated_per40', 'recent5_estimated_per40')),
         ):
-            for key in keys:
-                record(pace_samples, key, pace.get(key))
+            record(pace_samples, keys[0], pace.get(keys[0]))
+            if (games or 0) >= 6:
+                record(pace_samples, keys[1], pace.get(keys[1]))
         for family in ('situations', 'restart_contexts', 'personnel'):
             for row in observed.get(family, []):
                 key = (family, row['side'], row.get('basis') or '', row.get('personnel') or row.get('kind'))
@@ -57,19 +71,61 @@ def matchup_baselines(contexts):
                     record(efficiency, key, row.get('ppp'))
         for role, side in (('offense', 'o'), ('defense', 'd')):
             key = ('shot_share', role, '', 'three')
-            record(frequency, key, context['rates'].get(f'tpr_{side}_all'))
+            rates = context['rates'] if context['rates'].get('games_all') else box.get('rates', {})
+            record(frequency, key, rates.get(f'tpr_{side}_all'))
             for schema, block in context['shots'].items():
-                rim = next((z for z in block[role]['zones'] if z['id'] == 'atr2'), {})
+                profile = block[role]
+                rim = next((z for z in profile['zones'] if z['id'] == 'atr2'), {})
                 record(frequency, ('shot_share', role, schema, 'rim'), rim.get('shot_share'))
+                if profile['totals']['attempts'] >= 20:
+                    record(ranked, ('shot_accuracy', role, schema, 'efg'), profile['totals'].get('efg_pct'))
+                for zone in profile['zones']:
+                    record(frequency, ('shot_share', role, schema, zone['id']), zone.get('shot_share'))
+                    if zone['attempts'] >= 10:
+                        record(ranked, ('shot_accuracy', role, schema, zone['id']), zone.get('fg_pct'))
+        size = observed.get('size_summary') or {}
+        for basis, key in (('starters', 'starter_position_size'), ('whole_team', 'position_size')):
+            record(ranked, ('height', basis, '', 'all'), (size.get(basis) or {}).get('mean_height_inches'))
+            for row in observed.get(key, []):
+                record(ranked, ('height', basis, '', row['position']), row.get('mean_height_inches'))
+    comparisons = []
+    for key in sorted(frequency.keys() | ranked.keys()):
+        family, side, basis, kind = key
+        row = {'family': family, 'side': side, 'basis': basis, 'kind': kind}
+        if key in frequency:
+            row['usage_samples'] = sorted(frequency[key])
+        if family in ('situations', 'restart_contexts', 'personnel'):
+            row['ppp_baseline'] = distribution(efficiency[key])
+        if key in ranked or key in efficiency:
+            row['rank_samples'] = sorted(ranked.get(key) or efficiency[key])
+        comparisons.append(row)
     return {
         'pace_samples': {key: sorted(values) for key, values in sorted(pace_samples.items())},
-        'matchup_comparisons': [
-            {'family': family, 'side': side, 'basis': basis, 'kind': kind,
-             'usage_samples': sorted(values), 'ppp_baseline': distribution(efficiency[key])}
-            for key, values in sorted(frequency.items())
-            for family, side, basis, kind in [key]
-        ],
+        'matchup_comparisons': comparisons,
     }
+
+
+def split_matchup_ranks(baselines):
+    """Move matchup-only samples out of the board's team index."""
+    ranks = {}
+    for year, baseline in baselines.items():
+        season = {group: {key: entry.pop('rank_samples') for key, entry in baseline[group].items()
+                          if 'rank_samples' in entry} for group in ('team', 'player')}
+        comparisons, board = [], []
+        for row in baseline['matchup_comparisons']:
+            samples = row.pop('rank_samples', None)
+            if row['family'] == 'shot_share' and row['kind'] in ZONES:
+                samples = row.pop('usage_samples', None)
+            if samples:
+                comparisons.append({**{k: row[k] for k in ('family', 'side', 'basis', 'kind')},
+                                    'rank_samples': samples})
+            if 'usage_samples' in row:
+                board.append(row)
+        season['matchup_comparisons'] = comparisons
+        baseline['matchup_comparisons'] = board
+        ranks[year] = season
+    return {'grade_baselines': ranks}
+
 
 def assert_public(value):
     if isinstance(value,dict):
@@ -212,6 +268,7 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
               'games':games}
     assert_public(manifest);write(out/'slate.json',manifest)
     baselines={str(y):grade_baselines(all_context,y) for y in [2026,2027]}
+    write(out/'matchup-ranks.json',split_matchup_ranks(baselines))
     write(out/'teams.json',{'teams':index,'grade_baselines':baselines})
     write(out/'manifest.json',{k:v for k,v in manifest.items() if k!='games'})
     return {'team_season_contexts':len(all_context),'scheduled_game_rows':len(games),'data_through':through,'team_index':len(index)}

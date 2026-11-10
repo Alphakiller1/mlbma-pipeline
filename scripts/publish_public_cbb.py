@@ -18,6 +18,20 @@ def validate_context(value,old=None):
             raise ValueError('Supplemental team-rate contract mismatch')
         for n in (box.get('pace') or {}).values():
             if not 20<=n<=120:raise ValueError('Box-estimated pace outside range')
+        for key in ('fast_break_points','points_off_turnovers'):
+            if sample:=box.get(key):
+                if not 1<=sample['games']<=box['games'] or not all(
+                    math.isfinite(sample[k]) and sample[k]>=0 for k in ('scored','allowed')
+                ):raise ValueError('Invalid ESPN box scoring sample: '+key)
+        if groups:=box.get('starter_groups'):
+            if sum(r['games'] for r in groups)>box['games'] or not math.isclose(sum(r['usage'] for r in groups),1):
+                raise ValueError('ESPN starting-group counts do not reconcile')
+        if players:=box.get('players'):
+            if len({p['athlete_id'] for p in players})!=len(players) or any(
+                not p['Name'] or not 1<=p['G']<=box['games'] or not 0<=p['Min_pct']<=100
+                or any(p[k] is not None and (not math.isfinite(p[k]) or p[k]<0) for k in ('Pts','Reb','Ast','TS'))
+                for p in players
+            ):raise ValueError('Invalid ESPN player rotation sample')
     for family in value['shots'].values():
         for p in family.values():
             if {z['id'] for z in p['zones']}!={'atr2','paint2','mid2','c3','atb3','heave3'}:raise ValueError('Incomplete zone schema')

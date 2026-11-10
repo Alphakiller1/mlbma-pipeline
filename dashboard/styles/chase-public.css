@@ -6183,10 +6183,9 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-basketball-legend{display:flex;flex-wrap:wrap;gap:var(--space-3);font-size:12px;line-height:1.5;color:var(--text-muted);margin:var(--space-3) 0;text-transform:none}
 .ca-cbb-court .ca-court-badge__big{fill:var(--grade,var(--text-primary))}
 .ca-cbb-court .ca-court-badge__small{fill:var(--text-secondary)}
-.ca-cbb-court[data-court-metric="share"] .ca-court-badge__small{
-  fill:color-mix(in srgb,var(--series-6) var(--shot-volume,0%),var(--text-secondary));
-  font-weight:700
-}
+.ca-cbb-ranked{display:inline-flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:var(--space-1);max-width:100%}
+.ca-cbb-ranked>.ca-rank{margin:0;padding-inline:3px}
+.ca-cbb-coverage-reference{grid-column:1/-1}
 .ca-pace-icons{display:inline-flex;align-items:center;gap:1px;margin-inline-start:var(--space-1);vertical-align:middle;white-space:nowrap}
 .ca-pace-icons[data-pace-direction="fast"]{color:var(--accent-text)}
 .ca-pace-icons[data-pace-direction="slow"]{color:var(--series-6)}
@@ -6229,16 +6228,24 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-lineup-table.ca-basketball-table th:first-child,
 .ca-lineup-table.ca-basketball-table td:first-child { text-align: left; }
 .ca-lineup-table.ca-basketball-table th { vertical-align: bottom; white-space: normal; }
-/* Frequency is a single fixed 0–50% scale, independent of performance grades. */
+/* The same usage palette drives the zone, its numbers, and the legend. */
+.ca-cbb-shot-share.u-rare{--shot-strength:22%;color:var(--text-muted)}
+.ca-cbb-shot-share.u-tertiary{--shot-strength:48%;color:var(--series-3)}
+.ca-cbb-shot-share.u-secondary{--shot-strength:59%;color:var(--series-2)}
+.ca-cbb-shot-share.u-primary{--shot-strength:72%;color:var(--series-1)}
 .ca-cbb-court[data-court-metric="share"] .ca-court-zone {
-  fill: color-mix(in srgb, var(--series-6) var(--shot-volume, 0%), var(--surface-2));
+  fill: color-mix(in srgb, currentColor var(--shot-strength), var(--surface-2));
   fill-opacity: 1;
 }
+.ca-cbb-court .ca-cbb-shot-share .ca-court-badge__big,
+.ca-cbb-court .ca-cbb-shot-share .ca-court-badge__small{fill:currentColor;font-weight:700}
 .ca-cbb-court[data-court-metric="share"] .ca-court-zone:hover,
 .ca-cbb-court[data-court-metric="share"] .ca-court-zone:focus-visible {
   fill-opacity: 1; stroke: var(--text-secondary); stroke-width: 2;
 }
-.ca-cbb-legend--share .ca-cbb-legend__ramp { background: linear-gradient(90deg, var(--surface-2), var(--series-6)); }
+.ca-cbb-share-key{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--space-1) var(--space-3)}
+.ca-cbb-share-key span{display:inline-flex;align-items:center;gap:var(--space-1);font-weight:700;white-space:nowrap}
+.ca-cbb-share-key i{width:11px;height:11px;border-radius:var(--radius-xs);background:color-mix(in srgb,currentColor var(--shot-strength),var(--surface-2))}
 .ca-basketball-volume { display: inline-block; min-width: 44px; color: var(--series-6); font-variant-numeric: tabular-nums; }
 .ca-basketball-volume > span { display: block; height: 3px; margin-top: 4px; border-radius: var(--radius-pill); background: var(--surface-3); }
 .ca-basketball-volume > span::after { content: ''; display: block; width: var(--volume); height: 100%; border-radius: inherit; background: var(--series-6); }

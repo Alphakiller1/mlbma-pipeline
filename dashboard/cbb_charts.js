@@ -4,6 +4,8 @@
   var PATH = {atb3:'M0 0H500V470H0Z',mid2:'M33.44 0L33.44 98.81A221.46 221.46 0 0 0 466.56 98.81L466.56 0Z',
     c3:'M0 0H33.44V98.81H0Z M466.56 0H500V98.81H466.56Z',paint2:'M190 0H310V190H190Z',
     atr2:'M295 52.5A45 45 0 1 0 205 52.5A45 45 0 1 0 295 52.5Z'};
+  var SHARE_BANDS = [[0.30,'u-primary','30%+'],[0.18,'u-secondary','18–<30%'],
+    [0.09,'u-tertiary','9–<18%'],[0,'u-rare','<9%']];
   function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
   function pct(v) { return v == null ? '—' : (100 * v).toFixed(1) + '%'; }
   function pp(v) { return v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(1) + ' pp'; }
@@ -17,26 +19,25 @@
   function efg(profile,defense) { var t=profile.totals,d=t.efg_pct!=null&&t.league_efg_pct!=null?100*(t.efg_pct-t.league_efg_pct):null;
     return value(pct(t.efg_pct),grade(d,defense),'eFG% vs matching-source D-I baseline · '+pp(d)); }
   function metricLegend() { return '<p class="ca-basketball-legend"><span class="c-elite">Elite</span><span class="c-good">Strong</span><span class="c-mid">Average</span><span class="c-weak">Weak</span><span class="c-poor">Poor</span><span>Same-season distribution · gray = ungraded</span></p>'; }
-  function shotVolume(zone) {
-    return Math.max(0, Math.min(100, 200 * (zone.shot_share || 0))).toFixed(1) + '%';
+  function shareTone(value) {
+    var band = Number.isFinite(value) && SHARE_BANDS.find(function (row) { return value >= row[0]; });
+    return 'ca-cbb-shot-share ' + (band ? band[1] : 'u-rare');
   }
   function court(profile,title,options) {
     options = options || {};
     if (!profile || !profile.totals.attempts) return '<p class="ca-cbb-note">Shot coverage is not available for this evidence window.</p>';
     var by = {}, share = options.metric === 'share'; profile.zones.forEach(function(z){by[z.id]=z;});
     var zones = ['atb3','mid2','c3','paint2','atr2'].map(function(id){
-      var z = by[id], tone = z.attempts && !share ? grade(z.delta_pp,options.defense) : 'c-na';
-      var style = share ? ' style="--shot-volume:' + shotVolume(z) + '"' : '';
+      var z = by[id], tone = share ? shareTone(z.shot_share) : grade(z.attempts?z.delta_pp:null,options.defense);
       // Cut out nested zones: translucent paint must never add the fill of
       // another zone underneath it. Every region expresses only its own data.
       var cutout=id==='atb3'?PATH.mid2+PATH.c3:id==='mid2'?PATH.paint2:id==='paint2'?PATH.atr2:'';
-      return '<path class="ca-court-zone ' + tone + '" d="' + PATH[id]+cutout + '" fill-rule="evenodd"' + style + ' tabindex="0"><title>' +
+      return '<path class="ca-court-zone ' + tone + '" d="' + PATH[id]+cutout + '" fill-rule="evenodd" tabindex="0"><title>' +
         esc(z.label + ': ' + pct(z.fg_pct) + ', ' + z.made + '/' + z.attempts + '; share ' + pct(z.shot_share) + '; D-I ' + pct(z.league_fg_pct) + '; ' + pp(z.delta_pp)) + '</title></path>';
     }).join('');
     function badge(id,x,y,rotate) {
-      var z = by[id],tone=share?'':grade(z.attempts?z.delta_pp:null,options.defense);
-      var style = share ? ' style="--shot-volume:' + shotVolume(z) + '"' : '';
-      return '<g class="ca-court-badge '+tone + (rotate ? ' ca-cbb-corner' : '') + '"' + style + ' transform="translate(' + x + ' ' + y + ')' + (rotate ? ' rotate(90)' : '') + '"><rect x="' + (rotate ? -40 : -55) + '" y="' + (rotate ? -18 : -28) + '" width="' + (rotate ? 80 : 110) + '" height="' + (rotate ? 36 : 56) + '" rx="7"></rect><text class="ca-court-badge__big" y="-2">' +
+      var z = by[id],tone=share?shareTone(z.shot_share):grade(z.attempts?z.delta_pp:null,options.defense);
+      return '<g class="ca-court-badge '+tone + (rotate ? ' ca-cbb-corner' : '') + '" transform="translate(' + x + ' ' + y + ')' + (rotate ? ' rotate(90)' : '') + '"><rect x="' + (rotate ? -40 : -55) + '" y="' + (rotate ? -18 : -28) + '" width="' + (rotate ? 80 : 110) + '" height="' + (rotate ? 36 : 56) + '" rx="7"></rect><text class="ca-court-badge__big" y="-2">' +
         (share ? pct(z.shot_share) : pct(z.fg_pct)) + '</text><text class="ca-court-badge__small" y="' + (rotate ? 14 : 20) + '">' +
         (share ? z.attempts + ' FGA' : z.made + '/' + z.attempts) + '</text></g>';
     }
@@ -46,8 +47,11 @@
       (share ? 'Share of FGA · attempts' : 'Zone FG% · makes/attempts') + ' · ' + esc(by.heave3.label) + ' ' + by.heave3.made + '/' + by.heave3.attempts + '</figcaption></figure>';
   }
   function legend(defense,metric) {
-    if (metric === 'share') return '<div class="ca-cbb-legend ca-cbb-legend--share"><span>Shot volume · share of all FGA</span><div class="ca-cbb-legend__ramp"></div><div class="ca-cbb-legend__labels"><span>0%</span><span>25%</span><span>50%+</span></div><span>Court fills and FGA labels use the same scale for both teams</span></div>';
+    if (metric === 'share') return '<div class="ca-cbb-legend ca-cbb-legend--share"><span>Shot volume · share of all FGA</span><div class="ca-cbb-share-key">'+
+      SHARE_BANDS.slice().reverse().map(function (band) {
+        return '<span class="'+shareTone(band[0])+'"><i aria-hidden="true"></i>'+esc(band[2])+'</span>';
+      }).join('')+'</div><span>Same bands for both teams</span></div>';
     return '<div class="ca-cbb-legend"><span>Zone FG% vs same-season D-I average</span><div class="ca-cbb-legend__ramp"></div><div class="ca-cbb-legend__labels"><span>' + (defense ? '+10 pp allowed' : '−10 pp') + '</span><span>D-I average</span><span>' + (defense ? '−10 pp allowed' : '+10 pp') + '</span></div></div>';
   }
-  global.ChaseCbbCharts = { court:court,legend:legend,pct:pct,pp:pp,esc:esc,grade:grade,value:value,metric:metric,efg:efg,metricLegend:metricLegend };
+  global.ChaseCbbCharts = { court:court,legend:legend,pct:pct,pp:pp,esc:esc,grade:grade,value:value,metric:metric,efg:efg,metricLegend:metricLegend,shareTone:shareTone };
 })(typeof window !== 'undefined' ? window : this);

@@ -14,7 +14,7 @@ class PublicPaceTests(unittest.TestCase):
     def test_cbb_comparison_cohorts_keep_method_and_role_separate(self):
         contexts = [
             {"rates": {}, "shots": {}, "observed_tactics": {
-                "pace": {"observed_per40": 67, "recent5_per40": 65},
+                "pace": {"observed_per40": 67, "recent5_per40": 65, "games": 6},
                 "situations": [
                     {"side": "offense", "kind": "transition", "usage": .22, "ppp": 1.3, "possessions": 12},
                     {"side": "defense", "kind": "transition", "usage": .33, "ppp": 1.8, "possessions": 8},

@@ -1,7 +1,7 @@
 /** CBB research adapter: factual, versioned two-season exports only. */
 (function (global) {
   'use strict';
-  var ROOT = '/data/public/cbb/', cache = {}, baselines = {};
+  var ROOT = '/data/public/cbb/', cache = {}, baselines = {}, ranks = {};
   function rememberIndex(value) { baselines=value.grade_baselines||{};return value; }
   function json(url) {
     return fetch(url, { cache: 'no-cache' }).then(function (r) {
@@ -130,6 +130,11 @@
   }
   function detail(game) {
     function covered(year,side) { return (game[side+'_evidence_seasons']||[]).indexOf(String(year))<0 ? Promise.resolve(null) : context(year,game[side]).catch(function(){return null;}); }
+    game.cbbRanksReady = json(ROOT+'matchup-ranks.json').then(function (value) {
+      ranks = value.grade_baselines || {};
+      game.cbbRanksLoaded = true;
+      return true;
+    }).catch(function () { return false; });
     return Promise.all([covered(2027,'away'),covered(2027,'home'),covered(2026,'away'),covered(2026,'home'),
       json(ROOT+'tagged-schemes-2026.json').catch(function(){return null;}),
       json(ROOT+'film-coverage.json').catch(function(){return null;})]).then(function (items) {
@@ -137,16 +142,20 @@
       game.away_cbb_prior = items[2]; game.home_cbb_prior = items[3];
       game.cbb_tagged_schemes = items[4];
       game.cbb_film_coverage = items[5];
+      game.cbbDetailReady = true;
       return game;
+    });
+  }
+  function comparison(data, year, family, row) {
+    return ((data[String(year)] || {}).matchup_comparisons || []).find(function (p) {
+      return p.family === family && p.side === row.side && p.basis === (row.basis || '') &&
+        p.kind === (row.personnel || row.kind);
     });
   }
   global.ChaseSportCBB = { load: load, context: context, detail: detail, SLATE_URL: ROOT + 'slate.json',
     baseline:function(year,group,key){return ((baselines[String(year)]||{})[group]||{})[key]||null;},
-    comparison: function (year, family, row) {
-      return ((baselines[String(year)] || {}).matchup_comparisons || []).find(function (p) {
-        return p.family === family && p.side === row.side && p.basis === (row.basis || '') &&
-          p.kind === (row.personnel || row.kind);
-      });
-    },
+    rankSamples:function(year,group,key){return ((ranks[String(year)]||{})[group]||{})[key]||null;},
+    comparison:function(year,family,row){return comparison(baselines,year,family,row);},
+    comparisonRanks:function(year,family,row){var p=comparison(ranks,year,family,row);return p&&p.rank_samples;},
     teamIndex: function () { return json(ROOT + 'teams.json').then(rememberIndex); } };
 })(typeof window !== 'undefined' ? window : this);
