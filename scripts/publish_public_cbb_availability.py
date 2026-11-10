@@ -62,7 +62,10 @@ def rotowire(_now):
 
 def action(_now):
     soup = BeautifulSoup(get(ACTION).content, "html.parser")
-    data = json.loads(soup.find("script", id="__NEXT_DATA__").string)
+    script = soup.find("script", id="__NEXT_DATA__")
+    if not script or not script.string:
+        raise ValueError("Action Network injury payload missing from the public page")
+    data = json.loads(script.string)
     rows = data["props"]["pageProps"]["injuries"]
     if not isinstance(rows, list):
         raise ValueError("Unexpected Action Network injury report")
@@ -206,6 +209,18 @@ def publish_report(path, payload):
     temp.replace(path)
 
 
+def carry_unavailable_reports(reports, prior, received, teams, season, day):
+    """Retain same-day verified players from unavailable feeds until a fresh report wins."""
+    if prior.get("season") != season or prior.get("slate_date") != day:
+        return 0
+    before = len(reports)
+    for row in prior.get("reports", []):
+        club, player = row.get("team_id"), row.get("player_id")
+        if club in teams and player and row.get("source") not in received:
+            reports.setdefault((club, player), row)
+    return len(reports) - before
+
+
 def main():
     season = json.loads((ROOT / "manifest.json").read_text(encoding="utf-8"))["season"]
     teams = json.loads((ROOT / "teams.json").read_text(encoding="utf-8"))["teams"]
@@ -245,7 +260,7 @@ def main():
             row.update(source=name, source_url=url, status=status, retrieved_at_utc=retrieved,
                        updated=stamp.astimezone(timezone.utc).isoformat() if stamp else None)
             candidates[next(iter(clubs))].append(row)
-    checks = {}
+    checks, prior = {}, {}
     if archive.is_file():
         prior = json.loads(archive.read_text(encoding="utf-8"))
         if prior.get("season") == season and prior.get("slate_date") == day:
@@ -291,6 +306,9 @@ def main():
                 if not previous or (row["updated"] or "") >= (previous["updated"] or ""):
                     row.pop("team", None)
                     reports[player_id] = row
+    carried = carry_unavailable_reports(reports, prior, received, teams, season, day)
+    if carried:
+        print(f"Retained {carried} previously verified same-day designations from unavailable feeds.")
     if any(received.values()) and not reports:
         raise ValueError("No public designations matched a current roster")
     payload = {"schema": "chase-cbb-availability/1", "sport": "cbb", "season": season, "slate_date": day,

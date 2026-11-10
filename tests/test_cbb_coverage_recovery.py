@@ -13,6 +13,22 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class CbbCoverageRecoveryTests(unittest.TestCase):
+    def test_partial_source_outage_preserves_same_day_out_designation(self):
+        row = {"team_id": "135", "player_id": "5254164", "status": "Out",
+               "source": "Action Network", "retrieved_at_utc": "2026-11-09T23:09:37Z"}
+        prior = {"season": 2027, "slate_date": "2026-11-09", "reports": [row]}
+        teams = {"135": {}}
+        key = (row["team_id"], row["player_id"])
+        reports = {}
+        carry = cbb_availability.carry_unavailable_reports
+        self.assertEqual(carry(reports, prior, {"Covers": 10}, teams, 2027, "2026-11-09"), 1)
+        self.assertEqual(reports[key], row)
+        current = {key: {**row, "status": "Available", "source": "Covers"}}
+        self.assertEqual(carry(current, prior, {"Covers": 10}, teams, 2027, "2026-11-09"), 0)
+        self.assertEqual(current[key]["status"], "Available")
+        self.assertEqual(carry({}, prior, {"Action Network": 0}, teams, 2027, "2026-11-09"), 0)
+        self.assertEqual(carry({}, prior, {}, teams, 2027, "2026-11-10"), 0)
+
     def test_covers_fixture_report_requires_the_correct_day_and_pairing(self):
         event = {
             "@type": "SportsEvent", "startDate": "11/09/2026 23:00:00 &#x2B;00:00",
