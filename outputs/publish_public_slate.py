@@ -832,7 +832,7 @@ def fetch_ftn_dvoa(season: int | None = None) -> dict[str, dict]:
         return {}
 
     years = [int(year) for year, rows in payload.items() if str(year).isdigit() and rows]
-    selected = season if season in years else (max(years) if years else None)
+    selected = season if season is not None else (max(years) if years else None)
     rows = payload.get(str(selected), {}) if selected is not None else {}
     if not isinstance(rows, dict) or len(rows) < 32:
         print(f"  WARNING: FTN DVOA returned {len(rows) if isinstance(rows, dict) else 0} teams")
@@ -846,17 +846,25 @@ def fetch_ftn_dvoa(season: int | None = None) -> dict[str, dict]:
     )
     out: dict[str, dict] = {}
     for club, row in rows.items():
+        week = re.fullmatch(r"([1-9]|1[0-8])([A-Z])?", str(row.get("week") or "").strip())
+        if not week or str(row.get("year") or selected) != str(selected):
+            continue
         metrics: dict[str, object] = {
             "source": "FTN public Team Total DVOA",
-            "season": int(row.get("year") or selected),
-            "week": int(row.get("week") or 0),
+            "season": selected,
+            "week": int(week[1]),
         }
+        if week[2]:
+            metrics["week_edition"] = week[0]
         for metric, rank_key in spec:
             value = _dvoa_value(row.get(metric))
-            rank = row.get(rank_key)
-            if value is None or rank is None:
+            try:
+                rank = int(row.get(rank_key))
+            except (TypeError, ValueError):
                 continue
-            metrics[metric] = {"value": value, "rank": int(rank), "of": len(rows)}
+            if value is None or not 1 <= rank <= len(rows):
+                continue
+            metrics[metric] = {"value": value, "rank": rank, "of": len(rows)}
         if all(metric in metrics for metric, _rank in spec):
             out[str(club).upper()] = metrics
     return out
