@@ -3,8 +3,8 @@
   "sport": "cfb",
   "season": 2026,
   "week": 11,
-  "generated_at_utc": "2026-11-09T22:34:45Z",
-  "data_through_utc": "2026-11-08T19:55:30Z",
+  "generated_at_utc": "2026-11-10T00:12:56Z",
+  "data_through_utc": "2026-11-09T23:50:33Z",
   "games": [
     {
       "id": "KENT@BGSU",
@@ -65309,7 +65309,7 @@
       "venue": "Gerald J. Ford Stadium",
       "venue_city": "Dallas, TX",
       "roof": "Outdoor",
-      "broadcast": "ESPN",
+      "broadcast": "ESPN, Disney+",
       "weather_temp": 63,
       "weather_cond": "Intermittent clouds",
       "away_form": {
@@ -149367,7 +149367,7 @@
       "venue": "Sanford Stadium",
       "venue_city": "Athens, GA",
       "roof": "Outdoor",
-      "broadcast": "ABC",
+      "broadcast": "ABC, Disney+",
       "weather_temp": 55,
       "weather_cond": "Sunny",
       "away_form": {
@@ -240818,7 +240818,7 @@
       "roof": "Outdoor",
       "broadcast": "USA Net",
       "weather_temp": 67,
-      "weather_cond": "Clear",
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
