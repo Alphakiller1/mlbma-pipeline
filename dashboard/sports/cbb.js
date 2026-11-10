@@ -49,6 +49,10 @@
         if(String(g.away)!==a||String(g.home)!==h)return;
         if ((g.game_state === 'final' && nextState !== 'final') || (g.game_state === 'live' && nextState === 'scheduled')) return;
         g.game_state=nextState;
+        // Lines come off the board at tip; keep the last posted numbers.
+        g.cbb_lines_checked=true;
+        if(comp.market_lines)g.market_lines=comp.market_lines;
+        ['away','home'].forEach(function(side){var abbr=(sides[side].team||{}).abbreviation;if(abbr)g[side+'_abbr']=abbr;});
         g.kickoff_utc=event.date||g.kickoff_utc;g.venue=(comp.venue||{}).fullName||g.venue;
         g.venue_city=((comp.venue||{}).address||{}).city||g.venue_city;
         if(comp.neutralSite!=null)g.neutral=comp.neutralSite===true;

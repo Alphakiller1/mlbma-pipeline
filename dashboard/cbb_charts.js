@@ -52,7 +52,9 @@
       badge('atr2',250,98) + badge('paint2',250,165) + badge('mid2',250,253) + badge('atb3',250,options.compact ? 330 : 362) + badge('c3',480,54,true) + '</svg><figcaption>' +
       (share ? 'Share of FGA · attempts' : 'Zone FG% · makes/attempts') + ' · ' + esc(by.heave3.label) + ' ' + by.heave3.made + '/' + by.heave3.attempts + '</figcaption></figure>';
   }
-  function legend(defense,metric) {
+  function legend(defense,metric,graded) {
+    if (metric === 'share' && graded) return '<div class="ca-cbb-legend"><span>Shot share vs same-season D-I teams</span><div class="ca-cbb-legend__ramp"></div><div class="ca-cbb-legend__labels"><span>' +
+      (defense ? 'Most allowed' : 'Fewest attempts') + '</span><span>D-I middle</span><span>' + (defense ? 'Fewest allowed' : 'Most attempts') + '</span></div></div>';
     if (metric === 'share') return '<div class="ca-cbb-legend ca-cbb-legend--share"><span>Shot volume · share of all FGA</span><div class="ca-cbb-share-key">'+
       SHARE_BANDS.slice().reverse().map(function (band) {
         return '<span class="'+shareTone(band[0])+'"><i aria-hidden="true"></i>'+esc(band[2])+'</span>';
