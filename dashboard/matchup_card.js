@@ -384,7 +384,7 @@
     // repeating them made the same two headshots appear twice on expand.
     var html = '<div class="ca-matchup-card__expand" id="' + esc(panelId) + '" hidden>';
     if (sport === 'cbb') {
-      return html + '<p class="ca-ctx-head">2026–27 observed team shooting · current-season sample</p><div class="ca-matchup-card__detail-grid">'+['away','home'].map(function(side){var r=game[side+'_summary']||{};return miniFact(teamName(sport,game[side],game[side+'_name'])+' eFG%',r.efg_pct==null?'Not published':(100*r.efg_pct).toFixed(1)+'%',r.source?'c-na':global.MLBMAAssets.baselineChipClass(r.efg_pct,global.ChaseSportCBB.baseline(game.season||2027,'team','efg_o_all'),true))+miniFact(r.source?'ESPN final boxes':'Reported games',r.games||0);}).join('')+'</div><p class="ca-cbb-note">Full analysis includes both seasons, opponent allowed rates, shot zones and observed players.</p></div>';
+      return html + '<p class="ca-ctx-head">2026–27 observed team shooting · current-season sample</p><div class="ca-matchup-card__detail-grid">'+['away','home'].map(function(side){var r=game[side+'_summary']||{};return miniFact(teamName(sport,game[side],game[side+'_name'])+' eFG%',r.efg_pct==null?'Not published':(100*r.efg_pct).toFixed(1)+'%',r.source?'c-na':global.MLBMAAssets.baselineChipClass(r.efg_pct,global.ChaseSportCBB.baseline(game.season||2027,'team','efg_o_all'),true))+miniFact(r.source?'ESPN final boxes':'Reported games',r.games||0);}).join('')+'</div><div class="ca-matchup-card__detail-grid">'+miniFact('Broadcast',game.broadcast||'Not published','','tv')+'</div></div>';
     }
     if (sport === 'cfb') {
       return html + cfbAnalysis(game, awayName, homeName) + '</div>';
@@ -620,8 +620,8 @@
   }
   function cbbTotal(game) {
     var l = game.market_lines || {}, now = cbbLineNumber(l.total_current), was = cbbLineNumber(l.total_open);
-    return miniFact('Total' + cbbLineSource(game), now || (game.cbb_lines_checked ? 'Not posted' : 'Checking'),
-      now ? '' : 'is-pending', 'gauge', now && was ? ' <small class="ca-matchup-card__line-open is-inline">open ' + esc(was) + '</small>' : '');
+    return miniFact(was && now ? 'Total · Open' : 'Total', now ? now + (was ? ' · ' + was : '') :
+      (game.cbb_lines_checked ? 'Not posted' : 'Checking'), now ? '' : 'is-pending', 'gauge');
   }
   function summaryRow(sport, game, statusLine) {
     if (sport === 'cbb') {
@@ -630,7 +630,7 @@
         game.cbb_availability_pending ? 'Checking report' : game.cbb_fixture_check ? 'Matchup report checked' : 'No verified listing';
       return '<div class="ca-matchup-card__summary">'+cbbTotal(game)+
         miniFact('Availability',report)+
-        miniFact('Site · TV',(game.neutral?'Neutral':'Home court')+' · '+(game.broadcast||'TV not listed'))+'</div>';
+        miniFact('Site',game.neutral?'Neutral court':'Home court')+'</div>';
     }
 
     if (sport === 'nba') {

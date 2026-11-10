@@ -346,16 +346,6 @@ body[data-ca-product="research"] {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.ca-matchup-card__line-open {
-  display: block;
-  margin-top: 2px;
-  color: var(--text-meta);
-  font-size: var(--type-meta);
-  font-weight: 500;
-}
-
-.ca-matchup-card__line-open.is-inline { display: inline; margin-top: 0; white-space: nowrap; }
-
 .ca-matchup-card__fact > strong.is-pending { color: var(--text-meta); font-weight: 500; }
 
 /* A graded card fact carries its tier colour; the plain fact colour must not win. */
