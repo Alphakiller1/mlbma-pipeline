@@ -30,6 +30,21 @@ Its team index now includes `grade_baselines` by season, group and statistic.
 Missing values are excluded and reported zeros retained. The existing daily
 factual refresh regenerates these baselines along with its validated snapshot.
 
+The matchup detail loads `matchup-ranks.json` alongside its team profiles.
+Ranks use observed values in the selected season. Pace ranks fastest first
+within the same counting method. Height ranks tallest first within position,
+with separate cohorts for starters and full rosters. Zone accuracy needs at
+least 10 attempts and a comparable shot source. Shot-share bands use the same
+cutoffs and colors for both courts and their FGA labels. The bands measure how
+often a zone is used.
+
+When NCAA possession tags are pending, score-matched ESPN finals can supply
+fast-break points, points off turnovers, and recorded starting groups. They also
+supply reconciled player lines where Basketball Quant has no rotation. Each
+panel identifies the ESPN source and the measurement it supplies. When neither
+team has a reviewed coverage sample, the Man, Zone and Press panel shows labeled
+same-season references from the actual games reviewed.
+
 ## NBA
 
 The existing 12 tabs retain the native desktop/phone layout. Team/player

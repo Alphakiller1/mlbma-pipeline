@@ -23,6 +23,19 @@ class CbbDeskTests(unittest.TestCase):
         self.assertIn('data-nav="cbb"',nav);self.assertNotIn('data-nav="mlb"',nav)
         self.assertIn('url=/',(ROOT/'mlb/index.html').read_text())
 
+    def test_matchup_rank_samples_match_the_published_team_evidence(self):
+        from pipeline.cbb_public.export import grade_baselines,split_matchup_ranks
+        root=ROOT/'data/public/cbb'
+        contexts={(year,f.stem):json.loads(f.read_text(encoding='utf-8')) for year in (2026,2027)
+                  for f in (root/f'{year}/teams').glob('*.json')}
+        observed=split_matchup_ranks({str(y):grade_baselines(contexts,y) for y in (2026,2027)})
+        expected=json.loads((root/'matchup-ranks.json').read_text(encoding='utf-8'))
+        self.assertEqual(observed,expected)
+        for (year,team),context in contexts.items():
+            if year==2027 and any(game['state']=='post' for game in context['games']):
+                players=context['players']+(context.get('official_box') or {}).get('players',[])
+                self.assertTrue(any(p.get('G') for p in players),team)
+
     def test_model_scores_are_separate_and_margin_sign_is_correct(self):
         board=json.loads((ROOT/'functions/api/model-center/cbb-board.json').read_text(encoding='utf-8'))['board']
         self.assertFalse(board['may_bet'])
