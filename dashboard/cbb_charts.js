@@ -27,8 +27,14 @@
     options = options || {};
     if (!profile || !profile.totals.attempts) return '<p class="ca-cbb-note">Shot coverage is not available for this evidence window.</p>';
     var by = {}, share = options.metric === 'share'; profile.zones.forEach(function(z){by[z.id]=z;});
+    // A caller that grades the zones (the matchup table) passes its tones, so
+    // the court, its badges and the table beside it never disagree.
+    function toneOf(z) {
+      if (options.tones && options.tones[z.id]) return options.tones[z.id];
+      return share ? shareTone(z.shot_share) : grade(z.attempts?z.delta_pp:null,options.defense);
+    }
     var zones = ['atb3','mid2','c3','paint2','atr2'].map(function(id){
-      var z = by[id], tone = share ? shareTone(z.shot_share) : grade(z.attempts?z.delta_pp:null,options.defense);
+      var z = by[id], tone = toneOf(z);
       // Cut out nested zones: translucent paint must never add the fill of
       // another zone underneath it. Every region expresses only its own data.
       var cutout=id==='atb3'?PATH.mid2+PATH.c3:id==='mid2'?PATH.paint2:id==='paint2'?PATH.atr2:'';
@@ -36,9 +42,9 @@
         esc(z.label + ': ' + pct(z.fg_pct) + ', ' + z.made + '/' + z.attempts + '; share ' + pct(z.shot_share) + '; D-I ' + pct(z.league_fg_pct) + '; ' + pp(z.delta_pp)) + '</title></path>';
     }).join('');
     function badge(id,x,y,rotate) {
-      var z = by[id],tone=share?shareTone(z.shot_share):grade(z.attempts?z.delta_pp:null,options.defense);
+      var z = by[id],tone=toneOf(z);
       return '<g class="ca-court-badge '+tone + (rotate ? ' ca-cbb-corner' : '') + '" transform="translate(' + x + ' ' + y + ')' + (rotate ? ' rotate(90)' : '') + '"><rect x="' + (rotate ? -40 : -55) + '" y="' + (rotate ? -18 : -28) + '" width="' + (rotate ? 80 : 110) + '" height="' + (rotate ? 36 : 56) + '" rx="7"></rect><text class="ca-court-badge__big" y="-2">' +
-        (share ? pct(z.shot_share) : pct(z.fg_pct)) + '</text><text class="ca-court-badge__small" y="' + (rotate ? 14 : 20) + '">' +
+        (!z.attempts ? 'No FGA' : share ? pct(z.shot_share) : pct(z.fg_pct)) + '</text><text class="ca-court-badge__small" y="' + (rotate ? 14 : 20) + '">' +
         (share ? z.attempts + ' FGA' : z.made + '/' + z.attempts) + '</text></g>';
     }
     return '<figure class="ca-court ca-cbb-court" data-court-metric="'+(share?'share':'fg')+'"><svg viewBox="0 0 500 ' + (options.compact ? 380 : 470) + '" role="img" aria-label="' + esc(title) + '"><rect class="ca-court-floor" width="500" height="470"></rect>' + zones +

@@ -931,7 +931,19 @@
     "yards_per_target",
     "ytd",
     "zone_rate",
-    "zones"
+    "zones",
+    "ft_pct_o_all",
+    "ft_pct_d_all",
+    "fb_pts_per100_all",
+    "fb_pts_per100_d_all",
+    "pitp_per100_all",
+    "pitp_per100_d_all",
+    "pts_off_to_per_dposs_all",
+    "pts_off_to_per_dposs_d_all",
+    "stl_pct_o_all",
+    "stl_pct_d_all",
+    "blk_pct_o_all",
+    "blk_pct_d_all"
   ],
   "derived_descriptive": [
     "estimated_per40",

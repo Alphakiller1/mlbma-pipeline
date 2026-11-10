@@ -6180,12 +6180,14 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-cbb-summary strong{color:var(--text-primary);font-variant-numeric:tabular-nums}
 .ca-cbb-count{display:block;color:var(--grade,var(--text-muted));font-size:12px;margin-top:2px}
 .ca-basketball-value{color:var(--grade,var(--text-primary));font-weight:700;font-variant-numeric:tabular-nums}
+.ca-cbb-controls>.ca-basketball-legend{flex-basis:100%;margin:0}
+.ca-cbb-court-title{margin:0 0 var(--space-2);font-size:var(--type-meta,13px);line-height:1.4;color:var(--text-secondary);text-align:center}
 .ca-basketball-legend{display:flex;flex-wrap:wrap;gap:var(--space-3);font-size:12px;line-height:1.5;color:var(--text-muted);margin:var(--space-3) 0;text-transform:none}
 .ca-cbb-court .ca-court-badge__big{fill:var(--grade,var(--text-primary))}
 .ca-cbb-court .ca-court-badge__small{fill:var(--text-secondary)}
 .ca-cbb-ranked{display:inline-flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:var(--space-1);max-width:100%}
 .ca-cbb-ranked>.ca-rank{margin:0;padding-inline:3px}
-.ca-cbb-coverage-reference{grid-column:1/-1}
+
 .ca-pace-icons{display:inline-flex;align-items:center;gap:1px;margin-inline-start:var(--space-1);vertical-align:middle;white-space:nowrap}
 .ca-pace-icons[data-pace-direction="fast"]{color:var(--accent-text)}
 .ca-pace-icons[data-pace-direction="slow"]{color:var(--series-6)}
@@ -6262,4 +6264,4 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-cfb-panel .ca-cbb-factor-table th,.ca-cfb-panel .ca-cbb-zone-table th{white-space:normal;overflow-wrap:break-word}
 .ca-cfb-panel .ca-lineup-table:is(.ca-cbb-factor-table,.ca-cbb-zone-table) td:first-child{white-space:normal;overflow-wrap:anywhere}
 @media(max-width:560px){body[data-sport="cbb"] .ca-detail-center strong{font-size:28px}body[data-sport="cbb"] .ca-cbb-meridiem{display:block;font-size:18px;line-height:1.3}.ca-cbb-corner .ca-court-badge__big{font-size:24px}.ca-cbb-corner .ca-court-badge__small{font-size:18px}}
-@media(max-width:560px){.ca-cbb-controls{gap:var(--space-2);padding:var(--space-3)}.ca-cbb-controls>div:first-child{width:100%}.ca-cbb-options{flex:1 1 auto}.ca-cbb-options button{flex:1;padding-inline:10px}.ca-cbb-zone-table{table-layout:fixed;width:100%}.ca-cbb-zone-table th:first-child,.ca-cbb-zone-table td:first-child{min-width:0;width:44%}.ca-cbb-zone-table th:nth-child(3),.ca-cbb-zone-table td:nth-child(3){display:none}.ca-cbb-court .ca-court-badge__big{font-size:30px}.ca-cbb-court .ca-court-badge__small{font-size:20px}.ca-cbb-corner .ca-court-badge__big{font-size:18px}.ca-cbb-corner .ca-court-badge__small{font-size:13px}}
+@media(max-width:560px){.ca-cbb-controls{gap:var(--space-2);padding:var(--space-3)}.ca-cbb-controls>div:first-child{width:100%}.ca-cbb-options{flex:1 1 auto}.ca-cbb-options button{flex:1;padding-inline:10px}.ca-cbb-zone-table{table-layout:fixed;width:100%}.ca-cbb-zone-table th:first-child,.ca-cbb-zone-table td:first-child{min-width:0;width:34%}.ca-cbb-court .ca-court-badge__big{font-size:30px}.ca-cbb-court .ca-court-badge__small{font-size:20px}.ca-cbb-corner .ca-court-badge__big{font-size:18px}.ca-cbb-corner .ca-court-badge__small{font-size:13px}}

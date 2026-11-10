@@ -16,8 +16,10 @@ def validate_context(value,old=None):
         if value['season']!=2027 or box['games']<1:raise ValueError('Invalid supplemental box score sample')
         if box.get('rates') and (set(box['rates'])!=set(value['rates']) or box['rates']['games_all']!=box['games']):
             raise ValueError('Supplemental team-rate contract mismatch')
-        for n in (box.get('pace') or {}).values():
-            if not 20<=n<=120:raise ValueError('Box-estimated pace outside range')
+        pace=box.get('pace') or {}
+        for key,n in pace.items():
+            if key.endswith('per40') and not 20<=n<=120:raise ValueError('Box-estimated pace outside range')
+        if pace and not 1<=pace.get('games',0)<=box['games']:raise ValueError('Box pace sample does not reconcile')
         for key in ('fast_break_points','points_off_turnovers'):
             if sample:=box.get(key):
                 if not 1<=sample['games']<=box['games'] or not all(
