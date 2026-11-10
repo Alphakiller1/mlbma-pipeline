@@ -4978,11 +4978,12 @@ function seasonToggle(game) {
 
   /* One possession in the trenches: this offense's line directly above the
      front it meets, then the run game by direction in the Pitch Mix shape -
-     where the back goes, what he has done there, what the front has allowed
-     there. */
+     where the offense runs, what it has done there, what the front has
+     allowed there. */
   function nflTrenchPanel(sport, game, offSide) {
     var defSide = nflOther(offSide);
-    var oLine = (game[offSide + '_line_stats'] || {}).offense;
+    var offLine = game[offSide + '_line_stats'] || {};
+    var oLine = offLine.offense;
     var dLine = game[defSide + '_line_stats'] || {};
     var oNick = nflNick(sport, game, offSide), dNick = nflNick(sport, game, defSide);
     var head = '<section class="ca-form-panel"><h3>' + esc(nflVs(sport, game, offSide, 'O-Line', 'D-Line')) +
@@ -5002,6 +5003,12 @@ function seasonToggle(game) {
     ((profile && profile.splits) || []).forEach(function (s) { looks[s.look] = s; });
     var all = looks.all || {};
     var season = profile ? profile.source_season : null;
+    var teamRuns = offLine.offense_run_lanes || {};
+    var useTeam = Number(teamRuns.carries) > 0 &&
+      (season !== offLine.season || (Number(all.carries) || 0) < 40 || NFL_LANES.some(function (lane) {
+        return front[lane[1]] && !looks[lane[0]];
+      }));
+    var total = Number(useTeam ? teamRuns.carries : all.carries) || 0;
     // How much of a back's work goes each way, for every back on the slate in
     // the same season with a real sample: the pool behind the usage marker.
     function shareOf(p, look) {
@@ -5011,10 +5018,15 @@ function seasonToggle(game) {
       return total >= 15 && ls[look] ? Number(ls[look].carries) / total : null;
     }
     var rows = NFL_LANES.map(function (lane) {
-      var mine = looks[lane[0]], theirs = front[lane[1]];
-      if (!mine && !theirs) return '';
-      var share = mine && all.carries ? Number(mine.carries) / Number(all.carries) : null;
+      var mine = useTeam ? teamRuns[lane[1]] : looks[lane[0]];
+      var theirs = front[lane[1]];
+      if (!mine || !theirs || !total) return '';
+      var share = Number(mine.carries) / total;
       var sharePool = nflPoolValues(function (t) {
+        if (useTeam) {
+          var runs = (t.line || {}).offense_run_lanes || {};
+          return runs.carries && runs[lane[1]] ? Number(runs[lane[1]].carries) / Number(runs.carries) : null;
+        }
         return (t.backs || []).filter(function (p) {
           return p.play_family === 'rushing' && p.source_season === season;
         }).map(function (p) { return shareOf(p, lane[0]); });
@@ -5024,34 +5036,39 @@ function seasonToggle(game) {
         return nflFormat(value, 'num1') + (low ? ' <small class="is-low" title="Under 5 carries">' +
           esc(carries) + '</small>' : '');
       }
-      // The back's YPC in this lane is placed among backs in the same lane
-      // (published); the front's YPC and stuff rate among the clubs' fronts.
-      var mineRank = mine && (mine.league_ranks || {}).yards_per_carry;
+      var mineRank = (mine.league_ranks || {}).yards_per_carry;
+      var minePlace = mineRank ? { rank: mineRank.place, of: mineRank.of } : null;
+      if (useTeam) {
+        var teamYpc = nflPoolValues(function (t) {
+          var run = ((t.line || {}).offense_run_lanes || {})[lane[1]];
+          return run && Number(run.carries) >= 5 ? run.yards_per_carry : null;
+        });
+        minePlace = nflPlace(teamYpc, mine.yards_per_carry, true);
+      }
       var frontYpc = nflPoolValues(function (t) {
         return (((t.line || {}).defense_run_front || {})[lane[1]] || {}).yards_per_carry_allowed;
       });
       var frontStuff = nflPoolValues(function (t) {
         return (((t.line || {}).defense_run_front || {})[lane[1]] || {}).stuff_rate;
       });
-      var thinTheirs = theirs && Number(theirs.carries) < 5;
+      var thinTheirs = Number(theirs.carries) < 5;
       return '<tr><td class="ca-lineup-name">' + esc(lane[2]) + '</td>' +
         nflUsageCell(share, nflAsFreq(nflPlace(sharePool, share, true))) +
-        (mine ? nflPlacedTd(ypc(mine.yards_per_carry, mine.carries),
-          mineRank ? { rank: mineRank.place, of: mineRank.of } : null, Number(mine.carries) < 5)
-          : '<td class="num">—</td>') +
-        (theirs ? nflPlacedTd(ypc(theirs.yards_per_carry_allowed, theirs.carries),
-          nflPlace(frontYpc, theirs.yards_per_carry_allowed, false), thinTheirs)
-          : '<td class="num">—</td>') +
-        (theirs ? nflPlacedTd(esc(nflFormat(theirs.stuff_rate, 'pct')),
-          nflPlace(frontStuff, theirs.stuff_rate, true), thinTheirs)
-          : '<td class="num">—</td>') + '</tr>';
+        nflPlacedTd(ypc(mine.yards_per_carry, mine.carries), minePlace, Number(mine.carries) < 5) +
+        nflPlacedTd(ypc(theirs.yards_per_carry_allowed, theirs.carries),
+          nflPlace(frontYpc, theirs.yards_per_carry_allowed, false), thinTheirs) +
+        nflPlacedTd(esc(nflFormat(theirs.stuff_rate, 'pct')),
+          nflPlace(frontStuff, theirs.stuff_rate, true), thinTheirs) + '</tr>';
     }).filter(Boolean);
     if (rows.length) {
-      var who = profile ? profile.player_name + ' ' + profile.source_season : 'Lead back';
+      var who = useTeam ? oNick + ' team designed runs' : profile.player_name;
+      var sampleNote = who + ' vs ' + dNick + ' D-Line · ' + (useTeam ? offLine.season : season) + ' · ' + total + ' carries';
       html += '<div class="ca-split-block"><h4>Run Direction</h4>' +
-        '<p class="ca-lineup-context">' + esc(who + ' vs ' + dNick + ' D-Line') + '</p>' +
+        '<p class="ca-lineup-context">' + esc(sampleNote) + '</p>' +
         nflMixTable('Direction', [oNick + ' YPC', dNick + ' Allowed', 'Stuff'], rows) +
         '</div>';
+    } else {
+      html += pending('Comparable run-direction splits are unavailable for this matchup.');
     }
     return html + '</section>';
   }
@@ -7495,7 +7512,7 @@ function seasonToggle(game) {
           esc(play.result), '<span class="ca-basketball-value">'+epa+'</span>'];
       });
       return cbbPanel('Reviewed coverage plays: '+sample.away.team_name+' at '+sample.home.team_name,
-        'Week '+sample.week+' · '+sample.game_date+' · '+rows.length+' examples',
+        'Week '+sample.week+' · '+sample.game_date+' · '+rows.length+(rows.length===1?' example':' examples'),
         cbbTable(['Coverage','Result','Offense EPA'],rows,'ca-nba-evidence-table ca-film-table')+
         '<p class="ca-cbb-note">Selected plays from the team’s film review. EPA is from nflverse and is shown for each play. '+
         filmEvidenceLink('Patriots film review',sample.film_url)+' · '+filmEvidenceLink('Play-by-play',sample.results_url)+
@@ -7528,11 +7545,11 @@ function seasonToggle(game) {
       if (!rows.length) return '';
       var title = (sport === 'nba' ? 'Reviewed ball screens: ' : 'Reviewed defense: ')+sample.away.team_name+' at '+sample.home.team_name;
       var caption = sample.game_date+' · '+sample.film_scope+' · '+sample.film_possessions.length+' reviewed';
-      var scope = sport === 'nba' ? 'The first clear screen is tagged, and points count through the end of that possession.'
+      var scope = sport === 'nba' ? 'The coverage label describes the reviewed screen. Points count through the end of the possession.'
         : 'The first clear half-court defense is tagged. Backcourt press can overlap with man or zone.';
       return cbbPanel(title, caption, cbbTable(['Coverage','Poss','Pts','PPP'],rows,'ca-nba-evidence-table ca-film-table')+
         '<p class="ca-cbb-note">'+scope+' Small sample; no season grade. '+
-        filmEvidenceLink(sample.film_source+' film',sample.film_url)+' · '+filmEvidenceLink('Play-by-play',sample.results_url)+
+        filmEvidenceLink(sample.film_source,sample.film_url)+' · '+filmEvidenceLink('Play-by-play',sample.results_url)+
         ' · <a href="/data/public/'+sport+'/film-coverage.json">Charted possessions</a></p>');
     }).join('');
   }

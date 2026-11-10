@@ -17,6 +17,37 @@
         {"end_play_id": "1111", "side": "away", "kind": "Match quarters (poach)", "period": 2, "game_clock": "14:23", "yards": -9, "result": "9 yd sack", "play_epa": -1.695639},
         {"end_play_id": "1762", "side": "home", "kind": "Cover 6", "period": 2, "game_clock": "5:47", "yards": 0, "result": "Interception", "play_epa": -3.676335}
       ]
+    },
+    {
+      "game_id": "401873034",
+      "pbp_game_id": "2026_08_NE_MIA",
+      "season": 2026,
+      "game_date": "2026-11-01",
+      "week": 8,
+      "away": {"team_id": "NE", "team_name": "New England"},
+      "home": {"team_id": "MIA", "team_name": "Miami"},
+      "film_source": "New England Patriots",
+      "film_url": "https://www.patriots.com/news/game-observations-8-takeaways-from-the-patriots-comeback-win-over-the-dolphins-in-week-8",
+      "results_url": "https://www.espn.com/nfl/playbyplay/_/gameId/401873034",
+      "film_plays": [
+        {"end_play_id": "995", "side": "home", "kind": "Cover 2", "period": 2, "game_clock": "14:18", "yards": 23, "result": "23 yd completion", "play_epa": 1.872814},
+        {"end_play_id": "2381", "side": "away", "kind": "Cover 3", "period": 3, "game_clock": "9:30", "yards": 43, "result": "43 yd touchdown", "play_epa": 3.742539}
+      ]
+    },
+    {
+      "game_id": "401872986",
+      "pbp_game_id": "2026_05_LV_NE",
+      "season": 2026,
+      "game_date": "2026-10-11",
+      "week": 5,
+      "away": {"team_id": "LV", "team_name": "Las Vegas"},
+      "home": {"team_id": "NE", "team_name": "New England"},
+      "film_source": "New England Patriots",
+      "film_url": "https://www.patriots.com/news/after-further-review-drake-maye-film-breakdown-defense-review-and-quick-hit-film-notes-from-week-5-win-over-raiders",
+      "results_url": "https://www.espn.com/nfl/playbyplay/_/gameId/401872986",
+      "film_plays": [
+        {"end_play_id": "3585", "side": "home", "kind": "Cover 0", "period": 3, "game_clock": "0:36", "yards": 49, "result": "49 yd completion", "play_epa": 3.605385}
+      ]
     }
   ]
 }

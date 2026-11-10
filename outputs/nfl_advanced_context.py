@@ -423,9 +423,8 @@ def _entry(label: str, value: float | None, better: str, fmt: str) -> dict | Non
     return {"label": label, "value": round(float(value), 4), "better": better, "format": fmt}
 
 
-def _run_front(rows) -> dict[str, dict[str, float | int]]:
-    """Observed run defense by point of attack, never by inferred blocking call."""
-    result: dict[str, dict[str, float | int]] = {}
+def _run_splits(rows):
+    """Group designed runs by the recorded point of attack."""
     for column, prefix, values in (
         ("run_gap", "gap", ("guard", "tackle", "end")),
         ("run_location", "lane", ("left", "middle", "right")),
@@ -435,17 +434,22 @@ def _run_front(rows) -> dict[str, dict[str, float | int]]:
         normalized = rows[column].fillna("").astype(str).str.lower()
         for value in values:
             sample = rows[normalized.eq(value)]
-            carries = len(sample)
-            if not carries:
-                continue
-            result[f"{prefix}_{value}"] = {
-                "carries": carries,
-                "yards_per_carry_allowed": round(float(sample["yards_gained"].fillna(0).mean()), 4),
-                "epa_per_carry_allowed": round(float(sample["epa"].fillna(0).mean()), 4),
-                "success_rate_allowed": round(float(sample["success"].fillna(0).mean()), 4),
-                "stuff_rate": round(float(sample["yards_gained"].le(0).mean()), 4),
-            }
-    return result
+            if len(sample):
+                yield f"{prefix}_{value}", sample
+
+
+def _run_front(rows) -> dict[str, dict[str, float | int]]:
+    """Observed run defense by point of attack, never by inferred blocking call."""
+    return {
+        lane: {
+            "carries": len(sample),
+            "yards_per_carry_allowed": round(float(sample["yards_gained"].fillna(0).mean()), 4),
+            "epa_per_carry_allowed": round(float(sample["epa"].fillna(0).mean()), 4),
+            "success_rate_allowed": round(float(sample["success"].fillna(0).mean()), 4),
+            "stuff_rate": round(float(sample["yards_gained"].le(0).mean()), 4),
+        }
+        for lane, sample in _run_splits(rows)
+    }
 
 
 def _pfr_contact_entry(rows, field: str, label: str, better: str) -> dict | None:
@@ -513,6 +517,16 @@ def _team_line(frame, season: int, pfr_rushing=None) -> dict[str, dict]:
             "source": "nflverse/nflfastR; FTN Data and PFR advanced rushing via nflverse",
             "offense": {k: v for k, v in off.items() if v},
             "defense": {k: v for k, v in defense.items() if v},
+            "offense_run_lanes": {
+                "carries": len(off_runs),
+                **{
+                    lane: {
+                        "carries": len(sample),
+                        "yards_per_carry": round(float(sample["yards_gained"].fillna(0).mean()), 4),
+                    }
+                    for lane, sample in _run_splits(off_runs)
+                },
+            },
             "defense_run_front": _run_front(def_runs),
             "definitions": {
                 "line_yards": "Rush-outcome adjusted line-yards proxy; not player-tracking contact yards.",

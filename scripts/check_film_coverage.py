@@ -12,7 +12,7 @@ import re
 import urllib.request
 from datetime import date, datetime
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,8 +29,13 @@ def validate_sample(sport: str, sample: dict, summary: dict | None = None) -> No
     assert re.fullmatch(r"\d+", game_id), game_id
     assert sample["season"] == day.year + (day.month >= 10), game_id
     assert sample["away"]["team_id"] != sample["home"]["team_id"], game_id
+    film_url = urlsplit(sample["film_url"])
+    tracking = sport == "nba" and film_url.netloc == "courtsketch.com"
+    tracking_game = parse_qs(film_url.fragment).get("g", [""])[0]
+    if tracking:
+        assert film_url.path == "/tracking" and re.fullmatch(r"\d{10}", tracking_game), game_id
     for field, domains in {
-        "film_url": {"www.youtube.com", "x.com"},
+        "film_url": {"www.youtube.com", "x.com", "courtsketch.com"} if tracking else {"www.youtube.com", "x.com"},
         "results_url": {"www.espn.com"},
     }.items():
         url = urlsplit(sample[field])
@@ -42,6 +47,7 @@ def validate_sample(sport: str, sample: dict, summary: dict | None = None) -> No
         assert len(possessions) == 10, game_id
     ids = set()
     previous = None
+    last_end = -1
     source_plays = {}
     if summary is not None:
         assert str(summary["header"]["id"]) == game_id, game_id
@@ -59,16 +65,25 @@ def validate_sample(sport: str, sample: dict, summary: dict | None = None) -> No
         assert row["side"] in {"away", "home"} and row["kind"] in SCHEMES[sport], row
         assert row["period"] == 1 and re.fullmatch(r"\d{1,2}:\d{2}(?:\.\d+)?", row["game_clock"]), row
         assert type(row["points"]) is int and 0 <= row["points"] <= 5, row
-        assert type(row["film_offset_seconds"]) is int and row["film_offset_seconds"] >= 0, row
+        if tracking:
+            replay = urlsplit(row["film_url"])
+            params = parse_qs(replay.fragment)
+            assert replay.scheme == "https" and replay.netloc == "courtsketch.com" and replay.path == "/tracking", row
+            assert params.get("src") == ["game"] and params.get("g") == [tracking_game], row
+            assert len(params.get("n", [])) == 1 and params["n"][0].isdigit(), row
+        else:
+            assert type(row["film_offset_seconds"]) is int and row["film_offset_seconds"] >= 0, row
         assert "press_observed" not in row or (sport == "cbb" and row["press_observed"] is True), row
         if previous:
-            assert row["film_offset_seconds"] > previous["film_offset_seconds"], row
+            if not tracking:
+                assert row["film_offset_seconds"] > previous["film_offset_seconds"], row
             if sport == "cbb":
                 assert start == previous["end_play_id"] and row["side"] != previous["side"], row
         if source_plays:
             first, a = source_plays[start]
             last, b = source_plays[end]
-            assert first < last and b["period"]["number"] == row["period"], row
+            assert last_end <= first < last and b["period"]["number"] == row["period"], row
+            last_end = last
             assert b["clock"]["displayValue"] == row["game_clock"], row
             assert b[row["side"] + "Score"] - a[row["side"] + "Score"] == row["points"], row
             other = "away" if row["side"] == "home" else "home"
@@ -94,12 +109,19 @@ def validate_nfl(sample: dict, pbp: dict | None = None) -> None:
         assert math.isfinite(play["play_epa"]) and isinstance(play["yards"], int), play
         if pbp is not None:
             row = pbp[game_id, play_id]
-            assert int(row.qtr) == play["period"] and row.time.lstrip("0") == play["game_clock"], play
+            minutes, seconds = row.time.split(":")
+            assert int(row.qtr) == play["period"] and f"{int(minutes)}:{seconds}" == play["game_clock"], play
             assert row.game_date == sample["game_date"] and row.posteam == sample[play["side"]]["team_id"], play
             assert row.yards_gained == play["yards"] and row.qb_dropback == 1, play
             assert math.isclose(row.epa, play["play_epa"], abs_tol=0.000001), play
-            expected = "Interception" if row.interception else f"{abs(play['yards'])} yd sack" if row.sack else f"{play['yards']} yd completion"
             assert row.interception or row.sack or row.complete_pass, play
+            if row.interception:
+                expected = "Interception"
+            elif row.sack:
+                expected = f"{abs(play['yards'])} yd sack"
+            else:
+                outcome = "touchdown" if row.touchdown else "completion"
+                expected = f"{play['yards']} yd {outcome}"
             assert play["result"] == expected, play
         seen.add(play_id)
     assert seen, game_id
@@ -132,7 +154,8 @@ def main() -> None:
     if args.nflverse:
         import pandas as pd
         game_ids = [sample["pbp_game_id"] for sample in nfl["film_samples"]]
-        cols = ["game_id", "play_id", "game_date", "qtr", "time", "posteam", "epa", "yards_gained", "qb_dropback", "interception", "sack", "complete_pass"]
+        cols = ["game_id", "play_id", "game_date", "qtr", "time", "posteam", "epa", "yards_gained",
+                "qb_dropback", "interception", "sack", "complete_pass", "touchdown"]
         df = pd.read_parquet(args.nflverse, columns=cols, filters=[("game_id", "in", game_ids)])
         pbp = {(row.game_id, int(row.play_id)): row for row in df.itertuples(index=False)}
     for sample in nfl["film_samples"]:

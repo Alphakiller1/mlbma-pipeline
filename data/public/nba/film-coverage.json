@@ -2,6 +2,63 @@
   "schema_version": 1,
   "film_samples": [
     {
+      "game_id": "401909951",
+      "season": 2027,
+      "game_date": "2026-11-08",
+      "away": {"team_id": "MIA", "team_name": "Miami"},
+      "home": {"team_id": "SAC", "team_name": "Sacramento"},
+      "film_url": "https://courtsketch.com/tracking#src=game&g=0022600202&n=12",
+      "film_source": "NBA player tracking via CourtSketch",
+      "results_url": "https://www.espn.com/nba/playbyplay/_/gameId/401909951",
+      "film_scope": "Selected first-quarter screens",
+      "film_possessions": [
+        {
+          "side": "home",
+          "kind": "blitz",
+          "film_url": "https://courtsketch.com/tracking#src=game&g=0022600202&n=12",
+          "start_play_id": "40190995111",
+          "end_play_id": "40190995112",
+          "period": 1,
+          "game_clock": "11:16",
+          "points": 0,
+          "film_note": "From about 10 to 8 seconds before the turnover, both defenders follow the ball handler into a sideline trap while the screener releases to the middle. The handler passes out and the possession later ends in a turnover."
+        },
+        {
+          "side": "home",
+          "kind": "switch",
+          "film_url": "https://courtsketch.com/tracking#src=game&g=0022600202&n=29",
+          "start_play_id": "40190995121",
+          "end_play_id": "40190995129",
+          "period": 1,
+          "game_clock": "9:36",
+          "points": 3,
+          "film_note": "From about 6 to 1 seconds before the make, the screener's defender takes the handler and contests the shot. The original guard defender follows the screener toward the lane. The prior offensive rebound is part of the same possession."
+        },
+        {
+          "side": "home",
+          "kind": "switch",
+          "film_url": "https://courtsketch.com/tracking#src=game&g=0022600202&n=37",
+          "start_play_id": "40190995136",
+          "end_play_id": "40190995137",
+          "period": 1,
+          "game_clock": "8:34",
+          "points": 3,
+          "film_note": "From about 6 to 2 seconds before the make, the screener's defender takes the handler on the wing and follows him to the pull-up. The original guard defender follows the screener after the exchange."
+        },
+        {
+          "side": "home",
+          "kind": "blitz",
+          "film_url": "https://courtsketch.com/tracking#src=game&g=0022600202&n=72",
+          "start_play_id": "40190995164",
+          "end_play_id": "40190995172",
+          "period": 1,
+          "game_clock": "6:36",
+          "points": 0,
+          "film_note": "From about 5 to 3 seconds before the turnover, the screener's defender leaves the roll to close on the handler along with the original ball defender. Both stay with the handler near midcourt until he passes out."
+        }
+      ]
+    },
+    {
       "game_id": "401909873",
       "season": 2027,
       "game_date": "2026-10-26",

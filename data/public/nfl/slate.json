@@ -14307,6 +14307,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 178,
+          "gap_guard": {
+            "carries": 53,
+            "yards_per_carry": 3.0
+          },
+          "gap_tackle": {
+            "carries": 41,
+            "yards_per_carry": 4.1707
+          },
+          "gap_end": {
+            "carries": 35,
+            "yards_per_carry": 5.4857
+          },
+          "lane_left": {
+            "carries": 55,
+            "yards_per_carry": 4.9818
+          },
+          "lane_middle": {
+            "carries": 47,
+            "yards_per_carry": 3.2766
+          },
+          "lane_right": {
+            "carries": 74,
+            "yards_per_carry": 3.3514
+          }
         }
       },
       "home_line_stats": {
@@ -14469,6 +14496,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 215,
+          "gap_guard": {
+            "carries": 58,
+            "yards_per_carry": 3.5345
+          },
+          "gap_tackle": {
+            "carries": 46,
+            "yards_per_carry": 2.8696
+          },
+          "gap_end": {
+            "carries": 47,
+            "yards_per_carry": 4.8085
+          },
+          "lane_left": {
+            "carries": 91,
+            "yards_per_carry": 3.8022
+          },
+          "lane_middle": {
+            "carries": 63,
+            "yards_per_carry": 3.6825
+          },
+          "lane_right": {
+            "carries": 60,
+            "yards_per_carry": 3.6167
+          }
         }
       },
       "away_dvoa": {
@@ -33724,6 +33778,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 217,
+          "gap_guard": {
+            "carries": 51,
+            "yards_per_carry": 4.1569
+          },
+          "gap_tackle": {
+            "carries": 43,
+            "yards_per_carry": 4.3256
+          },
+          "gap_end": {
+            "carries": 30,
+            "yards_per_carry": 3.9
+          },
+          "lane_left": {
+            "carries": 69,
+            "yards_per_carry": 4.2029
+          },
+          "lane_middle": {
+            "carries": 91,
+            "yards_per_carry": 3.8791
+          },
+          "lane_right": {
+            "carries": 55,
+            "yards_per_carry": 4.0909
+          }
         }
       },
       "home_line_stats": {
@@ -33886,6 +33967,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 218,
+          "gap_guard": {
+            "carries": 22,
+            "yards_per_carry": 3.4091
+          },
+          "gap_tackle": {
+            "carries": 79,
+            "yards_per_carry": 5.7342
+          },
+          "gap_end": {
+            "carries": 39,
+            "yards_per_carry": 4.7179
+          },
+          "lane_left": {
+            "carries": 72,
+            "yards_per_carry": 4.6111
+          },
+          "lane_middle": {
+            "carries": 74,
+            "yards_per_carry": 3.973
+          },
+          "lane_right": {
+            "carries": 68,
+            "yards_per_carry": 5.5882
+          }
         }
       },
       "away_dvoa": {
@@ -50157,6 +50265,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 195,
+          "gap_guard": {
+            "carries": 39,
+            "yards_per_carry": 5.5897
+          },
+          "gap_tackle": {
+            "carries": 35,
+            "yards_per_carry": 5.2
+          },
+          "gap_end": {
+            "carries": 43,
+            "yards_per_carry": 7.093
+          },
+          "lane_left": {
+            "carries": 63,
+            "yards_per_carry": 6.4444
+          },
+          "lane_middle": {
+            "carries": 77,
+            "yards_per_carry": 4.2338
+          },
+          "lane_right": {
+            "carries": 54,
+            "yards_per_carry": 5.537
+          }
         }
       },
       "home_line_stats": {
@@ -50319,6 +50454,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 239,
+          "gap_guard": {
+            "carries": 66,
+            "yards_per_carry": 4.6364
+          },
+          "gap_tackle": {
+            "carries": 64,
+            "yards_per_carry": 4.1719
+          },
+          "gap_end": {
+            "carries": 52,
+            "yards_per_carry": 7.7692
+          },
+          "lane_left": {
+            "carries": 120,
+            "yards_per_carry": 5.3833
+          },
+          "lane_middle": {
+            "carries": 55,
+            "yards_per_carry": 2.9273
+          },
+          "lane_right": {
+            "carries": 62,
+            "yards_per_carry": 5.3387
+          }
         }
       },
       "away_dvoa": {
@@ -67482,6 +67644,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 180,
+          "gap_guard": {
+            "carries": 55,
+            "yards_per_carry": 2.4727
+          },
+          "gap_tackle": {
+            "carries": 48,
+            "yards_per_carry": 4.2708
+          },
+          "gap_end": {
+            "carries": 38,
+            "yards_per_carry": 3.8421
+          },
+          "lane_left": {
+            "carries": 64,
+            "yards_per_carry": 3.5625
+          },
+          "lane_middle": {
+            "carries": 39,
+            "yards_per_carry": 3.1538
+          },
+          "lane_right": {
+            "carries": 77,
+            "yards_per_carry": 3.3636
+          }
         }
       },
       "home_line_stats": {
@@ -67644,6 +67833,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 194,
+          "gap_guard": {
+            "carries": 55,
+            "yards_per_carry": 3.6909
+          },
+          "gap_tackle": {
+            "carries": 40,
+            "yards_per_carry": 3.825
+          },
+          "gap_end": {
+            "carries": 49,
+            "yards_per_carry": 3.898
+          },
+          "lane_left": {
+            "carries": 79,
+            "yards_per_carry": 3.2785
+          },
+          "lane_middle": {
+            "carries": 48,
+            "yards_per_carry": 2.7917
+          },
+          "lane_right": {
+            "carries": 65,
+            "yards_per_carry": 4.4308
+          }
         }
       },
       "away_dvoa": {
@@ -85570,6 +85786,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 181,
+          "gap_guard": {
+            "carries": 48,
+            "yards_per_carry": 2.8958
+          },
+          "gap_tackle": {
+            "carries": 47,
+            "yards_per_carry": 5.0426
+          },
+          "gap_end": {
+            "carries": 39,
+            "yards_per_carry": 4.7949
+          },
+          "lane_left": {
+            "carries": 59,
+            "yards_per_carry": 3.6949
+          },
+          "lane_middle": {
+            "carries": 44,
+            "yards_per_carry": 3.3636
+          },
+          "lane_right": {
+            "carries": 76,
+            "yards_per_carry": 4.5395
+          }
         }
       },
       "home_line_stats": {
@@ -85732,6 +85975,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 194,
+          "gap_guard": {
+            "carries": 39,
+            "yards_per_carry": 3.2308
+          },
+          "gap_tackle": {
+            "carries": 61,
+            "yards_per_carry": 3.0164
+          },
+          "gap_end": {
+            "carries": 43,
+            "yards_per_carry": 3.8837
+          },
+          "lane_left": {
+            "carries": 82,
+            "yards_per_carry": 3.439
+          },
+          "lane_middle": {
+            "carries": 49,
+            "yards_per_carry": 2.7347
+          },
+          "lane_right": {
+            "carries": 61,
+            "yards_per_carry": 3.1967
+          }
         }
       },
       "away_dvoa": {
@@ -104360,6 +104630,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 214,
+          "gap_guard": {
+            "carries": 55,
+            "yards_per_carry": 3.8364
+          },
+          "gap_tackle": {
+            "carries": 57,
+            "yards_per_carry": 4.1754
+          },
+          "gap_end": {
+            "carries": 54,
+            "yards_per_carry": 4.037
+          },
+          "lane_left": {
+            "carries": 85,
+            "yards_per_carry": 4.2824
+          },
+          "lane_middle": {
+            "carries": 48,
+            "yards_per_carry": 4.6667
+          },
+          "lane_right": {
+            "carries": 81,
+            "yards_per_carry": 3.7407
+          }
         }
       },
       "home_line_stats": {
@@ -104522,6 +104819,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 172,
+          "gap_guard": {
+            "carries": 43,
+            "yards_per_carry": 4.2093
+          },
+          "gap_tackle": {
+            "carries": 50,
+            "yards_per_carry": 4.36
+          },
+          "gap_end": {
+            "carries": 28,
+            "yards_per_carry": 5.8214
+          },
+          "lane_left": {
+            "carries": 67,
+            "yards_per_carry": 4.4478
+          },
+          "lane_middle": {
+            "carries": 50,
+            "yards_per_carry": 3.0
+          },
+          "lane_right": {
+            "carries": 54,
+            "yards_per_carry": 4.8889
+          }
         }
       },
       "away_dvoa": {
@@ -120931,6 +121255,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 189,
+          "gap_guard": {
+            "carries": 48,
+            "yards_per_carry": 3.6875
+          },
+          "gap_tackle": {
+            "carries": 29,
+            "yards_per_carry": 4.6897
+          },
+          "gap_end": {
+            "carries": 37,
+            "yards_per_carry": 3.973
+          },
+          "lane_left": {
+            "carries": 62,
+            "yards_per_carry": 4.3226
+          },
+          "lane_middle": {
+            "carries": 73,
+            "yards_per_carry": 3.7123
+          },
+          "lane_right": {
+            "carries": 52,
+            "yards_per_carry": 3.6923
+          }
         }
       },
       "home_line_stats": {
@@ -121093,6 +121444,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 232,
+          "gap_guard": {
+            "carries": 50,
+            "yards_per_carry": 3.7
+          },
+          "gap_tackle": {
+            "carries": 75,
+            "yards_per_carry": 5.12
+          },
+          "gap_end": {
+            "carries": 54,
+            "yards_per_carry": 4.463
+          },
+          "lane_left": {
+            "carries": 84,
+            "yards_per_carry": 4.8333
+          },
+          "lane_middle": {
+            "carries": 51,
+            "yards_per_carry": 3.098
+          },
+          "lane_right": {
+            "carries": 95,
+            "yards_per_carry": 4.2526
+          }
         }
       },
       "away_dvoa": {
@@ -139811,6 +140189,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 176,
+          "gap_guard": {
+            "carries": 44,
+            "yards_per_carry": 4.7045
+          },
+          "gap_tackle": {
+            "carries": 49,
+            "yards_per_carry": 4.7347
+          },
+          "gap_end": {
+            "carries": 39,
+            "yards_per_carry": 4.2308
+          },
+          "lane_left": {
+            "carries": 82,
+            "yards_per_carry": 5.1585
+          },
+          "lane_middle": {
+            "carries": 43,
+            "yards_per_carry": 2.8837
+          },
+          "lane_right": {
+            "carries": 50,
+            "yards_per_carry": 3.62
+          }
         }
       },
       "home_line_stats": {
@@ -139973,6 +140378,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 187,
+          "gap_guard": {
+            "carries": 51,
+            "yards_per_carry": 4.0392
+          },
+          "gap_tackle": {
+            "carries": 34,
+            "yards_per_carry": 2.7941
+          },
+          "gap_end": {
+            "carries": 20,
+            "yards_per_carry": 1.9
+          },
+          "lane_left": {
+            "carries": 56,
+            "yards_per_carry": 3.0357
+          },
+          "lane_middle": {
+            "carries": 77,
+            "yards_per_carry": 3.5844
+          },
+          "lane_right": {
+            "carries": 49,
+            "yards_per_carry": 3.449
+          }
         }
       },
       "away_dvoa": {
@@ -156924,6 +157356,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 227,
+          "gap_guard": {
+            "carries": 75,
+            "yards_per_carry": 4.5467
+          },
+          "gap_tackle": {
+            "carries": 45,
+            "yards_per_carry": 4.5556
+          },
+          "gap_end": {
+            "carries": 26,
+            "yards_per_carry": 3.5
+          },
+          "lane_left": {
+            "carries": 79,
+            "yards_per_carry": 4.2785
+          },
+          "lane_middle": {
+            "carries": 79,
+            "yards_per_carry": 4.3038
+          },
+          "lane_right": {
+            "carries": 67,
+            "yards_per_carry": 4.4627
+          }
         }
       },
       "home_line_stats": {
@@ -157086,6 +157545,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 212,
+          "gap_guard": {
+            "carries": 62,
+            "yards_per_carry": 4.4194
+          },
+          "gap_tackle": {
+            "carries": 54,
+            "yards_per_carry": 4.2222
+          },
+          "gap_end": {
+            "carries": 37,
+            "yards_per_carry": 5.3514
+          },
+          "lane_left": {
+            "carries": 78,
+            "yards_per_carry": 4.4103
+          },
+          "lane_middle": {
+            "carries": 57,
+            "yards_per_carry": 3.4561
+          },
+          "lane_right": {
+            "carries": 75,
+            "yards_per_carry": 4.7467
+          }
         }
       },
       "away_dvoa": {
@@ -175684,6 +176170,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 241,
+          "gap_guard": {
+            "carries": 58,
+            "yards_per_carry": 3.2414
+          },
+          "gap_tackle": {
+            "carries": 35,
+            "yards_per_carry": 4.6571
+          },
+          "gap_end": {
+            "carries": 73,
+            "yards_per_carry": 4.0822
+          },
+          "lane_left": {
+            "carries": 72,
+            "yards_per_carry": 4.1944
+          },
+          "lane_middle": {
+            "carries": 75,
+            "yards_per_carry": 3.3467
+          },
+          "lane_right": {
+            "carries": 94,
+            "yards_per_carry": 3.6915
+          }
         }
       },
       "home_line_stats": {
@@ -175846,6 +176359,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 206,
+          "gap_guard": {
+            "carries": 50,
+            "yards_per_carry": 3.4
+          },
+          "gap_tackle": {
+            "carries": 36,
+            "yards_per_carry": 2.9722
+          },
+          "gap_end": {
+            "carries": 33,
+            "yards_per_carry": 3.1212
+          },
+          "lane_left": {
+            "carries": 58,
+            "yards_per_carry": 3.5862
+          },
+          "lane_middle": {
+            "carries": 87,
+            "yards_per_carry": 2.9425
+          },
+          "lane_right": {
+            "carries": 61,
+            "yards_per_carry": 2.8197
+          }
         }
       },
       "away_dvoa": {
@@ -191690,6 +192230,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 228,
+          "gap_guard": {
+            "carries": 55,
+            "yards_per_carry": 4.1455
+          },
+          "gap_tackle": {
+            "carries": 32,
+            "yards_per_carry": 4.6875
+          },
+          "gap_end": {
+            "carries": 39,
+            "yards_per_carry": 5.5641
+          },
+          "lane_left": {
+            "carries": 66,
+            "yards_per_carry": 4.697
+          },
+          "lane_middle": {
+            "carries": 102,
+            "yards_per_carry": 4.9804
+          },
+          "lane_right": {
+            "carries": 60,
+            "yards_per_carry": 4.75
+          }
         }
       },
       "home_line_stats": {
@@ -191852,6 +192419,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 214,
+          "gap_guard": {
+            "carries": 30,
+            "yards_per_carry": 3.0667
+          },
+          "gap_tackle": {
+            "carries": 50,
+            "yards_per_carry": 3.96
+          },
+          "gap_end": {
+            "carries": 45,
+            "yards_per_carry": 6.4667
+          },
+          "lane_left": {
+            "carries": 72,
+            "yards_per_carry": 5.1944
+          },
+          "lane_middle": {
+            "carries": 89,
+            "yards_per_carry": 3.2022
+          },
+          "lane_right": {
+            "carries": 53,
+            "yards_per_carry": 3.9057
+          }
         }
       },
       "away_dvoa": {
@@ -210687,6 +211281,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 205,
+          "gap_guard": {
+            "carries": 52,
+            "yards_per_carry": 4.0577
+          },
+          "gap_tackle": {
+            "carries": 27,
+            "yards_per_carry": 4.5185
+          },
+          "gap_end": {
+            "carries": 38,
+            "yards_per_carry": 5.2895
+          },
+          "lane_left": {
+            "carries": 63,
+            "yards_per_carry": 4.7302
+          },
+          "lane_middle": {
+            "carries": 88,
+            "yards_per_carry": 4.2841
+          },
+          "lane_right": {
+            "carries": 54,
+            "yards_per_carry": 4.3704
+          }
         }
       },
       "home_line_stats": {
@@ -210849,6 +211470,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 214,
+          "gap_guard": {
+            "carries": 46,
+            "yards_per_carry": 3.8043
+          },
+          "gap_tackle": {
+            "carries": 60,
+            "yards_per_carry": 4.85
+          },
+          "gap_end": {
+            "carries": 27,
+            "yards_per_carry": 3.4074
+          },
+          "lane_left": {
+            "carries": 80,
+            "yards_per_carry": 5.0625
+          },
+          "lane_middle": {
+            "carries": 79,
+            "yards_per_carry": 3.557
+          },
+          "lane_right": {
+            "carries": 53,
+            "yards_per_carry": 2.8868
+          }
         }
       },
       "away_dvoa": {
@@ -229131,6 +229779,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 179,
+          "gap_guard": {
+            "carries": 49,
+            "yards_per_carry": 5.1837
+          },
+          "gap_tackle": {
+            "carries": 37,
+            "yards_per_carry": 3.3784
+          },
+          "gap_end": {
+            "carries": 38,
+            "yards_per_carry": 5.5263
+          },
+          "lane_left": {
+            "carries": 75,
+            "yards_per_carry": 4.7333
+          },
+          "lane_middle": {
+            "carries": 54,
+            "yards_per_carry": 6.1111
+          },
+          "lane_right": {
+            "carries": 49,
+            "yards_per_carry": 4.7755
+          }
         }
       },
       "home_line_stats": {
@@ -229293,6 +229968,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 162,
+          "gap_guard": {
+            "carries": 57,
+            "yards_per_carry": 4.0
+          },
+          "gap_tackle": {
+            "carries": 26,
+            "yards_per_carry": 4.0769
+          },
+          "gap_end": {
+            "carries": 19,
+            "yards_per_carry": 3.7368
+          },
+          "lane_left": {
+            "carries": 60,
+            "yards_per_carry": 3.9333
+          },
+          "lane_middle": {
+            "carries": 60,
+            "yards_per_carry": 3.7167
+          },
+          "lane_right": {
+            "carries": 42,
+            "yards_per_carry": 4.0238
+          }
         }
       },
       "away_dvoa": {
@@ -247060,6 +247762,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 201,
+          "gap_guard": {
+            "carries": 33,
+            "yards_per_carry": 3.7273
+          },
+          "gap_tackle": {
+            "carries": 31,
+            "yards_per_carry": 5.3871
+          },
+          "gap_end": {
+            "carries": 73,
+            "yards_per_carry": 3.7671
+          },
+          "lane_left": {
+            "carries": 75,
+            "yards_per_carry": 3.52
+          },
+          "lane_middle": {
+            "carries": 62,
+            "yards_per_carry": 3.3387
+          },
+          "lane_right": {
+            "carries": 62,
+            "yards_per_carry": 4.8548
+          }
         }
       },
       "home_line_stats": {
@@ -247222,6 +247951,33 @@
           "yards_before_contact": "Actual RB rushing yards before first contact from PFR advanced rushing data.",
           "havoc_rate": "Share of rushes and dropbacks ending in a sack, tackle for loss, forced fumble or interception.",
           "blocking_scheme": "Zone-versus-gap blocking calls are not published in the licensed public feed; guard/tackle/end rows are point of attack, not blocking scheme."
+        },
+        "offense_run_lanes": {
+          "carries": 238,
+          "gap_guard": {
+            "carries": 57,
+            "yards_per_carry": 3.4561
+          },
+          "gap_tackle": {
+            "carries": 61,
+            "yards_per_carry": 5.4426
+          },
+          "gap_end": {
+            "carries": 83,
+            "yards_per_carry": 4.7108
+          },
+          "lane_left": {
+            "carries": 101,
+            "yards_per_carry": 3.9505
+          },
+          "lane_middle": {
+            "carries": 32,
+            "yards_per_carry": 4.8438
+          },
+          "lane_right": {
+            "carries": 100,
+            "yards_per_carry": 5.21
+          }
         }
       },
       "away_dvoa": {
