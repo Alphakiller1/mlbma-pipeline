@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "film_samples": [
+    {
+      "game_id": "401909873",
+      "season": 2027,
+      "game_date": "2026-10-26",
+      "away": {
+        "team_id": "PHX",
+        "team_name": "Phoenix"
+      },
+      "home": {
+        "team_id": "OKC",
+        "team_name": "Oklahoma City"
+      },
+      "film_url": "https://x.com/KellanOlson/status/2115156221720436753",
+      "film_source": "Kellan Olson",
+      "results_url": "https://www.espn.com/nba/playbyplay/_/gameId/401909873",
+      "film_scope": "First-quarter ball screens · one Phoenix ball handler",
+      "film_possessions": [
+        {
+          "side": "away",
+          "kind": "drop",
+          "film_offset_seconds": 0,
+          "start_play_id": "4019098734",
+          "end_play_id": "40190987312",
+          "period": 1,
+          "game_clock": "11:33",
+          "points": 0,
+          "film_note": "The screener's defender stays below the screen and follows the roll. The on-ball defender remains with the handler; offensive rebounds stay in the possession."
+        },
+        {
+          "side": "away",
+          "kind": "drop",
+          "film_offset_seconds": 7,
+          "start_play_id": "40190987314",
+          "end_play_id": "40190987316",
+          "period": 1,
+          "game_clock": "10:59",
+          "points": 0,
+          "film_note": "The big starts below the wing screen, steps to meet the drive inside the arc, then recovers to the roller as the guard trails."
+        },
+        {
+          "side": "away",
+          "kind": "drop",
+          "film_offset_seconds": 14,
+          "start_play_id": "40190987324",
+          "end_play_id": "40190987328",
+          "period": 1,
+          "game_clock": "9:52",
+          "points": 2,
+          "film_note": "The big contains from below the high screen and the guard trails. The offense keeps possession after a nonshooting foul."
+        },
+        {
+          "side": "away",
+          "kind": "drop",
+          "film_offset_seconds": 29,
+          "start_play_id": "40190987330",
+          "end_play_id": "40190987336",
+          "period": 1,
+          "game_clock": "9:07",
+          "points": 2,
+          "film_note": "The screen defender stays in the lane on the pull-up; the original on-ball defender recovers to contest. The offensive rebound and the later score stay in this possession."
+        },
+        {
+          "side": "away",
+          "kind": "unclassified",
+          "film_offset_seconds": 35,
+          "start_play_id": "40190987361",
+          "end_play_id": "40190987369",
+          "period": 1,
+          "game_clock": "6:43",
+          "points": 0,
+          "film_note": "Two defenders converge after the screen. The clip does not distinguish a sustained two-man trap from a short show and recovery."
+        },
+        {
+          "side": "away",
+          "kind": "unclassified",
+          "film_offset_seconds": 42,
+          "start_play_id": "401909873110",
+          "end_play_id": "401909873112",
+          "period": 1,
+          "game_clock": "3:36",
+          "points": 3,
+          "film_note": "The first interaction is a brief show with the ball rejected away from the screen; no drop, switch or blitz was assigned."
+        }
+      ]
+    }
+  ]
+}

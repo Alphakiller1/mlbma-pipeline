@@ -204,12 +204,16 @@
   }
 
   function detail(game) {
-    if (game.nba_fixture_only && game.slate_date !== easternToday()) return Promise.resolve(game);
-    return evidence().then(function (data) {
-      game.__nbaEvidence = data;
-      selectSeason(game, game.__nbaYear || game.season);
+    var stats = game.nba_fixture_only && game.slate_date !== easternToday() ? Promise.resolve(null)
+      : evidence().catch(function () { game.__nbaEvidenceError = true; return null; });
+    return Promise.all([stats, loadJson('/data/public/nba/film-coverage.json').catch(function () { return null; })]).then(function (items) {
+      if (items[0]) {
+        game.__nbaEvidence = items[0];
+        selectSeason(game, game.__nbaYear || game.season);
+      }
+      game.nba_film_coverage = items[1];
       return game;
-    }).catch(function () { game.__nbaEvidenceError = true; return game; });
+    });
   }
 
   function desk(slate, source) {

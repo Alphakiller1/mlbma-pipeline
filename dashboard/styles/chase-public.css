@@ -6211,6 +6211,11 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-cfb-panel .ca-lineup-table.ca-nba-evidence-table{width:100%;min-width:0;table-layout:fixed}
 .ca-cfb-panel .ca-lineup-table.ca-nba-evidence-table th:first-child,
 .ca-cfb-panel .ca-lineup-table.ca-nba-evidence-table td:first-child{width:28%;min-width:0;white-space:normal;overflow:visible}
+.ca-cfb-panel .ca-lineup-table.ca-film-table th:first-child,
+.ca-cfb-panel .ca-lineup-table.ca-film-table td:first-child{width:50%}
+.ca-lineup-table.ca-film-table th.num,.ca-lineup-table.ca-film-table td.num{width:auto}
+.ca-film-table td:first-child small{color:var(--text-muted);overflow-wrap:anywhere}
+.ca-film-volume{color:var(--series-6)}
 @media(max-width:560px){
   .ca-cfb-panel .ca-nba-evidence-table th,.ca-cfb-panel .ca-nba-evidence-table td{padding-inline:4px;min-width:0;font-size:12px}
   .ca-cfb-panel .ca-nba-evidence-table th{font-size:10px}
