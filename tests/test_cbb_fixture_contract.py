@@ -31,4 +31,24 @@ console.log(JSON.stringify({result,invalid}));
         for key in ['odds','spread','win_probability','ranking','private','againstTheSpread']:
             self.assertNotIn('"'+key+'"',json.dumps(body))
 
+    def test_market_lines_carry_posted_numbers_only(self):
+        source = (ROOT / 'functions/api/cbb-fixtures.js').read_text(encoding='utf-8')
+        source = source.replace("import { json } from '../_shared/http.js';", "const json=(body,status=200)=>({body,status});")
+        link = {'href': 'https://sportsbook.draftkings.com/x', 'text': 'Home Bet'}
+        odds = {'provider': {'id': '100', 'name': 'DraftKings'}, 'details': 'USF -7.5', 'overUnder': 151.5, 'spread': -7.5,
+                'moneyline': {'home': {'close': {'odds': '-325', 'link': link}, 'open': {'odds': '-265'}}},
+                'pointSpread': {'home': {'close': {'line': '-7.5', 'odds': '-102', 'link': link}, 'open': {'line': '-6.5', 'odds': '-112'}},
+                                'away': {'close': {'line': '+7.5', 'odds': '-118'}, 'open': {'line': '+6.5'}}},
+                'total': {'over': {'close': {'line': 'o151.5', 'odds': '-105', 'link': link}, 'open': {'line': 'o150.5'}}}}
+        blank = {'provider': {'name': 'DraftKings'}, 'pointSpread': {'home': {'close': {'line': ''}, 'open': {'line': ''}}},
+                 'total': {'over': {'close': {'line': ''}}}}
+        harness = source + '\nconst odds=' + json.dumps(odds) + ', blank=' + json.dumps(blank) + ';\n' + \
+            'console.log(JSON.stringify([marketLines({odds:[odds]}),marketLines({odds:[blank]}),marketLines({})]));\n'
+        proc = subprocess.run(['node', '--input-type=module', '-e', harness], text=True, capture_output=True, check=True)
+        posted, empty, none = json.loads(proc.stdout)
+        self.assertEqual(posted, {'provider': 'DraftKings', 'home_open': -6.5, 'home_current': -7.5,
+                                  'total_open': 150.5, 'total_current': 151.5})
+        self.assertIsNone(empty, 'an unposted line must not read as a pick-em')
+        self.assertIsNone(none)
+
 if __name__ == '__main__': unittest.main()

@@ -76,9 +76,9 @@ class CbbMatchupLayoutTests(unittest.TestCase):
         charts=(ROOT/'dashboard/cbb_charts.js').read_text(encoding='utf-8')
         self.assertIn('options.tones',charts)
         self.assertIn('tones:tones',self.block)
-        # Allowed FG% ranks favor the low end; shares are tendencies and stay neutral.
+        # Allowed FG% and allowed shot share both rank the low end first.
         self.assertIn("cbbComparison(game,'shot_accuracy',key,z.fg_pct,!onDefense)",self.block)
-        self.assertIn("share?'c-na':''",self.block)
+        self.assertIn("cbbComparison(game,'shot_share',key,z.shot_share,!onDefense)",self.block)
         css=(ROOT/'dashboard/styles/chase-public.css').read_text(encoding='utf-8')
         self.assertNotIn('.ca-cbb-zone-table td:nth-child(3){display:none}',css)
 

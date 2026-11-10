@@ -346,6 +346,13 @@ body[data-ca-product="research"] {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.ca-matchup-card__fact > strong.is-pending { color: var(--text-meta); font-weight: 500; }
+
+/* A graded card fact carries its tier colour; the plain fact colour must not win. */
+.ca-matchup-card__fact > strong.c-elite, .ca-matchup-card__fact > strong.c-good,
+.ca-matchup-card__fact > strong.c-mid, .ca-matchup-card__fact > strong.c-weak,
+.ca-matchup-card__fact > strong.c-poor { color: var(--grade); }
+
 .ca-matchup-card__fact {
   min-width: 0;
   padding: var(--space-2);
@@ -6235,7 +6242,8 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-cbb-shot-share.u-tertiary{--shot-strength:48%;color:var(--series-3)}
 .ca-cbb-shot-share.u-secondary{--shot-strength:59%;color:var(--series-2)}
 .ca-cbb-shot-share.u-primary{--shot-strength:72%;color:var(--series-1)}
-.ca-cbb-court[data-court-metric="share"] .ca-court-zone {
+/* Volume bands (the research tool); graded zones keep the tier fill. */
+.ca-cbb-court[data-court-metric="share"] .ca-court-zone.ca-cbb-shot-share {
   fill: color-mix(in srgb, currentColor var(--shot-strength), var(--surface-2));
   fill-opacity: 1;
 }

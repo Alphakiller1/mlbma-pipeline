@@ -7480,9 +7480,9 @@ function seasonToggle(game) {
     ['units','Units',['cbb-pace','cbb-efficiency']],
     ['shooting','Shot Profile',['cbb-shot-chart']],
     ['possessions','Possessions',['cbb-transition','cbb-situations','cbb-restarts']],
-    ['defense','Defense',['cbb-tagged-schemes','cbb-personnel']],
+    ['defense','Defense',['cbb-shot-types','cbb-personnel','cbb-tagged-schemes']],
     ['roster','Roster',['cbb-availability','cbb-rotation','cbb-size']],
-    ['games','Games',['cbb-game-log','cbb-schedule']]
+    ['games','Games',['cbb-game-log']]
   ];
   function cbbYear(game) { return game.__cbbYear || 2027; }
   function cbbClock(game) { return scoreOrTime(game).replace(/\s+(AM|PM)\s+ET<\/strong>/,'<span class="ca-cbb-meridiem"> $1 ET</span></strong>'); }
@@ -7627,8 +7627,7 @@ function seasonToggle(game) {
     var n=read.rates[key];
     if (n == null) return cbbMissing();
     var text=format(n);
-    var matchingShotRatio = /^(efg|fg2_pct|fg3_pct|ftr)_/.test(key);
-    return read.box && !matchingShotRatio ? nbaGraded(text,null) : cbbMetric(game,n,text,key,higher);
+    return cbbMetric(game,n,text,key,higher);
   }
   function cbbRateCaption(game,side,opp,x,y) {
     var through=[x.through,y.through].filter(Boolean).sort().pop();
@@ -7672,6 +7671,24 @@ function seasonToggle(game) {
       ['Block rate','blk_pct_o_all',false,'blk_pct_d_all',true,cbbPct]
     ],'No D-I team rates are available in this season.');
   }
+  /* Every D-I game's shots by type: how often the offense takes each one and
+     what it scores per attempt, beside how often the defense allows it and
+     what it gives up. Frequencies follow the desk rule for shares (offense
+     high, defense low ranks first); points per attempt grade the same way. */
+  var CBB_SHOT_TYPES = [['rim','At rim'],['layup','Layups'],['driving','Drives'],['floater','Floaters'],
+    ['pullup','Pull-ups'],['midrange','Mid-range'],['three','Threes'],['corner3','Corner threes']];
+  function cbbShotTypes(sport,game,side) {
+    var opp=side==='away'?'home':'away',x=cbbRateRead(cbbTeam(game,side)),y=cbbRateRead(cbbTeam(game,opp));
+    var heading=cbbSchool(game,side)+' Offense vs '+cbbSchool(game,opp)+' Defense';
+    if(!x.rates.games_all&&!y.rates.games_all)return cbbPanel(heading,cbbSeason(game),pending('No D-I shot-type sample is available in this season.'));
+    function pps(n){return cbbNumber(n,2);}
+    var rows=CBB_SHOT_TYPES.map(function(t){
+      return [esc(t[1]),cbbRateMetric(game,x,t[0]+'_freq_off_all',true,cbbPct),cbbRateMetric(game,x,t[0]+'_ppa_off_all',true,pps),
+        cbbRateMetric(game,y,t[0]+'_freq_def_all',false,cbbPct),cbbRateMetric(game,y,t[0]+'_ppa_def_all',false,pps)];
+    });
+    return cbbPanel(heading,cbbRateCaption(game,side,opp,x,y)+' · Basketball Quant shot types',
+      cbbTable(['Shot type','O share','O pts/shot','D share allowed','D pts/shot allowed'],rows,'ca-cbb-shot-type-table'));
+  }
   function cbbShotPanel(sport,game,side) {
     var opp=side==='away'?'home':'away',a=cbbTeam(game,side),b=cbbTeam(game,opp),chart=global.ChaseCbbCharts;
     var defense=game.__cbbView==='defense',metric=game.__cbbMetric||'fg',share=metric==='share';
@@ -7695,8 +7712,13 @@ function seasonToggle(game) {
     function zoneRead(z, role) {
       var onDefense=role==='defense', key={side:role,basis:schema,kind:z.id};
       if (!z.attempts) return {tone:'c-na',place:null};
-      if (share) return {tone:chart.shareTone(z.shot_share),
-        place:cbbComparison(game,'shot_share',key,z.shot_share,true), cohort:'same-source D-I teams · largest share first'};
+      if (share) {
+        // Graded like every other stat: offense ranks its larger shares first,
+        // defense ranks the smaller share allowed first.
+        var spot=cbbComparison(game,'shot_share',key,z.shot_share,!onDefense);
+        return {tone:spot?rankTone(spot.rank,spot.of):'c-na', place:spot,
+          cohort:'same-source D-I teams · '+(onDefense?'smallest share allowed first':'largest share first')};
+      }
       var place=z.attempts>=10 ? cbbComparison(game,'shot_accuracy',key,z.fg_pct,!onDefense) : null;
       return {tone:place?rankTone(place.rank,place.of):chart.grade(z.delta_pp,onDefense), place:place,
         cohort:'same-source D-I teams · '+(onDefense?'lowest FG% allowed first':'highest FG% first')};
@@ -7704,10 +7726,10 @@ function seasonToggle(game) {
     function zoneCell(z, role) {
       if (!z || !z.attempts) return cbbMissing('No attempts');
       var r=zoneRead(z,role);
-      var value=share ? '<strong class="'+r.tone+'">'+chart.pct(z.shot_share)+'</strong>'
+      var value=share ? chart.value(chart.pct(z.shot_share),r.tone,'Share of all FGA')
         : chart.value(chart.pct(z.fg_pct),r.tone,'D-I zone average '+chart.pct(z.league_fg_pct)+' · '+chart.pp(z.delta_pp));
-      return cbbRanked(value,r.place,r.cohort,share?'c-na':'')+
-        '<small class="ca-cbb-count'+(share?' '+r.tone:'')+'">'+(share?z.attempts+' FGA':z.made+'/'+z.attempts)+'</small>';
+      return cbbRanked(value,r.place,r.cohort)+
+        '<small class="ca-cbb-count">'+(share?z.attempts+' FGA':z.made+'/'+z.attempts)+'</small>';
     }
     var tones={};
     shown.zones.forEach(function(z){tones[z.id]=zoneRead(z,shownRole).tone;});
@@ -7727,7 +7749,7 @@ function seasonToggle(game) {
     var through=[off.totals.data_through,def.totals.data_through].filter(Boolean).sort().pop();
     return cbbPanel(title,cbbSeason(game)+' · '+cbbCoverage(game,side,off.totals.games)+' · '+cbbCoverage(game,opp,def.totals.games)+
         ' · '+label(schema)+(through?' · through '+through:''),
-      '<p class="ca-cbb-court-title">'+esc(court)+'</p>'+chart.court(shown,court,{metric:metric,defense:defense,tones:tones})+chart.legend(defense,metric)+
+      '<p class="ca-cbb-court-title">'+esc(court)+'</p>'+chart.court(shown,court,{metric:metric,defense:defense,tones:tones})+chart.legend(defense,metric,true)+
       '<div class="ca-cbb-summary"><span><strong>'+t.made+'/'+t.attempts+'</strong> FGM/FGA</span><span><strong>'+
         cbbRanked(efg,efgPlace,'same-source D-I teams · '+(defense?'lowest eFG% allowed first':'highest eFG% first'))+'</strong> eFG</span></div>'+
       cbbTable(share?['Zone','Offense share','Allowed share']:['Zone','Offense FG%','Allowed FG%'],rows,'ca-cbb-zone-table'));
@@ -7742,7 +7764,7 @@ function seasonToggle(game) {
     if (!players.length) return cbbPanel(title,cbbSeason(game),pending('No player lines are available for this matchup and season.'));
     var rows=players.map(function(p){return [esc(String(p.Name||'').replace(/\s*\(\d+\).*$/,'')),cbbNumber(p.G,0),cbbNumber(p.Min_pct,0)].concat(['Pts','Reb','Ast','TS'].map(function(k){
       if(p[k]==null)return cbbMissing(k==='TS'?'No attempts':'Not reported');
-      var qualified=!useBox&&(p.G||0)>0&&(p.Min_pct||0)>=10&&(k!=='TS'||(p.FGA||0)+(p.FTA||0)>0);
+      var qualified=(p.G||0)>0&&(k!=='TS'||(p.FGA||0)+(p.FTA||0)>0);
       var text=cbbNumber(p[k])+(k==='TS'?'%':'');
       return qualified?cbbMetric(game,p[k],text,k,true,'player'):text;
     }));});
@@ -7793,7 +7815,8 @@ function seasonToggle(game) {
     var peers = comparison && comparison.usage_samples || [];
     var place = cbbPlace(row.usage, peers, true);
     var pct = 100 * row.usage;
-    return '<span class="ca-cbb-usage"><span class="ca-usage '+usageTone(pct)+'">'+
+    var tone = place ? rankTone(place.rank, place.of) + ' ca-usage--graded' : 'c-na ca-usage--graded';
+    return '<span class="ca-cbb-usage"><span class="ca-usage '+tone+'">'+
       usageSquares(pct)+'<b>'+nbaPct(row.usage)+'</b></span>'+nflFreqMark(place && {place:place.rank, of:place.of})+'</span>';
   }
   function cbbObservedPpp(game, family, row) {
@@ -7803,18 +7826,22 @@ function seasonToggle(game) {
     if (!grade) {
       var comparison = global.ChaseSportCBB.comparison(cbbYear(game), family, row);
       var baseline = comparison && comparison.ppp_baseline;
+      // A start event too rare for its own cohort reads against team PPP.
+      if (!baseline || !(baseline.sample_size >= 20))
+        baseline = global.ChaseSportCBB.baseline(cbbYear(game), 'team', higher ? 'ppp_off_all' : 'ppp_def_all');
       var tone = '';
-      if (row.possessions >= 10 && baseline && baseline.sample_size >= 20) {
+      if (row.possessions > 0 && baseline && baseline.sample_size >= 20) {
         var adjusted = baseline.mean + (row.ppp - baseline.mean) * row.possessions / (row.possessions + 40);
         tone = global.MLBMAAssets.baselineChipClass(adjusted, baseline, higher);
       }
       if (tone) {
+        low = row.possessions < 10;
         text = global.ChaseCbbCharts.value(text, tone, baseline.sample_size+
           ' same-season teams · sample-weighted toward the D-I average');
-        text = cbbRanked(text, cbbComparison(game, family, row, row.ppp, higher, 20),
+        if (!low) text = cbbRanked(text, cbbComparison(game, family, row, row.ppp, higher, 20),
           'same-season D-I teams with 10+ possessions');
       } else {
-        low = true;
+        low = row.possessions < 10;
         text = nbaGraded(text, null);
       }
     } else text = cbbRanked(nbaGraded(text, grade), grade, 'qualified same-season D-I teams');
@@ -7873,7 +7900,8 @@ function seasonToggle(game) {
       var games = recent ? Math.min(team.games, 5) : team.games;
       var display = cbbNumber(n) + (global.ChaseIcons ? ChaseIcons.observedPace(n, peers, 'D-I teams on the same method',
         cbbPlural(games,'game')+' · '+team.source) : '');
-      return cbbRanked('<span>'+display+'</span>', cbbPlace(n, peers, true),
+      var spot = cbbPlace(n, peers, true);
+      return cbbRanked('<span class="ca-basketball-value '+(spot?rankTone(spot.rank,spot.of):'c-na')+'">'+display+'</span>', spot,
         'same-season D-I teams · fastest first · '+team.source);
     }
     var rows=[['Season pace',cell(away,false),cell(home,false)]];
@@ -7978,21 +8006,22 @@ function seasonToggle(game) {
     function part(id,title,note,body) {
       return section(id,title,note,game.cbbDetailReady||id==='cbb-availability' ? body : pending('Loading matchup evidence…'));
     }
-    var coverage = filmCoverageCards('cbb',game,cbbYear(game)) || (cbbYear(game) === 2026 ? nflDuo(cbbTaggedCoverage,sport,game)
-      : pending('No reviewed coverage sample includes '+cbbSchool(game,'away')+' or '+cbbSchool(game,'home')+' in 2026–27.'));
+    // Man, zone and press exist only where film was charted (no free source
+    // publishes them); without a sample the section is left out entirely.
+    var coverage = filmCoverageCards('cbb',game,cbbYear(game)) || (cbbYear(game) === 2026 ? nflDuo(cbbTaggedCoverage,sport,game) : '');
     return part('cbb-pace','Pace','Possessions Per 40 Minutes · Overtime Normalized',cbbPace(game))+
       part('cbb-efficiency','Efficiency','Each Offense Against The Defense It Meets',nflDuo(cbbEfficiency,sport,game))+
       part('cbb-shot-chart','Shot Chart','Zone Shooting Against The Defense It Meets',nflDuo(cbbShotPanel,sport,game))+
       part('cbb-transition','Transition And Turnovers','Every D-I Game · Each Offense Against The Defense It Meets',nflDuo(cbbTransition,sport,game))+
       part('cbb-situations','Transition And Half Court','Possession-Tagged Efficiency',nflDuo(cbbSituations,sport,game))+
       part('cbb-restarts','Possession Starts','Efficiency By How The Possession Began',nflDuo(cbbRestarts,sport,game))+
-      part('cbb-tagged-schemes','Man, Zone And Press','Reviewed Coverage Samples',coverage)+
+      part('cbb-shot-types','Shot Types','Every D-I Game · What Each Offense Takes Against What The Defense Allows',nflDuo(cbbShotTypes,sport,game))+
       part('cbb-personnel','Defensive Lineups','Lineup Shapes Each Defense Uses',nflDuo(cbbPersonnel,sport,game))+
+      (coverage||!game.cbbDetailReady ? part('cbb-tagged-schemes','Man, Zone And Press','Reviewed Coverage Samples',coverage) : '')+
       part('cbb-availability','Availability','Current Public Injury Listings',nflDuo(cbbAvailability,sport,game))+
       part('cbb-rotation','Rotation','Per-Game Output · Available Players',nflDuo(cbbRotation,sport,game))+
       part('cbb-size','Size By Position','Average Listed Height',nflDuo(cbbSize,sport,game))+
-      part('cbb-game-log','Game Log','Completed Games',nflDuo(cbbGames,sport,game,false))+
-      part('cbb-schedule','Schedule','Remaining Fixtures',nflDuo(cbbGames,sport,game,true));
+      part('cbb-game-log','Game Log','Completed Games',nflDuo(cbbGames,sport,game,false));
   }
   function wireCbbControls(host,game) {
     host.addEventListener('click',function(event){
@@ -8206,7 +8235,6 @@ function seasonToggle(game) {
         if(!updated.statusObservedAt)return;
         if (sport === 'cbb' && (game.away_cbb || game.home_cbb)) {
           paintSection(host,'cbb-game-log',nflDuo(cbbGames,sport,game,false));
-          paintSection(host,'cbb-schedule',nflDuo(cbbGames,sport,game,true));
         }
         var center=host.querySelector('.ca-detail-center');
         if(center)center.innerHTML=detailCenter(sport,game);
