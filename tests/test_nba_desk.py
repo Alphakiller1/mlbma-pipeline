@@ -112,6 +112,18 @@ class NbaPublisherTests(unittest.TestCase):
         self.assertEqual(out["games"][0]["away_record"], "1-0")
         self.assertNotIn("away_score", out["games"][1])  # ESPN named a different pairing
 
+    def test_coverage_lag_does_not_replace_the_current_paired_sample(self):
+        def window(count):
+            return {"teams": {club: {"measured_coverage": {
+                side: {"games": count} for side in ("offense", "defense")}} for club in pub.TEAMS}}
+
+        incoming, live = window(8), window(10)
+        incoming["teams"]["ATL"]["form"] = {"games": 11}
+        self.assertTrue(pub.preserve_coverage(incoming, live))
+        self.assertEqual(incoming["teams"]["ATL"]["measured_coverage"]["offense"]["games"], 10)
+        self.assertEqual(incoming["teams"]["ATL"]["form"]["games"], 11)
+        self.assertFalse(pub.preserve_coverage(window(11), live))
+
 
 @unittest.skipUnless(SLATE.exists(), "no published NBA slate")
 class PublishedNbaSlateTests(unittest.TestCase):

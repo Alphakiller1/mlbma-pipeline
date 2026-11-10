@@ -80,6 +80,11 @@ nba-model builds `evidence.json` for both seasons on its regular scheduled build
 with a six-hour source cache. The website's existing NBA publisher independently
 validates/copies this file alongside its slate. A failed evidence fetch retains
 the dated last good evidence without freezing valid fixture/score updates.
+When the league endpoint lags its public table, the dated paired table capture
+can supply both directions. Counts must resolve uniquely from the published
+shares and league totals must reconcile. The table's two-decimal PPP stays at
+that precision. A later website refresh retains the more complete coverage
+cohort while other NBA evidence updates.
 Unknown/private fields reject the evidence publication. Each nested field is
 classified; no object-level blanket exception bypasses the public boundary.
 

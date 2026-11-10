@@ -7422,14 +7422,22 @@ function seasonToggle(game) {
     var other=side==='away'?'home':'away',a=game[side+'_measured_coverage'],b=game[other+'_measured_coverage'];
     var title=fullName(sport,game,side)+' Offense vs '+fullName(sport,game,other)+' Coverage';
     if(!a||!b||!a.offense||!b.defense)return cbbPanel(title,'Measured coverage',pending('Measured coverage is unavailable for this evidence window.'));
+    function ppp(row, sample) {
+      var value = row.ppp == null ? '—' : Number(row.ppp).toFixed(sample.ppp_decimals === 2 ? 2 : 3);
+      return nbaGraded(value,row.ppp_grade)+'<small class="ca-cbb-count ca-coverage-sample">'+
+        (row.possessions==null?'—':row.possessions)+' poss</small>'+
+        (row.possessions>0&&!row.sample_qualified?'<small class="ca-cbb-count">Thin sample</small>':'');
+    }
     var rows=b.defense.rows.map(function(d){
       var o=a.offense.rows.find(function(r){return r.id===d.id;})||{};
-      function ppp(r){return nbaGraded(r.ppp==null?'—':Number(r.ppp).toFixed(3),r.ppp_grade)+'<small class="ca-cbb-count ca-coverage-sample">'+(r.possessions==null?'—':r.possessions)+' poss</small>'+(r.possessions>0&&!r.sample_qualified?'<small class="ca-cbb-count">Thin sample</small>':'');}
-      return [esc(d.label),basketballVolume(d.frequency),ppp(d),ppp(o)];
+      return [esc(d.label),basketballVolume(d.frequency),ppp(d,b.defense),ppp(o,a.offense)];
     });
+    var offenseStamp=nbaEvidenceStamp(a.offense.retrieved_at_utc), defenseStamp=nbaEvidenceStamp(b.defense.retrieved_at_utc);
+    var stamps=offenseStamp===defenseStamp?offenseStamp:offenseStamp+' / '+defenseStamp;
+    var precision=a.offense.ppp_decimals===2||b.defense.ppp_decimals===2?' The NBA table reports PPP to two decimals.':'';
     return cbbPanel(title,(a.season-1)+'–'+String(a.season).slice(2)+' · NBA Inside the Game · '+a.offense.games+' offense / '+b.defense.games+' defense games',
       cbbTable(['Coverage','Defense use','D PPP allowed','O PPP vs'],rows,'ca-nba-evidence-table')+nbaColorLegend()+
-      '<p class="ca-cbb-note">Colors compare the same coverage and season: higher offense PPP and lower defense PPP are favorable. Blue bars show usage. Grade requires 20 coverage possessions; smaller samples stay gray. Non-zone does not verify man defense. Retrieved '+esc(nbaEvidenceStamp(a.offense.retrieved_at_utc))+' / '+esc(nbaEvidenceStamp(b.defense.retrieved_at_utc))+'. Last included game date is not supplied.</p><p class="ca-cbb-note">Drop, switch, blitz, press and named offensive formations are not tagged by these connected public factual feeds. The tendencies below are inferences.</p>');
+      '<p class="ca-cbb-note">Colors compare the same coverage and season. Higher offense PPP and lower defense PPP grade higher. Blue bars show usage. Samples under 20 possessions stay gray. Retrieved '+esc(stamps)+'.'+precision+' The league labels the two groups Zone and Non-zone.</p><p class="ca-cbb-note">The connected public feeds do not tag drop, switch, blitz, press or named formations. The tendencies below are inferences.</p>');
   }
   function nbaDataballrPanel(sport,game,side) {
     var other=side==='away'?'home':'away',a=game[side+'_databallr'],b=game[other+'_databallr'];
