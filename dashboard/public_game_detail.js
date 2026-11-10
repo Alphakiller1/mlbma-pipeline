@@ -7504,21 +7504,21 @@ function seasonToggle(game) {
   }
   function cbbDefense(sport,game,side) {
     var opp=side==='away'?'home':'away',a=cbbTeam(game,side),b=cbbTeam(game,opp),chart=global.ChaseCbbCharts;
-    if(!a||!b)return cbbPanel(cbbSchool(game,side)+' Defensive Matchup','Coverage evidence',pending('Both team evidence windows are needed for this comparison.'));
-    var x=cbbRateRead(a),y=cbbRateRead(b),schema=a.shots.cbb&&b.shots.cbb?'cbb':'coordinates';
-    var rim=a.shots[schema].offense.zones.find(function(z){return z.id==='atr2';}),allowed=b.shots[schema].defense.zones.find(function(z){return z.id==='atr2';});
-    function m(r,k,h){return cbbRateMetric(game,r,k,h,chart.pct);}
+    var x=cbbRateRead(a),y=cbbRateRead(b);
     function share(value, role, kind, basis) {
       return cbbUsage(game, 'shot_share', {usage:value, side:role, kind:kind, basis:basis});
     }
-    var rows=[['3P attempt share',share(x.rates.tpr_o_all,'offense','three'),share(y.rates.tpr_d_all,'defense','three')],
-      ['3P accuracy',m(x,'fg3_pct_o_all',true),m(y,'fg3_pct_d_all',false)],
-      ['At-rim share',share(rim.shot_share,'offense','rim',schema),share(allowed.shot_share,'defense','rim',schema)],
-      ['At-rim accuracy',chart.value(chart.pct(rim.fg_pct),chart.grade(rim.delta_pp,false)),chart.value(chart.pct(allowed.fg_pct),chart.grade(allowed.delta_pp,true))],
-      ['Turnovers',m(x,'tov_pct_o_all',false),m(y,'tov_pct_d_all',true)]];
-    return cbbPanel(cbbSchool(game,side)+' Offense vs '+cbbSchool(game,opp)+' Defensive Tendencies',cbbSeason(game)+' · Observed shooting and possession patterns',
-      cbbTable(['Evidence','Offense','Allowed / forced'],rows,'ca-cbb-factor-table')+chart.metricLegend()+
-      '<p class="ca-cbb-note">Segments show share of attempts. Frequency ranks compare same-season teams on the same shot definitions. Accuracy and turnover colors grade results.</p>');
+    var rows=[['3P attempt share',share(x.rates.tpr_o_all,'offense','three'),share(y.rates.tpr_d_all,'defense','three')]];
+    var offShots=a&&a.shots, defShots=b&&b.shots;
+    var schema=offShots&&defShots&&offShots.cbb&&defShots.cbb?'cbb':'coordinates';
+    var off=offShots&&offShots[schema], def=defShots&&defShots[schema];
+    var rim=off&&off.offense.zones.find(function(z){return z.id==='atr2';});
+    var allowed=def&&def.defense.zones.find(function(z){return z.id==='atr2';});
+    if(rim||allowed)rows.push(['At-rim share',share(rim&&rim.shot_share,'offense','rim',schema),
+      share(allowed&&allowed.shot_share,'defense','rim',schema)]);
+    return cbbPanel(cbbSchool(game,side)+' Offense vs '+cbbSchool(game,opp)+' Shot Distribution',cbbSeason(game),
+      cbbTable(['Shot type','Offense','Allowed'],rows,'ca-cbb-factor-table')+
+      '<p class="ca-cbb-note">Segments show share of attempts. Ranks compare same-season teams on the same shot definitions.</p>');
   }
   function cbbGames(sport,game,side,upcoming) {
     var c=cbbTeam(game,side);if(!c)return pending('Game history is unavailable.');
@@ -7611,10 +7611,10 @@ function seasonToggle(game) {
         pending('The published tournament sample has no values for this matchup direction.'))+
       '<p class="ca-cbb-note">This archive covers selected 2026 tournament teams. The publisher reports defensive percentiles and offense ranks for the named coverages. <a href="https://www.actionnetwork.com/ncaab/5-key-stats-betting-march-madness-ncaa-tournament-2026">Published sample</a></p>');
   }
-  function cbbPace(sport,game,side) {
+  function cbbPace(game) {
     function read(teamSide) {
       var t=cbbTactics(game,teamSide), team=cbbTeam(game,teamSide), box=team&&team.official_box;
-      if(t&&t.pace.games)return { pace:t.pace.observed_per40, recent:t.pace.recent5_per40, games:t.pace.games,
+      if(t&&t.pace&&t.pace.games)return { pace:t.pace.observed_per40, recent:t.pace.recent5_per40, games:t.pace.games,
         keys:['observed_per40','recent5_per40'],
         through:t.pace.data_through||t.data_through, source:t.pace.source?'NCAA count · final matched':'NCAA possession count' };
       if(box&&box.pace)return { pace:box.pace.estimated_per40, recent:box.pace.recent5_estimated_per40, games:box.games,
@@ -7622,9 +7622,10 @@ function seasonToggle(game) {
         through:box.data_through, source:'ESPN box estimate' };
       return {};
     }
-    var other=side==='home'?'away':'home',p=read(side),q=read(other),title=cbbSchool(game,side)+' Pace vs '+cbbSchool(game,other);
-    if(!p.games&&!q.games)return cbbPanel(title,cbbSeason(game),pending('Pace requires a qualifying completed game.'));
+    var away=read('away'), home=read('home');
+    if(!away.games&&!home.games)return cbbPanel('Team pace',cbbSeason(game),pending('Pace requires a qualifying completed game.'));
     function cell(team, recent) {
+      if (recent && !(team.games > 5)) return '—';
       var n = recent ? team.recent : team.pace;
       if (!team.keys || !global.ChaseIcons) return cbbNumber(n);
       var key = team.keys[recent ? 1 : 0];
@@ -7633,14 +7634,14 @@ function seasonToggle(game) {
       return cbbNumber(n)+ChaseIcons.observedPace(n, peers, 'D-I teams on the same method',
         games+' games'+(games<5?' · early sample':'')+' · '+team.source);
     }
-    var rows=[['Season pace',cell(p,false),cell(q,false)],
-      ['Last 5 pace',cell(p,true),cell(q,true)],
-      ['Qualified games',String(p.games||0),String(q.games||0)],
-      ['Games through',esc(p.through||'—'),esc(q.through||'—')],
-      ['Sample basis',esc(p.source||'—'),esc(q.source||'—')]];
-    return cbbPanel(title,cbbSeason(game)+' · Possessions per 40 minutes',
-      cbbTable(['Possessions / 40',cbbSchool(game,side),cbbSchool(game,other)],rows,'ca-cbb-factor-table')+
-      '<p class="ca-cbb-note">Pace averages both sides and adjusts for recorded overtime. Counts and ESPN estimates use separate peer groups. Estimates use FGA − ORB + TOV + 0.475 × FTA. Recent pace uses up to five qualified games.</p>');
+    var rows=[['Season pace',cell(away,false),cell(home,false)]];
+    if(away.games>5||home.games>5)rows.push(['Last 5 pace',cell(away,true),cell(home,true)]);
+    rows.push(['Qualified games',String(away.games||0),String(home.games||0)],
+      ['Games through',esc(away.through||'—'),esc(home.through||'—')],
+      ['Sample basis',esc(away.source||'—'),esc(home.source||'—')]);
+    return cbbPanel('Team pace',cbbSeason(game),
+      cbbTable(['Metric',cbbSchool(game,'away'),cbbSchool(game,'home')],rows,'ca-cbb-factor-table')+
+      '<p class="ca-cbb-note">Pace averages both sides and adjusts for overtime. Counts and box estimates use separate peer groups. The last-five split appears after six qualified games.</p>'+paceKey());
   }
   function cbbSituations(sport,game,side) {
     var a=cbbTactics(game,side),other=side==='home'?'away':'home',b=cbbTactics(game,other);
@@ -7721,11 +7722,11 @@ function seasonToggle(game) {
   }
   function cbbSections(sport,game) {
     return section('cbb-pace','Pace And Possession Load','Possessions Per 40 Minutes · Overtime Normalized',
-      nflDuo(cbbPace,sport,game)+paceKey())+
+      cbbPace(game))+
       section('cbb-efficiency','Efficiency','Each Offense Against The Defense It Meets',nflDuo(cbbEfficiency,sport,game))+
       section('cbb-situations','Transition And Half Court','Each Offense Against Opponent Allowance',nflDuo(cbbSituations,sport,game))+
       section('cbb-shot-chart','Shot Chart','Shooting By Zone And Opponent Allowed',nflDuo(cbbShotPanel,sport,game))+
-      section('cbb-defense','Defensive Matchup','Observed Tendencies And Coverage Availability',nflDuo(cbbDefense,sport,game))+
+      section('cbb-defense','Shot Distribution Matchup','Where Each Offense Shoots And Each Defense Allows Attempts',nflDuo(cbbDefense,sport,game))+
       section('cbb-restarts','Possession Starts','Offense And Opponent Allowance After Tagged Events',nflDuo(cbbRestarts,sport,game))+
       section('cbb-personnel','Personnel Matchup','Opponent Lineup Usage And Efficiency Against That Composition',nflDuo(cbbPersonnel,sport,game))+
       section('cbb-tagged-schemes','Zone And Press','Published 2025–26 Coverage Reference',nflDuo(cbbTaggedCoverage,sport,game))+
