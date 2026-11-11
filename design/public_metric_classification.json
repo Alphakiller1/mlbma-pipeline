@@ -992,7 +992,15 @@
     "forced",
     "steals",
     "lost",
-    "stolen"
+    "stolen",
+    "box",
+    "orb_pct",
+    "drb_pct",
+    "fg2_pct",
+    "fg3_pct",
+    "ft_pct",
+    "fg3a_share",
+    "fg2a_share"
   ],
   "derived_descriptive": [
     "estimated_per40",

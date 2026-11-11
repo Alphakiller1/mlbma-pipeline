@@ -7861,6 +7861,21 @@ function seasonToggle(game) {
     return cbbPanel(title,cbbSeason(game)+' · '+(useBox?'ESPN final boxes':'Basketball Quant')+' · per game · players listed out are removed',
       cbbTable(['Player','GP','MIN%','PTS','REB','AST','TS%'],rows));
   }
+  /* Each completed game's box line (pipeline/cbb_public/game_lines.py): every
+     figure is coloured and placed among all D-I team-games that week. */
+  var CBB_LOG_COLS = [['orb_pct','ORB%'],['drb_pct','DRB%'],['efg_pct','eFG%'],['fg3_pct','3P%'],['fg2_pct','2P%'],
+    ['ft_pct','FT%'],['pace','Pace'],['fg3a_share','3PA share'],['fg2a_share','2PA share']];
+  function cbbLogCell(g,key) {
+    var e=(g.box||{})[key];
+    if(!e||e.value==null)return cbbMissing(g.box?'None':'Not published');
+    var text=key==='pace'?cbbNumber(e.value):cbbPct(e.value);
+    return cbbRanked(global.ChaseCbbCharts.value(text,rankTone(e.rank,e.of)),{rank:e.rank,of:e.of},
+      'D-I team-games in the week of '+(g.week||''));
+  }
+  /* Twelve columns need the full width: the two schools stack. */
+  function cbbGameLogs(sport,game) {
+    return '<div class="ca-cbb-log-stack">'+cbbGames(sport,game,'away',false)+cbbGames(sport,game,'home',false)+'</div>';
+  }
   function cbbGames(sport,game,side,upcoming) {
     var c=cbbTeam(game,side), title=cbbSchool(game,side)+(upcoming?' Remaining Schedule':' Game Log');
     if(!c)return cbbPanel(title,cbbSeason(game),pending('Game history is unavailable.'));
@@ -7881,10 +7896,13 @@ function seasonToggle(game) {
         var won=Number(g.points)>Number(g.opponent_points);
         result='<span class="'+(won?'c-good':'c-poor')+'">'+(won?'W ':'L ')+esc(g.points+'–'+g.opponent_points)+'</span>';
       }
-      return [esc(g.date),esc(g.opponent)+(d1?'':' <span class="ca-lineup-player__position">Non-D-I</span>'),esc(g.site),result];
+      var where=g.site==='Away'?'@ ':'vs ';
+      return [esc(g.date),where+esc(g.opponent)+(d1?'':' <span class="ca-lineup-player__position">Non-D-I</span>'),result]
+        .concat(upcoming?[]:CBB_LOG_COLS.map(function(c){return cbbLogCell(g,c[0]);}));
     });
     var caption=cbbSeason(game)+' · '+cbbPlural(games.length,'game')+(division<games.length?' · '+division+' vs D-I':'');
-    return cbbPanel(title,caption,rows.length?cbbTable(['Date','Opponent','Site',upcoming?'State':'Result'],rows):
+    var head=['Date','Opponent',upcoming?'State':'Result'].concat(upcoming?[]:CBB_LOG_COLS.map(function(c){return c[1];}));
+    return cbbPanel(title,caption,rows.length?cbbTable(head,rows,'ca-cbb-log-table'):
       pending(upcoming?'No remaining fixtures in this evidence window.':'No completed games in this evidence window.'));
   }
   function cbbTactics(game,side) { var team=cbbTeam(game,side);return team&&team.observed_tactics; }
@@ -8152,7 +8170,7 @@ function seasonToggle(game) {
       part('cbb-availability','Availability','Current Public Injury Listings',nflDuo(cbbAvailability,sport,game))+
       part('cbb-rotation','Rotation','Per-Game Output · Available Players',nflDuo(cbbRotation,sport,game))+
       part('cbb-size','Size By Position','Average Listed Height',nflDuo(cbbSize,sport,game))+
-      part('cbb-game-log','Game Log','Completed Games',nflDuo(cbbGames,sport,game,false));
+      part('cbb-game-log','Game Log','Completed Games · Each Figure Ranked Against That Week',cbbGameLogs(sport,game));
   }
   function wireCbbControls(host,game) {
     host.addEventListener('click',function(event){
@@ -8365,7 +8383,7 @@ function seasonToggle(game) {
       if (result.statusReady) result.statusReady.then(function(updated){
         if(!updated.statusObservedAt)return;
         if (sport === 'cbb' && (game.away_cbb || game.home_cbb)) {
-          paintSection(host,'cbb-game-log',nflDuo(cbbGames,sport,game,false));
+          paintSection(host,'cbb-game-log',cbbGameLogs(sport,game));
         }
         var center=host.querySelector('.ca-detail-center');
         if(center)center.innerHTML=detailCenter(sport,game);

@@ -48,6 +48,10 @@ def validate_context(value,old=None):
         before=old.get('pressure') if old and old['season']==value['season'] else None
         if before and before['games']>press['games'] and (press.get('data_through') or '')>=(before.get('data_through') or ''):
             raise ValueError('Pressure sample regressed; existing publication retained')
+    for g in value.get('games') or []:
+        for key,e in (g.get('box') or {}).items():
+            low,high=(20,120) if key=='pace' else (0,1)
+            if not (low<=e['value']<=high and 1<=e['rank']<=e['of']):raise ValueError('Invalid game box line: '+key)
     for family in value['shots'].values():
         for p in family.values():
             if {z['id'] for z in p['zones']}!={'atr2','paint2','mid2','c3','atb3','heave3'}:raise ValueError('Incomplete zone schema')
