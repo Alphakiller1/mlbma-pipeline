@@ -6,6 +6,7 @@ from statistics import mean
 import requests
 
 from . import possession_data as ncaa
+from . import pressure
 from .data import read, write
 from .espn_roster import fetch_roster
 
@@ -97,6 +98,10 @@ def parse_box(payload, game):
             "box_context": {key: n for key, field in BOX_CONTEXT.items()
                             if (n := ncaa.number(v.get(field))) is not None and 0 <= n <= points},
         }
+    # Backcourt pressure from the same payload's play-by-play. A game whose feed
+    # is missing or too thin to show each side scoring is left out, never zeroed.
+    counts = pressure.game_pressure(pressure.espn_plays(payload), tuple(str(game[s + "_id"]) for s in SIDES))
+    result["pressure"] = counts if all(c["defense"]["after_score"] >= 10 for c in counts.values()) else None
     return result
 
 
@@ -104,7 +109,7 @@ def load_box(game, cache):
     file = cache / (str(game["game_id"]) + ".json")
     if file.exists():
         cached = read(file)
-        if cached.get("fixture") == fixture_key(game) and all(
+        if cached.get("fixture") == fixture_key(game) and "pressure" in cached and all(
             "player_lines" in row and "box_context" in row for row in cached["teams"].values()
         ):
             return cached
@@ -284,11 +289,17 @@ def supplement(contexts, schedule, year, as_of, cache):
             return None
 
     finals = []  # one row per D-I game: what each side scored and its possessions
+    pressed = defaultdict(dict)  # backcourt pressure over D-I games
+    pressed_days = defaultdict(list)
     with ThreadPoolExecutor(max_workers=6) as pool:
         for g, box in zip(fixtures.values(), pool.map(read_game, fixtures.values())):
             if box is None:
                 continue
             day, home, away, h_score, a_score = box["fixture"]
+            if home in division and away in division and box.get("pressure"):
+                for tid, counts in box["pressure"].items():
+                    pressure.add(pressed[tid], counts)
+                    pressed_days[tid].append(day)
             if home in division and away in division:
                 finals.append({"id": str(g["game_id"]), "date": day, "home": home, "away": away,
                                **{f"{side}_{k}": box["teams"][tid][k] for side, tid in (("home", home), ("away", away))
@@ -301,6 +312,13 @@ def supplement(contexts, schedule, year, as_of, cache):
                                           matches[0] if len(matches) == 1 else None, opp in division))
     filled = Counter()
     lineups = {}
+    for team, context in ((str(t), c) for t, c in contexts.items()):
+        days = pressed_days.get(team)
+        context["pressure"] = pressure.summarise(pressed[team], len(days), max(days)) if days else None
+        if context["pressure"] is None:
+            context.pop("pressure")
+        else:
+            filled["pressure"] += 1
     for team, context in ((str(t), c) for t, c in contexts.items()):
         rows = sorted(observations[team], key=lambda row: row[0])
         measured = [row[:5] for row in rows if team in everything or row[5]]

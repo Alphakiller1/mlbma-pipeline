@@ -7962,6 +7962,32 @@ function seasonToggle(game) {
         pending('The published tournament sample has no values for this matchup direction.'))+
       '<p class="ca-cbb-note ca-cbb-cite"><a href="https://www.actionnetwork.com/ncaab/5-key-stats-betting-march-madness-ncaa-tournament-2026">Published sample</a></p>');
   }
+  /* Backcourt pressure (pipeline/cbb_public/pressure.py): turnovers in the
+     first 10 seconds after a score, before the offense gets a shot away, per
+     100 such possessions. The offense column is what it gives up against
+     pressure, the second what that defense forces; both rank among
+     same-season D-I teams. */
+  function cbbPressure(sport,game,side) {
+    var opp=side==='away'?'home':'away',o=(cbbTeam(game,side)||{}).pressure,d=(cbbTeam(game,opp)||{}).pressure;
+    var heading=cbbSchool(game,side)+' Offense vs '+cbbSchool(game,opp)+' Pressure';
+    if(!o&&!d)return cbbPanel(heading,cbbSeason(game),pending('No D-I play-by-play is published for these teams.'));
+    function cell(block,part,field,key,higher){
+      var unit=block&&block[part];
+      if(!unit||!unit.after_score)return cbbMissing('No sample');
+      var n=unit[field+'_per100'],low=unit.after_score<100;
+      return cbbMetric(game,n,cbbNumber(n),key,higher)+'<small class="ca-cbb-count'+(low?' is-low':'')+'">'+
+        unit[field]+'/'+unit.after_score+' poss'+(low?' · Low n':'')+'</small>';
+    }
+    var rows=[['Backcourt turnovers/100',cell(o,'offense','lost','pressure_lost_per100',false),cell(d,'defense','forced','pressure_forced_per100',true)],
+      ['Backcourt steals/100',cell(o,'offense','stolen','pressure_stolen_per100',false),cell(d,'defense','steals','pressure_steals_per100',true)]];
+    var through=[o&&o.data_through,d&&d.data_through].filter(Boolean).sort().pop();
+    return cbbPanel(heading,cbbSeason(game)+' · '+cbbCoverage(game,side,o?o.games:0)+' · '+cbbCoverage(game,opp,d?d.games:0)+
+      (through?' · through '+through:'')+' · ESPN play-by-play',cbbTable(['Stat','Offense','Forced'],rows,'ca-cbb-factor-table'));
+  }
+  function cbbTagged(game) {
+    var reports=(game.cbb_tagged_schemes||{}).reports||[],ids=[String(game.away),String(game.home)];
+    return reports.some(function(r){return ids.indexOf(r.team_id)!==-1;});
+  }
   /* Pace prefers the source that counts the most of a team's games: ESPN final
      boxes cover every D-I final, NCAA possession counts only the games it holds. */
   function cbbPace(game) {
@@ -8091,9 +8117,13 @@ function seasonToggle(game) {
     function part(id,title,note,body) {
       return section(id,title,note,game.cbbDetailReady||id==='cbb-availability' ? body : pending('Loading matchup evidence…'));
     }
-    // Man, zone and press exist only where film was charted (no free source
-    // publishes them); without a sample the section is left out entirely.
-    var coverage = filmCoverageCards('cbb',game,cbbYear(game)) || (cbbYear(game) === 2026 ? nflDuo(cbbTaggedCoverage,sport,game) : '');
+    // Pressure is measured from every D-I game's play-by-play. Man and zone
+    // tags exist only in charted film or Synergy's published tournament sample
+    // (no free feed tags them, and the box-score fingerprint failed against
+    // Synergy, r = -0.09), so they join only where such a sample covers a team.
+    var tags = filmCoverageCards('cbb',game,cbbYear(game)) || (cbbYear(game) === 2026 && cbbTagged(game) ? nflDuo(cbbTaggedCoverage,sport,game) : '');
+    var pressed = ['away','home'].some(function (s) { var t = cbbTeam(game,s); return t && t.pressure; });
+    var coverage = (pressed ? nflDuo(cbbPressure,sport,game) : '') + tags;
     return part('cbb-pace','Pace','Possessions Per 40 Minutes · Overtime Normalized',cbbPace(game))+
       part('cbb-efficiency','Efficiency','Each Offense Against The Defense It Meets',nflDuo(cbbEfficiency,sport,game))+
       part('cbb-sos','Strength Of Schedule','D-I Opponents · Leaving Out Games Against This Team',cbbSos(game))+
@@ -8106,7 +8136,8 @@ function seasonToggle(game) {
       part('cbb-restarts','Possession Starts','Efficiency By How The Possession Began',nflDuo(cbbRestarts,sport,game))+
       part('cbb-shot-types','Shot Types','Every D-I Game · What Each Offense Takes Against What The Defense Allows',nflDuo(cbbShotTypes,sport,game))+
       part('cbb-personnel','Defensive Lineups','Lineup Shapes Each Defense Uses',nflDuo(cbbPersonnel,sport,game))+
-      (coverage||!game.cbbDetailReady ? part('cbb-tagged-schemes','Man, Zone And Press','Reviewed Coverage Samples',coverage) : '')+
+      (coverage||!game.cbbDetailReady ? part('cbb-tagged-schemes',tags?'Press And Zone':'Full-Court Pressure',
+        'Backcourt Turnovers In The First 10 Seconds After A Score',coverage) : '')+
       part('cbb-availability','Availability','Current Public Injury Listings',nflDuo(cbbAvailability,sport,game))+
       part('cbb-rotation','Rotation','Per-Game Output · Available Players',nflDuo(cbbRotation,sport,game))+
       part('cbb-size','Size By Position','Average Listed Height',nflDuo(cbbSize,sport,game))+

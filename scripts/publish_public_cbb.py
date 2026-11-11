@@ -34,6 +34,17 @@ def validate_context(value,old=None):
                 or any(p[k] is not None and (not math.isfinite(p[k]) or p[k]<0) for k in ('Pts','Reb','Ast','TS'))
                 for p in players
             ):raise ValueError('Invalid ESPN player rotation sample')
+    if (press:=value.get('pressure')):
+        if press.get('window_seconds')!=10 or not 1<=press.get('games',0):raise ValueError('Invalid pressure sample')
+        for side,keys in (('defense',('forced','steals')),('offense',('lost','stolen'))):
+            part=press[side];n=part['after_score']
+            if not 0<=part[keys[1]]<=part[keys[0]]<=n:raise ValueError('Pressure counts do not reconcile')
+            for k in keys:
+                rate=part[k+'_per100']
+                if (rate is None)!=(not n) or (n and (abs(rate-100*part[k]/n)>0.01 or rate>30)):
+                    raise ValueError('Pressure rate does not match its counts')
+        if old and (old.get('pressure') or {}).get('games',0)>press['games'] and old['season']==value['season']:
+            raise ValueError('Pressure sample regressed; existing publication retained')
     for family in value['shots'].values():
         for p in family.values():
             if {z['id'] for z in p['zones']}!={'atr2','paint2','mid2','c3','atb3','heave3'}:raise ValueError('Incomplete zone schema')

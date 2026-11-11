@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 import gzip,json,math
 from .data import ZONES,read,write,table
 from .. import predictability
+from . import pressure
 
 RATE_FIELDS=['games_all','efg_o_all','efg_d_all','tov_pct_o_all','tov_pct_d_all','orb_pct_all','drb_pct_all',
              'ftr_o_all','ftr_d_all','tpr_o_all','tpr_d_all','ppp_off_all','ppp_def_all','fg2_pct_o_all',
@@ -108,6 +109,8 @@ def grade_baselines(contexts,year):
         if key.startswith(('efg_', 'fg2_pct_', 'fg3_pct_', 'ftr_')):
             values.extend(box.get(key) for box in fallback)
         team[key]=distribution(values,rank_samples=True)
+    for key in pressure.RANKED:
+        team[key]=distribution(pressure.rank_values((c.get('pressure') for c in season),key),rank_samples=True)
     for window in ('played','remaining'):
         for stat,key in (('opp_offense','off'),('opp_defense','def'),('opp_net','net')):
             team[f'sos_{key}_{window}']=distribution(((c.get('schedule_strength') or {}).get(window,{}).get(stat) for c in season),rank_samples=True)
@@ -274,6 +277,9 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
                 if previous['season']!=year or previous['identity']['id']!=str(tid):
                     raise ValueError('Retained shot profile identity mismatch')
                 own=previous['shots']['coordinates']
+                # A completed season's pressure was measured once from its full
+                # play-by-play (scripts/backfill_cbb_pressure.py) and is kept.
+                if previous.get('pressure'):c['pressure']=previous['pressure']
             else:
                 for role in ('offense','defense'):
                     rows=aggregates[role][tid];games,through=game_summaries[role].get(tid,(0,None))
