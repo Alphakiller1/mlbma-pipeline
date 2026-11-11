@@ -7727,9 +7727,15 @@ function seasonToggle(game) {
     var heading=cbbSchool(game,side)+' Offense vs '+cbbSchool(game,opp)+' Defense';
     if(!x.rates.games_all&&!y.rates.games_all)return cbbPanel(heading,cbbSeason(game),pending('No D-I shot-type sample is available in this season.'));
     function pps(n){return cbbNumber(n,2);}
+    function pair(read,shot,side,higher){
+      var freq=read.rates[shot+'_freq_'+side+'_all'];
+      if(freq==null&&read.rates.games_all&&/^(driving|floater|pullup)$/.test(shot))
+        return [cbbMissing('Not tracked'),cbbMissing('Not tracked')];
+      return [cbbRateMetric(game,read,shot+'_freq_'+side+'_all',higher,cbbPct),
+        freq===0?cbbMissing('No attempts'):cbbRateMetric(game,read,shot+'_ppa_'+side+'_all',higher,pps)];
+    }
     var rows=CBB_SHOT_TYPES.map(function(t){
-      return [esc(t[1]),cbbRateMetric(game,x,t[0]+'_freq_off_all',true,cbbPct),cbbRateMetric(game,x,t[0]+'_ppa_off_all',true,pps),
-        cbbRateMetric(game,y,t[0]+'_freq_def_all',false,cbbPct),cbbRateMetric(game,y,t[0]+'_ppa_def_all',false,pps)];
+      return [esc(t[1])].concat(pair(x,t[0],'off',true),pair(y,t[0],'def',false));
     });
     return cbbPanel(heading,cbbRateCaption(game,side,opp,x,y)+' · Basketball Quant shot types',
       cbbTable(['Shot type','O share','O pts/shot','D share allowed','D pts/shot allowed'],rows,'ca-cbb-shot-type-table'));
@@ -7910,8 +7916,15 @@ function seasonToggle(game) {
         low = row.possessions < 10;
         text = global.ChaseCbbCharts.value(text, tone, baseline.sample_size+
           ' same-season teams · sample-weighted toward the D-I average');
-        if (!low) text = cbbRanked(text, cbbComparison(game, family, row, row.ppp, higher, 20),
-          'same-season D-I teams with 10+ possessions');
+        var spot = cbbComparison(game, family, row, row.ppp, higher, 20, true);
+        var pool = 'placed among same-season D-I teams with 10+ possessions';
+        if (!spot) {
+          // An event too rare for its own pool is placed among team season PPP.
+          spot = cbbPlace(row.ppp, global.ChaseSportCBB.rankSamples(cbbYear(game), 'team',
+            higher ? 'ppp_off_all' : 'ppp_def_all'), higher, 10, true);
+          pool = 'placed among D-I team season points per possession';
+        }
+        text = cbbRanked(text, spot, pool);
       } else {
         low = row.possessions < 10;
         text = nbaGraded(text, null);

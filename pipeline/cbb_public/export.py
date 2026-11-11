@@ -45,6 +45,19 @@ def schedule_strength(season):
                            'opp_net':sum(o-d for o,d in zip(off,dfn))/len(opps)}
         c['schedule_strength']=block
 
+UNTAGGED_SHOT_TYPES=('driving','floater','pullup')
+
+def mark_untracked_shot_types(rates):
+    """Play-by-play from some feeds never labels drives, floaters or pull-ups.
+    A side with all three at exactly zero was not tagged, not shut out: those
+    fields publish as None so they read "Not tracked" and stay out of ranks."""
+    for side in ('off','def'):
+        if all(rates.get(f'{k}_freq_{side}_all')==0 for k in UNTAGGED_SHOT_TYPES):
+            for k in UNTAGGED_SHOT_TYPES:
+                rates[f'{k}_freq_{side}_all']=None
+                rates[f'{k}_ppa_{side}_all']=None
+
+
 def box_schedule_strength(season, finals):
     """Schedule strength from final boxes, leaving out each opponent's games
     against the team being measured, so a team never grades its own defense
@@ -250,7 +263,8 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
                 'short_name':ident.get('short_display_name') or name,'abbr':ident.get('abbreviation') or str(tid),
                 'logo':ident.get('logo_url') or f'https://a.espncdn.com/i/teamlogos/ncaa/500/{tid}.png',
                 'color':'#'+str(ident.get('primary_color') or '9A6BFF').lstrip('#')}
-            c={'identity':ident,'season':year,'rates':{k:s.get(k) for k in RATE_FIELDS},'players':roster,
+            rates={k:s.get(k) for k in RATE_FIELDS};mark_untracked_shot_types(rates)
+            c={'identity':ident,'season':year,'rates':rates,'players':roster,
                'source':'Basketball Quant','data_through':max((g['game_date'] for g in schedules[year] if g.get('status_type_name')=='STATUS_FINAL' and tid in [g.get('home_id'),g.get('away_id')] and g['game_date']<=as_of),default=None),
                'record':f'{int(s.get("wins") or 0)}–{int(s.get("losses") or 0)}','shots':{}}
             if observed_tactics:c['observed_tactics']=observed_tactics.get(year,{}).get(str(tid))
