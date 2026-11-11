@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-10",
- "generated_at_utc": "2026-11-10T13:01:20+00:00",
+ "generated_at_utc": "2026-11-10T20:51:07+00:00",
  "data_through_utc": "2026-11-10T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -121,8 +121,8 @@
    "id": "401909960",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/10 - 7:30 PM EST",
+   "game_state": "live",
+   "status_detail": "End of 1st",
    "kickoff_utc": "2026-11-11T00:30Z",
    "away": "MIL",
    "home": "NY",
@@ -136,8 +136,8 @@
    "home_record": "5-4",
    "away_split_record": "0-4",
    "home_split_record": "3-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 21,
+   "home_score": 26,
    "venue": "Madison Square Garden",
    "venue_city": "New York, NY",
    "broadcast": "MyMi / Bucks App",
@@ -3784,7 +3784,7 @@
       "player_name": "Kel'el Ware",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5105623.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 17.3,
       "ppg": 8.6,
       "height_in": 84.0,
@@ -3966,6 +3966,15 @@
     "altitude": false
    },
    "away_injuries": [
+    {
+     "player_id": "5105623",
+     "player_name": "Kel'el Ware",
+     "status": "Day-To-Day",
+     "detail": "Left Ankle Sprain",
+     "comment": "Ware is questionable for Tuesday's game against the Knicks due to a left ankle sprain.",
+     "date": "2026-11-10T17:18Z",
+     "return_date": "2026-11-10"
+    },
     {
      "player_id": "4395725",
      "player_name": "Tyler Herro",
@@ -7705,8 +7714,8 @@
      "player_name": "Josh Hart",
      "status": "Day-To-Day",
      "detail": "Ankle",
-     "comment": "Hart is questionable for Tuesday's game against the Bucks due to right ankle soreness.",
-     "date": "2026-11-09T22:04Z",
+     "comment": "Hart is doubtful for Tuesday's game against the Bucks due to an illness.",
+     "date": "2026-11-10T19:20Z",
      "return_date": "2026-11-10"
     }
    ]
@@ -23212,15 +23221,6 @@
    },
    "home_injuries": [
     {
-     "player_id": "4278402",
-     "player_name": "Jordan Goodwin",
-     "status": "Out",
-     "detail": "Right Calf Not Specified",
-     "comment": "Goodwin (calf) has been ruled out for Monday's game against the Spurs, Kellan Olson of ArizonaSports.com reports.",
-     "date": "2026-11-10T00:21Z",
-     "return_date": "2026-11-10"
-    },
-    {
      "player_id": "4701232",
      "player_name": "Mark Williams",
      "status": "Out",
@@ -30099,7 +30099,7 @@
       "player_name": "Lauri Markkanen",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066336.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 30.9,
       "ppg": 18.0,
       "height_in": 85.0,
@@ -31051,6 +31051,15 @@
    },
    "home_injuries": [
     {
+     "player_id": "4066336",
+     "player_name": "Lauri Markkanen",
+     "status": "Out",
+     "detail": "Right Wrist Sprain",
+     "comment": "Markkanen is out for Tuesday's game versus the Heat with a right wrist sprain.",
+     "date": "2026-11-10T18:30Z",
+     "return_date": "2026-11-11"
+    },
+    {
      "player_id": "4433627",
      "player_name": "Keyonte George",
      "status": "Out",
@@ -31058,15 +31067,6 @@
      "comment": "George (ankle) has been ruled out for Tuesday's game against the Heat.",
      "date": "2026-11-10T00:08Z",
      "return_date": "2026-11-11"
-    },
-    {
-     "player_id": "4066336",
-     "player_name": "Lauri Markkanen",
-     "status": "Day-To-Day",
-     "detail": "Right Wrist Sprain",
-     "comment": "Markkanen (wrist) is questionable for Tuesday's game against Miami.",
-     "date": "2026-11-10T00:08Z",
-     "return_date": "2026-11-10"
     },
     {
      "player_id": "3102530",
@@ -33776,7 +33776,7 @@
       "player_name": "Tristan da Silva",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4702382.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 30.4,
       "ppg": 15.1,
       "height_in": 80.0,
@@ -34690,6 +34690,15 @@
    },
    "away_injuries": [
     {
+     "player_id": "4702382",
+     "player_name": "Tristan da Silva",
+     "status": "Day-To-Day",
+     "detail": "Left Calf Strain",
+     "comment": "Da Silva is questionable for Tuesday's game against the Kings due to a left calf strain.",
+     "date": "2026-11-10T16:50Z",
+     "return_date": "2026-11-10"
+    },
+    {
      "player_id": "4432165",
      "player_name": "Jalen Suggs",
      "status": "Out",
@@ -34705,7 +34714,7 @@
      "detail": "Left Knee Not Specified",
      "comment": "Isaac (knee) is out for Tuesday's game against Sacramento.",
      "date": "2026-11-09T23:10Z",
-     "return_date": "2026-11-11"
+     "return_date": "2026-11-16"
     },
     {
      "player_id": "4432573",
@@ -46018,5 +46027,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-10T20:47:10+00:00"
+ "published_at_utc": "2026-11-11T01:05:15+00:00"
 }
