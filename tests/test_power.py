@@ -70,6 +70,9 @@ class TableTests(unittest.TestCase):
         nets = sorted(teams.values(), key=lambda r: r["net"]["rank"])
         self.assertEqual([r["net"]["rank"] for r in nets], list(range(1, 13)))
         self.assertGreaterEqual(nets[0]["net"]["value"], nets[-1]["net"]["value"])
+        # Wins above the supported record: the fewest above it ranks first.
+        steadiest = min(teams.values(), key=lambda r: r["luck"]["value"])
+        self.assertEqual(steadiest["luck"]["rank"], 1)
         # Defense: fewest allowed ranks first.
         best_d = min(teams.values(), key=lambda r: r["defense"]["value"])
         self.assertEqual(best_d["defense"]["rank"], 1)

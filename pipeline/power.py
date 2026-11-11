@@ -253,9 +253,10 @@ def table(fit: Fit, played: list[Played], ranked: set[str], digits: int = 1) -> 
             # the offenses and defenses it met (best offenses, stingiest defenses first).
             "schedule": place("schedule"), "schedule_offense": place("schedule_offense"),
             "schedule_defense": place("schedule_defense", higher=False),
-            # Wins above the record its play supports, per game: first is the
-            # most above it (the least sustainable record), placed neutrally.
-            "luck": place("luck"),
+            # Wins above the record its play supports, per game, graded as
+            # sustainability (owner, 2026-11-11): first is the fewest above it,
+            # a record its play backs; last runs furthest ahead of its play.
+            "luck": place("luck", higher=False),
             "record": {"wins": r["wins"], "losses": r["losses"], "games": r["games"]},
             "expected_record": {"wins": round(r["expected_wins"], 1),
                                 "losses": round(r["games"] - r["expected_wins"], 1)},

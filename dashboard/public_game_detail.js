@@ -7790,16 +7790,17 @@ function seasonToggle(game) {
   /* Adjusted power ranking (pipeline/power.py), shared by the CBB, NBA, NFL
      and CFB desks: each team's offense, defense and net against an average
      opponent on a neutral floor, read on noise-adjusted scoring, with its
-     place; the schedule it has played (its opponents' average net); and its
-     record beside the record its play supports. Wins above that record are
-     placed neutrally: first is the most above it. */
+     place; the schedule it has played (its opponents' average net, hardest
+     first); and its record beside the record its play supports. Every figure
+     is tier-coloured (owner, 2026-11-11): wins above the supported record
+     grade as sustainability, fewest above first. */
   var POWER_NOTES = {
     net: 'Offense minus defense: margin against an average opponent on a neutral floor.',
     offense: 'Scoring against an average defense, opponent-adjusted, luck-adjusted.',
     defense: 'Scoring allowed to an average offense, opponent-adjusted, luck-adjusted. Lower ranks first.',
     schedule: 'Average net of the opponents played. First is the hardest schedule.',
     supports: 'The record the team\u2019s play supports: each game played, the chance a team this good wins it against that opponent there.',
-    luck: 'Wins above the record its play supports. First is the most above it.'
+    luck: 'Wins above the record its play supports. First is the fewest above it: the record its play best backs. Last runs furthest ahead of its play.'
   };
   function powerCell(entry, tone, text, label) {
     if (!entry || entry.value == null) return '<td class="num ca-vs-none">Not Rated</td>';
@@ -7824,15 +7825,18 @@ function seasonToggle(game) {
       if (!t) return '<tr><td>' + esc(r[0]) + '</td><td class="num ca-vs-none" colspan="7">Not Rated Yet</td></tr>';
       var rec = t.record, exp = t.expected_record;
       var above = rec.wins - exp.wins;
-      var luck = { value: t.luck.value, rank: t.luck.rank, of: t.luck.of };
+      // Wins above the supported record grade as sustainability: the fewest
+      // above it (a record its play backs) is first, the furthest ahead last.
+      var luck = t.luck;
       return '<tr><td>' + esc(r[0]) + '</td>' +
         powerCell(t.net, '', powerSigned(t.net.value, opts.digits), cohort) +
         powerCell(t.offense, '', Number(t.offense.value).toFixed(opts.digits), cohort) +
         powerCell(t.defense, '', Number(t.defense.value).toFixed(opts.digits), cohort + ' · fewest allowed first') +
-        powerCell(t.schedule, 'neutral', powerSigned(t.schedule.value, opts.digits), cohort + ' · hardest first') +
+        // Graded like the SOS panel: the hardest schedule ranks first, tier-coloured.
+        powerCell(t.schedule, '', powerSigned(t.schedule.value, opts.digits), cohort + ' · hardest first') +
         '<td class="num">' + esc(rec.wins + '–' + rec.losses) + '</td>' +
         '<td class="num">' + esc(Number(exp.wins).toFixed(1) + '–' + Number(exp.losses).toFixed(1)) + '</td>' +
-        powerCell(luck, 'neutral', powerSigned(above, 1), cohort + ' · most above first') + '</tr>';
+        powerCell(luck, '', powerSigned(above, 1), cohort + ' · fewest above first, the most sustainable record') + '</tr>';
     });
     var heads = [['Net', 'net'], ['Offense', 'offense'], ['Defense', 'defense'], ['Schedule', 'schedule'],
       ['Record', ''], ['Play Supports', 'supports'], ['Wins Above', 'luck']];

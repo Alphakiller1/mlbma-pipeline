@@ -8,188 +8,50 @@
  "home_court": 1.443,
  "league_mean": 110.359,
  "teams": {
-  "MEM": {
+  "DEN": {
    "net": {
-    "value": -1.4,
-    "rank": 19,
-    "of": 30
-   },
-   "offense": {
-    "value": 109.86,
-    "rank": 18,
-    "of": 30
-   },
-   "defense": {
-    "value": 111.27,
-    "rank": 19,
-    "of": 30
-   },
-   "schedule": {
-    "value": -2.65,
-    "rank": 30,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 108.75,
-    "rank": 30,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 111.41,
-    "rank": 27,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.1618,
-    "rank": 3,
-    "of": 30
-   },
-   "record": {
-    "wins": 7,
-    "losses": 3,
-    "games": 10
-   },
-   "expected_record": {
-    "wins": 5.4,
-    "losses": 4.6
-   }
-  },
-  "GS": {
-   "net": {
-    "value": 3.46,
-    "rank": 10,
-    "of": 30
-   },
-   "offense": {
-    "value": 112.51,
-    "rank": 8,
-    "of": 30
-   },
-   "defense": {
-    "value": 109.05,
-    "rank": 10,
-    "of": 30
-   },
-   "schedule": {
-    "value": 0.52,
+    "value": 2.49,
     "rank": 12,
     "of": 30
    },
-   "schedule_offense": {
-    "value": 111.51,
-    "rank": 6,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.99,
-    "rank": 24,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.1337,
-    "rank": 5,
-    "of": 30
-   },
-   "record": {
-    "wins": 8,
-    "losses": 3,
-    "games": 11
-   },
-   "expected_record": {
-    "wins": 6.5,
-    "losses": 4.5
-   }
-  },
-  "MIA": {
-   "net": {
-    "value": 0.01,
-    "rank": 16,
-    "of": 30
-   },
    "offense": {
-    "value": 110.49,
-    "rank": 17,
+    "value": 114.42,
+    "rank": 3,
     "of": 30
    },
    "defense": {
-    "value": 110.48,
-    "rank": 15,
+    "value": 111.93,
+    "rank": 22,
     "of": 30
    },
    "schedule": {
-    "value": -0.59,
-    "rank": 21,
+    "value": 0.69,
+    "rank": 11,
     "of": 30
    },
    "schedule_offense": {
-    "value": 109.79,
-    "rank": 21,
+    "value": 110.99,
+    "rank": 10,
     "of": 30
    },
    "schedule_defense": {
-    "value": 110.38,
-    "rank": 18,
+    "value": 110.3,
+    "rank": 17,
     "of": 30
    },
    "luck": {
-    "value": -0.0493,
-    "rank": 18,
+    "value": 0.0013,
+    "rank": 15,
     "of": 30
    },
    "record": {
     "wins": 5,
-    "losses": 6,
-    "games": 11
+    "losses": 4,
+    "games": 9
    },
    "expected_record": {
-    "wins": 5.5,
-    "losses": 5.5
-   }
-  },
-  "PHX": {
-   "net": {
-    "value": -0.95,
-    "rank": 18,
-    "of": 30
-   },
-   "offense": {
-    "value": 110.71,
-    "rank": 15,
-    "of": 30
-   },
-   "defense": {
-    "value": 111.66,
-    "rank": 20,
-    "of": 30
-   },
-   "schedule": {
-    "value": 3.43,
-    "rank": 1,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 112.22,
-    "rank": 1,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 108.79,
-    "rank": 1,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.0063,
-    "rank": 15,
-    "of": 30
-   },
-   "record": {
-    "wins": 4,
-    "losses": 6,
-    "games": 10
-   },
-   "expected_record": {
-    "wins": 3.9,
-    "losses": 6.1
+    "wins": 5.0,
+    "losses": 4.0
    }
   },
   "SAC": {
@@ -225,7 +87,7 @@
    },
    "luck": {
     "value": -0.1356,
-    "rank": 25,
+    "rank": 6,
     "of": 30
    },
    "record": {
@@ -271,7 +133,7 @@
    },
    "luck": {
     "value": -0.1699,
-    "rank": 28,
+    "rank": 3,
     "of": 30
    },
    "record": {
@@ -282,650 +144,6 @@
    "expected_record": {
     "wins": 2.5,
     "losses": 6.5
-   }
-  },
-  "DAL": {
-   "net": {
-    "value": -0.43,
-    "rank": 17,
-    "of": 30
-   },
-   "offense": {
-    "value": 110.5,
-    "rank": 16,
-    "of": 30
-   },
-   "defense": {
-    "value": 110.93,
-    "rank": 17,
-    "of": 30
-   },
-   "schedule": {
-    "value": 0.2,
-    "rank": 16,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 109.87,
-    "rank": 18,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 109.67,
-    "rank": 7,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.1434,
-    "rank": 4,
-    "of": 30
-   },
-   "record": {
-    "wins": 7,
-    "losses": 4,
-    "games": 11
-   },
-   "expected_record": {
-    "wins": 5.4,
-    "losses": 5.6
-   }
-  },
-  "DET": {
-   "net": {
-    "value": 5.83,
-    "rank": 6,
-    "of": 30
-   },
-   "offense": {
-    "value": 111.38,
-    "rank": 12,
-    "of": 30
-   },
-   "defense": {
-    "value": 105.54,
-    "rank": 3,
-    "of": 30
-   },
-   "schedule": {
-    "value": -0.26,
-    "rank": 19,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 109.53,
-    "rank": 23,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 109.79,
-    "rank": 9,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.0341,
-    "rank": 13,
-    "of": 30
-   },
-   "record": {
-    "wins": 7,
-    "losses": 3,
-    "games": 10
-   },
-   "expected_record": {
-    "wins": 6.7,
-    "losses": 3.3
-   }
-  },
-  "CLE": {
-   "net": {
-    "value": 2.08,
-    "rank": 13,
-    "of": 30
-   },
-   "offense": {
-    "value": 113.06,
-    "rank": 7,
-    "of": 30
-   },
-   "defense": {
-    "value": 110.98,
-    "rank": 18,
-    "of": 30
-   },
-   "schedule": {
-    "value": -0.06,
-    "rank": 17,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 109.12,
-    "rank": 28,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 109.18,
-    "rank": 2,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.1068,
-    "rank": 23,
-    "of": 30
-   },
-   "record": {
-    "wins": 5,
-    "losses": 6,
-    "games": 11
-   },
-   "expected_record": {
-    "wins": 6.2,
-    "losses": 4.8
-   }
-  },
-  "LAC": {
-   "net": {
-    "value": -2.52,
-    "rank": 21,
-    "of": 30
-   },
-   "offense": {
-    "value": 109.34,
-    "rank": 20,
-    "of": 30
-   },
-   "defense": {
-    "value": 111.86,
-    "rank": 21,
-    "of": 30
-   },
-   "schedule": {
-    "value": 1.41,
-    "rank": 5,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 111.53,
-    "rank": 4,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.12,
-    "rank": 14,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.1898,
-    "rank": 30,
-    "of": 30
-   },
-   "record": {
-    "wins": 2,
-    "losses": 8,
-    "games": 10
-   },
-   "expected_record": {
-    "wins": 3.9,
-    "losses": 6.1
-   }
-  },
-  "LAL": {
-   "net": {
-    "value": 5.01,
-    "rank": 7,
-    "of": 30
-   },
-   "offense": {
-    "value": 115.6,
-    "rank": 1,
-    "of": 30
-   },
-   "defense": {
-    "value": 110.6,
-    "rank": 16,
-    "of": 30
-   },
-   "schedule": {
-    "value": 0.22,
-    "rank": 14,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 110.49,
-    "rank": 13,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.27,
-    "rank": 16,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.1987,
-    "rank": 2,
-    "of": 30
-   },
-   "record": {
-    "wins": 10,
-    "losses": 2,
-    "games": 12
-   },
-   "expected_record": {
-    "wins": 7.6,
-    "losses": 4.4
-   }
-  },
-  "BKN": {
-   "net": {
-    "value": -7.72,
-    "rank": 28,
-    "of": 30
-   },
-   "offense": {
-    "value": 104.72,
-    "rank": 30,
-    "of": 30
-   },
-   "defense": {
-    "value": 112.44,
-    "rank": 24,
-    "of": 30
-   },
-   "schedule": {
-    "value": 0.37,
-    "rank": 13,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 109.92,
-    "rank": 17,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 109.54,
-    "rank": 5,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.0755,
-    "rank": 19,
-    "of": 30
-   },
-   "record": {
-    "wins": 2,
-    "losses": 8,
-    "games": 10
-   },
-   "expected_record": {
-    "wins": 2.8,
-    "losses": 7.2
-   }
-  },
-  "WSH": {
-   "net": {
-    "value": -6.42,
-    "rank": 26,
-    "of": 30
-   },
-   "offense": {
-    "value": 107.43,
-    "rank": 24,
-    "of": 30
-   },
-   "defense": {
-    "value": 113.85,
-    "rank": 26,
-    "of": 30
-   },
-   "schedule": {
-    "value": -0.31,
-    "rank": 20,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 109.59,
-    "rank": 22,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 109.9,
-    "rank": 10,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.0392,
-    "rank": 12,
-    "of": 30
-   },
-   "record": {
-    "wins": 4,
-    "losses": 7,
-    "games": 11
-   },
-   "expected_record": {
-    "wins": 3.6,
-    "losses": 7.4
-   }
-  },
-  "IND": {
-   "net": {
-    "value": -5.33,
-    "rank": 23,
-    "of": 30
-   },
-   "offense": {
-    "value": 107.03,
-    "rank": 25,
-    "of": 30
-   },
-   "defense": {
-    "value": 112.36,
-    "rank": 23,
-    "of": 30
-   },
-   "schedule": {
-    "value": -2.62,
-    "rank": 29,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 109.23,
-    "rank": 27,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 111.84,
-    "rank": 30,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.1395,
-    "rank": 27,
-    "of": 30
-   },
-   "record": {
-    "wins": 3,
-    "losses": 8,
-    "games": 11
-   },
-   "expected_record": {
-    "wins": 4.5,
-    "losses": 6.5
-   }
-  },
-  "DEN": {
-   "net": {
-    "value": 2.49,
-    "rank": 12,
-    "of": 30
-   },
-   "offense": {
-    "value": 114.42,
-    "rank": 3,
-    "of": 30
-   },
-   "defense": {
-    "value": 111.93,
-    "rank": 22,
-    "of": 30
-   },
-   "schedule": {
-    "value": 0.69,
-    "rank": 11,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 110.99,
-    "rank": 10,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.3,
-    "rank": 17,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.0013,
-    "rank": 16,
-    "of": 30
-   },
-   "record": {
-    "wins": 5,
-    "losses": 4,
-    "games": 9
-   },
-   "expected_record": {
-    "wins": 5.0,
-    "losses": 4.0
-   }
-  },
-  "MIN": {
-   "net": {
-    "value": 6.08,
-    "rank": 4,
-    "of": 30
-   },
-   "offense": {
-    "value": 112.37,
-    "rank": 9,
-    "of": 30
-   },
-   "defense": {
-    "value": 106.29,
-    "rank": 4,
-    "of": 30
-   },
-   "schedule": {
-    "value": -0.17,
-    "rank": 18,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 110.48,
-    "rank": 14,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.65,
-    "rank": 21,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.0656,
-    "rank": 10,
-    "of": 30
-   },
-   "record": {
-    "wins": 8,
-    "losses": 3,
-    "games": 11
-   },
-   "expected_record": {
-    "wins": 7.3,
-    "losses": 3.7
-   }
-  },
-  "UTAH": {
-   "net": {
-    "value": -7.21,
-    "rank": 27,
-    "of": 30
-   },
-   "offense": {
-    "value": 105.48,
-    "rank": 29,
-    "of": 30
-   },
-   "defense": {
-    "value": 112.69,
-    "rank": 25,
-    "of": 30
-   },
-   "schedule": {
-    "value": 1.76,
-    "rank": 3,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 111.83,
-    "rank": 2,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.07,
-    "rank": 11,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.1746,
-    "rank": 29,
-    "of": 30
-   },
-   "record": {
-    "wins": 1,
-    "losses": 10,
-    "games": 11
-   },
-   "expected_record": {
-    "wins": 2.9,
-    "losses": 8.1
-   }
-  },
-  "BOS": {
-   "net": {
-    "value": 6.9,
-    "rank": 2,
-    "of": 30
-   },
-   "offense": {
-    "value": 114.08,
-    "rank": 4,
-    "of": 30
-   },
-   "defense": {
-    "value": 107.19,
-    "rank": 6,
-    "of": 30
-   },
-   "schedule": {
-    "value": -2.41,
-    "rank": 28,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 108.81,
-    "rank": 29,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 111.22,
-    "rank": 26,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.0889,
-    "rank": 8,
-    "of": 30
-   },
-   "record": {
-    "wins": 9,
-    "losses": 2,
-    "games": 11
-   },
-   "expected_record": {
-    "wins": 8.0,
-    "losses": 3.0
-   }
-  },
-  "NY": {
-   "net": {
-    "value": 4.98,
-    "rank": 8,
-    "of": 30
-   },
-   "offense": {
-    "value": 112.07,
-    "rank": 10,
-    "of": 30
-   },
-   "defense": {
-    "value": 107.09,
-    "rank": 5,
-    "of": 30
-   },
-   "schedule": {
-    "value": -1.61,
-    "rank": 26,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 109.38,
-    "rank": 26,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.99,
-    "rank": 23,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.0777,
-    "rank": 20,
-    "of": 30
-   },
-   "record": {
-    "wins": 6,
-    "losses": 4,
-    "games": 10
-   },
-   "expected_record": {
-    "wins": 6.8,
-    "losses": 3.2
-   }
-  },
-  "MIL": {
-   "net": {
-    "value": -9.24,
-    "rank": 29,
-    "of": 30
-   },
-   "offense": {
-    "value": 106.75,
-    "rank": 26,
-    "of": 30
-   },
-   "defense": {
-    "value": 115.99,
-    "rank": 30,
-    "of": 30
-   },
-   "schedule": {
-    "value": 1.68,
-    "rank": 4,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 111.24,
-    "rank": 9,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 109.57,
-    "rank": 6,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.139,
-    "rank": 26,
-    "of": 30
-   },
-   "record": {
-    "wins": 1,
-    "losses": 10,
-    "games": 11
-   },
-   "expected_record": {
-    "wins": 2.5,
-    "losses": 8.5
    }
   },
   "ORL": {
@@ -961,7 +179,7 @@
    },
    "luck": {
     "value": -0.1061,
-    "rank": 22,
+    "rank": 9,
     "of": 30
    },
    "record": {
@@ -972,144 +190,6 @@
    "expected_record": {
     "wins": 4.1,
     "losses": 5.9
-   }
-  },
-  "SA": {
-   "net": {
-    "value": 9.29,
-    "rank": 1,
-    "of": 30
-   },
-   "offense": {
-    "value": 114.58,
-    "rank": 2,
-    "of": 30
-   },
-   "defense": {
-    "value": 105.3,
-    "rank": 2,
-    "of": 30
-   },
-   "schedule": {
-    "value": -1.14,
-    "rank": 23,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 109.53,
-    "rank": 24,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.67,
-    "rank": 22,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.0532,
-    "rank": 11,
-    "of": 30
-   },
-   "record": {
-    "wins": 9,
-    "losses": 2,
-    "games": 11
-   },
-   "expected_record": {
-    "wins": 8.4,
-    "losses": 2.6
-   }
-  },
-  "PHI": {
-   "net": {
-    "value": 0.21,
-    "rank": 15,
-    "of": 30
-   },
-   "offense": {
-    "value": 108.96,
-    "rank": 22,
-    "of": 30
-   },
-   "defense": {
-    "value": 108.75,
-    "rank": 9,
-    "of": 30
-   },
-   "schedule": {
-    "value": 0.22,
-    "rank": 15,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 110.45,
-    "rank": 15,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.23,
-    "rank": 15,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.2505,
-    "rank": 1,
-    "of": 30
-   },
-   "record": {
-    "wins": 9,
-    "losses": 3,
-    "games": 12
-   },
-   "expected_record": {
-    "wins": 6.0,
-    "losses": 6.0
-   }
-  },
-  "CHA": {
-   "net": {
-    "value": -2.88,
-    "rank": 22,
-    "of": 30
-   },
-   "offense": {
-    "value": 106.5,
-    "rank": 27,
-    "of": 30
-   },
-   "defense": {
-    "value": 109.39,
-    "rank": 11,
-    "of": 30
-   },
-   "schedule": {
-    "value": -0.6,
-    "rank": 22,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 109.51,
-    "rank": 25,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.12,
-    "rank": 13,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.0867,
-    "rank": 21,
-    "of": 30
-   },
-   "record": {
-    "wins": 4,
-    "losses": 7,
-    "games": 11
-   },
-   "expected_record": {
-    "wins": 5.0,
-    "losses": 6.0
    }
   },
   "TOR": {
@@ -1145,7 +225,7 @@
    },
    "luck": {
     "value": -0.1324,
-    "rank": 24,
+    "rank": 7,
     "of": 30
    },
    "record": {
@@ -1158,50 +238,142 @@
     "losses": 3.7
    }
   },
-  "ATL": {
+  "GS": {
    "net": {
-    "value": 0.78,
-    "rank": 14,
+    "value": 3.46,
+    "rank": 10,
     "of": 30
    },
    "offense": {
-    "value": 110.99,
-    "rank": 13,
+    "value": 112.51,
+    "rank": 8,
     "of": 30
    },
    "defense": {
-    "value": 110.2,
-    "rank": 14,
+    "value": 109.05,
+    "rank": 10,
     "of": 30
    },
    "schedule": {
-    "value": -1.41,
-    "rank": 24,
+    "value": 0.52,
+    "rank": 12,
     "of": 30
    },
    "schedule_offense": {
-    "value": 109.81,
-    "rank": 20,
+    "value": 111.51,
+    "rank": 6,
     "of": 30
    },
    "schedule_defense": {
-    "value": 111.21,
-    "rank": 25,
+    "value": 110.99,
+    "rank": 24,
     "of": 30
    },
    "luck": {
-    "value": 0.0186,
-    "rank": 14,
+    "value": 0.1337,
+    "rank": 26,
     "of": 30
    },
    "record": {
-    "wins": 7,
-    "losses": 5,
-    "games": 12
+    "wins": 8,
+    "losses": 3,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 6.5,
+    "losses": 4.5
+   }
+  },
+  "NY": {
+   "net": {
+    "value": 4.98,
+    "rank": 8,
+    "of": 30
+   },
+   "offense": {
+    "value": 112.07,
+    "rank": 10,
+    "of": 30
+   },
+   "defense": {
+    "value": 107.09,
+    "rank": 5,
+    "of": 30
+   },
+   "schedule": {
+    "value": -1.61,
+    "rank": 26,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.38,
+    "rank": 26,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.99,
+    "rank": 23,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.0777,
+    "rank": 11,
+    "of": 30
+   },
+   "record": {
+    "wins": 6,
+    "losses": 4,
+    "games": 10
    },
    "expected_record": {
     "wins": 6.8,
-    "losses": 5.2
+    "losses": 3.2
+   }
+  },
+  "CHA": {
+   "net": {
+    "value": -2.88,
+    "rank": 22,
+    "of": 30
+   },
+   "offense": {
+    "value": 106.5,
+    "rank": 27,
+    "of": 30
+   },
+   "defense": {
+    "value": 109.39,
+    "rank": 11,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.6,
+    "rank": 22,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.51,
+    "rank": 25,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.12,
+    "rank": 13,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.0867,
+    "rank": 10,
+    "of": 30
+   },
+   "record": {
+    "wins": 4,
+    "losses": 7,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 5.0,
+    "losses": 6.0
    }
   },
   "NO": {
@@ -1237,7 +409,7 @@
    },
    "luck": {
     "value": -0.0374,
-    "rank": 17,
+    "rank": 14,
     "of": 30
    },
    "record": {
@@ -1250,50 +422,418 @@
     "losses": 6.6
    }
   },
-  "HOU": {
+  "MEM": {
    "net": {
-    "value": 5.91,
-    "rank": 5,
+    "value": -1.4,
+    "rank": 19,
     "of": 30
    },
    "offense": {
-    "value": 113.95,
-    "rank": 5,
+    "value": 109.86,
+    "rank": 18,
     "of": 30
    },
    "defense": {
-    "value": 108.04,
-    "rank": 7,
+    "value": 111.27,
+    "rank": 19,
     "of": 30
    },
    "schedule": {
-    "value": 2.0,
-    "rank": 2,
+    "value": -2.65,
+    "rank": 30,
     "of": 30
    },
    "schedule_offense": {
-    "value": 111.52,
-    "rank": 5,
+    "value": 108.75,
+    "rank": 30,
     "of": 30
    },
    "schedule_defense": {
-    "value": 109.52,
-    "rank": 4,
+    "value": 111.41,
+    "rank": 27,
     "of": 30
    },
    "luck": {
-    "value": 0.1152,
-    "rank": 7,
+    "value": 0.1618,
+    "rank": 28,
     "of": 30
    },
    "record": {
-    "wins": 8,
+    "wins": 7,
     "losses": 3,
+    "games": 10
+   },
+   "expected_record": {
+    "wins": 5.4,
+    "losses": 4.6
+   }
+  },
+  "LAL": {
+   "net": {
+    "value": 5.01,
+    "rank": 7,
+    "of": 30
+   },
+   "offense": {
+    "value": 115.6,
+    "rank": 1,
+    "of": 30
+   },
+   "defense": {
+    "value": 110.6,
+    "rank": 16,
+    "of": 30
+   },
+   "schedule": {
+    "value": 0.22,
+    "rank": 14,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.49,
+    "rank": 13,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.27,
+    "rank": 16,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.1987,
+    "rank": 29,
+    "of": 30
+   },
+   "record": {
+    "wins": 10,
+    "losses": 2,
+    "games": 12
+   },
+   "expected_record": {
+    "wins": 7.6,
+    "losses": 4.4
+   }
+  },
+  "MIL": {
+   "net": {
+    "value": -9.24,
+    "rank": 29,
+    "of": 30
+   },
+   "offense": {
+    "value": 106.75,
+    "rank": 26,
+    "of": 30
+   },
+   "defense": {
+    "value": 115.99,
+    "rank": 30,
+    "of": 30
+   },
+   "schedule": {
+    "value": 1.68,
+    "rank": 4,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.24,
+    "rank": 9,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.57,
+    "rank": 6,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.139,
+    "rank": 5,
+    "of": 30
+   },
+   "record": {
+    "wins": 1,
+    "losses": 10,
     "games": 11
    },
    "expected_record": {
-    "wins": 6.7,
-    "losses": 4.3
+    "wins": 2.5,
+    "losses": 8.5
+   }
+  },
+  "DAL": {
+   "net": {
+    "value": -0.43,
+    "rank": 17,
+    "of": 30
+   },
+   "offense": {
+    "value": 110.5,
+    "rank": 16,
+    "of": 30
+   },
+   "defense": {
+    "value": 110.93,
+    "rank": 17,
+    "of": 30
+   },
+   "schedule": {
+    "value": 0.2,
+    "rank": 16,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.87,
+    "rank": 18,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.67,
+    "rank": 7,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.1434,
+    "rank": 27,
+    "of": 30
+   },
+   "record": {
+    "wins": 7,
+    "losses": 4,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 5.4,
+    "losses": 5.6
+   }
+  },
+  "UTAH": {
+   "net": {
+    "value": -7.21,
+    "rank": 27,
+    "of": 30
+   },
+   "offense": {
+    "value": 105.48,
+    "rank": 29,
+    "of": 30
+   },
+   "defense": {
+    "value": 112.69,
+    "rank": 25,
+    "of": 30
+   },
+   "schedule": {
+    "value": 1.76,
+    "rank": 3,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.83,
+    "rank": 2,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.07,
+    "rank": 11,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.1746,
+    "rank": 2,
+    "of": 30
+   },
+   "record": {
+    "wins": 1,
+    "losses": 10,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 2.9,
+    "losses": 8.1
+   }
+  },
+  "PHI": {
+   "net": {
+    "value": 0.21,
+    "rank": 15,
+    "of": 30
+   },
+   "offense": {
+    "value": 108.96,
+    "rank": 22,
+    "of": 30
+   },
+   "defense": {
+    "value": 108.75,
+    "rank": 9,
+    "of": 30
+   },
+   "schedule": {
+    "value": 0.22,
+    "rank": 15,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.45,
+    "rank": 15,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.23,
+    "rank": 15,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.2505,
+    "rank": 30,
+    "of": 30
+   },
+   "record": {
+    "wins": 9,
+    "losses": 3,
+    "games": 12
+   },
+   "expected_record": {
+    "wins": 6.0,
+    "losses": 6.0
+   }
+  },
+  "SA": {
+   "net": {
+    "value": 9.29,
+    "rank": 1,
+    "of": 30
+   },
+   "offense": {
+    "value": 114.58,
+    "rank": 2,
+    "of": 30
+   },
+   "defense": {
+    "value": 105.3,
+    "rank": 2,
+    "of": 30
+   },
+   "schedule": {
+    "value": -1.14,
+    "rank": 23,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.53,
+    "rank": 24,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.67,
+    "rank": 22,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0532,
+    "rank": 20,
+    "of": 30
+   },
+   "record": {
+    "wins": 9,
+    "losses": 2,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 8.4,
+    "losses": 2.6
+   }
+  },
+  "BKN": {
+   "net": {
+    "value": -7.72,
+    "rank": 28,
+    "of": 30
+   },
+   "offense": {
+    "value": 104.72,
+    "rank": 30,
+    "of": 30
+   },
+   "defense": {
+    "value": 112.44,
+    "rank": 24,
+    "of": 30
+   },
+   "schedule": {
+    "value": 0.37,
+    "rank": 13,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.92,
+    "rank": 17,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.54,
+    "rank": 5,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.0755,
+    "rank": 12,
+    "of": 30
+   },
+   "record": {
+    "wins": 2,
+    "losses": 8,
+    "games": 10
+   },
+   "expected_record": {
+    "wins": 2.8,
+    "losses": 7.2
+   }
+  },
+  "IND": {
+   "net": {
+    "value": -5.33,
+    "rank": 23,
+    "of": 30
+   },
+   "offense": {
+    "value": 107.03,
+    "rank": 25,
+    "of": 30
+   },
+   "defense": {
+    "value": 112.36,
+    "rank": 23,
+    "of": 30
+   },
+   "schedule": {
+    "value": -2.62,
+    "rank": 29,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.23,
+    "rank": 27,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 111.84,
+    "rank": 30,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.1395,
+    "rank": 4,
+    "of": 30
+   },
+   "record": {
+    "wins": 3,
+    "losses": 8,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 4.5,
+    "losses": 6.5
    }
   },
   "OKC": {
@@ -1329,7 +869,7 @@
    },
    "luck": {
     "value": 0.082,
-    "rank": 9,
+    "rank": 22,
     "of": 30
    },
    "record": {
@@ -1340,6 +880,144 @@
    "expected_record": {
     "wins": 7.1,
     "losses": 3.9
+   }
+  },
+  "DET": {
+   "net": {
+    "value": 5.83,
+    "rank": 6,
+    "of": 30
+   },
+   "offense": {
+    "value": 111.38,
+    "rank": 12,
+    "of": 30
+   },
+   "defense": {
+    "value": 105.54,
+    "rank": 3,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.26,
+    "rank": 19,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.53,
+    "rank": 23,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.79,
+    "rank": 9,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0341,
+    "rank": 18,
+    "of": 30
+   },
+   "record": {
+    "wins": 7,
+    "losses": 3,
+    "games": 10
+   },
+   "expected_record": {
+    "wins": 6.7,
+    "losses": 3.3
+   }
+  },
+  "ATL": {
+   "net": {
+    "value": 0.78,
+    "rank": 14,
+    "of": 30
+   },
+   "offense": {
+    "value": 110.99,
+    "rank": 13,
+    "of": 30
+   },
+   "defense": {
+    "value": 110.2,
+    "rank": 14,
+    "of": 30
+   },
+   "schedule": {
+    "value": -1.41,
+    "rank": 24,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.81,
+    "rank": 20,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 111.21,
+    "rank": 25,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0186,
+    "rank": 17,
+    "of": 30
+   },
+   "record": {
+    "wins": 7,
+    "losses": 5,
+    "games": 12
+   },
+   "expected_record": {
+    "wins": 6.8,
+    "losses": 5.2
+   }
+  },
+  "MIN": {
+   "net": {
+    "value": 6.08,
+    "rank": 4,
+    "of": 30
+   },
+   "offense": {
+    "value": 112.37,
+    "rank": 9,
+    "of": 30
+   },
+   "defense": {
+    "value": 106.29,
+    "rank": 4,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.17,
+    "rank": 18,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.48,
+    "rank": 14,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.65,
+    "rank": 21,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0656,
+    "rank": 21,
+    "of": 30
+   },
+   "record": {
+    "wins": 8,
+    "losses": 3,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 7.3,
+    "losses": 3.7
    }
   },
   "POR": {
@@ -1375,7 +1053,7 @@
    },
    "luck": {
     "value": 0.1319,
-    "rank": 6,
+    "rank": 25,
     "of": 30
    },
    "record": {
@@ -1386,6 +1064,328 @@
    "expected_record": {
     "wins": 5.7,
     "losses": 4.3
+   }
+  },
+  "MIA": {
+   "net": {
+    "value": 0.01,
+    "rank": 16,
+    "of": 30
+   },
+   "offense": {
+    "value": 110.49,
+    "rank": 17,
+    "of": 30
+   },
+   "defense": {
+    "value": 110.48,
+    "rank": 15,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.59,
+    "rank": 21,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.79,
+    "rank": 21,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.38,
+    "rank": 18,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.0493,
+    "rank": 13,
+    "of": 30
+   },
+   "record": {
+    "wins": 5,
+    "losses": 6,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 5.5,
+    "losses": 5.5
+   }
+  },
+  "PHX": {
+   "net": {
+    "value": -0.95,
+    "rank": 18,
+    "of": 30
+   },
+   "offense": {
+    "value": 110.71,
+    "rank": 15,
+    "of": 30
+   },
+   "defense": {
+    "value": 111.66,
+    "rank": 20,
+    "of": 30
+   },
+   "schedule": {
+    "value": 3.43,
+    "rank": 1,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 112.22,
+    "rank": 1,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 108.79,
+    "rank": 1,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0063,
+    "rank": 16,
+    "of": 30
+   },
+   "record": {
+    "wins": 4,
+    "losses": 6,
+    "games": 10
+   },
+   "expected_record": {
+    "wins": 3.9,
+    "losses": 6.1
+   }
+  },
+  "LAC": {
+   "net": {
+    "value": -2.52,
+    "rank": 21,
+    "of": 30
+   },
+   "offense": {
+    "value": 109.34,
+    "rank": 20,
+    "of": 30
+   },
+   "defense": {
+    "value": 111.86,
+    "rank": 21,
+    "of": 30
+   },
+   "schedule": {
+    "value": 1.41,
+    "rank": 5,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.53,
+    "rank": 4,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.12,
+    "rank": 14,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.1898,
+    "rank": 1,
+    "of": 30
+   },
+   "record": {
+    "wins": 2,
+    "losses": 8,
+    "games": 10
+   },
+   "expected_record": {
+    "wins": 3.9,
+    "losses": 6.1
+   }
+  },
+  "BOS": {
+   "net": {
+    "value": 6.9,
+    "rank": 2,
+    "of": 30
+   },
+   "offense": {
+    "value": 114.08,
+    "rank": 4,
+    "of": 30
+   },
+   "defense": {
+    "value": 107.19,
+    "rank": 6,
+    "of": 30
+   },
+   "schedule": {
+    "value": -2.41,
+    "rank": 28,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 108.81,
+    "rank": 29,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 111.22,
+    "rank": 26,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0889,
+    "rank": 23,
+    "of": 30
+   },
+   "record": {
+    "wins": 9,
+    "losses": 2,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 8.0,
+    "losses": 3.0
+   }
+  },
+  "HOU": {
+   "net": {
+    "value": 5.91,
+    "rank": 5,
+    "of": 30
+   },
+   "offense": {
+    "value": 113.95,
+    "rank": 5,
+    "of": 30
+   },
+   "defense": {
+    "value": 108.04,
+    "rank": 7,
+    "of": 30
+   },
+   "schedule": {
+    "value": 2.0,
+    "rank": 2,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.52,
+    "rank": 5,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.52,
+    "rank": 4,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.1152,
+    "rank": 24,
+    "of": 30
+   },
+   "record": {
+    "wins": 8,
+    "losses": 3,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 6.7,
+    "losses": 4.3
+   }
+  },
+  "CLE": {
+   "net": {
+    "value": 2.08,
+    "rank": 13,
+    "of": 30
+   },
+   "offense": {
+    "value": 113.06,
+    "rank": 7,
+    "of": 30
+   },
+   "defense": {
+    "value": 110.98,
+    "rank": 18,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.06,
+    "rank": 17,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.12,
+    "rank": 28,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.18,
+    "rank": 2,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.1068,
+    "rank": 8,
+    "of": 30
+   },
+   "record": {
+    "wins": 5,
+    "losses": 6,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 6.2,
+    "losses": 4.8
+   }
+  },
+  "WSH": {
+   "net": {
+    "value": -6.42,
+    "rank": 26,
+    "of": 30
+   },
+   "offense": {
+    "value": 107.43,
+    "rank": 24,
+    "of": 30
+   },
+   "defense": {
+    "value": 113.85,
+    "rank": 26,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.31,
+    "rank": 20,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.59,
+    "rank": 22,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.9,
+    "rank": 10,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0392,
+    "rank": 19,
+    "of": 30
+   },
+   "record": {
+    "wins": 4,
+    "losses": 7,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 3.6,
+    "losses": 7.4
    }
   }
  },
@@ -10091,5 +10091,5 @@
    }
   ]
  },
- "generated_at_utc": "2026-11-11T20:40:03+00:00"
+ "generated_at_utc": "2026-11-11T21:23:33+00:00"
 }
