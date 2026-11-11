@@ -283,11 +283,16 @@ def supplement(contexts, schedule, year, as_of, cache):
             print(f"ESPN final {g['game_id']} skipped: {error}")
             return None
 
+    finals = []  # one row per D-I game: what each side scored and its possessions
     with ThreadPoolExecutor(max_workers=6) as pool:
         for g, box in zip(fixtures.values(), pool.map(read_game, fixtures.values())):
             if box is None:
                 continue
             day, home, away, h_score, a_score = box["fixture"]
+            if home in division and away in division:
+                finals.append({"id": str(g["game_id"]), "date": day, "home": home, "away": away,
+                               **{f"{side}_{k}": box["teams"][tid][k] for side, tid in (("home", home), ("away", away))
+                                  for k in ("pts", "poss")}})
             for side, own, opp in (("home", home, away), ("away", away, home)):
                 if own not in division:
                     continue
@@ -321,6 +326,7 @@ def supplement(contexts, schedule, year, as_of, cache):
             tactics["size_summary"]["starters"], tactics["starter_position_size"] = found
             filled["starter size"] += 1
     print(f"Matched ESPN finals filled CBB evidence {dict(filled)}.")
+    return finals
 
 
 def read_roster(team, year):

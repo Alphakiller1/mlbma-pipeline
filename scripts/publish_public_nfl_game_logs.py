@@ -20,6 +20,23 @@ OUT = ROOT / "data" / "public" / "nfl" / "game_logs.json"
 CLUBS = 32
 
 
+def add_predictability(log: dict) -> dict:
+    """Each club's predictability on the NFL curve: offensive EPA per play per
+    game, pairing the two clubs of every game (pipeline/predictability.py)."""
+    from pipeline import predictability
+    games: dict[str, dict] = {}
+    for club, rows in log["teams"].items():
+        for g in rows:
+            value = (g.get("off_epa_play") or {}).get("value")
+            row = games.setdefault(g["game_id"], {})
+            side = "home" if g.get("home") else "away"
+            row[side] = club
+            row[side + "_off"] = value
+    paired = [g for g in games.values() if {"home", "away", "home_off", "away_off"} <= g.keys()]
+    log["predictability"] = predictability.score(paired, predictability.NFL)
+    return log
+
+
 def validate(log: dict) -> str | None:
     teams = log.get("teams") or {}
     if len(teams) < CLUBS:
@@ -41,6 +58,7 @@ def main() -> int:
     if not log:
         print("  skip nfl game logs: no current play-by-play")
         return 1
+    add_predictability(log)
     problem = validate(log)
     if problem:
         print(f"  refusing to write {OUT.name}: {problem}; keeping the published file")

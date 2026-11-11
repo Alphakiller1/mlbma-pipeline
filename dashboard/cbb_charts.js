@@ -44,8 +44,8 @@
     function badge(id,x,y,rotate) {
       var z = by[id],tone=toneOf(z);
       return '<g class="ca-court-badge '+tone + (rotate ? ' ca-cbb-corner' : '') + '" transform="translate(' + x + ' ' + y + ')' + (rotate ? ' rotate(90)' : '') + '"><rect x="' + (rotate ? -40 : -55) + '" y="' + (rotate ? -18 : -28) + '" width="' + (rotate ? 80 : 110) + '" height="' + (rotate ? 36 : 56) + '" rx="7"></rect><text class="ca-court-badge__big" y="-2">' +
-        (!z.attempts ? 'No FGA' : share ? pct(z.shot_share) : pct(z.fg_pct)) + '</text><text class="ca-court-badge__small" y="' + (rotate ? 14 : 20) + '">' +
-        (share ? z.attempts + ' FGA' : z.made + '/' + z.attempts) + '</text></g>';
+        (!z.attempts ? '0 FGA' : share ? pct(z.shot_share) : pct(z.fg_pct)) + '</text><text class="ca-court-badge__small" y="' + (rotate ? 14 : 20) + '">' +
+        (!z.attempts ? 'none taken' : share ? z.attempts + ' FGA' : z.made + '/' + z.attempts) + '</text></g>';
     }
     return '<figure class="ca-court ca-cbb-court" data-court-metric="'+(share?'share':'fg')+'"><svg viewBox="0 0 500 ' + (options.compact ? 380 : 470) + '" role="img" aria-label="' + esc(title) + '"><rect class="ca-court-floor" width="500" height="470"></rect>' + zones +
       '<g class="ca-court-lines" aria-hidden="true"><rect x="1" y="1" width="498" height="468"></rect><rect x="190" y="1" width="120" height="189"></rect><circle cx="250" cy="190" r="60"></circle><path d="M33.44 1L33.44 98.81A221.46 221.46 0 0 0 466.56 98.81L466.56 1"></path><line x1="220" y1="40" x2="280" y2="40"></line><circle class="ca-court-rim" cx="250" cy="52.5" r="7.5"></circle></g>' +

@@ -30,6 +30,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import sys
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -451,6 +452,7 @@ def game_logs(season: int, through_week: int, wanted: dict[str, str],
     abbreviation for the schools that are published.
     """
     raw: dict[str, list[dict]] = {}       # ESPN team id -> games
+    paired: dict[str, dict] = {}          # event id -> {home|away: (team id, yards per play)}
     names: dict[str, tuple[str, str]] = {}  # ESPN team id -> (abbr, location)
     for week in range(1, max(1, through_week)):
         for event in _week_events(season, week):
@@ -470,6 +472,13 @@ def game_logs(season: int, through_week: int, wanted: dict[str, str],
                 third = str(mine.get("thirdDownEff") or "")
                 made_att = re.fullmatch(r"(\d+)-(\d+)", third)
                 names[tid] = (str(team.get("abbreviation") or "").upper(), team.get("location") or "")
+                passes = re.fullmatch(r"(\d+)[/-](\d+)", str(mine.get("completionAttempts") or ""))
+                rushes = _num(mine.get("rushingAttempts"))
+                plays = (rushes or 0) + (int(passes.group(2)) if passes else 0)
+                yards = _num(mine.get("totalYards"))
+                if yards is not None and plays >= 20:
+                    paired.setdefault(str(event.get("id")), {})[
+                        "home" if me.get("homeAway") == "home" else "away"] = (tid, yards / plays)
                 raw.setdefault(tid, []).append({
                     "week": week, "date": event.get("date"),
                     "opponent": (opp.get("team") or {}).get("abbreviation"),
@@ -515,6 +524,14 @@ def game_logs(season: int, through_week: int, wanted: dict[str, str],
         pool = [r[field] for tid, r in season_rows.items() if r[field] is not None and is_fbs(tid)]
         for r in season_rows.values():
             r[field] = _ranked(pool, r[field], better)
+    # Predictability on the FBS curve: yards per play, FBS vs FBS games only.
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    from pipeline import predictability
+    fbs_ids = {tid for tid in raw if is_fbs(tid)}
+    scored = predictability.score(
+        [{"home": g["home"][0], "away": g["away"][0], "home_off": g["home"][1], "away_off": g["away"][1]}
+         for g in paired.values() if "home" in g and "away" in g], predictability.CFB, teams=fbs_ids)
     out: dict[str, dict] = {}
     for tid, games in raw.items():
         abbr, location = names[tid]
@@ -523,6 +540,8 @@ def game_logs(season: int, through_week: int, wanted: dict[str, str],
             continue
         out[board] = {"games": sorted(games, key=lambda g: (g["week"], g["date"] or "")),
                       "season": season_rows[tid]}
+        if tid in scored:
+            out[board]["predictability"] = scored[tid]
     return out
 
 
