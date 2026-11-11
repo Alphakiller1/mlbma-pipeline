@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-10",
- "generated_at_utc": "2026-11-10T20:51:07+00:00",
+ "generated_at_utc": "2026-11-11T01:30:40+00:00",
  "data_through_utc": "2026-11-10T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -122,7 +122,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "End of 1st",
+   "status_detail": "8:29 - 3rd",
    "kickoff_utc": "2026-11-11T00:30Z",
    "away": "MIL",
    "home": "NY",
@@ -136,8 +136,8 @@
    "home_record": "5-4",
    "away_split_record": "0-4",
    "home_split_record": "3-2",
-   "away_score": 21,
-   "home_score": 26,
+   "away_score": 45,
+   "home_score": 63,
    "venue": "Madison Square Garden",
    "venue_city": "New York, NY",
    "broadcast": "MyMi / Bucks App",
@@ -2492,7 +2492,7 @@
       "player_name": "Tyler Herro",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4395725.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 30.7,
       "ppg": 21.4,
       "height_in": 77.0,
@@ -3784,7 +3784,7 @@
       "player_name": "Kel'el Ware",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5105623.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 17.3,
       "ppg": 8.6,
       "height_in": 84.0,
@@ -3967,22 +3967,13 @@
    },
    "away_injuries": [
     {
-     "player_id": "5105623",
-     "player_name": "Kel'el Ware",
-     "status": "Day-To-Day",
-     "detail": "Left Ankle Sprain",
-     "comment": "Ware is questionable for Tuesday's game against the Knicks due to a left ankle sprain.",
-     "date": "2026-11-10T17:18Z",
-     "return_date": "2026-11-10"
-    },
-    {
      "player_id": "4395725",
      "player_name": "Tyler Herro",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Right Knee Bruise",
-     "comment": "Herro (contusion) is listed as questionable for Tuesday's game against the Knicks.",
-     "date": "2026-11-09T22:21Z",
-     "return_date": "2026-11-10"
+     "comment": "Herro (knee) is listed as out for Tuesday's game against New York.",
+     "date": "2026-11-10T23:24Z",
+     "return_date": "2026-11-11"
     }
    ],
    "home_form": {
@@ -7131,7 +7122,7 @@
       "player_name": "Josh Hart",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3062679.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 31.7,
       "ppg": 8.6,
       "height_in": 77.0,
@@ -7712,11 +7703,11 @@
     {
      "player_id": "3062679",
      "player_name": "Josh Hart",
-     "status": "Day-To-Day",
-     "detail": "Ankle",
-     "comment": "Hart is doubtful for Tuesday's game against the Bucks due to an illness.",
-     "date": "2026-11-10T19:20Z",
-     "return_date": "2026-11-10"
+     "status": "Out",
+     "detail": "Illness",
+     "comment": "Hart (illness) won't play Tuesday against the Bucks, Kristian Winfield of the New York Daily News reports.",
+     "date": "2026-11-10T22:58Z",
+     "return_date": "2026-11-11"
     }
    ]
   },
@@ -7724,8 +7715,8 @@
    "id": "401909961",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/10 - 8:00 PM EST",
+   "game_state": "live",
+   "status_detail": "7:15 - 2nd",
    "kickoff_utc": "2026-11-11T01:00Z",
    "away": "BOS",
    "home": "PHI",
@@ -7739,8 +7730,8 @@
    "home_record": "9-2",
    "away_split_record": "3-2",
    "home_split_record": "4-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 45,
+   "home_score": 34,
    "venue": "Xfinity Mobile Arena",
    "venue_city": "Philadelphia, PA",
    "broadcast": "NBC",
@@ -9729,15 +9720,15 @@
     "size": {
      "height": {
       "label": "Rotation Height (in, minutes-weighted)",
-      "value": 78.7571,
+      "value": 78.8056,
       "better": "neutral",
-      "rank": 17,
+      "rank": 16,
       "of": 30,
       "format": "num"
      },
      "weight": {
       "label": "Rotation Weight (lb, minutes-weighted)",
-      "value": 223.367,
+      "value": 223.5572,
       "better": "neutral",
       "rank": 6,
       "of": 30,
@@ -9745,7 +9736,7 @@
      },
      "age": {
       "label": "Rotation Age (minutes-weighted)",
-      "value": 28.5964,
+      "value": 28.4867,
       "better": "neutral",
       "rank": 6,
       "of": 30,
@@ -25832,7 +25823,7 @@
       "player_name": "Giannis Antetokounmpo",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3032977.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 32.9,
       "ppg": 27.5,
       "height_in": 83.0,
@@ -27138,17 +27129,7 @@
     "tz_shift": 1,
     "altitude": true
    },
-   "away_injuries": [
-    {
-     "player_id": "3032977",
-     "player_name": "Giannis Antetokounmpo",
-     "status": "Day-To-Day",
-     "detail": "Right Wrist Sprain",
-     "comment": "Antetokounmpo is probable for Tuesday's game against the Jazz due to a right wrist sprain.",
-     "date": "2026-11-09T23:05Z",
-     "return_date": "2026-11-10"
-    }
-   ],
+   "away_injuries": [],
    "home_form": {
     "source": "espn-box",
     "season": 2027,
@@ -37423,7 +37404,7 @@
       "player_name": "Domantas Sabonis",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3155942.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 35.6,
       "ppg": 15.3,
       "height_in": 82.0,
@@ -38497,24 +38478,6 @@
      "comment": "Raynaud (knee) has been ruled out for Tuesday's game against Orlando.",
      "date": "2026-11-10T00:37Z",
      "return_date": "2026-11-15"
-    },
-    {
-     "player_id": "4594327",
-     "player_name": "Keegan Murray",
-     "status": "Day-To-Day",
-     "detail": "Right Wrist Soreness",
-     "comment": "Murray is questionable for Tuesday's game against the Magic due to right wrist soreness.",
-     "date": "2026-11-10T00:36Z",
-     "return_date": "2026-11-10"
-    },
-    {
-     "player_id": "3155942",
-     "player_name": "Domantas Sabonis",
-     "status": "Day-To-Day",
-     "detail": "Left Knee Soreness",
-     "comment": "Sabonis (knee) is questionable to play Tuesday's game against the Magic.",
-     "date": "2026-11-10T00:35Z",
-     "return_date": "2026-11-10"
     },
     {
      "player_id": "3907387",
@@ -46027,5 +45990,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-11T01:05:15+00:00"
+ "published_at_utc": "2026-11-11T01:52:32+00:00"
 }
