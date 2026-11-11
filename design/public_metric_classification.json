@@ -114,7 +114,8 @@
     "version",
     "week",
     "zone_policy",
-    "zones_basis"
+    "zones_basis",
+    "window_seconds"
   ],
   "identity": [
     "Cut",
@@ -985,7 +986,12 @@
     "sos_net_played",
     "sos_off_remaining",
     "sos_def_remaining",
-    "sos_net_remaining"
+    "sos_net_remaining",
+    "after_score",
+    "forced",
+    "steals",
+    "lost",
+    "stolen"
   ],
   "derived_descriptive": [
     "estimated_per40",
@@ -1108,7 +1114,15 @@
     "prior_games",
     "unit_sigma",
     "team_sigma",
-    "league_off_curve"
+    "league_off_curve",
+    "forced_per100",
+    "steals_per100",
+    "lost_per100",
+    "stolen_per100",
+    "pressure_forced_per100",
+    "pressure_steals_per100",
+    "pressure_lost_per100",
+    "pressure_stolen_per100"
   ],
   "contextual_environment": [
     "away_rest_days",

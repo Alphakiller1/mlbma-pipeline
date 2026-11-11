@@ -98,4 +98,14 @@ class CbbMatchupLayoutTests(unittest.TestCase):
         for key in ('fb_pts_per100_all','stl_pct_d_all','pts_off_to_per_dposs_all'):
             self.assertIn(key,json.loads((ROOT/'data/public/cbb/2027/teams/150.json').read_text(encoding='utf-8'))['rates'])
 
+    def test_pressure_covers_every_team_and_ranks_like_the_desk(self):
+        # Measured pressure is the section's base; Synergy and film tags join it.
+        self.assertIn("var coverage = (pressed ? nflDuo(cbbPressure,sport,game) : '') + tags;",self.block)
+        teams=list((ROOT/'data/public/cbb/2026/teams').glob('*.json'))
+        measured=[json.loads(f.read_text(encoding='utf-8')).get('pressure') for f in teams]
+        self.assertGreaterEqual(sum(1 for m in measured if m and m['games']>=20),0.95*len(teams))
+        ranks=json.loads((ROOT/'data/public/cbb/matchup-ranks.json').read_text(encoding='utf-8'))['grade_baselines']['2026']['team']
+        for key in ('pressure_forced_per100','pressure_steals_per100','pressure_lost_per100','pressure_stolen_per100'):
+            self.assertGreaterEqual(len(ranks[key]),0.95*len(teams))
+
 if __name__=='__main__':unittest.main()
