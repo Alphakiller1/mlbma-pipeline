@@ -3,14 +3,14 @@
   "sport": "cfb",
   "season": 2026,
   "week": 11,
-  "generated_at_utc": "2026-11-10T19:53:45Z",
-  "data_through_utc": "2026-11-09T23:50:33Z",
+  "generated_at_utc": "2026-11-11T00:44:30Z",
+  "data_through_utc": "2026-11-10T20:47:14Z",
   "games": [
     {
       "id": "KENT@BGSU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-11T00:00Z",
       "away": "KENT",
       "home": "BGSU",
@@ -24,13 +24,13 @@
       "home_color": "#fd5000",
       "away_record": "3-6",
       "home_record": "2-7",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "7",
+      "home_score": "7",
       "venue": "Doyt L. Perry Stadium",
       "venue_city": "Bowling Green, OH",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 53,
+      "weather_temp": 51,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -2422,35 +2422,35 @@
             "predictability": 96,
             "place": 7,
             "of": 138,
-            "off_curve": 0.03,
+            "off_curve": 0.0301,
             "observed_off_curve": 0.0,
-            "volatility": 0.691,
+            "volatility": 0.692,
             "games": 8
           },
           "defense": {
             "predictability": 15,
             "place": 118,
             "of": 138,
-            "off_curve": 0.2061,
+            "off_curve": 0.207,
             "observed_off_curve": 0.25,
-            "volatility": 1.186,
+            "volatility": 1.189,
             "games": 8
           },
           "team": {
             "predictability": 45,
             "place": 76,
             "of": 138,
-            "off_curve": 0.1251,
+            "off_curve": 0.1255,
             "observed_off_curve": 0.125,
-            "volatility": 0.978,
+            "volatility": 0.979,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -3738,8 +3738,8 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 70,
-            "place": 42,
+            "predictability": 72,
+            "place": 40,
             "of": 138,
             "off_curve": 0.0895,
             "observed_off_curve": 0.125,
@@ -3750,26 +3750,26 @@
             "predictability": 18,
             "place": 114,
             "of": 138,
-            "off_curve": 0.1975,
-            "observed_off_curve": 0.25,
-            "volatility": 1.164,
+            "off_curve": 0.1978,
+            "observed_off_curve": 0.375,
+            "volatility": 1.165,
             "games": 8
           },
           "team": {
             "predictability": 10,
             "place": 124,
             "of": 138,
-            "off_curve": 0.2186,
+            "off_curve": 0.2188,
             "observed_off_curve": 0.375,
-            "volatility": 1.219,
+            "volatility": 1.22,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -3838,6 +3838,16 @@
       "home_injuries": {
         "players": [
           {
+            "player": "Isaiah Dawson",
+            "position": "WR",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Nov 10 7:00 PM",
+            "detail": "Dawson is dealing with an undisclosed injury, and he will miss an undetermined length of time.",
+            "source": "RotoWire + Covers",
+            "return": "Nov 20th"
+          },
+          {
             "player": "T. Blackmon",
             "position": "RB",
             "status": "Questionable",
@@ -3875,7 +3885,7 @@
       "id": "WMU@AKR",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-11T00:00Z",
       "away": "WMU",
       "home": "AKR",
@@ -3889,14 +3899,14 @@
       "home_color": "#041e42",
       "away_record": "6-3",
       "home_record": "1-8",
-      "away_score": "0",
+      "away_score": "14",
       "home_score": "0",
       "venue": "InfoCision Stadium",
       "venue_city": "Akron, OH",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 50,
-      "weather_cond": "Mostly clear",
+      "weather_temp": 47,
+      "weather_cond": "Clear",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -6263,7 +6273,7 @@
             "predictability": 60,
             "place": 56,
             "of": 138,
-            "off_curve": 0.1033,
+            "off_curve": 0.1035,
             "observed_off_curve": 0.125,
             "volatility": 0.921,
             "games": 8
@@ -6272,26 +6282,26 @@
             "predictability": 99,
             "place": 2,
             "of": 138,
-            "off_curve": 0.023,
+            "off_curve": 0.0228,
             "observed_off_curve": 0.0,
-            "volatility": 0.66,
+            "volatility": 0.659,
             "games": 8
           },
           "team": {
             "predictability": 93,
             "place": 10,
             "of": 138,
-            "off_curve": 0.0384,
+            "off_curve": 0.0385,
             "observed_off_curve": 0.0,
-            "volatility": 0.724,
+            "volatility": 0.725,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -6358,7 +6368,17 @@
         }
       },
       "away_injuries": {
-        "players": [],
+        "players": [
+          {
+            "player": "Aveion Chenault",
+            "position": "WR",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "return": "Nov 10th",
+            "updated": "Nov 10 7:00 PM",
+            "source": "RotoWire"
+          }
+        ],
         "sources": "Covers, RotoWire"
       },
       "home_run_game": {
@@ -7612,14 +7632,14 @@
             "predictability": 91,
             "place": 13,
             "of": 138,
-            "off_curve": 0.0408,
+            "off_curve": 0.0409,
             "observed_off_curve": 0.0,
-            "volatility": 0.733,
+            "volatility": 0.734,
             "games": 8
           },
           "defense": {
-            "predictability": 68,
-            "place": 45,
+            "predictability": 67,
+            "place": 46,
             "of": 138,
             "off_curve": 0.0835,
             "observed_off_curve": 0.0,
@@ -7630,17 +7650,17 @@
             "predictability": 78,
             "place": 31,
             "of": 138,
-            "off_curve": 0.0792,
+            "off_curve": 0.0806,
             "observed_off_curve": 0.0,
-            "volatility": 0.854,
+            "volatility": 0.858,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -7718,6 +7738,15 @@
             "source": "Covers"
           },
           {
+            "player": "Elijah Alexander",
+            "position": "TE",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "return": "Nov 18th",
+            "updated": "Nov 10 7:00 PM",
+            "source": "RotoWire"
+          },
+          {
             "player": "C. Monteiro",
             "position": "WR",
             "status": "Out",
@@ -7745,11 +7774,11 @@
             "source": "Covers"
           },
           {
-            "player": "Semaj Beals",
-            "position": "QB",
-            "status": "Questionable",
+            "player": "Paul Davis",
+            "position": "WR",
+            "status": "Out",
             "injury": "Undisclosed",
-            "return": "Nov 10th",
+            "return": "Nov 18th",
             "updated": "Nov 10 7:00 PM",
             "source": "RotoWire"
           },
@@ -7761,24 +7790,6 @@
             "updated": "Sat, Oct 17",
             "detail": "Patrick is nursing with an undisclosed injury, and it is unclear whether he will play against Kent State on Saturday.",
             "source": "Covers"
-          },
-          {
-            "player": "Elijah Alexander",
-            "position": "TE",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "return": "Nov 10th",
-            "updated": "Nov 10 7:00 PM",
-            "source": "RotoWire"
-          },
-          {
-            "player": "Paul Davis",
-            "position": "WR",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "return": "Nov 10th",
-            "updated": "Nov 10 7:00 PM",
-            "source": "RotoWire"
           }
         ],
         "sources": "Covers, RotoWire"
@@ -7810,7 +7821,7 @@
       "venue_city": "Oxford, OH",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 51,
+      "weather_temp": 53,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -10199,19 +10210,19 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 72,
-            "place": 40,
+            "predictability": 70,
+            "place": 42,
             "of": 138,
-            "off_curve": 0.0883,
+            "off_curve": 0.0903,
             "observed_off_curve": 0.0,
-            "volatility": 0.88,
+            "volatility": 0.886,
             "games": 8
           },
           "defense": {
             "predictability": 96,
             "place": 6,
             "of": 138,
-            "off_curve": 0.0283,
+            "off_curve": 0.0284,
             "observed_off_curve": 0.0,
             "volatility": 0.684,
             "games": 8
@@ -10220,7 +10231,7 @@
             "predictability": 93,
             "place": 11,
             "of": 138,
-            "off_curve": 0.0435,
+            "off_curve": 0.0436,
             "observed_off_curve": 0.0,
             "volatility": 0.743,
             "games": 8
@@ -10229,8 +10240,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -11500,19 +11511,19 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 58,
-            "place": 59,
+            "predictability": 57,
+            "place": 60,
             "of": 138,
-            "off_curve": 0.1058,
+            "off_curve": 0.1061,
             "observed_off_curve": 0.0,
-            "volatility": 0.927,
+            "volatility": 0.928,
             "games": 8
           },
           "defense": {
-            "predictability": 27,
-            "place": 101,
+            "predictability": 28,
+            "place": 100,
             "of": 138,
-            "off_curve": 0.172,
+            "off_curve": 0.1721,
             "observed_off_curve": 0.125,
             "volatility": 1.098,
             "games": 8
@@ -11521,7 +11532,7 @@
             "predictability": 16,
             "place": 116,
             "of": 138,
-            "off_curve": 0.1945,
+            "off_curve": 0.1946,
             "observed_off_curve": 0.125,
             "volatility": 1.156,
             "games": 8
@@ -11530,8 +11541,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -13985,28 +13996,28 @@
           },
           "defense": {
             "predictability": 12,
-            "place": 122,
+            "place": 121,
             "of": 138,
-            "off_curve": 0.2176,
+            "off_curve": 0.2158,
             "observed_off_curve": 0.2857,
-            "volatility": 1.217,
+            "volatility": 1.212,
             "games": 7
           },
           "team": {
             "predictability": 11,
             "place": 123,
             "of": 138,
-            "off_curve": 0.2147,
+            "off_curve": 0.2142,
             "observed_off_curve": 0.1429,
-            "volatility": 1.209,
+            "volatility": 1.208,
             "games": 7
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -15386,10 +15397,10 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 54,
-            "place": 64,
+            "predictability": 53,
+            "place": 65,
             "of": 138,
-            "off_curve": 0.1143,
+            "off_curve": 0.1145,
             "observed_off_curve": 0.125,
             "volatility": 0.95,
             "games": 8
@@ -15398,26 +15409,26 @@
             "predictability": 77,
             "place": 33,
             "of": 138,
-            "off_curve": 0.0733,
+            "off_curve": 0.0736,
             "observed_off_curve": 0.125,
             "volatility": 0.838,
             "games": 8
           },
           "team": {
-            "predictability": 34,
-            "place": 92,
+            "predictability": 33,
+            "place": 93,
             "of": 138,
-            "off_curve": 0.1485,
+            "off_curve": 0.1488,
             "observed_off_curve": 0.125,
-            "volatility": 1.038,
+            "volatility": 1.039,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -17967,19 +17978,19 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 87,
-            "place": 19,
+            "predictability": 86,
+            "place": 20,
             "of": 138,
-            "off_curve": 0.0555,
+            "off_curve": 0.0561,
             "observed_off_curve": 0.0,
-            "volatility": 0.783,
+            "volatility": 0.785,
             "games": 7
           },
           "defense": {
             "predictability": 78,
             "place": 31,
             "of": 138,
-            "off_curve": 0.0716,
+            "off_curve": 0.0717,
             "observed_off_curve": 0.0,
             "volatility": 0.833,
             "games": 7
@@ -17988,17 +17999,17 @@
             "predictability": 91,
             "place": 13,
             "of": 138,
-            "off_curve": 0.0496,
+            "off_curve": 0.0499,
             "observed_off_curve": 0.0,
-            "volatility": 0.764,
+            "volatility": 0.765,
             "games": 7
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -19249,38 +19260,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 15,
-            "place": 117,
+            "predictability": 16,
+            "place": 116,
             "of": 138,
-            "off_curve": 0.1921,
+            "off_curve": 0.19,
             "observed_off_curve": 0.125,
-            "volatility": 1.15,
+            "volatility": 1.145,
             "games": 8
           },
           "defense": {
             "predictability": 93,
             "place": 11,
             "of": 138,
-            "off_curve": 0.0371,
+            "off_curve": 0.0372,
             "observed_off_curve": 0.0,
             "volatility": 0.72,
             "games": 8
           },
           "team": {
             "predictability": 64,
-            "place": 51,
+            "place": 50,
             "of": 138,
-            "off_curve": 0.1016,
+            "off_curve": 0.1005,
             "observed_off_curve": 0.0,
-            "volatility": 0.916,
+            "volatility": 0.913,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -21808,35 +21819,35 @@
             "predictability": 69,
             "place": 44,
             "of": 138,
-            "off_curve": 0.0929,
-            "observed_off_curve": 0.0,
-            "volatility": 0.893,
+            "off_curve": 0.0933,
+            "observed_off_curve": 0.1111,
+            "volatility": 0.894,
             "games": 9
           },
           "defense": {
-            "predictability": 23,
-            "place": 107,
+            "predictability": 22,
+            "place": 108,
             "of": 138,
-            "off_curve": 0.1893,
+            "off_curve": 0.19,
             "observed_off_curve": 0.2222,
-            "volatility": 1.143,
+            "volatility": 1.145,
             "games": 9
           },
           "team": {
             "predictability": 38,
             "place": 86,
             "of": 138,
-            "off_curve": 0.1391,
+            "off_curve": 0.1395,
             "observed_off_curve": 0.2222,
-            "volatility": 1.014,
+            "volatility": 1.015,
             "games": 9
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -23205,35 +23216,35 @@
             "predictability": 59,
             "place": 57,
             "of": 138,
-            "off_curve": 0.1051,
+            "off_curve": 0.1053,
             "observed_off_curve": 0.125,
-            "volatility": 0.925,
+            "volatility": 0.926,
             "games": 8
           },
           "defense": {
             "predictability": 88,
             "place": 17,
             "of": 138,
-            "off_curve": 0.0496,
+            "off_curve": 0.0494,
             "observed_off_curve": 0.125,
-            "volatility": 0.764,
+            "volatility": 0.763,
             "games": 8
           },
           "team": {
-            "predictability": 56,
-            "place": 61,
+            "predictability": 55,
+            "place": 62,
             "of": 138,
-            "off_curve": 0.1103,
+            "off_curve": 0.112,
             "observed_off_curve": 0.125,
-            "volatility": 0.939,
+            "volatility": 0.944,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -25731,28 +25742,28 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 29,
-            "place": 98,
+            "predictability": 28,
+            "place": 99,
             "of": 138,
-            "off_curve": 0.1597,
+            "off_curve": 0.16,
             "observed_off_curve": 0.125,
-            "volatility": 1.067,
+            "volatility": 1.068,
             "games": 8
           },
           "defense": {
             "predictability": 90,
             "place": 15,
             "of": 138,
-            "off_curve": 0.0429,
+            "off_curve": 0.043,
             "observed_off_curve": 0.0,
             "volatility": 0.741,
             "games": 8
           },
           "team": {
             "predictability": 96,
-            "place": 7,
+            "place": 6,
             "of": 138,
-            "off_curve": 0.0329,
+            "off_curve": 0.0328,
             "observed_off_curve": 0.0,
             "volatility": 0.703,
             "games": 8
@@ -25761,8 +25772,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -27064,19 +27075,19 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 75,
-            "place": 35,
+            "predictability": 74,
+            "place": 36,
             "of": 138,
-            "off_curve": 0.0849,
+            "off_curve": 0.0855,
             "observed_off_curve": 0.0,
-            "volatility": 0.87,
+            "volatility": 0.872,
             "games": 8
           },
           "defense": {
             "predictability": 53,
             "place": 65,
             "of": 138,
-            "off_curve": 0.1044,
+            "off_curve": 0.1046,
             "observed_off_curve": 0.0,
             "volatility": 0.924,
             "games": 8
@@ -27085,17 +27096,17 @@
             "predictability": 88,
             "place": 18,
             "of": 138,
-            "off_curve": 0.0575,
+            "off_curve": 0.058,
             "observed_off_curve": 0.0,
-            "volatility": 0.79,
+            "volatility": 0.791,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -29593,37 +29604,37 @@
         "predictability": {
           "offense": {
             "predictability": 9,
-            "place": 125,
+            "place": 126,
             "of": 138,
-            "off_curve": 0.2233,
+            "off_curve": 0.2254,
             "observed_off_curve": 0.25,
-            "volatility": 1.232,
+            "volatility": 1.237,
             "games": 8
           },
           "defense": {
-            "predictability": 63,
-            "place": 52,
+            "predictability": 62,
+            "place": 53,
             "of": 138,
-            "off_curve": 0.0937,
+            "off_curve": 0.0939,
             "observed_off_curve": 0.125,
             "volatility": 0.895,
             "games": 8
           },
           "team": {
             "predictability": 96,
-            "place": 6,
+            "place": 7,
             "of": 138,
-            "off_curve": 0.0323,
+            "off_curve": 0.0335,
             "observed_off_curve": 0.0,
-            "volatility": 0.701,
+            "volatility": 0.705,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -30949,38 +30960,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 98,
-            "place": 4,
+            "predictability": 99,
+            "place": 3,
             "of": 138,
-            "off_curve": 0.0269,
+            "off_curve": 0.0246,
             "observed_off_curve": 0.0,
-            "volatility": 0.678,
+            "volatility": 0.667,
             "games": 8
           },
           "defense": {
             "predictability": 0,
             "place": 138,
             "of": 138,
-            "off_curve": 0.3343,
+            "off_curve": 0.3346,
             "observed_off_curve": 0.375,
-            "volatility": 1.554,
+            "volatility": 1.555,
             "games": 8
           },
           "team": {
-            "predictability": 24,
-            "place": 105,
+            "predictability": 23,
+            "place": 106,
             "of": 138,
-            "off_curve": 0.1664,
+            "off_curve": 0.1697,
             "observed_off_curve": 0.125,
-            "volatility": 1.084,
+            "volatility": 1.092,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -33468,8 +33479,8 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 31,
-            "place": 96,
+            "predictability": 30,
+            "place": 97,
             "of": 138,
             "off_curve": 0.1561,
             "observed_off_curve": 0.125,
@@ -33480,26 +33491,26 @@
             "predictability": 1,
             "place": 136,
             "of": 138,
-            "off_curve": 0.2822,
+            "off_curve": 0.282,
             "observed_off_curve": 0.5,
-            "volatility": 1.395,
+            "volatility": 1.394,
             "games": 8
           },
           "team": {
             "predictability": 0,
             "place": 138,
             "of": 138,
-            "off_curve": 0.2989,
+            "off_curve": 0.2983,
             "observed_off_curve": 0.375,
-            "volatility": 1.444,
+            "volatility": 1.442,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -34985,9 +34996,9 @@
         "predictability": {
           "offense": {
             "predictability": 7,
-            "place": 128,
+            "place": 129,
             "of": 138,
-            "off_curve": 0.2309,
+            "off_curve": 0.231,
             "observed_off_curve": 0.125,
             "volatility": 1.252,
             "games": 8
@@ -34996,14 +35007,14 @@
             "predictability": 31,
             "place": 96,
             "of": 138,
-            "off_curve": 0.1588,
+            "off_curve": 0.1589,
             "observed_off_curve": 0.25,
-            "volatility": 1.064,
+            "volatility": 1.065,
             "games": 8
           },
           "team": {
-            "predictability": 23,
-            "place": 106,
+            "predictability": 24,
+            "place": 105,
             "of": 138,
             "off_curve": 0.1688,
             "observed_off_curve": 0.25,
@@ -35014,8 +35025,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -35149,8 +35160,8 @@
       "venue_city": "Pasadena, CA",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 65,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 62,
+      "weather_cond": "Mostly cloudy w/ showers",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -37550,7 +37561,7 @@
             "predictability": 92,
             "place": 12,
             "of": 138,
-            "off_curve": 0.0377,
+            "off_curve": 0.0378,
             "observed_off_curve": 0.0,
             "volatility": 0.722,
             "games": 8
@@ -37559,17 +37570,17 @@
             "predictability": 88,
             "place": 17,
             "of": 138,
-            "off_curve": 0.0563,
+            "off_curve": 0.0561,
             "observed_off_curve": 0.0,
-            "volatility": 0.786,
+            "volatility": 0.785,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -38956,27 +38967,27 @@
         "predictability": {
           "offense": {
             "predictability": 23,
-            "place": 106,
+            "place": 107,
             "of": 138,
-            "off_curve": 0.1756,
+            "off_curve": 0.1757,
             "observed_off_curve": 0.1111,
-            "volatility": 1.107,
+            "volatility": 1.108,
             "games": 9
           },
           "defense": {
             "predictability": 2,
             "place": 135,
             "of": 138,
-            "off_curve": 0.2798,
+            "off_curve": 0.2802,
             "observed_off_curve": 0.2222,
-            "volatility": 1.388,
+            "volatility": 1.389,
             "games": 9
           },
           "team": {
-            "predictability": 26,
-            "place": 103,
+            "predictability": 25,
+            "place": 104,
             "of": 138,
-            "off_curve": 0.1644,
+            "off_curve": 0.1645,
             "observed_off_curve": 0.2222,
             "volatility": 1.079,
             "games": 9
@@ -38985,8 +38996,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -41514,35 +41525,35 @@
             "predictability": 82,
             "place": 25,
             "of": 138,
-            "off_curve": 0.0698,
+            "off_curve": 0.0703,
             "observed_off_curve": 0.0,
-            "volatility": 0.827,
+            "volatility": 0.829,
             "games": 8
           },
           "defense": {
             "predictability": 72,
-            "place": 40,
+            "place": 39,
             "of": 138,
             "off_curve": 0.0799,
             "observed_off_curve": 0.0,
-            "volatility": 0.856,
+            "volatility": 0.857,
             "games": 8
           },
           "team": {
-            "predictability": 49,
-            "place": 71,
+            "predictability": 48,
+            "place": 72,
             "of": 138,
-            "off_curve": 0.117,
+            "off_curve": 0.1173,
             "observed_off_curve": 0.0,
-            "volatility": 0.957,
+            "volatility": 0.958,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -42907,27 +42918,27 @@
         "predictability": {
           "offense": {
             "predictability": 31,
-            "place": 95,
+            "place": 96,
             "of": 138,
-            "off_curve": 0.1558,
+            "off_curve": 0.1561,
             "observed_off_curve": 0.25,
-            "volatility": 1.057,
+            "volatility": 1.058,
             "games": 8
           },
           "defense": {
             "predictability": 85,
-            "place": 21,
+            "place": 22,
             "of": 138,
-            "off_curve": 0.0584,
+            "off_curve": 0.0582,
             "observed_off_curve": 0.0,
-            "volatility": 0.793,
+            "volatility": 0.792,
             "games": 8
           },
           "team": {
-            "predictability": 62,
-            "place": 53,
+            "predictability": 63,
+            "place": 52,
             "of": 138,
-            "off_curve": 0.1027,
+            "off_curve": 0.1028,
             "observed_off_curve": 0.125,
             "volatility": 0.919,
             "games": 8
@@ -42936,8 +42947,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -43098,7 +43109,7 @@
       "venue_city": "Starkville, MS",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 50,
+      "weather_temp": 51,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -45466,35 +45477,35 @@
             "predictability": 88,
             "place": 17,
             "of": 138,
-            "off_curve": 0.0518,
+            "off_curve": 0.0514,
             "observed_off_curve": 0.0,
-            "volatility": 0.771,
+            "volatility": 0.77,
             "games": 9
           },
           "defense": {
             "predictability": 73,
             "place": 38,
             "of": 138,
-            "off_curve": 0.0782,
+            "off_curve": 0.078,
             "observed_off_curve": 0.0,
-            "volatility": 0.852,
+            "volatility": 0.851,
             "games": 9
           },
           "team": {
             "predictability": 77,
             "place": 33,
             "of": 138,
-            "off_curve": 0.0822,
+            "off_curve": 0.081,
             "observed_off_curve": 0.1111,
-            "volatility": 0.863,
+            "volatility": 0.86,
             "games": 9
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -46841,35 +46852,35 @@
             "predictability": 6,
             "place": 130,
             "of": 138,
-            "off_curve": 0.244,
+            "off_curve": 0.2442,
             "observed_off_curve": 0.2222,
             "volatility": 1.288,
             "games": 9
           },
           "defense": {
             "predictability": 61,
-            "place": 54,
+            "place": 55,
             "of": 138,
-            "off_curve": 0.0957,
+            "off_curve": 0.0953,
             "observed_off_curve": 0.1111,
-            "volatility": 0.9,
+            "volatility": 0.899,
             "games": 9
           },
           "team": {
             "predictability": 12,
             "place": 122,
             "of": 138,
-            "off_curve": 0.2097,
+            "off_curve": 0.2094,
             "observed_off_curve": 0.2222,
-            "volatility": 1.196,
+            "volatility": 1.195,
             "games": 9
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -49295,25 +49306,25 @@
             "predictability": 11,
             "place": 123,
             "of": 138,
-            "off_curve": 0.2104,
+            "off_curve": 0.2109,
             "observed_off_curve": 0.25,
-            "volatility": 1.198,
+            "volatility": 1.199,
             "games": 8
           },
           "defense": {
             "predictability": 50,
             "place": 70,
             "of": 138,
-            "off_curve": 0.1113,
+            "off_curve": 0.1117,
             "observed_off_curve": 0.0,
-            "volatility": 0.942,
+            "volatility": 0.943,
             "games": 8
           },
           "team": {
-            "predictability": 19,
-            "place": 112,
+            "predictability": 18,
+            "place": 114,
             "of": 138,
-            "off_curve": 0.187,
+            "off_curve": 0.1872,
             "observed_off_curve": 0.125,
             "volatility": 1.137,
             "games": 8
@@ -49322,8 +49333,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -50659,27 +50670,27 @@
         "predictability": {
           "offense": {
             "predictability": 9,
-            "place": 126,
+            "place": 125,
             "of": 138,
-            "off_curve": 0.2249,
+            "off_curve": 0.2254,
             "observed_off_curve": 0.375,
-            "volatility": 1.236,
+            "volatility": 1.237,
             "games": 8
           },
           "defense": {
             "predictability": 26,
             "place": 103,
             "of": 138,
-            "off_curve": 0.1787,
+            "off_curve": 0.1789,
             "observed_off_curve": 0.375,
-            "volatility": 1.115,
+            "volatility": 1.116,
             "games": 8
           },
           "team": {
             "predictability": 6,
             "place": 130,
             "of": 138,
-            "off_curve": 0.2643,
+            "off_curve": 0.2645,
             "observed_off_curve": 0.375,
             "volatility": 1.344,
             "games": 8
@@ -50688,8 +50699,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -50859,7 +50870,7 @@
       "venue_city": "Miami Gardens, FL",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 69,
+      "weather_temp": 71,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -53251,16 +53262,16 @@
             "predictability": 85,
             "place": 21,
             "of": 138,
-            "off_curve": 0.0566,
+            "off_curve": 0.0569,
             "observed_off_curve": 0.0,
-            "volatility": 0.787,
+            "volatility": 0.788,
             "games": 8
           },
           "defense": {
             "predictability": 64,
             "place": 50,
             "of": 138,
-            "off_curve": 0.0864,
+            "off_curve": 0.0865,
             "observed_off_curve": 0.125,
             "volatility": 0.875,
             "games": 8
@@ -53269,17 +53280,17 @@
             "predictability": 53,
             "place": 65,
             "of": 138,
-            "off_curve": 0.1127,
+            "off_curve": 0.1131,
             "observed_off_curve": 0.125,
-            "volatility": 0.946,
+            "volatility": 0.947,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -54540,38 +54551,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 89,
-            "place": 16,
+            "predictability": 90,
+            "place": 15,
             "of": 138,
-            "off_curve": 0.051,
+            "off_curve": 0.0493,
             "observed_off_curve": 0.125,
-            "volatility": 0.768,
+            "volatility": 0.763,
             "games": 8
           },
           "defense": {
-            "predictability": 61,
-            "place": 55,
+            "predictability": 60,
+            "place": 56,
             "of": 138,
-            "off_curve": 0.0959,
+            "off_curve": 0.0963,
             "observed_off_curve": 0.125,
-            "volatility": 0.901,
+            "volatility": 0.902,
             "games": 8
           },
           "team": {
             "predictability": 58,
             "place": 59,
             "of": 138,
-            "off_curve": 0.1097,
+            "off_curve": 0.1094,
             "observed_off_curve": 0.125,
-            "volatility": 0.938,
+            "volatility": 0.937,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -57102,12 +57113,12 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 55,
-            "place": 62,
+            "predictability": 58,
+            "place": 59,
             "of": 138,
-            "off_curve": 0.1069,
+            "off_curve": 0.1058,
             "observed_off_curve": 0.1111,
-            "volatility": 0.93,
+            "volatility": 0.927,
             "games": 9
           },
           "defense": {
@@ -57116,24 +57127,24 @@
             "of": 138,
             "off_curve": 0.0556,
             "observed_off_curve": 0.0,
-            "volatility": 0.783,
+            "volatility": 0.784,
             "games": 9
           },
           "team": {
-            "predictability": 75,
-            "place": 35,
+            "predictability": 76,
+            "place": 34,
             "of": 138,
-            "off_curve": 0.0833,
+            "off_curve": 0.0822,
             "observed_off_curve": 0.0,
-            "volatility": 0.866,
+            "volatility": 0.863,
             "games": 9
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -58427,10 +58438,10 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 57,
-            "place": 60,
+            "predictability": 56,
+            "place": 61,
             "of": 138,
-            "off_curve": 0.1065,
+            "off_curve": 0.1066,
             "observed_off_curve": 0.25,
             "volatility": 0.929,
             "games": 8
@@ -58439,26 +58450,26 @@
             "predictability": 79,
             "place": 30,
             "of": 138,
-            "off_curve": 0.0704,
+            "off_curve": 0.0715,
             "observed_off_curve": 0.0,
-            "volatility": 0.829,
+            "volatility": 0.832,
             "games": 8
           },
           "team": {
             "predictability": 65,
             "place": 49,
             "of": 138,
-            "off_curve": 0.0982,
+            "off_curve": 0.0979,
             "observed_off_curve": 0.0,
-            "volatility": 0.907,
+            "volatility": 0.906,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -60965,9 +60976,9 @@
         "predictability": {
           "offense": {
             "predictability": 61,
-            "place": 54,
+            "place": 55,
             "of": 138,
-            "off_curve": 0.1022,
+            "off_curve": 0.1024,
             "observed_off_curve": 0.125,
             "volatility": 0.918,
             "games": 8
@@ -60976,26 +60987,26 @@
             "predictability": 71,
             "place": 41,
             "of": 138,
-            "off_curve": 0.0815,
+            "off_curve": 0.0817,
             "observed_off_curve": 0.125,
-            "volatility": 0.861,
+            "volatility": 0.862,
             "games": 8
           },
           "team": {
-            "predictability": 51,
-            "place": 68,
+            "predictability": 50,
+            "place": 69,
             "of": 138,
-            "off_curve": 0.116,
+            "off_curve": 0.1161,
             "observed_off_curve": 0.125,
-            "volatility": 0.954,
+            "volatility": 0.955,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -62447,16 +62458,16 @@
             "predictability": 71,
             "place": 41,
             "of": 138,
-            "off_curve": 0.0894,
+            "off_curve": 0.0896,
             "observed_off_curve": 0.1111,
-            "volatility": 0.883,
+            "volatility": 0.884,
             "games": 9
           },
           "defense": {
             "predictability": 35,
             "place": 90,
             "of": 138,
-            "off_curve": 0.1455,
+            "off_curve": 0.1456,
             "observed_off_curve": 0.1111,
             "volatility": 1.031,
             "games": 9
@@ -62474,8 +62485,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -65020,7 +65031,7 @@
             "predictability": 99,
             "place": 2,
             "of": 138,
-            "off_curve": 0.0196,
+            "off_curve": 0.0197,
             "observed_off_curve": 0.0,
             "volatility": 0.643,
             "games": 8
@@ -65029,26 +65040,26 @@
             "predictability": 96,
             "place": 7,
             "of": 138,
-            "off_curve": 0.0288,
+            "off_curve": 0.0293,
             "observed_off_curve": 0.0,
-            "volatility": 0.686,
+            "volatility": 0.688,
             "games": 8
           },
           "team": {
             "predictability": 100,
             "place": 1,
             "of": 138,
-            "off_curve": 0.0115,
+            "off_curve": 0.0116,
             "observed_off_curve": 0.0,
-            "volatility": 0.593,
+            "volatility": 0.594,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -66395,7 +66406,7 @@
             "predictability": 73,
             "place": 38,
             "of": 138,
-            "off_curve": 0.0867,
+            "off_curve": 0.0869,
             "observed_off_curve": 0.125,
             "volatility": 0.876,
             "games": 8
@@ -66404,7 +66415,7 @@
             "predictability": 36,
             "place": 88,
             "of": 138,
-            "off_curve": 0.1434,
+            "off_curve": 0.1435,
             "observed_off_curve": 0.125,
             "volatility": 1.025,
             "games": 8
@@ -66413,17 +66424,17 @@
             "predictability": 81,
             "place": 27,
             "of": 138,
-            "off_curve": 0.0711,
+            "off_curve": 0.0705,
             "observed_off_curve": 0.125,
-            "volatility": 0.831,
+            "volatility": 0.829,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -66602,7 +66613,7 @@
       "venue_city": "Dallas, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN, Disney+",
-      "weather_temp": 62,
+      "weather_temp": 61,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -68991,38 +69002,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 42,
-            "place": 81,
+            "predictability": 41,
+            "place": 82,
             "of": 138,
-            "off_curve": 0.1361,
+            "off_curve": 0.1363,
             "observed_off_curve": 0.0,
-            "volatility": 1.006,
+            "volatility": 1.007,
             "games": 8
           },
           "defense": {
             "predictability": 66,
             "place": 48,
             "of": 138,
-            "off_curve": 0.0862,
+            "off_curve": 0.0861,
             "observed_off_curve": 0.125,
             "volatility": 0.874,
             "games": 8
           },
           "team": {
-            "predictability": 47,
-            "place": 74,
+            "predictability": 46,
+            "place": 75,
             "of": 138,
-            "off_curve": 0.1218,
+            "off_curve": 0.1219,
             "observed_off_curve": 0.125,
-            "volatility": 0.969,
+            "volatility": 0.97,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -70293,37 +70304,37 @@
         "predictability": {
           "offense": {
             "predictability": 12,
-            "place": 121,
+            "place": 122,
             "of": 138,
-            "off_curve": 0.2061,
+            "off_curve": 0.2079,
             "observed_off_curve": 0.375,
-            "volatility": 1.186,
+            "volatility": 1.191,
             "games": 8
           },
           "defense": {
-            "predictability": 88,
-            "place": 18,
+            "predictability": 87,
+            "place": 19,
             "of": 138,
-            "off_curve": 0.0527,
+            "off_curve": 0.0533,
             "observed_off_curve": 0.0,
-            "volatility": 0.774,
+            "volatility": 0.776,
             "games": 8
           },
           "team": {
-            "predictability": 29,
-            "place": 98,
+            "predictability": 26,
+            "place": 103,
             "of": 138,
-            "off_curve": 0.1589,
+            "off_curve": 0.164,
             "observed_off_curve": 0.25,
-            "volatility": 1.065,
+            "volatility": 1.078,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -72864,38 +72875,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 62,
-            "place": 53,
+            "predictability": 61,
+            "place": 54,
             "of": 138,
-            "off_curve": 0.1018,
+            "off_curve": 0.102,
             "observed_off_curve": 0.125,
             "volatility": 0.917,
             "games": 8
           },
           "defense": {
-            "predictability": 44,
-            "place": 78,
+            "predictability": 45,
+            "place": 77,
             "of": 138,
-            "off_curve": 0.1271,
+            "off_curve": 0.1258,
             "observed_off_curve": 0.125,
-            "volatility": 0.983,
+            "volatility": 0.98,
             "games": 8
           },
           "team": {
             "predictability": 87,
             "place": 19,
             "of": 138,
-            "off_curve": 0.0585,
+            "off_curve": 0.0588,
             "observed_off_curve": 0.0,
-            "volatility": 0.793,
+            "volatility": 0.794,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -74209,16 +74220,16 @@
             "predictability": 5,
             "place": 131,
             "of": 138,
-            "off_curve": 0.2476,
+            "off_curve": 0.248,
             "observed_off_curve": 0.375,
-            "volatility": 1.297,
+            "volatility": 1.298,
             "games": 8
           },
           "defense": {
             "predictability": 83,
             "place": 24,
             "of": 138,
-            "off_curve": 0.063,
+            "off_curve": 0.0631,
             "observed_off_curve": 0.125,
             "volatility": 0.807,
             "games": 8
@@ -74227,7 +74238,7 @@
             "predictability": 9,
             "place": 125,
             "of": 138,
-            "off_curve": 0.2256,
+            "off_curve": 0.2255,
             "observed_off_curve": 0.25,
             "volatility": 1.238,
             "games": 8
@@ -74236,8 +74247,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -76740,18 +76751,18 @@
             "predictability": 27,
             "place": 101,
             "of": 138,
-            "off_curve": 0.1709,
+            "off_curve": 0.1712,
             "observed_off_curve": 0.25,
-            "volatility": 1.095,
+            "volatility": 1.096,
             "games": 8
           },
           "defense": {
             "predictability": 25,
             "place": 104,
             "of": 138,
-            "off_curve": 0.179,
+            "off_curve": 0.1792,
             "observed_off_curve": 0.25,
-            "volatility": 1.116,
+            "volatility": 1.117,
             "games": 8
           },
           "team": {
@@ -76767,8 +76778,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -78160,27 +78171,27 @@
         "predictability": {
           "offense": {
             "predictability": 80,
-            "place": 29,
+            "place": 28,
             "of": 138,
-            "off_curve": 0.076,
+            "off_curve": 0.0756,
             "observed_off_curve": 0.0,
-            "volatility": 0.845,
+            "volatility": 0.844,
             "games": 8
           },
           "defense": {
             "predictability": 42,
             "place": 80,
             "of": 138,
-            "off_curve": 0.1351,
+            "off_curve": 0.135,
             "observed_off_curve": 0.125,
             "volatility": 1.004,
             "games": 8
           },
           "team": {
             "predictability": 64,
-            "place": 50,
+            "place": 51,
             "of": 138,
-            "off_curve": 0.1008,
+            "off_curve": 0.1007,
             "observed_off_curve": 0.0,
             "volatility": 0.914,
             "games": 8
@@ -78189,8 +78200,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -80669,18 +80680,18 @@
         "predictability": {
           "offense": {
             "predictability": 53,
-            "place": 65,
+            "place": 66,
             "of": 138,
-            "off_curve": 0.1153,
+            "off_curve": 0.1155,
             "observed_off_curve": 0.125,
             "volatility": 0.953,
             "games": 8
           },
           "defense": {
             "predictability": 34,
-            "place": 91,
+            "place": 92,
             "of": 138,
-            "off_curve": 0.1476,
+            "off_curve": 0.1478,
             "observed_off_curve": 0.25,
             "volatility": 1.036,
             "games": 8
@@ -80689,17 +80700,17 @@
             "predictability": 74,
             "place": 36,
             "of": 138,
-            "off_curve": 0.086,
+            "off_curve": 0.0864,
             "observed_off_curve": 0.125,
-            "volatility": 0.874,
+            "volatility": 0.875,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -82068,7 +82079,7 @@
             "predictability": 82,
             "place": 26,
             "of": 138,
-            "off_curve": 0.0703,
+            "off_curve": 0.0705,
             "observed_off_curve": 0.125,
             "volatility": 0.829,
             "games": 8
@@ -82077,7 +82088,7 @@
             "predictability": 95,
             "place": 8,
             "of": 138,
-            "off_curve": 0.0295,
+            "off_curve": 0.0296,
             "observed_off_curve": 0.0,
             "volatility": 0.689,
             "games": 8
@@ -82086,7 +82097,7 @@
             "predictability": 80,
             "place": 29,
             "of": 138,
-            "off_curve": 0.073,
+            "off_curve": 0.0732,
             "observed_off_curve": 0.0,
             "volatility": 0.837,
             "games": 8
@@ -82095,8 +82106,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -84574,38 +84585,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 7,
-            "place": 129,
+            "predictability": 8,
+            "place": 127,
             "of": 138,
-            "off_curve": 0.2312,
+            "off_curve": 0.2297,
             "observed_off_curve": 0.4444,
-            "volatility": 1.253,
+            "volatility": 1.249,
             "games": 9
           },
           "defense": {
-            "predictability": 30,
-            "place": 97,
+            "predictability": 29,
+            "place": 98,
             "of": 138,
-            "off_curve": 0.1629,
+            "off_curve": 0.1632,
             "observed_off_curve": 0.2222,
-            "volatility": 1.075,
+            "volatility": 1.076,
             "games": 9
           },
           "team": {
             "predictability": 31,
             "place": 96,
             "of": 138,
-            "off_curve": 0.1541,
+            "off_curve": 0.1553,
             "observed_off_curve": 0.2222,
-            "volatility": 1.053,
+            "volatility": 1.056,
             "games": 9
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -85961,16 +85972,16 @@
             "predictability": 49,
             "place": 71,
             "of": 138,
-            "off_curve": 0.1235,
+            "off_curve": 0.1239,
             "observed_off_curve": 0.0,
-            "volatility": 0.974,
+            "volatility": 0.975,
             "games": 8
           },
           "defense": {
             "predictability": 94,
             "place": 9,
             "of": 138,
-            "off_curve": 0.0319,
+            "off_curve": 0.032,
             "observed_off_curve": 0.0,
             "volatility": 0.699,
             "games": 8
@@ -85979,7 +85990,7 @@
             "predictability": 99,
             "place": 2,
             "of": 138,
-            "off_curve": 0.015,
+            "off_curve": 0.0151,
             "observed_off_curve": 0.0,
             "volatility": 0.617,
             "games": 8
@@ -85988,8 +85999,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -88362,35 +88373,35 @@
             "predictability": 45,
             "place": 77,
             "of": 138,
-            "off_curve": 0.1308,
+            "off_curve": 0.1311,
             "observed_off_curve": 0.125,
-            "volatility": 0.993,
+            "volatility": 0.994,
             "games": 8
           },
           "defense": {
             "predictability": 75,
             "place": 35,
             "of": 138,
-            "off_curve": 0.0751,
+            "off_curve": 0.0747,
             "observed_off_curve": 0.0,
-            "volatility": 0.843,
+            "volatility": 0.842,
             "games": 8
           },
           "team": {
             "predictability": 97,
             "place": 5,
             "of": 138,
-            "off_curve": 0.0316,
+            "off_curve": 0.0321,
             "observed_off_curve": 0.0,
-            "volatility": 0.698,
+            "volatility": 0.7,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -89711,23 +89722,23 @@
             "predictability": 69,
             "place": 43,
             "of": 138,
-            "off_curve": 0.0912,
+            "off_curve": 0.0915,
             "observed_off_curve": 0.125,
-            "volatility": 0.888,
+            "volatility": 0.889,
             "games": 8
           },
           "defense": {
             "predictability": 46,
             "place": 75,
             "of": 138,
-            "off_curve": 0.1208,
+            "off_curve": 0.1211,
             "observed_off_curve": 0.0,
-            "volatility": 0.967,
+            "volatility": 0.968,
             "games": 8
           },
           "team": {
-            "predictability": 72,
-            "place": 40,
+            "predictability": 71,
+            "place": 41,
             "of": 138,
             "off_curve": 0.0925,
             "observed_off_curve": 0.0,
@@ -89738,8 +89749,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -92235,21 +92246,21 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 97,
-            "place": 5,
+            "predictability": 98,
+            "place": 4,
             "of": 138,
-            "off_curve": 0.0269,
+            "off_curve": 0.0267,
             "observed_off_curve": 0.0,
-            "volatility": 0.678,
+            "volatility": 0.677,
             "games": 8
           },
           "defense": {
             "predictability": 51,
             "place": 68,
             "of": 138,
-            "off_curve": 0.1062,
+            "off_curve": 0.1065,
             "observed_off_curve": 0.125,
-            "volatility": 0.928,
+            "volatility": 0.929,
             "games": 8
           },
           "team": {
@@ -92265,8 +92276,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -93585,35 +93596,35 @@
             "predictability": 58,
             "place": 58,
             "of": 138,
-            "off_curve": 0.1052,
+            "off_curve": 0.1056,
             "observed_off_curve": 0.125,
-            "volatility": 0.926,
+            "volatility": 0.927,
             "games": 8
           },
           "defense": {
-            "predictability": 29,
-            "place": 98,
+            "predictability": 30,
+            "place": 97,
             "of": 138,
-            "off_curve": 0.1629,
+            "off_curve": 0.1623,
             "observed_off_curve": 0.125,
-            "volatility": 1.075,
+            "volatility": 1.074,
             "games": 8
           },
           "team": {
             "predictability": 99,
             "place": 3,
             "of": 138,
-            "off_curve": 0.0239,
+            "off_curve": 0.0236,
             "observed_off_curve": 0.0,
-            "volatility": 0.664,
+            "volatility": 0.663,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -96130,16 +96141,16 @@
             "predictability": 78,
             "place": 31,
             "of": 138,
-            "off_curve": 0.0803,
+            "off_curve": 0.0799,
             "observed_off_curve": 0.0,
-            "volatility": 0.858,
+            "volatility": 0.856,
             "games": 8
           },
           "defense": {
             "predictability": 74,
-            "place": 37,
+            "place": 36,
             "of": 138,
-            "off_curve": 0.0781,
+            "off_curve": 0.0778,
             "observed_off_curve": 0.125,
             "volatility": 0.851,
             "games": 8
@@ -96148,17 +96159,17 @@
             "predictability": 85,
             "place": 22,
             "of": 138,
-            "off_curve": 0.0622,
+            "off_curve": 0.0611,
             "observed_off_curve": 0.0,
-            "volatility": 0.804,
+            "volatility": 0.801,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -97480,38 +97491,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 37,
-            "place": 87,
+            "predictability": 35,
+            "place": 90,
             "of": 138,
-            "off_curve": 0.148,
+            "off_curve": 0.151,
             "observed_off_curve": 0.25,
-            "volatility": 1.037,
+            "volatility": 1.044,
             "games": 8
           },
           "defense": {
             "predictability": 54,
             "place": 64,
             "of": 138,
-            "off_curve": 0.1035,
+            "off_curve": 0.1036,
             "observed_off_curve": 0.125,
-            "volatility": 0.921,
+            "volatility": 0.922,
             "games": 8
           },
           "team": {
             "predictability": 69,
             "place": 44,
             "of": 138,
-            "off_curve": 0.0957,
+            "off_curve": 0.0963,
             "observed_off_curve": 0.125,
-            "volatility": 0.9,
+            "volatility": 0.902,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -100073,35 +100084,35 @@
             "predictability": 91,
             "place": 14,
             "of": 138,
-            "off_curve": 0.0432,
+            "off_curve": 0.0433,
             "observed_off_curve": 0.0,
             "volatility": 0.742,
             "games": 8
           },
           "defense": {
             "predictability": 82,
-            "place": 25,
+            "place": 26,
             "of": 138,
-            "off_curve": 0.0653,
+            "off_curve": 0.0657,
             "observed_off_curve": 0.0,
-            "volatility": 0.814,
+            "volatility": 0.815,
             "games": 8
           },
           "team": {
             "predictability": 67,
             "place": 46,
             "of": 138,
-            "off_curve": 0.0965,
+            "off_curve": 0.097,
             "observed_off_curve": 0.125,
-            "volatility": 0.902,
+            "volatility": 0.904,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -101436,12 +101447,12 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 30,
-            "place": 97,
+            "predictability": 29,
+            "place": 98,
             "of": 138,
-            "off_curve": 0.1569,
+            "off_curve": 0.1577,
             "observed_off_curve": 0.125,
-            "volatility": 1.06,
+            "volatility": 1.062,
             "games": 8
           },
           "defense": {
@@ -101454,20 +101465,20 @@
             "games": 8
           },
           "team": {
-            "predictability": 70,
-            "place": 42,
+            "predictability": 69,
+            "place": 43,
             "of": 138,
-            "off_curve": 0.0939,
+            "off_curve": 0.0952,
             "observed_off_curve": 0.0,
-            "volatility": 0.895,
+            "volatility": 0.899,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -101583,7 +101594,7 @@
       "venue_city": "Fort Worth, TX",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 69,
+      "weather_temp": 68,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -103975,7 +103986,7 @@
             "predictability": 26,
             "place": 102,
             "of": 138,
-            "off_curve": 0.1725,
+            "off_curve": 0.1728,
             "observed_off_curve": 0.25,
             "volatility": 1.1,
             "games": 8
@@ -103984,16 +103995,16 @@
             "predictability": 21,
             "place": 109,
             "of": 138,
-            "off_curve": 0.1927,
+            "off_curve": 0.193,
             "observed_off_curve": 0.25,
-            "volatility": 1.151,
+            "volatility": 1.152,
             "games": 8
           },
           "team": {
-            "predictability": 4,
-            "place": 133,
+            "predictability": 3,
+            "place": 134,
             "of": 138,
-            "off_curve": 0.2682,
+            "off_curve": 0.2683,
             "observed_off_curve": 0.5,
             "volatility": 1.355,
             "games": 8
@@ -104002,8 +104013,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -105355,25 +105366,25 @@
             "predictability": 92,
             "place": 12,
             "of": 138,
-            "off_curve": 0.0401,
+            "off_curve": 0.0399,
             "observed_off_curve": 0.0,
-            "volatility": 0.731,
+            "volatility": 0.73,
             "games": 8
           },
           "defense": {
             "predictability": 39,
             "place": 84,
             "of": 138,
-            "off_curve": 0.1375,
+            "off_curve": 0.1378,
             "observed_off_curve": 0.25,
-            "volatility": 1.01,
+            "volatility": 1.011,
             "games": 8
           },
           "team": {
             "predictability": 52,
             "place": 67,
             "of": 138,
-            "off_curve": 0.1158,
+            "off_curve": 0.1159,
             "observed_off_curve": 0.125,
             "volatility": 0.954,
             "games": 8
@@ -105382,8 +105393,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -107897,38 +107908,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 34,
-            "place": 92,
+            "predictability": 33,
+            "place": 93,
             "of": 138,
-            "off_curve": 0.153,
+            "off_curve": 0.1538,
             "observed_off_curve": 0.2222,
-            "volatility": 1.05,
+            "volatility": 1.052,
             "games": 9
           },
           "defense": {
             "predictability": 64,
             "place": 51,
             "of": 138,
-            "off_curve": 0.0921,
+            "off_curve": 0.0916,
             "observed_off_curve": 0.1111,
-            "volatility": 0.89,
+            "volatility": 0.889,
             "games": 9
           },
           "team": {
-            "predictability": 31,
-            "place": 95,
+            "predictability": 32,
+            "place": 94,
             "of": 138,
-            "off_curve": 0.1495,
+            "off_curve": 0.149,
             "observed_off_curve": 0.1111,
-            "volatility": 1.041,
+            "volatility": 1.04,
             "games": 9
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -109281,29 +109292,29 @@
             "games": 8
           },
           "defense": {
-            "predictability": 84,
-            "place": 23,
+            "predictability": 85,
+            "place": 21,
             "of": 138,
-            "off_curve": 0.0589,
+            "off_curve": 0.0563,
             "observed_off_curve": 0.0,
-            "volatility": 0.794,
+            "volatility": 0.786,
             "games": 8
           },
           "team": {
             "predictability": 18,
-            "place": 114,
+            "place": 113,
             "of": 138,
-            "off_curve": 0.1875,
+            "off_curve": 0.1867,
             "observed_off_curve": 0.25,
-            "volatility": 1.138,
+            "volatility": 1.136,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -109446,7 +109457,7 @@
       "venue_city": "Newark, DE",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 50,
+      "weather_temp": 49,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -111844,29 +111855,29 @@
             "games": 8
           },
           "defense": {
-            "predictability": 31,
-            "place": 95,
+            "predictability": 32,
+            "place": 94,
             "of": 138,
-            "off_curve": 0.1571,
+            "off_curve": 0.155,
             "observed_off_curve": 0.125,
-            "volatility": 1.06,
+            "volatility": 1.055,
             "games": 8
           },
           "team": {
-            "predictability": 46,
-            "place": 75,
+            "predictability": 51,
+            "place": 68,
             "of": 138,
-            "off_curve": 0.1223,
+            "off_curve": 0.116,
             "observed_off_curve": 0.0,
-            "volatility": 0.971,
+            "volatility": 0.954,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -113183,37 +113194,37 @@
         "predictability": {
           "offense": {
             "predictability": 36,
-            "place": 89,
+            "place": 88,
             "of": 138,
-            "off_curve": 0.1503,
+            "off_curve": 0.1507,
             "observed_off_curve": 0.125,
-            "volatility": 1.043,
+            "volatility": 1.044,
             "games": 8
           },
           "defense": {
-            "predictability": 52,
-            "place": 67,
+            "predictability": 53,
+            "place": 66,
             "of": 138,
-            "off_curve": 0.1061,
+            "off_curve": 0.1048,
             "observed_off_curve": 0.125,
-            "volatility": 0.928,
+            "volatility": 0.925,
             "games": 8
           },
           "team": {
-            "predictability": 28,
-            "place": 99,
+            "predictability": 29,
+            "place": 98,
             "of": 138,
-            "off_curve": 0.1593,
+            "off_curve": 0.159,
             "observed_off_curve": 0.125,
-            "volatility": 1.066,
+            "volatility": 1.065,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -113337,6 +113348,7 @@
       "venue": "Robert W. Plaster Stadium",
       "venue_city": "Springfield, MO",
       "roof": "Outdoor",
+      "broadcast": "ESPN+",
       "weather_temp": 50,
       "weather_cond": "Partly sunny",
       "away_form": {
@@ -115726,38 +115738,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 61,
-            "place": 55,
+            "predictability": 64,
+            "place": 51,
             "of": 138,
-            "off_curve": 0.1026,
+            "off_curve": 0.0986,
             "observed_off_curve": 0.0,
-            "volatility": 0.919,
+            "volatility": 0.908,
             "games": 8
           },
           "defense": {
-            "predictability": 59,
-            "place": 57,
+            "predictability": 55,
+            "place": 63,
             "of": 138,
-            "off_curve": 0.0969,
+            "off_curve": 0.1012,
             "observed_off_curve": 0.125,
-            "volatility": 0.903,
+            "volatility": 0.915,
             "games": 8
           },
           "team": {
             "predictability": 86,
             "place": 20,
             "of": 138,
-            "off_curve": 0.0588,
+            "off_curve": 0.0593,
             "observed_off_curve": 0.0,
-            "volatility": 0.794,
+            "volatility": 0.795,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -117106,35 +117118,35 @@
             "predictability": 1,
             "place": 137,
             "of": 138,
-            "off_curve": 0.3019,
+            "off_curve": 0.3016,
             "observed_off_curve": 0.375,
-            "volatility": 1.453,
+            "volatility": 1.452,
             "games": 8
           },
           "defense": {
             "predictability": 89,
             "place": 16,
             "of": 138,
-            "off_curve": 0.0451,
+            "off_curve": 0.0466,
             "observed_off_curve": 0.0,
-            "volatility": 0.749,
+            "volatility": 0.754,
             "games": 8
           },
           "team": {
             "predictability": 14,
             "place": 119,
             "of": 138,
-            "off_curve": 0.1992,
+            "off_curve": 0.2003,
             "observed_off_curve": 0.125,
-            "volatility": 1.168,
+            "volatility": 1.171,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -119657,38 +119669,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 35,
-            "place": 90,
+            "predictability": 36,
+            "place": 89,
             "of": 138,
-            "off_curve": 0.151,
+            "off_curve": 0.1507,
             "observed_off_curve": 0.125,
-            "volatility": 1.045,
+            "volatility": 1.044,
             "games": 8
           },
           "defense": {
-            "predictability": 66,
-            "place": 47,
+            "predictability": 65,
+            "place": 49,
             "of": 138,
-            "off_curve": 0.0857,
+            "off_curve": 0.0863,
             "observed_off_curve": 0.125,
-            "volatility": 0.873,
+            "volatility": 0.875,
             "games": 8
           },
           "team": {
             "predictability": 68,
             "place": 45,
             "of": 138,
-            "off_curve": 0.0965,
+            "off_curve": 0.0966,
             "observed_off_curve": 0.0,
-            "volatility": 0.902,
+            "volatility": 0.903,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -121019,7 +121031,7 @@
             "predictability": 93,
             "place": 10,
             "of": 138,
-            "off_curve": 0.0349,
+            "off_curve": 0.0348,
             "observed_off_curve": 0.0,
             "volatility": 0.711,
             "games": 8
@@ -121028,26 +121040,26 @@
             "predictability": 3,
             "place": 134,
             "of": 138,
-            "off_curve": 0.2759,
+            "off_curve": 0.2773,
             "observed_off_curve": 0.375,
-            "volatility": 1.377,
+            "volatility": 1.381,
             "games": 8
           },
           "team": {
             "predictability": 15,
             "place": 118,
             "of": 138,
-            "off_curve": 0.1987,
+            "off_curve": 0.1991,
             "observed_off_curve": 0.25,
-            "volatility": 1.167,
+            "volatility": 1.168,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -121144,7 +121156,7 @@
       "venue_city": "Orlando, FL",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 65,
+      "weather_temp": 68,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -123533,10 +123545,10 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 65,
-            "place": 49,
+            "predictability": 66,
+            "place": 48,
             "of": 138,
-            "off_curve": 0.0974,
+            "off_curve": 0.0975,
             "observed_off_curve": 0.125,
             "volatility": 0.905,
             "games": 8
@@ -123545,7 +123557,7 @@
             "predictability": 24,
             "place": 105,
             "of": 138,
-            "off_curve": 0.1821,
+            "off_curve": 0.1822,
             "observed_off_curve": 0.375,
             "volatility": 1.124,
             "games": 8
@@ -123554,7 +123566,7 @@
             "predictability": 66,
             "place": 48,
             "of": 138,
-            "off_curve": 0.098,
+            "off_curve": 0.0978,
             "observed_off_curve": 0.0,
             "volatility": 0.906,
             "games": 8
@@ -123563,8 +123575,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -124938,25 +124950,25 @@
             "predictability": 74,
             "place": 37,
             "of": 138,
-            "off_curve": 0.0861,
+            "off_curve": 0.0858,
             "observed_off_curve": 0.0,
-            "volatility": 0.874,
+            "volatility": 0.873,
             "games": 8
           },
           "defense": {
             "predictability": 55,
-            "place": 63,
+            "place": 62,
             "of": 138,
-            "off_curve": 0.1007,
+            "off_curve": 0.101,
             "observed_off_curve": 0.125,
-            "volatility": 0.914,
+            "volatility": 0.915,
             "games": 8
           },
           "team": {
             "predictability": 55,
             "place": 63,
             "of": 138,
-            "off_curve": 0.1123,
+            "off_curve": 0.1122,
             "observed_off_curve": 0.125,
             "volatility": 0.944,
             "games": 8
@@ -124965,8 +124977,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -127471,19 +127483,19 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 22,
-            "place": 108,
+            "predictability": 21,
+            "place": 109,
             "of": 138,
-            "off_curve": 0.1782,
+            "off_curve": 0.1786,
             "observed_off_curve": 0.375,
-            "volatility": 1.114,
+            "volatility": 1.115,
             "games": 8
           },
           "defense": {
             "predictability": 97,
             "place": 5,
             "of": 138,
-            "off_curve": 0.0276,
+            "off_curve": 0.0277,
             "observed_off_curve": 0.0,
             "volatility": 0.681,
             "games": 8
@@ -127501,8 +127513,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -128766,7 +128778,7 @@
             "predictability": 17,
             "place": 115,
             "of": 138,
-            "off_curve": 0.1889,
+            "off_curve": 0.1892,
             "observed_off_curve": 0.25,
             "volatility": 1.142,
             "games": 8
@@ -128775,16 +128787,16 @@
             "predictability": 77,
             "place": 32,
             "of": 138,
-            "off_curve": 0.0725,
+            "off_curve": 0.0727,
             "observed_off_curve": 0.0,
-            "volatility": 0.835,
+            "volatility": 0.836,
             "games": 8
           },
           "team": {
-            "predictability": 13,
-            "place": 120,
+            "predictability": 12,
+            "place": 121,
             "of": 138,
-            "off_curve": 0.2033,
+            "off_curve": 0.2034,
             "observed_off_curve": 0.25,
             "volatility": 1.179,
             "games": 8
@@ -128793,8 +128805,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -131302,8 +131314,8 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 23,
-            "place": 107,
+            "predictability": 22,
+            "place": 108,
             "of": 138,
             "off_curve": 0.1779,
             "observed_off_curve": 0.25,
@@ -131311,29 +131323,29 @@
             "games": 8
           },
           "defense": {
-            "predictability": 45,
-            "place": 77,
+            "predictability": 44,
+            "place": 78,
             "of": 138,
-            "off_curve": 0.126,
+            "off_curve": 0.1286,
             "observed_off_curve": 0.125,
-            "volatility": 0.98,
+            "volatility": 0.987,
             "games": 8
           },
           "team": {
-            "predictability": 63,
-            "place": 52,
+            "predictability": 62,
+            "place": 53,
             "of": 138,
-            "off_curve": 0.1021,
+            "off_curve": 0.1035,
             "observed_off_curve": 0.125,
-            "volatility": 0.918,
+            "volatility": 0.921,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -132645,8 +132657,8 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 99,
-            "place": 3,
+            "predictability": 97,
+            "place": 5,
             "of": 138,
             "off_curve": 0.0269,
             "observed_off_curve": 0.0,
@@ -132654,29 +132666,29 @@
             "games": 9
           },
           "defense": {
-            "predictability": 55,
-            "place": 62,
+            "predictability": 58,
+            "place": 58,
             "of": 138,
-            "off_curve": 0.0999,
+            "off_curve": 0.0988,
             "observed_off_curve": 0.2222,
-            "volatility": 0.912,
+            "volatility": 0.909,
             "games": 9
           },
           "team": {
             "predictability": 74,
             "place": 37,
             "of": 138,
-            "off_curve": 0.0888,
+            "off_curve": 0.089,
             "observed_off_curve": 0.1111,
-            "volatility": 0.881,
+            "volatility": 0.882,
             "games": 9
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -135177,37 +135189,37 @@
         "predictability": {
           "offense": {
             "predictability": 80,
-            "place": 28,
+            "place": 29,
             "of": 138,
-            "off_curve": 0.0755,
+            "off_curve": 0.0758,
             "observed_off_curve": 0.125,
-            "volatility": 0.844,
+            "volatility": 0.845,
             "games": 8
           },
           "defense": {
-            "predictability": 62,
-            "place": 53,
+            "predictability": 63,
+            "place": 52,
             "of": 138,
-            "off_curve": 0.0939,
+            "off_curve": 0.093,
             "observed_off_curve": 0.0,
-            "volatility": 0.896,
+            "volatility": 0.893,
             "games": 8
           },
           "team": {
             "predictability": 95,
             "place": 8,
             "of": 138,
-            "off_curve": 0.0349,
+            "off_curve": 0.0338,
             "observed_off_curve": 0.0,
-            "volatility": 0.711,
+            "volatility": 0.707,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -136573,38 +136585,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 21,
-            "place": 109,
+            "predictability": 20,
+            "place": 110,
             "of": 138,
-            "off_curve": 0.1787,
+            "off_curve": 0.1793,
             "observed_off_curve": 0.125,
-            "volatility": 1.115,
+            "volatility": 1.117,
             "games": 8
           },
           "defense": {
             "predictability": 12,
-            "place": 121,
+            "place": 122,
             "of": 138,
-            "off_curve": 0.2165,
+            "off_curve": 0.2169,
             "observed_off_curve": 0.25,
-            "volatility": 1.214,
+            "volatility": 1.215,
             "games": 8
           },
           "team": {
             "predictability": 4,
-            "place": 132,
+            "place": 133,
             "of": 138,
-            "off_curve": 0.2679,
+            "off_curve": 0.2682,
             "observed_off_curve": 0.375,
-            "volatility": 1.354,
+            "volatility": 1.355,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -136774,7 +136786,7 @@
       "venue_city": "Tulsa, OK",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 57,
+      "weather_temp": 56,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -139134,35 +139146,35 @@
             "predictability": 44,
             "place": 78,
             "of": 138,
-            "off_curve": 0.1326,
+            "off_curve": 0.1332,
             "observed_off_curve": 0.125,
-            "volatility": 0.997,
+            "volatility": 0.999,
             "games": 8
           },
           "defense": {
             "predictability": 1,
             "place": 137,
             "of": 138,
-            "off_curve": 0.3334,
+            "off_curve": 0.3325,
             "observed_off_curve": 0.375,
-            "volatility": 1.551,
+            "volatility": 1.548,
             "games": 8
           },
           "team": {
             "predictability": 1,
             "place": 136,
             "of": 138,
-            "off_curve": 0.2822,
+            "off_curve": 0.2798,
             "observed_off_curve": 0.375,
-            "volatility": 1.395,
+            "volatility": 1.388,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -140488,38 +140500,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 40,
-            "place": 83,
+            "predictability": 42,
+            "place": 81,
             "of": 138,
-            "off_curve": 0.137,
-            "observed_off_curve": 0.125,
-            "volatility": 1.009,
+            "off_curve": 0.1353,
+            "observed_off_curve": 0.25,
+            "volatility": 1.004,
             "games": 8
           },
           "defense": {
             "predictability": 13,
             "place": 120,
             "of": 138,
-            "off_curve": 0.2131,
+            "off_curve": 0.2137,
             "observed_off_curve": 0.25,
-            "volatility": 1.205,
+            "volatility": 1.206,
             "games": 8
           },
           "team": {
-            "predictability": 3,
-            "place": 134,
+            "predictability": 4,
+            "place": 132,
             "of": 138,
-            "off_curve": 0.2708,
+            "off_curve": 0.268,
             "observed_off_curve": 0.25,
-            "volatility": 1.362,
+            "volatility": 1.354,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -143026,38 +143038,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 68,
-            "place": 45,
+            "predictability": 67,
+            "place": 46,
             "of": 138,
-            "off_curve": 0.0961,
+            "off_curve": 0.0968,
             "observed_off_curve": 0.0,
-            "volatility": 0.901,
+            "volatility": 0.903,
             "games": 8
           },
           "defense": {
             "predictability": 99,
             "place": 3,
             "of": 138,
-            "off_curve": 0.0268,
+            "off_curve": 0.0251,
             "observed_off_curve": 0.0,
-            "volatility": 0.677,
+            "volatility": 0.67,
             "games": 8
           },
           "team": {
-            "predictability": 89,
-            "place": 16,
+            "predictability": 90,
+            "place": 15,
             "of": 138,
-            "off_curve": 0.0558,
+            "off_curve": 0.0549,
             "observed_off_curve": 0.0,
-            "volatility": 0.784,
+            "volatility": 0.781,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -144401,38 +144413,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 64,
-            "place": 51,
+            "predictability": 62,
+            "place": 53,
             "of": 138,
-            "off_curve": 0.1012,
+            "off_curve": 0.1016,
             "observed_off_curve": 0.125,
-            "volatility": 0.915,
+            "volatility": 0.916,
             "games": 8
           },
           "defense": {
-            "predictability": 33,
-            "place": 93,
+            "predictability": 34,
+            "place": 91,
             "of": 138,
-            "off_curve": 0.1526,
+            "off_curve": 0.1467,
             "observed_off_curve": 0.125,
-            "volatility": 1.049,
+            "volatility": 1.033,
             "games": 8
           },
           "team": {
-            "predictability": 17,
-            "place": 115,
+            "predictability": 19,
+            "place": 112,
             "of": 138,
-            "off_curve": 0.1875,
+            "off_curve": 0.183,
             "observed_off_curve": 0.125,
-            "volatility": 1.138,
+            "volatility": 1.126,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -146864,37 +146876,37 @@
         "predictability": {
           "offense": {
             "predictability": 18,
-            "place": 113,
+            "place": 114,
             "of": 138,
-            "off_curve": 0.1857,
+            "off_curve": 0.1889,
             "observed_off_curve": 0.125,
-            "volatility": 1.133,
+            "volatility": 1.142,
             "games": 8
           },
           "defense": {
-            "predictability": 65,
-            "place": 49,
+            "predictability": 69,
+            "place": 43,
             "of": 138,
-            "off_curve": 0.0864,
+            "off_curve": 0.0819,
             "observed_off_curve": 0.0,
-            "volatility": 0.875,
+            "volatility": 0.862,
             "games": 8
           },
           "team": {
-            "predictability": 27,
-            "place": 101,
+            "predictability": 28,
+            "place": 100,
             "of": 138,
-            "off_curve": 0.1616,
+            "off_curve": 0.1624,
             "observed_off_curve": 0.25,
-            "volatility": 1.072,
+            "volatility": 1.074,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -148213,35 +148225,35 @@
             "predictability": 55,
             "place": 63,
             "of": 138,
-            "off_curve": 0.1096,
+            "off_curve": 0.1087,
             "observed_off_curve": 0.125,
-            "volatility": 0.937,
+            "volatility": 0.935,
             "games": 8
           },
           "defense": {
             "predictability": 4,
             "place": 132,
             "of": 138,
-            "off_curve": 0.2629,
+            "off_curve": 0.264,
             "observed_off_curve": 0.25,
-            "volatility": 1.34,
+            "volatility": 1.343,
             "games": 8
           },
           "team": {
             "predictability": 47,
-            "place": 73,
+            "place": 74,
             "of": 138,
-            "off_curve": 0.1215,
+            "off_curve": 0.1213,
             "observed_off_curve": 0.125,
-            "volatility": 0.969,
+            "volatility": 0.968,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -148375,8 +148387,8 @@
       "venue_city": "Eugene, OR",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 58,
-      "weather_cond": "Rain",
+      "weather_temp": 57,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -150767,16 +150779,16 @@
             "predictability": 34,
             "place": 91,
             "of": 138,
-            "off_curve": 0.1511,
+            "off_curve": 0.1513,
             "observed_off_curve": 0.1111,
             "volatility": 1.045,
             "games": 9
           },
           "defense": {
-            "predictability": 58,
-            "place": 58,
+            "predictability": 59,
+            "place": 57,
             "of": 138,
-            "off_curve": 0.0977,
+            "off_curve": 0.0979,
             "observed_off_curve": 0.2222,
             "volatility": 0.906,
             "games": 9
@@ -150785,7 +150797,7 @@
             "predictability": 53,
             "place": 66,
             "of": 138,
-            "off_curve": 0.1144,
+            "off_curve": 0.1145,
             "observed_off_curve": 0.0,
             "volatility": 0.95,
             "games": 9
@@ -150794,8 +150806,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -152157,19 +152169,19 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 8,
-            "place": 127,
+            "predictability": 7,
+            "place": 128,
             "of": 138,
-            "off_curve": 0.2303,
+            "off_curve": 0.2306,
             "observed_off_curve": 0.375,
             "volatility": 1.251,
             "games": 8
           },
           "defense": {
-            "predictability": 67,
-            "place": 46,
+            "predictability": 66,
+            "place": 47,
             "of": 138,
-            "off_curve": 0.0842,
+            "off_curve": 0.0843,
             "observed_off_curve": 0.0,
             "volatility": 0.869,
             "games": 8
@@ -152178,17 +152190,17 @@
             "predictability": 54,
             "place": 64,
             "of": 138,
-            "off_curve": 0.1126,
+            "off_curve": 0.1127,
             "observed_off_curve": 0.125,
-            "volatility": 0.945,
+            "volatility": 0.946,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -154723,35 +154735,35 @@
             "predictability": 19,
             "place": 112,
             "of": 138,
-            "off_curve": 0.1821,
+            "off_curve": 0.1815,
             "observed_off_curve": 0.25,
-            "volatility": 1.124,
+            "volatility": 1.123,
             "games": 8
           },
           "defense": {
-            "predictability": 58,
-            "place": 59,
+            "predictability": 57,
+            "place": 60,
             "of": 138,
-            "off_curve": 0.0996,
+            "off_curve": 0.0999,
             "observed_off_curve": 0.125,
-            "volatility": 0.911,
+            "volatility": 0.912,
             "games": 8
           },
           "team": {
             "predictability": 23,
             "place": 107,
             "of": 138,
-            "off_curve": 0.1773,
+            "off_curve": 0.178,
             "observed_off_curve": 0.25,
-            "volatility": 1.112,
+            "volatility": 1.114,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -156108,9 +156120,9 @@
             "predictability": 52,
             "place": 67,
             "of": 138,
-            "off_curve": 0.1162,
+            "off_curve": 0.1156,
             "observed_off_curve": 0.125,
-            "volatility": 0.955,
+            "volatility": 0.953,
             "games": 8
           },
           "defense": {
@@ -156123,8 +156135,8 @@
             "games": 8
           },
           "team": {
-            "predictability": 48,
-            "place": 72,
+            "predictability": 47,
+            "place": 73,
             "of": 138,
             "off_curve": 0.1208,
             "observed_off_curve": 0.125,
@@ -156135,8 +156147,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -156261,7 +156273,7 @@
       "venue_city": "Lynchburg, VA",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 49,
+      "weather_temp": 50,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -158645,16 +158657,16 @@
             "predictability": 24,
             "place": 105,
             "of": 138,
-            "off_curve": 0.1751,
+            "off_curve": 0.1742,
             "observed_off_curve": 0.25,
-            "volatility": 1.106,
+            "volatility": 1.104,
             "games": 8
           },
           "defense": {
             "predictability": 37,
             "place": 87,
             "of": 138,
-            "off_curve": 0.1402,
+            "off_curve": 0.1401,
             "observed_off_curve": 0.125,
             "volatility": 1.017,
             "games": 8
@@ -158663,17 +158675,17 @@
             "predictability": 15,
             "place": 117,
             "of": 138,
-            "off_curve": 0.1974,
+            "off_curve": 0.1968,
             "observed_off_curve": 0.125,
-            "volatility": 1.164,
+            "volatility": 1.162,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -159999,38 +160011,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 66,
-            "place": 47,
+            "predictability": 65,
+            "place": 49,
             "of": 138,
-            "off_curve": 0.0969,
+            "off_curve": 0.0976,
             "observed_off_curve": 0.0,
-            "volatility": 0.904,
+            "volatility": 0.905,
             "games": 8
           },
           "defense": {
-            "predictability": 87,
-            "place": 19,
+            "predictability": 88,
+            "place": 18,
             "of": 138,
-            "off_curve": 0.0541,
+            "off_curve": 0.0532,
             "observed_off_curve": 0.0,
-            "volatility": 0.779,
+            "volatility": 0.776,
             "games": 8
           },
           "team": {
             "predictability": 36,
             "place": 89,
             "of": 138,
-            "off_curve": 0.1431,
+            "off_curve": 0.1427,
             "observed_off_curve": 0.0,
-            "volatility": 1.024,
+            "volatility": 1.023,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -162560,16 +162572,16 @@
             "predictability": 4,
             "place": 133,
             "of": 138,
-            "off_curve": 0.2595,
+            "off_curve": 0.2599,
             "observed_off_curve": 0.25,
-            "volatility": 1.33,
+            "volatility": 1.332,
             "games": 8
           },
           "defense": {
             "predictability": 91,
             "place": 13,
             "of": 138,
-            "off_curve": 0.0387,
+            "off_curve": 0.0389,
             "observed_off_curve": 0.0,
             "volatility": 0.726,
             "games": 8
@@ -162578,17 +162590,17 @@
             "predictability": 36,
             "place": 88,
             "of": 138,
-            "off_curve": 0.1423,
+            "off_curve": 0.1424,
             "observed_off_curve": 0.25,
-            "volatility": 1.022,
+            "volatility": 1.023,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -163918,25 +163930,25 @@
             "predictability": 63,
             "place": 52,
             "of": 138,
-            "off_curve": 0.1012,
+            "off_curve": 0.1013,
             "observed_off_curve": 0.125,
-            "volatility": 0.915,
+            "volatility": 0.916,
             "games": 8
           },
           "defense": {
             "predictability": 40,
             "place": 83,
             "of": 138,
-            "off_curve": 0.1375,
+            "off_curve": 0.1373,
             "observed_off_curve": 0.125,
-            "volatility": 1.01,
+            "volatility": 1.009,
             "games": 8
           },
           "team": {
             "predictability": 66,
             "place": 47,
             "of": 138,
-            "off_curve": 0.0975,
+            "off_curve": 0.0973,
             "observed_off_curve": 0.0,
             "volatility": 0.905,
             "games": 8
@@ -163945,8 +163957,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -166403,35 +166415,35 @@
             "predictability": 26,
             "place": 103,
             "of": 138,
-            "off_curve": 0.1743,
+            "off_curve": 0.173,
             "observed_off_curve": 0.2222,
-            "volatility": 1.104,
+            "volatility": 1.101,
             "games": 9
           },
           "defense": {
             "predictability": 4,
             "place": 133,
             "of": 138,
-            "off_curve": 0.2744,
+            "off_curve": 0.2751,
             "observed_off_curve": 0.4444,
-            "volatility": 1.372,
+            "volatility": 1.374,
             "games": 9
           },
           "team": {
             "predictability": 9,
             "place": 126,
             "of": 138,
-            "off_curve": 0.229,
+            "off_curve": 0.2293,
             "observed_off_curve": 0.2222,
-            "volatility": 1.247,
+            "volatility": 1.248,
             "games": 9
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -167823,7 +167835,7 @@
             "predictability": 45,
             "place": 76,
             "of": 138,
-            "off_curve": 0.1307,
+            "off_curve": 0.131,
             "observed_off_curve": 0.25,
             "volatility": 0.993,
             "games": 8
@@ -167832,26 +167844,26 @@
             "predictability": 91,
             "place": 14,
             "of": 138,
-            "off_curve": 0.0426,
+            "off_curve": 0.0425,
             "observed_off_curve": 0.0,
             "volatility": 0.74,
             "games": 8
           },
           "team": {
-            "predictability": 90,
-            "place": 15,
+            "predictability": 89,
+            "place": 16,
             "of": 138,
-            "off_curve": 0.0549,
+            "off_curve": 0.0553,
             "observed_off_curve": 0.0,
-            "volatility": 0.781,
+            "volatility": 0.783,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -167958,7 +167970,7 @@
       "venue_city": "San Marcos, TX",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 69,
+      "weather_temp": 70,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -170352,25 +170364,25 @@
             "predictability": 2,
             "place": 135,
             "of": 138,
-            "off_curve": 0.2682,
+            "off_curve": 0.2688,
             "observed_off_curve": 0.3333,
-            "volatility": 1.355,
+            "volatility": 1.357,
             "games": 9
           },
           "defense": {
-            "predictability": 32,
-            "place": 94,
+            "predictability": 31,
+            "place": 95,
             "of": 138,
-            "off_curve": 0.1546,
+            "off_curve": 0.155,
             "observed_off_curve": 0.3333,
-            "volatility": 1.054,
+            "volatility": 1.055,
             "games": 9
           },
           "team": {
             "predictability": 1,
             "place": 137,
             "of": 138,
-            "off_curve": 0.2958,
+            "off_curve": 0.2959,
             "observed_off_curve": 0.4444,
             "volatility": 1.435,
             "games": 9
@@ -170379,8 +170391,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -171661,38 +171673,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 16,
-            "place": 116,
+            "predictability": 15,
+            "place": 117,
             "of": 138,
-            "off_curve": 0.192,
+            "off_curve": 0.1924,
             "observed_off_curve": 0.25,
-            "volatility": 1.15,
+            "volatility": 1.151,
             "games": 8
           },
           "defense": {
             "predictability": 72,
-            "place": 39,
+            "place": 40,
             "of": 138,
-            "off_curve": 0.0792,
+            "off_curve": 0.08,
             "observed_off_curve": 0.125,
-            "volatility": 0.855,
+            "volatility": 0.857,
             "games": 8
           },
           "team": {
             "predictability": 57,
             "place": 60,
             "of": 138,
-            "off_curve": 0.1098,
+            "off_curve": 0.1104,
             "observed_off_curve": 0.125,
-            "volatility": 0.938,
+            "volatility": 0.94,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -171826,7 +171838,7 @@
       "venue_city": "Norman, OK",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 63,
+      "weather_temp": 60,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -174153,35 +174165,35 @@
             "predictability": 77,
             "place": 32,
             "of": 138,
-            "off_curve": 0.0814,
+            "off_curve": 0.0818,
             "observed_off_curve": 0.1111,
-            "volatility": 0.861,
+            "volatility": 0.862,
             "games": 9
           },
           "defense": {
             "predictability": 74,
-            "place": 36,
+            "place": 37,
             "of": 138,
-            "off_curve": 0.0775,
+            "off_curve": 0.0779,
             "observed_off_curve": 0.0,
-            "volatility": 0.85,
+            "volatility": 0.851,
             "games": 9
           },
           "team": {
-            "predictability": 44,
-            "place": 78,
+            "predictability": 45,
+            "place": 77,
             "of": 138,
-            "off_curve": 0.1256,
+            "off_curve": 0.1258,
             "observed_off_curve": 0.2222,
-            "volatility": 0.979,
+            "volatility": 0.98,
             "games": 9
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -175444,26 +175456,26 @@
             "predictability": 43,
             "place": 79,
             "of": 138,
-            "off_curve": 0.1288,
+            "off_curve": 0.1294,
             "observed_off_curve": 0.2222,
-            "volatility": 0.988,
+            "volatility": 0.989,
             "games": 9
           },
           "team": {
-            "predictability": 73,
-            "place": 38,
+            "predictability": 72,
+            "place": 40,
             "of": 138,
-            "off_curve": 0.0902,
+            "off_curve": 0.0904,
             "observed_off_curve": 0.1111,
-            "volatility": 0.885,
+            "volatility": 0.886,
             "games": 9
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -177973,25 +177985,25 @@
             "predictability": 84,
             "place": 23,
             "of": 138,
-            "off_curve": 0.0576,
+            "off_curve": 0.0577,
             "observed_off_curve": 0.125,
             "volatility": 0.79,
             "games": 8
           },
           "defense": {
-            "predictability": 34,
-            "place": 92,
+            "predictability": 33,
+            "place": 93,
             "of": 138,
-            "off_curve": 0.1486,
+            "off_curve": 0.149,
             "observed_off_curve": 0.125,
-            "volatility": 1.038,
+            "volatility": 1.039,
             "games": 8
           },
           "team": {
             "predictability": 40,
             "place": 83,
             "of": 138,
-            "off_curve": 0.1331,
+            "off_curve": 0.1332,
             "observed_off_curve": 0.25,
             "volatility": 0.999,
             "games": 8
@@ -178000,8 +178012,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -179348,26 +179360,26 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 86,
-            "place": 20,
+            "predictability": 87,
+            "place": 19,
             "of": 138,
-            "off_curve": 0.0557,
+            "off_curve": 0.0559,
             "observed_off_curve": 0.0,
-            "volatility": 0.784,
+            "volatility": 0.785,
             "games": 9
           },
           "defense": {
             "predictability": 82,
-            "place": 26,
+            "place": 25,
             "of": 138,
-            "off_curve": 0.0658,
+            "off_curve": 0.0656,
             "observed_off_curve": 0.0,
             "volatility": 0.815,
             "games": 9
           },
           "team": {
             "predictability": 82,
-            "place": 26,
+            "place": 25,
             "of": 138,
             "off_curve": 0.0677,
             "observed_off_curve": 0.0,
@@ -179378,8 +179390,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -179514,7 +179526,7 @@
       "venue_city": "Ruston, LA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 59,
+      "weather_temp": 60,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -181903,19 +181915,19 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 28,
-            "place": 99,
+            "predictability": 34,
+            "place": 92,
             "of": 138,
-            "off_curve": 0.1616,
+            "off_curve": 0.1538,
             "observed_off_curve": 0.125,
-            "volatility": 1.072,
+            "volatility": 1.052,
             "games": 8
           },
           "defense": {
             "predictability": 7,
             "place": 129,
             "of": 138,
-            "off_curve": 0.256,
+            "off_curve": 0.2558,
             "observed_off_curve": 0.25,
             "volatility": 1.32,
             "games": 8
@@ -181924,7 +181936,7 @@
             "predictability": 77,
             "place": 32,
             "of": 138,
-            "off_curve": 0.0807,
+            "off_curve": 0.0808,
             "observed_off_curve": 0.125,
             "volatility": 0.859,
             "games": 8
@@ -181933,8 +181945,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -183279,7 +183291,7 @@
         "predictability": {
           "offense": {
             "predictability": 12,
-            "place": 122,
+            "place": 121,
             "of": 138,
             "off_curve": 0.2064,
             "observed_off_curve": 0.25,
@@ -183290,7 +183302,7 @@
             "predictability": 50,
             "place": 69,
             "of": 138,
-            "off_curve": 0.1078,
+            "off_curve": 0.1079,
             "observed_off_curve": 0.125,
             "volatility": 0.933,
             "games": 8
@@ -183299,7 +183311,7 @@
             "predictability": 58,
             "place": 58,
             "of": 138,
-            "off_curve": 0.1086,
+            "off_curve": 0.1088,
             "observed_off_curve": 0.125,
             "volatility": 0.935,
             "games": 8
@@ -183308,8 +183320,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -183425,7 +183437,7 @@
       "venue_city": "Morgantown, WV",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 40,
+      "weather_temp": 42,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -185821,16 +185833,16 @@
             "predictability": 46,
             "place": 75,
             "of": 138,
-            "off_curve": 0.1293,
+            "off_curve": 0.1296,
             "observed_off_curve": 0.25,
-            "volatility": 0.989,
+            "volatility": 0.99,
             "games": 8
           },
           "defense": {
             "predictability": 11,
             "place": 123,
             "of": 138,
-            "off_curve": 0.2179,
+            "off_curve": 0.2178,
             "observed_off_curve": 0.375,
             "volatility": 1.217,
             "games": 8
@@ -185839,7 +185851,7 @@
             "predictability": 7,
             "place": 129,
             "of": 138,
-            "off_curve": 0.2627,
+            "off_curve": 0.2625,
             "observed_off_curve": 0.375,
             "volatility": 1.339,
             "games": 8
@@ -185848,8 +185860,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -187169,35 +187181,35 @@
             "predictability": 28,
             "place": 100,
             "of": 138,
-            "off_curve": 0.165,
+            "off_curve": 0.1653,
             "observed_off_curve": 0.25,
-            "volatility": 1.08,
+            "volatility": 1.081,
             "games": 8
           },
           "defense": {
             "predictability": 36,
             "place": 89,
             "of": 138,
-            "off_curve": 0.144,
+            "off_curve": 0.1449,
             "observed_off_curve": 0.125,
-            "volatility": 1.027,
+            "volatility": 1.029,
             "games": 8
           },
           "team": {
             "predictability": 34,
             "place": 91,
             "of": 138,
-            "off_curve": 0.1473,
+            "off_curve": 0.1479,
             "observed_off_curve": 0.125,
-            "volatility": 1.035,
+            "volatility": 1.037,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -187340,7 +187352,7 @@
       "venue_city": "Huntington, WV",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 42,
+      "weather_temp": 43,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -189732,18 +189744,18 @@
             "predictability": 79,
             "place": 30,
             "of": 138,
-            "off_curve": 0.0789,
+            "off_curve": 0.0786,
             "observed_off_curve": 0.125,
-            "volatility": 0.854,
+            "volatility": 0.853,
             "games": 8
           },
           "defense": {
-            "predictability": 57,
-            "place": 60,
+            "predictability": 56,
+            "place": 61,
             "of": 138,
-            "off_curve": 0.0998,
+            "off_curve": 0.0999,
             "observed_off_curve": 0.125,
-            "volatility": 0.911,
+            "volatility": 0.912,
             "games": 8
           },
           "team": {
@@ -189759,8 +189771,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -191075,35 +191087,35 @@
             "predictability": 38,
             "place": 86,
             "of": 138,
-            "off_curve": 0.1465,
+            "off_curve": 0.1459,
             "observed_off_curve": 0.125,
-            "volatility": 1.033,
+            "volatility": 1.032,
             "games": 8
           },
           "defense": {
             "predictability": 8,
             "place": 127,
             "of": 138,
-            "off_curve": 0.2515,
+            "off_curve": 0.2508,
             "observed_off_curve": 0.375,
-            "volatility": 1.308,
+            "volatility": 1.306,
             "games": 8
           },
           "team": {
-            "predictability": 55,
-            "place": 62,
+            "predictability": 56,
+            "place": 61,
             "of": 138,
-            "off_curve": 0.1109,
+            "off_curve": 0.1115,
             "observed_off_curve": 0.125,
-            "volatility": 0.941,
+            "volatility": 0.943,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -191200,7 +191212,7 @@
       "venue_city": "Boise, ID",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 53,
+      "weather_temp": 54,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -193552,25 +193564,25 @@
             "predictability": 47,
             "place": 73,
             "of": 138,
-            "off_curve": 0.1252,
+            "off_curve": 0.1255,
             "observed_off_curve": 0.0,
-            "volatility": 0.978,
+            "volatility": 0.979,
             "games": 8
           },
           "defense": {
             "predictability": 9,
             "place": 126,
             "of": 138,
-            "off_curve": 0.2485,
+            "off_curve": 0.2488,
             "observed_off_curve": 0.5,
-            "volatility": 1.3,
+            "volatility": 1.301,
             "games": 8
           },
           "team": {
             "predictability": 2,
             "place": 135,
             "of": 138,
-            "off_curve": 0.2743,
+            "off_curve": 0.2744,
             "observed_off_curve": 0.5,
             "volatility": 1.372,
             "games": 8
@@ -193579,8 +193591,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -194896,28 +194908,28 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 32,
-            "place": 94,
+            "predictability": 31,
+            "place": 95,
             "of": 138,
-            "off_curve": 0.154,
+            "off_curve": 0.1543,
             "observed_off_curve": 0.125,
-            "volatility": 1.052,
+            "volatility": 1.053,
             "games": 8
           },
           "defense": {
             "predictability": 7,
             "place": 128,
             "of": 138,
-            "off_curve": 0.2544,
+            "off_curve": 0.2549,
             "observed_off_curve": 0.375,
-            "volatility": 1.316,
+            "volatility": 1.317,
             "games": 8
           },
           "team": {
-            "predictability": 32,
-            "place": 94,
+            "predictability": 31,
+            "place": 95,
             "of": 138,
-            "off_curve": 0.1491,
+            "off_curve": 0.1493,
             "observed_off_curve": 0.125,
             "volatility": 1.04,
             "games": 8
@@ -194926,8 +194938,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -197435,35 +197447,35 @@
             "predictability": 39,
             "place": 84,
             "of": 138,
-            "off_curve": 0.1413,
+            "off_curve": 0.1408,
             "observed_off_curve": 0.125,
-            "volatility": 1.02,
+            "volatility": 1.018,
             "games": 8
           },
           "defense": {
             "predictability": 14,
             "place": 119,
             "of": 138,
-            "off_curve": 0.213,
+            "off_curve": 0.2131,
             "observed_off_curve": 0.25,
             "volatility": 1.205,
             "games": 8
           },
           "team": {
-            "predictability": 25,
-            "place": 104,
+            "predictability": 26,
+            "place": 102,
             "of": 138,
-            "off_curve": 0.1657,
+            "off_curve": 0.164,
             "observed_off_curve": 0.25,
-            "volatility": 1.082,
+            "volatility": 1.078,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -198747,35 +198759,35 @@
             "predictability": 15,
             "place": 118,
             "of": 138,
-            "off_curve": 0.1978,
+            "off_curve": 0.1983,
             "observed_off_curve": 0.25,
-            "volatility": 1.165,
+            "volatility": 1.166,
             "games": 8
           },
           "defense": {
-            "predictability": 60,
-            "place": 56,
+            "predictability": 61,
+            "place": 54,
             "of": 138,
-            "off_curve": 0.0965,
+            "off_curve": 0.0941,
             "observed_off_curve": 0.125,
-            "volatility": 0.902,
+            "volatility": 0.896,
             "games": 8
           },
           "team": {
             "predictability": 42,
             "place": 81,
             "of": 138,
-            "off_curve": 0.1285,
+            "off_curve": 0.1306,
             "observed_off_curve": 0.0,
-            "volatility": 0.987,
+            "volatility": 0.992,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -201338,35 +201350,35 @@
             "predictability": 81,
             "place": 27,
             "of": 138,
-            "off_curve": 0.074,
+            "off_curve": 0.0741,
             "observed_off_curve": 0.0,
-            "volatility": 0.839,
+            "volatility": 0.84,
             "games": 9
           },
           "defense": {
             "predictability": 69,
-            "place": 43,
+            "place": 44,
             "of": 138,
-            "off_curve": 0.0823,
+            "off_curve": 0.0826,
             "observed_off_curve": 0.1111,
-            "volatility": 0.863,
+            "volatility": 0.864,
             "games": 9
           },
           "team": {
             "predictability": 84,
             "place": 23,
             "of": 138,
-            "off_curve": 0.0635,
+            "off_curve": 0.0636,
             "observed_off_curve": 0.1111,
-            "volatility": 0.808,
+            "volatility": 0.809,
             "games": 9
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -202812,19 +202824,19 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 41,
-            "place": 82,
+            "predictability": 40,
+            "place": 83,
             "of": 138,
-            "off_curve": 0.1369,
+            "off_curve": 0.1389,
             "observed_off_curve": 0.125,
-            "volatility": 1.008,
+            "volatility": 1.014,
             "games": 8
           },
           "defense": {
             "predictability": 42,
             "place": 81,
             "of": 138,
-            "off_curve": 0.1358,
+            "off_curve": 0.1359,
             "observed_off_curve": 0.125,
             "volatility": 1.006,
             "games": 8
@@ -202833,17 +202845,17 @@
             "predictability": 80,
             "place": 28,
             "of": 138,
-            "off_curve": 0.0721,
+            "off_curve": 0.0728,
             "observed_off_curve": 0.0,
-            "volatility": 0.834,
+            "volatility": 0.836,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -205325,19 +205337,19 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 56,
-            "place": 61,
+            "predictability": 55,
+            "place": 62,
             "of": 138,
-            "off_curve": 0.1065,
+            "off_curve": 0.1073,
             "observed_off_curve": 0.125,
-            "volatility": 0.929,
+            "volatility": 0.931,
             "games": 8
           },
           "defense": {
             "predictability": 80,
             "place": 28,
             "of": 138,
-            "off_curve": 0.0672,
+            "off_curve": 0.0673,
             "observed_off_curve": 0.0,
             "volatility": 0.82,
             "games": 8
@@ -205346,17 +205358,17 @@
             "predictability": 42,
             "place": 80,
             "of": 138,
-            "off_curve": 0.1275,
+            "off_curve": 0.1282,
             "observed_off_curve": 0.125,
-            "volatility": 0.984,
+            "volatility": 0.986,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -206674,9 +206686,9 @@
             "predictability": 94,
             "place": 9,
             "of": 138,
-            "off_curve": 0.0329,
+            "off_curve": 0.0324,
             "observed_off_curve": 0.0,
-            "volatility": 0.703,
+            "volatility": 0.701,
             "games": 8
           },
           "defense": {
@@ -206692,7 +206704,7 @@
             "predictability": 83,
             "place": 24,
             "of": 138,
-            "off_curve": 0.0667,
+            "off_curve": 0.0666,
             "observed_off_curve": 0.0,
             "volatility": 0.818,
             "games": 8
@@ -206701,8 +206713,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -206836,7 +206848,7 @@
       "venue_city": "University Park, PA",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 36,
+      "weather_temp": 35,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -209172,16 +209184,16 @@
             "predictability": 17,
             "place": 115,
             "of": 138,
-            "off_curve": 0.1987,
+            "off_curve": 0.1988,
             "observed_off_curve": 0.125,
             "volatility": 1.167,
             "games": 8
           },
           "team": {
-            "predictability": 76,
-            "place": 34,
+            "predictability": 75,
+            "place": 35,
             "of": 138,
-            "off_curve": 0.0828,
+            "off_curve": 0.0829,
             "observed_off_curve": 0.0,
             "volatility": 0.865,
             "games": 8
@@ -209190,8 +209202,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -210524,16 +210536,16 @@
             "predictability": 42,
             "place": 80,
             "of": 138,
-            "off_curve": 0.1347,
+            "off_curve": 0.1345,
             "observed_off_curve": 0.1111,
-            "volatility": 1.003,
+            "volatility": 1.002,
             "games": 9
           },
           "defense": {
             "predictability": 23,
             "place": 106,
             "of": 138,
-            "off_curve": 0.1865,
+            "off_curve": 0.1866,
             "observed_off_curve": 0.3333,
             "volatility": 1.136,
             "games": 9
@@ -210542,7 +210554,7 @@
             "predictability": 8,
             "place": 127,
             "of": 138,
-            "off_curve": 0.249,
+            "off_curve": 0.2488,
             "observed_off_curve": 0.3333,
             "volatility": 1.301,
             "games": 9
@@ -210551,8 +210563,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -210686,7 +210698,7 @@
       "venue_city": "Mobile, AL",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 51,
+      "weather_temp": 53,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -213078,35 +213090,35 @@
             "predictability": 4,
             "place": 132,
             "of": 138,
-            "off_curve": 0.257,
+            "off_curve": 0.2574,
             "observed_off_curve": 0.25,
-            "volatility": 1.323,
+            "volatility": 1.325,
             "games": 8
           },
           "defense": {
             "predictability": 9,
             "place": 125,
             "of": 138,
-            "off_curve": 0.239,
+            "off_curve": 0.2345,
             "observed_off_curve": 0.375,
-            "volatility": 1.274,
+            "volatility": 1.262,
             "games": 8
           },
           "team": {
             "predictability": 79,
             "place": 30,
             "of": 138,
-            "off_curve": 0.0763,
+            "off_curve": 0.0794,
             "observed_off_curve": 0.0,
-            "volatility": 0.846,
+            "volatility": 0.855,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -214435,35 +214447,35 @@
             "predictability": 13,
             "place": 120,
             "of": 138,
-            "off_curve": 0.2054,
+            "off_curve": 0.2058,
             "observed_off_curve": 0.25,
-            "volatility": 1.185,
+            "volatility": 1.186,
             "games": 8
           },
           "defense": {
             "predictability": 26,
             "place": 102,
             "of": 138,
-            "off_curve": 0.1739,
+            "off_curve": 0.1736,
             "observed_off_curve": 0.125,
-            "volatility": 1.103,
+            "volatility": 1.102,
             "games": 8
           },
           "team": {
-            "predictability": 61,
-            "place": 54,
+            "predictability": 60,
+            "place": 56,
             "of": 138,
-            "off_curve": 0.1031,
+            "off_curve": 0.1073,
             "observed_off_curve": 0.0,
-            "volatility": 0.92,
+            "volatility": 0.931,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -214597,7 +214609,7 @@
       "venue_city": "Iowa City, IA",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 39,
+      "weather_temp": 37,
       "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
@@ -216924,35 +216936,35 @@
             "predictability": 3,
             "place": 134,
             "of": 138,
-            "off_curve": 0.2676,
+            "off_curve": 0.2682,
             "observed_off_curve": 0.25,
-            "volatility": 1.353,
+            "volatility": 1.355,
             "games": 8
           },
           "defense": {
             "predictability": 10,
             "place": 124,
             "of": 138,
-            "off_curve": 0.2333,
+            "off_curve": 0.2336,
             "observed_off_curve": 0.375,
-            "volatility": 1.258,
+            "volatility": 1.259,
             "games": 8
           },
           "team": {
             "predictability": 7,
             "place": 128,
             "of": 138,
-            "off_curve": 0.2519,
+            "off_curve": 0.2523,
             "observed_off_curve": 0.375,
-            "volatility": 1.309,
+            "volatility": 1.31,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -218272,10 +218284,10 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 25,
-            "place": 104,
+            "predictability": 23,
+            "place": 106,
             "of": 138,
-            "off_curve": 0.1745,
+            "off_curve": 0.1748,
             "observed_off_curve": 0.125,
             "volatility": 1.105,
             "games": 8
@@ -218284,26 +218296,26 @@
             "predictability": 19,
             "place": 112,
             "of": 138,
-            "off_curve": 0.1955,
+            "off_curve": 0.1958,
             "observed_off_curve": 0.25,
-            "volatility": 1.159,
+            "volatility": 1.16,
             "games": 8
           },
           "team": {
-            "predictability": 18,
-            "place": 113,
+            "predictability": 17,
+            "place": 115,
             "of": 138,
-            "off_curve": 0.1873,
+            "off_curve": 0.1874,
             "observed_off_curve": 0.125,
-            "volatility": 1.137,
+            "volatility": 1.138,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -220735,27 +220747,27 @@
         "predictability": {
           "offense": {
             "predictability": 66,
-            "place": 48,
+            "place": 47,
             "of": 138,
-            "off_curve": 0.0971,
+            "off_curve": 0.0972,
             "observed_off_curve": 0.125,
             "volatility": 0.904,
             "games": 8
           },
           "defense": {
-            "predictability": 69,
-            "place": 44,
+            "predictability": 68,
+            "place": 45,
             "of": 138,
-            "off_curve": 0.0832,
+            "off_curve": 0.0831,
             "observed_off_curve": 0.125,
             "volatility": 0.866,
             "games": 8
           },
           "team": {
-            "predictability": 33,
-            "place": 93,
+            "predictability": 34,
+            "place": 92,
             "of": 138,
-            "off_curve": 0.1486,
+            "off_curve": 0.1484,
             "observed_off_curve": 0.25,
             "volatility": 1.038,
             "games": 8
@@ -220764,8 +220776,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -222065,18 +222077,18 @@
             "predictability": 47,
             "place": 74,
             "of": 138,
-            "off_curve": 0.1284,
+            "off_curve": 0.1287,
             "observed_off_curve": 0.25,
             "volatility": 0.987,
             "games": 8
           },
           "defense": {
-            "predictability": 22,
-            "place": 108,
+            "predictability": 23,
+            "place": 107,
             "of": 138,
-            "off_curve": 0.1903,
+            "off_curve": 0.1896,
             "observed_off_curve": 0.25,
-            "volatility": 1.145,
+            "volatility": 1.143,
             "games": 8
           },
           "team": {
@@ -222092,8 +222104,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -224581,25 +224593,25 @@
             "predictability": 72,
             "place": 39,
             "of": 138,
-            "off_curve": 0.0875,
+            "off_curve": 0.0887,
             "observed_off_curve": 0.1111,
-            "volatility": 0.878,
+            "volatility": 0.881,
             "games": 9
           },
           "defense": {
-            "predictability": 56,
-            "place": 61,
+            "predictability": 58,
+            "place": 59,
             "of": 138,
-            "off_curve": 0.0999,
+            "off_curve": 0.0997,
             "observed_off_curve": 0.1111,
-            "volatility": 0.912,
+            "volatility": 0.911,
             "games": 9
           },
           "team": {
             "predictability": 91,
             "place": 14,
             "of": 138,
-            "off_curve": 0.0513,
+            "off_curve": 0.0514,
             "observed_off_curve": 0.0,
             "volatility": 0.77,
             "games": 9
@@ -224608,8 +224620,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -225959,7 +225971,7 @@
             "predictability": 50,
             "place": 69,
             "of": 138,
-            "off_curve": 0.1182,
+            "off_curve": 0.1183,
             "observed_off_curve": 0.125,
             "volatility": 0.96,
             "games": 8
@@ -225968,7 +225980,7 @@
             "predictability": 49,
             "place": 71,
             "of": 138,
-            "off_curve": 0.1124,
+            "off_curve": 0.1126,
             "observed_off_curve": 0.125,
             "volatility": 0.945,
             "games": 8
@@ -225977,7 +225989,7 @@
             "predictability": 21,
             "place": 109,
             "of": 138,
-            "off_curve": 0.1793,
+            "off_curve": 0.1792,
             "observed_off_curve": 0.25,
             "volatility": 1.117,
             "games": 8
@@ -225986,8 +225998,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -226139,7 +226151,7 @@
       "venue_city": "Albuquerque, NM",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 57,
+      "weather_temp": 55,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -228528,38 +228540,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 74,
-            "place": 36,
+            "predictability": 75,
+            "place": 35,
             "of": 138,
-            "off_curve": 0.0852,
+            "off_curve": 0.0849,
             "observed_off_curve": 0.1111,
-            "volatility": 0.872,
+            "volatility": 0.871,
             "games": 9
           },
           "defense": {
-            "predictability": 53,
-            "place": 66,
+            "predictability": 52,
+            "place": 67,
             "of": 138,
-            "off_curve": 0.1049,
+            "off_curve": 0.1052,
             "observed_off_curve": 0.1111,
-            "volatility": 0.925,
+            "volatility": 0.926,
             "games": 9
           },
           "team": {
             "predictability": 85,
             "place": 21,
             "of": 138,
-            "off_curve": 0.0604,
+            "off_curve": 0.0596,
             "observed_off_curve": 0.0,
-            "volatility": 0.799,
+            "volatility": 0.796,
             "games": 9
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -229894,38 +229906,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 67,
-            "place": 46,
+            "predictability": 68,
+            "place": 45,
             "of": 138,
-            "off_curve": 0.0969,
+            "off_curve": 0.0961,
             "observed_off_curve": 0.125,
-            "volatility": 0.904,
+            "volatility": 0.901,
             "games": 8
           },
           "defense": {
             "predictability": 28,
             "place": 99,
             "of": 138,
-            "off_curve": 0.1647,
+            "off_curve": 0.1642,
             "observed_off_curve": 0.125,
-            "volatility": 1.079,
+            "volatility": 1.078,
             "games": 8
           },
           "team": {
             "predictability": 61,
-            "place": 55,
+            "place": 54,
             "of": 138,
-            "off_curve": 0.106,
+            "off_curve": 0.1062,
             "observed_off_curve": 0.125,
-            "volatility": 0.928,
+            "volatility": 0.929,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -230077,7 +230089,7 @@
       "venue_city": "Tucson, AZ",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 68,
+      "weather_temp": 66,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -232469,7 +232481,7 @@
             "predictability": 95,
             "place": 8,
             "of": 138,
-            "off_curve": 0.0318,
+            "off_curve": 0.032,
             "observed_off_curve": 0.0,
             "volatility": 0.699,
             "games": 8
@@ -232478,26 +232490,26 @@
             "predictability": 18,
             "place": 113,
             "of": 138,
-            "off_curve": 0.1973,
+            "off_curve": 0.1977,
             "observed_off_curve": 0.125,
-            "volatility": 1.163,
+            "volatility": 1.164,
             "games": 8
           },
           "team": {
-            "predictability": 26,
-            "place": 102,
+            "predictability": 27,
+            "place": 101,
             "of": 138,
-            "off_curve": 0.1626,
+            "off_curve": 0.1629,
             "observed_off_curve": 0.125,
-            "volatility": 1.074,
+            "volatility": 1.075,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -233802,16 +233814,16 @@
             "predictability": 77,
             "place": 33,
             "of": 138,
-            "off_curve": 0.0821,
+            "off_curve": 0.0824,
             "observed_off_curve": 0.125,
-            "volatility": 0.863,
+            "volatility": 0.864,
             "games": 8
           },
           "defense": {
             "predictability": 38,
             "place": 86,
             "of": 138,
-            "off_curve": 0.1389,
+            "off_curve": 0.1392,
             "observed_off_curve": 0.25,
             "volatility": 1.014,
             "games": 8
@@ -233820,7 +233832,7 @@
             "predictability": 30,
             "place": 97,
             "of": 138,
-            "off_curve": 0.1553,
+            "off_curve": 0.1555,
             "observed_off_curve": 0.125,
             "volatility": 1.056,
             "games": 8
@@ -233829,8 +233841,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -236383,7 +236395,7 @@
             "predictability": 39,
             "place": 85,
             "of": 138,
-            "off_curve": 0.1451,
+            "off_curve": 0.145,
             "observed_off_curve": 0.25,
             "volatility": 1.029,
             "games": 8
@@ -236392,26 +236404,26 @@
             "predictability": 41,
             "place": 82,
             "of": 138,
-            "off_curve": 0.137,
+            "off_curve": 0.1367,
             "observed_off_curve": 0.125,
-            "volatility": 1.009,
+            "volatility": 1.008,
             "games": 8
           },
           "team": {
             "predictability": 22,
             "place": 108,
             "of": 138,
-            "off_curve": 0.1788,
+            "off_curve": 0.1786,
             "observed_off_curve": 0.375,
-            "volatility": 1.116,
+            "volatility": 1.115,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -237773,38 +237785,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 90,
-            "place": 15,
+            "predictability": 89,
+            "place": 16,
             "of": 138,
-            "off_curve": 0.0508,
+            "off_curve": 0.0511,
             "observed_off_curve": 0.0,
-            "volatility": 0.768,
+            "volatility": 0.769,
             "games": 8
           },
           "defense": {
             "predictability": 80,
             "place": 29,
             "of": 138,
-            "off_curve": 0.0682,
+            "off_curve": 0.0691,
             "observed_off_curve": 0.0,
-            "volatility": 0.823,
+            "volatility": 0.825,
             "games": 8
           },
           "team": {
             "predictability": 82,
-            "place": 25,
+            "place": 26,
             "of": 138,
-            "off_curve": 0.0675,
+            "off_curve": 0.0682,
             "observed_off_curve": 0.0,
-            "volatility": 0.821,
+            "volatility": 0.823,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -237930,7 +237942,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "ESPNU",
-      "weather_temp": 62,
+      "weather_temp": 64,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -240322,35 +240334,35 @@
             "predictability": 64,
             "place": 50,
             "of": 138,
-            "off_curve": 0.1012,
+            "off_curve": 0.0978,
             "observed_off_curve": 0.125,
-            "volatility": 0.915,
+            "volatility": 0.906,
             "games": 8
           },
           "defense": {
-            "predictability": 28,
-            "place": 100,
+            "predictability": 27,
+            "place": 101,
             "of": 138,
-            "off_curve": 0.1709,
-            "observed_off_curve": 0.25,
-            "volatility": 1.095,
+            "off_curve": 0.1725,
+            "observed_off_curve": 0.375,
+            "volatility": 1.1,
             "games": 8
           },
           "team": {
-            "predictability": 60,
-            "place": 56,
+            "predictability": 61,
+            "place": 55,
             "of": 138,
-            "off_curve": 0.1083,
+            "off_curve": 0.1065,
             "observed_off_curve": 0.0,
-            "volatility": 0.934,
+            "volatility": 0.929,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -241638,38 +241650,38 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 53,
-            "place": 66,
+            "predictability": 54,
+            "place": 64,
             "of": 138,
-            "off_curve": 0.1156,
+            "off_curve": 0.1144,
             "observed_off_curve": 0.0,
-            "volatility": 0.953,
+            "volatility": 0.95,
             "games": 8
           },
           "defense": {
             "predictability": 6,
             "place": 130,
             "of": 138,
-            "off_curve": 0.2563,
+            "off_curve": 0.2564,
             "observed_off_curve": 0.375,
-            "volatility": 1.321,
+            "volatility": 1.322,
             "games": 8
           },
           "team": {
-            "predictability": 45,
-            "place": 77,
+            "predictability": 44,
+            "place": 78,
             "of": 138,
-            "off_curve": 0.1253,
+            "off_curve": 0.1267,
             "observed_off_curve": 0.125,
-            "volatility": 0.979,
+            "volatility": 0.982,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -241776,7 +241788,7 @@
       "venue_city": "Stillwater, OK",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 53,
+      "weather_temp": 51,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -244166,18 +244178,18 @@
         "predictability": {
           "offense": {
             "predictability": 18,
-            "place": 114,
+            "place": 113,
             "of": 138,
-            "off_curve": 0.1877,
+            "off_curve": 0.1876,
             "observed_off_curve": 0.25,
-            "volatility": 1.139,
+            "volatility": 1.138,
             "games": 8
           },
           "defense": {
             "predictability": 81,
             "place": 27,
             "of": 138,
-            "off_curve": 0.0666,
+            "off_curve": 0.0667,
             "observed_off_curve": 0.125,
             "volatility": 0.818,
             "games": 8
@@ -244195,8 +244207,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -245469,7 +245481,7 @@
             "predictability": 10,
             "place": 124,
             "of": 138,
-            "off_curve": 0.2221,
+            "off_curve": 0.2224,
             "observed_off_curve": 0.25,
             "volatility": 1.229,
             "games": 8
@@ -245478,7 +245490,7 @@
             "predictability": 20,
             "place": 110,
             "of": 138,
-            "off_curve": 0.1933,
+            "off_curve": 0.1931,
             "observed_off_curve": 0.125,
             "volatility": 1.153,
             "games": 8
@@ -245487,17 +245499,17 @@
             "predictability": 5,
             "place": 131,
             "of": 138,
-            "off_curve": 0.2659,
+            "off_curve": 0.2653,
             "observed_off_curve": 0.375,
-            "volatility": 1.348,
+            "volatility": 1.347,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -247996,35 +248008,35 @@
             "predictability": 48,
             "place": 72,
             "of": 138,
-            "off_curve": 0.1237,
+            "off_curve": 0.1254,
             "observed_off_curve": 0.125,
-            "volatility": 0.974,
+            "volatility": 0.979,
             "games": 8
           },
           "defense": {
             "predictability": 47,
             "place": 74,
             "of": 138,
-            "off_curve": 0.1195,
+            "off_curve": 0.1198,
             "observed_off_curve": 0.125,
-            "volatility": 0.963,
+            "volatility": 0.964,
             "games": 8
           },
           "team": {
-            "predictability": 71,
-            "place": 41,
+            "predictability": 70,
+            "place": 42,
             "of": 138,
-            "off_curve": 0.0935,
+            "off_curve": 0.0941,
             "observed_off_curve": 0.0,
-            "volatility": 0.894,
+            "volatility": 0.896,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -249420,7 +249432,7 @@
             "predictability": 51,
             "place": 68,
             "of": 138,
-            "off_curve": 0.1178,
+            "off_curve": 0.1179,
             "observed_off_curve": 0.125,
             "volatility": 0.959,
             "games": 8
@@ -249429,14 +249441,14 @@
             "predictability": 39,
             "place": 85,
             "of": 138,
-            "off_curve": 0.1387,
+            "off_curve": 0.1388,
             "observed_off_curve": 0.0,
             "volatility": 1.013,
             "games": 8
           },
           "team": {
             "predictability": 28,
-            "place": 100,
+            "place": 99,
             "of": 138,
             "off_curve": 0.1606,
             "observed_off_curve": 0.25,
@@ -249447,8 +249459,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -249646,7 +249658,7 @@
       "venue_city": "El Paso, TX",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 64,
+      "weather_temp": 62,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -252040,16 +252052,16 @@
             "predictability": 1,
             "place": 136,
             "of": 138,
-            "off_curve": 0.2786,
+            "off_curve": 0.2789,
             "observed_off_curve": 0.375,
-            "volatility": 1.384,
+            "volatility": 1.385,
             "games": 8
           },
           "defense": {
             "predictability": 100,
             "place": 1,
             "of": 138,
-            "off_curve": 0.0169,
+            "off_curve": 0.017,
             "observed_off_curve": 0.0,
             "volatility": 0.628,
             "games": 8
@@ -252058,7 +252070,7 @@
             "predictability": 20,
             "place": 111,
             "of": 138,
-            "off_curve": 0.1801,
+            "off_curve": 0.1802,
             "observed_off_curve": 0.25,
             "volatility": 1.119,
             "games": 8
@@ -252067,8 +252079,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -253442,35 +253454,35 @@
             "predictability": 76,
             "place": 34,
             "of": 138,
-            "off_curve": 0.0834,
+            "off_curve": 0.0837,
             "observed_off_curve": 0.125,
-            "volatility": 0.866,
+            "volatility": 0.867,
             "games": 8
           },
           "defense": {
             "predictability": 70,
             "place": 42,
             "of": 138,
-            "off_curve": 0.0817,
+            "off_curve": 0.0818,
             "observed_off_curve": 0.0,
             "volatility": 0.862,
             "games": 8
           },
           "team": {
-            "predictability": 72,
-            "place": 39,
+            "predictability": 73,
+            "place": 38,
             "of": 138,
-            "off_curve": 0.0902,
+            "off_curve": 0.0903,
             "observed_off_curve": 0.125,
-            "volatility": 0.885,
+            "volatility": 0.886,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -255959,25 +255971,25 @@
             "predictability": 85,
             "place": 22,
             "of": 138,
-            "off_curve": 0.057,
+            "off_curve": 0.0572,
             "observed_off_curve": 0.0,
-            "volatility": 0.788,
+            "volatility": 0.789,
             "games": 8
           },
           "defense": {
             "predictability": 5,
             "place": 131,
             "of": 138,
-            "off_curve": 0.2611,
+            "off_curve": 0.2615,
             "observed_off_curve": 0.25,
-            "volatility": 1.335,
+            "volatility": 1.336,
             "games": 8
           },
           "team": {
-            "predictability": 50,
-            "place": 70,
+            "predictability": 49,
+            "place": 71,
             "of": 138,
-            "off_curve": 0.1169,
+            "off_curve": 0.1171,
             "observed_off_curve": 0.125,
             "volatility": 0.957,
             "games": 8
@@ -255986,8 +255998,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -257334,25 +257346,25 @@
             "predictability": 20,
             "place": 111,
             "of": 138,
-            "off_curve": 0.1811,
+            "off_curve": 0.1814,
             "observed_off_curve": 0.25,
-            "volatility": 1.121,
+            "volatility": 1.122,
             "games": 8
           },
           "defense": {
-            "predictability": 85,
-            "place": 22,
+            "predictability": 84,
+            "place": 23,
             "of": 138,
-            "off_curve": 0.0588,
+            "off_curve": 0.059,
             "observed_off_curve": 0.0,
-            "volatility": 0.794,
+            "volatility": 0.795,
             "games": 8
           },
           "team": {
             "predictability": 50,
-            "place": 69,
+            "place": 70,
             "of": 138,
-            "off_curve": 0.1163,
+            "off_curve": 0.1164,
             "observed_off_curve": 0.125,
             "volatility": 0.955,
             "games": 8
@@ -257361,8 +257373,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -259836,35 +259848,35 @@
             "predictability": 96,
             "place": 6,
             "of": 138,
-            "off_curve": 0.0279,
+            "off_curve": 0.0278,
             "observed_off_curve": 0.0,
             "volatility": 0.682,
             "games": 8
           },
           "defense": {
-            "predictability": 16,
-            "place": 116,
+            "predictability": 15,
+            "place": 117,
             "of": 138,
-            "off_curve": 0.2051,
+            "off_curve": 0.2069,
             "observed_off_curve": 0.25,
-            "volatility": 1.184,
+            "volatility": 1.188,
             "games": 8
           },
           "team": {
             "predictability": 39,
             "place": 84,
             "of": 138,
-            "off_curve": 0.134,
+            "off_curve": 0.1343,
             "observed_off_curve": 0.25,
-            "volatility": 1.001,
+            "volatility": 1.002,
             "games": 8
           },
           "curve": {
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
@@ -261180,12 +261192,12 @@
         },
         "predictability": {
           "offense": {
-            "predictability": 36,
-            "place": 88,
+            "predictability": 37,
+            "place": 87,
             "of": 138,
-            "off_curve": 0.1487,
+            "off_curve": 0.1484,
             "observed_off_curve": 0.3333,
-            "volatility": 1.039,
+            "volatility": 1.038,
             "games": 9
           },
           "defense": {
@@ -261201,7 +261213,7 @@
             "predictability": 35,
             "place": 90,
             "of": 138,
-            "off_curve": 0.1466,
+            "off_curve": 0.1464,
             "observed_off_curve": 0.2222,
             "volatility": 1.033,
             "games": 9
@@ -261210,8 +261222,8 @@
             "metric": "Yards per play (FBS vs FBS)",
             "z": 1.5,
             "prior_games": 3,
-            "unit_sigma": 0.9753,
-            "team_sigma": 1.3558,
+            "unit_sigma": 0.9745,
+            "team_sigma": 1.3553,
             "league_off_curve": 0.1336,
             "games": 562
           }
