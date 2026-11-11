@@ -48,7 +48,17 @@ def validate_context(value,old=None):
         before=old.get('pressure') if old and old['season']==value['season'] else None
         if before and before['games']>press['games'] and (press.get('data_through') or '')>=(before.get('data_through') or ''):
             raise ValueError('Pressure sample regressed; existing publication retained')
+    if (adj:=value.get('adjusted')):
+        rec,exp=adj['record'],adj['expected_record']
+        if rec['wins']+rec['losses']>rec['games'] or abs(exp['wins']+exp['losses']-rec['games'])>0.2:
+            raise ValueError('Power record does not reconcile')
+        for key in ('net','offense','defense','schedule','schedule_offense','schedule_defense','luck'):
+            e=adj[key]
+            if not (math.isfinite(e['value']) and 1<=e['rank']<=e['of']<=400):raise ValueError('Invalid power place: '+key)
+        if not (60<=adj['offense']['value']<=160 and 60<=adj['defense']['value']<=160):raise ValueError('Power rating outside range')
     for g in value.get('games') or []:
+        if g.get('adj_points') is not None and (g.get('points') is None or abs(g['adj_points']-g['points'])>30):
+            raise ValueError('Noise-adjusted score does not follow its final')
         for key,e in (g.get('box') or {}).items():
             low,high=(20,120) if key=='pace' else (0,1)
             if not (low<=e['value']<=high and 1<=e['rank']<=e['of']):raise ValueError('Invalid game box line: '+key)

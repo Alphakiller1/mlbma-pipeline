@@ -20,8 +20,9 @@ from pathlib import Path
 try:  # run as a script (scripts/ on the path) or imported as scripts.*
     import cfb_depth
     import cfb_injuries
+    import cfb_power
 except ImportError:  # pragma: no cover - package import in tests
-    from scripts import cfb_depth, cfb_injuries
+    from scripts import cfb_depth, cfb_injuries, cfb_power
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "public" / "cfb" / "slate.json"
@@ -905,6 +906,13 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict,
         row[side + "_qbs"] = (depth.get("qbs") or {}).get(key)
         row[side + "_defense_splits"] = (depth.get("defense_splits") or {}).get(key)
         row[side + "_rushers"] = (depth.get("rushers") or {}).get(key)
+        power = depth.get("power") or {}
+        row[side + "_power"] = (power.get("teams") or {}).get(key)
+        row[side + "_predictability"] = (power.get("predictability") or {}).get(key)
+        for entry in (log or {}).get("games") or []:
+            hit = (power.get("games") or {}).get((key, str(entry.get("date") or "")[:10]))
+            if hit and hit["week"] == entry.get("week"):
+                entry["adj_points"], entry["adj_opponent_points"] = hit["adj_points"], hit["adj_opponent_points"]
         row[side + "_game_log"] = log
         row[side + "_schedule_strength"] = (depth.get("schedule") or {}).get(key)
         # An empty list is a published report with nobody listed; None is no report.
@@ -915,6 +923,20 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict,
         if not row.get(side + "_record"):
             row[side + "_record"] = _record((log or {}).get("games"))
     return {key: value for key, value in row.items() if value not in (None, "", [], {})}
+
+
+def load_power(season: int) -> dict:
+    """Power ranking, noise-adjusted scores and predictability (scripts/cfb_power.py);
+    empty when CFBD is unavailable, so the published blocks carry forward."""
+    try:
+        built = cfb_power.build(season)
+    except Exception as exc:  # noqa: BLE001 - the slate still publishes without it
+        print(f"  power: unavailable ({exc})")
+        return {}
+    if built:
+        print(f"  power: {len(built['teams'])} FBS schools rated through week {built['through_week']}, "
+              f"{len(built['predictability'])} offenses scored, {len(built['games'])} team-games adjusted")
+    return built
 
 
 def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | None = None) -> dict:
@@ -942,6 +964,7 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
             if key.startswith("name:") and (profile.get("overall") or {}).get("value") is not None}),
         "injuries": cfb_injuries.load(),
         "last_game": cfb_depth.last_game_players(season, week, wanted),
+        "power": load_power(season),
     }
     print(f"  depth: {len(advanced)} CFBD team profiles, {len(depth['qbs'])} QB rooms, "
           f"{len(depth['logs'])} game logs")
@@ -949,7 +972,7 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
 
 
 DEPTH_KEYS = ("_run_game", "_scheme_stats", "_qbs", "_defense_splits", "_rushers",
-              "_schedule_strength")
+              "_schedule_strength", "_power", "_predictability")
 
 
 def carry_forward_depth(games: list[dict], season: int) -> int:
@@ -1033,6 +1056,10 @@ def main() -> int:
         "data_through_utc": board.get("generated_at"),
         "games": games,
     }
+    power = depth.get("power") or {}
+    if power:
+        payload["power"] = {"home_court": power["home_court"], "league_mean": power["league_mean"],
+                            "through_week": power["through_week"]}
     with_form = sum(1 for game in games if game.get("away_form") and game.get("home_form"))
     with_adjusted = sum(1 for game in games if game.get("away_adjusted_efficiency")
                         and game.get("home_adjusted_efficiency"))

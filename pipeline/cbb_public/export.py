@@ -6,8 +6,9 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 import gzip,json,math
 from .data import ZONES,read,write,table
-from .. import predictability
+from .. import power, predictability
 from . import pressure
+REPO = Path(__file__).resolve().parents[2]
 
 RATE_FIELDS=['games_all','efg_o_all','efg_d_all','tov_pct_o_all','tov_pct_d_all','orb_pct_all','drb_pct_all',
              'ftr_o_all','ftr_d_all','tpr_o_all','tpr_d_all','ppp_off_all','ppp_def_all','fg2_pct_o_all',
@@ -25,26 +26,6 @@ RATE_FIELDS=RATE_FIELDS+EXTRA_RATE_FIELDS
 PLAYER_FIELDS=['id','pid','athlete_id','Name','Team','G','Min_pct','Usg','Pts','Reb','Ast','eFG','TS',
                'FGM','FGA','3PM','3PA','FTM','FTA','3PP','FTR','Ht']
 FORBIDDEN={'predicted_score','predicted_margin','home_probability','home_win_probability','win_probability','confidence','pick','edge','odds','spread','moneyline','away_points','home_points','home_margin','total_points','power','rating','model_diagnostics','shooting_reversion','recent_shooting_reversion','shooting_scenario','regression_pressure_pp100','progression_pressure_pp100','net_reversion_pp100','geometric_sets','prior_reference_weight','tracking_tactics','posterior_per_regulation','posterior_mean'}
-
-SOS_KEYS=['sos_off_played','sos_def_played','sos_net_played','sos_off_remaining','sos_def_remaining','sos_net_remaining']
-
-def schedule_strength(season):
-    """Opponents' observed D-I efficiency, averaged over each team's games.
-
-    Offense: opponents' points per 100 possessions scored. Defense: points per
-    100 they allowed. Net: the difference. Played counts finals, remaining
-    counts listed fixtures; repeated opponents count once per game.
-    """
-    rates={c['identity']['id']:c['rates'] for c in season.values() if (c['rates'].get('games_all') or 0)>0}
-    for c in season.values():
-        block={}
-        for window,states in (('played',('post',)),('remaining',('pre',))):
-            opps=[rates[g['opponent_id']] for g in c.get('games',[]) if g['state'] in states and g['opponent_id'] in rates]
-            if not opps:continue
-            off=[100*r['ppp_off_all'] for r in opps];dfn=[100*r['ppp_def_all'] for r in opps]
-            block[window]={'games':len(opps),'opp_offense':sum(off)/len(off),'opp_defense':sum(dfn)/len(dfn),
-                           'opp_net':sum(o-d for o,d in zip(off,dfn))/len(opps)}
-        c['schedule_strength']=block
 
 UNTAGGED_SHOT_TYPES=('driving','floater','pullup')
 
@@ -77,33 +58,54 @@ def mark_untracked_shot_types(rates):
                 rates[f'{k}_ppa_{side}_all']=None
 
 
-def box_schedule_strength(season, finals):
-    """Schedule strength from final boxes, leaving out each opponent's games
-    against the team being measured, so a team never grades its own defense
-    (or offense) into its schedule. Remaining fixtures read each opponent's
-    full box-score season."""
-    games = defaultdict(list)  # team -> (game id, opponent, pts, poss, opp pts, opp poss)
+# Ridge pull, in games, toward each team's starting point: last season's rating
+# carried 0.6 of the way (pipeline/power.py; CBB 2023-2026 validated).
+POWER_PENALTY = 4.0
+POWER_CARRY = 0.6
+
+
+def power_inputs(finals):
+    """Rows and played games for pipeline/power.py from D-I finals: each side's
+    noise-adjusted points per 100 possessions, the game's possessions the
+    average of the two sides' estimates."""
+    from .espn_boxes import shooting_totals
+    rates = power.shooting_rates(shooting_totals(finals))
+    rows, played = [], []
     for g in finals:
-        for side, other in (("home", "away"), ("away", "home")):
-            games[g[side]].append((g["id"], g[other], g[side + "_pts"], g[side + "_poss"],
-                                   g[other + "_pts"], g[other + "_poss"]))
-    def ratings(team, without=None):
-        rows = [r for r in games.get(team, []) if r[1] != without]
-        poss, opp_poss = sum(r[3] for r in rows), sum(r[5] for r in rows)
-        if not rows or not poss or not opp_poss:
-            return None
-        return 100 * sum(r[2] for r in rows) / poss, 100 * sum(r[4] for r in rows) / opp_poss
+        poss = (g["home_poss"] + g["away_poss"]) / 2
+        for side, other, loc in (("home", "away", 1), ("away", "home", -1)):
+            loc = 0 if g.get("neutral") else loc
+            tpm, tpa, ftm, fta = g[side + "_shots"]
+            adj = power.basketball_points(g[side + "_pts"], tpm, tpa, ftm, fta, rates.get(g[side]) or rates[""])
+            rows.append(power.Row(g[side], g[other], loc, 100 * adj / poss, poss))
+            margin = g[side + "_pts"] - g[other + "_pts"]
+            played.append(power.Played(g[side], g[other], loc, margin > 0 if margin else None, poss / 100, margin))
+    return rows, played
+
+
+def previous_ratings(year):
+    """Last season's published adjusted offense and defense per team."""
+    offense, defense = {}, {}
+    for f in (REPO / 'data/public/cbb' / str(year - 1) / 'teams').glob('*.json'):
+        a = read(f).get('adjusted')
+        if a:
+            offense[f.stem], defense[f.stem] = a['offense']['value'], a['defense']['value']
+    return offense, defense
+
+
+def adjusted_ranking(season, finals, prior=None):
+    """Each D-I team's power ranking over its D-I finals (pipeline/power.py),
+    starting from ``prior`` (last season's ratings) where one is given."""
+    rows, played = power_inputs(finals)
+    if len({r.offense for r in rows}) < 10:
+        return
+    fit = power.ridge(rows, POWER_PENALTY, prior=power.season_prior(*prior, POWER_CARRY) if prior else None)
+    out = power.table(fit, played, {str(t) for t in season})
     for tid, c in season.items():
-        block = {}
-        played = [ratings(opp, without=str(tid)) for _, opp, *_ in games.get(str(tid), [])]
-        upcoming = [ratings(g['opponent_id']) for g in c.get('games', []) if g['state'] == 'pre']
-        for window, rows in (('played', played), ('remaining', upcoming)):
-            rows = [r for r in rows if r]
-            if rows:
-                block[window] = {'games': len(rows), 'opp_offense': sum(r[0] for r in rows) / len(rows),
-                                 'opp_defense': sum(r[1] for r in rows) / len(rows),
-                                 'opp_net': sum(r[0] - r[1] for r in rows) / len(rows)}
-        c['schedule_strength'] = block
+        row = out["teams"].get(str(tid))
+        if row:
+            c["adjusted"] = {**row, "season": c["season"], "home_court": out["home_court"],
+                             "data_through": max(g["date"] for g in finals)}
 
 
 def distribution(values, *, rank_samples=False):
@@ -131,9 +133,6 @@ def grade_baselines(contexts,year):
         team[key]=distribution(values,rank_samples=True)
     for key in pressure.RANKED:
         team[key]=distribution(pressure.rank_values((c.get('pressure') for c in season),key),rank_samples=True)
-    for window in ('played','remaining'):
-        for stat,key in (('opp_offense','off'),('opp_defense','def'),('opp_net','net')):
-            team[f'sos_{key}_{window}']=distribution(((c.get('schedule_strength') or {}).get(window,{}).get(stat) for c in season),rank_samples=True)
     # The desk reads a team's ESPN box players when it has no counted player
     # line, so those players join the pool they are ranked against.
     lines=[p for c in season for p in (c['players'] if any(x.get('G') for x in c['players'])
@@ -307,6 +306,8 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
                 # A completed season's pressure was measured once from its full
                 # play-by-play (scripts/backfill_cbb_pressure.py) and is kept.
                 if previous.get('pressure'):c['pressure']=previous['pressure']
+                # ...and so is its power ranking (scripts/backfill_cbb_power.py).
+                if previous.get('adjusted'):c['adjusted']=previous['adjusted']
             else:
                 for role in ('offense','defense'):
                     rows=aggregates[role][tid];games,through=game_summaries[role].get(tid,(0,None))
@@ -324,9 +325,10 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
             # A completed season's box lines were ranked once from its full box
             # scores (scripts/backfill_cbb_game_lines.py) and are kept.
             if previous and year!=2027:
-                kept={g['id']:g for g in previous.get('games',[]) if g.get('box')}
+                kept={g['id']:g for g in previous.get('games',[]) if g.get('box') or g.get('adj_points') is not None}
                 for g in c['games']:
-                    if g['id'] in kept:g.update(week=kept[g['id']]['week'],box=kept[g['id']]['box'])
+                    if g['id'] in kept:
+                        g.update({k:kept[g['id']][k] for k in ('week','box','adj_points','adj_opponent_points') if k in kept[g['id']]})
             all_context[(year,tid)]=c
         finals=None
         if year==2027 and observed_tactics and box_cache:
@@ -347,7 +349,7 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
             all_context[(year,tid)]['shots']['cbb']=cbb
         season={tid:c for (y,tid),c in all_context.items() if y==year}
         if finals:
-            box_schedule_strength(season,finals)
+            adjusted_ranking(season,finals,previous_ratings(year))
             # Each offense's scoring events over its D-I games (pipeline/predictability.py).
             events=defaultdict(list)
             for g in finals:
@@ -355,8 +357,6 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
             scored=predictability.score(events,predictability.CBB)
             for tid,c in season.items():
                 if str(tid) in scored:c['predictability']=scored[str(tid)]
-        else:
-            schedule_strength(season)
         for s in stats:
             tid=s['team_id'];c=all_context[(year,tid)];assert_public(c)
             write(out/f'{year}/teams/{tid}.json',c)

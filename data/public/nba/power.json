@@ -1,0 +1,10095 @@
+{
+ "schema": "chase-public-nba-power/1",
+ "sport": "nba",
+ "season": 2027,
+ "games": 160,
+ "through": "2026-11-10",
+ "units": "points per 100 possessions",
+ "home_court": 1.443,
+ "league_mean": 110.359,
+ "teams": {
+  "MEM": {
+   "net": {
+    "value": -1.4,
+    "rank": 19,
+    "of": 30
+   },
+   "offense": {
+    "value": 109.86,
+    "rank": 18,
+    "of": 30
+   },
+   "defense": {
+    "value": 111.27,
+    "rank": 19,
+    "of": 30
+   },
+   "schedule": {
+    "value": -2.65,
+    "rank": 30,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 108.75,
+    "rank": 30,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 111.41,
+    "rank": 27,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.1618,
+    "rank": 3,
+    "of": 30
+   },
+   "record": {
+    "wins": 7,
+    "losses": 3,
+    "games": 10
+   },
+   "expected_record": {
+    "wins": 5.4,
+    "losses": 4.6
+   }
+  },
+  "GS": {
+   "net": {
+    "value": 3.46,
+    "rank": 10,
+    "of": 30
+   },
+   "offense": {
+    "value": 112.51,
+    "rank": 8,
+    "of": 30
+   },
+   "defense": {
+    "value": 109.05,
+    "rank": 10,
+    "of": 30
+   },
+   "schedule": {
+    "value": 0.52,
+    "rank": 12,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.51,
+    "rank": 6,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.99,
+    "rank": 24,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.1337,
+    "rank": 5,
+    "of": 30
+   },
+   "record": {
+    "wins": 8,
+    "losses": 3,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 6.5,
+    "losses": 4.5
+   }
+  },
+  "MIA": {
+   "net": {
+    "value": 0.01,
+    "rank": 16,
+    "of": 30
+   },
+   "offense": {
+    "value": 110.49,
+    "rank": 17,
+    "of": 30
+   },
+   "defense": {
+    "value": 110.48,
+    "rank": 15,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.59,
+    "rank": 21,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.79,
+    "rank": 21,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.38,
+    "rank": 18,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.0493,
+    "rank": 18,
+    "of": 30
+   },
+   "record": {
+    "wins": 5,
+    "losses": 6,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 5.5,
+    "losses": 5.5
+   }
+  },
+  "PHX": {
+   "net": {
+    "value": -0.95,
+    "rank": 18,
+    "of": 30
+   },
+   "offense": {
+    "value": 110.71,
+    "rank": 15,
+    "of": 30
+   },
+   "defense": {
+    "value": 111.66,
+    "rank": 20,
+    "of": 30
+   },
+   "schedule": {
+    "value": 3.43,
+    "rank": 1,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 112.22,
+    "rank": 1,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 108.79,
+    "rank": 1,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0063,
+    "rank": 15,
+    "of": 30
+   },
+   "record": {
+    "wins": 4,
+    "losses": 6,
+    "games": 10
+   },
+   "expected_record": {
+    "wins": 3.9,
+    "losses": 6.1
+   }
+  },
+  "SAC": {
+   "net": {
+    "value": -9.32,
+    "rank": 30,
+    "of": 30
+   },
+   "offense": {
+    "value": 105.97,
+    "rank": 28,
+    "of": 30
+   },
+   "defense": {
+    "value": 115.29,
+    "rank": 28,
+    "of": 30
+   },
+   "schedule": {
+    "value": 1.31,
+    "rank": 7,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.4,
+    "rank": 7,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.09,
+    "rank": 12,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.1356,
+    "rank": 25,
+    "of": 30
+   },
+   "record": {
+    "wins": 1,
+    "losses": 10,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 2.5,
+    "losses": 8.5
+   }
+  },
+  "CHI": {
+   "net": {
+    "value": -6.31,
+    "rank": 25,
+    "of": 30
+   },
+   "offense": {
+    "value": 108.98,
+    "rank": 21,
+    "of": 30
+   },
+   "defense": {
+    "value": 115.3,
+    "rank": 29,
+    "of": 30
+   },
+   "schedule": {
+    "value": 1.33,
+    "rank": 6,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.67,
+    "rank": 12,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.34,
+    "rank": 3,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.1699,
+    "rank": 28,
+    "of": 30
+   },
+   "record": {
+    "wins": 1,
+    "losses": 8,
+    "games": 9
+   },
+   "expected_record": {
+    "wins": 2.5,
+    "losses": 6.5
+   }
+  },
+  "DAL": {
+   "net": {
+    "value": -0.43,
+    "rank": 17,
+    "of": 30
+   },
+   "offense": {
+    "value": 110.5,
+    "rank": 16,
+    "of": 30
+   },
+   "defense": {
+    "value": 110.93,
+    "rank": 17,
+    "of": 30
+   },
+   "schedule": {
+    "value": 0.2,
+    "rank": 16,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.87,
+    "rank": 18,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.67,
+    "rank": 7,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.1434,
+    "rank": 4,
+    "of": 30
+   },
+   "record": {
+    "wins": 7,
+    "losses": 4,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 5.4,
+    "losses": 5.6
+   }
+  },
+  "DET": {
+   "net": {
+    "value": 5.83,
+    "rank": 6,
+    "of": 30
+   },
+   "offense": {
+    "value": 111.38,
+    "rank": 12,
+    "of": 30
+   },
+   "defense": {
+    "value": 105.54,
+    "rank": 3,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.26,
+    "rank": 19,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.53,
+    "rank": 23,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.79,
+    "rank": 9,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0341,
+    "rank": 13,
+    "of": 30
+   },
+   "record": {
+    "wins": 7,
+    "losses": 3,
+    "games": 10
+   },
+   "expected_record": {
+    "wins": 6.7,
+    "losses": 3.3
+   }
+  },
+  "CLE": {
+   "net": {
+    "value": 2.08,
+    "rank": 13,
+    "of": 30
+   },
+   "offense": {
+    "value": 113.06,
+    "rank": 7,
+    "of": 30
+   },
+   "defense": {
+    "value": 110.98,
+    "rank": 18,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.06,
+    "rank": 17,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.12,
+    "rank": 28,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.18,
+    "rank": 2,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.1068,
+    "rank": 23,
+    "of": 30
+   },
+   "record": {
+    "wins": 5,
+    "losses": 6,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 6.2,
+    "losses": 4.8
+   }
+  },
+  "LAC": {
+   "net": {
+    "value": -2.52,
+    "rank": 21,
+    "of": 30
+   },
+   "offense": {
+    "value": 109.34,
+    "rank": 20,
+    "of": 30
+   },
+   "defense": {
+    "value": 111.86,
+    "rank": 21,
+    "of": 30
+   },
+   "schedule": {
+    "value": 1.41,
+    "rank": 5,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.53,
+    "rank": 4,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.12,
+    "rank": 14,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.1898,
+    "rank": 30,
+    "of": 30
+   },
+   "record": {
+    "wins": 2,
+    "losses": 8,
+    "games": 10
+   },
+   "expected_record": {
+    "wins": 3.9,
+    "losses": 6.1
+   }
+  },
+  "LAL": {
+   "net": {
+    "value": 5.01,
+    "rank": 7,
+    "of": 30
+   },
+   "offense": {
+    "value": 115.6,
+    "rank": 1,
+    "of": 30
+   },
+   "defense": {
+    "value": 110.6,
+    "rank": 16,
+    "of": 30
+   },
+   "schedule": {
+    "value": 0.22,
+    "rank": 14,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.49,
+    "rank": 13,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.27,
+    "rank": 16,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.1987,
+    "rank": 2,
+    "of": 30
+   },
+   "record": {
+    "wins": 10,
+    "losses": 2,
+    "games": 12
+   },
+   "expected_record": {
+    "wins": 7.6,
+    "losses": 4.4
+   }
+  },
+  "BKN": {
+   "net": {
+    "value": -7.72,
+    "rank": 28,
+    "of": 30
+   },
+   "offense": {
+    "value": 104.72,
+    "rank": 30,
+    "of": 30
+   },
+   "defense": {
+    "value": 112.44,
+    "rank": 24,
+    "of": 30
+   },
+   "schedule": {
+    "value": 0.37,
+    "rank": 13,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.92,
+    "rank": 17,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.54,
+    "rank": 5,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.0755,
+    "rank": 19,
+    "of": 30
+   },
+   "record": {
+    "wins": 2,
+    "losses": 8,
+    "games": 10
+   },
+   "expected_record": {
+    "wins": 2.8,
+    "losses": 7.2
+   }
+  },
+  "WSH": {
+   "net": {
+    "value": -6.42,
+    "rank": 26,
+    "of": 30
+   },
+   "offense": {
+    "value": 107.43,
+    "rank": 24,
+    "of": 30
+   },
+   "defense": {
+    "value": 113.85,
+    "rank": 26,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.31,
+    "rank": 20,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.59,
+    "rank": 22,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.9,
+    "rank": 10,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0392,
+    "rank": 12,
+    "of": 30
+   },
+   "record": {
+    "wins": 4,
+    "losses": 7,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 3.6,
+    "losses": 7.4
+   }
+  },
+  "IND": {
+   "net": {
+    "value": -5.33,
+    "rank": 23,
+    "of": 30
+   },
+   "offense": {
+    "value": 107.03,
+    "rank": 25,
+    "of": 30
+   },
+   "defense": {
+    "value": 112.36,
+    "rank": 23,
+    "of": 30
+   },
+   "schedule": {
+    "value": -2.62,
+    "rank": 29,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.23,
+    "rank": 27,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 111.84,
+    "rank": 30,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.1395,
+    "rank": 27,
+    "of": 30
+   },
+   "record": {
+    "wins": 3,
+    "losses": 8,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 4.5,
+    "losses": 6.5
+   }
+  },
+  "DEN": {
+   "net": {
+    "value": 2.49,
+    "rank": 12,
+    "of": 30
+   },
+   "offense": {
+    "value": 114.42,
+    "rank": 3,
+    "of": 30
+   },
+   "defense": {
+    "value": 111.93,
+    "rank": 22,
+    "of": 30
+   },
+   "schedule": {
+    "value": 0.69,
+    "rank": 11,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.99,
+    "rank": 10,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.3,
+    "rank": 17,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0013,
+    "rank": 16,
+    "of": 30
+   },
+   "record": {
+    "wins": 5,
+    "losses": 4,
+    "games": 9
+   },
+   "expected_record": {
+    "wins": 5.0,
+    "losses": 4.0
+   }
+  },
+  "MIN": {
+   "net": {
+    "value": 6.08,
+    "rank": 4,
+    "of": 30
+   },
+   "offense": {
+    "value": 112.37,
+    "rank": 9,
+    "of": 30
+   },
+   "defense": {
+    "value": 106.29,
+    "rank": 4,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.17,
+    "rank": 18,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.48,
+    "rank": 14,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.65,
+    "rank": 21,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0656,
+    "rank": 10,
+    "of": 30
+   },
+   "record": {
+    "wins": 8,
+    "losses": 3,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 7.3,
+    "losses": 3.7
+   }
+  },
+  "UTAH": {
+   "net": {
+    "value": -7.21,
+    "rank": 27,
+    "of": 30
+   },
+   "offense": {
+    "value": 105.48,
+    "rank": 29,
+    "of": 30
+   },
+   "defense": {
+    "value": 112.69,
+    "rank": 25,
+    "of": 30
+   },
+   "schedule": {
+    "value": 1.76,
+    "rank": 3,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.83,
+    "rank": 2,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.07,
+    "rank": 11,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.1746,
+    "rank": 29,
+    "of": 30
+   },
+   "record": {
+    "wins": 1,
+    "losses": 10,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 2.9,
+    "losses": 8.1
+   }
+  },
+  "BOS": {
+   "net": {
+    "value": 6.9,
+    "rank": 2,
+    "of": 30
+   },
+   "offense": {
+    "value": 114.08,
+    "rank": 4,
+    "of": 30
+   },
+   "defense": {
+    "value": 107.19,
+    "rank": 6,
+    "of": 30
+   },
+   "schedule": {
+    "value": -2.41,
+    "rank": 28,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 108.81,
+    "rank": 29,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 111.22,
+    "rank": 26,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0889,
+    "rank": 8,
+    "of": 30
+   },
+   "record": {
+    "wins": 9,
+    "losses": 2,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 8.0,
+    "losses": 3.0
+   }
+  },
+  "NY": {
+   "net": {
+    "value": 4.98,
+    "rank": 8,
+    "of": 30
+   },
+   "offense": {
+    "value": 112.07,
+    "rank": 10,
+    "of": 30
+   },
+   "defense": {
+    "value": 107.09,
+    "rank": 5,
+    "of": 30
+   },
+   "schedule": {
+    "value": -1.61,
+    "rank": 26,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.38,
+    "rank": 26,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.99,
+    "rank": 23,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.0777,
+    "rank": 20,
+    "of": 30
+   },
+   "record": {
+    "wins": 6,
+    "losses": 4,
+    "games": 10
+   },
+   "expected_record": {
+    "wins": 6.8,
+    "losses": 3.2
+   }
+  },
+  "MIL": {
+   "net": {
+    "value": -9.24,
+    "rank": 29,
+    "of": 30
+   },
+   "offense": {
+    "value": 106.75,
+    "rank": 26,
+    "of": 30
+   },
+   "defense": {
+    "value": 115.99,
+    "rank": 30,
+    "of": 30
+   },
+   "schedule": {
+    "value": 1.68,
+    "rank": 4,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.24,
+    "rank": 9,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.57,
+    "rank": 6,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.139,
+    "rank": 26,
+    "of": 30
+   },
+   "record": {
+    "wins": 1,
+    "losses": 10,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 2.5,
+    "losses": 8.5
+   }
+  },
+  "ORL": {
+   "net": {
+    "value": -1.71,
+    "rank": 20,
+    "of": 30
+   },
+   "offense": {
+    "value": 107.9,
+    "rank": 23,
+    "of": 30
+   },
+   "defense": {
+    "value": 109.61,
+    "rank": 13,
+    "of": 30
+   },
+   "schedule": {
+    "value": 1.24,
+    "rank": 9,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.94,
+    "rank": 11,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.7,
+    "rank": 8,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.1061,
+    "rank": 22,
+    "of": 30
+   },
+   "record": {
+    "wins": 3,
+    "losses": 7,
+    "games": 10
+   },
+   "expected_record": {
+    "wins": 4.1,
+    "losses": 5.9
+   }
+  },
+  "SA": {
+   "net": {
+    "value": 9.29,
+    "rank": 1,
+    "of": 30
+   },
+   "offense": {
+    "value": 114.58,
+    "rank": 2,
+    "of": 30
+   },
+   "defense": {
+    "value": 105.3,
+    "rank": 2,
+    "of": 30
+   },
+   "schedule": {
+    "value": -1.14,
+    "rank": 23,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.53,
+    "rank": 24,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.67,
+    "rank": 22,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0532,
+    "rank": 11,
+    "of": 30
+   },
+   "record": {
+    "wins": 9,
+    "losses": 2,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 8.4,
+    "losses": 2.6
+   }
+  },
+  "PHI": {
+   "net": {
+    "value": 0.21,
+    "rank": 15,
+    "of": 30
+   },
+   "offense": {
+    "value": 108.96,
+    "rank": 22,
+    "of": 30
+   },
+   "defense": {
+    "value": 108.75,
+    "rank": 9,
+    "of": 30
+   },
+   "schedule": {
+    "value": 0.22,
+    "rank": 15,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.45,
+    "rank": 15,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.23,
+    "rank": 15,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.2505,
+    "rank": 1,
+    "of": 30
+   },
+   "record": {
+    "wins": 9,
+    "losses": 3,
+    "games": 12
+   },
+   "expected_record": {
+    "wins": 6.0,
+    "losses": 6.0
+   }
+  },
+  "CHA": {
+   "net": {
+    "value": -2.88,
+    "rank": 22,
+    "of": 30
+   },
+   "offense": {
+    "value": 106.5,
+    "rank": 27,
+    "of": 30
+   },
+   "defense": {
+    "value": 109.39,
+    "rank": 11,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.6,
+    "rank": 22,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.51,
+    "rank": 25,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.12,
+    "rank": 13,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.0867,
+    "rank": 21,
+    "of": 30
+   },
+   "record": {
+    "wins": 4,
+    "losses": 7,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 5.0,
+    "losses": 6.0
+   }
+  },
+  "TOR": {
+   "net": {
+    "value": 3.45,
+    "rank": 11,
+    "of": 30
+   },
+   "offense": {
+    "value": 111.64,
+    "rank": 11,
+    "of": 30
+   },
+   "defense": {
+    "value": 108.2,
+    "rank": 8,
+    "of": 30
+   },
+   "schedule": {
+    "value": -1.57,
+    "rank": 25,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.06,
+    "rank": 16,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 111.63,
+    "rank": 29,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.1324,
+    "rank": 24,
+    "of": 30
+   },
+   "record": {
+    "wins": 5,
+    "losses": 5,
+    "games": 10
+   },
+   "expected_record": {
+    "wins": 6.3,
+    "losses": 3.7
+   }
+  },
+  "ATL": {
+   "net": {
+    "value": 0.78,
+    "rank": 14,
+    "of": 30
+   },
+   "offense": {
+    "value": 110.99,
+    "rank": 13,
+    "of": 30
+   },
+   "defense": {
+    "value": 110.2,
+    "rank": 14,
+    "of": 30
+   },
+   "schedule": {
+    "value": -1.41,
+    "rank": 24,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.81,
+    "rank": 20,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 111.21,
+    "rank": 25,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0186,
+    "rank": 14,
+    "of": 30
+   },
+   "record": {
+    "wins": 7,
+    "losses": 5,
+    "games": 12
+   },
+   "expected_record": {
+    "wins": 6.8,
+    "losses": 5.2
+   }
+  },
+  "NO": {
+   "net": {
+    "value": -5.33,
+    "rank": 24,
+    "of": 30
+   },
+   "offense": {
+    "value": 109.59,
+    "rank": 19,
+    "of": 30
+   },
+   "defense": {
+    "value": 114.91,
+    "rank": 27,
+    "of": 30
+   },
+   "schedule": {
+    "value": -1.61,
+    "rank": 27,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.81,
+    "rank": 19,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 111.41,
+    "rank": 28,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.0374,
+    "rank": 17,
+    "of": 30
+   },
+   "record": {
+    "wins": 4,
+    "losses": 7,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 4.4,
+    "losses": 6.6
+   }
+  },
+  "HOU": {
+   "net": {
+    "value": 5.91,
+    "rank": 5,
+    "of": 30
+   },
+   "offense": {
+    "value": 113.95,
+    "rank": 5,
+    "of": 30
+   },
+   "defense": {
+    "value": 108.04,
+    "rank": 7,
+    "of": 30
+   },
+   "schedule": {
+    "value": 2.0,
+    "rank": 2,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.52,
+    "rank": 5,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.52,
+    "rank": 4,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.1152,
+    "rank": 7,
+    "of": 30
+   },
+   "record": {
+    "wins": 8,
+    "losses": 3,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 6.7,
+    "losses": 4.3
+   }
+  },
+  "OKC": {
+   "net": {
+    "value": 6.69,
+    "rank": 3,
+    "of": 30
+   },
+   "offense": {
+    "value": 110.78,
+    "rank": 14,
+    "of": 30
+   },
+   "defense": {
+    "value": 104.09,
+    "rank": 1,
+    "of": 30
+   },
+   "schedule": {
+    "value": 1.25,
+    "rank": 8,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.82,
+    "rank": 3,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.57,
+    "rank": 20,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.082,
+    "rank": 9,
+    "of": 30
+   },
+   "record": {
+    "wins": 8,
+    "losses": 3,
+    "games": 11
+   },
+   "expected_record": {
+    "wins": 7.1,
+    "losses": 3.9
+   }
+  },
+  "POR": {
+   "net": {
+    "value": 3.62,
+    "rank": 9,
+    "of": 30
+   },
+   "offense": {
+    "value": 113.1,
+    "rank": 6,
+    "of": 30
+   },
+   "defense": {
+    "value": 109.49,
+    "rank": 12,
+    "of": 30
+   },
+   "schedule": {
+    "value": 0.86,
+    "rank": 10,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.37,
+    "rank": 8,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.51,
+    "rank": 19,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.1319,
+    "rank": 6,
+    "of": 30
+   },
+   "record": {
+    "wins": 7,
+    "losses": 3,
+    "games": 10
+   },
+   "expected_record": {
+    "wins": 5.7,
+    "losses": 4.3
+   }
+  }
+ },
+ "logs": {
+  "DET": [
+   {
+    "id": "401909954",
+    "date": "2026-11-09",
+    "week": "2026-11-09",
+    "opp": "WSH",
+    "home": true,
+    "neutral": false,
+    "points": 122,
+    "opp_points": 111,
+    "adj_points": 124.5,
+    "opp_adj_points": 116.6,
+    "off_rtg": {
+     "value": 116.6,
+     "rank": 11,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 104.4,
+     "rank": 7,
+     "of": 28
+    },
+    "pace": {
+     "value": 105.5,
+     "rank": 3,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909946",
+    "date": "2026-11-08",
+    "week": "2026-11-02",
+    "opp": "LAL",
+    "home": true,
+    "neutral": false,
+    "points": 116,
+    "opp_points": 121,
+    "adj_points": 114.4,
+    "opp_adj_points": 119.8,
+    "off_rtg": {
+     "value": 118.6,
+     "rank": 26,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 118.0,
+     "rank": 81,
+     "of": 108
+    },
+    "pace": {
+     "value": 100.2,
+     "rank": 71,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909922",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "PHI",
+    "home": true,
+    "neutral": false,
+    "points": 106,
+    "opp_points": 112,
+    "adj_points": 106.1,
+    "opp_adj_points": 109.4,
+    "off_rtg": {
+     "value": 104.8,
+     "rank": 77,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 108.4,
+     "rank": 43,
+     "of": 108
+    },
+    "pace": {
+     "value": 102.2,
+     "rank": 41,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909908",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "CHA",
+    "home": false,
+    "neutral": false,
+    "points": 124,
+    "opp_points": 91,
+    "adj_points": 116.6,
+    "opp_adj_points": 94.2,
+    "off_rtg": {
+     "value": 127.0,
+     "rank": 10,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 89.8,
+     "rank": 3,
+     "of": 108
+    },
+    "pace": {
+     "value": 99.5,
+     "rank": 77,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909279",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "BKN",
+    "home": false,
+    "neutral": false,
+    "points": 110,
+    "opp_points": 94,
+    "adj_points": 113.7,
+    "opp_adj_points": 96.2,
+    "off_rtg": {
+     "value": 104.4,
+     "rank": 67,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 90.9,
+     "rank": 5,
+     "of": 98
+    },
+    "pace": {
+     "value": 104.4,
+     "rank": 27,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909883",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "CHA",
+    "home": true,
+    "neutral": false,
+    "points": 97,
+    "opp_points": 89,
+    "adj_points": 94.9,
+    "opp_adj_points": 88.7,
+    "off_rtg": {
+     "value": 105.7,
+     "rank": 61,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 93.3,
+     "rank": 8,
+     "of": 98
+    },
+    "pace": {
+     "value": 93.6,
+     "rank": 89,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909878",
+    "date": "2026-10-27",
+    "week": "2026-10-26",
+    "opp": "NY",
+    "home": false,
+    "neutral": false,
+    "points": 97,
+    "opp_points": 111,
+    "adj_points": 105.6,
+    "opp_adj_points": 111.6,
+    "off_rtg": {
+     "value": 100.5,
+     "rank": 81,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 111.8,
+     "rank": 53,
+     "of": 98
+    },
+    "pace": {
+     "value": 97.9,
+     "rank": 69,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909866",
+    "date": "2026-10-25",
+    "week": "2026-10-19",
+    "opp": "PHI",
+    "home": false,
+    "neutral": false,
+    "points": 106,
+    "opp_points": 93,
+    "adj_points": 104.8,
+    "opp_adj_points": 98.5,
+    "off_rtg": {
+     "value": 106.0,
+     "rank": 56,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 91.1,
+     "rank": 6,
+     "of": 86
+    },
+    "pace": {
+     "value": 101.1,
+     "rank": 75,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909847",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "MIA",
+    "home": false,
+    "neutral": false,
+    "points": 128,
+    "opp_points": 111,
+    "adj_points": 121.0,
+    "opp_adj_points": 116.2,
+    "off_rtg": {
+     "value": 121.0,
+     "rank": 10,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 102.5,
+     "rank": 25,
+     "of": 86
+    },
+    "pace": {
+     "value": 107.1,
+     "rank": 23,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909088",
+    "date": "2026-10-20",
+    "week": "2026-10-19",
+    "opp": "BOS",
+    "home": true,
+    "neutral": false,
+    "points": 121,
+    "opp_points": 113,
+    "adj_points": 118.2,
+    "opp_adj_points": 110.6,
+    "off_rtg": {
+     "value": 117.4,
+     "rank": 23,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 113.9,
+     "rank": 56,
+     "of": 86
+    },
+    "pace": {
+     "value": 101.2,
+     "rank": 73,
+     "of": 86
+    }
+   }
+  ],
+  "BOS": [
+   {
+    "id": "401909961",
+    "date": "2026-11-10",
+    "week": "2026-11-09",
+    "opp": "PHI",
+    "home": false,
+    "neutral": false,
+    "points": 123,
+    "opp_points": 101,
+    "adj_points": 116.1,
+    "opp_adj_points": 102.6,
+    "off_rtg": {
+     "value": 125.3,
+     "rank": 5,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 103.8,
+     "rank": 6,
+     "of": 28
+    },
+    "pace": {
+     "value": 97.8,
+     "rank": 17,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909949",
+    "date": "2026-11-08",
+    "week": "2026-11-02",
+    "opp": "MIL",
+    "home": false,
+    "neutral": false,
+    "points": 117,
+    "opp_points": 97,
+    "adj_points": 117.1,
+    "opp_adj_points": 96.0,
+    "off_rtg": {
+     "value": 128.3,
+     "rank": 6,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 106.4,
+     "rank": 40,
+     "of": 108
+    },
+    "pace": {
+     "value": 91.2,
+     "rank": 107,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909288",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "CHA",
+    "home": false,
+    "neutral": false,
+    "points": 119,
+    "opp_points": 80,
+    "adj_points": 106.4,
+    "opp_adj_points": 87.9,
+    "off_rtg": {
+     "value": 121.3,
+     "rank": 18,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 82.1,
+     "rank": 2,
+     "of": 108
+    },
+    "pace": {
+     "value": 97.8,
+     "rank": 91,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909924",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "MIL",
+    "home": true,
+    "neutral": false,
+    "points": 109,
+    "opp_points": 102,
+    "adj_points": 106.5,
+    "opp_adj_points": 98.5,
+    "off_rtg": {
+     "value": 114.7,
+     "rank": 42,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 104.8,
+     "rank": 31,
+     "of": 108
+    },
+    "pace": {
+     "value": 96.2,
+     "rank": 95,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909916",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "HOU",
+    "home": false,
+    "neutral": false,
+    "points": 93,
+    "opp_points": 109,
+    "adj_points": 97.2,
+    "opp_adj_points": 107.6,
+    "off_rtg": {
+     "value": 98.1,
+     "rank": 95,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 121.5,
+     "rank": 93,
+     "of": 108
+    },
+    "pace": {
+     "value": 92.3,
+     "rank": 105,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909903",
+    "date": "2026-11-01",
+    "week": "2026-10-26",
+    "opp": "ORL",
+    "home": false,
+    "neutral": false,
+    "points": 108,
+    "opp_points": 97,
+    "adj_points": 113.1,
+    "opp_adj_points": 96.0,
+    "off_rtg": {
+     "value": 114.4,
+     "rank": 36,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 102.8,
+     "rank": 28,
+     "of": 98
+    },
+    "pace": {
+     "value": 94.4,
+     "rank": 87,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909278",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "CHI",
+    "home": true,
+    "neutral": false,
+    "points": 125,
+    "opp_points": 111,
+    "adj_points": 127.5,
+    "opp_adj_points": 115.0,
+    "off_rtg": {
+     "value": 118.4,
+     "rank": 28,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 105.1,
+     "rank": 35,
+     "of": 98
+    },
+    "pace": {
+     "value": 105.6,
+     "rank": 23,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909877",
+    "date": "2026-10-27",
+    "week": "2026-10-26",
+    "opp": "BKN",
+    "home": true,
+    "neutral": false,
+    "points": 125,
+    "opp_points": 124,
+    "adj_points": 130.7,
+    "opp_adj_points": 124.5,
+    "off_rtg": {
+     "value": 110.9,
+     "rank": 48,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 112.0,
+     "rank": 54,
+     "of": 98
+    },
+    "pace": {
+     "value": 101.2,
+     "rank": 57,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909870",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "CHI",
+    "home": true,
+    "neutral": false,
+    "points": 134,
+    "opp_points": 99,
+    "adj_points": 127.3,
+    "opp_adj_points": 103.6,
+    "off_rtg": {
+     "value": 119.9,
+     "rank": 24,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 91.1,
+     "rank": 6,
+     "of": 98
+    },
+    "pace": {
+     "value": 110.2,
+     "rank": 3,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909095",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "NY",
+    "home": true,
+    "neutral": false,
+    "points": 107,
+    "opp_points": 103,
+    "adj_points": 106.0,
+    "opp_adj_points": 101.0,
+    "off_rtg": {
+     "value": 112.6,
+     "rank": 37,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 108.1,
+     "rank": 38,
+     "of": 86
+    },
+    "pace": {
+     "value": 95.1,
+     "rank": 85,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909088",
+    "date": "2026-10-20",
+    "week": "2026-10-19",
+    "opp": "DET",
+    "home": false,
+    "neutral": false,
+    "points": 113,
+    "opp_points": 121,
+    "adj_points": 110.6,
+    "opp_adj_points": 118.2,
+    "off_rtg": {
+     "value": 113.9,
+     "rank": 31,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 117.4,
+     "rank": 64,
+     "of": 86
+    },
+    "pace": {
+     "value": 101.2,
+     "rank": 73,
+     "of": 86
+    }
+   }
+  ],
+  "NY": [
+   {
+    "id": "401909960",
+    "date": "2026-11-10",
+    "week": "2026-11-09",
+    "opp": "MIL",
+    "home": true,
+    "neutral": false,
+    "points": 117,
+    "opp_points": 85,
+    "adj_points": 114.7,
+    "opp_adj_points": 83.0,
+    "off_rtg": {
+     "value": 125.8,
+     "rank": 3,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 94.0,
+     "rank": 2,
+     "of": 28
+    },
+    "pace": {
+     "value": 91.7,
+     "rank": 27,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909940",
+    "date": "2026-11-07",
+    "week": "2026-11-02",
+    "opp": "CLE",
+    "home": false,
+    "neutral": false,
+    "points": 109,
+    "opp_points": 97,
+    "adj_points": 110.4,
+    "opp_adj_points": 101.4,
+    "off_rtg": {
+     "value": 113.4,
+     "rank": 48,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 106.2,
+     "rank": 39,
+     "of": 108
+    },
+    "pace": {
+     "value": 93.8,
+     "rank": 101,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909926",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "CHI",
+    "home": true,
+    "neutral": false,
+    "points": 135,
+    "opp_points": 105,
+    "adj_points": 130.3,
+    "opp_adj_points": 111.5,
+    "off_rtg": {
+     "value": 134.6,
+     "rank": 2,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 100.7,
+     "rank": 22,
+     "of": 108
+    },
+    "pace": {
+     "value": 102.3,
+     "rank": 37,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909910",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "BKN",
+    "home": true,
+    "neutral": false,
+    "points": 103,
+    "opp_points": 90,
+    "adj_points": 100.3,
+    "opp_adj_points": 91.1,
+    "off_rtg": {
+     "value": 111.0,
+     "rank": 55,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 98.0,
+     "rank": 13,
+     "of": 108
+    },
+    "pace": {
+     "value": 92.3,
+     "rank": 103,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909280",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "PHI",
+    "home": false,
+    "neutral": false,
+    "points": 93,
+    "opp_points": 98,
+    "adj_points": 95.8,
+    "opp_adj_points": 97.9,
+    "off_rtg": {
+     "value": 102.0,
+     "rank": 76,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 107.6,
+     "rank": 40,
+     "of": 98
+    },
+    "pace": {
+     "value": 91.1,
+     "rank": 97,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909886",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "CHI",
+    "home": false,
+    "neutral": false,
+    "points": 133,
+    "opp_points": 127,
+    "adj_points": 124.9,
+    "opp_adj_points": 121.3,
+    "off_rtg": {
+     "value": 120.0,
+     "rank": 23,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 117.4,
+     "rank": 70,
+     "of": 98
+    },
+    "pace": {
+     "value": 109.5,
+     "rank": 7,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909878",
+    "date": "2026-10-27",
+    "week": "2026-10-26",
+    "opp": "DET",
+    "home": true,
+    "neutral": false,
+    "points": 111,
+    "opp_points": 97,
+    "adj_points": 111.6,
+    "opp_adj_points": 105.6,
+    "off_rtg": {
+     "value": 111.8,
+     "rank": 46,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 100.5,
+     "rank": 18,
+     "of": 98
+    },
+    "pace": {
+     "value": 97.9,
+     "rank": 69,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909863",
+    "date": "2026-10-25",
+    "week": "2026-10-19",
+    "opp": "ORL",
+    "home": true,
+    "neutral": false,
+    "points": 102,
+    "opp_points": 111,
+    "adj_points": 109.6,
+    "opp_adj_points": 105.3,
+    "off_rtg": {
+     "value": 94.8,
+     "rank": 76,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 107.5,
+     "rank": 34,
+     "of": 86
+    },
+    "pace": {
+     "value": 105.4,
+     "rank": 33,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909095",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "BOS",
+    "home": false,
+    "neutral": false,
+    "points": 103,
+    "opp_points": 107,
+    "adj_points": 101.0,
+    "opp_adj_points": 106.0,
+    "off_rtg": {
+     "value": 108.1,
+     "rank": 49,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 112.6,
+     "rank": 50,
+     "of": 86
+    },
+    "pace": {
+     "value": 95.1,
+     "rank": 85,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909089",
+    "date": "2026-10-20",
+    "week": "2026-10-19",
+    "opp": "PHI",
+    "home": true,
+    "neutral": false,
+    "points": 100,
+    "opp_points": 106,
+    "adj_points": 102.1,
+    "opp_adj_points": 110.3,
+    "off_rtg": {
+     "value": 93.6,
+     "rank": 77,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 99.2,
+     "rank": 18,
+     "of": 86
+    },
+    "pace": {
+     "value": 106.9,
+     "rank": 25,
+     "of": 86
+    }
+   }
+  ],
+  "PHI": [
+   {
+    "id": "401909961",
+    "date": "2026-11-10",
+    "week": "2026-11-09",
+    "opp": "BOS",
+    "home": true,
+    "neutral": false,
+    "points": 101,
+    "opp_points": 123,
+    "adj_points": 102.6,
+    "opp_adj_points": 116.1,
+    "off_rtg": {
+     "value": 103.8,
+     "rank": 23,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 125.3,
+     "rank": 24,
+     "of": 28
+    },
+    "pace": {
+     "value": 97.8,
+     "rank": 17,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909945",
+    "date": "2026-11-08",
+    "week": "2026-11-02",
+    "opp": "CHI",
+    "home": false,
+    "neutral": false,
+    "points": 127,
+    "opp_points": 121,
+    "adj_points": 122.9,
+    "opp_adj_points": 123.2,
+    "off_rtg": {
+     "value": 128.3,
+     "rank": 7,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 118.5,
+     "rank": 82,
+     "of": 108
+    },
+    "pace": {
+     "value": 100.6,
+     "rank": 63,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909289",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "CLE",
+    "home": false,
+    "neutral": false,
+    "points": 95,
+    "opp_points": 119,
+    "adj_points": 100.6,
+    "opp_adj_points": 119.2,
+    "off_rtg": {
+     "value": 91.6,
+     "rank": 104,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 114.5,
+     "rank": 65,
+     "of": 108
+    },
+    "pace": {
+     "value": 103.9,
+     "rank": 25,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909922",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "DET",
+    "home": false,
+    "neutral": false,
+    "points": 112,
+    "opp_points": 106,
+    "adj_points": 109.4,
+    "opp_adj_points": 106.1,
+    "off_rtg": {
+     "value": 108.4,
+     "rank": 66,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 104.8,
+     "rank": 32,
+     "of": 108
+    },
+    "pace": {
+     "value": 102.2,
+     "rank": 41,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909912",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "CHI",
+    "home": true,
+    "neutral": false,
+    "points": 126,
+    "opp_points": 107,
+    "adj_points": 126.6,
+    "opp_adj_points": 112.1,
+    "off_rtg": {
+     "value": 121.3,
+     "rank": 17,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 101.8,
+     "rank": 23,
+     "of": 108
+    },
+    "pace": {
+     "value": 104.5,
+     "rank": 19,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909897",
+    "date": "2026-10-31",
+    "week": "2026-10-26",
+    "opp": "CHA",
+    "home": false,
+    "neutral": false,
+    "points": 109,
+    "opp_points": 104,
+    "adj_points": 107.6,
+    "opp_adj_points": 102.0,
+    "off_rtg": {
+     "value": 119.6,
+     "rank": 25,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 113.0,
+     "rank": 57,
+     "of": 98
+    },
+    "pace": {
+     "value": 91.6,
+     "rank": 95,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909280",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "NY",
+    "home": true,
+    "neutral": false,
+    "points": 98,
+    "opp_points": 93,
+    "adj_points": 97.9,
+    "opp_adj_points": 95.8,
+    "off_rtg": {
+     "value": 107.6,
+     "rank": 59,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 102.0,
+     "rank": 23,
+     "of": 98
+    },
+    "pace": {
+     "value": 91.1,
+     "rank": 97,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909884",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "IND",
+    "home": false,
+    "neutral": false,
+    "points": 114,
+    "opp_points": 109,
+    "adj_points": 112.0,
+    "opp_adj_points": 113.4,
+    "off_rtg": {
+     "value": 110.1,
+     "rank": 51,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 104.4,
+     "rank": 31,
+     "of": 98
+    },
+    "pace": {
+     "value": 104.0,
+     "rank": 33,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909866",
+    "date": "2026-10-25",
+    "week": "2026-10-19",
+    "opp": "DET",
+    "home": true,
+    "neutral": false,
+    "points": 93,
+    "opp_points": 106,
+    "adj_points": 98.5,
+    "opp_adj_points": 104.8,
+    "off_rtg": {
+     "value": 91.1,
+     "rank": 81,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 106.0,
+     "rank": 31,
+     "of": 86
+    },
+    "pace": {
+     "value": 101.1,
+     "rank": 75,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909855",
+    "date": "2026-10-24",
+    "week": "2026-10-19",
+    "opp": "MIL",
+    "home": true,
+    "neutral": false,
+    "points": 127,
+    "opp_points": 116,
+    "adj_points": 120.6,
+    "opp_adj_points": 117.2,
+    "off_rtg": {
+     "value": 112.4,
+     "rank": 38,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 108.1,
+     "rank": 37,
+     "of": 86
+    },
+    "pace": {
+     "value": 110.1,
+     "rank": 11,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909093",
+    "date": "2026-10-22",
+    "week": "2026-10-19",
+    "opp": "CLE",
+    "home": true,
+    "neutral": false,
+    "points": 114,
+    "opp_points": 106,
+    "adj_points": 118.2,
+    "opp_adj_points": 111.1,
+    "off_rtg": {
+     "value": 100.7,
+     "rank": 66,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 96.1,
+     "rank": 13,
+     "of": 86
+    },
+    "pace": {
+     "value": 111.8,
+     "rank": 7,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909089",
+    "date": "2026-10-20",
+    "week": "2026-10-19",
+    "opp": "NY",
+    "home": false,
+    "neutral": false,
+    "points": 106,
+    "opp_points": 100,
+    "adj_points": 110.3,
+    "opp_adj_points": 102.1,
+    "off_rtg": {
+     "value": 99.2,
+     "rank": 69,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 93.6,
+     "rank": 10,
+     "of": 86
+    },
+    "pace": {
+     "value": 106.9,
+     "rank": 25,
+     "of": 86
+    }
+   }
+  ],
+  "SA": [
+   {
+    "id": "401909958",
+    "date": "2026-11-09",
+    "week": "2026-11-09",
+    "opp": "PHX",
+    "home": false,
+    "neutral": false,
+    "points": 122,
+    "opp_points": 96,
+    "adj_points": 121.7,
+    "opp_adj_points": 95.4,
+    "off_rtg": {
+     "value": 125.8,
+     "rank": 4,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 102.8,
+     "rank": 5,
+     "of": 28
+    },
+    "pace": {
+     "value": 95.2,
+     "rank": 23,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909944",
+    "date": "2026-11-07",
+    "week": "2026-11-02",
+    "opp": "POR",
+    "home": false,
+    "neutral": false,
+    "points": 125,
+    "opp_points": 103,
+    "adj_points": 120.5,
+    "opp_adj_points": 107.5,
+    "off_rtg": {
+     "value": 118.8,
+     "rank": 25,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 96.1,
+     "rank": 8,
+     "of": 108
+    },
+    "pace": {
+     "value": 106.2,
+     "rank": 5,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909295",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "SAC",
+    "home": false,
+    "neutral": false,
+    "points": 124,
+    "opp_points": 109,
+    "adj_points": 117.5,
+    "opp_adj_points": 104.1,
+    "off_rtg": {
+     "value": 128.5,
+     "rank": 5,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 113.1,
+     "rank": 60,
+     "of": 108
+    },
+    "pace": {
+     "value": 96.4,
+     "rank": 93,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909933",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "DAL",
+    "home": true,
+    "neutral": false,
+    "points": 112,
+    "opp_points": 111,
+    "adj_points": 122.4,
+    "opp_adj_points": 110.0,
+    "off_rtg": {
+     "value": 111.8,
+     "rank": 52,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 107.3,
+     "rank": 42,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.8,
+     "rank": 45,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909917",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "UTAH",
+    "home": true,
+    "neutral": false,
+    "points": 119,
+    "opp_points": 97,
+    "adj_points": 119.3,
+    "opp_adj_points": 95.9,
+    "off_rtg": {
+     "value": 111.0,
+     "rank": 56,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 97.3,
+     "rank": 10,
+     "of": 108
+    },
+    "pace": {
+     "value": 103.4,
+     "rank": 29,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909901",
+    "date": "2026-10-31",
+    "week": "2026-10-26",
+    "opp": "MIN",
+    "home": true,
+    "neutral": false,
+    "points": 121,
+    "opp_points": 111,
+    "adj_points": 120.0,
+    "opp_adj_points": 113.3,
+    "off_rtg": {
+     "value": 120.2,
+     "rank": 20,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 105.3,
+     "rank": 36,
+     "of": 98
+    },
+    "pace": {
+     "value": 103.0,
+     "rank": 37,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909890",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "UTAH",
+    "home": false,
+    "neutral": false,
+    "points": 117,
+    "opp_points": 111,
+    "adj_points": 118.8,
+    "opp_adj_points": 106.8,
+    "off_rtg": {
+     "value": 110.1,
+     "rank": 50,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 103.4,
+     "rank": 29,
+     "of": 98
+    },
+    "pace": {
+     "value": 96.7,
+     "rank": 81,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909879",
+    "date": "2026-10-27",
+    "week": "2026-10-26",
+    "opp": "SAC",
+    "home": true,
+    "neutral": false,
+    "points": 130,
+    "opp_points": 103,
+    "adj_points": 124.0,
+    "opp_adj_points": 102.9,
+    "off_rtg": {
+     "value": 125.8,
+     "rank": 12,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 102.3,
+     "rank": 24,
+     "of": 98
+    },
+    "pace": {
+     "value": 102.0,
+     "rank": 49,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909858",
+    "date": "2026-10-24",
+    "week": "2026-10-19",
+    "opp": "DAL",
+    "home": false,
+    "neutral": false,
+    "points": 122,
+    "opp_points": 106,
+    "adj_points": 122.4,
+    "opp_adj_points": 104.7,
+    "off_rtg": {
+     "value": 116.1,
+     "rank": 27,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 102.4,
+     "rank": 24,
+     "of": 86
+    },
+    "pace": {
+     "value": 104.3,
+     "rank": 43,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909096",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "HOU",
+    "home": true,
+    "neutral": false,
+    "points": 110,
+    "opp_points": 114,
+    "adj_points": 112.4,
+    "opp_adj_points": 111.0,
+    "off_rtg": {
+     "value": 105.8,
+     "rank": 57,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 115.6,
+     "rank": 59,
+     "of": 86
+    },
+    "pace": {
+     "value": 101.3,
+     "rank": 69,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909090",
+    "date": "2026-10-20",
+    "week": "2026-10-19",
+    "opp": "OKC",
+    "home": true,
+    "neutral": false,
+    "points": 104,
+    "opp_points": 116,
+    "adj_points": 107.4,
+    "opp_adj_points": 111.4,
+    "off_rtg": {
+     "value": 96.3,
+     "rank": 73,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 107.6,
+     "rank": 35,
+     "of": 86
+    },
+    "pace": {
+     "value": 107.9,
+     "rank": 19,
+     "of": 86
+    }
+   }
+  ],
+  "OKC": [
+   {
+    "id": "401909965",
+    "date": "2026-11-10",
+    "week": "2026-11-09",
+    "opp": "POR",
+    "home": false,
+    "neutral": false,
+    "points": 103,
+    "opp_points": 123,
+    "adj_points": 103.0,
+    "opp_adj_points": 118.9,
+    "off_rtg": {
+     "value": 106.3,
+     "rank": 18,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 122.5,
+     "rank": 21,
+     "of": 28
+    },
+    "pace": {
+     "value": 98.7,
+     "rank": 15,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909941",
+    "date": "2026-11-07",
+    "week": "2026-11-02",
+    "opp": "WSH",
+    "home": true,
+    "neutral": false,
+    "points": 114,
+    "opp_points": 75,
+    "adj_points": 114.0,
+    "opp_adj_points": 87.0,
+    "off_rtg": {
+     "value": 110.8,
+     "rank": 58,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 73.8,
+     "rank": 1,
+     "of": 108
+    },
+    "pace": {
+     "value": 102.3,
+     "rank": 39,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909291",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "MEM",
+    "home": false,
+    "neutral": false,
+    "points": 128,
+    "opp_points": 97,
+    "adj_points": 123.9,
+    "opp_adj_points": 104.8,
+    "off_rtg": {
+     "value": 120.7,
+     "rank": 19,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 91.0,
+     "rank": 4,
+     "of": 108
+    },
+    "pace": {
+     "value": 106.3,
+     "rank": 3,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909929",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "CLE",
+    "home": true,
+    "neutral": false,
+    "points": 124,
+    "opp_points": 116,
+    "adj_points": 121.1,
+    "opp_adj_points": 112.4,
+    "off_rtg": {
+     "value": 116.5,
+     "rank": 30,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 110.1,
+     "rank": 48,
+     "of": 108
+    },
+    "pace": {
+     "value": 105.9,
+     "rank": 13,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909907",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "CLE",
+    "home": false,
+    "neutral": false,
+    "points": 117,
+    "opp_points": 112,
+    "adj_points": 114.1,
+    "opp_adj_points": 113.3,
+    "off_rtg": {
+     "value": 115.7,
+     "rank": 35,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 114.8,
+     "rank": 68,
+     "of": 108
+    },
+    "pace": {
+     "value": 99.3,
+     "rank": 79,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909902",
+    "date": "2026-10-31",
+    "week": "2026-10-26",
+    "opp": "HOU",
+    "home": false,
+    "neutral": false,
+    "points": 98,
+    "opp_points": 119,
+    "adj_points": 98.9,
+    "opp_adj_points": 113.8,
+    "off_rtg": {
+     "value": 102.5,
+     "rank": 74,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 122.5,
+     "rank": 85,
+     "of": 98
+    },
+    "pace": {
+     "value": 96.4,
+     "rank": 83,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909891",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "DAL",
+    "home": false,
+    "neutral": false,
+    "points": 96,
+    "opp_points": 120,
+    "adj_points": 105.1,
+    "opp_adj_points": 119.3,
+    "off_rtg": {
+     "value": 96.9,
+     "rank": 88,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 120.5,
+     "rank": 82,
+     "of": 98
+    },
+    "pace": {
+     "value": 99.4,
+     "rank": 63,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909873",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "PHX",
+    "home": true,
+    "neutral": false,
+    "points": 125,
+    "opp_points": 114,
+    "adj_points": 123.1,
+    "opp_adj_points": 114.6,
+    "off_rtg": {
+     "value": 120.5,
+     "rank": 18,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 112.9,
+     "rank": 56,
+     "of": 98
+    },
+    "pace": {
+     "value": 102.4,
+     "rank": 43,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909865",
+    "date": "2026-10-25",
+    "week": "2026-10-19",
+    "opp": "LAC",
+    "home": true,
+    "neutral": false,
+    "points": 108,
+    "opp_points": 101,
+    "adj_points": 107.5,
+    "opp_adj_points": 99.0,
+    "off_rtg": {
+     "value": 104.4,
+     "rank": 59,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 95.6,
+     "rank": 12,
+     "of": 86
+    },
+    "pace": {
+     "value": 104.5,
+     "rank": 39,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909094",
+    "date": "2026-10-22",
+    "week": "2026-10-19",
+    "opp": "DEN",
+    "home": true,
+    "neutral": false,
+    "points": 96,
+    "opp_points": 84,
+    "adj_points": 101.3,
+    "opp_adj_points": 89.5,
+    "off_rtg": {
+     "value": 98.8,
+     "rank": 70,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 88.7,
+     "rank": 4,
+     "of": 86
+    },
+    "pace": {
+     "value": 95.9,
+     "rank": 83,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909090",
+    "date": "2026-10-20",
+    "week": "2026-10-19",
+    "opp": "SA",
+    "home": false,
+    "neutral": false,
+    "points": 116,
+    "opp_points": 104,
+    "adj_points": 111.4,
+    "opp_adj_points": 107.4,
+    "off_rtg": {
+     "value": 107.6,
+     "rank": 52,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 96.3,
+     "rank": 14,
+     "of": 86
+    },
+    "pace": {
+     "value": 107.9,
+     "rank": 19,
+     "of": 86
+    }
+   }
+  ],
+  "MIA": [
+   {
+    "id": "401909963",
+    "date": "2026-11-10",
+    "week": "2026-11-09",
+    "opp": "UTAH",
+    "home": false,
+    "neutral": false,
+    "points": 115,
+    "opp_points": 109,
+    "adj_points": 117.9,
+    "opp_adj_points": 107.9,
+    "off_rtg": {
+     "value": 106.1,
+     "rank": 19,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 107.2,
+     "rank": 13,
+     "of": 28
+    },
+    "pace": {
+     "value": 105.0,
+     "rank": 5,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909951",
+    "date": "2026-11-08",
+    "week": "2026-11-02",
+    "opp": "SAC",
+    "home": false,
+    "neutral": false,
+    "points": 114,
+    "opp_points": 108,
+    "adj_points": 111.9,
+    "opp_adj_points": 109.2,
+    "off_rtg": {
+     "value": 113.0,
+     "rank": 50,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 105.8,
+     "rank": 37,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.5,
+     "rank": 53,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909937",
+    "date": "2026-11-05",
+    "week": "2026-11-02",
+    "opp": "GS",
+    "home": false,
+    "neutral": false,
+    "points": 100,
+    "opp_points": 120,
+    "adj_points": 103.2,
+    "opp_adj_points": 118.9,
+    "off_rtg": {
+     "value": 91.6,
+     "rank": 103,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 116.5,
+     "rank": 78,
+     "of": 108
+    },
+    "pace": {
+     "value": 106.1,
+     "rank": 9,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909935",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "LAC",
+    "home": false,
+    "neutral": false,
+    "points": 117,
+    "opp_points": 116,
+    "adj_points": 121.8,
+    "opp_adj_points": 116.1,
+    "off_rtg": {
+     "value": 105.0,
+     "rank": 76,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 102.8,
+     "rank": 26,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.5,
+     "rank": 51,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909921",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "LAL",
+    "home": false,
+    "neutral": false,
+    "points": 117,
+    "opp_points": 138,
+    "adj_points": 114.6,
+    "opp_adj_points": 133.9,
+    "off_rtg": {
+     "value": 114.3,
+     "rank": 45,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 130.7,
+     "rank": 105,
+     "of": 108
+    },
+    "pace": {
+     "value": 104.0,
+     "rank": 23,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909282",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "IND",
+    "home": true,
+    "neutral": false,
+    "points": 145,
+    "opp_points": 125,
+    "adj_points": 137.7,
+    "opp_adj_points": 118.9,
+    "off_rtg": {
+     "value": 139.3,
+     "rank": 1,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 120.3,
+     "rank": 80,
+     "of": 98
+    },
+    "pace": {
+     "value": 104.0,
+     "rank": 31,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909881",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "ATL",
+    "home": false,
+    "neutral": false,
+    "points": 129,
+    "opp_points": 117,
+    "adj_points": 128.0,
+    "opp_adj_points": 113.9,
+    "off_rtg": {
+     "value": 117.1,
+     "rank": 31,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 108.2,
+     "rank": 43,
+     "of": 98
+    },
+    "pace": {
+     "value": 109.1,
+     "rank": 9,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909871",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "DAL",
+    "home": true,
+    "neutral": false,
+    "points": 109,
+    "opp_points": 113,
+    "adj_points": 112.9,
+    "opp_adj_points": 115.0,
+    "off_rtg": {
+     "value": 101.9,
+     "rank": 78,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 108.5,
+     "rank": 45,
+     "of": 98
+    },
+    "pace": {
+     "value": 105.6,
+     "rank": 25,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909853",
+    "date": "2026-10-24",
+    "week": "2026-10-19",
+    "opp": "CHA",
+    "home": false,
+    "neutral": false,
+    "points": 110,
+    "opp_points": 115,
+    "adj_points": 106.3,
+    "opp_adj_points": 111.1,
+    "off_rtg": {
+     "value": 107.8,
+     "rank": 51,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 109.5,
+     "rank": 40,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.5,
+     "rank": 53,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909847",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "DET",
+    "home": true,
+    "neutral": false,
+    "points": 111,
+    "opp_points": 128,
+    "adj_points": 116.2,
+    "opp_adj_points": 121.0,
+    "off_rtg": {
+     "value": 102.5,
+     "rank": 62,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 121.0,
+     "rank": 77,
+     "of": 86
+    },
+    "pace": {
+     "value": 107.1,
+     "rank": 23,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909091",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "MIN",
+    "home": true,
+    "neutral": false,
+    "points": 106,
+    "opp_points": 131,
+    "adj_points": 110.6,
+    "opp_adj_points": 127.5,
+    "off_rtg": {
+     "value": 98.7,
+     "rank": 71,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 119.4,
+     "rank": 73,
+     "of": 86
+    },
+    "pace": {
+     "value": 108.6,
+     "rank": 17,
+     "of": 86
+    }
+   }
+  ],
+  "MIN": [
+   {
+    "id": "401909947",
+    "date": "2026-11-08",
+    "week": "2026-11-02",
+    "opp": "UTAH",
+    "home": true,
+    "neutral": false,
+    "points": 115,
+    "opp_points": 100,
+    "adj_points": 111.9,
+    "opp_adj_points": 101.5,
+    "off_rtg": {
+     "value": 111.6,
+     "rank": 53,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 99.4,
+     "rank": 19,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.8,
+     "rank": 43,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909293",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "NO",
+    "home": false,
+    "neutral": false,
+    "points": 115,
+    "opp_points": 109,
+    "adj_points": 117.4,
+    "opp_adj_points": 106.5,
+    "off_rtg": {
+     "value": 113.5,
+     "rank": 47,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 110.7,
+     "rank": 50,
+     "of": 108
+    },
+    "pace": {
+     "value": 99.9,
+     "rank": 73,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909930",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "HOU",
+    "home": false,
+    "neutral": false,
+    "points": 117,
+    "opp_points": 107,
+    "adj_points": 114.9,
+    "opp_adj_points": 107.5,
+    "off_rtg": {
+     "value": 120.2,
+     "rank": 20,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 103.7,
+     "rank": 29,
+     "of": 108
+    },
+    "pace": {
+     "value": 100.3,
+     "rank": 69,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909915",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "MIL",
+    "home": true,
+    "neutral": false,
+    "points": 112,
+    "opp_points": 100,
+    "adj_points": 114.3,
+    "opp_adj_points": 102.9,
+    "off_rtg": {
+     "value": 114.9,
+     "rank": 38,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 96.8,
+     "rank": 9,
+     "of": 108
+    },
+    "pace": {
+     "value": 100.4,
+     "rank": 67,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909901",
+    "date": "2026-10-31",
+    "week": "2026-10-26",
+    "opp": "SA",
+    "home": false,
+    "neutral": false,
+    "points": 111,
+    "opp_points": 121,
+    "adj_points": 113.3,
+    "opp_adj_points": 120.0,
+    "off_rtg": {
+     "value": 105.3,
+     "rank": 63,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 120.2,
+     "rank": 79,
+     "of": 98
+    },
+    "pace": {
+     "value": 103.0,
+     "rank": 37,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909284",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "LAC",
+    "home": true,
+    "neutral": false,
+    "points": 127,
+    "opp_points": 101,
+    "adj_points": 122.9,
+    "opp_adj_points": 98.4,
+    "off_rtg": {
+     "value": 127.2,
+     "rank": 8,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 99.3,
+     "rank": 16,
+     "of": 98
+    },
+    "pace": {
+     "value": 100.8,
+     "rank": 59,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909888",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "GS",
+    "home": true,
+    "neutral": false,
+    "points": 114,
+    "opp_points": 119,
+    "adj_points": 115.6,
+    "opp_adj_points": 121.9,
+    "off_rtg": {
+     "value": 103.7,
+     "rank": 69,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 108.9,
+     "rank": 47,
+     "of": 98
+    },
+    "pace": {
+     "value": 109.6,
+     "rank": 5,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909869",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "CLE",
+    "home": false,
+    "neutral": false,
+    "points": 125,
+    "opp_points": 127,
+    "adj_points": 128.0,
+    "opp_adj_points": 124.3,
+    "off_rtg": {
+     "value": 110.5,
+     "rank": 49,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 114.3,
+     "rank": 62,
+     "of": 98
+    },
+    "pace": {
+     "value": 101.5,
+     "rank": 53,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909864",
+    "date": "2026-10-25",
+    "week": "2026-10-19",
+    "opp": "TOR",
+    "home": true,
+    "neutral": false,
+    "points": 117,
+    "opp_points": 94,
+    "adj_points": 111.9,
+    "opp_adj_points": 99.2,
+    "off_rtg": {
+     "value": 113.6,
+     "rank": 33,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 91.0,
+     "rank": 5,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.1,
+     "rank": 57,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909845",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "ORL",
+    "home": false,
+    "neutral": false,
+    "points": 115,
+    "opp_points": 93,
+    "adj_points": 115.9,
+    "opp_adj_points": 103.0,
+    "off_rtg": {
+     "value": 113.6,
+     "rank": 32,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 92.7,
+     "rank": 8,
+     "of": 86
+    },
+    "pace": {
+     "value": 100.8,
+     "rank": 77,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909091",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "MIA",
+    "home": false,
+    "neutral": false,
+    "points": 131,
+    "opp_points": 106,
+    "adj_points": 127.5,
+    "opp_adj_points": 110.6,
+    "off_rtg": {
+     "value": 119.4,
+     "rank": 14,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 98.7,
+     "rank": 16,
+     "of": 86
+    },
+    "pace": {
+     "value": 108.6,
+     "rank": 17,
+     "of": 86
+    }
+   }
+  ],
+  "LAL": [
+   {
+    "id": "401909952",
+    "date": "2026-11-09",
+    "week": "2026-11-09",
+    "opp": "ATL",
+    "home": false,
+    "neutral": false,
+    "points": 124,
+    "opp_points": 114,
+    "adj_points": 120.2,
+    "opp_adj_points": 112.0,
+    "off_rtg": {
+     "value": 120.2,
+     "rank": 10,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 107.4,
+     "rank": 14,
+     "of": 28
+    },
+    "pace": {
+     "value": 104.6,
+     "rank": 9,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909946",
+    "date": "2026-11-08",
+    "week": "2026-11-02",
+    "opp": "DET",
+    "home": false,
+    "neutral": false,
+    "points": 121,
+    "opp_points": 116,
+    "adj_points": 119.8,
+    "opp_adj_points": 114.4,
+    "off_rtg": {
+     "value": 118.0,
+     "rank": 28,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 118.6,
+     "rank": 83,
+     "of": 108
+    },
+    "pace": {
+     "value": 100.2,
+     "rank": 71,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909294",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "POR",
+    "home": true,
+    "neutral": false,
+    "points": 124,
+    "opp_points": 118,
+    "adj_points": 127.8,
+    "opp_adj_points": 112.9,
+    "off_rtg": {
+     "value": 120.1,
+     "rank": 21,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 115.4,
+     "rank": 73,
+     "of": 108
+    },
+    "pace": {
+     "value": 102.8,
+     "rank": 33,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909934",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "SAC",
+    "home": false,
+    "neutral": false,
+    "points": 116,
+    "opp_points": 103,
+    "adj_points": 116.8,
+    "opp_adj_points": 105.2,
+    "off_rtg": {
+     "value": 119.9,
+     "rank": 23,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 97.8,
+     "rank": 12,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.0,
+     "rank": 59,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909921",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "MIA",
+    "home": true,
+    "neutral": false,
+    "points": 138,
+    "opp_points": 117,
+    "adj_points": 133.9,
+    "opp_adj_points": 114.6,
+    "off_rtg": {
+     "value": 130.7,
+     "rank": 4,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 114.3,
+     "rank": 64,
+     "of": 108
+    },
+    "pace": {
+     "value": 104.0,
+     "rank": 23,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909906",
+    "date": "2026-11-01",
+    "week": "2026-10-26",
+    "opp": "TOR",
+    "home": true,
+    "neutral": false,
+    "points": 131,
+    "opp_points": 125,
+    "adj_points": 123.3,
+    "opp_adj_points": 127.4,
+    "off_rtg": {
+     "value": 120.1,
+     "rank": 21,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 114.7,
+     "rank": 64,
+     "of": 98
+    },
+    "pace": {
+     "value": 109.0,
+     "rank": 11,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909285",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "GS",
+    "home": false,
+    "neutral": false,
+    "points": 95,
+    "opp_points": 112,
+    "adj_points": 100.2,
+    "opp_adj_points": 104.4,
+    "off_rtg": {
+     "value": 96.4,
+     "rank": 89,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 113.7,
+     "rank": 59,
+     "of": 98
+    },
+    "pace": {
+     "value": 98.5,
+     "rank": 67,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909892",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "LAC",
+    "home": false,
+    "neutral": false,
+    "points": 103,
+    "opp_points": 87,
+    "adj_points": 107.5,
+    "opp_adj_points": 86.9,
+    "off_rtg": {
+     "value": 105.6,
+     "rank": 62,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 88.9,
+     "rank": 4,
+     "of": 98
+    },
+    "pace": {
+     "value": 97.7,
+     "rank": 75,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909880",
+    "date": "2026-10-27",
+    "week": "2026-10-26",
+    "opp": "POR",
+    "home": true,
+    "neutral": false,
+    "points": 129,
+    "opp_points": 136,
+    "adj_points": 127.8,
+    "opp_adj_points": 130.7,
+    "off_rtg": {
+     "value": 126.2,
+     "rank": 10,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 132.0,
+     "rank": 95,
+     "of": 98
+    },
+    "pace": {
+     "value": 102.6,
+     "rank": 41,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909861",
+    "date": "2026-10-25",
+    "week": "2026-10-19",
+    "opp": "UTAH",
+    "home": false,
+    "neutral": false,
+    "points": 132,
+    "opp_points": 123,
+    "adj_points": 126.6,
+    "opp_adj_points": 125.8,
+    "off_rtg": {
+     "value": 127.3,
+     "rank": 3,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 118.4,
+     "rank": 69,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.8,
+     "rank": 47,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909851",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "LAC",
+    "home": true,
+    "neutral": false,
+    "points": 125,
+    "opp_points": 117,
+    "adj_points": 121.8,
+    "opp_adj_points": 113.4,
+    "off_rtg": {
+     "value": 121.4,
+     "rank": 8,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 107.3,
+     "rank": 33,
+     "of": 86
+    },
+    "pace": {
+     "value": 106.0,
+     "rank": 31,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909092",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "GS",
+    "home": true,
+    "neutral": false,
+    "points": 127,
+    "opp_points": 105,
+    "adj_points": 124.5,
+    "opp_adj_points": 113.4,
+    "off_rtg": {
+     "value": 125.9,
+     "rank": 5,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 100.1,
+     "rank": 19,
+     "of": 86
+    },
+    "pace": {
+     "value": 102.9,
+     "rank": 63,
+     "of": 86
+    }
+   }
+  ],
+  "GS": [
+   {
+    "id": "401909959",
+    "date": "2026-11-09",
+    "week": "2026-11-09",
+    "opp": "NO",
+    "home": true,
+    "neutral": false,
+    "points": 138,
+    "opp_points": 87,
+    "adj_points": 130.1,
+    "opp_adj_points": 88.7,
+    "off_rtg": {
+     "value": 138.9,
+     "rank": 1,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 91.0,
+     "rank": 1,
+     "of": 28
+    },
+    "pace": {
+     "value": 97.5,
+     "rank": 19,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909942",
+    "date": "2026-11-07",
+    "week": "2026-11-02",
+    "opp": "ORL",
+    "home": true,
+    "neutral": false,
+    "points": 126,
+    "opp_points": 119,
+    "adj_points": 121.3,
+    "opp_adj_points": 120.5,
+    "off_rtg": {
+     "value": 114.9,
+     "rank": 39,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 106.0,
+     "rank": 38,
+     "of": 108
+    },
+    "pace": {
+     "value": 100.5,
+     "rank": 65,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909937",
+    "date": "2026-11-05",
+    "week": "2026-11-02",
+    "opp": "MIA",
+    "home": true,
+    "neutral": false,
+    "points": 120,
+    "opp_points": 100,
+    "adj_points": 118.9,
+    "opp_adj_points": 103.2,
+    "off_rtg": {
+     "value": 116.5,
+     "rank": 31,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 91.6,
+     "rank": 6,
+     "of": 108
+    },
+    "pace": {
+     "value": 106.1,
+     "rank": 9,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909919",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "PHX",
+    "home": true,
+    "neutral": false,
+    "points": 116,
+    "opp_points": 113,
+    "adj_points": 119.3,
+    "opp_adj_points": 113.3,
+    "off_rtg": {
+     "value": 114.5,
+     "rank": 43,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 108.4,
+     "rank": 44,
+     "of": 108
+    },
+    "pace": {
+     "value": 102.7,
+     "rank": 35,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909905",
+    "date": "2026-11-01",
+    "week": "2026-10-26",
+    "opp": "LAC",
+    "home": true,
+    "neutral": false,
+    "points": 124,
+    "opp_points": 112,
+    "adj_points": 118.9,
+    "opp_adj_points": 110.6,
+    "off_rtg": {
+     "value": 129.0,
+     "rank": 5,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 112.7,
+     "rank": 55,
+     "of": 98
+    },
+    "pace": {
+     "value": 97.8,
+     "rank": 73,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909285",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "LAL",
+    "home": true,
+    "neutral": false,
+    "points": 112,
+    "opp_points": 95,
+    "adj_points": 104.4,
+    "opp_adj_points": 100.2,
+    "off_rtg": {
+     "value": 113.7,
+     "rank": 40,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 96.4,
+     "rank": 10,
+     "of": 98
+    },
+    "pace": {
+     "value": 98.5,
+     "rank": 67,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909888",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "MIN",
+    "home": false,
+    "neutral": false,
+    "points": 119,
+    "opp_points": 114,
+    "adj_points": 121.9,
+    "opp_adj_points": 115.6,
+    "off_rtg": {
+     "value": 108.9,
+     "rank": 52,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 103.7,
+     "rank": 30,
+     "of": 98
+    },
+    "pace": {
+     "value": 109.6,
+     "rank": 5,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909876",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "DEN",
+    "home": false,
+    "neutral": false,
+    "points": 134,
+    "opp_points": 114,
+    "adj_points": 123.9,
+    "opp_adj_points": 113.4,
+    "off_rtg": {
+     "value": 135.0,
+     "rank": 2,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 118.6,
+     "rank": 72,
+     "of": 98
+    },
+    "pace": {
+     "value": 97.7,
+     "rank": 77,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909860",
+    "date": "2026-10-24",
+    "week": "2026-10-19",
+    "opp": "PHX",
+    "home": false,
+    "neutral": false,
+    "points": 122,
+    "opp_points": 131,
+    "adj_points": 119.6,
+    "opp_adj_points": 129.9,
+    "off_rtg": {
+     "value": 118.4,
+     "rank": 19,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 126.4,
+     "rank": 83,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.4,
+     "rank": 55,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909850",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "MEM",
+    "home": true,
+    "neutral": false,
+    "points": 108,
+    "opp_points": 111,
+    "adj_points": 108.5,
+    "opp_adj_points": 110.8,
+    "off_rtg": {
+     "value": 111.6,
+     "rank": 40,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 106.0,
+     "rank": 32,
+     "of": 86
+    },
+    "pace": {
+     "value": 100.7,
+     "rank": 79,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909092",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "LAL",
+    "home": false,
+    "neutral": false,
+    "points": 105,
+    "opp_points": 127,
+    "adj_points": 113.4,
+    "opp_adj_points": 124.5,
+    "off_rtg": {
+     "value": 100.1,
+     "rank": 68,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 125.9,
+     "rank": 82,
+     "of": 86
+    },
+    "pace": {
+     "value": 102.9,
+     "rank": 63,
+     "of": 86
+    }
+   }
+  ],
+  "ORL": [
+   {
+    "id": "401909964",
+    "date": "2026-11-10",
+    "week": "2026-11-09",
+    "opp": "SAC",
+    "home": false,
+    "neutral": false,
+    "points": 107,
+    "opp_points": 100,
+    "adj_points": 109.6,
+    "opp_adj_points": 93.3,
+    "off_rtg": {
+     "value": 107.1,
+     "rank": 17,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 98.3,
+     "rank": 3,
+     "of": 28
+    },
+    "pace": {
+     "value": 100.8,
+     "rank": 11,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909942",
+    "date": "2026-11-07",
+    "week": "2026-11-02",
+    "opp": "GS",
+    "home": false,
+    "neutral": false,
+    "points": 119,
+    "opp_points": 126,
+    "adj_points": 120.5,
+    "opp_adj_points": 121.3,
+    "off_rtg": {
+     "value": 106.0,
+     "rank": 71,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 114.9,
+     "rank": 70,
+     "of": 108
+    },
+    "pace": {
+     "value": 100.5,
+     "rank": 65,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909936",
+    "date": "2026-11-05",
+    "week": "2026-11-02",
+    "opp": "PHX",
+    "home": false,
+    "neutral": false,
+    "points": 104,
+    "opp_points": 117,
+    "adj_points": 106.9,
+    "opp_adj_points": 109.8,
+    "off_rtg": {
+     "value": 102.4,
+     "rank": 84,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 115.0,
+     "rank": 72,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.6,
+     "rank": 49,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909911",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "WSH",
+    "home": true,
+    "neutral": false,
+    "points": 94,
+    "opp_points": 103,
+    "adj_points": 97.0,
+    "opp_adj_points": 101.7,
+    "off_rtg": {
+     "value": 98.5,
+     "rank": 93,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 110.8,
+     "rank": 52,
+     "of": 108
+    },
+    "pace": {
+     "value": 94.2,
+     "rank": 99,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909903",
+    "date": "2026-11-01",
+    "week": "2026-10-26",
+    "opp": "BOS",
+    "home": true,
+    "neutral": false,
+    "points": 97,
+    "opp_points": 108,
+    "adj_points": 96.0,
+    "opp_adj_points": 113.1,
+    "off_rtg": {
+     "value": 102.8,
+     "rank": 71,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 114.4,
+     "rank": 63,
+     "of": 98
+    },
+    "pace": {
+     "value": 94.4,
+     "rank": 87,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909281",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "TOR",
+    "home": false,
+    "neutral": false,
+    "points": 121,
+    "opp_points": 114,
+    "adj_points": 110.2,
+    "opp_adj_points": 111.4,
+    "off_rtg": {
+     "value": 133.3,
+     "rank": 3,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 121.8,
+     "rank": 84,
+     "of": 98
+    },
+    "pace": {
+     "value": 92.2,
+     "rank": 93,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909885",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "TOR",
+    "home": false,
+    "neutral": false,
+    "points": 99,
+    "opp_points": 129,
+    "adj_points": 101.7,
+    "opp_adj_points": 122.9,
+    "off_rtg": {
+     "value": 95.4,
+     "rank": 90,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 118.7,
+     "rank": 73,
+     "of": 98
+    },
+    "pace": {
+     "value": 106.2,
+     "rank": 17,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909863",
+    "date": "2026-10-25",
+    "week": "2026-10-19",
+    "opp": "NY",
+    "home": false,
+    "neutral": false,
+    "points": 111,
+    "opp_points": 102,
+    "adj_points": 105.3,
+    "opp_adj_points": 109.6,
+    "off_rtg": {
+     "value": 107.5,
+     "rank": 53,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 94.8,
+     "rank": 11,
+     "of": 86
+    },
+    "pace": {
+     "value": 105.4,
+     "rank": 33,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909845",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "MIN",
+    "home": true,
+    "neutral": false,
+    "points": 93,
+    "opp_points": 115,
+    "adj_points": 103.0,
+    "opp_adj_points": 115.9,
+    "off_rtg": {
+     "value": 92.7,
+     "rank": 79,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 113.6,
+     "rank": 55,
+     "of": 86
+    },
+    "pace": {
+     "value": 100.8,
+     "rank": 77,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909834",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "ATL",
+    "home": true,
+    "neutral": false,
+    "points": 125,
+    "opp_points": 132,
+    "adj_points": 126.2,
+    "opp_adj_points": 128.8,
+    "off_rtg": {
+     "value": 110.5,
+     "rank": 44,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 118.0,
+     "rank": 67,
+     "of": 86
+    },
+    "pace": {
+     "value": 112.5,
+     "rank": 1,
+     "of": 86
+    }
+   }
+  ],
+  "ATL": [
+   {
+    "id": "401909952",
+    "date": "2026-11-09",
+    "week": "2026-11-09",
+    "opp": "LAL",
+    "home": true,
+    "neutral": false,
+    "points": 114,
+    "opp_points": 124,
+    "adj_points": 112.0,
+    "opp_adj_points": 120.2,
+    "off_rtg": {
+     "value": 107.4,
+     "rank": 15,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 120.2,
+     "rank": 19,
+     "of": 28
+    },
+    "pace": {
+     "value": 104.6,
+     "rank": 9,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909939",
+    "date": "2026-11-07",
+    "week": "2026-11-02",
+    "opp": "BKN",
+    "home": true,
+    "neutral": false,
+    "points": 124,
+    "opp_points": 121,
+    "adj_points": 130.8,
+    "opp_adj_points": 122.4,
+    "off_rtg": {
+     "value": 109.7,
+     "rank": 62,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 111.3,
+     "rank": 55,
+     "of": 108
+    },
+    "pace": {
+     "value": 110.9,
+     "rank": 1,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909287",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "WSH",
+    "home": true,
+    "neutral": false,
+    "points": 139,
+    "opp_points": 132,
+    "adj_points": 132.6,
+    "opp_adj_points": 120.6,
+    "off_rtg": {
+     "value": 127.8,
+     "rank": 8,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 127.5,
+     "rank": 100,
+     "of": 108
+    },
+    "pace": {
+     "value": 106.2,
+     "rank": 7,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909923",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "WSH",
+    "home": false,
+    "neutral": false,
+    "points": 120,
+    "opp_points": 105,
+    "adj_points": 117.2,
+    "opp_adj_points": 109.9,
+    "off_rtg": {
+     "value": 116.3,
+     "rank": 32,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 104.7,
+     "rank": 30,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.7,
+     "rank": 47,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909909",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "IND",
+    "home": false,
+    "neutral": false,
+    "points": 108,
+    "opp_points": 104,
+    "adj_points": 100.9,
+    "opp_adj_points": 108.3,
+    "off_rtg": {
+     "value": 102.4,
+     "rank": 85,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 99.9,
+     "rank": 20,
+     "of": 108
+    },
+    "pace": {
+     "value": 104.8,
+     "rank": 17,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909898",
+    "date": "2026-10-31",
+    "week": "2026-10-26",
+    "opp": "NO",
+    "home": false,
+    "neutral": false,
+    "points": 99,
+    "opp_points": 121,
+    "adj_points": 109.5,
+    "opp_adj_points": 119.6,
+    "off_rtg": {
+     "value": 93.3,
+     "rank": 92,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 113.7,
+     "rank": 58,
+     "of": 98
+    },
+    "pace": {
+     "value": 106.3,
+     "rank": 15,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909893",
+    "date": "2026-10-29",
+    "week": "2026-10-26",
+    "opp": "CLE",
+    "home": true,
+    "neutral": false,
+    "points": 114,
+    "opp_points": 111,
+    "adj_points": 111.5,
+    "opp_adj_points": 113.9,
+    "off_rtg": {
+     "value": 115.2,
+     "rank": 34,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 111.3,
+     "rank": 52,
+     "of": 98
+    },
+    "pace": {
+     "value": 99.3,
+     "rank": 65,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909881",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "MIA",
+    "home": true,
+    "neutral": false,
+    "points": 117,
+    "opp_points": 129,
+    "adj_points": 113.9,
+    "opp_adj_points": 128.0,
+    "off_rtg": {
+     "value": 108.2,
+     "rank": 56,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 117.1,
+     "rank": 68,
+     "of": 98
+    },
+    "pace": {
+     "value": 109.1,
+     "rank": 9,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909874",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "HOU",
+    "home": false,
+    "neutral": false,
+    "points": 110,
+    "opp_points": 120,
+    "adj_points": 114.6,
+    "opp_adj_points": 122.5,
+    "off_rtg": {
+     "value": 102.6,
+     "rank": 73,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 114.2,
+     "rank": 61,
+     "of": 98
+    },
+    "pace": {
+     "value": 106.2,
+     "rank": 19,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909856",
+    "date": "2026-10-24",
+    "week": "2026-10-19",
+    "opp": "HOU",
+    "home": true,
+    "neutral": false,
+    "points": 114,
+    "opp_points": 121,
+    "adj_points": 120.8,
+    "opp_adj_points": 117.6,
+    "off_rtg": {
+     "value": 111.5,
+     "rank": 41,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 118.5,
+     "rank": 70,
+     "of": 86
+    },
+    "pace": {
+     "value": 102.2,
+     "rank": 65,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909843",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "CHA",
+    "home": false,
+    "neutral": false,
+    "points": 128,
+    "opp_points": 81,
+    "adj_points": 126.1,
+    "opp_adj_points": 89.8,
+    "off_rtg": {
+     "value": 121.1,
+     "rank": 9,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 80.8,
+     "rank": 1,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.0,
+     "rank": 59,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909834",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "ORL",
+    "home": false,
+    "neutral": false,
+    "points": 132,
+    "opp_points": 125,
+    "adj_points": 128.8,
+    "opp_adj_points": 126.2,
+    "off_rtg": {
+     "value": 118.0,
+     "rank": 20,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 110.5,
+     "rank": 43,
+     "of": 86
+    },
+    "pace": {
+     "value": 112.5,
+     "rank": 1,
+     "of": 86
+    }
+   }
+  ],
+  "WSH": [
+   {
+    "id": "401909954",
+    "date": "2026-11-09",
+    "week": "2026-11-09",
+    "opp": "DET",
+    "home": false,
+    "neutral": false,
+    "points": 111,
+    "opp_points": 122,
+    "adj_points": 116.6,
+    "opp_adj_points": 124.5,
+    "off_rtg": {
+     "value": 104.4,
+     "rank": 22,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 116.6,
+     "rank": 18,
+     "of": 28
+    },
+    "pace": {
+     "value": 105.5,
+     "rank": 3,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909941",
+    "date": "2026-11-07",
+    "week": "2026-11-02",
+    "opp": "OKC",
+    "home": false,
+    "neutral": false,
+    "points": 75,
+    "opp_points": 114,
+    "adj_points": 87.0,
+    "opp_adj_points": 114.0,
+    "off_rtg": {
+     "value": 73.8,
+     "rank": 108,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 110.8,
+     "rank": 51,
+     "of": 108
+    },
+    "pace": {
+     "value": 102.3,
+     "rank": 39,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909287",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "ATL",
+    "home": false,
+    "neutral": false,
+    "points": 132,
+    "opp_points": 139,
+    "adj_points": 120.6,
+    "opp_adj_points": 132.6,
+    "off_rtg": {
+     "value": 127.5,
+     "rank": 9,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 127.8,
+     "rank": 101,
+     "of": 108
+    },
+    "pace": {
+     "value": 106.2,
+     "rank": 7,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909923",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "ATL",
+    "home": true,
+    "neutral": false,
+    "points": 105,
+    "opp_points": 120,
+    "adj_points": 109.9,
+    "opp_adj_points": 117.2,
+    "off_rtg": {
+     "value": 104.7,
+     "rank": 79,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 116.3,
+     "rank": 77,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.7,
+     "rank": 47,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909911",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "ORL",
+    "home": false,
+    "neutral": false,
+    "points": 103,
+    "opp_points": 94,
+    "adj_points": 101.7,
+    "opp_adj_points": 97.0,
+    "off_rtg": {
+     "value": 110.8,
+     "rank": 57,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 98.5,
+     "rank": 16,
+     "of": 108
+    },
+    "pace": {
+     "value": 94.2,
+     "rank": 99,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909277",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "CHA",
+    "home": true,
+    "neutral": false,
+    "points": 95,
+    "opp_points": 79,
+    "adj_points": 94.4,
+    "opp_adj_points": 90.3,
+    "off_rtg": {
+     "value": 100.6,
+     "rank": 80,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 78.0,
+     "rank": 1,
+     "of": 98
+    },
+    "pace": {
+     "value": 97.8,
+     "rank": 71,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909882",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "CLE",
+    "home": false,
+    "neutral": false,
+    "points": 111,
+    "opp_points": 121,
+    "adj_points": 114.3,
+    "opp_adj_points": 118.1,
+    "off_rtg": {
+     "value": 116.3,
+     "rank": 32,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 122.6,
+     "rank": 86,
+     "of": 98
+    },
+    "pace": {
+     "value": 97.1,
+     "rank": 79,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909868",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "CHA",
+    "home": false,
+    "neutral": false,
+    "points": 103,
+    "opp_points": 110,
+    "adj_points": 103.5,
+    "opp_adj_points": 111.4,
+    "off_rtg": {
+     "value": 107.7,
+     "rank": 57,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 114.0,
+     "rank": 60,
+     "of": 98
+    },
+    "pace": {
+     "value": 96.0,
+     "rank": 85,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909857",
+    "date": "2026-10-24",
+    "week": "2026-10-19",
+    "opp": "CHI",
+    "home": false,
+    "neutral": false,
+    "points": 124,
+    "opp_points": 120,
+    "adj_points": 124.6,
+    "opp_adj_points": 120.3,
+    "off_rtg": {
+     "value": 113.4,
+     "rank": 35,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 109.9,
+     "rank": 41,
+     "of": 86
+    },
+    "pace": {
+     "value": 109.3,
+     "rank": 15,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909846",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "TOR",
+    "home": true,
+    "neutral": false,
+    "points": 102,
+    "opp_points": 112,
+    "adj_points": 101.4,
+    "opp_adj_points": 118.2,
+    "off_rtg": {
+     "value": 91.6,
+     "rank": 80,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 103.5,
+     "rank": 26,
+     "of": 86
+    },
+    "pace": {
+     "value": 109.8,
+     "rank": 13,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909835",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "MIL",
+    "home": true,
+    "neutral": false,
+    "points": 128,
+    "opp_points": 116,
+    "adj_points": 133.3,
+    "opp_adj_points": 113.9,
+    "off_rtg": {
+     "value": 121.9,
+     "rank": 7,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 111.4,
+     "rank": 45,
+     "of": 86
+    },
+    "pace": {
+     "value": 104.6,
+     "rank": 37,
+     "of": 86
+    }
+   }
+  ],
+  "MIL": [
+   {
+    "id": "401909960",
+    "date": "2026-11-10",
+    "week": "2026-11-09",
+    "opp": "NY",
+    "home": false,
+    "neutral": false,
+    "points": 85,
+    "opp_points": 117,
+    "adj_points": 83.0,
+    "opp_adj_points": 114.7,
+    "off_rtg": {
+     "value": 94.0,
+     "rank": 27,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 125.8,
+     "rank": 26,
+     "of": 28
+    },
+    "pace": {
+     "value": 91.7,
+     "rank": 27,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909949",
+    "date": "2026-11-08",
+    "week": "2026-11-02",
+    "opp": "BOS",
+    "home": true,
+    "neutral": false,
+    "points": 97,
+    "opp_points": 117,
+    "adj_points": 96.0,
+    "opp_adj_points": 117.1,
+    "off_rtg": {
+     "value": 106.4,
+     "rank": 69,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 128.3,
+     "rank": 103,
+     "of": 108
+    },
+    "pace": {
+     "value": 91.2,
+     "rank": 107,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909292",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "TOR",
+    "home": true,
+    "neutral": false,
+    "points": 107,
+    "opp_points": 121,
+    "adj_points": 111.6,
+    "opp_adj_points": 123.4,
+    "off_rtg": {
+     "value": 107.0,
+     "rank": 68,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 112.4,
+     "rank": 58,
+     "of": 108
+    },
+    "pace": {
+     "value": 103.8,
+     "rank": 27,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909924",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "BOS",
+    "home": false,
+    "neutral": false,
+    "points": 102,
+    "opp_points": 109,
+    "adj_points": 98.5,
+    "opp_adj_points": 106.5,
+    "off_rtg": {
+     "value": 104.8,
+     "rank": 78,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 114.7,
+     "rank": 67,
+     "of": 108
+    },
+    "pace": {
+     "value": 96.2,
+     "rank": 95,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909915",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "MIN",
+    "home": false,
+    "neutral": false,
+    "points": 100,
+    "opp_points": 112,
+    "adj_points": 102.9,
+    "opp_adj_points": 114.3,
+    "off_rtg": {
+     "value": 96.8,
+     "rank": 100,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 114.9,
+     "rank": 71,
+     "of": 108
+    },
+    "pace": {
+     "value": 100.4,
+     "rank": 67,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909900",
+    "date": "2026-10-31",
+    "week": "2026-10-26",
+    "opp": "CLE",
+    "home": true,
+    "neutral": false,
+    "points": 111,
+    "opp_points": 136,
+    "adj_points": 112.7,
+    "opp_adj_points": 131.4,
+    "off_rtg": {
+     "value": 104.8,
+     "rank": 65,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 128.4,
+     "rank": 92,
+     "of": 98
+    },
+    "pace": {
+     "value": 105.9,
+     "rank": 21,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909887",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "HOU",
+    "home": true,
+    "neutral": false,
+    "points": 100,
+    "opp_points": 132,
+    "adj_points": 103.0,
+    "opp_adj_points": 125.9,
+    "off_rtg": {
+     "value": 97.2,
+     "rank": 87,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 128.9,
+     "rank": 93,
+     "of": 98
+    },
+    "pace": {
+     "value": 102.7,
+     "rank": 39,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909872",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "IND",
+    "home": true,
+    "neutral": false,
+    "points": 110,
+    "opp_points": 102,
+    "adj_points": 113.7,
+    "opp_adj_points": 108.6,
+    "off_rtg": {
+     "value": 108.7,
+     "rank": 53,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 99.1,
+     "rank": 15,
+     "of": 98
+    },
+    "pace": {
+     "value": 102.1,
+     "rank": 47,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909855",
+    "date": "2026-10-24",
+    "week": "2026-10-19",
+    "opp": "PHI",
+    "home": false,
+    "neutral": false,
+    "points": 116,
+    "opp_points": 127,
+    "adj_points": 117.2,
+    "opp_adj_points": 120.6,
+    "off_rtg": {
+     "value": 108.1,
+     "rank": 50,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 112.4,
+     "rank": 49,
+     "of": 86
+    },
+    "pace": {
+     "value": 110.1,
+     "rank": 11,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909848",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "CHI",
+    "home": true,
+    "neutral": false,
+    "points": 125,
+    "opp_points": 132,
+    "adj_points": 123.1,
+    "opp_adj_points": 133.2,
+    "off_rtg": {
+     "value": 112.2,
+     "rank": 39,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 117.6,
+     "rank": 65,
+     "of": 86
+    },
+    "pace": {
+     "value": 111.8,
+     "rank": 5,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909835",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "WSH",
+    "home": false,
+    "neutral": false,
+    "points": 116,
+    "opp_points": 128,
+    "adj_points": 113.9,
+    "opp_adj_points": 133.3,
+    "off_rtg": {
+     "value": 111.4,
+     "rank": 42,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 121.9,
+     "rank": 80,
+     "of": 86
+    },
+    "pace": {
+     "value": 104.6,
+     "rank": 37,
+     "of": 86
+    }
+   }
+  ],
+  "BKN": [
+   {
+    "id": "401909948",
+    "date": "2026-11-08",
+    "week": "2026-11-02",
+    "opp": "DAL",
+    "home": false,
+    "neutral": false,
+    "points": 93,
+    "opp_points": 130,
+    "adj_points": 97.5,
+    "opp_adj_points": 125.9,
+    "off_rtg": {
+     "value": 93.6,
+     "rank": 102,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 126.6,
+     "rank": 98,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.0,
+     "rank": 61,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909939",
+    "date": "2026-11-07",
+    "week": "2026-11-02",
+    "opp": "ATL",
+    "home": false,
+    "neutral": false,
+    "points": 121,
+    "opp_points": 124,
+    "adj_points": 122.4,
+    "opp_adj_points": 130.8,
+    "off_rtg": {
+     "value": 111.3,
+     "rank": 54,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 109.7,
+     "rank": 47,
+     "of": 108
+    },
+    "pace": {
+     "value": 110.9,
+     "rank": 1,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909925",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "CHA",
+    "home": true,
+    "neutral": false,
+    "points": 114,
+    "opp_points": 104,
+    "adj_points": 113.0,
+    "opp_adj_points": 105.5,
+    "off_rtg": {
+     "value": 115.9,
+     "rank": 33,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 105.2,
+     "rank": 34,
+     "of": 108
+    },
+    "pace": {
+     "value": 98.6,
+     "rank": 87,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909910",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "NY",
+    "home": false,
+    "neutral": false,
+    "points": 90,
+    "opp_points": 103,
+    "adj_points": 91.1,
+    "opp_adj_points": 100.3,
+    "off_rtg": {
+     "value": 98.0,
+     "rank": 96,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 111.0,
+     "rank": 54,
+     "of": 108
+    },
+    "pace": {
+     "value": 92.3,
+     "rank": 103,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909904",
+    "date": "2026-11-01",
+    "week": "2026-10-26",
+    "opp": "IND",
+    "home": false,
+    "neutral": false,
+    "points": 98,
+    "opp_points": 90,
+    "adj_points": 98.1,
+    "opp_adj_points": 89.5,
+    "off_rtg": {
+     "value": 100.4,
+     "rank": 82,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 100.9,
+     "rank": 20,
+     "of": 98
+    },
+    "pace": {
+     "value": 93.4,
+     "rank": 91,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909279",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "DET",
+    "home": true,
+    "neutral": false,
+    "points": 94,
+    "opp_points": 110,
+    "adj_points": 96.2,
+    "opp_adj_points": 113.7,
+    "off_rtg": {
+     "value": 90.9,
+     "rank": 94,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 104.4,
+     "rank": 32,
+     "of": 98
+    },
+    "pace": {
+     "value": 104.4,
+     "rank": 27,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909877",
+    "date": "2026-10-27",
+    "week": "2026-10-26",
+    "opp": "BOS",
+    "home": false,
+    "neutral": false,
+    "points": 124,
+    "opp_points": 125,
+    "adj_points": 124.5,
+    "opp_adj_points": 130.7,
+    "off_rtg": {
+     "value": 112.0,
+     "rank": 45,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 110.9,
+     "rank": 51,
+     "of": 98
+    },
+    "pace": {
+     "value": 101.2,
+     "rank": 57,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909862",
+    "date": "2026-10-25",
+    "week": "2026-10-19",
+    "opp": "IND",
+    "home": true,
+    "neutral": false,
+    "points": 109,
+    "opp_points": 136,
+    "adj_points": 110.9,
+    "opp_adj_points": 126.6,
+    "off_rtg": {
+     "value": 101.6,
+     "rank": 64,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 128.7,
+     "rank": 85,
+     "of": 86
+    },
+    "pace": {
+     "value": 106.5,
+     "rank": 29,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909854",
+    "date": "2026-10-24",
+    "week": "2026-10-19",
+    "opp": "CLE",
+    "home": false,
+    "neutral": false,
+    "points": 121,
+    "opp_points": 125,
+    "adj_points": 115.3,
+    "opp_adj_points": 121.2,
+    "off_rtg": {
+     "value": 109.1,
+     "rank": 48,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 113.9,
+     "rank": 57,
+     "of": 86
+    },
+    "pace": {
+     "value": 110.3,
+     "rank": 9,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909836",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "CHA",
+    "home": true,
+    "neutral": false,
+    "points": 103,
+    "opp_points": 110,
+    "adj_points": 101.2,
+    "opp_adj_points": 111.1,
+    "off_rtg": {
+     "value": 101.0,
+     "rank": 65,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 104.2,
+     "rank": 27,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.8,
+     "rank": 47,
+     "of": 86
+    }
+   }
+  ],
+  "CHA": [
+   {
+    "id": "401909953",
+    "date": "2026-11-09",
+    "week": "2026-11-09",
+    "opp": "CLE",
+    "home": true,
+    "neutral": false,
+    "points": 124,
+    "opp_points": 112,
+    "adj_points": 112.5,
+    "opp_adj_points": 109.5,
+    "off_rtg": {
+     "value": 124.0,
+     "rank": 6,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 112.1,
+     "rank": 15,
+     "of": 28
+    },
+    "pace": {
+     "value": 100.0,
+     "rank": 13,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909288",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "BOS",
+    "home": true,
+    "neutral": false,
+    "points": 80,
+    "opp_points": 119,
+    "adj_points": 87.9,
+    "opp_adj_points": 106.4,
+    "off_rtg": {
+     "value": 82.1,
+     "rank": 107,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 121.3,
+     "rank": 91,
+     "of": 108
+    },
+    "pace": {
+     "value": 97.8,
+     "rank": 91,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909925",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "BKN",
+    "home": false,
+    "neutral": false,
+    "points": 104,
+    "opp_points": 114,
+    "adj_points": 105.5,
+    "opp_adj_points": 113.0,
+    "off_rtg": {
+     "value": 105.2,
+     "rank": 75,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 115.9,
+     "rank": 76,
+     "of": 108
+    },
+    "pace": {
+     "value": 98.6,
+     "rank": 87,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909908",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "DET",
+    "home": true,
+    "neutral": false,
+    "points": 91,
+    "opp_points": 124,
+    "adj_points": 94.2,
+    "opp_adj_points": 116.6,
+    "off_rtg": {
+     "value": 89.8,
+     "rank": 106,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 127.0,
+     "rank": 99,
+     "of": 108
+    },
+    "pace": {
+     "value": 99.5,
+     "rank": 77,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909897",
+    "date": "2026-10-31",
+    "week": "2026-10-26",
+    "opp": "PHI",
+    "home": true,
+    "neutral": false,
+    "points": 104,
+    "opp_points": 109,
+    "adj_points": 102.0,
+    "opp_adj_points": 107.6,
+    "off_rtg": {
+     "value": 113.0,
+     "rank": 42,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 119.6,
+     "rank": 74,
+     "of": 98
+    },
+    "pace": {
+     "value": 91.6,
+     "rank": 95,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909277",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "WSH",
+    "home": false,
+    "neutral": false,
+    "points": 79,
+    "opp_points": 95,
+    "adj_points": 90.3,
+    "opp_adj_points": 94.4,
+    "off_rtg": {
+     "value": 78.0,
+     "rank": 98,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 100.6,
+     "rank": 19,
+     "of": 98
+    },
+    "pace": {
+     "value": 97.8,
+     "rank": 71,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909883",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "DET",
+    "home": false,
+    "neutral": false,
+    "points": 89,
+    "opp_points": 97,
+    "adj_points": 88.7,
+    "opp_adj_points": 94.9,
+    "off_rtg": {
+     "value": 93.3,
+     "rank": 91,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 105.7,
+     "rank": 38,
+     "of": 98
+    },
+    "pace": {
+     "value": 93.6,
+     "rank": 89,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909868",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "WSH",
+    "home": true,
+    "neutral": false,
+    "points": 110,
+    "opp_points": 103,
+    "adj_points": 111.4,
+    "opp_adj_points": 103.5,
+    "off_rtg": {
+     "value": 114.0,
+     "rank": 39,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 107.7,
+     "rank": 42,
+     "of": 98
+    },
+    "pace": {
+     "value": 96.0,
+     "rank": 85,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909853",
+    "date": "2026-10-24",
+    "week": "2026-10-19",
+    "opp": "MIA",
+    "home": true,
+    "neutral": false,
+    "points": 115,
+    "opp_points": 110,
+    "adj_points": 111.1,
+    "opp_adj_points": 106.3,
+    "off_rtg": {
+     "value": 109.5,
+     "rank": 47,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 107.8,
+     "rank": 36,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.5,
+     "rank": 53,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909843",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "ATL",
+    "home": true,
+    "neutral": false,
+    "points": 81,
+    "opp_points": 128,
+    "adj_points": 89.8,
+    "opp_adj_points": 126.1,
+    "off_rtg": {
+     "value": 80.8,
+     "rank": 86,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 121.1,
+     "rank": 78,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.0,
+     "rank": 59,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909836",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "BKN",
+    "home": false,
+    "neutral": false,
+    "points": 110,
+    "opp_points": 103,
+    "adj_points": 111.1,
+    "opp_adj_points": 101.2,
+    "off_rtg": {
+     "value": 104.2,
+     "rank": 60,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 101.0,
+     "rank": 22,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.8,
+     "rank": 47,
+     "of": 86
+    }
+   }
+  ],
+  "TOR": [
+   {
+    "id": "401909955",
+    "date": "2026-11-09",
+    "week": "2026-11-09",
+    "opp": "MEM",
+    "home": true,
+    "neutral": false,
+    "points": 102,
+    "opp_points": 118,
+    "adj_points": 102.7,
+    "opp_adj_points": 111.3,
+    "off_rtg": {
+     "value": 105.7,
+     "rank": 20,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 126.4,
+     "rank": 27,
+     "of": 28
+    },
+    "pace": {
+     "value": 94.9,
+     "rank": 25,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909292",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "MIL",
+    "home": false,
+    "neutral": false,
+    "points": 121,
+    "opp_points": 107,
+    "adj_points": 123.4,
+    "opp_adj_points": 111.6,
+    "off_rtg": {
+     "value": 112.4,
+     "rank": 51,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 107.0,
+     "rank": 41,
+     "of": 108
+    },
+    "pace": {
+     "value": 103.8,
+     "rank": 27,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909931",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "DEN",
+    "home": false,
+    "neutral": false,
+    "points": 109,
+    "opp_points": 128,
+    "adj_points": 109.1,
+    "opp_adj_points": 125.8,
+    "off_rtg": {
+     "value": 109.3,
+     "rank": 64,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 130.8,
+     "rank": 106,
+     "of": 108
+    },
+    "pace": {
+     "value": 98.8,
+     "rank": 85,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909920",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "LAC",
+    "home": false,
+    "neutral": false,
+    "points": 125,
+    "opp_points": 118,
+    "adj_points": 130.2,
+    "opp_adj_points": 117.6,
+    "off_rtg": {
+     "value": 120.1,
+     "rank": 22,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 109.4,
+     "rank": 46,
+     "of": 108
+    },
+    "pace": {
+     "value": 106.0,
+     "rank": 11,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909906",
+    "date": "2026-11-01",
+    "week": "2026-10-26",
+    "opp": "LAL",
+    "home": false,
+    "neutral": false,
+    "points": 125,
+    "opp_points": 131,
+    "adj_points": 127.4,
+    "opp_adj_points": 123.3,
+    "off_rtg": {
+     "value": 114.7,
+     "rank": 35,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 120.1,
+     "rank": 78,
+     "of": 98
+    },
+    "pace": {
+     "value": 109.0,
+     "rank": 11,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909281",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "ORL",
+    "home": true,
+    "neutral": false,
+    "points": 114,
+    "opp_points": 121,
+    "adj_points": 111.4,
+    "opp_adj_points": 110.2,
+    "off_rtg": {
+     "value": 121.8,
+     "rank": 15,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 133.3,
+     "rank": 96,
+     "of": 98
+    },
+    "pace": {
+     "value": 92.2,
+     "rank": 93,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909885",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "ORL",
+    "home": true,
+    "neutral": false,
+    "points": 129,
+    "opp_points": 99,
+    "adj_points": 122.9,
+    "opp_adj_points": 101.7,
+    "off_rtg": {
+     "value": 118.7,
+     "rank": 26,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 95.4,
+     "rank": 9,
+     "of": 98
+    },
+    "pace": {
+     "value": 106.2,
+     "rank": 17,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909864",
+    "date": "2026-10-25",
+    "week": "2026-10-19",
+    "opp": "MIN",
+    "home": false,
+    "neutral": false,
+    "points": 94,
+    "opp_points": 117,
+    "adj_points": 99.2,
+    "opp_adj_points": 111.9,
+    "off_rtg": {
+     "value": 91.0,
+     "rank": 82,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 113.6,
+     "rank": 54,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.1,
+     "rank": 57,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909846",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "WSH",
+    "home": false,
+    "neutral": false,
+    "points": 112,
+    "opp_points": 102,
+    "adj_points": 118.2,
+    "opp_adj_points": 101.4,
+    "off_rtg": {
+     "value": 103.5,
+     "rank": 61,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 91.6,
+     "rank": 7,
+     "of": 86
+    },
+    "pace": {
+     "value": 109.8,
+     "rank": 13,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909837",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "CHI",
+    "home": true,
+    "neutral": false,
+    "points": 135,
+    "opp_points": 92,
+    "adj_points": 134.5,
+    "opp_adj_points": 104.3,
+    "off_rtg": {
+     "value": 119.2,
+     "rank": 15,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 82.4,
+     "rank": 2,
+     "of": 86
+    },
+    "pace": {
+     "value": 112.5,
+     "rank": 3,
+     "of": 86
+    }
+   }
+  ],
+  "CHI": [
+   {
+    "id": "401909945",
+    "date": "2026-11-08",
+    "week": "2026-11-02",
+    "opp": "PHI",
+    "home": true,
+    "neutral": false,
+    "points": 121,
+    "opp_points": 127,
+    "adj_points": 123.2,
+    "opp_adj_points": 122.9,
+    "off_rtg": {
+     "value": 118.5,
+     "rank": 27,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 128.3,
+     "rank": 102,
+     "of": 108
+    },
+    "pace": {
+     "value": 100.6,
+     "rank": 63,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909926",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "NY",
+    "home": false,
+    "neutral": false,
+    "points": 105,
+    "opp_points": 135,
+    "adj_points": 111.5,
+    "opp_adj_points": 130.3,
+    "off_rtg": {
+     "value": 100.7,
+     "rank": 87,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 134.6,
+     "rank": 107,
+     "of": 108
+    },
+    "pace": {
+     "value": 102.3,
+     "rank": 37,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909912",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "PHI",
+    "home": false,
+    "neutral": false,
+    "points": 107,
+    "opp_points": 126,
+    "adj_points": 112.1,
+    "opp_adj_points": 126.6,
+    "off_rtg": {
+     "value": 101.8,
+     "rank": 86,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 121.3,
+     "rank": 92,
+     "of": 108
+    },
+    "pace": {
+     "value": 104.5,
+     "rank": 19,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909278",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "BOS",
+    "home": false,
+    "neutral": false,
+    "points": 111,
+    "opp_points": 125,
+    "adj_points": 115.0,
+    "opp_adj_points": 127.5,
+    "off_rtg": {
+     "value": 105.1,
+     "rank": 64,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 118.4,
+     "rank": 71,
+     "of": 98
+    },
+    "pace": {
+     "value": 105.6,
+     "rank": 23,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909886",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "NY",
+    "home": true,
+    "neutral": false,
+    "points": 127,
+    "opp_points": 133,
+    "adj_points": 121.3,
+    "opp_adj_points": 124.9,
+    "off_rtg": {
+     "value": 117.4,
+     "rank": 29,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 120.0,
+     "rank": 76,
+     "of": 98
+    },
+    "pace": {
+     "value": 109.5,
+     "rank": 7,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909870",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "BOS",
+    "home": false,
+    "neutral": false,
+    "points": 99,
+    "opp_points": 134,
+    "adj_points": 103.6,
+    "opp_adj_points": 127.3,
+    "off_rtg": {
+     "value": 91.1,
+     "rank": 93,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 119.9,
+     "rank": 75,
+     "of": 98
+    },
+    "pace": {
+     "value": 110.2,
+     "rank": 3,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909857",
+    "date": "2026-10-24",
+    "week": "2026-10-19",
+    "opp": "WSH",
+    "home": true,
+    "neutral": false,
+    "points": 120,
+    "opp_points": 124,
+    "adj_points": 120.3,
+    "opp_adj_points": 124.6,
+    "off_rtg": {
+     "value": 109.9,
+     "rank": 46,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 113.4,
+     "rank": 52,
+     "of": 86
+    },
+    "pace": {
+     "value": 109.3,
+     "rank": 15,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909848",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "MIL",
+    "home": false,
+    "neutral": false,
+    "points": 132,
+    "opp_points": 125,
+    "adj_points": 133.2,
+    "opp_adj_points": 123.1,
+    "off_rtg": {
+     "value": 117.6,
+     "rank": 22,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 112.2,
+     "rank": 48,
+     "of": 86
+    },
+    "pace": {
+     "value": 111.8,
+     "rank": 5,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909837",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "TOR",
+    "home": false,
+    "neutral": false,
+    "points": 92,
+    "opp_points": 135,
+    "adj_points": 104.3,
+    "opp_adj_points": 134.5,
+    "off_rtg": {
+     "value": 82.4,
+     "rank": 85,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 119.2,
+     "rank": 72,
+     "of": 86
+    },
+    "pace": {
+     "value": 112.5,
+     "rank": 3,
+     "of": 86
+    }
+   }
+  ],
+  "MEM": [
+   {
+    "id": "401909955",
+    "date": "2026-11-09",
+    "week": "2026-11-09",
+    "opp": "TOR",
+    "home": false,
+    "neutral": false,
+    "points": 118,
+    "opp_points": 102,
+    "adj_points": 111.3,
+    "opp_adj_points": 102.7,
+    "off_rtg": {
+     "value": 126.4,
+     "rank": 2,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 105.7,
+     "rank": 9,
+     "of": 28
+    },
+    "pace": {
+     "value": 94.9,
+     "rank": 25,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909291",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "OKC",
+    "home": true,
+    "neutral": false,
+    "points": 97,
+    "opp_points": 128,
+    "adj_points": 104.8,
+    "opp_adj_points": 123.9,
+    "off_rtg": {
+     "value": 91.0,
+     "rank": 105,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 120.7,
+     "rank": 90,
+     "of": 108
+    },
+    "pace": {
+     "value": 106.3,
+     "rank": 3,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909927",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "IND",
+    "home": true,
+    "neutral": false,
+    "points": 103,
+    "opp_points": 107,
+    "adj_points": 110.6,
+    "opp_adj_points": 107.1,
+    "off_rtg": {
+     "value": 98.5,
+     "rank": 94,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 103.4,
+     "rank": 28,
+     "of": 108
+    },
+    "pace": {
+     "value": 104.0,
+     "rank": 21,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909914",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "NO",
+    "home": true,
+    "neutral": false,
+    "points": 134,
+    "opp_points": 135,
+    "adj_points": 128.9,
+    "opp_adj_points": 132.8,
+    "off_rtg": {
+     "value": 124.2,
+     "rank": 14,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 124.8,
+     "rank": 97,
+     "of": 108
+    },
+    "pace": {
+     "value": 97.8,
+     "rank": 89,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909899",
+    "date": "2026-10-31",
+    "week": "2026-10-26",
+    "opp": "SAC",
+    "home": true,
+    "neutral": false,
+    "points": 136,
+    "opp_points": 105,
+    "adj_points": 127.8,
+    "opp_adj_points": 107.6,
+    "off_rtg": {
+     "value": 126.1,
+     "rank": 11,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 97.4,
+     "rank": 13,
+     "of": 98
+    },
+    "pace": {
+     "value": 107.8,
+     "rank": 13,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909895",
+    "date": "2026-10-29",
+    "week": "2026-10-26",
+    "opp": "POR",
+    "home": false,
+    "neutral": false,
+    "points": 124,
+    "opp_points": 103,
+    "adj_points": 118.8,
+    "opp_adj_points": 112.4,
+    "off_rtg": {
+     "value": 120.1,
+     "rank": 22,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 97.7,
+     "rank": 14,
+     "of": 98
+    },
+    "pace": {
+     "value": 104.4,
+     "rank": 29,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909875",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "UTAH",
+    "home": false,
+    "neutral": false,
+    "points": 110,
+    "opp_points": 105,
+    "adj_points": 105.2,
+    "opp_adj_points": 107.0,
+    "off_rtg": {
+     "value": 108.2,
+     "rank": 55,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 101.9,
+     "rank": 22,
+     "of": 98
+    },
+    "pace": {
+     "value": 102.3,
+     "rank": 45,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909867",
+    "date": "2026-10-25",
+    "week": "2026-10-19",
+    "opp": "SAC",
+    "home": false,
+    "neutral": false,
+    "points": 123,
+    "opp_points": 112,
+    "adj_points": 121.9,
+    "opp_adj_points": 115.7,
+    "off_rtg": {
+     "value": 120.7,
+     "rank": 11,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 110.1,
+     "rank": 42,
+     "of": 86
+    },
+    "pace": {
+     "value": 101.8,
+     "rank": 67,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909850",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "GS",
+    "home": false,
+    "neutral": false,
+    "points": 111,
+    "opp_points": 108,
+    "adj_points": 110.8,
+    "opp_adj_points": 108.5,
+    "off_rtg": {
+     "value": 106.0,
+     "rank": 55,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 111.6,
+     "rank": 47,
+     "of": 86
+    },
+    "pace": {
+     "value": 100.7,
+     "rank": 79,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909838",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "UTAH",
+    "home": true,
+    "neutral": false,
+    "points": 123,
+    "opp_points": 103,
+    "adj_points": 122.6,
+    "opp_adj_points": 104.6,
+    "off_rtg": {
+     "value": 116.8,
+     "rank": 25,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 100.5,
+     "rank": 20,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.9,
+     "rank": 45,
+     "of": 86
+    }
+   }
+  ],
+  "UTAH": [
+   {
+    "id": "401909963",
+    "date": "2026-11-10",
+    "week": "2026-11-09",
+    "opp": "MIA",
+    "home": true,
+    "neutral": false,
+    "points": 109,
+    "opp_points": 115,
+    "adj_points": 107.9,
+    "opp_adj_points": 117.9,
+    "off_rtg": {
+     "value": 107.2,
+     "rank": 16,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 106.1,
+     "rank": 10,
+     "of": 28
+    },
+    "pace": {
+     "value": 105.0,
+     "rank": 5,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909947",
+    "date": "2026-11-08",
+    "week": "2026-11-02",
+    "opp": "MIN",
+    "home": false,
+    "neutral": false,
+    "points": 100,
+    "opp_points": 115,
+    "adj_points": 101.5,
+    "opp_adj_points": 111.9,
+    "off_rtg": {
+     "value": 99.4,
+     "rank": 90,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 111.6,
+     "rank": 56,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.8,
+     "rank": 43,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909290",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "DAL",
+    "home": false,
+    "neutral": false,
+    "points": 100,
+    "opp_points": 112,
+    "adj_points": 96.4,
+    "opp_adj_points": 114.8,
+    "off_rtg": {
+     "value": 98.9,
+     "rank": 92,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 110.2,
+     "rank": 49,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.4,
+     "rank": 55,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909928",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "NO",
+    "home": false,
+    "neutral": false,
+    "points": 113,
+    "opp_points": 120,
+    "adj_points": 122.1,
+    "opp_adj_points": 120.9,
+    "off_rtg": {
+     "value": 98.9,
+     "rank": 91,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 105.3,
+     "rank": 36,
+     "of": 108
+    },
+    "pace": {
+     "value": 103.3,
+     "rank": 31,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909917",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "SA",
+    "home": false,
+    "neutral": false,
+    "points": 97,
+    "opp_points": 119,
+    "adj_points": 95.9,
+    "opp_adj_points": 119.3,
+    "off_rtg": {
+     "value": 97.3,
+     "rank": 99,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 111.0,
+     "rank": 53,
+     "of": 108
+    },
+    "pace": {
+     "value": 103.4,
+     "rank": 29,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909896",
+    "date": "2026-10-31",
+    "week": "2026-10-26",
+    "opp": "POR",
+    "home": true,
+    "neutral": false,
+    "points": 90,
+    "opp_points": 112,
+    "adj_points": 93.5,
+    "opp_adj_points": 110.0,
+    "off_rtg": {
+     "value": 87.9,
+     "rank": 97,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 107.7,
+     "rank": 41,
+     "of": 98
+    },
+    "pace": {
+     "value": 103.2,
+     "rank": 35,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909890",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "SA",
+    "home": true,
+    "neutral": false,
+    "points": 111,
+    "opp_points": 117,
+    "adj_points": 106.8,
+    "opp_adj_points": 118.8,
+    "off_rtg": {
+     "value": 103.4,
+     "rank": 70,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 110.1,
+     "rank": 49,
+     "of": 98
+    },
+    "pace": {
+     "value": 96.7,
+     "rank": 81,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909875",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "MEM",
+    "home": true,
+    "neutral": false,
+    "points": 105,
+    "opp_points": 110,
+    "adj_points": 107.0,
+    "opp_adj_points": 105.2,
+    "off_rtg": {
+     "value": 101.9,
+     "rank": 77,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 108.2,
+     "rank": 44,
+     "of": 98
+    },
+    "pace": {
+     "value": 102.3,
+     "rank": 45,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909861",
+    "date": "2026-10-25",
+    "week": "2026-10-19",
+    "opp": "LAL",
+    "home": true,
+    "neutral": false,
+    "points": 123,
+    "opp_points": 132,
+    "adj_points": 125.8,
+    "opp_adj_points": 126.6,
+    "off_rtg": {
+     "value": 118.4,
+     "rank": 18,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 127.3,
+     "rank": 84,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.8,
+     "rank": 47,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909849",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "NO",
+    "home": true,
+    "neutral": false,
+    "points": 120,
+    "opp_points": 119,
+    "adj_points": 118.6,
+    "opp_adj_points": 119.9,
+    "off_rtg": {
+     "value": 117.1,
+     "rank": 24,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 113.5,
+     "rank": 53,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.7,
+     "rank": 51,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909838",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "MEM",
+    "home": false,
+    "neutral": false,
+    "points": 103,
+    "opp_points": 123,
+    "adj_points": 104.6,
+    "opp_adj_points": 122.6,
+    "off_rtg": {
+     "value": 100.5,
+     "rank": 67,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 116.8,
+     "rank": 62,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.9,
+     "rank": 45,
+     "of": 86
+    }
+   }
+  ],
+  "NO": [
+   {
+    "id": "401909959",
+    "date": "2026-11-09",
+    "week": "2026-11-09",
+    "opp": "GS",
+    "home": false,
+    "neutral": false,
+    "points": 87,
+    "opp_points": 138,
+    "adj_points": 88.7,
+    "opp_adj_points": 130.1,
+    "off_rtg": {
+     "value": 91.0,
+     "rank": 28,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 138.9,
+     "rank": 28,
+     "of": 28
+    },
+    "pace": {
+     "value": 97.5,
+     "rank": 19,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909950",
+    "date": "2026-11-08",
+    "week": "2026-11-02",
+    "opp": "LAC",
+    "home": false,
+    "neutral": false,
+    "points": 123,
+    "opp_points": 139,
+    "adj_points": 121.8,
+    "opp_adj_points": 135.1,
+    "off_rtg": {
+     "value": 119.0,
+     "rank": 24,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 140.8,
+     "rank": 108,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.1,
+     "rank": 57,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909293",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "MIN",
+    "home": true,
+    "neutral": false,
+    "points": 109,
+    "opp_points": 115,
+    "adj_points": 106.5,
+    "opp_adj_points": 117.4,
+    "off_rtg": {
+     "value": 110.7,
+     "rank": 59,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 113.5,
+     "rank": 62,
+     "of": 108
+    },
+    "pace": {
+     "value": 99.9,
+     "rank": 73,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909928",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "UTAH",
+    "home": true,
+    "neutral": false,
+    "points": 120,
+    "opp_points": 113,
+    "adj_points": 120.9,
+    "opp_adj_points": 122.1,
+    "off_rtg": {
+     "value": 105.3,
+     "rank": 73,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 98.9,
+     "rank": 18,
+     "of": 108
+    },
+    "pace": {
+     "value": 103.3,
+     "rank": 31,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909914",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "MEM",
+    "home": false,
+    "neutral": false,
+    "points": 135,
+    "opp_points": 134,
+    "adj_points": 132.8,
+    "opp_adj_points": 128.9,
+    "off_rtg": {
+     "value": 124.8,
+     "rank": 12,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 124.2,
+     "rank": 95,
+     "of": 108
+    },
+    "pace": {
+     "value": 97.8,
+     "rank": 89,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909898",
+    "date": "2026-10-31",
+    "week": "2026-10-26",
+    "opp": "ATL",
+    "home": true,
+    "neutral": false,
+    "points": 121,
+    "opp_points": 99,
+    "adj_points": 119.6,
+    "opp_adj_points": 109.5,
+    "off_rtg": {
+     "value": 113.7,
+     "rank": 41,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 93.3,
+     "rank": 7,
+     "of": 98
+    },
+    "pace": {
+     "value": 106.3,
+     "rank": 15,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909894",
+    "date": "2026-10-29",
+    "week": "2026-10-26",
+    "opp": "SAC",
+    "home": true,
+    "neutral": false,
+    "points": 132,
+    "opp_points": 120,
+    "adj_points": 134.0,
+    "opp_adj_points": 121.1,
+    "off_rtg": {
+     "value": 115.7,
+     "rank": 33,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 104.5,
+     "rank": 33,
+     "of": 98
+    },
+    "pace": {
+     "value": 114.4,
+     "rank": 1,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909889",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "DEN",
+    "home": true,
+    "neutral": false,
+    "points": 91,
+    "opp_points": 104,
+    "adj_points": 96.9,
+    "opp_adj_points": 100.9,
+    "off_rtg": {
+     "value": 88.6,
+     "rank": 96,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 102.6,
+     "rank": 27,
+     "of": 98
+    },
+    "pace": {
+     "value": 102.0,
+     "rank": 51,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909859",
+    "date": "2026-10-24",
+    "week": "2026-10-19",
+    "opp": "DEN",
+    "home": false,
+    "neutral": false,
+    "points": 135,
+    "opp_points": 141,
+    "adj_points": 138.3,
+    "opp_adj_points": 143.7,
+    "off_rtg": {
+     "value": 116.2,
+     "rank": 26,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 123.5,
+     "rank": 81,
+     "of": 86
+    },
+    "pace": {
+     "value": 104.3,
+     "rank": 41,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909849",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "UTAH",
+    "home": false,
+    "neutral": false,
+    "points": 119,
+    "opp_points": 120,
+    "adj_points": 119.9,
+    "opp_adj_points": 118.6,
+    "off_rtg": {
+     "value": 113.5,
+     "rank": 34,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 117.1,
+     "rank": 63,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.7,
+     "rank": 51,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909839",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "IND",
+    "home": true,
+    "neutral": false,
+    "points": 120,
+    "opp_points": 123,
+    "adj_points": 118.6,
+    "opp_adj_points": 126.0,
+    "off_rtg": {
+     "value": 112.9,
+     "rank": 36,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 115.2,
+     "rank": 58,
+     "of": 86
+    },
+    "pace": {
+     "value": 106.5,
+     "rank": 27,
+     "of": 86
+    }
+   }
+  ],
+  "IND": [
+   {
+    "id": "401909956",
+    "date": "2026-11-09",
+    "week": "2026-11-09",
+    "opp": "DAL",
+    "home": false,
+    "neutral": false,
+    "points": 122,
+    "opp_points": 125,
+    "adj_points": 117.7,
+    "opp_adj_points": 122.5,
+    "off_rtg": {
+     "value": 114.7,
+     "rank": 13,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 121.4,
+     "rank": 20,
+     "of": 28
+    },
+    "pace": {
+     "value": 104.6,
+     "rank": 7,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909938",
+    "date": "2026-11-07",
+    "week": "2026-11-02",
+    "opp": "DEN",
+    "home": false,
+    "neutral": true,
+    "points": 102,
+    "opp_points": 114,
+    "adj_points": 104.5,
+    "opp_adj_points": 117.0,
+    "off_rtg": {
+     "value": 102.9,
+     "rank": 82,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 113.6,
+     "rank": 63,
+     "of": 108
+    },
+    "pace": {
+     "value": 99.7,
+     "rank": 75,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909927",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "MEM",
+    "home": false,
+    "neutral": false,
+    "points": 107,
+    "opp_points": 103,
+    "adj_points": 107.1,
+    "opp_adj_points": 110.6,
+    "off_rtg": {
+     "value": 103.4,
+     "rank": 81,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 98.5,
+     "rank": 15,
+     "of": 108
+    },
+    "pace": {
+     "value": 104.0,
+     "rank": 21,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909909",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "ATL",
+    "home": true,
+    "neutral": false,
+    "points": 104,
+    "opp_points": 108,
+    "adj_points": 108.3,
+    "opp_adj_points": 100.9,
+    "off_rtg": {
+     "value": 99.9,
+     "rank": 89,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 102.4,
+     "rank": 24,
+     "of": 108
+    },
+    "pace": {
+     "value": 104.8,
+     "rank": 17,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909904",
+    "date": "2026-11-01",
+    "week": "2026-10-26",
+    "opp": "BKN",
+    "home": true,
+    "neutral": false,
+    "points": 90,
+    "opp_points": 98,
+    "adj_points": 89.5,
+    "opp_adj_points": 98.1,
+    "off_rtg": {
+     "value": 100.9,
+     "rank": 79,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 100.4,
+     "rank": 17,
+     "of": 98
+    },
+    "pace": {
+     "value": 93.4,
+     "rank": 91,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909282",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "MIA",
+    "home": false,
+    "neutral": false,
+    "points": 125,
+    "opp_points": 145,
+    "adj_points": 118.9,
+    "opp_adj_points": 137.7,
+    "off_rtg": {
+     "value": 120.3,
+     "rank": 19,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 139.3,
+     "rank": 98,
+     "of": 98
+    },
+    "pace": {
+     "value": 104.0,
+     "rank": 31,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909884",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "PHI",
+    "home": true,
+    "neutral": false,
+    "points": 109,
+    "opp_points": 114,
+    "adj_points": 113.4,
+    "opp_adj_points": 112.0,
+    "off_rtg": {
+     "value": 104.4,
+     "rank": 68,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 110.1,
+     "rank": 48,
+     "of": 98
+    },
+    "pace": {
+     "value": 104.0,
+     "rank": 33,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909872",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "MIL",
+    "home": false,
+    "neutral": false,
+    "points": 102,
+    "opp_points": 110,
+    "adj_points": 108.6,
+    "opp_adj_points": 113.7,
+    "off_rtg": {
+     "value": 99.1,
+     "rank": 84,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 108.7,
+     "rank": 46,
+     "of": 98
+    },
+    "pace": {
+     "value": 102.1,
+     "rank": 47,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909862",
+    "date": "2026-10-25",
+    "week": "2026-10-19",
+    "opp": "BKN",
+    "home": false,
+    "neutral": false,
+    "points": 136,
+    "opp_points": 109,
+    "adj_points": 126.6,
+    "opp_adj_points": 110.9,
+    "off_rtg": {
+     "value": 128.7,
+     "rank": 2,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 101.6,
+     "rank": 23,
+     "of": 86
+    },
+    "pace": {
+     "value": 106.5,
+     "rank": 29,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909844",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "DAL",
+    "home": true,
+    "neutral": false,
+    "points": 105,
+    "opp_points": 121,
+    "adj_points": 111.7,
+    "opp_adj_points": 117.2,
+    "off_rtg": {
+     "value": 96.9,
+     "rank": 72,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 118.5,
+     "rank": 70,
+     "of": 86
+    },
+    "pace": {
+     "value": 105.2,
+     "rank": 35,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909839",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "NO",
+    "home": false,
+    "neutral": false,
+    "points": 123,
+    "opp_points": 120,
+    "adj_points": 126.0,
+    "opp_adj_points": 118.6,
+    "off_rtg": {
+     "value": 115.2,
+     "rank": 29,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 112.9,
+     "rank": 51,
+     "of": 86
+    },
+    "pace": {
+     "value": 106.5,
+     "rank": 27,
+     "of": 86
+    }
+   }
+  ],
+  "HOU": [
+   {
+    "id": "401909957",
+    "date": "2026-11-09",
+    "week": "2026-11-09",
+    "opp": "DEN",
+    "home": true,
+    "neutral": false,
+    "points": 110,
+    "opp_points": 100,
+    "adj_points": 109.3,
+    "opp_adj_points": 104.2,
+    "off_rtg": {
+     "value": 116.4,
+     "rank": 12,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 101.0,
+     "rank": 4,
+     "of": 28
+    },
+    "pace": {
+     "value": 96.7,
+     "rank": 21,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909943",
+    "date": "2026-11-07",
+    "week": "2026-11-02",
+    "opp": "PHX",
+    "home": false,
+    "neutral": false,
+    "points": 99,
+    "opp_points": 102,
+    "adj_points": 102.0,
+    "opp_adj_points": 102.6,
+    "off_rtg": {
+     "value": 97.7,
+     "rank": 98,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 105.3,
+     "rank": 35,
+     "of": 108
+    },
+    "pace": {
+     "value": 99.1,
+     "rank": 81,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909930",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "MIN",
+    "home": true,
+    "neutral": false,
+    "points": 107,
+    "opp_points": 117,
+    "adj_points": 107.5,
+    "opp_adj_points": 114.9,
+    "off_rtg": {
+     "value": 103.7,
+     "rank": 80,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 120.2,
+     "rank": 89,
+     "of": 108
+    },
+    "pace": {
+     "value": 100.3,
+     "rank": 69,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909916",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "BOS",
+    "home": true,
+    "neutral": false,
+    "points": 109,
+    "opp_points": 93,
+    "adj_points": 107.6,
+    "opp_adj_points": 97.2,
+    "off_rtg": {
+     "value": 121.5,
+     "rank": 16,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 98.1,
+     "rank": 14,
+     "of": 108
+    },
+    "pace": {
+     "value": 92.3,
+     "rank": 105,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909902",
+    "date": "2026-10-31",
+    "week": "2026-10-26",
+    "opp": "OKC",
+    "home": true,
+    "neutral": false,
+    "points": 119,
+    "opp_points": 98,
+    "adj_points": 113.8,
+    "opp_adj_points": 98.9,
+    "off_rtg": {
+     "value": 122.5,
+     "rank": 14,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 102.5,
+     "rank": 25,
+     "of": 98
+    },
+    "pace": {
+     "value": 96.4,
+     "rank": 83,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909283",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "DAL",
+    "home": false,
+    "neutral": false,
+    "points": 111,
+    "opp_points": 116,
+    "adj_points": 117.4,
+    "opp_adj_points": 115.8,
+    "off_rtg": {
+     "value": 107.2,
+     "rank": 60,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 117.3,
+     "rank": 69,
+     "of": 98
+    },
+    "pace": {
+     "value": 101.2,
+     "rank": 55,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909887",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "MIL",
+    "home": false,
+    "neutral": false,
+    "points": 132,
+    "opp_points": 100,
+    "adj_points": 125.9,
+    "opp_adj_points": 103.0,
+    "off_rtg": {
+     "value": 128.9,
+     "rank": 6,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 97.2,
+     "rank": 12,
+     "of": 98
+    },
+    "pace": {
+     "value": 102.7,
+     "rank": 39,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909874",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "ATL",
+    "home": true,
+    "neutral": false,
+    "points": 120,
+    "opp_points": 110,
+    "adj_points": 122.5,
+    "opp_adj_points": 114.6,
+    "off_rtg": {
+     "value": 114.2,
+     "rank": 38,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 102.6,
+     "rank": 26,
+     "of": 98
+    },
+    "pace": {
+     "value": 106.2,
+     "rank": 19,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909856",
+    "date": "2026-10-24",
+    "week": "2026-10-19",
+    "opp": "ATL",
+    "home": false,
+    "neutral": false,
+    "points": 121,
+    "opp_points": 114,
+    "adj_points": 117.6,
+    "opp_adj_points": 120.8,
+    "off_rtg": {
+     "value": 118.5,
+     "rank": 16,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 111.5,
+     "rank": 46,
+     "of": 86
+    },
+    "pace": {
+     "value": 102.2,
+     "rank": 65,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909096",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "SA",
+    "home": false,
+    "neutral": false,
+    "points": 114,
+    "opp_points": 110,
+    "adj_points": 111.0,
+    "opp_adj_points": 112.4,
+    "off_rtg": {
+     "value": 115.6,
+     "rank": 28,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 105.8,
+     "rank": 30,
+     "of": 86
+    },
+    "pace": {
+     "value": 101.3,
+     "rank": 69,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909840",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "DAL",
+    "home": true,
+    "neutral": false,
+    "points": 128,
+    "opp_points": 110,
+    "adj_points": 124.5,
+    "opp_adj_points": 115.0,
+    "off_rtg": {
+     "value": 130.6,
+     "rank": 1,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 105.3,
+     "rank": 29,
+     "of": 86
+    },
+    "pace": {
+     "value": 101.2,
+     "rank": 71,
+     "of": 86
+    }
+   }
+  ],
+  "DAL": [
+   {
+    "id": "401909956",
+    "date": "2026-11-09",
+    "week": "2026-11-09",
+    "opp": "IND",
+    "home": true,
+    "neutral": false,
+    "points": 125,
+    "opp_points": 122,
+    "adj_points": 122.5,
+    "opp_adj_points": 117.7,
+    "off_rtg": {
+     "value": 121.4,
+     "rank": 9,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 114.7,
+     "rank": 16,
+     "of": 28
+    },
+    "pace": {
+     "value": 104.6,
+     "rank": 7,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909948",
+    "date": "2026-11-08",
+    "week": "2026-11-02",
+    "opp": "BKN",
+    "home": true,
+    "neutral": false,
+    "points": 130,
+    "opp_points": 93,
+    "adj_points": 125.9,
+    "opp_adj_points": 97.5,
+    "off_rtg": {
+     "value": 126.6,
+     "rank": 11,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 93.6,
+     "rank": 7,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.0,
+     "rank": 61,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909290",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "UTAH",
+    "home": true,
+    "neutral": false,
+    "points": 112,
+    "opp_points": 100,
+    "adj_points": 114.8,
+    "opp_adj_points": 96.4,
+    "off_rtg": {
+     "value": 110.2,
+     "rank": 60,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 98.9,
+     "rank": 17,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.4,
+     "rank": 55,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909933",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "SA",
+    "home": false,
+    "neutral": false,
+    "points": 111,
+    "opp_points": 112,
+    "adj_points": 110.0,
+    "opp_adj_points": 122.4,
+    "off_rtg": {
+     "value": 107.3,
+     "rank": 67,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 111.8,
+     "rank": 57,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.8,
+     "rank": 45,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909913",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "SAC",
+    "home": true,
+    "neutral": false,
+    "points": 100,
+    "opp_points": 115,
+    "adj_points": 105.9,
+    "opp_adj_points": 109.8,
+    "off_rtg": {
+     "value": 100.6,
+     "rank": 88,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 116.6,
+     "rank": 80,
+     "of": 108
+    },
+    "pace": {
+     "value": 99.0,
+     "rank": 83,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909283",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "HOU",
+    "home": true,
+    "neutral": false,
+    "points": 116,
+    "opp_points": 111,
+    "adj_points": 115.8,
+    "opp_adj_points": 117.4,
+    "off_rtg": {
+     "value": 117.3,
+     "rank": 30,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 107.2,
+     "rank": 39,
+     "of": 98
+    },
+    "pace": {
+     "value": 101.2,
+     "rank": 55,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909891",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "OKC",
+    "home": true,
+    "neutral": false,
+    "points": 120,
+    "opp_points": 96,
+    "adj_points": 119.3,
+    "opp_adj_points": 105.1,
+    "off_rtg": {
+     "value": 120.5,
+     "rank": 17,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 96.9,
+     "rank": 11,
+     "of": 98
+    },
+    "pace": {
+     "value": 99.4,
+     "rank": 63,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909871",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "MIA",
+    "home": false,
+    "neutral": false,
+    "points": 113,
+    "opp_points": 109,
+    "adj_points": 115.0,
+    "opp_adj_points": 112.9,
+    "off_rtg": {
+     "value": 108.5,
+     "rank": 54,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 101.9,
+     "rank": 21,
+     "of": 98
+    },
+    "pace": {
+     "value": 105.6,
+     "rank": 25,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909858",
+    "date": "2026-10-24",
+    "week": "2026-10-19",
+    "opp": "SA",
+    "home": true,
+    "neutral": false,
+    "points": 106,
+    "opp_points": 122,
+    "adj_points": 104.7,
+    "opp_adj_points": 122.4,
+    "off_rtg": {
+     "value": 102.4,
+     "rank": 63,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 116.1,
+     "rank": 60,
+     "of": 86
+    },
+    "pace": {
+     "value": 104.3,
+     "rank": 43,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909844",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "IND",
+    "home": false,
+    "neutral": false,
+    "points": 121,
+    "opp_points": 105,
+    "adj_points": 117.2,
+    "opp_adj_points": 111.7,
+    "off_rtg": {
+     "value": 118.5,
+     "rank": 16,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 96.9,
+     "rank": 15,
+     "of": 86
+    },
+    "pace": {
+     "value": 105.2,
+     "rank": 35,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909840",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "HOU",
+    "home": false,
+    "neutral": false,
+    "points": 110,
+    "opp_points": 128,
+    "adj_points": 115.0,
+    "opp_adj_points": 124.5,
+    "off_rtg": {
+     "value": 105.3,
+     "rank": 58,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 130.6,
+     "rank": 86,
+     "of": 86
+    },
+    "pace": {
+     "value": 101.2,
+     "rank": 71,
+     "of": 86
+    }
+   }
+  ],
+  "POR": [
+   {
+    "id": "401909965",
+    "date": "2026-11-10",
+    "week": "2026-11-09",
+    "opp": "OKC",
+    "home": true,
+    "neutral": false,
+    "points": 123,
+    "opp_points": 103,
+    "adj_points": 118.9,
+    "opp_adj_points": 103.0,
+    "off_rtg": {
+     "value": 122.5,
+     "rank": 8,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 106.3,
+     "rank": 11,
+     "of": 28
+    },
+    "pace": {
+     "value": 98.7,
+     "rank": 15,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909944",
+    "date": "2026-11-07",
+    "week": "2026-11-02",
+    "opp": "SA",
+    "home": true,
+    "neutral": false,
+    "points": 103,
+    "opp_points": 125,
+    "adj_points": 107.5,
+    "opp_adj_points": 120.5,
+    "off_rtg": {
+     "value": 96.1,
+     "rank": 101,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 118.8,
+     "rank": 84,
+     "of": 108
+    },
+    "pace": {
+     "value": 106.2,
+     "rank": 5,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909294",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "LAL",
+    "home": false,
+    "neutral": false,
+    "points": 118,
+    "opp_points": 124,
+    "adj_points": 112.9,
+    "opp_adj_points": 127.8,
+    "off_rtg": {
+     "value": 115.4,
+     "rank": 36,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 120.1,
+     "rank": 88,
+     "of": 108
+    },
+    "pace": {
+     "value": 102.8,
+     "rank": 33,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909932",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "PHX",
+    "home": false,
+    "neutral": false,
+    "points": 132,
+    "opp_points": 119,
+    "adj_points": 132.3,
+    "opp_adj_points": 121.9,
+    "off_rtg": {
+     "value": 124.5,
+     "rank": 13,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 114.8,
+     "rank": 69,
+     "of": 108
+    },
+    "pace": {
+     "value": 104.8,
+     "rank": 15,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909918",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "DEN",
+    "home": false,
+    "neutral": false,
+    "points": 118,
+    "opp_points": 110,
+    "adj_points": 116.7,
+    "opp_adj_points": 109.2,
+    "off_rtg": {
+     "value": 122.6,
+     "rank": 15,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 115.8,
+     "rank": 75,
+     "of": 108
+    },
+    "pace": {
+     "value": 95.6,
+     "rank": 97,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909896",
+    "date": "2026-10-31",
+    "week": "2026-10-26",
+    "opp": "UTAH",
+    "home": false,
+    "neutral": false,
+    "points": 112,
+    "opp_points": 90,
+    "adj_points": 110.0,
+    "opp_adj_points": 93.5,
+    "off_rtg": {
+     "value": 107.7,
+     "rank": 58,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 87.9,
+     "rank": 2,
+     "of": 98
+    },
+    "pace": {
+     "value": 103.2,
+     "rank": 35,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909895",
+    "date": "2026-10-29",
+    "week": "2026-10-26",
+    "opp": "MEM",
+    "home": true,
+    "neutral": false,
+    "points": 103,
+    "opp_points": 124,
+    "adj_points": 112.4,
+    "opp_adj_points": 118.8,
+    "off_rtg": {
+     "value": 97.7,
+     "rank": 85,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 120.1,
+     "rank": 77,
+     "of": 98
+    },
+    "pace": {
+     "value": 104.4,
+     "rank": 29,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909880",
+    "date": "2026-10-27",
+    "week": "2026-10-26",
+    "opp": "LAL",
+    "home": false,
+    "neutral": false,
+    "points": 136,
+    "opp_points": 129,
+    "adj_points": 130.7,
+    "opp_adj_points": 127.8,
+    "off_rtg": {
+     "value": 132.0,
+     "rank": 4,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 126.2,
+     "rank": 89,
+     "of": 98
+    },
+    "pace": {
+     "value": 102.6,
+     "rank": 41,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909852",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "SAC",
+    "home": false,
+    "neutral": false,
+    "points": 128,
+    "opp_points": 120,
+    "adj_points": 132.9,
+    "opp_adj_points": 122.3,
+    "off_rtg": {
+     "value": 120.5,
+     "rank": 12,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 110.9,
+     "rank": 44,
+     "of": 86
+    },
+    "pace": {
+     "value": 107.2,
+     "rank": 21,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909841",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "PHX",
+    "home": true,
+    "neutral": false,
+    "points": 124,
+    "opp_points": 83,
+    "adj_points": 119.8,
+    "opp_adj_points": 91.6,
+    "off_rtg": {
+     "value": 120.5,
+     "rank": 13,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 85.5,
+     "rank": 3,
+     "of": 86
+    },
+    "pace": {
+     "value": 100.0,
+     "rank": 81,
+     "of": 86
+    }
+   }
+  ],
+  "PHX": [
+   {
+    "id": "401909962",
+    "date": "2026-11-10",
+    "week": "2026-11-09",
+    "opp": "LAC",
+    "home": true,
+    "neutral": false,
+    "points": 133,
+    "opp_points": 110,
+    "adj_points": 124.4,
+    "opp_adj_points": 112.1,
+    "off_rtg": {
+     "value": 123.4,
+     "rank": 7,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 105.3,
+     "rank": 8,
+     "of": 28
+    },
+    "pace": {
+     "value": 106.1,
+     "rank": 1,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909958",
+    "date": "2026-11-09",
+    "week": "2026-11-09",
+    "opp": "SA",
+    "home": true,
+    "neutral": false,
+    "points": 96,
+    "opp_points": 122,
+    "adj_points": 95.4,
+    "opp_adj_points": 121.7,
+    "off_rtg": {
+     "value": 102.8,
+     "rank": 24,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 125.8,
+     "rank": 25,
+     "of": 28
+    },
+    "pace": {
+     "value": 95.2,
+     "rank": 23,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909943",
+    "date": "2026-11-07",
+    "week": "2026-11-02",
+    "opp": "HOU",
+    "home": true,
+    "neutral": false,
+    "points": 102,
+    "opp_points": 99,
+    "adj_points": 102.6,
+    "opp_adj_points": 102.0,
+    "off_rtg": {
+     "value": 105.3,
+     "rank": 74,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 97.7,
+     "rank": 11,
+     "of": 108
+    },
+    "pace": {
+     "value": 99.1,
+     "rank": 81,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909936",
+    "date": "2026-11-05",
+    "week": "2026-11-02",
+    "opp": "ORL",
+    "home": true,
+    "neutral": false,
+    "points": 117,
+    "opp_points": 104,
+    "adj_points": 109.8,
+    "opp_adj_points": 106.9,
+    "off_rtg": {
+     "value": 115.0,
+     "rank": 37,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 102.4,
+     "rank": 25,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.6,
+     "rank": 49,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909932",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "POR",
+    "home": true,
+    "neutral": false,
+    "points": 119,
+    "opp_points": 132,
+    "adj_points": 121.9,
+    "opp_adj_points": 132.3,
+    "off_rtg": {
+     "value": 114.8,
+     "rank": 40,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 124.5,
+     "rank": 96,
+     "of": 108
+    },
+    "pace": {
+     "value": 104.8,
+     "rank": 15,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909919",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "GS",
+    "home": false,
+    "neutral": false,
+    "points": 113,
+    "opp_points": 116,
+    "adj_points": 113.3,
+    "opp_adj_points": 119.3,
+    "off_rtg": {
+     "value": 108.4,
+     "rank": 65,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 114.5,
+     "rank": 66,
+     "of": 108
+    },
+    "pace": {
+     "value": 102.7,
+     "rank": 35,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909286",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "DEN",
+    "home": true,
+    "neutral": false,
+    "points": 120,
+    "opp_points": 127,
+    "adj_points": 114.9,
+    "opp_adj_points": 116.9,
+    "off_rtg": {
+     "value": 121.4,
+     "rank": 16,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 126.7,
+     "rank": 90,
+     "of": 98
+    },
+    "pace": {
+     "value": 99.5,
+     "rank": 61,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909873",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "OKC",
+    "home": false,
+    "neutral": false,
+    "points": 114,
+    "opp_points": 125,
+    "adj_points": 114.6,
+    "opp_adj_points": 123.1,
+    "off_rtg": {
+     "value": 112.9,
+     "rank": 43,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 120.5,
+     "rank": 81,
+     "of": 98
+    },
+    "pace": {
+     "value": 102.4,
+     "rank": 43,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909860",
+    "date": "2026-10-24",
+    "week": "2026-10-19",
+    "opp": "GS",
+    "home": true,
+    "neutral": false,
+    "points": 131,
+    "opp_points": 122,
+    "adj_points": 129.9,
+    "opp_adj_points": 119.6,
+    "off_rtg": {
+     "value": 126.4,
+     "rank": 4,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 118.4,
+     "rank": 68,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.4,
+     "rank": 55,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909841",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "POR",
+    "home": false,
+    "neutral": false,
+    "points": 83,
+    "opp_points": 124,
+    "adj_points": 91.6,
+    "opp_adj_points": 119.8,
+    "off_rtg": {
+     "value": 85.5,
+     "rank": 84,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 120.5,
+     "rank": 74,
+     "of": 86
+    },
+    "pace": {
+     "value": 100.0,
+     "rank": 81,
+     "of": 86
+    }
+   }
+  ],
+  "LAC": [
+   {
+    "id": "401909962",
+    "date": "2026-11-10",
+    "week": "2026-11-09",
+    "opp": "PHX",
+    "home": false,
+    "neutral": false,
+    "points": 110,
+    "opp_points": 133,
+    "adj_points": 112.1,
+    "opp_adj_points": 124.4,
+    "off_rtg": {
+     "value": 105.3,
+     "rank": 21,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 123.4,
+     "rank": 22,
+     "of": 28
+    },
+    "pace": {
+     "value": 106.1,
+     "rank": 1,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909950",
+    "date": "2026-11-08",
+    "week": "2026-11-02",
+    "opp": "NO",
+    "home": true,
+    "neutral": false,
+    "points": 139,
+    "opp_points": 123,
+    "adj_points": 135.1,
+    "opp_adj_points": 121.8,
+    "off_rtg": {
+     "value": 140.8,
+     "rank": 1,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 119.0,
+     "rank": 85,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.1,
+     "rank": 57,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909935",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "MIA",
+    "home": true,
+    "neutral": false,
+    "points": 116,
+    "opp_points": 117,
+    "adj_points": 116.1,
+    "opp_adj_points": 121.8,
+    "off_rtg": {
+     "value": 102.8,
+     "rank": 83,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 105.0,
+     "rank": 33,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.5,
+     "rank": 51,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909920",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "TOR",
+    "home": true,
+    "neutral": false,
+    "points": 118,
+    "opp_points": 125,
+    "adj_points": 117.6,
+    "opp_adj_points": 130.2,
+    "off_rtg": {
+     "value": 109.4,
+     "rank": 63,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 120.1,
+     "rank": 87,
+     "of": 108
+    },
+    "pace": {
+     "value": 106.0,
+     "rank": 11,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909905",
+    "date": "2026-11-01",
+    "week": "2026-10-26",
+    "opp": "GS",
+    "home": false,
+    "neutral": false,
+    "points": 112,
+    "opp_points": 124,
+    "adj_points": 110.6,
+    "opp_adj_points": 118.9,
+    "off_rtg": {
+     "value": 112.7,
+     "rank": 44,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 129.0,
+     "rank": 94,
+     "of": 98
+    },
+    "pace": {
+     "value": 97.8,
+     "rank": 73,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909284",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "MIN",
+    "home": false,
+    "neutral": false,
+    "points": 101,
+    "opp_points": 127,
+    "adj_points": 98.4,
+    "opp_adj_points": 122.9,
+    "off_rtg": {
+     "value": 99.3,
+     "rank": 83,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 127.2,
+     "rank": 91,
+     "of": 98
+    },
+    "pace": {
+     "value": 100.8,
+     "rank": 59,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909892",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "LAL",
+    "home": true,
+    "neutral": false,
+    "points": 87,
+    "opp_points": 103,
+    "adj_points": 86.9,
+    "opp_adj_points": 107.5,
+    "off_rtg": {
+     "value": 88.9,
+     "rank": 95,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 105.6,
+     "rank": 37,
+     "of": 98
+    },
+    "pace": {
+     "value": 97.7,
+     "rank": 75,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909865",
+    "date": "2026-10-25",
+    "week": "2026-10-19",
+    "opp": "OKC",
+    "home": false,
+    "neutral": false,
+    "points": 101,
+    "opp_points": 108,
+    "adj_points": 99.0,
+    "opp_adj_points": 107.5,
+    "off_rtg": {
+     "value": 95.6,
+     "rank": 75,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 104.4,
+     "rank": 28,
+     "of": 86
+    },
+    "pace": {
+     "value": 104.5,
+     "rank": 39,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909851",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "LAL",
+    "home": false,
+    "neutral": false,
+    "points": 117,
+    "opp_points": 125,
+    "adj_points": 113.4,
+    "opp_adj_points": 121.8,
+    "off_rtg": {
+     "value": 107.3,
+     "rank": 54,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 121.4,
+     "rank": 79,
+     "of": 86
+    },
+    "pace": {
+     "value": 106.0,
+     "rank": 31,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909842",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "SAC",
+    "home": true,
+    "neutral": false,
+    "points": 121,
+    "opp_points": 96,
+    "adj_points": 120.7,
+    "opp_adj_points": 101.4,
+    "off_rtg": {
+     "value": 117.9,
+     "rank": 21,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 92.9,
+     "rank": 9,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.0,
+     "rank": 59,
+     "of": 86
+    }
+   }
+  ],
+  "SAC": [
+   {
+    "id": "401909964",
+    "date": "2026-11-10",
+    "week": "2026-11-09",
+    "opp": "ORL",
+    "home": true,
+    "neutral": false,
+    "points": 100,
+    "opp_points": 107,
+    "adj_points": 93.3,
+    "opp_adj_points": 109.6,
+    "off_rtg": {
+     "value": 98.3,
+     "rank": 26,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 107.1,
+     "rank": 12,
+     "of": 28
+    },
+    "pace": {
+     "value": 100.8,
+     "rank": 11,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909951",
+    "date": "2026-11-08",
+    "week": "2026-11-02",
+    "opp": "MIA",
+    "home": true,
+    "neutral": false,
+    "points": 108,
+    "opp_points": 114,
+    "adj_points": 109.2,
+    "opp_adj_points": 111.9,
+    "off_rtg": {
+     "value": 105.8,
+     "rank": 72,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 113.0,
+     "rank": 59,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.5,
+     "rank": 53,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909295",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "SA",
+    "home": true,
+    "neutral": false,
+    "points": 109,
+    "opp_points": 124,
+    "adj_points": 104.1,
+    "opp_adj_points": 117.5,
+    "off_rtg": {
+     "value": 113.1,
+     "rank": 49,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 128.5,
+     "rank": 104,
+     "of": 108
+    },
+    "pace": {
+     "value": 96.4,
+     "rank": 93,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909934",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "LAL",
+    "home": true,
+    "neutral": false,
+    "points": 103,
+    "opp_points": 116,
+    "adj_points": 105.2,
+    "opp_adj_points": 116.8,
+    "off_rtg": {
+     "value": 97.8,
+     "rank": 97,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 119.9,
+     "rank": 86,
+     "of": 108
+    },
+    "pace": {
+     "value": 101.0,
+     "rank": 59,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909913",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "DAL",
+    "home": false,
+    "neutral": false,
+    "points": 115,
+    "opp_points": 100,
+    "adj_points": 109.8,
+    "opp_adj_points": 105.9,
+    "off_rtg": {
+     "value": 116.6,
+     "rank": 29,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 100.6,
+     "rank": 21,
+     "of": 108
+    },
+    "pace": {
+     "value": 99.0,
+     "rank": 83,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909899",
+    "date": "2026-10-31",
+    "week": "2026-10-26",
+    "opp": "MEM",
+    "home": false,
+    "neutral": false,
+    "points": 105,
+    "opp_points": 136,
+    "adj_points": 107.6,
+    "opp_adj_points": 127.8,
+    "off_rtg": {
+     "value": 97.4,
+     "rank": 86,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 126.1,
+     "rank": 88,
+     "of": 98
+    },
+    "pace": {
+     "value": 107.8,
+     "rank": 13,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909894",
+    "date": "2026-10-29",
+    "week": "2026-10-26",
+    "opp": "NO",
+    "home": false,
+    "neutral": false,
+    "points": 120,
+    "opp_points": 132,
+    "adj_points": 121.1,
+    "opp_adj_points": 134.0,
+    "off_rtg": {
+     "value": 104.5,
+     "rank": 66,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 115.7,
+     "rank": 66,
+     "of": 98
+    },
+    "pace": {
+     "value": 114.4,
+     "rank": 1,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909879",
+    "date": "2026-10-27",
+    "week": "2026-10-26",
+    "opp": "SA",
+    "home": false,
+    "neutral": false,
+    "points": 103,
+    "opp_points": 130,
+    "adj_points": 102.9,
+    "opp_adj_points": 124.0,
+    "off_rtg": {
+     "value": 102.3,
+     "rank": 75,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 125.8,
+     "rank": 87,
+     "of": 98
+    },
+    "pace": {
+     "value": 102.0,
+     "rank": 49,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909867",
+    "date": "2026-10-25",
+    "week": "2026-10-19",
+    "opp": "MEM",
+    "home": true,
+    "neutral": false,
+    "points": 112,
+    "opp_points": 123,
+    "adj_points": 115.7,
+    "opp_adj_points": 121.9,
+    "off_rtg": {
+     "value": 110.1,
+     "rank": 45,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 120.7,
+     "rank": 76,
+     "of": 86
+    },
+    "pace": {
+     "value": 101.8,
+     "rank": 67,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909852",
+    "date": "2026-10-23",
+    "week": "2026-10-19",
+    "opp": "POR",
+    "home": true,
+    "neutral": false,
+    "points": 120,
+    "opp_points": 128,
+    "adj_points": 122.3,
+    "opp_adj_points": 132.9,
+    "off_rtg": {
+     "value": 110.9,
+     "rank": 43,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 120.5,
+     "rank": 75,
+     "of": 86
+    },
+    "pace": {
+     "value": 107.2,
+     "rank": 21,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909842",
+    "date": "2026-10-21",
+    "week": "2026-10-19",
+    "opp": "LAC",
+    "home": false,
+    "neutral": false,
+    "points": 96,
+    "opp_points": 121,
+    "adj_points": 101.4,
+    "opp_adj_points": 120.7,
+    "off_rtg": {
+     "value": 92.9,
+     "rank": 78,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 117.9,
+     "rank": 66,
+     "of": 86
+    },
+    "pace": {
+     "value": 103.0,
+     "rank": 59,
+     "of": 86
+    }
+   }
+  ],
+  "CLE": [
+   {
+    "id": "401909953",
+    "date": "2026-11-09",
+    "week": "2026-11-09",
+    "opp": "CHA",
+    "home": false,
+    "neutral": false,
+    "points": 112,
+    "opp_points": 124,
+    "adj_points": 109.5,
+    "opp_adj_points": 112.5,
+    "off_rtg": {
+     "value": 112.1,
+     "rank": 14,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 124.0,
+     "rank": 23,
+     "of": 28
+    },
+    "pace": {
+     "value": 100.0,
+     "rank": 13,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909940",
+    "date": "2026-11-07",
+    "week": "2026-11-02",
+    "opp": "NY",
+    "home": true,
+    "neutral": false,
+    "points": 97,
+    "opp_points": 109,
+    "adj_points": 101.4,
+    "opp_adj_points": 110.4,
+    "off_rtg": {
+     "value": 106.2,
+     "rank": 70,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 113.4,
+     "rank": 61,
+     "of": 108
+    },
+    "pace": {
+     "value": 93.8,
+     "rank": 101,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909289",
+    "date": "2026-11-06",
+    "week": "2026-11-02",
+    "opp": "PHI",
+    "home": true,
+    "neutral": false,
+    "points": 119,
+    "opp_points": 95,
+    "adj_points": 119.2,
+    "opp_adj_points": 100.6,
+    "off_rtg": {
+     "value": 114.5,
+     "rank": 44,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 91.6,
+     "rank": 5,
+     "of": 108
+    },
+    "pace": {
+     "value": 103.9,
+     "rank": 25,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909929",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "OKC",
+    "home": false,
+    "neutral": false,
+    "points": 116,
+    "opp_points": 124,
+    "adj_points": 112.4,
+    "opp_adj_points": 121.1,
+    "off_rtg": {
+     "value": 110.1,
+     "rank": 61,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 116.5,
+     "rank": 79,
+     "of": 108
+    },
+    "pace": {
+     "value": 105.9,
+     "rank": 13,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909907",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "OKC",
+    "home": true,
+    "neutral": false,
+    "points": 112,
+    "opp_points": 117,
+    "adj_points": 113.3,
+    "opp_adj_points": 114.1,
+    "off_rtg": {
+     "value": 114.8,
+     "rank": 41,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 115.7,
+     "rank": 74,
+     "of": 108
+    },
+    "pace": {
+     "value": 99.3,
+     "rank": 79,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909900",
+    "date": "2026-10-31",
+    "week": "2026-10-26",
+    "opp": "MIL",
+    "home": false,
+    "neutral": false,
+    "points": 136,
+    "opp_points": 111,
+    "adj_points": 131.4,
+    "opp_adj_points": 112.7,
+    "off_rtg": {
+     "value": 128.4,
+     "rank": 7,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 104.8,
+     "rank": 34,
+     "of": 98
+    },
+    "pace": {
+     "value": 105.9,
+     "rank": 21,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909893",
+    "date": "2026-10-29",
+    "week": "2026-10-26",
+    "opp": "ATL",
+    "home": false,
+    "neutral": false,
+    "points": 111,
+    "opp_points": 114,
+    "adj_points": 113.9,
+    "opp_adj_points": 111.5,
+    "off_rtg": {
+     "value": 111.3,
+     "rank": 47,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 115.2,
+     "rank": 65,
+     "of": 98
+    },
+    "pace": {
+     "value": 99.3,
+     "rank": 65,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909882",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "WSH",
+    "home": true,
+    "neutral": false,
+    "points": 121,
+    "opp_points": 111,
+    "adj_points": 118.1,
+    "opp_adj_points": 114.3,
+    "off_rtg": {
+     "value": 122.6,
+     "rank": 13,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 116.3,
+     "rank": 67,
+     "of": 98
+    },
+    "pace": {
+     "value": 97.1,
+     "rank": 79,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909869",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "MIN",
+    "home": true,
+    "neutral": false,
+    "points": 127,
+    "opp_points": 125,
+    "adj_points": 124.3,
+    "opp_adj_points": 128.0,
+    "off_rtg": {
+     "value": 114.3,
+     "rank": 37,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 110.5,
+     "rank": 50,
+     "of": 98
+    },
+    "pace": {
+     "value": 101.5,
+     "rank": 53,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909854",
+    "date": "2026-10-24",
+    "week": "2026-10-19",
+    "opp": "BKN",
+    "home": true,
+    "neutral": false,
+    "points": 125,
+    "opp_points": 121,
+    "adj_points": 121.2,
+    "opp_adj_points": 115.3,
+    "off_rtg": {
+     "value": 113.9,
+     "rank": 30,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 109.1,
+     "rank": 39,
+     "of": 86
+    },
+    "pace": {
+     "value": 110.3,
+     "rank": 9,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909093",
+    "date": "2026-10-22",
+    "week": "2026-10-19",
+    "opp": "PHI",
+    "home": false,
+    "neutral": false,
+    "points": 106,
+    "opp_points": 114,
+    "adj_points": 111.1,
+    "opp_adj_points": 118.2,
+    "off_rtg": {
+     "value": 96.1,
+     "rank": 74,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 100.7,
+     "rank": 21,
+     "of": 86
+    },
+    "pace": {
+     "value": 111.8,
+     "rank": 7,
+     "of": 86
+    }
+   }
+  ],
+  "DEN": [
+   {
+    "id": "401909957",
+    "date": "2026-11-09",
+    "week": "2026-11-09",
+    "opp": "HOU",
+    "home": false,
+    "neutral": false,
+    "points": 100,
+    "opp_points": 110,
+    "adj_points": 104.2,
+    "opp_adj_points": 109.3,
+    "off_rtg": {
+     "value": 101.0,
+     "rank": 25,
+     "of": 28
+    },
+    "def_rtg": {
+     "value": 116.4,
+     "rank": 17,
+     "of": 28
+    },
+    "pace": {
+     "value": 96.7,
+     "rank": 21,
+     "of": 28
+    }
+   },
+   {
+    "id": "401909938",
+    "date": "2026-11-07",
+    "week": "2026-11-02",
+    "opp": "IND",
+    "home": false,
+    "neutral": true,
+    "points": 114,
+    "opp_points": 102,
+    "adj_points": 117.0,
+    "opp_adj_points": 104.5,
+    "off_rtg": {
+     "value": 113.6,
+     "rank": 46,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 102.9,
+     "rank": 27,
+     "of": 108
+    },
+    "pace": {
+     "value": 99.7,
+     "rank": 75,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909931",
+    "date": "2026-11-04",
+    "week": "2026-11-02",
+    "opp": "TOR",
+    "home": true,
+    "neutral": false,
+    "points": 128,
+    "opp_points": 109,
+    "adj_points": 125.8,
+    "opp_adj_points": 109.1,
+    "off_rtg": {
+     "value": 130.8,
+     "rank": 3,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 109.3,
+     "rank": 45,
+     "of": 108
+    },
+    "pace": {
+     "value": 98.8,
+     "rank": 85,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909918",
+    "date": "2026-11-02",
+    "week": "2026-11-02",
+    "opp": "POR",
+    "home": true,
+    "neutral": false,
+    "points": 110,
+    "opp_points": 118,
+    "adj_points": 109.2,
+    "opp_adj_points": 116.7,
+    "off_rtg": {
+     "value": 115.8,
+     "rank": 34,
+     "of": 108
+    },
+    "def_rtg": {
+     "value": 122.6,
+     "rank": 94,
+     "of": 108
+    },
+    "pace": {
+     "value": 95.6,
+     "rank": 97,
+     "of": 108
+    }
+   },
+   {
+    "id": "401909286",
+    "date": "2026-10-30",
+    "week": "2026-10-26",
+    "opp": "PHX",
+    "home": false,
+    "neutral": false,
+    "points": 127,
+    "opp_points": 120,
+    "adj_points": 116.9,
+    "opp_adj_points": 114.9,
+    "off_rtg": {
+     "value": 126.7,
+     "rank": 9,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 121.4,
+     "rank": 83,
+     "of": 98
+    },
+    "pace": {
+     "value": 99.5,
+     "rank": 61,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909889",
+    "date": "2026-10-28",
+    "week": "2026-10-26",
+    "opp": "NO",
+    "home": false,
+    "neutral": false,
+    "points": 104,
+    "opp_points": 91,
+    "adj_points": 100.9,
+    "opp_adj_points": 96.9,
+    "off_rtg": {
+     "value": 102.6,
+     "rank": 72,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 88.6,
+     "rank": 3,
+     "of": 98
+    },
+    "pace": {
+     "value": 102.0,
+     "rank": 51,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909876",
+    "date": "2026-10-26",
+    "week": "2026-10-26",
+    "opp": "GS",
+    "home": true,
+    "neutral": false,
+    "points": 114,
+    "opp_points": 134,
+    "adj_points": 113.4,
+    "opp_adj_points": 123.9,
+    "off_rtg": {
+     "value": 118.6,
+     "rank": 27,
+     "of": 98
+    },
+    "def_rtg": {
+     "value": 135.0,
+     "rank": 97,
+     "of": 98
+    },
+    "pace": {
+     "value": 97.7,
+     "rank": 77,
+     "of": 98
+    }
+   },
+   {
+    "id": "401909859",
+    "date": "2026-10-24",
+    "week": "2026-10-19",
+    "opp": "NO",
+    "home": true,
+    "neutral": false,
+    "points": 141,
+    "opp_points": 135,
+    "adj_points": 143.7,
+    "opp_adj_points": 138.3,
+    "off_rtg": {
+     "value": 123.5,
+     "rank": 6,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 116.2,
+     "rank": 61,
+     "of": 86
+    },
+    "pace": {
+     "value": 104.3,
+     "rank": 41,
+     "of": 86
+    }
+   },
+   {
+    "id": "401909094",
+    "date": "2026-10-22",
+    "week": "2026-10-19",
+    "opp": "OKC",
+    "home": false,
+    "neutral": false,
+    "points": 84,
+    "opp_points": 96,
+    "adj_points": 89.5,
+    "opp_adj_points": 101.3,
+    "off_rtg": {
+     "value": 88.7,
+     "rank": 83,
+     "of": 86
+    },
+    "def_rtg": {
+     "value": 98.8,
+     "rank": 17,
+     "of": 86
+    },
+    "pace": {
+     "value": 95.9,
+     "rank": 83,
+     "of": 86
+    }
+   }
+  ]
+ },
+ "generated_at_utc": "2026-11-11T20:40:03+00:00"
+}

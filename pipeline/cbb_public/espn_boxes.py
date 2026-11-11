@@ -5,7 +5,7 @@ from statistics import mean
 
 import requests
 
-from .. import predictability
+from .. import power, predictability
 from . import game_lines
 from . import possession_data as ncaa
 from . import pressure
@@ -163,6 +163,16 @@ def counted_pace(year):
             if tid:
                 index[(day, side, tid, h_score, a_score)].append((opp, (counts[game][h] + counts[game][a]) / 2))
     return index
+
+
+def shooting_totals(finals):
+    """Each D-I team's threes and free throws over its D-I finals."""
+    totals = defaultdict(lambda: defaultdict(float))
+    for g in finals:
+        for side in ("home", "away"):
+            for k, n in zip(("tpm", "tpa", "ftm", "fta"), g[side + "_shots"]):
+                totals[g[side]][k] += n
+    return totals
 
 
 def rate_rows(pairs):
@@ -332,6 +342,7 @@ def supplement(contexts, schedule, year, as_of, cache):
     pressed = defaultdict(dict)  # backcourt pressure over D-I games
     pressed_days = defaultdict(list)
     lines = defaultdict(dict)  # team -> game id -> (date, box line), every final
+    scored = []  # (game id, home, away, both boxes) for every final, for the noise-adjusted score
     with ThreadPoolExecutor(max_workers=6) as pool:
         for g, box in zip(fixtures.values(), pool.map(read_game, fixtures.values())):
             if box is None:
@@ -341,23 +352,39 @@ def supplement(contexts, schedule, year, as_of, cache):
                 for tid, counts in box["pressure"].items():
                     pressure.add(pressed[tid], counts)
                     pressed_days[tid].append(day)
+            for tid in (home, away):
+                row = box["teams"][tid]
+                row["ftm"] = row["pts"] - 2 * row["fgm"] - row["tpm"]
+            scored.append((str(g["game_id"]), home, away, box["teams"]))
             if home in division and away in division:
                 finals.append({"id": str(g["game_id"]), "date": day, "home": home, "away": away,
+                               "neutral": bool(g.get("neutral_site")),
+                               **{f"{side}_shots": [box["teams"][tid][k] for k in ("tpm", "tpa", "ftm", "fta")]
+                                  for side, tid in (("home", home), ("away", away))},
                                **{f"{side}_{k}": box["teams"][tid][k] for side, tid in (("home", home), ("away", away))
                                   for k in ("pts", "poss")},
                                **{f"{side}_events": events(box["teams"][tid]) for side, tid in (("home", home), ("away", away))}})
             for side, own, opp in (("home", home, away), ("away", away, home)):
                 if own not in division:
                     continue
-                lines[own][str(g["game_id"])] = (day, game_lines.line(
-                    {**box["teams"][own], "ftm": box["teams"][own]["pts"] - 2 * box["teams"][own]["fgm"] - box["teams"][own]["tpm"]},
-                    box["teams"][opp], box["minutes"]))
+                lines[own][str(g["game_id"])] = (day, game_lines.line(box["teams"][own], box["teams"][opp], box["minutes"]))
                 matches = [p for tid, p in exact[(day, side, own, h_score, a_score)] if tid is None or tid == opp]
                 observations[own].append((day, box["minutes"], box["teams"][own], box["teams"][opp],
                                           matches[0] if len(matches) == 1 else None, opp in division))
     filled = Counter()
     lineups = {}
     logged = game_lines.ranked(lines)
+    # Each final's noise-adjusted score (pipeline/power.py): half of each side's
+    # three-point and free-throw luck against its own D-I season rate taken
+    # out; a non-D-I opponent shoots against the league rate.
+    rates = power.shooting_rates(shooting_totals(finals))
+    for gid, home, away, teams in scored:
+        adj = {tid: power.basketball_points(t["pts"], t["tpm"], t["tpa"], t["ftm"], t["fta"],
+                                            rates.get(tid) or rates[""]) for tid, t in teams.items()}
+        for own, opp in ((home, away), (away, home)):
+            if own in logged and gid in logged[own]:
+                logged[own][gid]["adj_points"] = round(adj[own], 1)
+                logged[own][gid]["adj_opponent_points"] = round(adj[opp], 1)
     for team, context in ((str(t), c) for t, c in contexts.items()):
         for g in context.get("games") or []:
             found = logged.get(team, {}).get(str(g["id"]))

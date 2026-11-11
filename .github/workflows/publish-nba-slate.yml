@@ -48,7 +48,9 @@ jobs:
           key: nba-boxes-${{ runner.os }}-${{ github.run_id }}
           restore-keys: nba-boxes-${{ runner.os }}-
 
-      - name: Score NBA predictability
+      # Predictability, the adjusted power ranking and every club's
+      # noise-adjusted game log, from each final's ESPN box.
+      - name: Score NBA predictability and power ranking
         run: python scripts/publish_public_nba_predictability.py
 
       - name: Commit the refreshed slate to master
@@ -57,7 +59,7 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/validate_public_fields.py
-          git add -- data/public/nba/slate.json data/public/nba/evidence.json data/public/nba/predictability.json
+          git add -- data/public/nba/slate.json data/public/nba/evidence.json data/public/nba/predictability.json data/public/nba/power.json
           if git diff --cached --quiet; then
             echo "NBA slate is already current; no commit needed."
             exit 0

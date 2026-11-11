@@ -9,14 +9,20 @@ have got from the same chances:
     distance, not at their actual result (3 x (made - expected) per FG);
   * fumble recoveries, which go roughly 50/50 whatever the team, count at the
     league's average fumble outcome: each fumble's EPA is replaced with the
-    mean EPA of all fumbles, and the net swing is split across both scores;
-  * defensive and return touchdowns (scored by the team without the ball)
-    count at the league's average per team-game rather than as they fell.
+    mean EPA of all fumbles, and the net swing is split across both scores.
 
-Interceptions and everything else stay as played. Constants are measured from
-the prior and current regular seasons together and published with the log.
-Every per-game rate is placed as a percentile among all team-games this
-season.
+Defensive and return touchdowns stay as scored (2026-11-11): neutralising
+them made every club's later results harder to predict (NFL 2021-2025, r
+-0.0125 against the raw margin, worse at 20 of 25 in-season cuts), and a
+club's count repeats from one half of a season to the next (r = +0.13), so
+they are part of how good a team is, not luck. Interceptions and everything
+else stay as played too. Constants are measured from the prior and current
+regular seasons together and published with the log. Every per-game rate is
+placed as a percentile among all team-games this season.
+
+The log also carries the adjusted power ranking (pipeline/power.py): half a
+scoring-margin model, half an EPA-per-play model with fumbles at the league
+mean, both opponent-adjusted.
 """
 from __future__ import annotations
 
@@ -32,7 +38,7 @@ COLUMNS = (
     "home_score", "away_score", "play_type", "epa", "success", "yards_gained",
     "field_goal_result", "kick_distance", "extra_point_result", "fumble", "fumble_lost",
     "interception", "touchdown", "td_team", "third_down_converted", "third_down_failed",
-    "sack", "pass", "rush",
+    "sack", "pass", "rush", "location",
 )
 # The slate's club codes (nflverse writes WAS and LA).
 TEAM_ALIAS = {"WAS": "WSH", "LA": "LAR"}
@@ -71,13 +77,10 @@ def luck_constants(frames: list[pd.DataFrame]) -> dict[str, Any]:
     xp = both[both["play_type"].eq("extra_point")]
     xp_rate = float(xp["extra_point_result"].eq("good").mean())
     fumbles = both[both["fumble"].eq(1) & both["epa"].notna() & both["play_type"].isin(["pass", "run"])]
-    nonoff = both[both["touchdown"].eq(1) & both["td_team"].notna() & both["td_team"].ne(both["posteam"])]
-    team_games = both["game_id"].nunique() * 2
     return {
         "fg_make_rate_by_distance": fg_rate,
         "xp_make_rate": round(xp_rate, 4),
         "fumble_mean_epa": round(float(fumbles["epa"].mean()), 4),
-        "non_offensive_td_per_team_game": round(len(nonoff) / team_games, 4) if team_games else 0.0,
     }
 
 
@@ -93,8 +96,8 @@ def _game_rows(game: pd.DataFrame, k: dict[str, Any]) -> list[dict]:
     home, away = game["home_team"].iloc[0], game["away_team"].iloc[0]
     final = {home: int(game["home_score"].max()), away: int(game["away_score"].max())}
     luck = {home: 0.0, away: 0.0}
-    nonoff_points = 6 + k["xp_make_rate"]
     plays = game[game["play_type"].isin(["pass", "run"])]
+    fumble_net = {home: 0.0, away: 0.0}
     for team in (home, away):
         opp = away if team == home else home
         fg = game[game["posteam"].eq(team) & game["play_type"].eq("field_goal")].dropna(
@@ -103,10 +106,9 @@ def _game_rows(game: pd.DataFrame, k: dict[str, Any]) -> list[dict]:
         luck[team] += 3 * (int(fg["field_goal_result"].eq("made").sum()) - expected)
         xp = game[game["posteam"].eq(team) & game["play_type"].eq("extra_point")]
         luck[team] += int(xp["extra_point_result"].eq("good").sum()) - k["xp_make_rate"] * len(xp)
-        nonoff = game[game["touchdown"].eq(1) & game["td_team"].eq(team) & game["posteam"].ne(team)]
-        luck[team] += (len(nonoff) - k["non_offensive_td_per_team_game"]) * nonoff_points
         fumbles = plays[plays["posteam"].eq(team) & plays["fumble"].eq(1) & plays["epa"].notna()]
         net = float((fumbles["epa"] - k["fumble_mean_epa"]).sum())
+        fumble_net[team] = net
         luck[team] += net / 2
         luck[opp] -= net / 2
 
@@ -123,6 +125,7 @@ def _game_rows(game: pd.DataFrame, k: dict[str, Any]) -> list[dict]:
             "game_id": game["game_id"].iloc[0],
             "week": int(game["week"].iloc[0]),
             "team": _canon(team), "opp": _canon(opp), "home": team == home,
+            "neutral": str(game["location"].iloc[0]) == "Neutral",
             "points": final[team], "opp_points": final[opp],
             "adj_points": round(final[team] - luck[team], 1),
             "opp_adj_points": round(final[opp] - luck[opp], 1),
@@ -140,6 +143,8 @@ def _game_rows(game: pd.DataFrame, k: dict[str, Any]) -> list[dict]:
             # Play count, EPA sum and EPA sum of squares: the predictability read.
             "_events": (int(off["epa"].notna().sum()), float(off["epa"].sum()), float((off["epa"] ** 2).sum()))
             if off["epa"].notna().any() else None,
+            # Plays and EPA with every fumble at the league's mean fumble outcome: the power read.
+            "_plays": (int(off["epa"].notna().sum()), float(off["epa"].sum()) - fumble_net[team]),
         })
     return rows
 
@@ -178,7 +183,7 @@ def build(season: int | None = None) -> dict | None:
     for row in rows:
         if row["_events"]:
             events.setdefault(row["team"], []).append(row["_events"])
-    from pipeline import predictability
+    from pipeline import power, predictability
     return {
         "season": season,
         "through_week": int(current["week"].max()),
@@ -186,4 +191,22 @@ def build(season: int | None = None) -> dict | None:
         "luck_rates": k,
         "teams": teams,
         "predictability": predictability.score(events, predictability.NFL),
+        "adjusted": power_ranking(rows),
     }
+
+
+def power_ranking(rows: list[dict]) -> dict:
+    """The adjusted power ranking (pipeline/power.py) in points per game."""
+    from pipeline import power
+    points, plays, played = [], [], []
+    for r in rows:
+        loc = 0 if r["neutral"] else (1 if r["home"] else -1)
+        points.append(power.Row(r["team"], r["opp"], loc, float(r["points"])))
+        n, epa = r["_plays"]
+        if n:
+            plays.append(power.Row(r["team"], r["opp"], loc, epa / n, float(n)))
+        margin = r["points"] - r["opp_points"]
+        played.append(power.Played(r["team"], r["opp"], loc, margin > 0 if margin else None, 1.0, float(margin)))
+    fit = power.football(points, plays, played)
+    out = power.table(fit, played, {r["team"] for r in rows})
+    return {"units": "points per game", **out}
