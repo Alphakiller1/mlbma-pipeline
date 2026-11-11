@@ -79,6 +79,7 @@ def parse_box(payload, game):
         tpm, tpa = map(int, v["threePointFieldGoalsMade-threePointFieldGoalsAttempted"].split("-"))
         ftm, fta = map(int, v["freeThrowsMade-freeThrowsAttempted"].split("-"))
         orb, drb, ast, tov = [int(v[k]) for k in ("offensiveRebounds", "defensiveRebounds", "assists", "totalTurnovers")]
+        stl, blk = (int(v.get(k) or 0) for k in ("steals", "blocks"))
         points = int(competitors[side]["score"])
         if (not 0 <= tpm <= min(fgm, tpa) or not 0 <= fgm - tpm <= fga - tpa or not 0 <= ftm <= fta
                 or min(orb, drb, ast, tov) < 0 or ast > fgm or 2 * fgm + tpm + ftm != points):
@@ -94,7 +95,7 @@ def parse_box(payload, game):
                     starters[str(athlete["id"])] = ncaa.role((athlete.get("position") or {}).get("abbreviation"))
         result["teams"][team] = {
             "fgm": fgm, "fga": fga, "tpm": tpm, "tpa": tpa, "fta": fta, "orb": orb,
-            "drb": drb, "ast": ast, "tov": tov, "pts": points, "poss": possessions,
+            "drb": drb, "ast": ast, "tov": tov, "stl": stl, "blk": blk, "pts": points, "poss": possessions,
             "starters": starters if len(starters) == 5 else {},
             "player_lines": player_lines(players.get(team, []), minutes, points),
             "box_context": {key: n for key, field in BOX_CONTEXT.items()
@@ -112,7 +113,7 @@ def load_box(game, cache):
     if file.exists():
         cached = read(file)
         if cached.get("fixture") == fixture_key(game) and "pressure" in cached and all(
-            "player_lines" in row and "box_context" in row for row in cached["teams"].values()
+            "player_lines" in row and "box_context" in row and "stl" in row for row in cached["teams"].values()
         ):
             return cached
     response = requests.get(BOX_URL, params={"event": game["game_id"]}, timeout=15)
@@ -165,29 +166,58 @@ def counted_pace(year):
 
 
 def rate_rows(pairs):
+    """Season rates for a team Basketball Quant has not counted, from its ESPN
+    boxes, on Basketball Quant's own definitions so they rank in one pool
+    (checked against twelve counted teams, 2026-11-11): possessions are
+    FGA - ORB + TOV + 0.44 FTA; TOV% is TOV / (FGA + 0.44 FTA + TOV); steal
+    rates are per possession of the side losing the ball, block rates per two-
+    point attempt, points off turnovers per opponent possession. Fast-break and
+    paint points are left unfilled: ESPN's box counts them differently from
+    Basketball Quant's play-by-play, so they would not rank on one scale.
+    """
     def sum_side(k, side):
-        return sum(pair[side][k] for pair in pairs)
+        return sum(pair[side].get(k) or 0 for pair in pairs)
 
     def fraction(n, d):
         return n / d if d else None
 
+    def possessions(side):
+        return sum_side("fga", side) - sum_side("orb", side) + sum_side("tov", side) + .44 * sum_side("fta", side)
+
+    def turnover_points(side):
+        values = [pair[side].get("box_context", {}).get("points_off_turnovers") for pair in pairs]
+        return sum(values) if all(v is not None for v in values) else None
+
     rate = {"games_all": len(pairs)}
+    poss = {0: possessions(0), 1: possessions(1)}
     for s, name in ((0, "o"), (1, "d")):
-        fgm, fga, tpm, tpa, fta, ast, tov, pts, poss = (
-            sum_side(k, s) for k in ("fgm", "fga", "tpm", "tpa", "fta", "ast", "tov", "pts", "poss")
+        fgm, fga, tpm, tpa, fta, ast, tov, pts = (
+            sum_side(k, s) for k in ("fgm", "fga", "tpm", "tpa", "fta", "ast", "tov", "pts")
         )
+        ftm = pts - 2 * fgm - tpm
         rate.update({
             f"efg_{name}_all": fraction(fgm + .5 * tpm, fga),
-            f"tov_pct_{name}_all": fraction(tov, poss),
+            f"tov_pct_{name}_all": fraction(tov, fga + .44 * fta + tov),
             f"ftr_{name}_all": fraction(fta, fga),
             f"tpr_{name}_all": fraction(tpa, fga),
-            f"ppp_{'off' if s == 0 else 'def'}_all": fraction(pts, poss),
+            f"ppp_{'off' if s == 0 else 'def'}_all": fraction(pts, poss[s]),
             f"fg2_pct_{name}_all": fraction(fgm - tpm, fga - tpa),
             f"fg3_pct_{name}_all": fraction(tpm, tpa),
+            f"ft_pct_{name}_all": fraction(ftm, fta),
             f"ast_rate_{name}_all": fraction(ast, fgm),
         })
+    # Steals and blocks are logged by the defense, so the offense's rates are
+    # what its opponents took from it: per own possession and own two-point try.
+    twos = {side: sum_side("fga", side) - sum_side("tpa", side) for side in (0, 1)}
+    rate["stl_pct_o_all"] = fraction(sum_side("stl", 1), poss[0])
+    rate["stl_pct_d_all"] = fraction(sum_side("stl", 0), poss[1])
+    rate["blk_pct_o_all"] = fraction(sum_side("blk", 1), twos[0])
+    rate["blk_pct_d_all"] = fraction(sum_side("blk", 0), twos[1])
+    own_pot, opp_pot = turnover_points(0), turnover_points(1)
     from .export import EXTRA_RATE_FIELDS
-    rate.update({key: None for key in EXTRA_RATE_FIELDS})
+    rate.update({key: None for key in EXTRA_RATE_FIELDS if key not in rate})
+    rate["pts_off_to_per_dposs_all"] = fraction(own_pot, poss[1]) if own_pot is not None else None
+    rate["pts_off_to_per_dposs_d_all"] = fraction(opp_pot, poss[0]) if opp_pot is not None else None
     orb, drb = sum_side("orb", 0), sum_side("drb", 0)
     rate["orb_pct_all"] = fraction(orb, orb + sum_side("drb", 1))
     rate["drb_pct_all"] = fraction(drb, drb + sum_side("orb", 1))

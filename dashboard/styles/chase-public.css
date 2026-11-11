@@ -5258,6 +5258,13 @@ body[data-sport="nfl"] .ca-detail-nav {
   .ca-nfl-split tbody td:first-child { width: 16%; }
 }
 
+/* Player tables with many figure columns (NBA rotation, zones, defenders):
+   each figure's rank pill sits under it, and any context line under that, so
+   a narrow column never pushes a pill into its neighbour (2026-11-11). */
+.ca-nfl-split td.num.ca-stack-rank { white-space: normal; }
+.ca-nfl-split td.num.ca-stack-rank .ca-rank { display: block; width: max-content; margin: 2px 0 0 auto; }
+.ca-nfl-split td.num.ca-stack-rank small { display: block; margin-left: 0; white-space: nowrap; }
+
 /* ===========================================================================
  * NFL DESK: TABS AND ONE CLUB AT A TIME
  *
