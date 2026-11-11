@@ -42,6 +42,12 @@ jobs:
       - name: Build the NBA slate
         run: python scripts/publish_public_nba_slate.py
 
+      - uses: actions/cache@v4
+        with:
+          path: .cache/nba-boxes
+          key: nba-boxes-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: nba-boxes-${{ runner.os }}-
+
       - name: Score NBA predictability
         run: python scripts/publish_public_nba_predictability.py
 

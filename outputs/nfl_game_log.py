@@ -137,6 +137,9 @@ def _game_rows(game: pd.DataFrame, k: dict[str, Any]) -> list[dict]:
             "giveaways": give, "takeaways": take, "turnover_margin": take - give,
             "third_down": third_conv / third_att if third_att else None,
             "third_down_made": third_conv, "third_down_att": third_att,
+            # Play count, EPA sum and EPA sum of squares: the predictability read.
+            "_events": (int(off["epa"].notna().sum()), float(off["epa"].sum()), float((off["epa"] ** 2).sum()))
+            if off["epa"].notna().any() else None,
         })
     return rows
 
@@ -171,10 +174,16 @@ def build(season: int | None = None) -> dict | None:
         teams.setdefault(row["team"], []).append(game)
     for games in teams.values():
         games.sort(key=lambda g: g["week"])
+    events: dict[str, list] = {}
+    for row in rows:
+        if row["_events"]:
+            events.setdefault(row["team"], []).append(row["_events"])
+    from pipeline import predictability
     return {
         "season": season,
         "through_week": int(current["week"].max()),
         "team_games": len(rows),
         "luck_rates": k,
         "teams": teams,
+        "predictability": predictability.score(events, predictability.NFL),
     }

@@ -115,7 +115,8 @@
     "week",
     "zone_policy",
     "zones_basis",
-    "window_seconds"
+    "window_seconds",
+    "event"
   ],
   "identity": [
     "Cut",
@@ -1122,7 +1123,9 @@
     "pressure_forced_per100",
     "pressure_steals_per100",
     "pressure_lost_per100",
-    "pressure_stolen_per100"
+    "pressure_stolen_per100",
+    "game_spread",
+    "league_spread"
   ],
   "contextual_environment": [
     "away_rest_days",

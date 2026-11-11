@@ -1,71 +1,63 @@
-"""Predictability reads each unit's spread around expectation against its league's curve."""
+"""Predictability reads an offense's game spread from how it scores (pipeline/predictability.py)."""
 import random
 import unittest
 
 from pipeline import predictability as pr
 
 
-def league_games(seed=7, teams=24, rounds=14, wild_offense="T0", calm_defense="T1"):
+def basketball_league(seed=7, teams=24, games=20, threes=None, slow=None):
+    """Synthetic box rows: most offenses take 35% threes over 70 possessions;
+    ``threes`` maps a team to its three-point share, ``slow`` to its possessions."""
     rng = random.Random(seed)
-    names = [f"T{i}" for i in range(teams)]
-    level = {t: rng.gauss(0, 4) for t in names}
-    stop = {t: rng.gauss(0, 4) for t in names}
-    games = []
-    for r in range(rounds):
-        order = names[:]
-        rng.shuffle(order)
-        for home, away in zip(order[::2], order[1::2]):
-            row = {"home": home, "away": away}
-            for side, other in (("home", away), ("away", home)):
-                me = home if side == "home" else away
-                noise = 10.0
-                if me == wild_offense:
-                    noise *= 2.5
-                if other == calm_defense:
-                    noise *= 0.35
-                row[side + "_off"] = 110 + level[me] - stop[other] + rng.gauss(0, noise)
-            games.append(row)
-    return games
+    out = {}
+    for i in range(teams):
+        team = f"T{i}"
+        share = (threes or {}).get(team, 0.35)
+        poss = (slow or {}).get(team, 70)
+        rows = []
+        for _ in range(games):
+            fga = int(poss * 0.85)
+            tpa = int(fga * share)
+            tpm = sum(rng.random() < 0.35 for _ in range(tpa))
+            twos = sum(rng.random() < 0.52 for _ in range(fga - tpa))
+            fta = 18
+            ftm = sum(rng.random() < 0.72 for _ in range(fta))
+            points = 2 * twos + 3 * tpm + ftm
+            rows.append(pr.basketball_game(twos + tpm, tpm, ftm, fta, points, poss))
+        out[team] = rows
+    return out
 
 
 class PredictabilityTests(unittest.TestCase):
-    def setUp(self):
-        self.out = pr.score(league_games(), pr.NBA)
+    def test_lumpier_scoring_and_fewer_possessions_read_as_less_predictable(self):
+        out = pr.score(basketball_league(threes={"T0": 0.65}, slow={"T1": 58}), pr.NBA)
+        self.assertEqual(out["T0"]["offense"]["place"], out["T0"]["offense"]["of"])
+        self.assertGreater(out["T1"]["offense"]["volatility"], 1.03)
+        self.assertGreater(out["T0"]["offense"]["off_curve"], 0.1336)
 
-    def test_volatile_offense_ranks_least_predictable(self):
-        offense = {t: v["offense"] for t, v in self.out.items()}
-        worst = max(offense, key=lambda t: offense[t]["volatility"])
-        self.assertEqual(worst, "T0")
-        self.assertEqual(offense["T0"]["place"], offense["T0"]["of"])
-        self.assertLess(offense["T0"]["predictability"], 10)
-        self.assertGreater(offense["T0"]["off_curve"], 0.25)
-
-    def test_variance_preventing_defense_ranks_most_predictable(self):
-        defense = {t: v["defense"] for t, v in self.out.items()}
-        self.assertEqual(defense["T1"]["place"], 1)
-        self.assertEqual(defense["T1"]["predictability"], 100)
-        self.assertLess(defense["T1"]["off_curve"], 0.10)
-
-    def test_league_average_unit_sits_on_the_normal_tail(self):
-        curve = next(iter(self.out.values()))["curve"]
+    def test_league_average_offense_sits_on_the_normal_tail(self):
+        out = pr.score(basketball_league(), pr.NBA)
+        curve = next(iter(out.values()))["curve"]
         self.assertAlmostEqual(curve["league_off_curve"], 0.1336, places=3)
-        typical = sorted(v["offense"]["off_curve"] for t, v in self.out.items() if t not in ("T0", "T1"))
-        median = typical[len(typical) // 2]
-        self.assertLess(abs(median - 0.1336), 0.06)
+        typical = sorted(v["offense"]["off_curve"] for v in out.values())
+        self.assertLess(abs(typical[len(typical) // 2] - 0.1336), 0.01)
 
-    def test_scores_are_percentiles_and_places_are_complete(self):
-        for unit in ("team", "offense", "defense"):
-            rows = [v[unit] for v in self.out.values()]
-            self.assertEqual({r["of"] for r in rows}, {len(rows)})
-            self.assertEqual(min(r["place"] for r in rows), 1)
-            self.assertTrue(all(0 <= r["predictability"] <= 100 for r in rows))
+    def test_scores_are_percentiles_with_complete_places(self):
+        out = pr.score(basketball_league(threes={"T3": 0.6}), pr.CBB)
+        rows = [v["offense"] for v in out.values()]
+        self.assertEqual({r["of"] for r in rows}, {len(rows)})
+        self.assertEqual(min(r["place"] for r in rows), 1)
+        self.assertTrue(all(0 <= r["predictability"] <= 100 for r in rows))
+        self.assertTrue(all(set(v) == {"offense", "curve"} for v in out.values()), "defenses are never scored")
 
-    def test_thin_samples_lean_on_the_league_and_outsiders_are_excluded(self):
-        games = league_games(rounds=3)
-        out = pr.score(games, pr.NBA)
-        self.assertEqual(out, {}, "NBA needs five games before a unit is scored")
-        out = pr.score(league_games(), pr.CBB, teams={f"T{i}" for i in range(12)})
-        self.assertTrue(set(out) <= {f"T{i}" for i in range(12)})
+    def test_thin_samples_are_left_out(self):
+        league = basketball_league(games=2)
+        self.assertEqual(pr.score(league, pr.NBA), {}, "NBA needs three games")
+        self.assertEqual(len(pr.score(league, pr.CBB)), 24)
+
+    def test_free_throw_trips_add_the_partner_throw(self):
+        _, _, sq = pr.basketball_game(fgm=0, tpm=0, ftm=2, fta=2, points=2, possessions=1)
+        self.assertEqual(sq, 4.0)
 
 
 if __name__ == "__main__":

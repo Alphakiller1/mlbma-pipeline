@@ -5,6 +5,7 @@ from statistics import mean
 
 import requests
 
+from .. import predictability
 from . import possession_data as ncaa
 from . import pressure
 from .data import read, write
@@ -118,6 +119,12 @@ def load_box(game, cache):
     value = parse_box(response.json(), game)
     write(file, value)
     return value
+
+
+def events(team):
+    """(possessions, points, points squared) for the predictability read."""
+    ftm = team["pts"] - 2 * team["fgm"] - team["tpm"]
+    return predictability.basketball_game(team["fgm"], team["tpm"], ftm, team["fta"], team["pts"], team["poss"])
 
 
 def counted_pace(year):
@@ -303,7 +310,8 @@ def supplement(contexts, schedule, year, as_of, cache):
             if home in division and away in division:
                 finals.append({"id": str(g["game_id"]), "date": day, "home": home, "away": away,
                                **{f"{side}_{k}": box["teams"][tid][k] for side, tid in (("home", home), ("away", away))
-                                  for k in ("pts", "poss")}})
+                                  for k in ("pts", "poss")},
+                               **{f"{side}_events": events(box["teams"][tid]) for side, tid in (("home", home), ("away", away))}})
             for side, own, opp in (("home", home, away), ("away", away, home)):
                 if own not in division:
                     continue

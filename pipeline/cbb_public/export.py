@@ -334,10 +334,11 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
         season={tid:c for (y,tid),c in all_context.items() if y==year}
         if finals:
             box_schedule_strength(season,finals)
-            # Points per 100 box possessions, D-I vs D-I, on the CBB curve.
-            scored=predictability.score([{'home':g['home'],'away':g['away'],
-                'home_off':100*g['home_pts']/g['home_poss'],'away_off':100*g['away_pts']/g['away_poss']}
-                for g in finals if g['home_poss'] and g['away_poss']],predictability.CBB)
+            # Each offense's scoring events over its D-I games (pipeline/predictability.py).
+            events=defaultdict(list)
+            for g in finals:
+                for side in ('home','away'):events[g[side]].append(g[side+'_events'])
+            scored=predictability.score(events,predictability.CBB)
             for tid,c in season.items():
                 if str(tid) in scored:c['predictability']=scored[str(tid)]
         else:
