@@ -123,17 +123,25 @@ def grade_baselines(contexts,year):
     for key in RATE_FIELDS:
         if key=='games_all':
             continue
+        # A team Basketball Quant has not counted yet is read on its ESPN box
+        # rates (espn_boxes.rate_rows, the same definitions), so every figure
+        # the desk shows sits in the pool it is ranked against.
         values=[c['rates'].get(key) for c in cohort]
-        if key.startswith(('efg_', 'fg2_pct_', 'fg3_pct_', 'ftr_')):
-            values.extend(box.get(key) for box in fallback)
+        values.extend(box.get(key) for box in fallback)
         team[key]=distribution(values,rank_samples=True)
     for key in pressure.RANKED:
         team[key]=distribution(pressure.rank_values((c.get('pressure') for c in season),key),rank_samples=True)
     for window in ('played','remaining'):
         for stat,key in (('opp_offense','off'),('opp_defense','def'),('opp_net','net')):
             team[f'sos_{key}_{window}']=distribution(((c.get('schedule_strength') or {}).get(window,{}).get(stat) for c in season),rank_samples=True)
-    players=[p for c in cohort for p in c['players'] if (p.get('G') or 0)>0 and (p.get('Min_pct') or 0)>=10]
-    player={k:distribution((p.get(k) for p in players if k!='TS' or (p.get('FGA') or 0)+(p.get('FTA') or 0)>0), rank_samples=True)
+    # The desk reads a team's ESPN box players when it has no counted player
+    # line, so those players join the pool they are ranked against.
+    lines=[p for c in season for p in (c['players'] if any(x.get('G') for x in c['players'])
+                                        else (c.get('official_box') or {}).get('players') or [])]
+    players=[p for p in lines if (p.get('G') or 0)>0 and (p.get('Min_pct') or 0)>=10]
+    # Box player lines publish TS only when the player shot (no FGA/FTA keys).
+    player={k:distribution((p.get(k) for p in players if k!='TS' or (p.get('FGA') or 0)+(p.get('FTA') or 0)>0
+                            or ('FGA' not in p and p.get('TS') is not None)), rank_samples=True)
             for k in ['Pts','Reb','Ast','TS']}
     return {'team':team,'player':player, **matchup_baselines(season),
             'team_policy':'Same-season D-I teams with a reported game; equal team weighting.',

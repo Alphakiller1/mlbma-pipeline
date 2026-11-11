@@ -66,6 +66,28 @@ NFL_GRADING_AUDIT = r"""
 }
 """
 
+# Every graded figure in a desk table prints its place (owner, 2026-11-11:
+# "some values are missing rank, fix this everywhere"). A cell is graded when it
+# or a value inside it carries a tier class; the pill must sit in the same cell.
+UNPILLED_AUDIT = r"""
+() => {
+  const tier = /(^|\s)c-(elite|good|mid|weak|poor)(\s|$)/;
+  // Figures only: rank-bar cells hold no number, and a W/L result is a result.
+  const cells = [...document.querySelectorAll('.ca-detail-stack table td')].filter(td =>
+    /\d/.test(td.innerText) && !td.querySelector('[data-result], .ca-log-result'));
+  const graded = cells.filter(td => tier.test(td.className) ||
+    [...td.querySelectorAll('[class]')].some(el => !el.classList.contains('ca-rank') && tier.test(el.className)));
+  const bad = graded.filter(td => !td.querySelector('.ca-rank')).map(td => {
+    const sec = td.closest('.ca-detail-section'); const table = td.closest('table');
+    const idx = [...td.parentElement.cells].indexOf(td);
+    const head = table.tHead ? [...table.tHead.rows].pop().cells[idx] : null;
+    return (sec ? sec.id : '?') + ' | ' + (head ? head.innerText.trim() : '') + ' | ' + td.innerText.trim().slice(0, 24);
+  });
+  return { graded: graded.length, unpilled: bad.length, sample: bad.slice(0, 6) };
+}
+"""
+
+
 def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
     results: list[Result] = []
 
@@ -224,6 +246,11 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.locator('[data-cbb-season="2027"]').click()
         check("CBB current season restores the evidence", cbb_counts[2027] in page.locator("#cbb-shot-chart").text_content())
         check("CBB public copy boundary", PROHIBITED.search(page.locator("main").inner_text()) is None)
+        page.evaluate("document.querySelector('.ca-detail-stack').setAttribute('data-nfl-tab', 'all')")
+        page.wait_for_timeout(1500)
+        cbb_pills = page.evaluate(UNPILLED_AUDIT)
+        check("CBB every graded figure carries its rank pill",
+              cbb_pills["graded"] > 40 and cbb_pills["unpilled"] == 0, str(cbb_pills))
 
         nba = page.request.get(base_url.rstrip('/') + '/data/public/nba/slate.json').json()
         if nba.get('games'):
@@ -238,6 +265,11 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             page.locator('[data-nba-season="2027"]').click()
             check('NBA current season restores measured coverage', '2026–27' in page.locator('#nba-coverage').inner_text())
             check('NBA measured and inferred coverage remain distinct', 'Inferred Defensive Tendencies' in page.locator('#nba-scheme').inner_text())
+            page.evaluate("document.querySelector('.ca-detail-stack').setAttribute('data-nfl-tab', 'all')")
+            page.wait_for_timeout(1500)
+            nba_pills = page.evaluate(UNPILLED_AUDIT)
+            check('NBA every graded figure carries its rank pill',
+                  nba_pills['graded'] > 100 and nba_pills['unpilled'] == 0, str(nba_pills))
 
         for sport in ("cbb", "nfl", "cfb", "nba"):
             response = page.request.get(f"{base_url.rstrip('/')}/{sport}/results.html")
