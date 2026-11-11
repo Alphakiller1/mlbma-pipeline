@@ -1,7 +1,7 @@
 """Factual public projection. Model outputs never enter this directory."""
 from __future__ import annotations
 from collections import Counter, defaultdict
-from datetime import date, datetime, time, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import gzip,json,math
@@ -47,6 +47,24 @@ def schedule_strength(season):
         c['schedule_strength']=block
 
 UNTAGGED_SHOT_TYPES=('driving','floater','pullup')
+
+def live_cutoff(stats, schedule, as_of):
+    """Shot coordinates and ESPN boxes post a game within minutes; Basketball
+    Quant's team rates count it overnight. When most of the day's D-I finals
+    are not yet in the rates, the live feeds are read through the day before,
+    so every section of a team counts the same games."""
+    counted = {s['team_id']: int(s.get('games_all') or 0) for s in stats}
+    days = defaultdict(list)
+    for g in schedule:
+        h, a = g.get('home_id'), g.get('away_id')
+        if g.get('status_type_name') == 'STATUS_FINAL' and g['game_date'] <= as_of and h in counted and a in counted:
+            days[h].append(g['game_date']); days[a].append(g['game_date'])
+    today = [t for t, d in days.items() if as_of in d]
+    behind = sum(1 for t in today if len(days[t]) > counted[t])
+    if today and behind > len(today) / 2:
+        print(f'Team rates do not count {behind} of {len(today)} D-I teams that finished on {as_of}; live feeds read through the day before.')
+        return (date.fromisoformat(as_of) - timedelta(days=1)).isoformat()
+    return as_of
 
 def mark_untracked_shot_types(rates):
     """Play-by-play from some feeds never labels drives, floaters or pull-ups.
@@ -243,6 +261,7 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
     for year in (2026,2027):
         stats=table(snapshot,'mbb_team_seasons',year);cohort={r['team_id'] for r in stats};ratings={r['team_id']:r for r in table(snapshot,'mbb_team_ratings',year)}
         players=table(snapshot,'basketball_players',year);schedules[year]=table(snapshot,'mbb_sched',year)
+        live=date.fromisoformat(live_cutoff(stats,schedules[year],as_of) if year==2027 else as_of).isoformat()
         players_by_team=defaultdict(list)
         for p in players:players_by_team[p.get('Team')].append({k:p.get(k) for k in PLAYER_FIELDS})
         cbb_lg={r['zoneName']:{'made':r['fgm'],'attempts':r['fga']} for r in read(snapshot/f'data/cbb-league-zones-{year}.json') if r.get('zoneSchema')=='zones6' and r.get('divisionId')==1}
@@ -251,7 +270,7 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
         # Team rates count D-I opponents only. Shots use the same games, so a
         # shot chart and the efficiency table beside it describe one sample.
         division=','.join(str(int(t)) for t in sorted(cohort))
-        d1=f' AND home_id IN ({division}) AND away_id IN ({division})'
+        d1=f" AND home_id IN ({division}) AND away_id IN ({division}) AND game_date<='{live}'"
         for tid,z,n,m in conn.execute('SELECT team_id,zone,COUNT(*),SUM(made) FROM shots WHERE season=? AND zone IS NOT NULL'+d1+' GROUP BY team_id,zone',(year,)):
             aggregates['offense'][tid].append({'id':z,'attempts':n,'made':m})
             if tid in cohort:lg[z]['attempts']+=n;lg[z]['made']+=m
@@ -268,7 +287,7 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
                 'color':'#'+str(ident.get('primary_color') or '9A6BFF').lstrip('#')}
             rates={k:s.get(k) for k in RATE_FIELDS};mark_untracked_shot_types(rates)
             c={'identity':ident,'season':year,'rates':rates,'players':roster,
-               'source':'Basketball Quant','data_through':max((g['game_date'] for g in schedules[year] if g.get('status_type_name')=='STATUS_FINAL' and tid in [g.get('home_id'),g.get('away_id')] and g['game_date']<=as_of),default=None),
+               'source':'Basketball Quant','data_through':max((g['game_date'] for g in schedules[year] if g.get('status_type_name')=='STATUS_FINAL' and tid in [g.get('home_id'),g.get('away_id')] and g['game_date']<=live),default=None),
                'record':f'{int(s.get("wins") or 0)}–{int(s.get("losses") or 0)}','shots':{}}
             if observed_tactics:c['observed_tactics']=observed_tactics.get(year,{}).get(str(tid))
             own={}
@@ -298,7 +317,7 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
         finals=None
         if year==2027 and observed_tactics and box_cache:
             from .espn_boxes import supplement
-            finals=supplement({tid:all_context[(year,tid)] for tid in cohort},schedules[year],year,as_of,box_cache)
+            finals=supplement({tid:all_context[(year,tid)] for tid in cohort},schedules[year],year,live,box_cache)
         # Published shortcut metadata maps the provider IDs to the validated institution IDs.
         reference={103765:96,103549:150,103903:127,103296:12,103757:2305,103257:2509}
         for file in (snapshot/'data').glob(f'cbb-shots-{year}-*-offense.ndjson.gz'):

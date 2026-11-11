@@ -7698,8 +7698,9 @@ function seasonToggle(game) {
       ['Points/100','ppp_off_all',true,'ppp_def_all',false,cbbPer100],
       ['eFG%','efg_o_all',true,'efg_d_all',false,cbbPct],
       ['TOV%','tov_pct_o_all',false,'tov_pct_d_all',true,cbbPct],
-      // The defense's own rebound share prints as the offensive share it allows.
-      ['ORB%','orb_pct_all',true,'drb_pct_all',true,cbbPct,function(n){return cbbPct(1-n);}],
+      // The offense's share of its misses against the defense's share of the
+      // misses it forces: the same boards, each read from its own side.
+      ['ORB% / DRB%','orb_pct_all',true,'drb_pct_all',true,cbbPct],
       ['FTA/FGA','ftr_o_all',true,'ftr_d_all',false,function(n){return cbbNumber(n,3);}],
       ['2P%','fg2_pct_o_all',true,'fg2_pct_d_all',false,cbbPct],
       ['3P%','fg3_pct_o_all',true,'fg3_pct_d_all',false,cbbPct],
@@ -7741,8 +7742,8 @@ function seasonToggle(game) {
       cbbTable(['Shot type','O share','O pts/shot','D share allowed','D pts/shot allowed'],rows,'ca-cbb-shot-type-table'));
   }
   /* Schedule strength: the average D-I opponent's points scored and allowed
-     per 100 possessions, and their net, over games played and fixtures left.
-     1st is the hardest: the best offenses, the stingiest defenses. */
+     per 100 possessions, and their net, over games played. 1st is the
+     hardest: the best offenses, the stingiest defenses. */
   function cbbSos(game) {
     var year=cbbYear(game);
     function cell(block,key,stat,higher){
@@ -7760,11 +7761,10 @@ function seasonToggle(game) {
       });
     }
     var head=['School','D-I games','Vs offenses (opp pts/100)','Vs defenses (opp allowed/100)','Total SOS (opp net/100)'];
-    var played=rows('played'), remaining=rows('remaining');
-    var any=played.concat(remaining).some(function(r){return r[1]!=='0';});
-    if(!any)return cbbPanel('Schedule strength',cbbSeason(game),pending('No D-I schedule sample is published for these teams.'));
-    return cbbPanel('Games played',cbbSeason(game)+' · ESPN final boxes',cbbTable(head,played,'ca-cbb-factor-table'))+
-      (year===2027?cbbPanel('Games remaining',cbbSeason(game)+' · listed D-I fixtures',cbbTable(head,remaining,'ca-cbb-factor-table')):'');
+    var played=rows('played');
+    if(!played.some(function(r){return r[1]!=='0';}))
+      return cbbPanel('Schedule strength',cbbSeason(game),pending('No D-I schedule sample is published for these teams.'));
+    return cbbPanel('Games played',cbbSeason(game)+' · ESPN final boxes',cbbTable(head,played,'ca-cbb-factor-table'));
   }
   function cbbShotPanel(sport,game,side) {
     var opp=side==='away'?'home':'away',a=cbbTeam(game,side),b=cbbTeam(game,opp),chart=global.ChaseCbbCharts;
