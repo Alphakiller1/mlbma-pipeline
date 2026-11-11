@@ -4,6 +4,12 @@ This extends the existing matchup desk, tab order, club switch, paired ledgers,
 court geometry, fonts, surfaces and five-tier Chase color system. No replacement
 layout or chart library is introduced.
 
+The CFB matchup ledger also serves NBA scoring, Four Factors and shooting,
+CBB efficiency and transition, and NFL team form, pass/run, rushing and red
+zone comparisons. Each row puts the offense on the left and its opposing
+defense on the right. The bars mirror each unit's rank within its own cohort.
+Reported values without a comparable rank appear with an empty bar.
+
 ## CBB
 
 Current/prior season controls continue to select 2026–27 and 2025–26 explicitly.
