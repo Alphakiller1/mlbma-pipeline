@@ -43,7 +43,10 @@ def validate_context(value,old=None):
                 rate=part[k+'_per100']
                 if (rate is None)!=(not n) or (n and (abs(rate-100*part[k]/n)>0.01 or rate>30)):
                     raise ValueError('Pressure rate does not match its counts')
-        if old and (old.get('pressure') or {}).get('games',0)>press['games'] and old['season']==value['season']:
+        # Fewer games over the same or a later window is lost data; a window that
+        # ends earlier (live feeds held to the team-rate day) may count fewer.
+        before=old.get('pressure') if old and old['season']==value['season'] else None
+        if before and before['games']>press['games'] and (press.get('data_through') or '')>=(before.get('data_through') or ''):
             raise ValueError('Pressure sample regressed; existing publication retained')
     for family in value['shots'].values():
         for p in family.values():
