@@ -6,6 +6,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 import gzip,json,math
 from .data import ZONES,read,write,table
+from .. import predictability
 
 RATE_FIELDS=['games_all','efg_o_all','efg_d_all','tov_pct_o_all','tov_pct_d_all','orb_pct_all','drb_pct_all',
              'ftr_o_all','ftr_d_all','tpr_o_all','tpr_d_all','ppp_off_all','ppp_def_all','fg2_pct_o_all',
@@ -23,6 +24,55 @@ RATE_FIELDS=RATE_FIELDS+EXTRA_RATE_FIELDS
 PLAYER_FIELDS=['id','pid','athlete_id','Name','Team','G','Min_pct','Usg','Pts','Reb','Ast','eFG','TS',
                'FGM','FGA','3PM','3PA','FTM','FTA','3PP','FTR','Ht']
 FORBIDDEN={'predicted_score','predicted_margin','home_probability','home_win_probability','win_probability','confidence','pick','edge','odds','spread','moneyline','away_points','home_points','home_margin','total_points','power','rating','model_diagnostics','shooting_reversion','recent_shooting_reversion','shooting_scenario','regression_pressure_pp100','progression_pressure_pp100','net_reversion_pp100','geometric_sets','prior_reference_weight','tracking_tactics','posterior_per_regulation','posterior_mean'}
+
+SOS_KEYS=['sos_off_played','sos_def_played','sos_net_played','sos_off_remaining','sos_def_remaining','sos_net_remaining']
+
+def schedule_strength(season):
+    """Opponents' observed D-I efficiency, averaged over each team's games.
+
+    Offense: opponents' points per 100 possessions scored. Defense: points per
+    100 they allowed. Net: the difference. Played counts finals, remaining
+    counts listed fixtures; repeated opponents count once per game.
+    """
+    rates={c['identity']['id']:c['rates'] for c in season.values() if (c['rates'].get('games_all') or 0)>0}
+    for c in season.values():
+        block={}
+        for window,states in (('played',('post',)),('remaining',('pre',))):
+            opps=[rates[g['opponent_id']] for g in c.get('games',[]) if g['state'] in states and g['opponent_id'] in rates]
+            if not opps:continue
+            off=[100*r['ppp_off_all'] for r in opps];dfn=[100*r['ppp_def_all'] for r in opps]
+            block[window]={'games':len(opps),'opp_offense':sum(off)/len(off),'opp_defense':sum(dfn)/len(dfn),
+                           'opp_net':sum(o-d for o,d in zip(off,dfn))/len(opps)}
+        c['schedule_strength']=block
+
+def box_schedule_strength(season, finals):
+    """Schedule strength from final boxes, leaving out each opponent's games
+    against the team being measured, so a team never grades its own defense
+    (or offense) into its schedule. Remaining fixtures read each opponent's
+    full box-score season."""
+    games = defaultdict(list)  # team -> (game id, opponent, pts, poss, opp pts, opp poss)
+    for g in finals:
+        for side, other in (("home", "away"), ("away", "home")):
+            games[g[side]].append((g["id"], g[other], g[side + "_pts"], g[side + "_poss"],
+                                   g[other + "_pts"], g[other + "_poss"]))
+    def ratings(team, without=None):
+        rows = [r for r in games.get(team, []) if r[1] != without]
+        poss, opp_poss = sum(r[3] for r in rows), sum(r[5] for r in rows)
+        if not rows or not poss or not opp_poss:
+            return None
+        return 100 * sum(r[2] for r in rows) / poss, 100 * sum(r[4] for r in rows) / opp_poss
+    for tid, c in season.items():
+        block = {}
+        played = [ratings(opp, without=str(tid)) for _, opp, *_ in games.get(str(tid), [])]
+        upcoming = [ratings(g['opponent_id']) for g in c.get('games', []) if g['state'] == 'pre']
+        for window, rows in (('played', played), ('remaining', upcoming)):
+            rows = [r for r in rows if r]
+            if rows:
+                block[window] = {'games': len(rows), 'opp_offense': sum(r[0] for r in rows) / len(rows),
+                                 'opp_defense': sum(r[1] for r in rows) / len(rows),
+                                 'opp_net': sum(r[0] - r[1] for r in rows) / len(rows)}
+        c['schedule_strength'] = block
+
 
 def distribution(values, *, rank_samples=False):
     values=[float(v) for v in values if v is not None and math.isfinite(float(v))]
@@ -45,6 +95,9 @@ def grade_baselines(contexts,year):
         if key.startswith(('efg_', 'fg2_pct_', 'fg3_pct_', 'ftr_')):
             values.extend(box.get(key) for box in fallback)
         team[key]=distribution(values,rank_samples=True)
+    for window in ('played','remaining'):
+        for stat,key in (('opp_offense','off'),('opp_defense','def'),('opp_net','net')):
+            team[f'sos_{key}_{window}']=distribution(((c.get('schedule_strength') or {}).get(window,{}).get(stat) for c in season),rank_samples=True)
     players=[p for c in cohort for p in c['players'] if (p.get('G') or 0)>0 and (p.get('Min_pct') or 0)>=10]
     player={k:distribution((p.get(k) for p in players if k!='TS' or (p.get('FGA') or 0)+(p.get('FTA') or 0)>0), rank_samples=True)
             for k in ['Pts','Reb','Ast','TS']}
@@ -222,9 +275,10 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
                              'opponent_points':g.get(opp+'_score') if g.get('status_type_name')=='STATUS_FINAL' else None})
             c['games']=sorted(logs,key=lambda g:(g['date'],g['id']))
             all_context[(year,tid)]=c
+        finals=None
         if year==2027 and observed_tactics and box_cache:
             from .espn_boxes import supplement
-            supplement({tid:all_context[(year,tid)] for tid in cohort},schedules[year],year,as_of,box_cache)
+            finals=supplement({tid:all_context[(year,tid)] for tid in cohort},schedules[year],year,as_of,box_cache)
         # Published shortcut metadata maps the provider IDs to the validated institution IDs.
         reference={103765:96,103549:150,103903:127,103296:12,103757:2305,103257:2509}
         for file in (snapshot/'data').glob(f'cbb-shots-{year}-*-offense.ndjson.gz'):
@@ -238,6 +292,17 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
                 rows=[{'id':z,'attempts':sum(s.get('zones6')==z for s in shots),'made':sum(s.get('zones6')==z and s.get('success') is True for s in shots)} for z in ZONES]
                 cbb[role]=profile(rows,cbb_lg,'cbb-analytics-zones6',max((s.get('gameDate') for s in shots),default=None),len({s['gameId'] for s in shots}))
             all_context[(year,tid)]['shots']['cbb']=cbb
+        season={tid:c for (y,tid),c in all_context.items() if y==year}
+        if finals:
+            box_schedule_strength(season,finals)
+            # Points per 100 box possessions, D-I vs D-I, on the CBB curve.
+            scored=predictability.score([{'home':g['home'],'away':g['away'],
+                'home_off':100*g['home_pts']/g['home_poss'],'away_off':100*g['away_pts']/g['away_poss']}
+                for g in finals if g['home_poss'] and g['away_poss']],predictability.CBB)
+            for tid,c in season.items():
+                if str(tid) in scored:c['predictability']=scored[str(tid)]
+        else:
+            schedule_strength(season)
         for s in stats:
             tid=s['team_id'];c=all_context[(year,tid)];assert_public(c)
             write(out/f'{year}/teams/{tid}.json',c)

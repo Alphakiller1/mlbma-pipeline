@@ -975,7 +975,17 @@
     "corner3_freq_off_all",
     "corner3_freq_def_all",
     "corner3_ppa_off_all",
-    "corner3_ppa_def_all"
+    "corner3_ppa_def_all",
+    "schedule_strength",
+    "opp_offense",
+    "opp_defense",
+    "opp_net",
+    "sos_off_played",
+    "sos_def_played",
+    "sos_net_played",
+    "sos_off_remaining",
+    "sos_def_remaining",
+    "sos_net_remaining"
   ],
   "derived_descriptive": [
     "estimated_per40",
@@ -1087,7 +1097,18 @@
     "total_dvoa",
     "tracking_ranks",
     "two_high_rate",
-    "wins_over_pythag"
+    "wins_over_pythag",
+    "predictability",
+    "off_curve",
+    "observed_off_curve",
+    "volatility",
+    "curve",
+    "metric",
+    "z",
+    "prior_games",
+    "unit_sigma",
+    "team_sigma",
+    "league_off_curve"
   ],
   "contextual_environment": [
     "away_rest_days",
@@ -1281,7 +1302,8 @@
       "$.teams.*.seasons",
       "$.grade_baselines",
       "$.seasons",
-      "$.seasons.*.teams"
+      "$.seasons.*.teams",
+      "$.predictability"
     ],
     "exact_note": "Whole-path rules, anchored at the artifact root. `note` and `teams` are both named in model_derived_label, where they mean a model's own note and a model's team block. At the root of a published artifact they are the human-readable caveat and the container everything else hangs off, so they resolve by position rather than by name.",
     "exact": {

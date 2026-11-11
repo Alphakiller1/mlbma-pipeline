@@ -112,7 +112,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("ca-cfb-ledger-table", js)
         self.assertIn("function cfbSpecialBody", js)
         self.assertIn("function cfbDvoaBody", js)
-        self.assertIn("['units', 'Units', ['cfb-efficiency', 'cfb-dvoa']]", js)
+        self.assertIn("['units', 'Units', ['cfb-efficiency', 'cfb-dvoa', 'cfb-predictability']]", js)
         self.assertIn("['passing', 'Passing', ['cfb-quarterbacks', 'cfb-passing']]", js)
         self.assertIn("['rushing', 'Rushing', ['cfb-rushing', 'cfb-rushers']]", js)
         for fn in ("cfbQbPanel", "cfbRushersPanel", "cfbGameLogPanel"):

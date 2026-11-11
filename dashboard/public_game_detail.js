@@ -5623,12 +5623,19 @@ function seasonToggle(game) {
       nflMarginStrip(games) + table + '</section>';
   }
 
+  function nflPredictabilityBody(sport, game, logs) {
+    if (logs === undefined) return pending('Predictability is loading.');
+    var table = (logs || {}).predictability || {};
+    return predictabilityPanel(nflNick(sport, game, 'away'), nflNick(sport, game, 'home'),
+      table[game.away], table[game.home], String((logs || {}).season || '') + ' · through week ' + ((logs || {}).through_week || ''));
+  }
+
   function nflGameLogBody(sport, game, logs) {
     return nflDuo(nflGameLogPanel, sport, game, logs);
   }
 
   var NFL_TABS = [
-    ['units', 'Units', ['efficiency']],
+    ['units', 'Units', ['efficiency', 'predictability']],
     ['dvoa', 'DVOA', ['dvoa']],
     ['games', 'Games', ['game-log']],
     ['passing', 'Passing', ['quarterbacks', 'coverage', 'looks']],
@@ -5862,6 +5869,9 @@ function seasonToggle(game) {
       section('efficiency', 'Unit Matchups', 'Each Offense Above The Defense It Meets',
         nflDuo(nflDrivePanel, sport, game)),
 
+      section('predictability', 'Predictability', 'How Often Each Unit Lands Off The NFL Curve',
+        nflPredictabilityBody(sport, game, undefined)),
+
       section('dvoa', 'DVOA', 'Total And Unit Efficiency From FTN Team Total DVOA',
         nflDuo(nflDvoaPanel, sport, game)),
 
@@ -5932,7 +5942,7 @@ function seasonToggle(game) {
    * no explanations (owner rules, 2026-09-26).
    * ------------------------------------------------------------------ */
   var CFB_TABS = [
-    ['units', 'Units', ['cfb-efficiency', 'cfb-dvoa']],
+    ['units', 'Units', ['cfb-efficiency', 'cfb-dvoa', 'cfb-predictability']],
     ['games', 'Games', ['cfb-game-log', 'cfb-schedule']],
     ['passing', 'Passing', ['cfb-quarterbacks', 'cfb-passing']],
     ['rushing', 'Rushing', ['cfb-rushing', 'cfb-rushers']],
@@ -6390,7 +6400,7 @@ function seasonToggle(game) {
    * (ChaseSportNBA.MIN_GAMES), and every panel says which.
    * ------------------------------------------------------------------ */
   var NBA_TABS = [
-    ['units', 'Matchup', ['nba-edge-map', 'nba-ratings', 'nba-efficiency']],
+    ['units', 'Matchup', ['nba-edge-map', 'nba-ratings', 'nba-efficiency', 'nba-predictability']],
     ['shots', 'Shot Profile', ['nba-shot-chart', 'nba-databallr', 'nba-shot-maps', 'nba-shot-kinds', 'nba-shooting']],
     ['playtypes', 'Play Types', ['nba-fingerprint', 'nba-play-types']],
     ['defense', 'Defense', ['nba-coverage', 'nba-scheme', 'nba-defenders', 'nba-onfloor']],
@@ -7361,6 +7371,13 @@ function seasonToggle(game) {
     ].join('');
   }
 
+  function nbaPredictabilityBody(sport, game) {
+    var data = game.__nbaPredictability;
+    if (data === undefined) return pending('Predictability is loading.');
+    var teams = (data && data.teams) || {};
+    return predictabilityPanel(fullName(sport, game, 'away'), fullName(sport, game, 'home'),
+      teams[game.away], teams[game.home], (data ? (data.season - 1) + '–' + String(data.season).slice(2) + ' · ' + data.games + ' finals' : ''));
+  }
   function nbaSections(sport, game) {
     function context(side) {
       return teamPanel(sport, game, side, [
@@ -7375,6 +7392,8 @@ function seasonToggle(game) {
       section('nba-ratings', 'Team Ratings', 'Per 100 Possessions, Ranked Of 30 Clubs', nbaRatingsBody(sport, game)),
       section('nba-efficiency', 'Offense Against Defense', 'Scoring And The Four Factors',
         nflDuo(nbaLedgerPanel, sport, game, 'efficiency')),
+      section('nba-predictability', 'Predictability', 'How Often Each Unit Lands Off The NBA Curve',
+        nbaPredictabilityBody(sport, game)),
       section('nba-shooting', 'Shooting', 'Shot Mix, Accuracy And Ball Movement',
         nflDuo(nbaLedgerPanel, sport, game, 'shooting')),
       section('nba-rotation', 'Rotation', 'Per-Game Lines, Most Minutes First', nflDuo(nbaRotationPanel, sport, game)),
@@ -7477,7 +7496,7 @@ function seasonToggle(game) {
      where the shots come from, how possessions start and end, how each defense
      lines up, who is available to play, then the schedule. */
   var CBB_TABS = [
-    ['units','Units',['cbb-pace','cbb-efficiency']],
+    ['units','Units',['cbb-pace','cbb-efficiency','cbb-sos','cbb-predictability']],
     ['shooting','Shot Profile',['cbb-shot-chart']],
     ['possessions','Possessions',['cbb-transition','cbb-situations','cbb-restarts']],
     ['defense','Defense',['cbb-shot-types','cbb-personnel','cbb-tagged-schemes']],
@@ -7512,7 +7531,9 @@ function seasonToggle(game) {
     var total=cbbDivisionGames(game,side);
     return cbbSchool(game,side)+' '+(total&&games<total?games+' of '+total:games)+' D-I '+(total===1||(!total&&games===1)?'game':'games');
   }
-  function cbbPlace(value, peers, higher, minimum) {
+  /* A value outside the ranked pool (a sample under its floor) can still be
+     placed among it when asked: where it would sit, clamped to the pool. */
+  function cbbPlace(value, peers, higher, minimum, placeOutside) {
     if (!Number.isFinite(value) || !Array.isArray(peers) || peers.length < (minimum || 10)) return null;
     var ahead = 0, included = false;
     peers.forEach(function (peer) {
@@ -7520,16 +7541,17 @@ function seasonToggle(game) {
       if (Math.abs(delta) < 1e-10) included = true;
       else if (delta > 0) ahead += 1;
     });
-    return included ? {rank:ahead + 1, of:peers.length} : null;
+    if (!included && !placeOutside) return null;
+    return {rank:Math.min(ahead + 1, peers.length), of:peers.length};
   }
   function cbbRanked(value, place, cohort, tone) {
     if (!place) return value;
     var label = place.rank + ordinal(place.rank) + ' of ' + place.of + ' ' + cohort;
     return '<span class="ca-cbb-ranked">' + value + rankBadge(place, tone || '', label) + '</span>';
   }
-  function cbbComparison(game, family, row, value, higher, minimum) {
+  function cbbComparison(game, family, row, value, higher, minimum, placeOutside) {
     var peers = global.ChaseSportCBB.comparisonRanks(cbbYear(game), family, row);
-    return cbbPlace(value, peers, higher, minimum);
+    return cbbPlace(value, peers, higher, minimum, placeOutside);
   }
   function cbbMetric(game,n,text,key,higher,group) {
     var chart = global.ChaseCbbCharts, year = cbbYear(game);
@@ -7545,6 +7567,29 @@ function seasonToggle(game) {
   }
   function cbbTable(head,rows,cls) {
     return '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-basketball-table '+(cls||'')+'"><thead><tr>'+head.map(function(h,i){return '<th scope="col"'+(i?' class="num"':'')+'>'+esc(h)+'</th>';}).join('')+'</tr></thead><tbody>'+rows.map(function(row){return '<tr>'+row.map(function(v,i){return '<td'+(i?' class="num"':'')+'>'+v+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>';
+  }
+  /* Predictability (pipeline/predictability.py), shared by every desk: each
+     unit's score is its percentile among its league for staying on the curve
+     (100 = least volatile around what each game was expected to produce).
+     Beneath it, how often that spread puts a game beyond 1.5 league standard
+     deviations, against the league's own normal tail. */
+  function predictabilityPanel(awayName, homeName, a, b, season) {
+    var curve = (a && a.curve) || (b && b.curve);
+    var units = [['team','Team (net margin)'],['offense','Offense (causes variance)'],['defense','Defense (allows variance)']];
+    function cell(block) {
+      if (!block) return cbbMissing('Too few games');
+      var place = {rank: block.place, of: block.of};
+      var label = 'least volatile first · volatility ' + Number(block.volatility).toFixed(2) + '× the league curve';
+      return cbbRanked('<span class="ca-basketball-value ' + rankTone(block.place, block.of) + '">' +
+        esc(String(block.predictability)) + '</span>', place, label) +
+        '<small class="ca-cbb-count">' + (100 * block.off_curve).toFixed(1) + '% off-curve · ' +
+        block.games + (block.games === 1 ? ' game' : ' games') + '</small>';
+    }
+    if (!curve) return cbbPanel('Predictability', season, pending('Predictability needs more completed games for these teams.'));
+    var rows = units.map(function (u) { return [esc(u[1]), cell(a && a[u[0]]), cell(b && b[u[0]])]; });
+    return cbbPanel('Predictability', season + ' · ' + curve.metric + ' · league off-curve rate ' +
+        (100 * curve.league_off_curve).toFixed(1) + '% (beyond ' + curve.z + ' SD)',
+      cbbTable(['Unit', awayName, homeName], rows, 'ca-cbb-factor-table'));
   }
   function cbbPanel(title,caption,body) { return '<section class="ca-form-panel ca-cfb-panel ca-cfb-ledger"><h3>'+esc(title)+'</h3><p class="ca-lineup-context">'+esc(caption)+'</p>'+body+'</section>'; }
   function filmEvidenceLink(label, url) {
@@ -7689,6 +7734,32 @@ function seasonToggle(game) {
     return cbbPanel(heading,cbbRateCaption(game,side,opp,x,y)+' · Basketball Quant shot types',
       cbbTable(['Shot type','O share','O pts/shot','D share allowed','D pts/shot allowed'],rows,'ca-cbb-shot-type-table'));
   }
+  /* Schedule strength: the average D-I opponent's points scored and allowed
+     per 100 possessions, and their net, over games played and fixtures left.
+     1st is the hardest: the best offenses, the stingiest defenses. */
+  function cbbSos(game) {
+    var year=cbbYear(game);
+    function cell(block,key,stat,higher){
+      if(!block)return cbbMissing('No D-I games');
+      var n=block[stat];if(n==null)return cbbMissing();
+      var text=(stat==='opp_net'&&n>0?'+':'')+cbbNumber(n);
+      var place=cbbPlace(n,global.ChaseSportCBB.rankSamples(year,'team',key),higher,10,true);
+      return place?cbbRanked(global.ChaseCbbCharts.value(text,rankTone(place.rank,place.of)),place,'D-I schedules · hardest first'):nbaGraded(text,null);
+    }
+    function rows(window){
+      return ['away','home'].map(function(side){
+        var b=((cbbTeam(game,side)||{}).schedule_strength||{})[window];
+        return [esc(cbbSchool(game,side)),b?String(b.games):'0',cell(b,'sos_off_'+window,'opp_offense',true),
+          cell(b,'sos_def_'+window,'opp_defense',false),cell(b,'sos_net_'+window,'opp_net',true)];
+      });
+    }
+    var head=['School','D-I games','Vs offenses (opp pts/100)','Vs defenses (opp allowed/100)','Total SOS (opp net/100)'];
+    var played=rows('played'), remaining=rows('remaining');
+    var any=played.concat(remaining).some(function(r){return r[1]!=='0';});
+    if(!any)return cbbPanel('Schedule strength',cbbSeason(game),pending('No D-I schedule sample is published for these teams.'));
+    return cbbPanel('Games played',cbbSeason(game)+' · ESPN final boxes',cbbTable(head,played,'ca-cbb-factor-table'))+
+      (year===2027?cbbPanel('Games remaining',cbbSeason(game)+' · listed D-I fixtures',cbbTable(head,remaining,'ca-cbb-factor-table')):'');
+  }
   function cbbShotPanel(sport,game,side) {
     var opp=side==='away'?'home':'away',a=cbbTeam(game,side),b=cbbTeam(game,opp),chart=global.ChaseCbbCharts;
     var defense=game.__cbbView==='defense',metric=game.__cbbMetric||'fg',share=metric==='share';
@@ -7698,12 +7769,13 @@ function seasonToggle(game) {
     if(!a||!b){
       var picked=defense?b:a;
       if(!picked)return cbbPanel(title,cbbSeason(game),pending('Zone evidence is unavailable for the selected team and view.'));
-      var alone=(picked.shots.cbb||picked.shots.coordinates)[defense?'defense':'offense'];
-      return cbbPanel(title,cbbSeason(game)+' · '+label(picked.shots.cbb?'cbb':'coordinates')+' · through '+(alone.totals.data_through||'not published'),
+      var alone=picked.shots.coordinates[defense?'defense':'offense'];
+      return cbbPanel(title,cbbSeason(game)+' · '+label('coordinates')+' · through '+(alone.totals.data_through||'not published'),
         chart.court(alone,title,{metric:metric,defense:defense})+chart.legend(defense,metric));
     }
-    var useCbb = a.shots.cbb && b.shots.cbb && a.shots.cbb.offense.totals.attempts && b.shots.cbb.defense.totals.attempts;
-    var schema=useCbb?'cbb':'coordinates',off=a.shots[schema].offense,def=b.shots[schema].defense;
+    // Chase zones exist for every D-I team, so every matchup reads on one
+    // definition and every zone ranks among all 365.
+    var schema='coordinates',off=a.shots[schema].offense,def=b.shots[schema].defense;
     var shown=defense?def:off, shownRole=defense?'defense':'offense';
     /* One reading per zone, shared by the court, its badge and the table.
        Accuracy: the zone's place among same-source D-I teams when ranked, else
@@ -7719,9 +7791,9 @@ function seasonToggle(game) {
         return {tone:spot?rankTone(spot.rank,spot.of):'c-na', place:spot,
           cohort:'same-source D-I teams · '+(onDefense?'smallest share allowed first':'largest share first')};
       }
-      var place=z.attempts>=10 ? cbbComparison(game,'shot_accuracy',key,z.fg_pct,!onDefense) : null;
+      var place=cbbComparison(game,'shot_accuracy',key,z.fg_pct,!onDefense,10,true);
       return {tone:place?rankTone(place.rank,place.of):chart.grade(z.delta_pp,onDefense), place:place,
-        cohort:'same-source D-I teams · '+(onDefense?'lowest FG% allowed first':'highest FG% first')};
+        cohort:'D-I teams with 10+ zone attempts · '+(onDefense?'lowest FG% allowed first':'highest FG% first')};
     }
     function zoneCell(z, role) {
       if (!z || !z.attempts) return cbbMissing('No attempts');
@@ -7740,8 +7812,8 @@ function seasonToggle(game) {
       var q=def.zones.find(function(x){return x.id===z.id;});
       return [esc(z.label),zoneCell(z,'offense'),zoneCell(q,'defense')];
     });
-    var t=shown.totals, efgPlace=t.attempts>=20 ? cbbComparison(game,'shot_accuracy',
-      {side:shownRole,basis:schema,kind:'efg'},t.efg_pct,!defense) : null;
+    var t=shown.totals, efgPlace=t.attempts ? cbbComparison(game,'shot_accuracy',
+      {side:shownRole,basis:schema,kind:'efg'},t.efg_pct,!defense,10,true) : null;
     var efgDelta=t.efg_pct!=null&&t.league_efg_pct!=null?100*(t.efg_pct-t.league_efg_pct):null;
     var efg=chart.value(chart.pct(t.efg_pct),efgPlace?rankTone(efgPlace.rank,efgPlace.of):chart.grade(efgDelta,defense),
       'D-I average '+chart.pct(t.league_efg_pct));
@@ -8011,6 +8083,10 @@ function seasonToggle(game) {
     var coverage = filmCoverageCards('cbb',game,cbbYear(game)) || (cbbYear(game) === 2026 ? nflDuo(cbbTaggedCoverage,sport,game) : '');
     return part('cbb-pace','Pace','Possessions Per 40 Minutes · Overtime Normalized',cbbPace(game))+
       part('cbb-efficiency','Efficiency','Each Offense Against The Defense It Meets',nflDuo(cbbEfficiency,sport,game))+
+      part('cbb-sos','Strength Of Schedule','D-I Opponents · Leaving Out Games Against This Team',cbbSos(game))+
+      part('cbb-predictability','Predictability','How Often Each Unit Lands Off The D-I Curve',
+        predictabilityPanel(cbbSchool(game,'away'),cbbSchool(game,'home'),cbbTeam(game,'away')&&cbbTeam(game,'away').predictability,
+          cbbTeam(game,'home')&&cbbTeam(game,'home').predictability,cbbSeason(game)))+
       part('cbb-shot-chart','Shot Chart','Zone Shooting Against The Defense It Meets',nflDuo(cbbShotPanel,sport,game))+
       part('cbb-transition','Transition And Turnovers','Every D-I Game · Each Offense Against The Defense It Meets',nflDuo(cbbTransition,sport,game))+
       part('cbb-situations','Transition And Half Court','Possession-Tagged Efficiency',nflDuo(cbbSituations,sport,game))+
@@ -8051,6 +8127,10 @@ function seasonToggle(game) {
         nflDuo(cfbLedgerPanel, sport, game, 'efficiency')),
       section('cfb-dvoa', 'DVOA Equivalent', 'SP+ Opponent-Adjusted Efficiency By Unit',
         cfbDvoaBody(sport, game)),
+      section('cfb-predictability', 'Predictability', 'How Often Each Unit Lands Off The FBS Curve',
+        predictabilityPanel(cfbName(sport, game, 'away'), cfbName(sport, game, 'home'),
+          (game.away_game_log || {}).predictability, (game.home_game_log || {}).predictability,
+          String(game.season || '') + ' · FBS games')),
       section('cfb-game-log', 'Game Log', 'Every Game, Ranked Against That Week',
         nflDuo(cfbGameLogPanel, sport, game)),
       section('cfb-schedule', 'Schedule Strength', 'FBS Opponents Played And Remaining, Ranked Of FBS',
@@ -8456,9 +8536,16 @@ function seasonToggle(game) {
           paintSection(host, 'bullpens', bullpenBody(sport, game, extra));
         }).catch(function () { /* the section keeps its pending note */ });
       }
+      if (sport === 'nba') {
+        fetchJson('/data/public/nba/predictability.json').catch(function () { return null; }).then(function (data) {
+          game.__nbaPredictability = data;
+          paintSection(host, 'nba-predictability', nbaPredictabilityBody(sport, game));
+        });
+      }
       if (sport === 'nfl') {
         loadNflGameLogs().then(function (logs) {
           paintSection(host, 'game-log', nflGameLogBody(sport, game, logs));
+          paintSection(host, 'predictability', nflPredictabilityBody(sport, game, logs));
         });
       }
       if (global.ChaseShell && ChaseShell.setContext) {
