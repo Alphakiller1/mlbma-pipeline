@@ -31,6 +31,18 @@ def validate(log: dict) -> str | None:
                 return f"{team} {game['game_id']} does not mirror its opponent's line"
             if abs(game["adj_points"] - game["points"]) > 25:
                 return f"{team} {game['game_id']} adjusted score moved {game['adj_points'] - game['points']:+.1f}"
+    ranked = (log.get("adjusted") or {}).get("teams") or {}
+    if set(ranked) != set(teams):
+        return f"power ranking covers {len(ranked)} of {len(teams)} clubs"
+    places = [r["net"]["rank"] for r in ranked.values()]
+    if min(places) != 1 or max(places) > len(ranked):
+        return "power ranking places do not run 1 to 32"
+    for team, row in ranked.items():
+        rec, exp = row["record"], row["expected_record"]
+        if rec["games"] != len(teams[team]) or abs(exp["wins"] + exp["losses"] - rec["games"]) > 0.2:
+            return f"{team} power record does not reconcile with its game log"
+        if not -30 <= row["net"]["value"] <= 30:
+            return f"{team} power net {row['net']['value']} outside range"
     return None
 
 

@@ -1000,7 +1000,8 @@
     "fg3_pct",
     "ft_pct",
     "fg3a_share",
-    "fg2a_share"
+    "fg2a_share",
+    "logs"
   ],
   "derived_descriptive": [
     "estimated_per40",
@@ -1133,7 +1134,23 @@
     "pressure_lost_per100",
     "pressure_stolen_per100",
     "game_spread",
-    "league_spread"
+    "league_spread",
+    "adjusted",
+    "net",
+    "schedule",
+    "schedule_offense",
+    "schedule_defense",
+    "luck",
+    "expected_record",
+    "home_court",
+    "adj_opponent_points",
+    "league_mean",
+    "margin_sd",
+    "away_power",
+    "home_power",
+    "away_predictability",
+    "home_predictability",
+    "power"
   ],
   "contextual_environment": [
     "away_rest_days",
@@ -1328,7 +1345,9 @@
       "$.grade_baselines",
       "$.seasons",
       "$.seasons.*.teams",
-      "$.predictability"
+      "$.predictability",
+      "$.adjusted.teams",
+      "$.logs"
     ],
     "exact_note": "Whole-path rules, anchored at the artifact root. `note` and `teams` are both named in model_derived_label, where they mean a model's own note and a model's team block. At the root of a published artifact they are the human-readable caveat and the container everything else hangs off, so they resolve by position rather than by name.",
     "exact": {
@@ -1343,7 +1362,8 @@
       "$.baselines": "descriptive",
       "$.formulas": "provenance",
       "$.splits": "descriptive",
-      "$.pitchers": "descriptive"
+      "$.pitchers": "descriptive",
+      "$.adjusted.teams": "descriptive"
     }
   }
 }

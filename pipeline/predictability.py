@@ -28,8 +28,12 @@ NFL 2025, CFB 2025 FBS):
   each offense's second-half game spread (NBA r = 0.54, NFL 0.47, CBB 0.14
   over 365 teams) and beat league average in all three.
 - The same read of what defenses allow did not beat league average in any
-  league, so defenses and net team margins are not scored. CFB has no
-  play-level feed here to build the event spread from, so it is not scored.
+  league, so defenses and net team margins are not scored. Rechecked
+  2026-11-11 with CFB play-by-play: defenses again worse than league average
+  (Brier skill -0.091 in 2024, -0.099 in 2025).
+- CFB offenses are scored from collegefootballdata.com play-by-play
+  (scripts/cfb_power.py, PPA per play): first-half spread against second-half
+  game spread r = +0.23 (2024) and +0.20 (2025), Brier skill +0.022 / +0.061.
 
 Only observed events enter; nothing here forecasts a result.
 """

@@ -295,7 +295,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 10)
         # The desk reads a tab at a time, and where the clubs stack, one club at a time.
         shown = "() => [...document.querySelectorAll('.ca-detail-section')].filter(s => s.offsetParent).map(s => s.id).join(',')"
-        check("NFL desk opens on the Units tab alone", page.evaluate(shown) == "efficiency,predictability", page.evaluate(shown))
+        check("NFL desk opens on the Units tab alone", page.evaluate(shown) == "power,efficiency,predictability", page.evaluate(shown))
         page.locator('a[data-nfl-tab="games"]').click()
         try:
             page.wait_for_selector("#game-log .ca-log-panel table", timeout=timeout_ms)
@@ -592,7 +592,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CFB opens on the Units evidence group alone",
               page.evaluate("[...document.querySelectorAll('.ca-detail-section')]"
                             ".filter(s => s.offsetParent).map(s => s.id).join(',')") ==
-              "cfb-efficiency,cfb-dvoa")
+              "cfb-power,cfb-efficiency,cfb-dvoa,cfb-predictability")
         # Owner 2026-10-03: one matchup ledger for every unit comparison - both
         # directions side by side, the same rows in the same order, each stat
         # once on the desk, a rank bar beside every ranked figure.

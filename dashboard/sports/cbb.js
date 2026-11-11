@@ -163,5 +163,7 @@
     comparisonRanks:function(year,family,row){var p=comparison(ranks,year,family,row);return p&&p.rank_samples;},
     // Every published team is D-I; an opponent outside the index is not.
     isDivisionI:function(id){return !division || Object.prototype.hasOwnProperty.call(division,String(id));},
+    // A published team's identity once the index has loaded (null before, or outside D-I).
+    identity:function(id){var t=division&&division[String(id)];return t?t.identity:null;},
     teamIndex: function () { return json(ROOT + 'teams.json').then(rememberIndex); } };
 })(typeof window !== 'undefined' ? window : this);

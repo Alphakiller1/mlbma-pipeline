@@ -136,7 +136,7 @@
       // CFBD depth (scripts/cfb_depth.py): run game and lines, scheme rates,
       // quarterbacks with the defense's splits, ball carriers, game logs.
       ['_run_game', '_scheme_stats', '_qbs', '_defense_splits', '_rushers', '_game_log',
-        '_schedule_strength', '_injuries']
+        '_schedule_strength', '_injuries', '_power', '_predictability']
         .forEach(function (key) {
           if (pub[side + key]) mapped[side + key] = pub[side + key];
         });
@@ -176,7 +176,7 @@
      reports and schedule strength are left out: a week-old copy of either is
      wrong, not merely older. */
   var TEAM_FACTS = ['_qbs', '_adjusted_efficiency', '_scheme_profile', '_run_game',
-    '_scheme_stats', '_defense_splits', '_rushers', '_game_log'];
+    '_scheme_stats', '_defense_splits', '_rushers', '_game_log', '_power', '_predictability'];
 
   /* When the week's slate is published without a team's facts (the model's
      stats source was out of calls, or the model board rolled to next week
@@ -261,6 +261,9 @@
         });
         var mapped = mapGame(g, board);
         mapped.season = statsSeason;
+        // The power ranking's league context (scripts/cfb_power.py): through week, home field.
+        mapped.__cfbPower = ((parts[2] && Number(parts[2].season) === statsSeason && parts[2].power) ||
+          (parts[3] && Number(parts[3].season) === statsSeason && parts[3].power)) || null;
         mapped = mergePublic(mergePublic(mapped, remote[key]), local[key]);
         ['away', 'home'].forEach(function (side) {
           var name = String((g[side] && (g[side].school || g[side].name)) || g[side] || '').toLowerCase();

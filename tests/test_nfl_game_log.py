@@ -16,7 +16,6 @@ LUCK = {
     "fg_make_rate_by_distance": {30: 0.9, 50: 0.5},
     "xp_make_rate": 1.0,
     "fumble_mean_epa": -2.0,
-    "non_offensive_td_per_team_game": 0.0,
 }
 
 
@@ -26,7 +25,8 @@ def play(**kw):
             "defteam": "BBB", "play_type": "run", "epa": 0.0, "success": 0, "yards_gained": 4,
             "field_goal_result": None, "kick_distance": None, "extra_point_result": None,
             "fumble": 0, "fumble_lost": 0, "interception": 0, "touchdown": 0, "td_team": None,
-            "third_down_converted": 0, "third_down_failed": 0, "sack": 0, "pass": 0, "rush": 1}
+            "third_down_converted": 0, "third_down_failed": 0, "sack": 0, "pass": 0, "rush": 1,
+            "location": "Home"}
     base.update(kw)
     return base
 
@@ -48,10 +48,16 @@ class NoiseAdjustedScoreTests(unittest.TestCase):
         self.assertEqual(rows["AAA"]["adj_points"], 3 - 1.0)
         self.assertEqual(rows["BBB"]["adj_points"], 10 + 1.0)
 
-    def test_a_defensive_touchdown_is_replaced_by_the_league_rate(self):
+    def test_a_defensive_touchdown_stays_as_scored(self):
+        # Neutralising defensive and return touchdowns made later results harder
+        # to predict (2026-11-11): they count as scored.
         rows = self.rows([play(touchdown=1, td_team="BBB", posteam="AAA", play_type="pass")])
-        # Seven points (6 + a certain extra point here) off BBB's score.
-        self.assertEqual(rows["BBB"]["adj_points"], 10 - 7)
+        self.assertEqual(rows["BBB"]["adj_points"], 10)
+
+    def test_power_ranking_reads_points_and_fumble_neutral_plays(self):
+        rows = self.rows([play(fumble=1, epa=-5.0)])
+        # The lost fumble's EPA is replaced by the league mean (-2) for the power read.
+        self.assertEqual(rows["AAA"]["_plays"], (1, -2.0))
 
     def test_offensive_play_is_left_alone(self):
         rows = self.rows([play(epa=1.5, success=1)])

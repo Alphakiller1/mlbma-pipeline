@@ -65,16 +65,26 @@ def _get(url: str, headers: dict | None = None) -> object:
     raise last if last else RuntimeError(url)
 
 
+# One run asks for the season's games from two places (schedule strength and
+# the power ranking); a request is made once per process. CFBD's allowance is
+# counted per call.
+_CFBD_SEEN: dict[str, object] = {}
+
+
 def cfbd(path: str, **params) -> list | dict | None:
     key = os.environ.get("CFBD_API_KEY")
     if not key:
         return None
     url = f"{CFBD}{path}?{urllib.parse.urlencode(params)}"
+    if url in _CFBD_SEEN:
+        return _CFBD_SEEN[url]
     try:
-        return _get(url, {"Authorization": f"Bearer {key}", "Accept": "application/json"})
+        value = _get(url, {"Authorization": f"Bearer {key}", "Accept": "application/json"})
     except Exception as exc:
         print(f"  CFBD {path} unavailable: {exc}")
         return None
+    _CFBD_SEEN[url] = value
+    return value
 
 
 def rank(pool: list[float], value: float, better: str) -> int:
