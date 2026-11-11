@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Publish data/public/nba/predictability.json: every club's predictability on
-the NBA curve (pipeline/predictability.py).
+"""Publish data/public/nba/predictability.json: every offense's predictability
+on the NBA curve (pipeline/predictability.py).
 
-Every regular-season final this season is read from ESPN's box score; each
-side's outcome is points per 100 box possessions (FGA - ORB + TOV + 0.44 FTA).
-Boxes are cached by event id, so a run fetches only new finals. The file is
-kept when fewer than every club can be scored or the season would shrink.
+Every regular-season final this season is read from ESPN's box score: each
+side's possessions (FGA - ORB + TOV + 0.44 FTA), points, twos, threes and free
+throws. Boxes are cached by event id, so a run fetches only new finals. The
+file is kept when fewer than every club can be scored or the season would
+shrink.
 """
 from __future__ import annotations
 
@@ -50,10 +51,12 @@ def season_finals(season: int, today: date) -> list[dict]:
 
 
 def box(event_id: str) -> dict | None:
-    """{abbreviation: (points, possessions)} for both sides, cached."""
+    """{abbreviation: [points, possessions, FGM, 3PM, FTM, FTA]} for both sides, cached."""
     cached = CACHE / f"{event_id}.json"
     if cached.exists():
-        return json.loads(cached.read_text(encoding="utf-8"))
+        value = json.loads(cached.read_text(encoding="utf-8"))
+        if all(len(side) == 6 for side in value.values()):
+            return value
     try:
         payload = fetch(f"{BASE}/summary?event={event_id}")
         comp = payload["header"]["competitions"][0]
@@ -61,12 +64,16 @@ def box(event_id: str) -> dict | None:
         out = {}
         for team in payload["boxscore"]["teams"]:
             v = {s["name"]: s["displayValue"] for s in team["statistics"]}
-            fga = int(v["fieldGoalsMade-fieldGoalsAttempted"].split("-")[1])
-            fta = int(v["freeThrowsMade-freeThrowsAttempted"].split("-")[1])
+            fgm, fga = map(int, v["fieldGoalsMade-fieldGoalsAttempted"].split("-"))
+            tpm = int(v["threePointFieldGoalsMade-threePointFieldGoalsAttempted"].split("-")[0])
+            ftm, fta = map(int, v["freeThrowsMade-freeThrowsAttempted"].split("-"))
             poss = fga - int(v["offensiveRebounds"]) + int(v.get("totalTurnovers") or v["turnovers"]) + 0.44 * fta
             if not 70 <= poss <= 140:
                 return None
-            out[team["team"]["abbreviation"]] = [scores[str(team["team"]["id"])], poss]
+            points = scores[str(team["team"]["id"])]
+            if 2 * fgm + tpm + ftm != points:
+                return None
+            out[team["team"]["abbreviation"]] = [points, poss, fgm, tpm, ftm, fta]
         if len(out) != 2:
             return None
     except Exception:
@@ -81,21 +88,22 @@ def build(now: datetime) -> dict | None:
     finals = season_finals(season, now.date())
     with ThreadPoolExecutor(max_workers=6) as pool:
         boxes = list(pool.map(lambda e: box(str(e["id"])), finals))
-    games = []
+    events: dict[str, list] = {}
+    games = 0
     for event, b in zip(finals, boxes):
         if not b:
             continue
-        sides = {c["homeAway"]: c["team"]["abbreviation"] for c in event["competitions"][0]["competitors"]}
-        if set(sides.values()) != set(b):
+        sides = {c["team"]["abbreviation"] for c in event["competitions"][0]["competitors"]}
+        if sides != set(b):
             continue
-        games.append({"home": sides["home"], "away": sides["away"],
-                      "home_off": 100 * b[sides["home"]][0] / b[sides["home"]][1],
-                      "away_off": 100 * b[sides["away"]][0] / b[sides["away"]][1]})
-    clubs = predictability.score(games, predictability.NBA)
+        games += 1
+        for club, (points, poss, fgm, tpm, ftm, fta) in b.items():
+            events.setdefault(club, []).append(predictability.basketball_game(fgm, tpm, ftm, fta, points, poss))
+    clubs = predictability.score(events, predictability.NBA)
     if not clubs:
         return None
     return {"schema": "chase-public-nba-predictability/1", "sport": "nba", "season": season,
-            "games": len(games), "teams": clubs}
+            "games": games, "teams": clubs}
 
 
 def main() -> int:

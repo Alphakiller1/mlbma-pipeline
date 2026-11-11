@@ -5,6 +5,8 @@ from statistics import mean
 
 import requests
 
+from .. import predictability
+from . import game_lines
 from . import possession_data as ncaa
 from . import pressure
 from .data import read, write
@@ -118,6 +120,12 @@ def load_box(game, cache):
     value = parse_box(response.json(), game)
     write(file, value)
     return value
+
+
+def events(team):
+    """(possessions, points, points squared) for the predictability read."""
+    ftm = team["pts"] - 2 * team["fgm"] - team["tpm"]
+    return predictability.basketball_game(team["fgm"], team["tpm"], ftm, team["fta"], team["pts"], team["poss"])
 
 
 def counted_pace(year):
@@ -276,8 +284,10 @@ def supplement(contexts, schedule, year, as_of, cache):
     fixtures = {g["game_id"]: g for g in schedule if g["game_date"] <= as_of
                 and g.get("status_type_completed") and g.get("status_type_name") == "STATUS_FINAL"
                 and all(g.get(s + "_score") is not None for s in SIDES)
-                and (all(str(g[s + "_id"]) in division for s in SIDES)
-                     or any(str(g[s + "_id"]) in everything for s in SIDES))}
+                # Every final a D-I team played: its game log reads them all. Rates
+                # still count D-I opponents only (measured below), unless a team
+                # has no D-I rate row at all.
+                and any(str(g[s + "_id"]) in division for s in SIDES)}
     observations = defaultdict(list)
     exact = counted_pace(year)
 
@@ -291,6 +301,7 @@ def supplement(contexts, schedule, year, as_of, cache):
     finals = []  # one row per D-I game: what each side scored and its possessions
     pressed = defaultdict(dict)  # backcourt pressure over D-I games
     pressed_days = defaultdict(list)
+    lines = defaultdict(dict)  # team -> game id -> (date, box line), every final
     with ThreadPoolExecutor(max_workers=6) as pool:
         for g, box in zip(fixtures.values(), pool.map(read_game, fixtures.values())):
             if box is None:
@@ -303,15 +314,26 @@ def supplement(contexts, schedule, year, as_of, cache):
             if home in division and away in division:
                 finals.append({"id": str(g["game_id"]), "date": day, "home": home, "away": away,
                                **{f"{side}_{k}": box["teams"][tid][k] for side, tid in (("home", home), ("away", away))
-                                  for k in ("pts", "poss")}})
+                                  for k in ("pts", "poss")},
+                               **{f"{side}_events": events(box["teams"][tid]) for side, tid in (("home", home), ("away", away))}})
             for side, own, opp in (("home", home, away), ("away", away, home)):
                 if own not in division:
                     continue
+                lines[own][str(g["game_id"])] = (day, game_lines.line(
+                    {**box["teams"][own], "ftm": box["teams"][own]["pts"] - 2 * box["teams"][own]["fgm"] - box["teams"][own]["tpm"]},
+                    box["teams"][opp], box["minutes"]))
                 matches = [p for tid, p in exact[(day, side, own, h_score, a_score)] if tid is None or tid == opp]
                 observations[own].append((day, box["minutes"], box["teams"][own], box["teams"][opp],
                                           matches[0] if len(matches) == 1 else None, opp in division))
     filled = Counter()
     lineups = {}
+    logged = game_lines.ranked(lines)
+    for team, context in ((str(t), c) for t, c in contexts.items()):
+        for g in context.get("games") or []:
+            found = logged.get(team, {}).get(str(g["id"]))
+            if found:
+                g.update(found)
+                filled["game lines"] += 1
     for team, context in ((str(t), c) for t, c in contexts.items()):
         days = pressed_days.get(team)
         context["pressure"] = pressure.summarise(pressed[team], len(days), max(days)) if days else None

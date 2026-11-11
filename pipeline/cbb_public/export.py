@@ -290,7 +290,7 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
                'source':'Basketball Quant','data_through':max((g['game_date'] for g in schedules[year] if g.get('status_type_name')=='STATUS_FINAL' and tid in [g.get('home_id'),g.get('away_id')] and g['game_date']<=live),default=None),
                'record':f'{int(s.get("wins") or 0)}–{int(s.get("losses") or 0)}','shots':{}}
             if observed_tactics:c['observed_tactics']=observed_tactics.get(year,{}).get(str(tid))
-            own={}
+            own={};previous=None
             if year in (archived_coordinates or {}):
                 previous=read(archived_coordinates[year]/f'{year}/teams/{tid}.json')
                 if previous['season']!=year or previous['identity']['id']!=str(tid):
@@ -313,6 +313,12 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
                              'state':g.get('status_type_state'),'points':g.get(side+'_score') if g.get('status_type_name')=='STATUS_FINAL' else None,
                              'opponent_points':g.get(opp+'_score') if g.get('status_type_name')=='STATUS_FINAL' else None})
             c['games']=sorted(logs,key=lambda g:(g['date'],g['id']))
+            # A completed season's box lines were ranked once from its full box
+            # scores (scripts/backfill_cbb_game_lines.py) and are kept.
+            if previous and year!=2027:
+                kept={g['id']:g for g in previous.get('games',[]) if g.get('box')}
+                for g in c['games']:
+                    if g['id'] in kept:g.update(week=kept[g['id']]['week'],box=kept[g['id']]['box'])
             all_context[(year,tid)]=c
         finals=None
         if year==2027 and observed_tactics and box_cache:
@@ -334,10 +340,11 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
         season={tid:c for (y,tid),c in all_context.items() if y==year}
         if finals:
             box_schedule_strength(season,finals)
-            # Points per 100 box possessions, D-I vs D-I, on the CBB curve.
-            scored=predictability.score([{'home':g['home'],'away':g['away'],
-                'home_off':100*g['home_pts']/g['home_poss'],'away_off':100*g['away_pts']/g['away_poss']}
-                for g in finals if g['home_poss'] and g['away_poss']],predictability.CBB)
+            # Each offense's scoring events over its D-I games (pipeline/predictability.py).
+            events=defaultdict(list)
+            for g in finals:
+                for side in ('home','away'):events[g[side]].append(g[side+'_events'])
+            scored=predictability.score(events,predictability.CBB)
             for tid,c in season.items():
                 if str(tid) in scored:c['predictability']=scored[str(tid)]
         else:

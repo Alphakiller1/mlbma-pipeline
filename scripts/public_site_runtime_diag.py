@@ -560,7 +560,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CFB opens on the Units evidence group alone",
               page.evaluate("[...document.querySelectorAll('.ca-detail-section')]"
                             ".filter(s => s.offsetParent).map(s => s.id).join(',')") ==
-              "cfb-efficiency,cfb-dvoa,cfb-predictability")
+              "cfb-efficiency,cfb-dvoa")
         # Owner 2026-10-03: one matchup ledger for every unit comparison - both
         # directions side by side, the same rows in the same order, each stat
         # once on the desk, a rank bar beside every ranked figure.

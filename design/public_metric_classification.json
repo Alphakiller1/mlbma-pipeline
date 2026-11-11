@@ -115,7 +115,8 @@
     "week",
     "zone_policy",
     "zones_basis",
-    "window_seconds"
+    "window_seconds",
+    "event"
   ],
   "identity": [
     "Cut",
@@ -991,7 +992,15 @@
     "forced",
     "steals",
     "lost",
-    "stolen"
+    "stolen",
+    "box",
+    "orb_pct",
+    "drb_pct",
+    "fg2_pct",
+    "fg3_pct",
+    "ft_pct",
+    "fg3a_share",
+    "fg2a_share"
   ],
   "derived_descriptive": [
     "estimated_per40",
@@ -1122,7 +1131,9 @@
     "pressure_forced_per100",
     "pressure_steals_per100",
     "pressure_lost_per100",
-    "pressure_stolen_per100"
+    "pressure_stolen_per100",
+    "game_spread",
+    "league_spread"
   ],
   "contextual_environment": [
     "away_rest_days",
