@@ -5557,12 +5557,9 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-cfb-panel td.num { white-space: nowrap; }
 
 /* ====================================================================
- * CFB MATCHUP LEDGER - 2026-10-03 (owner: compare stats better and more
- * congruently). Every unit comparison is one four-column table: stat, the
- * offense (or away school) with its FBS rank, two bars drawn out from the
- * centre to each side's FBS place, the defense (or home school). The two
- * directions sit side by side with identical rows, so a stat reads across
- * both panels on one line. Bars take the grade colour of their figure.
+ * MATCHUP LEDGER. Each row shows the stat, the offense and its rank,
+ * mirrored rank bars, and the opposing defense and its rank. Bars use
+ * the grade color of the corresponding value.
  * ================================================================== */
 /* Fixed columns that fit the panel: the generic lineup table's 560px floor
    would push a phone panel into a side scroll. */
@@ -5575,6 +5572,8 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-cfb-ledger-table tbody tr,
 .ca-cfb-ledger-table tbody tr:nth-child(even) { background: none; }
 .ca-cfb-ledger-table tbody tr:not(.ca-ledger-group):hover { background: var(--surface-raised); }
+.ca-cfb-panel .ca-cfb-ledger-table tbody td[role="rowheader"],
+.ca-cfb-ledger-table td.num.ca-vs-none { white-space: normal; overflow-wrap: break-word; }
 .ca-cfb-ledger-table th.num.ca-ledger-right,
 .ca-cfb-ledger-table td.num.ca-ledger-right { text-align: left; }
 .ca-cfb-ledger-table td.num.ca-ledger-right .ca-rank { margin-left: 3px; }
@@ -5628,11 +5627,10 @@ body[data-sport="nfl"] .ca-detail-nav {
   .ca-cfb-ledger-table .ca-ledger-col-stat { width: 32%; }
   .ca-cfb-ledger-table .ca-ledger-col-val { width: 25%; }
   .ca-cfb-ledger-table .ca-ledger-col-bars { width: 18%; }
-  .ca-cfb-panel .ca-cfb-ledger-table tbody td:first-child { white-space: normal; overflow: visible; }
   /* The panel title names both schools; the column heads keep the unit. */
   .ca-ledger-school { display: none; }
-  .ca-cfb-ledger-table th,
-  .ca-cfb-ledger-table td { padding-left: var(--space-1); padding-right: var(--space-1); }
+  .ca-lineup-table.ca-cfb-ledger-table th,
+  .ca-lineup-table.ca-cfb-ledger-table td { padding-inline: var(--space-1); }
   .ca-cfb-ledger-table td.num .ca-rank { display: block; width: max-content; margin: 2px 0 0 auto; }
   .ca-cfb-ledger-table td.num.ca-ledger-right .ca-rank { margin: 2px 0 0; }
 }

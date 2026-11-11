@@ -375,11 +375,17 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                                ("#receivers", ".ca-form-panel"), ("#tendencies", ".ca-arsenal-panel")):
             n = page.locator(f"{sid} .ca-detail-duo:visible > {component}").count()
             check(f"NFL {sid[1:]} is a two-club duo of {component}", n == 2, f"panels={n}")
-        # Unit Matchups: each possession is the offense's row directly above the
-        # defense it meets, in the same columns.
-        # The form table sits in the evidence-window view (model form / this season).
-        rows = page.locator("#efficiency .ca-form-panel > [data-season-view]:not([hidden]) > .ca-lineup-scroll tbody tr").count()
-        check("NFL unit matchups pair each offense with the defense it meets", rows == 4, f"rows={rows}")
+        ledgers = page.locator("#efficiency [data-season-view]:visible .ca-cfb-ledger-table")
+        units = ledgers.evaluate_all("""tables => tables.map(table => ({
+          rows: [...table.querySelectorAll('td[role="rowheader"]')].map(td => td.textContent),
+          ranks: table.querySelectorAll('.ca-rank').length,
+          bars: [...table.querySelectorAll('.ca-ledger-bar i')].filter(bar => parseFloat(bar.style.width) > 0).length
+        }))""")
+        check("NFL unit matchups pair each offense with the defense it meets",
+              len(units) == 2 and units[0]["rows"] == units[1]["rows"] and len(units[0]["rows"]) == 10,
+              str(units))
+        check("NFL ranked unit figures carry mirrored bars",
+              bool(units) and all(unit["bars"] == unit["ranks"] > 0 for unit in units), str(units))
         grades = page.locator("#efficiency td[class*='c-']").evaluate_all(
             "nodes => [...new Set(nodes.map(n => getComputedStyle(n).color))].length")
         check("NFL unit matchups grade on the five-band ramp", grades >= 4, f"distinct colors={grades}")

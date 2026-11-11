@@ -4724,6 +4724,17 @@ function seasonToggle(game) {
       (entry.rank ? nflBadge({ rank: entry.rank, of: entry.of || 32 }) : '') + '</td>';
   }
 
+  function nflLedgerEntry(raw, kind, place, label) {
+    if (raw == null || !isFinite(Number(raw))) return null;
+    return {
+      value: raw,
+      text: nflFormat(raw, kind),
+      rank: place && (place.rank || place.place),
+      of: place && place.of,
+      label: label
+    };
+  }
+
   function nflSplitTable(heads, rows, first, numeric) {
     return '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-nfl-split"><thead><tr><th>' +
       esc(first || 'Unit') + '</th>' +
@@ -4768,24 +4779,19 @@ function seasonToggle(game) {
     if (!mine.offense && !theirs.defense) {
       return head + pending('Run game figures are not published for this club.') + '</section>';
     }
-    function unitRow(label, unit) {
-      unit = unit || {};
-      var ranks = unit.ranks || {};
-      return '<tr><td>' + esc(label) + '</td>' + NFL_RUN_UNIT.map(function (m) {
-        return nflGradedCell(unit[m[0]] == null ? null : {
-          value: unit[m[0]], rank: (ranks[m[0]] || {}).place, of: (ranks[m[0]] || {}).of, label: m[1]
-        }, m[2]);
-      }).join('') + '</tr>';
+    function entry(unit, stat) {
+      var rank = (unit.ranks || {})[stat[0]] || {};
+      return nflLedgerEntry(unit[stat[0]], stat[2], { rank: rank.place, of: rank.of || 32 }, stat[1]);
     }
     var off = mine.offense || {}, def = theirs.defense || {};
     var sample = [seasons.join(' + '),
       off.games ? off.games + ' games' : '', off.carries ? off.carries + ' designed runs' : ''
     ].filter(Boolean).join(' · ');
+    var rows = NFL_RUN_UNIT.map(function (stat) {
+      return cfbLedgerRow(stat[1], entry(off, stat), entry(def, stat));
+    });
     var html = head + (sample ? '<p class="ca-lineup-context">' + esc(sample) + '</p>' : '') +
-      nflSplitTable(NFL_RUN_UNIT.map(function (m) { return m[1]; }), [
-        unitRow(oNick + ' Run Game', off),
-        unitRow(dNick + ' Run Defense', def)
-      ]);
+      cfbLedgerTable([oNick, 'Run Game'], [dNick, 'Run Defense'], [{ rows: rows }]);
 
     // Every ball carrier, graded among the slate's carriers in this window.
     var floor = win === 'current' ? 10 : 30;
@@ -4827,9 +4833,6 @@ function seasonToggle(game) {
     return season ? '<p class="ca-lineup-context">' + esc(season + ' form') + '</p>' : '';
   }
 
-  /* One possession: the offense's row directly above the row of the defense
-     it meets, under the same columns. The reader compares down one column;
-     the page never says which way it points. */
   /* Units form, per evidence window. "2025 + 2026" is the model's form: prior
      seasons blended with this one by games played (the share is published).
      "2026 Only" is this season alone, adjusted for opponents the same way. */
@@ -4850,59 +4853,51 @@ function seasonToggle(game) {
       (share != null && season ? ' \u00b7 ' + Math.round(share * 100) + '% ' + season : '')) + '</p>';
   }
 
+  var NFL_FORM_LEDGER = [
+    ['epa', 'EPA/Play', 'epa'], ['first_down', '1st Down', 'pct'], ['explosive', 'Explosive', 'pct'],
+    ['sack', 'Sack', 'pct'], ['turnover', 'Turnover', 'pct']
+  ];
+  var NFL_PASS_RUN_LEDGER = [
+    ['pass_epa', 'Pass EPA', 'epa'], ['pass_success_rate', 'Pass Succ', 'pct'],
+    ['rush_epa', 'Rush EPA', 'epa'], ['rush_success_rate', 'Rush Succ', 'pct'],
+    ['pass_epa_play_action', 'PA EPA', 'epa']
+  ];
+
   function nflDrivePanel(sport, game, offSide) {
     var defSide = nflOther(offSide);
-    var oRates = (game[offSide + '_form'] || {}).rates || {};
-    var dRates = (game[defSide + '_form'] || {}).rates || {};
-    var oScheme = game[offSide + '_scheme'] || {};
-    var dScheme = game[defSide + '_scheme'] || {};
     var oNick = nflNick(sport, game, offSide), dNick = nflNick(sport, game, defSide);
     var head = '<section class="ca-form-panel"><h3>' + esc(nflVs(sport, game, offSide, 'Offense', 'Defense')) +
       '</h3>';
-    if (!Object.keys(oRates).length && !Object.keys(dRates).length) {
-      return head + pending('Team form is not published yet.') + '</section>';
+    function formEntry(rates, prefix, stat) {
+      var entry = rates[prefix + stat[0]];
+      return entry && nflLedgerEntry(entry.value, stat[2],
+        { rank: entry.rank, of: entry.of || 32 }, entry.label);
     }
-    function formRow(label, rates, prefix) {
-      return '<tr><td>' + esc(label) + '</td>' +
-        nflGradedCell(rates[prefix + 'epa'], 'epa') + nflGradedCell(rates[prefix + 'first_down'], 'pct') +
-        nflGradedCell(rates[prefix + 'explosive'], 'pct') + nflGradedCell(rates[prefix + 'sack'], 'pct') +
-        nflGradedCell(rates[prefix + 'turnover'], 'pct') + '</tr>';
+    function schemeEntry(scheme, phase, stat) {
+      var raw = nflResponse(scheme, phase)[stat[0]];
+      return nflLedgerEntry(raw, stat[2], nflResultRank(scheme, phase, stat[0], raw));
     }
     var html = head + nflBothWindows(function () {
-      var o = nflFormFor(game, offSide), d = nflFormFor(game, defSide);
-      if (!Object.keys(o).length && !Object.keys(d).length) return '';
-      return nflFormNote(game) +
-        nflSplitTable(['EPA/Play', '1st Down', 'Explosive', 'Sack', 'Turnover'], [
-          formRow(oNick + ' Offense', o, 'off_'),
-          formRow(dNick + ' Defense', d, 'def_')
-        ]);
-    });
-
-    // Pass and run, from the charted scheme sample (its own season window).
-    var SPLIT = [['pass_epa', 'epa'], ['pass_success_rate', 'pct'], ['rush_epa', 'epa'],
-      ['rush_success_rate', 'pct'], ['pass_epa_play_action', 'epa']];
-    function schemeRow(label, scheme, phase) {
-      var resp = nflResponse(scheme, phase);
-      return '<tr><td>' + esc(label) + '</td>' + SPLIT.map(function (col) {
-        var raw = resp[col[0]];
-        if (raw == null) return '<td class="num">&mdash;</td>';
-        var rank = nflResultRank(scheme, phase, col[0], raw);
-        var tone = rank ? rankTone(rank.rank, rank.of) : '';
-        return '<td class="num' + (tone ? ' ' + tone : '') + '"' +
-          (rank ? ' title="' + rank.rank + ordinal(rank.rank) + ' of ' + rank.of + '"' : '') + '>' +
-          esc(epaText(raw, col[1] === 'pct')) + nflBadge(rank) + '</td>';
-      }).join('') + '</tr>';
-    }
-    html += nflBothWindows(function () {
-      var o = nflScheme(game, offSide), d = nflScheme(game, defSide);
-      var seasons = (o.source_seasons || []).join(' + ');
-      if (!Object.keys(o).length && !Object.keys(d).length) return '';
-      return '<div class="ca-split-block"><h4>Pass And Run' +
-        (seasons ? ' · ' + esc(seasons) + ' Charting' : '') + '</h4>' +
-        nflSplitTable(['Pass EPA', 'Pass Succ', 'Rush EPA', 'Rush Succ', 'PA EPA'], [
-          schemeRow(oNick + ' Offense', o, 'offense'),
-          schemeRow(dNick + ' Defense', d, 'defense')
-        ]) + '</div>';
+      var off = nflFormFor(game, offSide), def = nflFormFor(game, defSide);
+      var oScheme = nflScheme(game, offSide), dScheme = nflScheme(game, defSide);
+      var groups = [];
+      var hasForm = Object.keys(off).length || Object.keys(def).length;
+      if (hasForm) {
+        groups.push({ title: 'Team Form', rows: NFL_FORM_LEDGER.map(function (stat) {
+          return cfbLedgerRow(stat[1], formEntry(off, 'off_', stat), formEntry(def, 'def_', stat));
+        }) });
+      }
+      if (Object.keys(oScheme).length || Object.keys(dScheme).length) {
+        var seasons = (oScheme.source_seasons || dScheme.source_seasons || []).join(' + ');
+        groups.push({ title: 'Pass And Run' + (seasons ? ' · ' + seasons + ' Charting' : ''),
+          rows: NFL_PASS_RUN_LEDGER.map(function (stat) {
+            return cfbLedgerRow(stat[1], schemeEntry(oScheme, 'offense', stat),
+              schemeEntry(dScheme, 'defense', stat));
+          }) });
+      }
+      if (!groups.length) return pending('Team form is not published yet.');
+      return (hasForm ? nflFormNote(game) : '') +
+        cfbLedgerTable([oNick, 'Offense'], [dNick, 'Defense'], groups);
     });
 
     function perGameBlock(stats, prior, windowLabel) {
@@ -5336,20 +5331,17 @@ function seasonToggle(game) {
       oNick + ' ' + off.trips + ' trips on ' + off.drives + ' drives · ' +
       dNick + ' allowed ' + def.trips + ' on ' + def.drives) + '</p>';
 
-    // The unit line: the offense directly above the defense it meets.
-    var unitRows = [[oNick + ' Offense', off, (own.ranks || {}).offense || {}],
-      [dNick + ' Defense', def, (opp.ranks || {}).defense || {}]];
-    html += nflSplitTable(NFL_RZ_UNIT.map(function (c) { return c[1]; }).concat(['Pass Rate']),
-      unitRows.map(function (row) {
-        var cells = NFL_RZ_UNIT.map(function (col) {
-          var raw = row[1][col[0]];
-          if (raw == null) return '<td class="num">&mdash;</td>';
-          return nflPlacedTd(esc(nflFormat(raw, col[2])), nflRzPlace(row[2][col[0]]), false);
-        }).join('');
-        // How often they throw is a tendency: a league marker, never a grade.
-        return '<tr><td>' + esc(row[0]) + '</td>' + cells +
-          nflRateCell(row[1].pass_rate, row[2].pass_rate) + '</tr>';
-      }));
+    var oRanks = (own.ranks || {}).offense || {}, dRanks = (opp.ranks || {}).defense || {};
+    var unitRows = NFL_RZ_UNIT.map(function (stat) {
+      return cfbLedgerRow(stat[1],
+        nflLedgerEntry(off[stat[0]], stat[2], oRanks[stat[0]]),
+        nflLedgerEntry(def[stat[0]], stat[2], dRanks[stat[0]]));
+    });
+    // Pass rate keeps its frequency rank without a performance bar.
+    unitRows.push(cfbLedgerRow('Pass Rate',
+      nflLedgerEntry(off.pass_rate, 'pct'), nflLedgerEntry(def.pass_rate, 'pct'),
+      [nflFreqMark(oRanks.pass_rate), nflFreqMark(dRanks.pass_rate)]));
+    html += cfbLedgerTable([oNick, 'Offense'], [dNick, 'Defense'], [{ rows: unitRows }]);
 
     // Where the targets go inside the 20, beside where this defense lets them go.
     var ownPos = own.offense_by_position || {}, oppPos = opp.defense_by_position || {};
@@ -5880,7 +5872,7 @@ function seasonToggle(game) {
       section('power', 'Power Ranking', 'Opponent-Adjusted · Points And Play Efficiency · Per Game',
         nflPowerBody(sport, game, undefined)),
 
-      section('efficiency', 'Unit Matchups', 'Each Offense Above The Defense It Meets',
+      section('efficiency', 'Unit Matchups', 'Each Offense Against The Defense It Meets',
         nflDuo(nflDrivePanel, sport, game)),
 
       section('predictability', 'Predictability', 'How Often Each Offense Lands Off The NFL Curve',
@@ -6057,7 +6049,7 @@ function seasonToggle(game) {
       ? v.toFixed(2) : v.toFixed(1);
   }
 
-  // A rate with its FBS place. The label rides in the tooltip, because one
+  // A rate with its league place. The label rides in the tooltip, because one
   // column can mean "sacks taken" for an offense and "sacks made" for the
   // defense beside it.
   function cfbCell(entry, extraClass, suffix) {
@@ -6068,7 +6060,7 @@ function seasonToggle(game) {
     return '<td class="num' + cls + (tone ? ' ' + tone : '') + '" title="' +
       esc(titleCase(entry.label || '') + (place ? ' · ' + place.rank + ordinal(place.rank) +
         (entry.better === 'neutral' ? ' most' : '') + ' of ' + place.of : '')) + '">' +
-      esc(cfbValue(entry)) + (suffix || '') +
+      esc(entry.text == null ? cfbValue(entry) : entry.text) + (suffix || '') +
       rankBadge(place, tone) + '</td>';
   }
 
@@ -6086,17 +6078,18 @@ function seasonToggle(game) {
       .join(' · ')) + '</p>';
   }
 
-  // A side's place among FBS schools as a bar length: 1st fills it.
+  // Each side uses its own cohort. A 1st-place rank fills the bar.
   function cfbBar(entry, side) {
-    var ranked = entry && entry.value != null && entry.rank && entry.of > 1;
-    var pct = ranked ? Math.max(4, Math.round(((entry.of - entry.rank) / (entry.of - 1)) * 100)) : 0;
+    var rankPct = entry && entry.value != null && entry.rank ? percentOf(entry) : null;
+    var ranked = rankPct != null;
+    var pct = ranked ? Math.max(4, Math.round(rankPct)) : 0;
     var tone = ranked ? (entry.better === 'neutral' ? ' c-volume' : ' ' + rankTone(entry.rank, entry.of)) : '';
     return '<span class="ca-ledger-bar ' + side + tone +
       '"><i style="width:' + pct + '%"></i></span>';
   }
 
   function cfbLedgerRow(label, left, right, marks) {
-    return '<tr><td>' + esc(label) + '</td>' + cfbCell(left, '', marks && marks[0]) +
+    return '<tr><td role="rowheader">' + esc(label) + '</td>' + cfbCell(left, '', marks && marks[0]) +
       '<td class="ca-ledger-bars" aria-hidden="true"><span class="ca-ledger-pair">' +
       cfbBar(left, 'is-left') + cfbBar(right, 'is-right') + '</span></td>' +
       cfbCell(right, 'ca-ledger-right', marks && marks[1]) + '</tr>';
@@ -6104,13 +6097,13 @@ function seasonToggle(game) {
 
   function cfbLedgerTable(left, right, groups) {
     function head(name, unit, cls) {
-      return '<th class="num' + cls + '"><span class="ca-ledger-school">' + esc(name) + '</span>' +
+      return '<th scope="col" class="num' + cls + '"><span class="ca-ledger-school">' + esc(name) + '</span>' +
         esc(unit) + '</th>';
     }
     return '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-cfb-ledger-table">' +
       '<colgroup><col class="ca-ledger-col-stat"><col class="ca-ledger-col-val">' +
       '<col class="ca-ledger-col-bars"><col class="ca-ledger-col-val"></colgroup>' +
-      '<thead><tr><th>Stat</th>' + head(left[0], left[1], '') +
+      '<thead><tr><th scope="col">Stat</th>' + head(left[0], left[1], '') +
       '<th class="ca-ledger-bars" aria-hidden="true"></th>' +
       head(right[0], right[1], ' ca-ledger-right') + '</tr></thead><tbody>' +
       groups.map(function (g) {
@@ -6477,7 +6470,11 @@ function seasonToggle(game) {
       return {
         title: group[0],
         rows: group[1].filter(function (spec) {
-          return (off['off_' + spec[0]] || {}).value != null || (def['def_' + spec[0]] || {}).value != null;
+          // Keep the two directions on the same rows when one rate is missing.
+          return [off, def].some(function (rates) {
+            return (rates['off_' + spec[0]] || {}).value != null ||
+              (rates['def_' + spec[0]] || {}).value != null;
+          });
         }).map(function (spec) {
           return cfbLedgerRow(spec[1], off['off_' + spec[0]], def['def_' + spec[0]]);
         })
@@ -7952,48 +7949,66 @@ function seasonToggle(game) {
     return cbbSeason(game)+' · '+cbbCoverage(game,side,x.rates.games_all||0)+' · '+cbbCoverage(game,opp,y.rates.games_all||0)+
       (through?' · through '+through:'');
   }
-  /* One offense against the defense it meets: the offense column is what the
-     offense does, the second column what that defense allows or forces. */
-  function cbbLedger(sport,game,side,title,specs,empty) {
-    var opp=side==='away'?'home':'away',x=cbbRateRead(cbbTeam(game,side)),y=cbbRateRead(cbbTeam(game,opp));
-    var heading=cbbSchool(game,side)+' Offense vs '+cbbSchool(game,opp)+' '+title;
-    if(!x.rates.games_all&&!y.rates.games_all)return cbbPanel(heading,cbbSeason(game),pending(empty));
-    var rows=specs.map(function(s){
-      return [esc(s[0]),cbbRateMetric(game,x,s[1],s[2],s[5]),cbbRateMetric(game,y,s[3],s[4],s[6]||s[5])];
+  function cbbLedger(game, side, specs) {
+    var other = nflOther(side);
+    var offName = cbbSchool(game, side), defName = cbbSchool(game, other);
+    var off = cbbRateRead(cbbTeam(game, side)).rates, def = cbbRateRead(cbbTeam(game, other)).rates;
+    var title = offName + ' Offense vs ' + defName + ' Defense';
+    if (!off.games_all && !def.games_all) {
+      return cbbPanel(title, '', pending('No D-I team rates are available in this season.'));
+    }
+    function entry(rates, key, higher, format) {
+      var raw = rates[key], n = Number(raw);
+      if (raw == null || raw === '' || !Number.isFinite(n)) return null;
+      var place = cbbPlace(n, global.ChaseSportCBB.rankSamples(cbbYear(game), 'team', key), higher);
+      return {
+        value: n, text: format(n), rank: place && place.rank, of: place && place.of,
+        label: 'Same-season D-I teams'
+      };
+    }
+    var groups = specs.map(function (group) {
+      return {
+        title: group[0],
+        rows: group[1].map(function (stat) {
+          return cfbLedgerRow(stat[0], entry(off, stat[1], stat[2], stat[5]),
+            entry(def, stat[3], stat[4], stat[5]));
+        })
+      };
     });
-    return cbbPanel(heading,cbbRateCaption(game,side,opp,x,y),cbbTable(['Stat','Offense','Allowed / forced'],rows,'ca-cbb-factor-table'));
+    return cbbPanel(title, '', cfbLedgerTable([offName, 'Offense'], [defName, 'Defense'], groups));
   }
   function cbbPct(n) { return global.ChaseCbbCharts.pct(n); }
   function cbbPer100(n) { return cbbNumber(n==null?null:100*n); }
   function cbbEfficiency(sport,game,side) {
-    // [label, offense key, higher is favorable, defense key, higher is favorable, format, defense format]
-    return cbbLedger(sport,game,side,'Defense',[
-      ['Points/100','ppp_off_all',true,'ppp_def_all',false,cbbPer100],
-      ['eFG%','efg_o_all',true,'efg_d_all',false,cbbPct],
-      ['TOV%','tov_pct_o_all',false,'tov_pct_d_all',true,cbbPct],
-      // The offense's share of its misses against the defense's share of the
-      // misses it forces: the same boards, each read from its own side.
-      ['ORB% / DRB%','orb_pct_all',true,'drb_pct_all',true,cbbPct],
-      // Each shot type reads as how often it is taken (attempt rate, a share of
-      // field-goal attempts) and then how often it goes in (made rate). Shares
-      // follow the desk rule: offense high, defense low ranks first.
-      ['2PA rate (2PA/FGA)','tpr_o_all',false,'tpr_d_all',true,function(n){return cbbPct(1-n);}],
-      ['2P% (2PM/2PA)','fg2_pct_o_all',true,'fg2_pct_d_all',false,cbbPct],
-      ['3PA rate (3PA/FGA)','tpr_o_all',true,'tpr_d_all',false,cbbPct],
-      ['3P% (3PM/3PA)','fg3_pct_o_all',true,'fg3_pct_d_all',false,cbbPct],
-      ['FT rate (FTA/FGA)','ftr_o_all',true,'ftr_d_all',false,function(n){return cbbNumber(n,3);}],
-      ['FT% (FTM/FTA)','ft_pct_o_all',true,'ft_pct_d_all',false,cbbPct],
-      ['Assist rate','ast_rate_o_all',true,'ast_rate_d_all',false,cbbPct]
-    ],'No D-I team rates are available in this season.');
+    // [label, offense key, higher is favorable, defense key, higher is favorable, format]
+    return cbbLedger(game,side,[
+      ['Scoring And Possession',[
+        ['Points/100','ppp_off_all',true,'ppp_def_all',false,cbbPer100],
+        ['eFG%','efg_o_all',true,'efg_d_all',false,cbbPct],
+        ['TOV%','tov_pct_o_all',false,'tov_pct_d_all',true,cbbPct],
+        // Each unit's share of the offense's missed shots.
+        ['ORB% / DRB%','orb_pct_all',true,'drb_pct_all',true,cbbPct]
+      ]],
+      ['Shooting And Ball Movement',[
+        // The 2PA share complements the 3PA share, so its rank direction flips.
+        ['2PA rate (2PA/FGA)','tpr_o_all',false,'tpr_d_all',true,function(n){return cbbPct(1-n);}],
+        ['2P% (2PM/2PA)','fg2_pct_o_all',true,'fg2_pct_d_all',false,cbbPct],
+        ['3PA rate (3PA/FGA)','tpr_o_all',true,'tpr_d_all',false,cbbPct],
+        ['3P% (3PM/3PA)','fg3_pct_o_all',true,'fg3_pct_d_all',false,cbbPct],
+        ['FT rate (FTA/FGA)','ftr_o_all',true,'ftr_d_all',false,function(n){return cbbNumber(n,3);}],
+        ['FT% (FTM/FTA)','ft_pct_o_all',true,'ft_pct_d_all',false,cbbPct],
+        ['Assist rate','ast_rate_o_all',true,'ast_rate_d_all',false,cbbPct]
+      ]]
+    ]);
   }
   function cbbTransition(sport,game,side) {
-    return cbbLedger(sport,game,side,'Defense',[
+    return cbbLedger(game, side, [['', [
       ['Fast-break pts/100','fb_pts_per100_all',true,'fb_pts_per100_d_all',false,function(n){return cbbNumber(n);}],
       ['Paint pts/100','pitp_per100_all',true,'pitp_per100_d_all',false,function(n){return cbbNumber(n);}],
       ['Steal rate','stl_pct_o_all',false,'stl_pct_d_all',true,cbbPct],
       ['Pts off turnovers/100','pts_off_to_per_dposs_d_all',false,'pts_off_to_per_dposs_all',true,cbbPer100],
       ['Block rate','blk_pct_o_all',false,'blk_pct_d_all',true,cbbPct]
-    ],'No D-I team rates are available in this season.');
+    ]]]);
   }
   /* Every D-I game's shots by type: how often the offense takes each one and
      what it scores per attempt, beside how often the defense allows it and
