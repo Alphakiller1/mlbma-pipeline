@@ -4114,7 +4114,9 @@ function seasonToggle(game) {
      snaps of a drive and snaps per game, beside the same for the plays run
      against the defense it meets; then time of possession, full game and by
      half. A league place on every figure; for seconds per snap 1st is the
-     fastest. Leading/trailing is the possession team's score. */
+     fastest. Leading/trailing is the possession team's score. Snaps and
+     possession time a defense faces are volume it allows, so there 1st is
+     the fewest (owner 2026-11-12: colour follows what the unit wants). */
   var NFL_PACE_SITUATIONS = [['', 'Full Game'], ['_h1', '1st Half'], ['_h2', '2nd Half'],
     ['_leading', 'Leading'], ['_trailing', 'Trailing'], ['_neutral', 'Neutral']];
   var NFL_TOP_ROWS = [['', 'Full Game'], ['_h1', '1st Half'], ['_h2', '2nd Half']];
@@ -4149,14 +4151,14 @@ function seasonToggle(game) {
         cell('offense', oScheme, 'seconds_per_play' + sit[0], 'sec', true) +
         cell('offense', oScheme, 'plays_per_game' + sit[0], 'num1', false) +
         cell('defense', dScheme, 'seconds_per_play' + sit[0], 'sec', true) +
-        cell('defense', dScheme, 'plays_per_game' + sit[0], 'num1', false) + '</tr>';
+        cell('defense', dScheme, 'plays_per_game' + sit[0], 'num1', true) + '</tr>';
     });
     var top = NFL_TOP_ROWS.filter(function (row) {
       return mine['time_of_possession' + row[0]] != null || seen['time_of_possession' + row[0]] != null;
     }).map(function (row) {
       return '<tr><td class="ca-lineup-name">' + esc(row[1]) + '</td>' +
         cell('offense', oScheme, 'time_of_possession' + row[0], 'clock', false) +
-        cell('defense', dScheme, 'time_of_possession' + row[0], 'clock', false) + '</tr>';
+        cell('defense', dScheme, 'time_of_possession' + row[0], 'clock', true) + '</tr>';
     });
     if (!tempo.length && !top.length) {
       return head + pending('Pace is not published for this pairing yet.') + '</section>';
@@ -7966,13 +7968,17 @@ function seasonToggle(game) {
     if (!off.games_all && !def.games_all) {
       return cbbPanel(title, '', pending('No D-I team rates are available in this season.'));
     }
+    // 'most' / 'least' mark a style share: a neutral pill, 1st taking the
+    // most of it ('least' when the key is its complement).
     function entry(rates, key, higher, format) {
       var raw = rates[key], n = Number(raw);
       if (raw == null || raw === '' || !Number.isFinite(n)) return null;
-      var place = cbbPlace(n, global.ChaseSportCBB.rankSamples(cbbYear(game), 'team', key), higher);
+      var neutral = typeof higher === 'string';
+      var place = cbbPlace(n, global.ChaseSportCBB.rankSamples(cbbYear(game), 'team', key),
+        neutral ? higher === 'most' : higher);
       return {
         value: n, text: format(n), rank: place && place.rank, of: place && place.of,
-        label: 'Same-season D-I teams'
+        label: 'Same-season D-I teams', better: neutral ? 'neutral' : undefined
       };
     }
     var groups = specs.map(function (group) {
@@ -7999,10 +8005,13 @@ function seasonToggle(game) {
         ['ORB% / DRB%','orb_pct_all',true,'drb_pct_all',true,cbbPct]
       ]],
       ['Shooting And Ball Movement',[
-        // The 2PA share complements the 3PA share, so its rank direction flips.
-        ['2PA rate (2PA/FGA)','tpr_o_all',false,'tpr_d_all',true,function(n){return cbbPct(1-n);}],
+        // Shot mix is style (owner 2026-11-12: colour follows what the unit
+        // wants, and a three scores about what the league's average shot
+        // does), so both shares read neutral. The 2PA share complements the
+        // 3PA share, so its 1st is the team with the lowest 3PA rate.
+        ['2PA rate (2PA/FGA)','tpr_o_all','least','tpr_d_all','least',function(n){return cbbPct(1-n);}],
         ['2P% (2PM/2PA)','fg2_pct_o_all',true,'fg2_pct_d_all',false,cbbPct],
-        ['3PA rate (3PA/FGA)','tpr_o_all',true,'tpr_d_all',false,cbbPct],
+        ['3PA rate (3PA/FGA)','tpr_o_all','most','tpr_d_all','most',cbbPct],
         ['3P% (3PM/3PA)','fg3_pct_o_all',true,'fg3_pct_d_all',false,cbbPct],
         ['FT rate (FTA/FGA)','ftr_o_all',true,'ftr_d_all',false,function(n){return cbbNumber(n,3);}],
         ['FT% (FTM/FTA)','ft_pct_o_all',true,'ft_pct_d_all',false,cbbPct],
@@ -8021,10 +8030,34 @@ function seasonToggle(game) {
   }
   /* Every D-I game's shots by type: how often the offense takes each one and
      what it scores per attempt, beside how often the defense allows it and
-     what it gives up. Frequencies follow the desk rule for shares (offense
-     high, defense low ranks first); points per attempt grade the same way. */
+     what it gives up. Points per attempt grade offense high, defense low.
+
+     A share's colour follows what each unit wants (owner 2026-11-12): a shot
+     type the league scores on at more than 5% above its points per shot
+     (2 x eFG) is one an offense wants more of and a defense wants to allow
+     less of; more than 5% below, the reverse - a defense that forces
+     mid-range jumpers is doing its job. In between, the share is style: a
+     neutral pill, 1st taking it most. Read from the season's baselines. */
   var CBB_SHOT_TYPES = [['rim','At rim'],['layup','Layups'],['driving','Drives'],['floater','Floaters'],
     ['pullup','Pull-ups'],['midrange','Mid-range'],['three','Threes'],['corner3','Corner threes']];
+  function cbbShotWanted(game, shot) {
+    var C = global.ChaseSportCBB, year = cbbYear(game);
+    function mean(key) {
+      var s = C.rankSamples(year, 'team', key);
+      return Array.isArray(s) && s.length ? s.reduce(function (a, b) { return a + b; }, 0) / s.length : null;
+    }
+    var pps = mean(shot + '_ppa_off_all'), efg = mean('efg_o_all');
+    if (pps == null || !efg) return null;
+    var ratio = pps / (2 * efg);
+    return ratio > 1.05 ? 'more' : ratio < 0.95 ? 'less' : null;
+  }
+  function cbbStyleMetric(game, read, key, format) {
+    var n = read.rates[key];
+    if (n == null) return cbbMissing();
+    var place = cbbPlace(n, global.ChaseSportCBB.rankSamples(cbbYear(game), 'team', key), true);
+    var text = global.ChaseCbbCharts.value(format(n), 'c-volume');
+    return place ? cbbRanked(text, place, 'same-season D-I teams · 1st takes it most', 'c-volume') : text;
+  }
   function cbbShotTypes(sport,game,side) {
     var opp=side==='away'?'home':'away',x=cbbRateRead(cbbTeam(game,side)),y=cbbRateRead(cbbTeam(game,opp));
     var heading=cbbSchool(game,side)+' Offense vs '+cbbSchool(game,opp)+' Defense';
@@ -8034,7 +8067,10 @@ function seasonToggle(game) {
       var freq=read.rates[shot+'_freq_'+side+'_all'];
       if(freq==null&&read.rates.games_all&&/^(driving|floater|pullup)$/.test(shot))
         return [cbbMissing('Not tracked'),cbbMissing('Not tracked')];
-      return [cbbRateMetric(game,read,shot+'_freq_'+side+'_all',higher,cbbPct),
+      var wanted=cbbShotWanted(game,shot), key=shot+'_freq_'+side+'_all';
+      var share=wanted==null?cbbStyleMetric(game,read,key,cbbPct):
+        cbbRateMetric(game,read,key,side==='off'?wanted==='more':wanted==='less',cbbPct);
+      return [share,
         freq===0?cbbMissing('No attempts'):cbbRateMetric(game,read,shot+'_ppa_'+side+'_all',higher,pps)];
     }
     var rows=CBB_SHOT_TYPES.map(function(t){
