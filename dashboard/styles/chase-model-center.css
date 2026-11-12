@@ -983,3 +983,6 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 
 .mc-cbb-method{font-size:var(--type-meta);line-height:1.5;color:var(--text-muted);margin:var(--space-3) 0 var(--space-5)}
 .mc-cbb-research{display:flex;align-items:center;min-height:44px;padding:var(--space-3);font-size:var(--type-meta);color:var(--accent-text)}
+
+/* Owner 2026-11-12: no purple sub-text anywhere on the site. */
+.mc-board__eyebrow { display: none !important; }

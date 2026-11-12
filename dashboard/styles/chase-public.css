@@ -6279,3 +6279,11 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-cfb-panel .ca-lineup-table:is(.ca-cbb-factor-table,.ca-cbb-zone-table) td:first-child{white-space:normal;overflow-wrap:anywhere}
 @media(max-width:560px){body[data-sport="cbb"] .ca-detail-center strong{font-size:28px}body[data-sport="cbb"] .ca-cbb-meridiem{display:block;font-size:18px;line-height:1.3}.ca-cbb-corner .ca-court-badge__big{font-size:24px}.ca-cbb-corner .ca-court-badge__small{font-size:18px}}
 @media(max-width:560px){.ca-cbb-controls{gap:var(--space-2);padding:var(--space-3)}.ca-cbb-controls>div:first-child{width:100%}.ca-cbb-options{flex:1 1 auto}.ca-cbb-options button{flex:1;padding-inline:10px}.ca-cbb-zone-table{table-layout:fixed;width:100%}.ca-cbb-zone-table th:first-child,.ca-cbb-zone-table td:first-child{min-width:0;width:34%}.ca-cbb-court .ca-court-badge__big{font-size:30px}.ca-cbb-court .ca-court-badge__small{font-size:20px}.ca-cbb-corner .ca-court-badge__big{font-size:18px}.ca-cbb-corner .ca-court-badge__small{font-size:13px}}
+
+/* Owner 2026-11-12: no purple sub-text anywhere on the site. The violet line
+   under a panel title, the page and hero eyebrows and the scope labels are
+   removed; the titles, tables and controls they sat beside stay. */
+.ca-lineup-context,
+.ca-detail-eyebrow,
+.ca-public-page__eyebrow,
+.ca-analysis-scope__eyebrow { display: none !important; }
