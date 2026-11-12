@@ -163,9 +163,17 @@ def team_advanced(rows: list[dict]) -> dict[str, dict]:
             for suffix, path, label, ob, db, fmt in spec:
                 for side, better, prefix in (("offense", ob, "off_"), ("defense", db, "def_")):
                     value = _dig(r.get(side) or {}, path)
-                    entry = _entry(label if side == "offense" else label + " allowed"
-                                   if better != "neutral" else "Opponent " + label.lower(),
-                                   value, better, fmt, pools[prefix + suffix])
+                    # A defense allows what it wants less of; what it wants more
+                    # of (stuffs, havoc, passing downs forced) it generates.
+                    if side == "offense":
+                        text = label
+                    elif better == "neutral":
+                        text = "Opponent " + label.lower()
+                    elif better == "low":
+                        text = label + " allowed"
+                    else:
+                        text = label + " generated" if "rate" in label else label
+                    entry = _entry(text, value, better, fmt, pools[prefix + suffix])
                     if entry:
                         rates[prefix + suffix] = entry
             out.setdefault(_norm(r.get("team")), {})[group_name] = {"rates": rates}
