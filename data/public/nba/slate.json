@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-11",
- "generated_at_utc": "2026-11-11T22:16:52+00:00",
+ "generated_at_utc": "2026-11-12T00:45:44+00:00",
  "data_through_utc": "2026-11-11T04:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -122,7 +122,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "1:42 - 1st",
+   "status_detail": "5:06 - 4th",
    "kickoff_utc": "2026-11-12T00:00Z",
    "away": "WSH",
    "home": "IND",
@@ -136,8 +136,8 @@
    "home_record": "3-8",
    "away_split_record": "2-5",
    "home_split_record": "0-4",
-   "away_score": 22,
-   "home_score": 20,
+   "away_score": 89,
+   "home_score": 102,
    "venue": "Gainbridge Fieldhouse",
    "venue_city": "Indianapolis, IN",
    "broadcast": "MNMT / DAZN IND",
@@ -7892,22 +7892,13 @@
    },
    "home_injuries": [
     {
-     "player_id": "2530530",
-     "player_name": "T.J. McConnell",
-     "status": "Day-To-Day",
-     "detail": "Hamstring",
-     "comment": "McConnell is questionable for Wednesday's game against the Wizards due to a strained right hamstring.",
-     "date": "2026-11-10T22:05Z",
-     "return_date": "2026-11-11"
-    },
-    {
      "player_id": "4396993",
      "player_name": "Tyrese Haliburton",
      "status": "Out",
      "detail": "Left Hamstring Strain",
-     "comment": "Haliburton (hamstring) is progressing well but does not have a timetable to return, Dustin Dopirak of The Indianapolis Star reports.",
-     "date": "2026-11-07T20:46Z",
-     "return_date": "2026-11-13"
+     "comment": "Head coach Rick Carlisle said Wednesday that Haliburton (hamstring) will miss at least 10 more days, Alex Golden of SI.com reports.",
+     "date": "2026-11-11T22:29Z",
+     "return_date": "2026-11-22"
     },
     {
      "player_id": "5157066",
@@ -7934,7 +7925,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "2:37 - 1st",
+   "status_detail": "9:57 - 4th",
    "kickoff_utc": "2026-11-12T00:00Z",
    "away": "CLE",
    "home": "NY",
@@ -7948,8 +7939,8 @@
    "home_record": "6-4",
    "away_split_record": "1-4",
    "home_split_record": "4-2",
-   "away_score": 21,
-   "home_score": 16,
+   "away_score": 89,
+   "home_score": 83,
    "venue": "Madison Square Garden",
    "venue_city": "New York, NY",
    "broadcast": "ESPN",
@@ -11785,15 +11776,6 @@
      "comment": "Merrill (elbow) is listed as out for Wednesday's game against the Knicks.",
      "date": "2026-11-10T22:12Z",
      "return_date": "2026-11-16"
-    },
-    {
-     "player_id": "4683747",
-     "player_name": "Jaylon Tyson",
-     "status": "Out",
-     "detail": "Right Ankle Sprain",
-     "comment": "Tyson (ankle) is questionable to face the Knicks on Wednesday.",
-     "date": "2026-11-10T22:07Z",
-     "return_date": "2026-11-11"
     }
    ],
    "home_form": {
@@ -14492,7 +14474,7 @@
       "player_name": "Karl-Anthony Towns",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3136195.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 31.1,
       "ppg": 20.9,
       "height_in": 84.0,
@@ -14969,7 +14951,7 @@
       "player_name": "Josh Hart",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3062679.png",
-      "status": "Out",
+      "status": null,
       "mpg": 31.7,
       "ppg": 8.6,
       "height_in": 77.0,
@@ -15546,33 +15528,14 @@
     "tz_shift": 0,
     "altitude": false
    },
-   "home_injuries": [
-    {
-     "player_id": "3136195",
-     "player_name": "Karl-Anthony Towns",
-     "status": "Day-To-Day",
-     "detail": "Left Calf Soreness",
-     "comment": "Towns (calf) is listed as questionable for Wednesday's game against Cleveland.",
-     "date": "2026-11-11T18:06Z",
-     "return_date": "2026-11-11"
-    },
-    {
-     "player_id": "3062679",
-     "player_name": "Josh Hart",
-     "status": "Out",
-     "detail": "Illness",
-     "comment": "Hart (illness) is probable for Wednesday's game against the Cavaliers.",
-     "date": "2026-11-11T18:06Z",
-     "return_date": "2026-11-11"
-    }
-   ]
+   "home_injuries": []
   },
   {
    "id": "401909968",
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "4:11 - 1st",
+   "status_detail": "9:47 - 4th",
    "kickoff_utc": "2026-11-12T00:00Z",
    "away": "BOS",
    "home": "TOR",
@@ -15586,8 +15549,8 @@
    "home_record": "5-5",
    "away_split_record": "4-2",
    "home_split_record": "2-2",
-   "away_score": 20,
-   "home_score": 21,
+   "away_score": 80,
+   "home_score": 82,
    "venue": "Scotiabank Arena",
    "venue_city": "Toronto, ON",
    "broadcast": "",
@@ -22366,7 +22329,7 @@
       "player_name": "Immanuel Quickley",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4395724.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 31.8,
       "ppg": 17.4,
       "height_in": 75.0,
@@ -22710,7 +22673,7 @@
       "player_name": "Collin Murray-Boyles",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/5093267.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 22.2,
       "ppg": 10.7,
       "height_in": 79.0,
@@ -23317,6 +23280,15 @@
    },
    "home_injuries": [
     {
+     "player_id": "6450",
+     "player_name": "Kawhi Leonard",
+     "status": "Out",
+     "detail": "Left Knee Inflammation",
+     "comment": "Head coach Darko Rajakovic said Wednesday that Leonard (knee) is doing individual on-court work and is progressing well, Michael Grange of Sportsnet.ca reports.",
+     "date": "2026-11-11T22:33Z",
+     "return_date": "2026-11-23"
+    },
+    {
      "player_id": "4431684",
      "player_name": "Trayce Jackson-Davis",
      "status": "Out",
@@ -23326,24 +23298,6 @@
      "return_date": "2026-11-12"
     },
     {
-     "player_id": "5093267",
-     "player_name": "Collin Murray-Boyles",
-     "status": "Day-To-Day",
-     "detail": "Illness",
-     "comment": "Murray-Boyles (illness) is questionable for Wednesday's game against the Celtics.",
-     "date": "2026-11-10T21:51Z",
-     "return_date": "2026-11-11"
-    },
-    {
-     "player_id": "4395724",
-     "player_name": "Immanuel Quickley",
-     "status": "Day-To-Day",
-     "detail": "Right Hamstring",
-     "comment": "Quickley (hamstring) is questionable for Wednesday's game against Boston.",
-     "date": "2026-11-10T21:49Z",
-     "return_date": "2026-11-11"
-    },
-    {
      "player_id": "4433134",
      "player_name": "Scottie Barnes",
      "status": "Out",
@@ -23351,15 +23305,6 @@
      "comment": "Barnes (groin) is out for Wednesday's game against Boston.",
      "date": "2026-11-10T21:48Z",
      "return_date": "2026-11-12"
-    },
-    {
-     "player_id": "6450",
-     "player_name": "Kawhi Leonard",
-     "status": "Out",
-     "detail": "Left Knee Inflammation",
-     "comment": "Leonard (knee) is continuing the reconditioning process, and another update will be provided in one week, Blake Murphy of Sportsnet.ca reports.",
-     "date": "2026-11-10T17:33Z",
-     "return_date": "2026-11-23"
     },
     {
      "player_id": "4432586",
@@ -23376,8 +23321,8 @@
    "id": "401909969",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/11 - 8:00 PM EST",
+   "game_state": "live",
+   "status_detail": "Halftime",
    "kickoff_utc": "2026-11-12T01:00Z",
    "away": "SA",
    "home": "CHI",
@@ -23391,8 +23336,8 @@
    "home_record": "1-8",
    "away_split_record": "5-0",
    "home_split_record": "0-3",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 56,
+   "home_score": 70,
    "venue": "United Center",
    "venue_city": "Chicago, IL",
    "broadcast": "DAZN SAS",
@@ -26451,7 +26396,7 @@
       "player_name": "Devin Vassell",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4395630.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 30.2,
       "ppg": 11.9,
       "height_in": 77.0,
@@ -27215,11 +27160,11 @@
     {
      "player_id": "4395630",
      "player_name": "Devin Vassell",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Left Groin",
-     "comment": "Vassell (groin) is listed as questionable for Wednesday's game versus the Bulls, NBA reporter Matthew Tynan reports.",
-     "date": "2026-11-10T22:48Z",
-     "return_date": "2026-11-11"
+     "comment": "Vassell (adductor) won't play in Wednesday's game against the Bulls, Jeff Garcia of KENS 5 San Antonio reports.",
+     "date": "2026-11-11T23:26Z",
+     "return_date": "2026-11-13"
     },
     {
      "player_id": "6440",
@@ -30109,7 +30054,7 @@
       "player_name": "Norman Powell",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/2595516.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 28.9,
       "ppg": 19.2,
       "height_in": 76.0,
@@ -31042,6 +30987,24 @@
    },
    "home_injuries": [
     {
+     "player_id": "4848625",
+     "player_name": "Dailyn Swain",
+     "status": "Out",
+     "detail": "Right Back",
+     "comment": "Swain (back) is out for Wednesday's game against the Spurs.",
+     "date": "2026-11-12T00:21Z",
+     "return_date": "2026-11-13"
+    },
+    {
+     "player_id": "2595516",
+     "player_name": "Norman Powell",
+     "status": "Out",
+     "detail": "Right Shoulder Inflammation",
+     "comment": "Powell (shoulder) won't play in Wednesday's game against the Spurs,Joel Lorenzi of The Athletic reports.",
+     "date": "2026-11-11T23:27Z",
+     "return_date": "2026-11-13"
+    },
+    {
      "player_id": "5105555",
      "player_name": "Tobe Awaka",
      "status": "Out",
@@ -31054,28 +31017,10 @@
      "player_id": "5095151",
      "player_name": "Caleb Wilson",
      "status": "Day-To-Day",
-     "detail": "Right Hip Soreness",
+     "detail": "",
      "comment": "Wilson has been downgraded to questionable for Wednesday's game against the Spurs due to right hip soreness.",
      "date": "2026-11-11T18:21Z",
-     "return_date": "2026-11-11"
-    },
-    {
-     "player_id": "2595516",
-     "player_name": "Norman Powell",
-     "status": "Day-To-Day",
-     "detail": "Right Shoulder Inflammation",
-     "comment": "Powell (shoulder) is listed as questionable for Wednesday's game versus the Spurs.",
-     "date": "2026-11-10T22:21Z",
-     "return_date": "2026-11-11"
-    },
-    {
-     "player_id": "4066650",
-     "player_name": "Zach Collins",
-     "status": "Day-To-Day",
-     "detail": "Illness",
-     "comment": "Collins (illness) is questionable for Wednesday's game against the Spurs.",
-     "date": "2026-11-10T22:19Z",
-     "return_date": "2026-11-11"
+     "return_date": ""
     }
    ]
   },
@@ -31083,8 +31028,8 @@
    "id": "401909970",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/11 - 8:00 PM EST",
+   "game_state": "live",
+   "status_detail": "Halftime",
    "kickoff_utc": "2026-11-12T01:00Z",
    "away": "DEN",
    "home": "MEM",
@@ -31098,8 +31043,8 @@
    "home_record": "7-3",
    "away_split_record": "2-2",
    "home_split_record": "2-3",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 65,
+   "home_score": 52,
    "venue": "FedExForum",
    "venue_city": "Memphis, TN",
    "broadcast": "",
@@ -38572,7 +38517,7 @@
       "player_name": "Isaiah Stewart",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4432810.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 18.3,
       "ppg": 11.9,
       "height_in": 80.0,
@@ -38723,15 +38668,6 @@
    },
    "home_injuries": [
     {
-     "player_id": "4432810",
-     "player_name": "Isaiah Stewart",
-     "status": "Day-To-Day",
-     "detail": "Right Knee Bruise",
-     "comment": "Stewart (knee) is listed as questionable for Wednesday's game versus the Nuggets.",
-     "date": "2026-11-10T23:13Z",
-     "return_date": "2026-11-11"
-    },
-    {
      "player_id": "4431785",
      "player_name": "Scotty Pippen Jr.",
      "status": "Out",
@@ -38764,8 +38700,8 @@
    "id": "401909971",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/11 - 8:00 PM EST",
+   "game_state": "live",
+   "status_detail": "Halftime",
    "kickoff_utc": "2026-11-12T01:00Z",
    "away": "LAL",
    "home": "MIL",
@@ -38779,8 +38715,8 @@
    "home_record": "1-10",
    "away_split_record": "5-1",
    "home_split_record": "1-5",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 61,
+   "home_score": 50,
    "venue": "Fiserv Forum",
    "venue_city": "Milwaukee, WI",
    "broadcast": "Spectrum Sports Net / Spectrum Sports Net + / MyMi / Bucks App",
@@ -45025,7 +44961,7 @@
       "player_name": "Tyler Herro",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4395725.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 30.7,
       "ppg": 21.4,
       "height_in": 77.0,
@@ -46518,15 +46454,6 @@
    },
    "home_injuries": [
     {
-     "player_id": "4395725",
-     "player_name": "Tyler Herro",
-     "status": "Day-To-Day",
-     "detail": "Right Knee Bruise",
-     "comment": "Herro (knee) is listed as questionable for Wednesday's game against the Lakers.",
-     "date": "2026-11-11T19:05Z",
-     "return_date": "2026-11-11"
-    },
-    {
      "player_id": "3133628",
      "player_name": "Myles Turner",
      "status": "Out",
@@ -46541,8 +46468,8 @@
    "id": "401909972",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/11 - 8:00 PM EST",
+   "game_state": "live",
+   "status_detail": "3:56 - 2nd",
    "kickoff_utc": "2026-11-12T01:00Z",
    "away": "BKN",
    "home": "NO",
@@ -46556,8 +46483,8 @@
    "home_record": "4-7",
    "away_split_record": "1-5",
    "home_split_record": "3-3",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 68,
+   "home_score": 54,
    "venue": "Smoothie King Center",
    "venue_city": "New Orleans, LA",
    "broadcast": "DAZN (YES) / GCSEN / Pelicans.com",
@@ -53145,7 +53072,7 @@
       "player_name": "Trey Murphy III",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4397688.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 32.8,
       "ppg": 15.6,
       "height_in": 81.0,
@@ -54313,6 +54240,15 @@
    },
    "home_injuries": [
     {
+     "player_id": "4397688",
+     "player_name": "Trey Murphy III",
+     "status": "Out",
+     "detail": "Knee Tendinitis",
+     "comment": "Murphy (knee) is listed as out for Wednesday's game against the Nets.",
+     "date": "2026-11-11T23:50Z",
+     "return_date": "2026-11-13"
+    },
+    {
      "player_id": "4683634",
      "player_name": "Bennedict Mathurin",
      "status": "Out",
@@ -54320,15 +54256,6 @@
      "comment": "Mathurin has been ruled out for Wednesday's game against the Nets due to a right thumb sprain.",
      "date": "2026-11-11T16:55Z",
      "return_date": "2026-11-13"
-    },
-    {
-     "player_id": "4397688",
-     "player_name": "Trey Murphy III",
-     "status": "Day-To-Day",
-     "detail": "Knee Tendinitis",
-     "comment": "Murphy (knee) is doubtful for Wednesday's game against the Nets.",
-     "date": "2026-11-11T16:53Z",
-     "return_date": "2026-11-11"
     },
     {
      "player_id": "4431675",
@@ -77411,5 +77338,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-12T00:31:40+00:00"
+ "published_at_utc": "2026-11-12T02:08:52+00:00"
 }
