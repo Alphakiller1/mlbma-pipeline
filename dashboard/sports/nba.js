@@ -251,16 +251,36 @@
     });
   }
 
+  /* ESPN's injury lists as they stand now (/api/injuries), laid over the
+     published slate's: the slate is written when GitHub's scheduler gets to
+     it, which can be hours before tip-off. Requested beside the slate, so it
+     adds no wait; when it fails the published lists stand. */
+  function liveInjuries() {
+    return loadJson('/api/injuries?sport=nba').then(function (feed) {
+      return feed && feed.teams && typeof feed.teams === 'object' ? feed : null;
+    }).catch(function () { return null; });
+  }
+
+  function withLiveInjuries(slate, live) {
+    if (!live) return slate;
+    slate.games.forEach(function (g) {
+      ['away', 'home'].forEach(function (side) { g[side + '_injuries'] = live.teams[g[side]] || []; });
+    });
+    return slate;
+  }
+
   // ChaseMatchupCard.loadGames() calls load(); it returns the desk result shape.
   function load(date) {
     var today = easternToday();
     var day = date || today;
     var gameId = new URLSearchParams(global.location.search).get('game');
-    return loadJson(SLATE_URL).catch(function () { return null; }).then(function (slate) {
+    var live = day === today ? liveInjuries() : Promise.resolve(null);
+    return Promise.all([loadJson(SLATE_URL).catch(function () { return null; }), live]).then(function (parts) {
+      var slate = parts[0];
       if (slate && slate.sport === 'nba' && Array.isArray(slate.games) &&
           (slate.slate_date === day || (!date && gameId && slate.games.some(function (game) {
             return String(game.id) === gameId;
-          })))) return desk(slate, 'Published slate');
+          })))) return desk(slate.slate_date === today ? withLiveInjuries(slate, parts[1]) : slate, 'Published slate');
       return loadFixtures(day, today);
     });
   }

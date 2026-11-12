@@ -3578,6 +3578,15 @@
       '<div class="ca-lineup-groups">' + content + '</div></section>';
   }
 
+  /* The league's official report lists practice participation before a club
+     issues game statuses (outputs/publish_public_slate.py); a player who did
+     not practise or was limited is not ruled out. Short tag and tone per
+     status, anything else (Out, IR, a suspension) in the out tone. */
+  var NFL_STATUS_TAG = {
+    Questionable: ['Q', 'c-mid'], Doubtful: ['D', 'c-weak'],
+    'Did Not Practice': ['DNP', 'c-weak'], 'Limited Practice': ['LP', 'c-mid']
+  };
+
   function injuryReport(entries) {
     if (!entries) return pending('Injury report not published for this club.');
     if (!entries.length) return pending('No designations reported.');
@@ -5119,8 +5128,8 @@ function seasonToggle(game) {
       var tgtG = perG(p, 'targets');
       return '<tr' + (thin ? ' class="is-thin"' : '') + '><td>' + esc(p.player_name) +
         ' <span class="ca-lineup-player__position">' + esc(p.position) + '</span>' +
-        (stText ? ' <span class="ca-rank ' + (stText === 'Questionable' ? 'c-mid' : 'c-poor') + '">' +
-          esc(stText === 'Questionable' ? 'Q' : stText) + '</span>' : '') +
+        (stText ? ' <span class="ca-rank ' + (NFL_STATUS_TAG[stText] || [0, 'c-poor'])[1] + '">' +
+          esc((NFL_STATUS_TAG[stText] || [stText])[0]) + '</span>' : '') +
         (thin ? ' <span class="ca-thin-tag" title="Under ' + MIN_TARGETS + ' targets: printed, not graded">Low n</span>' : '') +
         '</td>' +
         marked(tgtG == null ? '—' : tgtG.toFixed(1), tgtG, function (x) { return perG(x, 'targets'); }) +

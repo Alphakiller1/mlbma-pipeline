@@ -149,6 +149,10 @@ def covers_fixture(url, fixtures, now):
             if len(cells) != 5:
                 continue
             link = cells[0].find("a", href=True)
+            # The status cell repeats the date for phones; the note sits in a
+            # collapsed row the expand button points at.
+            for repeat in cells[2].select(".mobile-date"):
+                repeat.decompose()
             status, _, reason = cells[2].get_text(" ", strip=True).partition(" - ")
             status = STATUSES.get(status.lower().strip())
             if not link or not status:
@@ -162,7 +166,11 @@ def covers_fixture(url, fixtures, now):
                     continue
             if updated and not now - timedelta(days=14) <= updated <= now + timedelta(hours=2):
                 continue
-            note = cells[4].get_text(" ", strip=True)
+            button = cells[4].find(attrs={"aria-controls": True})
+            target = section.find(id=button["aria-controls"]) if button else None
+            note = target.get_text(" ", strip=True) if target else cells[4].get_text(" ", strip=True)
+            if note.lower() in {"expand", "collapse"}:
+                note = ""
             entries.append((str(matched[0][side]), {
                 "player": link["href"].rstrip("/").rsplit("/", 1)[-1],
                 "status": status, "injury": reason or None,

@@ -22,6 +22,8 @@ import re
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 COVERS_URL = "https://www.covers.com/sport/football/ncaaf/injuries"
 ROTOWIRE_URL = "https://www.rotowire.com/cfootball/tables/injury-report.php?team=ALL&pos=ALL"
@@ -116,6 +118,54 @@ def merge(covers: dict[str, list[dict]], roto: dict[str, list[dict]]) -> dict[st
                                     e.get("player") or ""))
         out[school] = entries
     return out
+
+
+PER_GAME = {"Questionable", "Doubtful", "Probable", "Out"}
+LONG_TERM = re.compile(r"\b(season|indefinite(ly)?|surgery|torn|tear|acl|achilles|fracture[ds]?|broken)\b", re.I)
+EXPIRE_DAYS = 8
+
+
+def covers_date(text: str | None, today: date) -> date | None:
+    """Covers stamps a row "Sat, Oct 17" with no year: the latest such date
+    on or before today whose weekday matches."""
+    m = re.match(r"([A-Za-z]{3}),\s+([A-Za-z]{3})\s+(\d{1,2})$", str(text or "").strip())
+    if not m:
+        return None
+    for year in (today.year, today.year - 1):
+        try:
+            day = datetime.strptime(f"{m[2]} {m[3]} {year}", "%b %d %Y").date()
+        except ValueError:
+            continue
+        if day <= today and day.strftime("%a") == m[1]:
+            return day
+    return None
+
+
+def expire(merged: dict[str, list[dict]], today: date) -> int:
+    """Drop Covers designations that no longer describe this week.
+
+    Owner 2026-11-12: wrong designations across the site. Covers' college page
+    stopped updating around 2026-10-21, so it still listed players
+    "Questionable" for games played weeks earlier. Questionable, Doubtful and
+    Probable are issued for one game; an Out without a long-term injury in its
+    own words (season, surgery, a tear, a fracture) is too. Such a row last
+    updated more than EXPIRE_DAYS ago is dropped. IR, Out For Season and
+    suspensions stand, as does every row RotoWire confirmed.
+    """
+    dropped = 0
+    for school, entries in merged.items():
+        kept = []
+        for e in entries:
+            stamp = covers_date(e.get("updated"), today) if e.get("source") == "Covers" else None
+            stale = stamp is not None and (today - stamp).days > EXPIRE_DAYS and e.get("status") in PER_GAME
+            if stale and e["status"] == "Out" and LONG_TERM.search(f"{e.get('injury') or ''} {e.get('detail') or ''}"):
+                stale = False
+            if stale:
+                dropped += 1
+            else:
+                kept.append(e)
+        merged[school] = kept
+    return dropped
 
 
 ROTOWIRE_SEARCH = "https://www.rotowire.com/frontend/ajax/search-players.php?league=CFB&searchTerm="
@@ -215,6 +265,8 @@ def load() -> dict[str, list[dict]]:
     except Exception as exc:
         print(f"  injuries: RotoWire unavailable: {exc}")
     merged = merge(covers, roto)
+    dropped = expire(merged, datetime.now(ZoneInfo("America/New_York")).date())
+    print(f"  injuries: {dropped} Covers designations past their game dropped")
     counts = verify(merged)
     print(f"  injuries: {sum(len(v) for v in merged.values())} players across "
           f"{sum(1 for v in merged.values() if v)} schools "
