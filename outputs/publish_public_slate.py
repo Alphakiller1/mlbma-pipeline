@@ -749,8 +749,10 @@ def merge_producers(official: dict, curated: dict) -> dict:
 ESPN_NFL_INJURIES = (
     "https://site.api.espn.com/apis/site/v2/sports/football/nfl/injuries"
 )
+NFL_OFFICIAL_REPORT = "https://www.nfl.com/injuries/"
 FTN_DVOA = "https://ls.ftnfantasy.com/api/ftn/dvoa/rankings"
 FTN_TEAM_ALIASES = {"WSH": "WAS"}
+CLIENT_HEADERS = {"User-Agent": "ChaseAnalytics/1.0 (+https://chase-analytics.com)"}
 
 # Designations that change how a reader should treat availability. "Active" is
 # the default state and is not worth reporting.
@@ -758,23 +760,102 @@ NFL_NOTABLE_STATUS = {
     "out", "doubtful", "questionable",
     "injured reserve", "ir", "pup", "suspension", "suspended",
 }
+# A game designation is issued for one game by the club's official report;
+# a roster status (IR, PUP, a suspension) holds until the club changes it.
+NFL_GAME_DESIGNATIONS = {"out", "doubtful", "questionable"}
+NFL_COM_ALIASES = {"WAS": "WSH", "AZ": "ARI"}
+NFL_GAME_STATUS = {"out": "Out", "doubtful": "Doubtful", "questionable": "Questionable"}
+NFL_PRACTICE_STATUS = {
+    "did not participate in practice": "Did Not Practice",
+    "limited participation in practice": "Limited Practice",
+}
 
 
-def fetch_nfl_injuries() -> dict:
-    """Official injury designations, keyed by team abbreviation.
+def _player_key(name: str) -> str:
+    text = unicodedata.normalize("NFKD", name or "").encode("ascii", "ignore").decode().lower()
+    parts = re.findall(r"[a-z0-9]+", text.replace("'", "").replace(".", ""))
+    if len(parts) > 2 and parts[-1] in {"jr", "sr", "ii", "iii", "iv", "v"}:
+        parts.pop()
+    return "".join(parts)
 
-    nfl-model/board.json reports injury_status as null on every player row, so
-    the designations come from the official feed instead. The block node
-    carries only id and displayName - the abbreviation is on each athlete's
-    team - and the body part is reported inside the comment text rather than a
-    field of its own.
+
+def _cell_text(html: str) -> str:
+    return " ".join(re.sub(r"<[^>]+>", " ", unescape_html(html)).split())
+
+
+def unescape_html(text: str) -> str:
+    import html as _html
+    return _html.unescape(text)
+
+
+def parse_nfl_official_report(page: str) -> dict[tuple[str, str], dict[str, list[dict]]]:
+    """The league's official injury report (nfl.com/injuries), game by game.
+
+    {(away, home): {team: [entry, ...]}} in ESPN club codes, for each game
+    whose report has been issued - at least one player listed for either club.
+    Before a club's first practice report nfl.com shows "No Injuries
+    Reported", which is not a statement that nobody is hurt, so such a game is
+    left out and the caller keeps what it had.
+
+    Each listed player carries his game status when the club has issued one
+    (a club can rule a player out early in the week), else his practice
+    participation when he did not practise or was limited; a full participant
+    without a game status has no designation and is left off.
     """
+    games: dict[tuple[str, str], dict[str, list[dict]]] = {}
+    for chunk in page.split('<section class="nfl-o-injury-report__unit">')[1:]:
+        chunk = chunk.split("</section>", 1)[0]
+        codes = re.findall(r'nfl-c-matchup-strip__team-abbreviation">\s*([A-Z]{2,4})\s*<', chunk)
+        names = re.findall(r'nfl-c-matchup-strip__team-fullname"[^>]*>\s*([^<]+?)\s*<', chunk)
+        if len(codes) != 2 or len(names) != 2:
+            continue
+        codes = [NFL_COM_ALIASES.get(c, c) for c in codes]
+        by_name = {unescape_html(n).strip(): c for n, c in zip(names, codes)}
+        rows: dict[str, list[dict]] = {}
+        for part in re.split(r'd3-o-section-sub-title"><span>', chunk)[1:]:
+            club = by_name.get(unescape_html(part.split("</span>", 1)[0]).strip())
+            if not club:
+                continue
+            listed = []
+            for row in re.findall(r"<tr>(.*?)</tr>", part, re.S):
+                cells = [_cell_text(c) for c in re.findall(r"<td[^>]*>(.*?)</td>", row, re.S)]
+                if len(cells) != 5 or not cells[0]:
+                    continue
+                listed.append({"name": cells[0], "position": cells[1], "injury": cells[2],
+                               "practice": cells[3].lower(), "game": cells[4].lower()})
+            rows[club] = listed
+        if not any(rows.values()):
+            continue
+        report: dict[str, list[dict]] = {}
+        for club in codes:
+            entries = []
+            for r in rows.get(club, []):
+                status = NFL_GAME_STATUS.get(r["game"]) or NFL_PRACTICE_STATUS.get(r["practice"])
+                if status:
+                    entries.append({"name": r["name"], "position": r["position"],
+                                    "status": status, "detail": r["injury"].lower() if r["injury"] else ""})
+            report[club] = entries
+        games[(codes[0], codes[1])] = report
+    return games
+
+
+def fetch_nfl_official_report() -> dict[tuple[str, str], dict[str, list[dict]]]:
     try:
-        with urllib.request.urlopen(ESPN_NFL_INJURIES, timeout=30) as response:
-            payload = json.loads(response.read().decode("utf-8"))
-    except Exception:
+        request = urllib.request.Request(NFL_OFFICIAL_REPORT, headers=CLIENT_HEADERS)
+        with urllib.request.urlopen(request, timeout=30) as response:
+            return parse_nfl_official_report(response.read().decode("utf-8", "replace"))
+    except Exception as exc:  # noqa: BLE001 - the ESPN feed still stands
+        print(f"  WARNING nfl official injury report unavailable: {exc}")
         return {}
 
+
+def parse_espn_nfl_injuries(payload: dict) -> dict[str, list[dict]]:
+    """ESPN's league injury feed, keyed by team abbreviation.
+
+    The block node carries only id and displayName - the abbreviation is on
+    each athlete's team - and the body part is reported inside the comment
+    text rather than a field of its own.
+    """
     by_team: dict[str, list[dict]] = {}
     for block in payload.get("injuries") or []:
         team = ""
@@ -796,12 +877,65 @@ def fetch_nfl_injuries() -> dict:
                 "status": status,
                 "detail": detail,
             })
-        if not team:
-            continue
-        rank = {"Out": 0, "Doubtful": 1, "Questionable": 2}
-        notable.sort(key=lambda p: rank.get(p["status"], 3))
-        by_team[team] = notable
+        if team:
+            by_team[team] = notable
     return by_team
+
+
+NFL_STATUS_ORDER = {"Out": 0, "Doubtful": 1, "Questionable": 2, "Did Not Practice": 3, "Limited Practice": 4}
+
+
+def merge_nfl_injuries(espn: dict[str, list[dict]],
+                       official: dict[tuple[str, str], dict[str, list[dict]]],
+                       games: set[tuple[str, str]] | None = None) -> dict[str, list[dict]]:
+    """One list per club: the official report's designations where the club's
+    report for this game has been issued, plus ESPN's roster statuses (IR,
+    PUP, suspensions) for anyone the report does not list.
+
+    ESPN's game designations are not carried for a club with an official
+    report: they linger from the previous game (Cam Skattebo stayed "Out" on
+    ESPN the week the Giants' report listed him a full participant with no
+    designation). A report for a game not on the slate is ignored, so last
+    week's report never speaks for this week.
+    """
+    # Questionable and Doubtful are issued for one game and expire with it, so
+    # before a club's report is out ESPN's are last week's; its Out and roster
+    # statuses are kept until the report says otherwise.
+    by_team = {team: [e for e in rows if e["status"].lower() not in {"questionable", "doubtful"}]
+               for team, rows in espn.items()}
+    for pair, report in official.items():
+        if games is not None and pair not in games:
+            continue
+        for team, entries in report.items():
+            listed = {_player_key(e["name"]) for e in entries}
+            kept = [e for e in espn.get(team, [])
+                    if e["status"].lower() not in NFL_GAME_DESIGNATIONS and _player_key(e["name"]) not in listed]
+            by_team[team] = entries + kept
+    for team, rows in by_team.items():
+        rows.sort(key=lambda e: NFL_STATUS_ORDER.get(e["status"], 5))
+    return by_team
+
+
+def fetch_nfl_injuries(games: set[tuple[str, str]] | None = None) -> dict:
+    """Designations keyed by team abbreviation: the league's official report
+    where it has been issued, ESPN's feed for roster statuses and for clubs
+    whose report is not out yet.
+
+    nfl-model/board.json reports injury_status as null on every player row, so
+    the designations come from these feeds instead.
+    """
+    try:
+        with urllib.request.urlopen(ESPN_NFL_INJURIES, timeout=30) as response:
+            espn = parse_espn_nfl_injuries(json.loads(response.read().decode("utf-8")))
+    except Exception:
+        espn = {}
+    official = fetch_nfl_official_report()
+    if not espn and not official:
+        return {}
+    merged = merge_nfl_injuries(espn, official, games)
+    used = [pair for pair in official if games is None or pair in games]
+    print(f"  nfl injuries: official report for {len(used)} games, ESPN feed for {len(espn)} clubs")
+    return merged
 
 
 def _dvoa_value(raw) -> float | None:
@@ -892,9 +1026,10 @@ def availability_summary(entries: list[dict] | None) -> str:
     counts: dict[str, int] = {}
     for entry in entries:
         counts[entry["status"]] = counts.get(entry["status"], 0) + 1
+    labels = {"Did Not Practice": "DNP", "Limited Practice": "limited"}
     parts = [
-        f"{counts[s]} {s.lower()}"
-        for s in ("Out", "Doubtful", "Questionable")
+        f"{counts[s]} {labels.get(s, s.lower())}"
+        for s in ("Out", "Doubtful", "Questionable", "Did Not Practice", "Limited Practice")
         if counts.get(s)
     ]
     return " · ".join(parts) or f"{len(entries)} designated"
@@ -1478,7 +1613,14 @@ def publish_nfl() -> bool:
         }
         context = nfl_public_context.build()
         rest = fetch_nfl_rest({c for c in codes if c})
-        nfl = nfl_producer_from_espn(espn, fetch_nfl_injuries(), context, rest)
+        pairs = set()
+        for event in espn.get("events") or []:
+            for comp in event.get("competitions") or []:
+                sides = {c.get("homeAway"): (c.get("team") or {}).get("abbreviation")
+                         for c in comp.get("competitors") or []}
+                if sides.get("away") and sides.get("home"):
+                    pairs.add((sides["away"], sides["home"]))
+        nfl = nfl_producer_from_espn(espn, fetch_nfl_injuries(pairs), context, rest)
         dvoa = fetch_ftn_dvoa(datetime.now(ET).year)
         attached = attach_nfl_dvoa(nfl, dvoa)
         expected = len(nfl.get("games") or []) * 2

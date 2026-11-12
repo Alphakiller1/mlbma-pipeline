@@ -2605,6 +2605,7 @@ body[data-ca-product="research"] {
 }
 
 .ca-status-pill[data-status="doubtful"],
+.ca-status-pill[data-status="did-not-practice"],
 .ca-status-pill[data-status="pup"] {
   color: var(--status-stale);
   border-color: var(--status-stale);

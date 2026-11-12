@@ -359,7 +359,7 @@
     var remaining = list.filter(function (p) { return !availability.isOut(p.status); });
     var shown = remaining.slice(0, 5);
     var rows = shown.map(function (p) {
-      var tone = p.status === 'Doubtful' ? 'is-doubtful' : 'is-questionable';
+      var tone = p.status === 'Doubtful' || p.status === 'Did Not Practice' ? 'is-doubtful' : 'is-questionable';
       return '<li class="ca-avail-row">' +
         '<span class="ca-avail-pos">' + esc(p.position || '--') + '</span>' +
         '<span class="ca-avail-name">' + esc(p.name) + '</span>' +

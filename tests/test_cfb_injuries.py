@@ -87,3 +87,29 @@ def test_qbs_are_checked_against_their_own_rotowire_card():
 
 def test_name_key_matches_initials_and_drops_suffixes():
     assert ci._key("Rodney Tisdale Jr.") == ci._key("R. Tisdale") == "rtisdale"
+
+
+def test_covers_dates_take_the_year_whose_weekday_matches():
+    from datetime import date
+    assert ci.covers_date("Sat, Oct 17", date(2026, 11, 12)) == date(2026, 10, 17)
+    assert ci.covers_date("Tue, Dec 30", date(2026, 11, 12)) == date(2025, 12, 30)
+    assert ci.covers_date("Nov 12 8:00 PM", date(2026, 11, 12)) is None
+
+
+def test_designations_past_their_game_expire():
+    # Owner 2026-11-12: Covers' college page stopped updating around Oct 21
+    # and the desk still showed October Questionable tags in November.
+    from datetime import date
+    merged = {"memphis": [
+        {"player": "B. Kluse", "status": "Questionable", "updated": "Sat, Oct 17", "source": "Covers",
+         "detail": "unclear whether he will play against East Carolina on Thursday."},
+        {"player": "L. Szarka", "status": "Out", "injury": "Leg", "updated": "Mon, Oct 5", "source": "Covers",
+         "detail": "has been shut down for the remainder of the season."},
+        {"player": "C. Cole", "status": "Out", "injury": "Undisclosed", "updated": "Sat, Oct 10", "source": "Covers",
+         "detail": "will miss Saturday's game."},
+        {"player": "R. Ir", "status": "IR", "updated": "Tue, Aug 11", "source": "Covers"},
+        {"player": "M. Fresh", "status": "Questionable", "updated": "Tue, Nov 10", "source": "Covers"},
+        {"player": "Michael Van Buren", "status": "Questionable", "updated": "Nov 12 8:00 PM", "source": "RotoWire"},
+    ]}
+    assert ci.expire(merged, date(2026, 11, 12)) == 2
+    assert [e["player"] for e in merged["memphis"]] == ["L. Szarka", "R. Ir", "M. Fresh", "Michael Van Buren"]
