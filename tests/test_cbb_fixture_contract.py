@@ -5,11 +5,13 @@ import subprocess
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+SHARED = ROOT / 'functions/_shared/market-lines.js'
 
 class CbbFixtureContractTests(unittest.TestCase):
     def test_fixture_response_drops_upstream_markets_and_model_fields(self):
         source = (ROOT / 'functions/api/cbb-fixtures.js').read_text(encoding='utf-8')
         source = source.replace("import { json } from '../_shared/http.js';", "const json=(body,status=200)=>({body,status});")
+        source = source.replace("'../_shared/market-lines.js'", repr(SHARED.as_uri()))
         harness = source + '''
 const event={id:'123',date:'2026-11-06T22:00Z',odds:[{spread:4}],win_probability:.7,
   status:{type:{state:'in',name:'STATUS_IN_PROGRESS'},private:'hidden'},competitions:[{
@@ -32,8 +34,7 @@ console.log(JSON.stringify({result,invalid}));
             self.assertNotIn('"'+key+'"',json.dumps(body))
 
     def test_market_lines_carry_posted_numbers_only(self):
-        source = (ROOT / 'functions/api/cbb-fixtures.js').read_text(encoding='utf-8')
-        source = source.replace("import { json } from '../_shared/http.js';", "const json=(body,status=200)=>({body,status});")
+        source = SHARED.read_text(encoding='utf-8')
         link = {'href': 'https://sportsbook.draftkings.com/x', 'text': 'Home Bet'}
         odds = {'provider': {'id': '100', 'name': 'DraftKings'}, 'details': 'USF -7.5', 'overUnder': 151.5, 'spread': -7.5,
                 'moneyline': {'home': {'close': {'odds': '-325', 'link': link}, 'open': {'odds': '-265'}}},

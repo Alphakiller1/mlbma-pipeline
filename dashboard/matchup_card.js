@@ -427,7 +427,8 @@
     }
     return html + '<div class="ca-matchup-card__environment">' +
       miniFact('Venue', venue(game)) + miniFact(sport === 'nfl' ? 'Weather and surface' : 'Conditions',
-        [conditions(game), game.surface].filter(Boolean).join(' · ')) + '</div></div>';
+        [conditions(game), game.surface].filter(Boolean).join(' · ')) +
+      (sport === 'nfl' ? miniFact('Broadcast', game.broadcast || 'Not Published', '', 'tv') : '') + '</div></div>';
   }
 
 
@@ -596,32 +597,68 @@
       (sport === 'mlb' ? 'Probable Starters' : 'Quarterbacks') + '">' +
       starterFace(sport, game, 'away') + starterFace(sport, game, 'home') + '</div>';
   }
-  /* Posted market lines (ESPN's listed book, DraftKings): the current number,
-     with the opener beside it. Each school's spread sits under that school,
-     as books post it; the total is a game fact. */
-  function cbbLineNumber(n, signed) {
+  /* Posted market lines (ESPN's listed book, DraftKings). CBB cards read
+     them from the fixture refresh and show each school's spread under that
+     school with the opener; NFL, CFB and NBA cards read /api/market-lines
+     after the slate paints (withLines) and show one Line cell. */
+  function lineNumber(n, signed) {
     if (n == null) return null;
     if (signed && n === 0) return 'PK';
     var text = Math.abs(n).toFixed(1).replace(/\.0$/, '');
     return signed ? (n < 0 ? '−' : '+') + text : text;
   }
-  function cbbLineSource(game) {
+  function lineSource(game) {
     var l = game.market_lines;
     return l && l.provider ? ' (' + (l.provider === 'DraftKings' ? 'DK' : l.provider) + ')' : '';
   }
-  function cbbSpread(game, side) {
+  function lineState(game) {
+    if (game.lines_state === 'unavailable') return 'Unavailable';
+    if (!(game.cbb_lines_checked || game.lines_state === 'checked')) return 'Checking';
+    // The book takes a game's line down once it starts.
+    return game.game_state === 'live' || game.game_state === 'final' ? 'Off board' : 'Not posted';
+  }
+  function sideLine(game, side) {
     var l = game.market_lines || {}, sign = side === 'home' ? 1 : -1;
-    var now = cbbLineNumber(l.home_current == null ? null : sign * l.home_current, true);
-    var was = cbbLineNumber(l.home_open == null ? null : sign * l.home_open, true);
-    var who = game[side + '_abbr'];
-    if (now && who) now = who + ' ' + now;
-    return '<div>' + miniFact('Spread' + cbbLineSource(game), now || (game.cbb_lines_checked ? 'Not posted' : 'Checking'),
-      now ? '' : 'is-pending') + '<span class="ca-cbb-card-sample">' + (now && was ? 'Open ' + was : ' ') + '</span></div>';
+    var now = lineNumber(l.home_current == null ? null : sign * l.home_current, true);
+    var was = lineNumber(l.home_open == null ? null : sign * l.home_open, true);
+    var who = game[side + '_abbr'] || game[side];
+    return { now: now && who ? who + ' ' + now : now, was: was };
+  }
+  function cbbSpread(game, side) {
+    var line = sideLine(game, side);
+    return '<div>' + miniFact('Spread' + lineSource(game), line.now || lineState(game),
+      line.now ? '' : 'is-pending') + '<span class="ca-cbb-card-sample">' + (line.now && line.was ? 'Open ' + line.was : ' ') + '</span></div>';
   }
   function cbbTotal(game) {
-    var l = game.market_lines || {}, now = cbbLineNumber(l.total_current), was = cbbLineNumber(l.total_open);
+    var l = game.market_lines || {}, now = lineNumber(l.total_current), was = lineNumber(l.total_open);
     return miniFact(was && now ? 'Total · Open' : 'Total', now ? now + (was ? ' · ' + was : '') :
-      (game.cbb_lines_checked ? 'Not posted' : 'Checking'), now ? '' : 'is-pending', 'gauge');
+      lineState(game), now ? '' : 'is-pending', 'gauge');
+  }
+  /* NFL, CFB and NBA: one summary cell, the line as it is quoted - the
+     favourite's spread, then the total ("NYG −2.5 · 40.5"). The opener and the
+     book ride in the cell's title. Keeping it to one of the three cells holds
+     the collapsed card to the style lock's height. */
+  function lineCell(game) {
+    var l = game.market_lines || {}, spread = null, total = lineNumber(l.total_current);
+    if (l.home_current != null) {
+      spread = l.home_current === 0 ? 'PK' :
+        (l.home_current < 0 ? game.home : game.away) + ' −' + lineNumber(Math.abs(l.home_current));
+    }
+    var now = spread && total ? spread + ' · ' + total : spread || (total ? 'Total ' + total : null);
+    var title = '';
+    if (now) {
+      var opened = [];
+      if (l.home_open != null) {
+        opened.push(l.home_open === 0 ? 'PK' :
+          (l.home_open < 0 ? game.home : game.away) + ' −' + lineNumber(Math.abs(l.home_open)));
+      }
+      if (l.total_open != null) opened.push('total ' + lineNumber(l.total_open));
+      title = 'Spread and total' + (l.provider ? ' at ' + l.provider + ' (via ESPN)' : '') +
+        (opened.length ? '. Opened ' + opened.join(', ') : '');
+    }
+    return '<div class="ca-matchup-card__fact"' + (title ? ' title="' + esc(title) + '"' : '') + '><span>' +
+      ico('gauge', 'ca-matchup-card__ico') + 'Line' + esc(lineSource(game)) + '</span><strong class="' +
+      (now ? '' : 'is-pending') + '">' + esc(now || lineState(game)) + '</strong></div>';
   }
   function summaryRow(sport, game, statusLine) {
     if (sport === 'cbb') {
@@ -639,7 +676,7 @@
       return '<div class="ca-matchup-card__summary">' +
         miniFact('Rest', rest, '', 'calendar') +
         miniFact('Availability', statusLine, '', 'whistle') +
-        miniFact('Broadcast', game.broadcast || 'Not Published', '', 'tv') +
+        lineCell(game) +
         '</div>';
     }
     if (sport === 'cfb') {
@@ -650,11 +687,9 @@
         ? aCode + ' ' + (game.away_record || 'Not Published') + ' · ' + hCode + ' ' +
           (game.home_record || 'Not Published')
         : 'Not Published';
-      var ac = game.away_conference, hc = game.home_conference;
-      var conf = ac && hc ? (ac === hc ? ac : ac + ' vs ' + hc) : (ac || hc || 'Not Published');
       return '<div class="ca-matchup-card__summary">' +
         miniFact('Records', records, '', 'users') +
-        miniFact('Conference', conf, '', 'whistle') +
+        lineCell(game) +
         miniFact('Site', game.neutral ? 'Neutral site' : (game.stadium || game.venue || 'Not Published'),
           '', 'plane') +
         '</div>';
@@ -665,7 +700,7 @@
         '', sport === 'mlb' ? 'users' : 'plane') +
       miniFact(sport === 'mlb' ? 'Lineup Status' : 'Availability', statusLine,
         '', sport === 'mlb' ? 'lineup' : 'whistle') +
-      miniFact('Broadcast', game.broadcast || 'Not Published', '', 'tv') +
+      (sport === 'nfl' ? lineCell(game) : miniFact('Broadcast', game.broadcast || 'Not Published', '', 'tv')) +
       '</div>';
   }
   /* Expanded CFB card: facts only (owner 2026-10-01 - the model's margins,
@@ -720,7 +755,8 @@
     var homeAv = availabilityPanel(game, 'home', homeName);
     return '<p class="ca-ctx-head">Ratings: ' + esc(basis || 'Not Published') + '</p>' +
       '<div class="ca-matchup-card__detail-grid">' + facts('away', awayName) + facts('home', homeName) + '</div>' +
-      (awayAv || homeAv ? '<div class="ca-ctx-duo">' + awayAv + homeAv + '</div>' : '');
+      (awayAv || homeAv ? '<div class="ca-ctx-duo">' + awayAv + homeAv + '</div>' : '') +
+      '<div class="ca-matchup-card__detail-grid">' + miniFact('Broadcast', game.broadcast || 'Not Published', '', 'tv') + '</div>';
   }
 
   function cardHtml(sport, game) {
@@ -910,6 +946,60 @@
       if (observed) result.statusObservedAt = new Date().toISOString();
       return result;
     }).catch(function () { return result; });
+    return result;
+  }
+
+  /* One /api/market-lines call for the days an NFL, CFB or NBA slate covers.
+     A card is matched on ESPN's event id, then on both club codes, then on the
+     school or club names; a pair seen on the card's own day wins over the
+     same pair on another day. */
+  var LINE_SPORTS = { nfl: 1, cfb: 1, nba: 1 };
+  function lineKey(text) {
+    return String(text || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+      .replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
+  }
+  function lineMatch(game, rows) {
+    var id = String(game.id);
+    var direct = rows.filter(function (r) { return r.id === id; })[0];
+    if (direct) return direct;
+    function sameSide(side, club) {
+      club = club || {};
+      var code = String(game[side] || '').toUpperCase();
+      if (code && club.abbr && code === String(club.abbr).toUpperCase()) return true;
+      var name = lineKey(game[side + '_name']);
+      return !!name && (name === lineKey(club.location) || name === lineKey(club.name));
+    }
+    var pairs = rows.filter(function (r) { return sameSide('away', r.away) && sameSide('home', r.home); });
+    var day = game.kickoff_utc ? easternDateIso(new Date(game.kickoff_utc)) : null;
+    return pairs.filter(function (r) {
+      return day && r.kickoff_utc && easternDateIso(new Date(r.kickoff_utc)) === day;
+    })[0] || (pairs.length === 1 ? pairs[0] : null);
+  }
+  function withLines(result, sport) {
+    if (!LINE_SPORTS[sport] || !result || !(result.games || []).length) return result;
+    var days = [];
+    result.games.forEach(function (game) {
+      var when = game.kickoff_utc ? new Date(game.kickoff_utc) : null;
+      var day = when && isFinite(when.valueOf()) ? easternDateIso(when) : result.dateIso;
+      if (day && days.indexOf(day) < 0) days.push(day);
+      if (!game.market_lines) game.lines_state = 'checking';
+    });
+    if (!days.length) return result;
+    var url = '/api/market-lines?sport=' + sport + '&dates=' +
+      days.sort().slice(0, 8).map(function (d) { return d.replace(/-/g, ''); }).join(',');
+    var prior = (result.statusReady || Promise.resolve(result)).catch(function () { return result; });
+    var request = loadJson(url).catch(function () { return null; });
+    result.statusReady = Promise.all([prior, request]).then(function (parts) {
+      var updated = parts[0] || result, payload = parts[1];
+      var rows = payload && payload.status !== 'unavailable' && Array.isArray(payload.games) ? payload.games : null;
+      updated.games.forEach(function (game) {
+        var hit = rows && lineMatch(game, rows);
+        if (hit) game.market_lines = hit.lines;
+        game.lines_state = rows || game.market_lines ? 'checked' : 'unavailable';
+      });
+      updated.linesObservedAt = new Date().toISOString();
+      return updated;
+    });
     return result;
   }
 
@@ -1306,12 +1396,13 @@
     // opens on the next day with games rather than on an empty today.
     return loadGames(opts.sport, opts.adapter,
       opts.dateIso || query().get('date') || null).then(function (result) {
+      result = withLines(result, opts.sport);
       host.__desk.games = result.games;
       host.__desk.dateIso = result.dateIso || host.__desk.dateIso;
       if (!host.__desk.embedded) updateStatus(opts.sport, result);
       render(host);
       if (result.statusReady) result.statusReady.then(function(updated){
-        if(!(updated.statusObservedAt || updated.availabilityChecked) || (updated.dateIso && host.__desk.dateIso!==updated.dateIso))return;
+        if(!(updated.statusObservedAt || updated.availabilityChecked || updated.linesObservedAt) || (updated.dateIso && host.__desk.dateIso!==updated.dateIso))return;
         var open=host.querySelector('[data-expand-matchup][aria-expanded="true"]'),keep=open&&open.getAttribute('aria-controls');
         host.__desk.games=updated.games;render(host);
         if(keep){var panel=document.getElementById(keep),button=host.querySelector('[aria-controls="'+keep+'"]');if(panel&&button){panel.hidden=false;button.setAttribute('aria-expanded','true');button.closest('.ca-matchup-card').classList.add('is-expanded');}}

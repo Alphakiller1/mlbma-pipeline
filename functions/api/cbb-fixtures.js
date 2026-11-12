@@ -1,25 +1,6 @@
 /** Factual fixture refresh. Upstream extras never enter the Research client. */
 import { json } from '../_shared/http.js';
-
-/* Posted market numbers only: the opening and current point spread (home
-   side) and total from the first listed provider. Prices, links, moneylines
-   and every model field stay upstream. */
-export function marketLines(comp) {
-  const o = (comp.odds || [])[0] || {};
-  const num = (v, lo, hi) => {
-    const text = String(v == null ? '' : v).trim().replace(/^[ou]/i, '');
-    if (!/^[+-]?\d+(\.\d+)?$/.test(text) && !/^(pk|even)$/i.test(text)) return null;
-    const n = /^(pk|even)$/i.test(text) ? 0 : Number(text);
-    return Number.isFinite(n) && n >= lo && n <= hi ? n : null;
-  };
-  const ps = ((o.pointSpread || {}).home) || {}, over = ((o.total || {}).over) || {};
-  const lines = {
-    provider: (function (pv) { var n = pv.displayName || pv.name; return typeof n === 'string' ? n.slice(0, 40) : null; })(o.provider || {}),
-    home_open: num((ps.open || {}).line, -70, 70), home_current: num((ps.close || {}).line, -70, 70),
-    total_open: num((over.open || {}).line, 60, 260), total_current: num((over.close || {}).line, 60, 260)
-  };
-  return lines.home_current == null && lines.total_current == null ? null : lines;
-}
+import { marketLines } from '../_shared/market-lines.js';
 
 export function factualEvents(payload) {
   return (payload.events || []).map(event => {
@@ -30,7 +11,7 @@ export function factualEvents(payload) {
       status: { type: { name: type.name, state: type.state } },
       competitions: [{
         neutralSite: comp.neutralSite === true,
-        market_lines: marketLines(comp),
+        market_lines: marketLines(comp, 'cbb'),
         venue: { fullName: (comp.venue || {}).fullName, address: { city: ((comp.venue || {}).address || {}).city } },
         competitors: (comp.competitors || []).filter(c => c.homeAway === 'home' || c.homeAway === 'away').map(c => {
           const team = c.team || {};

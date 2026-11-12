@@ -351,8 +351,16 @@ class SportRouteBuilderTests(unittest.TestCase):
         summary = card.split("function summaryRow", 1)[1].split("function cfbAnalysis", 1)[0]
         for gone in ("Model margin", "Win probability", "Projected total"):
             self.assertNotIn(gone, summary)
-        for fact in ("'Records'", "'Conference'", "'Site'"):
-            self.assertIn(fact, summary)
+        cfb = summary.split("if (sport === 'cfb')", 1)[1].split("return '<div", 2)[1]
+        for fact in ("'Records'", "lineCell(game)", "'Site'"):
+            self.assertIn(fact, cfb)
+        # Owner 2026-11-12: every NFL, CFB and NBA card carries the posted line
+        # (spread and total from ESPN's listed book), never a model number.
+        line = card.split("function lineCell", 1)[1].split("function summaryRow", 1)[0]
+        self.assertIn("market_lines", line)
+        for gone in ("margin", "probability", "projected", "edge"):
+            self.assertNotIn(gone, line.lower())
+        self.assertEqual(summary.count("lineCell(game)"), 3)
 
     def test_scope_bar_omits_defaults(self):
         js = (ROOT / "dashboard" / "chase_scope.js").read_text(encoding="utf-8")
