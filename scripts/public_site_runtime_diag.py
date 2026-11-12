@@ -260,10 +260,10 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             page.wait_for_selector('[data-nba-season="2027"]', timeout=timeout_ms)
             check('NBA measured coverage includes exact samples', page.locator('#nba-coverage .ca-coverage-sample').count() >= 4)
             page.locator('[data-nba-season="2026"]').click()
-            check('NBA prior season changes measured coverage', '2025–26' in page.locator('#nba-coverage').inner_text())
+            check('NBA prior season changes measured coverage', '2025–26' in page.locator('#nba-coverage').text_content())
             check('NBA season selection preserves active tab', page.locator('.ca-detail-stack').get_attribute('data-nfl-tab') == 'defense')
             page.locator('[data-nba-season="2027"]').click()
-            check('NBA current season restores measured coverage', '2026–27' in page.locator('#nba-coverage').inner_text())
+            check('NBA current season restores measured coverage', '2026–27' in page.locator('#nba-coverage').text_content())
             check('NBA measured and inferred coverage remain distinct', 'Inferred Defensive Tendencies' in page.locator('#nba-scheme').inner_text())
             page.evaluate("document.querySelector('.ca-detail-stack').setAttribute('data-nfl-tab', 'all')")
             page.wait_for_timeout(1500)
@@ -320,11 +320,17 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL Passing tab shows quarterbacks, coverage and looks",
               page.evaluate(shown) == "quarterbacks,coverage,looks" and page.url.endswith("#passing"),
               page.evaluate(shown) + " " + page.url)
+        # Owner 2026-11-12: no purple sub-text anywhere. Provenance stays in the
+        # DOM (the checks below read text_content), but none of it shows.
+        purple = page.evaluate("""() => Array.from(document.querySelectorAll(
+          '.ca-lineup-context, .ca-detail-eyebrow, .ca-public-page__eyebrow, .ca-analysis-scope__eyebrow'))
+          .filter(el => el.offsetParent !== null).length""")
+        check("NFL matchup shows no purple sub-text", purple == 0, f"visible={purple}")
         page.locator('a[data-nfl-tab="dvoa"]').click()
         check("NFL DVOA tab exposes both FTN panels",
               page.evaluate(shown) == "dvoa"
               and page.locator("#dvoa .ca-nfl-dvoa-panel").count() == 2)
-        dvoa_text = page.locator("#dvoa").inner_text().lower()
+        dvoa_text = page.locator("#dvoa").text_content().lower()
         check("NFL DVOA publishes all eight team-unit values",
               page.locator("#dvoa tbody tr").count() == 8
               and "not published" not in dvoa_text,
@@ -628,7 +634,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         efficiency_text = page.locator("#cfb-efficiency").inner_text().lower()
         check("CFB efficiency carries scoring, yardage and per-play evidence",
               all(label in efficiency_text for label in ("points/g", "pts/play", "yds/play", "success")))
-        dvoa_text = page.locator("#cfb-dvoa").inner_text()
+        dvoa_text = page.locator("#cfb-dvoa").text_content()
         check("CFB DVOA equivalent sets both SP+ profiles school against school",
               page.locator("#cfb-dvoa .ca-cfb-h2h").count() == 1
               and page.locator("#cfb-dvoa tbody tr").count() == 4
@@ -711,7 +717,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               and page.locator("#cfb-game-log tbody tr.ca-log-season").count() == 2
               and page.locator("#cfb-game-log tbody .ca-rank").count() > 10)
         page.locator("a[data-nfl-tab='availability']").click()
-        injury_text = page.locator("#cfb-availability").inner_text().lower()
+        injury_text = page.locator("#cfb-availability").text_content().lower()
         check("CFB availability tab carries both schools' injury reports",
               page.locator("#cfb-availability.is-tab-on .ca-cfb-injury-panel").count() == 2
               and "injury report" in injury_text and ("covers" in injury_text or "not published" in injury_text),
