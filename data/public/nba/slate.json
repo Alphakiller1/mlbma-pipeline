@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-12",
- "generated_at_utc": "2026-11-12T10:22:09+00:00",
+ "generated_at_utc": "2026-11-12T18:21:06+00:00",
  "data_through_utc": "2026-11-12T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -121,8 +121,8 @@
    "id": "401909976",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/12 - 7:00 PM EST",
+   "game_state": "live",
+   "status_detail": "4:02 - 2nd",
    "kickoff_utc": "2026-11-13T00:00Z",
    "away": "TOR",
    "home": "PHI",
@@ -136,8 +136,8 @@
    "home_record": "9-3",
    "away_split_record": "3-3",
    "home_split_record": "4-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 49,
+   "home_score": 47,
    "venue": "Xfinity Mobile Arena",
    "venue_city": "Philadelphia, PA",
    "broadcast": "",
@@ -3972,11 +3972,20 @@
     {
      "player_id": "4431684",
      "player_name": "Trayce Jackson-Davis",
-     "status": "Day-To-Day",
+     "status": "Out",
      "detail": "Illness",
-     "comment": "Jackson-Davis (illness) has been ruled out for Wednesday's game against the Celtics, Blake Murphy of Sportsnet.ca reports.",
-     "date": "2026-11-12T03:01Z",
-     "return_date": "2026-11-12"
+     "comment": "Jackson-Davis is out for Thursday's game against the 76ers due to an illness.",
+     "date": "2026-11-12T18:09Z",
+     "return_date": "2026-11-15"
+    },
+    {
+     "player_id": "4433134",
+     "player_name": "Scottie Barnes",
+     "status": "Out",
+     "detail": "Left Groin Soreness",
+     "comment": "Barnes (groin) is out for Thursday's game against Philadelphia.",
+     "date": "2026-11-12T18:05Z",
+     "return_date": "2026-11-15"
     },
     {
      "player_id": "6450",
@@ -3986,15 +3995,6 @@
      "comment": "Head coach Darko Rajakovic said Wednesday that Leonard (knee) is doing individual on-court work and is progressing well, Michael Grange of Sportsnet.ca reports.",
      "date": "2026-11-11T22:33Z",
      "return_date": "2026-11-23"
-    },
-    {
-     "player_id": "4433134",
-     "player_name": "Scottie Barnes",
-     "status": "Out",
-     "detail": "Left Groin Soreness",
-     "comment": "Barnes (groin) is out for Wednesday's game against Boston.",
-     "date": "2026-11-10T21:48Z",
-     "return_date": "2026-11-12"
     },
     {
      "player_id": "4432586",
@@ -6941,7 +6941,7 @@
       "player_name": "LeBron James",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/1966.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 32.5,
       "ppg": 15.1,
       "height_in": 81.0,
@@ -7915,12 +7915,30 @@
    },
    "home_injuries": [
     {
+     "player_id": "1966",
+     "player_name": "LeBron James",
+     "status": "Out",
+     "detail": "Back",
+     "comment": "James (back) remains questionable for Thursday's game against the Raptors, but he participated in the team's morning shootaround, Ky Carlin of USA Today reports.",
+     "date": "2026-11-12T18:06Z",
+     "return_date": "2026-11-15"
+    },
+    {
+     "player_id": "4870562",
+     "player_name": "Dominick Barlow",
+     "status": "Out",
+     "detail": "Back Fracture",
+     "comment": "Barlow (back) participated in Thursday's shootaround but doesn't have a timeline to return to game action, Ky Carlin of USA Today reports.",
+     "date": "2026-11-12T16:37Z",
+     "return_date": "2026-11-18"
+    },
+    {
      "player_id": "5105637",
      "player_name": "Adem Bona",
      "status": "Out",
      "detail": "Back Sprain",
-     "comment": "Bona (back) is out for Thursday's game against the Raptors, Kyle Neubeck of AllPHLY.com reports.",
-     "date": "2026-11-11T22:10Z",
+     "comment": "Bona (back) will be re-evaluated in approximately one week after seeing a specialist, Ky Carlin of USA Today reports.",
+     "date": "2026-11-12T16:36Z",
      "return_date": "2026-11-18"
     },
     {
@@ -7928,27 +7946,9 @@
      "player_name": "Joel Embiid",
      "status": "Day-To-Day",
      "detail": "Right Foot",
-     "comment": "Embiid (foot) is listed as questionable for Thursday's game against Toronto, Adam Aaronson of PhillyVoice.com reports.",
-     "date": "2026-11-11T22:06Z",
+     "comment": "Embiid (foot) remains questionable for Thursday's game against the Raptors, but he participated in the team's morning shootaround, Ky Carlin of USA Today reports.",
+     "date": "2026-11-12T16:34Z",
      "return_date": "2026-11-12"
-    },
-    {
-     "player_id": "1966",
-     "player_name": "LeBron James",
-     "status": "Day-To-Day",
-     "detail": "Back",
-     "comment": "James (back) is questionable for Thursday's game against the Raptors, Kyle Neubeck of AllPHLY.com reports.",
-     "date": "2026-11-11T22:06Z",
-     "return_date": "2026-11-12"
-    },
-    {
-     "player_id": "4870562",
-     "player_name": "Dominick Barlow",
-     "status": "Out",
-     "detail": "Back Fracture",
-     "comment": "Head coach Nick Nurse said Wednesday that Barlow (back) likely needs another 10-12 days before he's cleared to return to the court, Derek Bodner of AllPHLY.com reports.",
-     "date": "2026-11-04T22:41Z",
-     "return_date": "2026-11-18"
     },
     {
      "player_id": "4871141",
@@ -7965,8 +7965,8 @@
    "id": "401909977",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/12 - 7:00 PM EST",
+   "game_state": "live",
+   "status_detail": "2:57 - 2nd",
    "kickoff_utc": "2026-11-13T00:00Z",
    "away": "DET",
    "home": "WSH",
@@ -7980,8 +7980,8 @@
    "home_record": "4-8",
    "away_split_record": "4-1",
    "home_split_record": "2-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 54,
+   "home_score": 55,
    "venue": "Capital One Arena",
    "venue_city": "Washington, DC",
    "broadcast": "MNMT",
@@ -31005,5 +31005,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-12T18:11:17+00:00"
+ "published_at_utc": "2026-11-13T01:00:30+00:00"
 }
