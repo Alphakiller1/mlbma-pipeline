@@ -990,6 +990,21 @@
       entry.rank + ordinal(entry.rank) + '</span>';
   }
 
+  /* A game-log figure is placed among that week's team-games, a pool that can
+     outnumber the league's teams. It prints on the league's own scale - the
+     same share of the pool ahead of it, read as a place among the teams - so
+     no place runs past the number of teams (owner 2026-11-13). {rank, of,
+     pool}; a pool no larger than the league prints as it is. */
+  function teamScaled(rank, of, teams) {
+    if (!rank || !(of > 1)) return null;
+    if (!(teams > 1) || of <= teams) return { rank: rank, of: of, pool: null };
+    return { rank: 1 + Math.round((rank - 1) * (teams - 1) / (of - 1)), of: teams, pool: of };
+  }
+  function teamScaledLabel(place, raw, cohort, poolLabel) {
+    return place.rank + ordinal(place.rank) + ' of ' + place.of + ' ' + cohort +
+      (place.pool ? ' · ' + raw + ordinal(raw) + ' of ' + place.pool + ' ' + poolLabel : '');
+  }
+
   // The rank pill for either shape a place comes in: {rank, of} or {place, of}.
   function nflBadge(r) {
     return r ? rankBadge({ rank: r.rank != null ? r.rank : r.place, of: r.of }) : '';
@@ -6410,12 +6425,15 @@ function seasonToggle(game) {
   var CFB_LOG_COLS = [['total_yards', 'Yards', 'int'], ['passing_yards', 'Pass', 'int'],
     ['rushing_yards', 'Rush', 'int'], ['turnovers', 'TO', 'int'], ['third_down_rate', '3rd Dn', 'pct']];
 
-  function cfbLogCell(entry, kind, extra) {
+  // A week's team-games can outnumber FBS; teamScaled prints them on its scale.
+  function cfbLogCell(entry, kind, extra, teams) {
     if (!entry || entry.value == null) return '<td class="num ca-vs-none">Not Charted</td>';
     var e = { value: entry.value, rank: entry.rank, of: entry.of, format: kind };
-    return '<td class="num ' + (entry.rank ? rankTone(entry.rank, entry.of) : '') + '" title="' +
-      esc((entry.rank ? entry.rank + ordinal(entry.rank) + ' of ' + entry.of : '') + (extra || '')) + '">' +
-      esc(cfbValue(e)) + (entry.rank ? rankBadge({ rank: entry.rank, of: entry.of }) : '') + '</td>';
+    var place = teamScaled(entry.rank, entry.of, teams);
+    return '<td class="num ' + (place ? rankTone(place.rank, place.of) : '') + '" title="' +
+      esc((place ? teamScaledLabel(place, entry.rank, place.pool ? 'on the FBS scale' : '', 'team-games that week') : '') +
+        (extra || '')) + '">' +
+      esc(cfbValue(e)) + (place ? rankBadge(place) : '') + '</td>';
   }
 
   function cfbGameLogPanel(sport, game, side) {
@@ -6432,6 +6450,8 @@ function seasonToggle(game) {
           opp_adj_points: g.adj_opponent_points };
       });
     function mean(list, key) { return list.reduce(function (t, g) { return t + g[key]; }, 0) / list.length; }
+    // The FBS cohort the season row is ranked in.
+    var fbs = ((log.season || {}).total_yards || {}).of || ((cfbRates(game, side).off_ppg || {}).of) || null;
     var rows = games.map(function (g) {
       var pts = (g.points || {}).value, opp = (g.opponent_points || {}).value;
       return '<tr><td>W' + g.week + ' ' + (g.neutral ? 'vs ' : (g.home ? 'vs ' : '@ ')) +
@@ -6442,7 +6462,7 @@ function seasonToggle(game) {
           : nflLogResult(g.adj_points, g.adj_opponent_points, 1)) + '</td>' +
         CFB_LOG_COLS.map(function (c) {
           return cfbLogCell(g[c[0]], c[2], c[0] === 'third_down_rate' && g.third_down
-            ? ' · ' + g.third_down : '');
+            ? ' · ' + g.third_down : '', fbs);
         }).join('') + '</tr>';
     }).join('');
     var season = log.season || {};
@@ -8293,15 +8313,24 @@ function seasonToggle(game) {
       cbbTable(['Player','GP','MIN%','PTS','REB','AST','TS%'],rows));
   }
   /* Each completed game's box line (pipeline/cbb_public/game_lines.py): every
-     figure is coloured and placed among all D-I team-games that week. */
+     figure is coloured and placed among all D-I team-games that week, printed
+     on the D-I team scale (teamScaled). */
   var CBB_LOG_COLS = [['orb_pct','ORB%'],['drb_pct','DRB%'],['efg_pct','eFG%'],['fg3_pct','3P%'],['fg2_pct','2P%'],
     ['ft_pct','FT%'],['pace','Pace'],['fg3a_share','3PA share'],['fg2a_share','2PA share']];
-  function cbbLogCell(g,key) {
+  function cbbLogCell(g,key,teams) {
     var e=(g.box||{})[key];
     if(!e||e.value==null)return cbbMissing(g.box?'None':'Not published');
     var text=key==='pace'?cbbNumber(e.value):cbbPct(e.value);
-    return cbbRanked(global.ChaseCbbCharts.value(text,rankTone(e.rank,e.of)),{rank:e.rank,of:e.of},
-      'D-I team-games in the week of '+(g.week||''));
+    var place=teamScaled(e.rank,e.of,teams);
+    if(!place)return global.ChaseCbbCharts.value(text,'');
+    var label=teamScaledLabel(place,e.rank,'on the D-I team scale','D-I team-games in the week of '+(g.week||''));
+    return '<span class="ca-cbb-ranked">'+global.ChaseCbbCharts.value(text,rankTone(place.rank,place.of))+
+      rankBadge(place,'',label)+'</span>';
+  }
+  // The league's size for the game-log scale: the season's ranked D-I teams.
+  function cbbTeamCount(game) {
+    var samples=global.ChaseSportCBB.rankSamples(cbbYear(game),'team','efg_o_all');
+    return Array.isArray(samples)&&samples.length>1?samples.length:null;
   }
   /* Twelve columns need the full width: the two schools stack. */
   function cbbGameLogs(sport,game) {
@@ -8324,7 +8353,7 @@ function seasonToggle(game) {
     }
     games=games.filter(function(g){return upcoming?g.state==='pre'&&g.date>=String(game.slate_date):g.points!=null;});
     games.sort(function(a,b){return upcoming?a.date.localeCompare(b.date):b.date.localeCompare(a.date);});
-    var division=0;
+    var division=0, teams=cbbTeamCount(game);
     var rows=games.map(function(g){
       var d1=!check||check(g.opponent_id);
       if(d1)division++;
@@ -8342,7 +8371,7 @@ function seasonToggle(game) {
         return [day,opponent,result,{span:CBB_LOG_COLS.length+1,html:esc('Box score not published')}];
       var adjusted=upcoming?[]:[g.adj_points!=null?nflLogResult(g.adj_points,g.adj_opponent_points,1):cbbMissing('Not published')];
       return [day,opponent,result]
-        .concat(adjusted).concat(upcoming?[]:CBB_LOG_COLS.map(function(c){return cbbLogCell(g,c[0]);}));
+        .concat(adjusted).concat(upcoming?[]:CBB_LOG_COLS.map(function(c){return cbbLogCell(g,c[0],teams);}));
     });
     var caption=cbbSeason(game)+' · '+cbbPlural(games.length,'game')+(division<games.length?' · '+division+' vs D-I':'');
     var head=['Date','Opponent',upcoming?'State':'Result'].concat(upcoming?[]:['Noise-Adj']).concat(upcoming?[]:CBB_LOG_COLS.map(function(c){return c[1];}));
