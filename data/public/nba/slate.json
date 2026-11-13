@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-13",
- "generated_at_utc": "2026-11-13T10:01:15+00:00",
+ "generated_at_utc": "2026-11-13T17:47:30+00:00",
  "data_through_utc": "2026-11-13T02:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -15281,21 +15281,21 @@
    },
    "home_injuries": [
     {
-     "player_id": "4702382",
-     "player_name": "Tristan da Silva",
-     "status": "Day-To-Day",
-     "detail": "Left Calf Strain",
-     "comment": "Da Silva (calf) is questionable for Friday's game against Milwaukee.",
-     "date": "2026-11-12T22:07Z",
-     "return_date": "2026-11-13"
-    },
-    {
      "player_id": "4278572",
      "player_name": "Jamal Cain",
      "status": "Day-To-Day",
      "detail": "Left Shoulder Bruise",
-     "comment": "Cain (shoulder) is questionable for Friday's game against the Bucks.",
-     "date": "2026-11-12T22:04Z",
+     "comment": "Cain (shoulder) participated in Friday morning's shootaround and remains questionable for Friday's game against the Bucks, Jason Beede of the Orlando Sentinel reports.",
+     "date": "2026-11-13T17:12Z",
+     "return_date": "2026-11-13"
+    },
+    {
+     "player_id": "4702382",
+     "player_name": "Tristan da Silva",
+     "status": "Day-To-Day",
+     "detail": "Left Calf Strain",
+     "comment": "Da Silva (calf) participated in Friday's morning shootaround and remains questionable for Friday's game against Milwaukee, Jason Beede of the Orlando Sentinel reports.",
+     "date": "2026-11-13T17:09Z",
      "return_date": "2026-11-13"
     },
     {
@@ -15303,8 +15303,8 @@
      "player_name": "Jalen Suggs",
      "status": "Out",
      "detail": "Right Knee",
-     "comment": "Suggs (knee) is questionable for Friday's game against Milwaukee.",
-     "date": "2026-11-12T22:03Z",
+     "comment": "Suggs (knee) participated in Friday's morning shootaround and remains questionable for Friday's game against the Bucks, Jason Beede of the Orlando Sentinel reports.",
+     "date": "2026-11-13T17:08Z",
      "return_date": "2026-11-13"
     },
     {
@@ -69951,5 +69951,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-13T17:39:24+00:00"
+ "published_at_utc": "2026-11-13T23:28:47+00:00"
 }
