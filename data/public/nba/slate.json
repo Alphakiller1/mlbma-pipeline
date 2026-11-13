@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-12",
- "generated_at_utc": "2026-11-12T18:21:06+00:00",
+ "generated_at_utc": "2026-11-13T01:06:56+00:00",
  "data_through_utc": "2026-11-12T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -122,7 +122,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "4:02 - 2nd",
+   "status_detail": "4:49 - 3rd",
    "kickoff_utc": "2026-11-13T00:00Z",
    "away": "TOR",
    "home": "PHI",
@@ -136,8 +136,8 @@
    "home_record": "9-3",
    "away_split_record": "3-3",
    "home_split_record": "4-2",
-   "away_score": 49,
-   "home_score": 47,
+   "away_score": 76,
+   "home_score": 81,
    "venue": "Xfinity Mobile Arena",
    "venue_city": "Philadelphia, PA",
    "broadcast": "",
@@ -7125,7 +7125,7 @@
       "player_name": "Joel Embiid",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3059318.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 31.8,
       "ppg": 17.7,
       "height_in": 84.0,
@@ -7919,8 +7919,8 @@
      "player_name": "LeBron James",
      "status": "Out",
      "detail": "Back",
-     "comment": "James (back) remains questionable for Thursday's game against the Raptors, but he participated in the team's morning shootaround, Ky Carlin of USA Today reports.",
-     "date": "2026-11-12T18:06Z",
+     "comment": "James (back) is out for Thursday's game against Toronto.",
+     "date": "2026-11-12T18:07Z",
      "return_date": "2026-11-15"
     },
     {
@@ -7942,15 +7942,6 @@
      "return_date": "2026-11-18"
     },
     {
-     "player_id": "3059318",
-     "player_name": "Joel Embiid",
-     "status": "Day-To-Day",
-     "detail": "Right Foot",
-     "comment": "Embiid (foot) remains questionable for Thursday's game against the Raptors, but he participated in the team's morning shootaround, Ky Carlin of USA Today reports.",
-     "date": "2026-11-12T16:34Z",
-     "return_date": "2026-11-12"
-    },
-    {
      "player_id": "4871141",
      "player_name": "Ariel Hukporti",
      "status": "Out",
@@ -7966,7 +7957,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "2:57 - 2nd",
+   "status_detail": "2:07 - 3rd",
    "kickoff_utc": "2026-11-13T00:00Z",
    "away": "DET",
    "home": "WSH",
@@ -7980,8 +7971,8 @@
    "home_record": "4-8",
    "away_split_record": "4-1",
    "home_split_record": "2-2",
-   "away_score": 54,
-   "home_score": 55,
+   "away_score": 92,
+   "home_score": 86,
    "venue": "Capital One Arena",
    "venue_city": "Washington, DC",
    "broadcast": "MNMT",
@@ -15759,8 +15750,8 @@
    "id": "401909978",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/12 - 8:00 PM EST",
+   "game_state": "live",
+   "status_detail": "9:32 - 2nd",
    "kickoff_utc": "2026-11-13T01:00Z",
    "away": "DAL",
    "home": "MIN",
@@ -15774,8 +15765,8 @@
    "home_record": "8-3",
    "away_split_record": "2-2",
    "home_split_record": "4-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 32,
+   "home_score": 41,
    "venue": "Target Center",
    "venue_city": "Minneapolis, MN",
    "broadcast": "NBA TV / KFAA-TV / MavsTV",
@@ -17774,7 +17765,7 @@
       "label": "Rotation Weight (lb, minutes-weighted)",
       "value": 212.1991,
       "better": "neutral",
-      "rank": 24,
+      "rank": 23,
       "of": 30,
       "format": "num"
      },
@@ -19147,7 +19138,7 @@
       "player_name": "Morez Johnson Jr.",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4873153.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 17.1,
       "ppg": 7.6,
       "height_in": 82.0,
@@ -19492,15 +19483,6 @@
      "comment": "De Larrea (knee) has been ruled out for Thursday's game at Minnesota.",
      "date": "2026-11-11T22:10Z",
      "return_date": "2026-11-18"
-    },
-    {
-     "player_id": "4873153",
-     "player_name": "Morez Johnson Jr.",
-     "status": "Day-To-Day",
-     "detail": "Left Lower Leg Bruise",
-     "comment": "Johnson (shin) is listed as probable for Thursday's game against Minnesota.",
-     "date": "2026-11-11T22:08Z",
-     "return_date": "2026-11-12"
     }
    ],
    "home_form": {
@@ -21487,7 +21469,7 @@
     "size": {
      "height": {
       "label": "Rotation Height (in, minutes-weighted)",
-      "value": 79.1801,
+      "value": 79.17,
       "better": "neutral",
       "rank": 9,
       "of": 30,
@@ -21495,17 +21477,17 @@
      },
      "weight": {
       "label": "Rotation Weight (lb, minutes-weighted)",
-      "value": 212.3797,
+      "value": 212.0593,
       "better": "neutral",
-      "rank": 23,
+      "rank": 24,
       "of": 30,
       "format": "num"
      },
      "age": {
       "label": "Rotation Age (minutes-weighted)",
-      "value": 26.2093,
+      "value": 26.1561,
       "better": "neutral",
-      "rank": 15,
+      "rank": 16,
       "of": 30,
       "format": "num"
      },
@@ -26600,7 +26582,7 @@
       "player_name": "Moussa Diabate",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4433249.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 28.8,
       "ppg": 8.9,
       "height_in": 82.0,
@@ -27182,24 +27164,6 @@
     "altitude": false
    },
    "away_injuries": [
-    {
-     "player_id": "4066218",
-     "player_name": "Grant Williams",
-     "status": "Out",
-     "detail": "Right Hamstring",
-     "comment": "Williams (hamstring) is listed as probable for Thursday's game against the Suns.",
-     "date": "2026-11-12T00:12Z",
-     "return_date": "2026-11-12"
-    },
-    {
-     "player_id": "4433249",
-     "player_name": "Moussa Diabate",
-     "status": "Day-To-Day",
-     "detail": "Right Quadriceps",
-     "comment": "Diabate (quadriceps) is listed as probable for Thursday's game against the Suns.",
-     "date": "2026-11-12T00:10Z",
-     "return_date": "2026-11-12"
-    },
     {
      "player_id": "4433287",
      "player_name": "Brandon Miller",
@@ -31005,5 +30969,5 @@
    ]
   }
  ],
- "published_at_utc": "2026-11-13T01:00:30+00:00"
+ "published_at_utc": "2026-11-13T01:43:53+00:00"
 }
