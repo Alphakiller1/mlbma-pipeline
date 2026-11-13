@@ -5640,15 +5640,20 @@ body[data-sport="nfl"] .ca-detail-nav {
  * NFL TABLE SPACING + EVEN PILLS - 2026-10-01 (owner: "too bunched up",
  * "not everything is represented the same"). Last in the file so it wins
  * over the tighter 2026-09-27 gutters. A table where any pill would wrap
- * gets .is-stacked (nflEvenPills) and every pill in it sits under its figure.
+ * gets .is-stacked (deskEvenTables, together with its mirror in the other
+ * panel) and every pill in it sits under its figure.
  * ======================================================================== */
 @media (min-width: 561px) {
   .ca-nfl-mix th.num, .ca-nfl-mix td.num { padding-left: var(--space-5); padding-right: var(--space-2); }
   .ca-nfl-split th.num, .ca-nfl-split td.num { padding-left: var(--space-3); padding-right: var(--space-2); }
   .ca-nfl-split td.num .ca-rank, .ca-nfl-mix td.num .ca-rank { margin-left: var(--space-1); }
 }
-.ca-nfl-split.is-stacked td.num .ca-rank,
-.ca-nfl-mix.is-stacked td.num .ca-rank { display: block; margin: 2px 0 0 auto; width: max-content; }
+/* Any desk table, any sport: deskEvenTables stacks a table and its mirror
+   together, so the rule cannot be tied to the NFL table classes. */
+.ca-detail-stack table.is-stacked td.num .ca-rank { display: block; margin: 2px 0 0 auto; width: max-content; }
+/* Basketball cells hold figure + pill in a wrapping flex row, where display:block
+   cannot break the line: stacked, that row becomes a right-aligned column. */
+.ca-detail-stack table.is-stacked td.num .ca-cbb-ranked { flex-direction: column; align-items: flex-end; gap: 2px; }
 /* Receiver stat switch (2026-10-01): one look matrix per stat. */
 .ca-rec-metric__bar { display: flex; flex-wrap: wrap; gap: var(--space-1); margin: 0 0 var(--space-2); }
 .ca-rec-metric__btn {

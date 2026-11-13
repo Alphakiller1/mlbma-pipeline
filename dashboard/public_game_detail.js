@@ -5728,50 +5728,157 @@ function seasonToggle(game) {
     });
   }
 
-  /* One table, one rhythm (owner 2026-10-01: "not everything is represented
-     the same"). Whether a rank pill fits beside its figure depends on that
-     figure's width, so a narrow column used to put some pills beside and some
-     under. Each visible table is measured: if any pill would wrap, every pill
-     in it stacks under its figure; otherwise all sit inline. */
-  function nflPillWrapped(pill) {
-    var cell = pill.parentNode, first = cell && cell.firstChild;
-    if (!first || first === pill) return false;
+  /* One rhythm per table AND per pair, on every desk (owner 2026-10-01: "not
+     everything is represented the same"; 2026-11-12: "these are not formatted
+     the same, fix throughout site").
+
+     Whether a rank pill fits beside its figure depends on that figure's width,
+     so a narrow column used to put some pills beside and some under. Deciding
+     table by table was not enough either: the away and home panels of a duo
+     are read across, and a longer club name or a wider figure tipped one table
+     into stacking while its mirror stayed inline. So the tables in the same
+     place in both panels are measured together. If any pill in either would
+     wrap or spill, both stack; otherwise both sit inline. Their header rows,
+     and the rows of mirrors that list the same labels, then take one height so
+     the two read line for line. Every desk table with rank pills takes part,
+     whichever sport drew it. */
+  // The figure a pill belongs to is what comes right before it - bare text,
+  // a value span, or a wrapper's first part - not the cell's first child,
+  // which may be a usage bar or a wrapper holding the pill itself.
+  function deskPillFigure(pill) {
+    var node = pill.previousSibling;
+    while (node && node.nodeType === 3 && !node.textContent.trim()) node = node.previousSibling;
+    return node;
+  }
+
+  function deskPillWrapped(pill) {
+    var figure = deskPillFigure(pill);
+    if (!figure) return false;
     var box;
-    if (first.nodeType === 3) {
+    if (figure.nodeType === 3) {
       var range = document.createRange();
-      range.selectNodeContents(first);
+      range.selectNodeContents(figure);
       box = range.getBoundingClientRect();
     } else {
-      box = first.getBoundingClientRect();
+      box = figure.getBoundingClientRect();
     }
     return pill.getBoundingClientRect().top > box.top + box.height / 2;
   }
 
-  function nflEvenPills(host) {
-    Array.prototype.forEach.call(host.querySelectorAll('table.ca-nfl-split, table.ca-nfl-mix'), function (table) {
-      if (!table.offsetParent) return;
-      table.classList.remove('is-stacked');
-      var pills = table.querySelectorAll('td.num > .ca-rank');
-      for (var i = 0; i < pills.length; i++) {
-        // Wrapped under its figure, or (where a column keeps one line) spilling
-        // past its cell into the next: either way the table stacks.
-        var cell = pills[i].parentNode;
-        if (nflPillWrapped(pills[i]) || cell.scrollWidth > cell.clientWidth + 1) {
-          table.classList.add('is-stacked');
-          return;
-        }
-      }
+  function deskTableNeedsStack(table) {
+    var pills = table.querySelectorAll('td.num .ca-rank');
+    for (var i = 0; i < pills.length; i++) {
+      if (!pills[i].offsetParent) continue;
+      // Wrapped under its figure, or (where a column keeps one line) spilling
+      // past its cell into the next: either way the table stacks.
+      var cell = pills[i].closest('td');
+      if (deskPillWrapped(pills[i]) || cell.scrollWidth > cell.clientWidth + 1) return true;
+    }
+    return false;
+  }
+
+  function deskVisibleTables(root) {
+    return Array.prototype.filter.call(root.querySelectorAll('table.ca-lineup-table'), function (t) {
+      return t.offsetParent;
     });
+  }
+
+  // A table's shape: how many columns, and what its first column is called.
+  // Mirrors share it; a defenders list under one panel never pairs with a
+  // shell table under the other.
+  function deskTableShape(table) {
+    var head = table.tHead && table.tHead.rows[0];
+    return (head ? head.cells.length : 0) + '|' + (head && head.cells[0] ? head.cells[0].textContent.trim() : '');
+  }
+
+  /* Groups of tables that must read alike: the k-th table of each shape in
+     the away panel with the k-th of that shape in the home panel; any table
+     outside a duo on its own. */
+  function deskTableGroups(stack) {
+    var groups = [], grouped = [];
+    Array.prototype.forEach.call(stack.querySelectorAll('.ca-detail-duo'), function (duo) {
+      if (!duo.offsetParent) return;
+      var panels = Array.prototype.filter.call(duo.children, function (c) { return c.offsetParent; });
+      var byShape = {};
+      panels.forEach(function (panel, side) {
+        var seen = {};
+        deskVisibleTables(panel).forEach(function (table) {
+          if (table.closest('.ca-detail-duo') !== duo) return; // a nested duo pairs its own
+          var shape = deskTableShape(table);
+          var key = shape + '#' + (seen[shape] = (seen[shape] || 0) + 1);
+          (byShape[key] = byShape[key] || [])[side] = table;
+          grouped.push(table);
+        });
+      });
+      Object.keys(byShape).forEach(function (key) {
+        groups.push(byShape[key].filter(Boolean));
+      });
+    });
+    deskVisibleTables(stack).forEach(function (table) {
+      if (grouped.indexOf(table) < 0) groups.push([table]);
+    });
+    return groups;
+  }
+
+  function deskRowLabel(row) {
+    return row.cells[0] ? row.cells[0].textContent.trim() : '';
+  }
+
+  function deskEvenHeights(rows) {
+    var tallest = 0;
+    rows.forEach(function (r) { tallest = Math.max(tallest, r.getBoundingClientRect().height); });
+    rows.forEach(function (r) {
+      if (r.getBoundingClientRect().height < tallest - 0.5) r.style.height = tallest + 'px';
+    });
+  }
+
+  function deskEvenGroup(tables) {
+    tables.forEach(function (t) {
+      t.classList.remove('is-stacked');
+      Array.prototype.forEach.call(t.rows, function (r) { r.style.height = ''; });
+    });
+    var stack = tables.some(deskTableNeedsStack);
+    tables.forEach(function (t) { t.classList.toggle('is-stacked', stack); });
+    if (tables.length < 2) return;
+    deskEvenHeights(tables.map(function (t) { return t.tHead && t.tHead.rows[0]; }).filter(Boolean));
+    // Row for row only where both tables list the same things in the same
+    // order (a look, a shell, a stat) - never across two clubs' player lists.
+    var bodies = tables.map(function (t) {
+      return Array.prototype.filter.call(t.tBodies[0] ? t.tBodies[0].rows : [], function (r) { return r.offsetParent; });
+    });
+    var labels = bodies[0].map(deskRowLabel).join('\n');
+    if (!bodies[0].length || bodies.some(function (rows) { return rows.map(deskRowLabel).join('\n') !== labels; })) return;
+    bodies[0].forEach(function (_, i) {
+      deskEvenHeights(bodies.map(function (rows) { return rows[i]; }));
+    });
+  }
+
+  function deskEvenTables(host) {
+    var stack = host.querySelector('.ca-detail-stack');
+    if (!stack) return;
+    // Where one club is on screen at a time (narrower than 1380px), its
+    // mirror is hidden but sits at the same width when shown, so both are
+    // measured as one for this synchronous pass - nothing paints in between -
+    // and switching club never changes the rhythm.
+    var club = stack.getAttribute('data-club');
+    if (club && club !== 'both') stack.setAttribute('data-club', 'both');
+    try {
+      deskTableGroups(stack).forEach(deskEvenGroup);
+    } finally {
+      if (club && club !== 'both') stack.setAttribute('data-club', club);
+    }
   }
 
   function wireNflDesk(host) {
     var pending = 0;
     function even() {
       if (pending) global.cancelAnimationFrame(pending);
-      pending = global.requestAnimationFrame(function () { pending = 0; nflEvenPills(host); });
+      pending = global.requestAnimationFrame(function () { pending = 0; deskEvenTables(host); });
     }
-    // Any tab, club or season switch can reveal tables; so can a resize.
+    // Any tab, club or season switch can reveal tables; so can a resize, and
+    // a headshot or logo arriving late can change a row's height.
     host.addEventListener('click', even);
+    host.addEventListener('load', even, true);
     global.addEventListener('resize', even);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(even);
     even();
