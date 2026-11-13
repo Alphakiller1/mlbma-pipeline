@@ -111,7 +111,7 @@ def stamp_hrefs(text: str) -> str:
     # Anchored on a leading slash or a relative path with no scheme, so a
     # third-party URL that happens to carry ?v= is left alone.
     text = re.sub(
-        r'((?:src|href)="(?!https?:|//)[^"]*?\.(?:js|css)\?v=)[^"]*(")',
+        r'((?:src|href)="(?!https?:|//)[^"]*?\.(?:js|css)\?v=)[^"&]+([^"]*")',
         lambda m: m.group(1) + STAMP + m.group(2), text)
 
     if "chase-tokens-v1.css" not in text and "mlbma_design_system.css" in text:

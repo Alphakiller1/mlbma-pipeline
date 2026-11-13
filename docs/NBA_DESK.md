@@ -17,7 +17,9 @@ logs. nba-model refuses to write model fields into it (`PUBLIC_FORBIDDEN`); the
 publisher re-checks against `design/public_restricted_fields.json`, and
 `scripts/validate_public_fields.py` holds the NBA routes to the MLB/NFL public
 dependency graph. Projections, win probability and the market comparison live
-only in Model Center.
+only in Model Center. **View Prop Projections** on a matchup card opens that
+game's published player projections. The button beside the sport tabs opens
+the same panel, where the matchup picker lists games with published player props.
 
 The publisher keeps the published file when the source is unreachable, stale
 (over 36 h), malformed, carries model fields, or has fewer games for the same

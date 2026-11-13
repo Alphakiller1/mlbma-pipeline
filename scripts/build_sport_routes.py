@@ -288,6 +288,7 @@ def shot_charts_page() -> str:
 
 
 def models_page() -> str:
+    model_assets = f"{STAMP}&amp;rev=2"
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -303,16 +304,16 @@ def models_page() -> str:
   <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/mlbma_design_system.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/chase_nav.css?v={STAMP}">
-  <link rel="stylesheet" href="/dashboard/styles/chase-model-center.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-model-center.css?v={model_assets}">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="evidence" data-ca-product="research">
 {model_nav()}
-  <main class="ca-public-page ca-shell-main">
+  <main class="ca-public-page ca-shell-main mc-page">
     <header class="ca-public-page__head">
       <div class="ca-public-page__copy">
         <h1 class="ca-public-page__title">Model Center</h1>
-        <p class="ca-public-page__lede">Every game on today’s slate, with projected scores and the model’s position against the market.</p>
+        <p class="ca-public-page__lede">Matchup scores, market comparisons, and player prop projections.</p>
       </div>
     </header>
     <div id="mcBoard"></div>
@@ -327,7 +328,7 @@ def models_page() -> str:
   <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
   <script src="/dashboard/sports/chase_board.js?v={STAMP}"></script>
   <script src="/dashboard/player_availability_shared.js?v={STAMP}"></script>
-  <script src="/dashboard/model_center.js?v={STAMP}"></script>
+  <script src="/dashboard/model_center.js?v={model_assets}"></script>
 </body>
 </html>
 """

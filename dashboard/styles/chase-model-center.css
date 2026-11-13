@@ -7,23 +7,43 @@
  * Consumes L2 roles only.
  */
 
-.mc-panel {
-  position: relative;
-  padding: var(--space-5) var(--space-5) var(--space-5) calc(var(--space-5) + 3px);
-  background: var(--surface-board);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  box-shadow: var(--elevation-2);
-  overflow: hidden;
+body[data-ca-product="research"]:has(#mcBoard) {
+  background: var(--surface-page);
+  color-scheme: dark;
 }
 
-.mc-panel::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 3px;
-  background: var(--edge-brand);
+.mc-page.ca-shell-main {
+  padding-block: clamp(var(--space-5), 3vw, var(--space-8)) var(--space-9);
 }
+
+.mc-page .ca-public-page__head { margin-bottom: var(--space-6); }
+
+.mc-page .ca-public-page__title {
+  width: fit-content;
+  margin: 0 0 var(--space-2);
+  font-size: var(--type-display);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.mc-page .ca-public-page__lede {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.mc-panel,
+.mc-game,
+.mc-prop {
+  min-width: 0;
+  background: var(--surface-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-card);
+}
+
+.mc-panel { padding: var(--space-5); }
+.mc-empty h2 { margin-bottom: var(--space-1); }
+.mc-empty p { margin: 0; color: var(--text-secondary); }
 
 .mc-panel__title {
   margin: 0 0 var(--space-3);
@@ -39,7 +59,7 @@
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
-  color: var(--text-accent);
+  color: var(--text-secondary);
 }
 
 /* —— Board list ——————————————————————————————————————————————— */
@@ -51,73 +71,79 @@
 
 .mc-board__head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: var(--space-3);
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--border-default);
+  gap: var(--space-1) var(--space-4);
 }
 
 .mc-board__title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: var(--type-display);
+  font-size: var(--type-28);
   font-weight: 800;
-  letter-spacing: -0.01em;
-  line-height: 1.02;
-  text-transform: uppercase;
+  line-height: 1.1;
 }
 
-.mc-board__meta {
-  font-family: var(--font-display);
-  font-size: var(--type-caps);
+.mc-board__status {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--type-meta);
+  font-variant-numeric: tabular-nums;
+}
+
+.mc-board__status strong {
+  color: var(--text-primary);
   font-weight: 700;
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
-  color: var(--text-muted);
 }
 
 .mc-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
   gap: var(--space-3);
   align-items: stretch;
 }
 
+.mc-grid--cbb { grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
+
 /* —— Game card ————————————————————————————————————————————————— */
 .mc-game {
-  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  height: 100%;
   padding: var(--space-4);
-  background: var(--surface-board-raised);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  box-shadow: var(--elevation-2);
 }
 
 .mc-game__head {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  gap: var(--space-3);
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
 }
 
-.mc-teams { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
-
-/* Team chip is the shared club tab (.ca-team-tab owns ground, ink and type);
-   this only sets the Model Center sizing. */
-.mc-chip { min-width: 58px; }
-
 .mc-game__time {
-  font-family: var(--font-display);
-  font-size: var(--type-14);
-  font-weight: 700;
+  font-size: var(--type-meta);
   color: var(--text-secondary);
   white-space: nowrap;
+}
+
+.mc-game > .mc-game__actions {
+  display: flex;
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.mc-game__props-status {
+  align-content: center;
+  margin: 0;
+  min-height: var(--touch-min);
+  color: var(--text-secondary);
+  font-size: var(--type-meta);
 }
 
 /* —— Model vs market gauge ————————————————————————————————————— */
@@ -161,8 +187,7 @@
 .mc-gauge__track {
   position: relative;
   height: 26px;
-  background: var(--surface-inset);
-  border: 1px solid var(--border-subtle);
+  background: var(--surface-field);
   border-radius: var(--radius-xs);
 }
 
@@ -195,23 +220,12 @@
   background: var(--border-strong);
 }
 
-.mc-gauge__axis {
-  display: flex;
-  justify-content: space-between;
-  font-size: var(--type-meta);
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
-}
-
 .mc-game__read {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--space-1) var(--space-2);
   flex-wrap: wrap;
-  margin-top: auto;
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--border-subtle);
 }
 
 .mc-game__lean {
@@ -221,12 +235,12 @@
 }
 
 .mc-game__values {
-  display: grid;
-  gap: 2px;
-  font-size: var(--type-data);
+  display: flex;
+  gap: var(--space-1) var(--space-2);
+  flex-wrap: wrap;
+  font-size: var(--type-meta);
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
-  text-align: right;
 }
 
 .mc-withheld {
@@ -244,7 +258,6 @@
 .mc-tile {
   padding: var(--space-3);
   background: var(--surface-field);
-  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
 }
 
@@ -279,7 +292,6 @@
 }
 
 .mc-hero__side { display: grid; gap: var(--space-2); justify-items: center; text-align: center; }
-.mc-hero__side .mc-chip { min-width: 96px; font-size: var(--type-28); padding: var(--space-3) var(--space-5); }
 .mc-hero__name { font-family: var(--font-display); font-size: var(--type-18); font-weight: 700; color: var(--text-primary); }
 .mc-hero__sub { font-size: var(--type-meta); color: var(--text-muted); font-variant-numeric: tabular-nums; }
 
@@ -302,49 +314,10 @@
   color: var(--text-muted);
 }
 
-/* —— Comparison bars ————————————————————————————————————————— */
-.mc-form { display: grid; gap: var(--space-2); }
-
-.mc-form__row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1.1fr);
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-2) var(--space-3);
-  background: var(--surface-field);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-}
-
-.mc-form__label { font-size: var(--type-14); color: var(--text-secondary); }
-.mc-form__value {
-  font-family: var(--font-display);
-  font-weight: 700;
-  color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
-  text-align: right;
-}
-
-.mc-bar {
-  height: 8px;
-  background: var(--surface-inset);
-  border-radius: var(--radius-pill);
-  overflow: hidden;
-}
-.mc-bar > i {
-  display: block;
-  height: 100%;
-  border-radius: var(--radius-pill);
-  background: var(--metric-neutral);
-}
-.mc-bar > i[data-grade="good"] { background: var(--metric-above); }
-.mc-bar > i[data-grade="watch"] { background: var(--metric-watch); }
-.mc-bar > i[data-grade="poor"] { background: var(--metric-poor); }
-
 @media (max-width: 620px) {
-  .mc-hero { grid-template-columns: minmax(0, 1fr); }
-  .mc-form__row { grid-template-columns: minmax(0, 1fr) 56px; }
-  .mc-form__row .mc-bar { grid-column: 1 / -1; }
+  .mc-hero { gap: var(--space-2); }
+  .mc-hero__name { overflow-wrap: anywhere; }
+  .mc-hero__score { font-size: var(--type-24); }
 }
 
 
@@ -354,99 +327,6 @@
 /* The model mark is the emphasised one; market sits behind it. */
 .mc-gauge__pin { box-shadow: 0 0 0 1px var(--surface-inset); }
 
-/* Crest inside the board chip, sized like the card's identity block. */
-.mc-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  background: var(--surface-field);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xs);
-  font-family: var(--font-display);
-  font-size: var(--type-16);
-  font-weight: 800;
-  letter-spacing: 0.03em;
-  color: var(--text-primary);
-}
-.mc-chip__crest { width: 24px; height: 24px; object-fit: contain; flex: 0 0 auto; }
-.mc-chip__code { line-height: 1.1; }
-.mc-hero__side .mc-chip { font-size: var(--type-24); padding: var(--space-3) var(--space-4); }
-.mc-hero__side .mc-chip__crest { width: 40px; height: 40px; }
-
-/* ===========================================================================
- * MODEL CENTER'S OWN DESIGN LAYER
- *
- * The public desk and Model Center are two products, and the design layer for
- * each was drawn separately: the desk is flat near-black (#08090F) with violet
- * held back for navigation, and Model Center sits on a blue-shifted ink
- * (#141824) with deep violet fields carrying the brand into the surface.
- *
- * They had been sharing the desk's palette, so the model product looked
- * like the free one. These overrides re-point the semantic surface tokens for
- * this route only — every component below keeps consuming the same token names
- * and inherits the layer without knowing about it.
- * ======================================================================== */
-body[data-ca-product="research"]:has(#mcBoard) {
-  --surface-page: var(--surface-mc-page);
-  --surface-panel: var(--surface-mc-panel);
-  --surface-board: var(--surface-mc-panel);
-  --surface-board-raised: var(--surface-mc-raised);
-  --surface-inset: var(--surface-mc-field);
-  --surface-field: var(--surface-mc-field);
-  --surface-raised: var(--surface-mc-hover);
-  background: var(--surface-mc-page);
-}
-
-/* The board used to take the deepest violet as "the brand object on the page".
-   At twelve cards that reads as a violet sheet with twelve grey rectangles
-   floating on it, and the club tiles - the one place colour carries meaning -
-   have to fight it. The reference puts the board on the page ground and spends
-   the violet on the accent rule and the model-to-market segment instead.
-   The panels inside it keep their own ink. */
-body[data-ca-product="research"]:has(#mcBoard) #mcBoard > section {
-  background: var(--surface-mc-panel);
-  border-color: var(--border-violet);
-}
-
-body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
-  background: var(--surface-mc-hover);
-}
-
-/* ===========================================================================
- * MODEL CENTER — TO THE REFERENCE RENDERING (2026-09-11)
- * ---------------------------------------------------------------------------
- * The board had drifted into a violet-washed panel with the slate title set in
- * display type across a filled band. The reference is quieter and reads far
- * better at twelve cards: a near-black ground, one thin accent rule marking the
- * section, and all of the colour spent on the club tiles and the one purple
- * segment that carries the model-to-market gap.
- * ======================================================================== */
-
-/* The board sits on the page, not in a tinted container of its own. */
-.mc-board { background: none; padding: 0; }
-
-/* A rule, not a band. The title is the only thing that needs weight here. */
-.mc-board__head {
-  align-items: center;
-  gap: var(--space-3);
-  padding: 0 0 var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--border-subtle);
-  border-left: 3px solid var(--accent);
-}
-
-.mc-board__title { font-size: var(--type-28); letter-spacing: 0.01em; }
-
-/* Three across is the reference count: it is the widest a card can be and
-   still put the whole axis in one eyeful. */
-.mc-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); }
-
-.mc-game {
-  gap: var(--space-2);
-  box-shadow: none;
-  background: var(--surface-board-raised);
-}
-
 /* --- Club identity -------------------------------------------------------
  * The official crest is the primary identifier and the abbreviation remains
  * as a persistent text fallback. `--club` is reserved for the narrow identity
@@ -454,21 +334,20 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 .mc-chip {
   display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
   gap: var(--space-2);
-  min-width: 76px;
-  padding: 5px 9px 5px 7px;
+  min-width: 0;
+  max-width: 100%;
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-xs);
-  background: var(--surface-mc-field);
-  border: 1px solid var(--border-default);
+  background: var(--surface-field);
   box-shadow: inset 3px 0 0 var(--club, var(--accent));
 }
 
 .mc-chip__crest,
 .mc-chip .team-logo-fallback {
-  width: 28px;
-  height: 28px;
-  flex: 0 0 28px;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
 }
 
 .mc-chip__crest {
@@ -482,24 +361,15 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
   color: var(--text-secondary);
 }
 
+.mc-chip__mark { flex: 0 0 24px; line-height: 0; }
+
 .mc-chip__code {
   font-family: var(--font-display);
   font-size: var(--type-14);
   font-weight: 800;
-  letter-spacing: 0.02em;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
   color: var(--text-primary);
-}
-
-.mc-hero__side .mc-chip {
-  min-width: 112px;
-  padding: var(--space-2) var(--space-3) var(--space-2) 9px;
-}
-
-.mc-hero__side .mc-chip__crest,
-.mc-hero__side .mc-chip .team-logo-fallback {
-  width: 40px;
-  height: 40px;
-  flex-basis: 40px;
 }
 
 /* --- The scale ----------------------------------------------------------- */
@@ -556,7 +426,7 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 .mc-gauge__leg strong { font-size: var(--type-16); }
 
 /* --- The week, in windows ------------------------------------------------ */
-.mc-slot { display: grid; gap: var(--space-2); margin-bottom: var(--space-4); }
+.mc-slot { display: grid; gap: var(--space-2); }
 
 .mc-slot__title {
   margin: 0;
@@ -586,7 +456,7 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
  * Guarded: without background-clip:text a transparent colour erases the text.
  * ======================================================================== */
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
-  .ca-public-page__title,
+  .mc-page .ca-public-page__title,
   .mc-board__title,
   .mc-panel__title {
     background: var(--text-display-metal);
@@ -596,34 +466,43 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
   }
 }
 
-/* --- Sport switch --------------------------------------------------------
- * The top nav's MLB and NFL tabs leave Model Center for the public slates, so
- * an entitled reader had no way to reach the NFL board at all: it was only
- * addressable by typing ?sport=nfl. The board carries both, so the page offers
- * both. */
+/* --- Sport switch and slate action -------------------------------------- */
+.mc-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding-bottom: var(--space-2);
+  margin-bottom: var(--space-5);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.mc-toolbar__status {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--type-meta);
+}
+
 .mc-sports {
   display: inline-flex;
-  gap: 4px;
-  padding: 4px;
-  margin-bottom: var(--space-3);
-  background: var(--surface-mc-field);
-  border: 1px solid var(--border-violet);
+  flex-wrap: wrap;
+  gap: var(--space-1);
   border-radius: 0;
 }
 
 .mc-sports a {
-  /* 44px tall including padding: this is a primary control on a phone, and the
-     mobile audit holds every tap target to that floor. */
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  padding: 8px 18px;
+  justify-content: center;
+  min-height: var(--touch-min);
+  min-width: var(--touch-min);
+  padding: var(--space-2) var(--space-4);
   border-radius: 0;
   font-family: var(--font-display);
   font-size: var(--type-14);
   font-weight: 700;
   letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
   color: var(--text-secondary);
   text-decoration: none;
 }
@@ -632,90 +511,48 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 
 .mc-sports a[aria-current="page"] {
   background: var(--accent-soft);
-  color: var(--accent-text);
-  box-shadow: inset 0 0 0 1px var(--accent-strong);
-}
-
-/* ===========================================================================
- * SCORE-FIRST SLATE
- * The projected result is the first decision fact; the line view explains how
- * the model sits against the market. They share one compact visual row instead
- * of reading as unrelated layers of cards.
- * ======================================================================== */
-.mc-board__head {
-  align-items: end;
-  padding-left: var(--space-4);
-  border-left-width: 2px;
-}
-
-.mc-board__eyebrow {
-  margin: 0 0 2px;
-  font-family: var(--font-display);
-  font-size: var(--type-caps);
-  font-weight: 700;
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
-  color: var(--text-accent);
-}
-
-.mc-board__status {
-  display: grid;
-  grid-template-columns: auto auto;
-  align-items: baseline;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  background: var(--surface-mc-field);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xs);
-  font-family: var(--font-display);
-  font-variant-numeric: tabular-nums;
-}
-
-.mc-board__status strong {
-  font-size: var(--type-20);
   color: var(--text-primary);
+  box-shadow: inset 0 -2px 0 var(--accent);
 }
 
-.mc-board__status span {
-  font-size: var(--type-caps);
-  font-weight: 700;
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
+.ca-btn.mc-props-button {
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--accent-strong);
+  border-radius: var(--radius-sm);
+  background: var(--accent-strong);
+  color: var(--text-on-accent);
+}
+
+.ca-btn.mc-props-button:hover {
+  border-color: var(--accent);
+}
+
+.mc-game__actions .mc-props-button {
+  width: 100%;
+  background: var(--accent-soft);
+  border-color: var(--border-accent);
+}
+
+.mc-game__actions .mc-props-button:hover {
+  background: var(--control-bg-active);
+  border-color: var(--accent);
+}
+
+.mc-props-button small {
   color: var(--text-secondary);
+  font-size: var(--type-meta);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
-.mc-game {
-  padding: var(--space-3);
-  border-radius: var(--radius-xs);
-}
-
-.mc-game__head {
-  padding-bottom: var(--space-2);
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.mc-game__visuals {
-  display: grid;
-  grid-template-columns: minmax(132px, 0.78fr) minmax(180px, 1.8fr);
-  min-height: 132px;
-  background: var(--surface-mc-field);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xs);
-  overflow: hidden;
-}
-
-.mc-score,
-.mc-line {
-  min-width: 0;
-  padding: var(--space-3);
-}
-
+.mc-game__visuals,
 .mc-score {
   display: grid;
-  align-content: center;
   gap: var(--space-3);
-  border-right: 1px solid var(--border-default);
-  background: var(--surface-mc-raised);
+  min-width: 0;
 }
 
 .mc-score__label,
@@ -733,50 +570,52 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 .mc-score__match {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  align-items: end;
+  align-items: stretch;
   gap: var(--space-2);
 }
 
-.mc-score__match span {
-  display: grid;
-  gap: 2px;
+.mc-score__side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-width: 0;
 }
 
-.mc-score__match span:last-child { text-align: right; }
-
-.mc-score__match b {
-  overflow: hidden;
-  font-family: var(--font-display);
-  font-size: var(--type-meta);
-  letter-spacing: var(--tracking-caps);
-  color: var(--text-muted);
-  text-overflow: ellipsis;
+.mc-score__side:last-child {
+  align-items: flex-end;
+  text-align: right;
 }
+
+.mc-score__side:last-child .mc-chip { flex-direction: row-reverse; }
 
 .mc-score__match strong {
   font-family: var(--font-display);
-  font-size: var(--type-28);
+  font-size: var(--type-40);
   line-height: 1;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 }
 
-.mc-score__match i {
-  padding-bottom: 2px;
-  font-style: normal;
+.mc-score__divider {
+  align-self: end;
+  padding-bottom: var(--space-1);
   color: var(--text-muted);
 }
 
 .mc-score__pending {
-  font-family: var(--font-display);
-  font-size: var(--type-16);
-  color: var(--value-caution);
+  margin: 0;
+  font-size: var(--type-meta);
+  color: var(--text-secondary);
 }
 
 .mc-line {
   display: grid;
-  align-content: center;
   gap: var(--space-2);
+  padding: var(--space-2) var(--space-3) var(--space-1);
+  background: var(--surface-well);
+  border-radius: var(--radius-sm);
 }
 
 .mc-line .mc-withheld {
@@ -787,14 +626,11 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 
 .mc-total {
   display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: baseline;
-  gap: var(--space-2) var(--space-3);
-  padding: var(--space-2) var(--space-3);
-  background: var(--surface-mc-field);
-  border: 1px solid var(--border-subtle);
-  border-left: 3px solid var(--accent);
-  border-radius: var(--radius-xs);
+  gap: var(--space-1) var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border-subtle);
   font-variant-numeric: tabular-nums;
 }
 
@@ -810,119 +646,118 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 .mc-total strong {
   font-family: var(--font-display);
   font-size: var(--type-18);
-  color: var(--text-accent);
-  text-transform: uppercase;
-}
-
-.mc-total__detail {
-  justify-self: end;
-  min-width: 0;
-  font-size: var(--type-meta);
-  color: var(--text-secondary);
-  text-align: right;
-}
-
-.mc-total.is-withheld {
-  border-left-color: var(--border-strong);
-}
-
-.mc-total.is-withheld strong {
   color: var(--text-primary);
 }
 
-.mc-game__read {
-  padding-top: var(--space-2);
+.mc-total__detail {
+  grid-column: 1 / -1;
+  min-width: 0;
+  font-size: var(--type-meta);
+  color: var(--text-secondary);
+}
+
+.mc-panel > .mc-total,
+.mc-panel > .mc-game__read {
+  margin-top: var(--space-3);
+}
+
+.mc-cbb-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: var(--space-3);
+  margin: 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.mc-cbb-summary > div:last-child { text-align: right; }
+
+.mc-cbb-summary dd {
+  margin: var(--space-1) 0 0;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: var(--type-18);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 520px) {
-  .mc-board__head {
-    align-items: start;
-  }
-
-  .mc-board__status {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .mc-game__head {
-    align-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .mc-game__time { margin-left: auto; }
-
-  .mc-game__visuals {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .mc-score {
-    border-right: 0;
-    border-bottom: 1px solid var(--border-default);
-  }
-
-  .mc-score__match {
-    max-width: 240px;
-  }
-
-  .mc-total {
-    grid-template-columns: auto 1fr;
-  }
-
-  .mc-total__detail {
-    grid-column: 1 / -1;
-    justify-self: start;
-    text-align: left;
-  }
+  .mc-toolbar .mc-props-button { width: 100%; }
+  .mc-sports { width: 100%; }
+  .mc-sports a { flex: 1; }
 }
 
-/* ===========================================================================
- * BLACK PREMIUM SURFACE - 2026-09-15
- *
- * Same law as the desk (see chase-public.css): one slab per object and no
- * frames inside it. Model Center keeps what makes it the entitled product - the
- * violet cast in its fields and the accent on the board head and the total -
- * but its ground is now black like the desk's, so moving between the two no
- * longer reads as a jump from black to slate. The rail down every panel goes.
- * ======================================================================== */
-.mc-panel {
-  border-color: var(--border-card);
-  box-shadow: var(--elevation-card);
-}
-.mc-panel::before { content: none; }
+/* —— Player prop projections —— */
+body:has(.mc-props-dialog[open]) { overflow: hidden; }
 
-.mc-game {
-  border-color: var(--border-card);
-  box-shadow: var(--elevation-card);
-}
-
-.mc-tile,
-.mc-form__row,
-.mc-chip,
-.mc-sports,
-.mc-board__status,
-.mc-game__visuals,
-.mc-gauge__track { border-color: transparent; }
-
-.mc-total {
-  border-color: transparent;
-  border-left-color: var(--accent);
+.mc-props-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  inset: 0;
+  width: min(calc(100% - var(--space-6)), 1080px);
+  max-width: none;
+  max-height: calc(100dvh - var(--space-8));
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  color: var(--text-primary);
+  background: var(--surface-card);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
 }
 
-.mc-score { border-color: var(--border-card); }
+.mc-props-dialog::backdrop { background: var(--surface-overlay); }
 
-/* —— MLB starter prop projections ——————————————————————————————— */
+.mc-props-dialog__head,
+.mc-props-dialog__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.mc-props-dialog__head h2 {
+  margin: 0;
+  font-size: var(--type-section);
+  font-weight: 800;
+}
+
+.ca-btn.mc-props-close {
+  width: var(--touch-min);
+  padding: 0;
+  font-size: var(--type-24);
+  border-radius: var(--radius-sm);
+  background: var(--surface-field);
+  color: var(--text-primary);
+}
+
+.ca-btn.mc-props-close:hover { background: var(--control-bg-hover); }
+
+.mc-props-dialog__toolbar { flex-wrap: wrap; }
+
+.mc-props-dialog__body {
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  background: var(--surface-well);
+}
+
+.mc-props-dialog__body:focus-visible { outline-offset: -2px; }
+
 .mc-props { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); margin-top: var(--space-5); }
-.mc-props__grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); align-items: start; }
+.mc-props__grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); align-items: start; }
 .mc-prop {
   display: grid;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  background: var(--surface-board-raised);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
+  gap: var(--space-2);
+  padding: var(--space-3);
 }
 .mc-prop__head { display: flex; align-items: center; gap: var(--space-3); }
-.mc-prop__head h4 { margin: 0; font-family: var(--font-display); font-size: var(--type-18); color: var(--text-primary); }
+.mc-prop__head .mc-chip { flex: none; max-width: 40%; }
+.mc-prop__head > div { min-width: 0; overflow-wrap: anywhere; }
+.mc-prop__head h3 { margin: 0; font-family: var(--font-display); font-size: var(--type-18); color: var(--text-primary); }
 .mc-prop__head p { margin: 2px 0 0; font-size: var(--type-meta); color: var(--text-secondary); }
 .mc-prop__table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .mc-prop__table th, .mc-prop__table td {
@@ -962,27 +797,54 @@ body[data-ca-product="research"]:has(#mcBoard) .mc-row:hover {
 .mc-prop__median { position: absolute; top: 1px; bottom: 1px; width: 2px; margin-left: -1px; background: var(--text-primary); }
 .mc-prop__line { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--metric-mid); }
 .mc-prop__line.is-model { background: var(--text-muted); }
-.mc-prop__price { text-align: right; font-variant-numeric: tabular-nums; }
-.mc-prop__price span { display: block; color: var(--text-secondary); white-space: nowrap; }
+.mc-prop__table td:last-child { text-align: right; }
+.mc-prop__price { font-variant-numeric: tabular-nums; }
+.mc-prop__price span { display: block; color: var(--text-secondary); overflow-wrap: anywhere; }
 .mc-prop__price strong { font-family: var(--font-display); font-size: var(--type-16); color: var(--text-primary); }
 .mc-prop__price.is-over strong { color: var(--metric-good); }
 .mc-prop__price.is-under strong { color: var(--metric-poor); }
 
-.mc-props__pick { display: flex; align-items: center; gap: var(--space-2); font-size: var(--type-meta); color: var(--text-secondary); font-weight: 700; }
-.mc-props__pick select {
-  min-height: 44px;
-  min-width: 0;
+.mc-props__pick {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   max-width: 100%;
+  min-width: 0;
+  font-size: var(--type-meta);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+.mc-props__pick select {
+  flex: 1;
+  min-height: var(--touch-min);
+  min-width: 0;
   padding: 0 var(--space-3);
-  background: var(--surface-board-raised);
+  background: var(--control-bg);
   color: var(--text-primary);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--control-border);
   border-radius: var(--radius-sm);
   font: inherit;
+  text-overflow: ellipsis;
 }
 
-.mc-cbb-method{font-size:var(--type-meta);line-height:1.5;color:var(--text-muted);margin:var(--space-3) 0 var(--space-5)}
-.mc-cbb-research{display:flex;align-items:center;min-height:44px;padding:var(--space-3);font-size:var(--type-meta);color:var(--accent-text)}
+@media (max-width: 520px) {
+  .mc-props-dialog[open] {
+    width: calc(100% - var(--space-3));
+    max-height: calc(100dvh - var(--space-4));
+  }
+  .mc-props-dialog__head,
+  .mc-props-dialog__toolbar,
+  .mc-props-dialog__body { padding: var(--space-3); }
+  .mc-props__pick { width: 100%; }
+}
 
-/* Owner 2026-11-12: no purple sub-text anywhere on the site. */
-.mc-board__eyebrow { display: none !important; }
+.mc-cbb-method {
+  margin: 0 0 var(--space-5);
+  color: var(--text-secondary);
+  font-size: var(--type-meta);
+}
+
+.mc-cbb-research { gap: var(--space-2); }
+.mc-game__actions .mc-cbb-research { justify-content: space-between; width: 100%; }
+
+#mcPropsTitle { scroll-margin-top: calc(var(--shell-header-h) + var(--space-4)); }
