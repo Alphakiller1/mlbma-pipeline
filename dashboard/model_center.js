@@ -23,10 +23,11 @@
     if (el) el.textContent = text;
   }
 
-  function paintGate(title, body) {
+  function paintGate(sport, title, body) {
     var host = $('mcBoard');
     if (!host) return;
-    host.innerHTML = '<div class="ca-card ca-card-pad"><h2>' + esc(title) + '</h2><p>' + esc(body) + '</p></div>';
+    host.innerHTML = boardToolbar(sport) + '<div class="mc-panel mc-empty"><h2>' +
+      esc(title) + '</h2><p>' + esc(body) + '</p></div>';
   }
 
   /* ---------------------------------------------------------------------
@@ -75,13 +76,14 @@
     }
     if (suppliedLogo && /^https:\/\//i.test(String(suppliedLogo))) {
       crest = '<img class="mc-chip__crest" src="' + esc(suppliedLogo) +
-        '" width="28" height="28" alt="' + esc(code) + '" loading="lazy" decoding="async">';
+        '" width="28" height="28" alt="" loading="lazy" decoding="async">';
     } else if (code && global.MLBMAAssets && MLBMAAssets.teamLogoImg) {
       crest = MLBMAAssets.teamLogoImg(code, 28, 'mc-chip__crest', sport);
     }
     return '<span class="mc-chip"' + tint +
       (fullName ? ' title="' + esc(fullName) + '"' : '') + '>' +
-      crest + '<span class="mc-chip__code">' + esc(code || '--') + '</span></span>';
+      (crest ? '<span class="mc-chip__mark" aria-hidden="true">' + crest + '</span>' : '') +
+      '<span class="mc-chip__code">' + esc(code || '--') + '</span></span>';
   }
 
   /* One axis places both marks and both tick labels, and the domain is fixed
@@ -172,7 +174,7 @@
     return parts + '</div>';
   }
 
-  function readRow(g) {
+  function readRow(g, showMargin) {
     var lean = g.lean || g.model_lean || '';
     var withheld = g.edge_withheld_reason;
     // ChaseBoard.mapGame fills edge_withheld_reason with the literal string
@@ -182,8 +184,8 @@
     if (withheld && String(withheld).toLowerCase() === 'not published') withheld = '';
     var vals = '';
     var mm = signed(g.model_margin), km = signed(g.market_margin);
-    if (mm) vals += '<span>Model ' + esc(mm) + '</span>';
-    if (km) vals += '<span>Market ' + esc(km) + '</span>';
+    if (showMargin && mm) vals += '<span>Model ' + esc(mm) + '</span>';
+    if (showMargin && km) vals += '<span>Market ' + esc(km) + '</span>';
     // The book's moneylines, both sides, as quoted.
     var ml = function (v) { return v == null ? null : (v > 0 ? '+' : '') + Math.round(v); };
     if (g.away_moneyline != null && g.home_moneyline != null) {
@@ -198,23 +200,22 @@
       (vals ? '<div class="mc-game__values">' + vals + '</div>' : '') + '</div>';
   }
 
-  function projectedScore(g) {
+  function projectedScore(sport, g) {
     var away = fixed(g.away_projected, 1);
     var home = fixed(g.home_projected, 1);
     var published = away != null && home != null;
-    var label = published
-      ? ('Projected score: ' + (g.away || 'Away') + ' ' + away + ', ' +
-        (g.home || 'Home') + ' ' + home)
-      : 'Projected score not published';
-    return '<section class="mc-score' + (published ? '' : ' is-withheld') +
-      '" aria-label="' + esc(label) + '">' +
-      '<span class="mc-score__label">Projected score</span>' +
-      (published
-        ? '<div class="mc-score__match"><span><b>' + esc(g.away || 'Away') +
-          '</b><strong>' + esc(away) + '</strong></span><i aria-hidden="true">–</i>' +
-          '<span><b>' + esc(g.home || 'Home') + '</b><strong>' + esc(home) + '</strong></span></div>'
-        : '<strong class="mc-score__pending">Not published</strong>') +
-      '</section>';
+    var kick = kickoffLabel(g);
+    return '<section class="mc-score" aria-label="Projected score">' +
+      '<header class="mc-game__head"><span class="mc-score__label">Projected score</span>' +
+      (kick ? '<span class="mc-game__time">' + esc(kick) + '</span>' : '') + '</header>' +
+      '<div class="mc-score__match"><div class="mc-score__side">' +
+      chip(sport, g.away, g.away_name, g.away_logo, g.away_color) +
+      (published ? '<strong>' + esc(away) + '</strong>' : '') +
+      '</div><span class="mc-score__divider" aria-hidden="true">–</span><div class="mc-score__side">' +
+      chip(sport, g.home, g.home_name, g.home_logo, g.home_color) +
+      (published ? '<strong>' + esc(home) + '</strong>' : '') +
+      '</div></div>' +
+      (published ? '' : '<p class="mc-score__pending">Score not published</p>') + '</section>';
   }
 
   function projectedTotal(g) {
@@ -262,23 +263,33 @@
     }) + ' ET';
   }
 
-  function gameCard(sport, g) {
-    var kick = kickoffLabel(g);
-    if (sport === 'cbb') return '<article class="mc-game"><header class="mc-game__head"><div class="mc-teams">' +
-      chip(sport,g.away,g.away_name,g.away_logo,g.away_color) + chip(sport,g.home,g.home_name,g.home_logo,g.home_color) +
-      '</div><span class="mc-game__time">' + esc(kick) + '</span></header>' + projectedScore(g) + cbbScoreSummary(g) +
-      '<a class="mc-cbb-research" href="/cbb/matchup.html?game=' + encodeURIComponent(g.id) + '">Analyze this matchup →</a></article>';
-    return '<article class="mc-game">' +
-      '<header class="mc-game__head"><div class="mc-teams">' +
-      chip(sport, g.away, g.away_name, g.away_logo, g.away_color) +
-      chip(sport, g.home, g.home_name, g.home_logo, g.home_color) + '</div>' +
-      (kick ? '<span class="mc-game__time">' + esc(kick) + '</span>' : '') +
-      '</header>' +
-      '<div class="mc-game__visuals">' + projectedScore(g) +
+  function matchupLabel(g) {
+    return (g.away_name || g.away) + ' at ' + (g.home_name || g.home);
+  }
+
+  function cbbResearchLink(g) {
+    return '<a class="ca-text-link mc-cbb-research" href="/cbb/matchup.html?game=' +
+      encodeURIComponent(g.id) + '" aria-label="' + esc('Analyze matchup: ' + matchupLabel(g)) +
+      '">Analyze matchup <span aria-hidden="true">→</span></a>';
+  }
+
+  function gameCard(sport, g, props) {
+    var html = '<article class="mc-game" aria-label="' + esc(matchupLabel(g)) + '">';
+    if (sport === 'cbb') {
+      return html + projectedScore(sport, g) + cbbScoreSummary(g) +
+        '<footer class="mc-game__actions">' + cbbResearchLink(g) + '</footer></article>';
+    }
+    var key = modelGameKey(sport, g);
+    var players = props.get(key);
+    var action = players
+      ? propsButton(key, matchupLabel(g), players.length)
+      : (WEEKLY_PROPS[sport] || sport === 'wnba'
+        ? '<p class="mc-game__props-status">No props published</p>' : '');
+    return html + '<div class="mc-game__visuals">' + projectedScore(sport, g) +
+      (action ? '<div class="mc-game__actions">' + action + '</div>' : '') +
       '<section class="mc-line"><span class="mc-line__label">Model vs market</span>' +
       gauge(sport, g.model_margin, g.market_margin) + '</section></div>' +
-      totalRead(g) +
-      readRow(g) +
+      totalRead(g) + readRow(g, false) +
       '</article>';
   }
 
@@ -288,14 +299,17 @@
   }
 
   function cbbScoreSummary(g) {
-    var margin=Number(g.model_margin),leader=margin >= 0 ? g.home : g.away;
-    return '<section class="mc-total"><span class="mc-total__label">Projected total</span><strong>' + esc(fixed(projectedTotal(g),1)) +
-      '</strong><span class="mc-total__detail">Points</span></section><section class="mc-total"><span class="mc-total__label">Scoring margin</span><strong>' +
-      esc(Math.abs(margin)<0.05?'Even':leader+' by '+Math.abs(margin).toFixed(1)) +
-      '</strong><span class="mc-total__detail">Experimental score estimate</span></section>';
+    var margin = num(g.model_margin);
+    var leader = margin >= 0 ? g.home : g.away;
+    var read = margin == null ? 'Not published' : (Math.abs(margin) < 0.05
+      ? 'Even' : leader + ' by ' + Math.abs(margin).toFixed(1));
+    return '<dl class="mc-cbb-summary"><div><dt class="mc-total__label">Projected total</dt>' +
+      '<dd>' + esc(fixed(projectedTotal(g), 1) || 'Not published') +
+      '</dd></div><div><dt class="mc-total__label">Scoring margin</dt><dd>' +
+      esc(read) + '</dd></div></dl>';
   }
 
-  function detailView(sport, rawBoard, g) {
+  function detailView(sport, g) {
     var html = '<section class="mc-panel"><p class="mc-eyebrow">' +
       esc(sport.toUpperCase()) + ' · Game detail</p><div class="mc-hero">' +
       '<div class="mc-hero__side">' + chip(sport, g.away, g.away_name, g.away_logo, g.away_color) +
@@ -313,10 +327,10 @@
       '</div></div></section>';
 
     if (sport === 'cbb') return html + '<section class="mc-panel">' + cbbScoreSummary(g) +
-      '<a class="mc-cbb-research" href="/cbb/matchup.html?game=' + encodeURIComponent(g.id) + '">Analyze this matchup →</a></section>';
+      cbbResearchLink(g) + '</section>';
 
     html += '<section class="mc-panel"><h2 class="mc-panel__title">Model versus market</h2>' +
-      gauge(sport, g.model_margin, g.market_margin) + totalRead(g) + readRow(g) + '</section>';
+      gauge(sport, g.model_margin, g.market_margin) + totalRead(g) + readRow(g, true) + '</section>';
 
     var totalLabel = sport === 'mlb' ? 'Total runs' : 'Total points';
     html += '<section class="mc-panel"><h2 class="mc-panel__title">Key projections</h2>' +
@@ -361,7 +375,7 @@
     return isNaN(t) ? Infinity : t;
   }
 
-  function groupedGrid(sport, games) {
+  function groupedGrid(sport, games, props) {
     var order = [];
     var bySlot = {};
     var earliest = {};
@@ -378,7 +392,7 @@
     order.sort(function (a, b) { return earliest[a] - earliest[b]; });
     if (order.length < 2) {
       return '<div class="mc-grid">' +
-        games.map(function (g) { return gameCard(sport, g); }).join('') + '</div>';
+        games.map(function (g) { return gameCard(sport, g, props); }).join('') + '</div>';
     }
     return order.map(function (slot) {
       var rows = bySlot[slot];
@@ -387,7 +401,7 @@
       var cls = rows.length === 1 ? 'mc-grid mc-grid--single' : 'mc-grid';
       return '<section class="mc-slot"><h3 class="mc-slot__title">' + esc(slot) + '</h3>' +
         '<div class="' + cls + '">' +
-        rows.map(function (g) { return gameCard(sport, g); }).join('') + '</div></section>';
+        rows.map(function (g) { return gameCard(sport, g, props); }).join('') + '</div></section>';
     }).join('');
   }
 
@@ -401,8 +415,6 @@
     ['K', 'Strikeouts', 12], ['Outs', 'Outs Recorded', 27], ['H', 'Hits Allowed', 12],
     ['BB', 'Walks', 6], ['ER', 'Earned Runs', 8]
   ];
-  // Last regular-season day, for the "Playoffs" label.
-  var MLB_REGULAR_SEASON_END = { 2026: '2026-09-28' };
 
   function overProbability(dist, line) {
     var pmf = dist && dist.pmf;
@@ -500,8 +512,9 @@
 
   function propShown(p, stat) {
     var dist = p.stats[stat[0]];
+    var mean = num(dist && dist.mean);
     var floor = PROP_MIN_MEAN[stat[0]];
-    return dist && !(floor != null && Number(dist.mean) < floor);
+    return mean != null && (floor == null || mean >= floor);
   }
 
   // The board game a projection belongs to: cfb-model names it; an NFL
@@ -522,7 +535,7 @@
     var byId = {}, order = [];
     rows.forEach(function (r) {
       if (!r || !r.player || r.projection == null || !r.away || !r.home) return;
-      var id = r.player_id || r.player;
+      var id = r.away + '@' + r.home + ':' + (r.player_id || r.player);
       if (!byId[id]) {
         byId[id] = {
           player_name: r.player, team: r.team,
@@ -544,12 +557,14 @@
     return String(row.side).toLowerCase() === 'over' ? pr : 1 - pr;
   }
 
+  function wnbaMarketShown(p, market) {
+    return p.markets[market[0]] && num(p.markets[market[0]].projection) >= 0.25;
+  }
+
   function wnbaPropCard(p, g) {
     var side = p.home ? 'home' : 'away';
     // A market projected under a quarter of a unit (a 0.0 3PM) is no role.
-    var body = WNBA_MARKETS.filter(function (m) {
-      return p.markets[m[0]] && Number(p.markets[m[0]].projection) >= 0.25;
-    }).map(function (m) {
+    var body = WNBA_MARKETS.filter(function (m) { return wnbaMarketShown(p, m); }).map(function (m) {
       var r = p.markets[m[0]];
       var over = wnbaOver(r);
       var odds = r.odds == null ? '' : ' (' + (Number(r.odds) > 0 ? '+' : '') + r.odds + ')';
@@ -562,32 +577,38 @@
     }).join('');
     return '<article class="mc-prop">' +
       '<header class="mc-prop__head">' + chip('wnba', g ? g[side] : p.team, p.team) +
-      '<div><h4>' + esc(p.player_name) + '</h4><p>' + esc(p.team + ' vs ' + p.opponent) + '</p></div></header>' +
+      '<div><h3>' + esc(p.player_name) + '</h3><p>' + esc(p.team + ' vs ' + p.opponent) + '</p></div></header>' +
       '<table class="mc-prop__table"><thead><tr><th>Prop</th><th>Proj</th>' +
       '<th>Line</th><th>Model</th></tr></thead><tbody>' + body + '</tbody></table></article>';
-  }
-
-  function weeklyPropRows(sport, board, mapped) {
-    var rows = (mapped && mapped.player_projections) || (board && board.player_projections) || [];
-    if (sport === 'wnba') return wnbaPlayers(rows);
-    return rows.filter(function (p) {
-      return propPlayerAvailable(p) && p.stats && Object.keys(p.stats).length && propGameKey(sport, p);
-    });
   }
 
   function propPlayerAvailable(player) {
     return player && !global.ChasePlayerAvailability.isOut(player.injury_status || player.status);
   }
 
-  function weeklyCovered(sport, rows, games) {
-    var keyed = {};
-    rows.forEach(function (p) {
-      keyed[sport === 'wnba' ? p.game : propGameKey(sport, p)] = true;
+  function modelGameKey(sport, g) {
+    // WNBA board IDs include spaces. Match its props on the club codes.
+    return sport === 'wnba' ? g.away + '@' + g.home : String(g.id || g.game_id || g.key || '');
+  }
+
+  function propsByGame(sport, rows) {
+    var groups = new Map();
+    var markets = WEEKLY_PROPS[sport];
+    if (!markets && sport !== 'wnba') return groups;
+    var wnba = sport === 'wnba';
+    var players = wnba ? wnbaPlayers(rows) : rows;
+    players.forEach(function (player) {
+      var eligible = wnba
+        ? WNBA_MARKETS.some(function (market) { return wnbaMarketShown(player, market); })
+        : propPlayerAvailable(player) && player.stats &&
+          markets.some(function (stat) { return propShown(player, stat); });
+      if (!eligible) return;
+      var key = wnba ? player.game : propGameKey(sport, player);
+      if (!key) return;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(player);
     });
-    return games.filter(function (g) {
-      // WNBA board ids read "DAL @ GSV"; its props are matched on the clubs.
-      return keyed[sport === 'wnba' ? g.away + '@' + g.home : (g.id || g.key)];
-    });
+    return groups;
   }
 
   function anytimeTd(p) {
@@ -612,7 +633,7 @@
     return '<article class="mc-prop">' +
       '<header class="mc-prop__head">' +
       chip(sport, g ? g[side] : p.team, p.team, g && g[side + '_logo'], g && g[side + '_color']) +
-      '<div><h4>' + esc(p.player_name) + '</h4><p>' + esc(meta) + '</p></div></header>' +
+      '<div><h3>' + esc(p.player_name) + '</h3><p>' + esc(meta) + '</p></div></header>' +
       '<table class="mc-prop__table"><thead><tr><th>Prop</th><th>Proj</th>' +
       '<th>Range</th><th>Over</th></tr></thead><tbody>' + body + '</tbody></table>' +
       '</article>';
@@ -625,65 +646,77 @@
     return Number(s.mean) || 0;
   }
 
-  function weeklyGameCards(sport, rows, g) {
+  function weeklyGameCards(sport, players, g) {
     if (sport === 'wnba') {
-      return rows.filter(function (p) { return p.game === g.away + '@' + g.home; })
-        .sort(function (a, b) {
-          if (a.home !== b.home) return a.home ? 1 : -1;
-          return (Number((b.markets.player_points || {}).projection) || 0) -
-            (Number((a.markets.player_points || {}).projection) || 0);
-        }).map(function (p) { return wnbaPropCard(p, g); }).join('');
+      return players.slice().sort(function (a, b) {
+        if (a.home !== b.home) return a.home ? 1 : -1;
+        return (Number((b.markets.player_points || {}).projection) || 0) -
+          (Number((a.markets.player_points || {}).projection) || 0);
+      }).map(function (p) { return wnbaPropCard(p, g); }).join('');
     }
-    var mine = rows.filter(function (p) {
-      return propGameKey(sport, p) === (g.id || g.key) &&
-        WEEKLY_PROPS[sport].some(function (stat) { return propShown(p, stat); });
-    });
-    mine.sort(function (a, b) {
+    return players.slice().sort(function (a, b) {
       if (a.home !== b.home) return a.home ? 1 : -1;
       var pa = PROP_POSITION_ORDER[a.position], pb = PROP_POSITION_ORDER[b.position];
       if (pa !== pb) return (pa == null ? 9 : pa) - (pb == null ? 9 : pb);
       return propLead(b) - propLead(a);
-    });
-    return mine.map(function (p) { return weeklyPropCard(sport, p, g); }).join('');
+    }).map(function (p) { return weeklyPropCard(sport, p, g); }).join('');
   }
 
-  function weeklyPropsSection(sport, board, mapped, games) {
-    var rows = weeklyPropRows(sport, board, mapped);
-    var covered = weeklyCovered(sport, rows, games);
-    if (!covered.length) return '';
-    var options = covered.map(function (g, i) {
-      return '<option value="' + i + '">' + esc((g.away_name || g.away) + ' at ' +
-        (g.home_name || g.home)) + '</option>';
+  function propsButton(key, matchup, count) {
+    var text = 'View Prop Projections';
+    return '<button type="button" class="ca-btn mc-props-button" data-mc-props="' + esc(key) +
+      '" aria-haspopup="dialog" aria-controls="mcPropsDialog"' +
+      (matchup ? ' aria-label="' + esc(text + ' for ' + matchup + ', ' + count + ' players') + '"' : '') +
+      '><span>' + text + '</span>' +
+      (count ? '<small>' + count + (count === 1 ? ' player' : ' players') + '</small>' :
+        '<span aria-hidden="true">→</span>') + '</button>';
+  }
+
+  function propsDialog(sport, covered) {
+    var options = covered.map(function (g) {
+      return '<option value="' + esc(modelGameKey(sport, g)) + '">' + esc(matchupLabel(g)) + '</option>';
     }).join('');
-    return '<section class="mc-props" aria-labelledby="mcPropsTitle">' +
-      '<header class="mc-board__head"><div><p class="mc-board__eyebrow">' + esc(sport.toUpperCase()) +
-      '</p><h2 class="mc-board__title" id="mcPropsTitle">Player Prop Projections</h2></div>' +
-      '<div class="mc-board__status"><strong>' + rows.length + '</strong><span>players projected</span></div>' +
-      '</header><label class="mc-props__pick"><span>Game</span>' +
+    return '<dialog class="ca-dialog mc-props-dialog" id="mcPropsDialog" aria-labelledby="mcPropsTitle">' +
+      '<header class="mc-props-dialog__head"><h2 id="mcPropsTitle">Player Prop Projections</h2>' +
+      '<form method="dialog"><button type="submit" class="ca-btn mc-props-close" ' +
+      'aria-label="Close prop projections" autofocus>×</button></form></header>' +
+      '<div class="mc-props-dialog__toolbar"><label class="mc-props__pick"><span>Matchup</span>' +
       '<select id="mcPropsGame">' + options + '</select></label>' +
-      '<div class="mc-grid mc-props__grid" id="mcPropsGrid">' + weeklyGameCards(sport, rows, covered[0]) +
-      '</div></section>';
+      '<p class="mc-board__status" id="mcPropsCount" role="status"></p></div>' +
+      '<div class="mc-props-dialog__body" tabindex="0" role="region" aria-label="Projected players">' +
+      '<div class="mc-grid mc-props__grid" id="mcPropsGrid"></div></div></dialog>';
   }
 
-  function wireWeeklyProps(sport, board, mapped, games) {
-    var pick = $('mcPropsGame'), grid = $('mcPropsGrid');
-    if (!pick || !grid) return;
-    var rows = weeklyPropRows(sport, board, mapped);
-    var covered = weeklyCovered(sport, rows, games);
-    pick.addEventListener('change', function () {
-      var g = covered[Number(pick.value)];
-      if (g) grid.innerHTML = weeklyGameCards(sport, rows, g);
+  function wirePropsDialog(host, sport, groups, covered) {
+    var dialog = $('mcPropsDialog');
+    var pick = $('mcPropsGame');
+    var count = $('mcPropsCount');
+    var grid = $('mcPropsGrid');
+    var selected;
+
+    function selectGame(key) {
+      var game = covered.find(function (g) { return modelGameKey(sport, g) === key; });
+      if (!game || game === selected) return;
+      selected = game;
+      var players = groups.get(key);
+      pick.value = key;
+      grid.innerHTML = weeklyGameCards(sport, players, game);
+      grid.parentElement.scrollTop = 0;
+      count.textContent = players.length + (players.length === 1 ? ' player projected' : ' players projected');
+    }
+
+    pick.addEventListener('change', function () { selectGame(pick.value); });
+    host.querySelectorAll('[data-mc-props]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        selectGame(button.dataset.mcProps || pick.value);
+        dialog.showModal();
+      });
     });
   }
 
-  function propsSection(sport, board, mapped, games) {
-    if (WEEKLY_PROPS[sport] || sport === 'wnba') return weeklyPropsSection(sport, board, mapped, games || []);
-    var rows = (mapped && mapped.player_projections) || (board && board.player_projections) || [];
+  function starterPropsSection(rows) {
     rows = rows.filter(function (p) { return propPlayerAvailable(p) && p.stats; });
-    if (sport !== 'mlb' || !rows.length) return '';
-    var slate = String((board && board.slate_date) || '');
-    var end = MLB_REGULAR_SEASON_END[Number(slate.slice(0, 4))];
-    var eyebrow = end && slate > end ? 'MLB Playoffs' : 'MLB';
+    if (!rows.length) return '';
     var cards = rows.map(function (p) {
       var body = MLB_PROPS.filter(function (stat) { return p.stats[stat[0]]; })
         .map(function (stat) { return propRow(stat, p.stats[stat[0]], p.lines); }).join('');
@@ -691,81 +724,99 @@
         p.expected_ip != null ? fixed(p.expected_ip, 1) + ' IP projected' : '',
         p.trust === 'thin' ? 'Thin sample' : ''].filter(Boolean).join(' · ');
       return '<article class="mc-prop">' +
-        '<header class="mc-prop__head">' + chip(sport, p.team) +
-        '<div><h4>' + esc(p.player_name) + '</h4><p>' + esc(meta) + '</p></div></header>' +
+        '<header class="mc-prop__head">' + chip('mlb', p.team) +
+        '<div><h3>' + esc(p.player_name) + '</h3><p>' + esc(meta) + '</p></div></header>' +
         '<table class="mc-prop__table"><thead><tr><th>Prop</th><th>Proj</th>' +
         '<th>Range</th><th>Over</th></tr></thead><tbody>' + body + '</tbody></table>' +
         '</article>';
     }).join('');
     return '<section class="mc-props" aria-labelledby="mcPropsTitle">' +
-      '<header class="mc-board__head"><div><p class="mc-board__eyebrow">' + esc(eyebrow) + '</p>' +
-      '<h2 class="mc-board__title" id="mcPropsTitle">Starter Prop Projections</h2></div>' +
+      '<header class="mc-board__head">' +
+      '<h2 class="mc-board__title" id="mcPropsTitle">Starter Prop Projections</h2>' +
       '<div class="mc-board__status"><strong>' + rows.length + '</strong><span>starters projected</span></div>' +
       '</header><div class="mc-grid mc-props__grid">' + cards + '</div></section>';
   }
 
-  function renderBoard(sport, payload, options) {
-    var host = $('mcBoard');
-    if (!host) return;
-    var board = payload && payload.board;
-    // normalize(sport, board, extra) takes the sport FIRST. This used to call
-    // normalize(board), which put the payload in the sport slot and left the
-    // board undefined, so games came back [] and every entitled session saw
-    // "No priced games" no matter what the API returned.
-    var mapped = global.ChaseBoard && ChaseBoard.normalize
-      ? ChaseBoard.normalize(sport, board)
-      : board;
-    var games = (mapped && mapped.games) || (board && board.games) || [];
-    var sports = '<nav class="mc-sports" aria-label="Model Center sports">' +
+  function boardToolbar(sport, action) {
+    return '<div class="mc-toolbar"><nav class="mc-sports" aria-label="Model Center sports">' +
       [['nfl', 'NFL'], ['nba', 'NBA'], ['cfb', 'CFB'], ['cbb', 'CBB']].map(function (pair) {
         return '<a href="?sport=' + pair[0] + '"' +
           (pair[0] === sport ? ' aria-current="page"' : '') + '>' + pair[1] + '</a>';
-      }).join('') + '</nav>';
-    if (sport === 'cbb') sports += '<p class="mc-cbb-method">Model snapshot: ' + esc(board.as_of_date || 'not published') + ' · Outcomes through ' + esc(String(board.data_through_utc || '').slice(0,10)) + '. ' + esc(board.method_note || '') + '</p>';
+      }).join('') + '</nav>' + (action || '') + '</div>';
+  }
+
+  function cbbSnapshot(board) {
+    return '<p class="mc-cbb-method">Model snapshot: ' + esc(board.as_of_date || 'not published') +
+      ' · Outcomes through ' + esc(String(board.data_through_utc || '').slice(0, 10)) +
+      '. ' + esc(board.method_note || '') + '</p>';
+  }
+
+  function renderBoard(sport, payload) {
+    var host = $('mcBoard');
+    if (!host) return;
+    var board = payload && payload.board;
+    if (!board) {
+      paintGate(sport, 'Board unavailable', 'This sport’s model feed returned no published board.');
+      return;
+    }
+    var mapped = global.ChaseBoard && ChaseBoard.normalize
+      ? ChaseBoard.normalize(sport, board)
+      : board;
+    var games = mapped.games || [];
+    var rows = mapped.player_projections || [];
+    var groups = propsByGame(sport, rows);
+    var covered = games.filter(function (g) { return groups.has(modelGameKey(sport, g)); });
     var want = qs().get('game');
+    var snapshot = sport === 'cbb' ? cbbSnapshot(board) : '';
+
     if (want) {
-      var one = games.filter(function (g) {
+      var one = games.find(function (g) {
         return String(g.id || g.game_id || '') === want;
-      })[0];
+      });
       if (!one) {
-        paintGate('Game not on this board',
+        paintGate(sport, 'Game not on this board',
           'The requested game is not in the currently published Model Center rows.');
         return;
       }
-      var gameProps = WEEKLY_PROPS[sport] || sport === 'wnba'
-        ? weeklyGameCards(sport, weeklyPropRows(sport, board, mapped), one) : '';
-      host.innerHTML = (sport === 'cbb' ? sports : '') + '<div class="mc-board">' + detailView(sport, board, one) +
-        (gameProps ? '<section class="mc-panel"><h2 class="mc-panel__title">Player prop projections</h2>' +
-          '<div class="mc-grid mc-props__grid">' + gameProps + '</div></section>' : '') + '</div>';
+      var players = groups.get(modelGameKey(sport, one));
+      var gameProps = players
+        ? '<section class="mc-panel" aria-labelledby="mcPropsTitle">' +
+          '<h2 class="mc-panel__title" id="mcPropsTitle" tabindex="-1">Player Prop Projections</h2>' +
+          '<div class="mc-grid mc-props__grid">' + weeklyGameCards(sport, players, one) + '</div></section>'
+        : '';
+      var jump = players ? '<a class="ca-btn mc-props-button" href="#mcPropsTitle">' +
+        '<span>View Prop Projections</span><span aria-hidden="true">↓</span></a>' : '';
+      host.innerHTML = boardToolbar(sport, jump) + snapshot +
+        '<div class="mc-board">' + detailView(sport, one) + gameProps + '</div>';
+      if (players && location.hash === '#mcPropsTitle') $('mcPropsTitle').scrollIntoView();
       return;
     }
+
+    var action = covered.length ? propsButton('')
+      : '<p class="mc-toolbar__status">' +
+        (sport === 'cbb' ? 'CBB publishes score projections only' : 'No player props published') + '</p>';
+    var controls = boardToolbar(sport, action) + snapshot;
     if (!games.length) {
-      host.innerHTML = sports + '<div class="mc-board"><header class="mc-board__head">' +
-        '<div><p class="mc-board__eyebrow">' + esc(sport.toUpperCase()) + ' projections</p>' +
-        '<h2 class="mc-board__title">Today\'s Slate</h2></div>' +
-        '<div class="mc-board__status"><strong>0/0</strong><span>scores published</span></div>' +
-        '</header><div class="ca-card ca-card-pad"><h2>No games today</h2>' +
-        (sport === 'cbb' ? '<p>No forecasts for this date in the published CBB snapshot.</p>' : '<p>The producer is current, but this sport has no games on its published board today.</p>') +
-        '</div></div>';
+      host.innerHTML = controls + '<div class="mc-panel mc-empty"><h2>No games on this slate</h2>' +
+        '<p>The published model board has no games for this selection.</p></div>';
       return;
     }
     var weekly = sport === 'nfl' || sport === 'cfb';
-    var title = weekly ? 'The Week' : "Today's Slate";
-    var body = weekly ? groupedGrid(sport, games)
-      : '<div class="mc-grid">' + games.map(function (g) {
-          return gameCard(sport, g);
+    var title = weekly ? 'This Week’s Slate' : "Today's Slate";
+    var body = weekly ? groupedGrid(sport, games, groups)
+      : '<div class="mc-grid' + (sport === 'cbb' ? ' mc-grid--cbb' : '') + '">' + games.map(function (g) {
+          return gameCard(sport, g, groups);
         }).join('') + '</div>';
     var projected = games.filter(function (g) {
       return num(g.away_projected) != null && num(g.home_projected) != null;
     }).length;
-    var html = sports + '<div class="mc-board"><header class="mc-board__head">' +
-      '<div><p class="mc-board__eyebrow">' + esc(sport.toUpperCase()) + ' projections</p>' +
-      '<h2 class="mc-board__title">' + esc(title) + '</h2></div>' +
+    host.innerHTML = controls + '<div class="mc-board"><header class="mc-board__head">' +
+      '<h2 class="mc-board__title">' + esc(title) + '</h2>' +
       '<div class="mc-board__status"><strong>' + projected + '/' + games.length + '</strong>' +
       '<span>scores published</span></div></header>' +
-      body + propsSection(sport, board, mapped, games) + '</div>';
-    host.innerHTML = html;
-    if (WEEKLY_PROPS[sport] || sport === 'wnba') wireWeeklyProps(sport, board, mapped, games);
+      body + (sport === 'mlb' ? starterPropsSection(rows) : '') + '</div>' +
+      (covered.length ? propsDialog(sport, covered) : '');
+    if (covered.length) wirePropsDialog(host, sport, groups, covered);
   }
 
   function loadBoard(sport) {
@@ -774,35 +825,40 @@
       cache: 'no-store'
     }).then(function (r) {
       if (r.status === 503 || r.status === 404) {
-        paintGate('Board unavailable', 'This sport’s model feed is not attached to the current environment.');
+        paintGate(sport, 'Board unavailable', 'This sport’s model feed is not attached to the current environment.');
         return;
       }
       if (!r.ok) {
-        paintGate('Unavailable', 'Model Center could not load this sport’s published board.');
+        paintGate(sport, 'Unavailable', 'Model Center could not load this sport’s published board.');
         return;
       }
       return r.json().then(function (payload) {
         if (sport === 'cbb' && payload.board) {
-          var day=qs().get('date') || new Date().toLocaleDateString('en-CA',{timeZone:'America/New_York'});
-          if (!qs().get('game')) payload.board.games=(payload.board.games||[]).filter(function(g){return g.slate_date===day;});
+          var day = qs().get('date') || new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+          if (!qs().get('game')) {
+            payload.board.games = (payload.board.games || []).filter(function (g) { return g.slate_date === day; });
+          }
           if (global.ChaseNav && ChaseNav.applyDataStatus) ChaseNav.applyDataStatus({sport:'cbb',state:'ok',publishedAt:payload.board.generated_at_utc,dataCutoff:payload.board.data_through_utc,source:'Chase CBB score model'});
         }
         renderBoard(sport, payload);
       });
     }).catch(function () {
-      paintGate('Unavailable', 'Model Center could not reach the board service.');
+      paintGate(sport, 'Unavailable', 'Model Center could not reach the board service.');
     });
   }
 
   function boot() {
     var sport = (qs().get('sport') || 'nfl').toLowerCase();
     if (['nfl', 'nba', 'cfb', 'cbb'].indexOf(sport) < 0) sport = 'nfl';
-    if (sport === 'cbb') { var lede=document.querySelector('.ca-public-page__lede');if(lede)lede.textContent='Experimental score estimates, with a direct path to the evidence behind each matchup.'; }
+    if (sport === 'cbb') {
+      var lede = document.querySelector('.ca-public-page__lede');
+      if (lede) lede.textContent = 'Experimental score estimates with matchup analysis.';
+    }
     var game = qs().get('game');
     setContext(game
       ? ('Requested ' + sport.toUpperCase() + ' game ' + game + '.')
       : ('Loading the latest published ' + sport.toUpperCase() + ' board.'));
-    paintGate('Loading board', 'Fetching the latest published projections.');
+    paintGate(sport, 'Loading board', 'Fetching the latest published projections.');
     loadBoard(sport);
   }
 
