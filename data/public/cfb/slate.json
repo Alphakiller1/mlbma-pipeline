@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 11,
-  "generated_at_utc": "2026-11-14T18:22:44Z",
+  "generated_at_utc": "2026-11-14T18:46:49Z",
   "data_through_utc": "2026-11-14T01:25:34Z",
   "games": [
     {
@@ -3952,7 +3952,8 @@
             "injury": "Undisclosed",
             "updated": "Sat, Sep 26",
             "detail": "Clay is dealing with an undisclosed injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -10450,7 +10451,8 @@
             "injury": "Undisclosed",
             "updated": "Sat, Oct 10",
             "detail": "Perry is dealing with an undisclosed injury, and is expected to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -11852,7 +11854,10 @@
             "injury": "Upper Body",
             "updated": "Sat, Oct 10",
             "source": "RotoWire + Covers",
-            "return": "3/1/2027"
+            "return": "3/1/2027",
+            "value": 3.04,
+            "missed": 5,
+            "value_recent": 0.0
           },
           {
             "player": "T. Gotkowski",
@@ -11861,7 +11866,8 @@
             "injury": "Undisclosed",
             "updated": "Mon, Aug 24",
             "source": "RotoWire + Covers",
-            "return": "3/1/2027"
+            "return": "3/1/2027",
+            "value": null
           },
           {
             "player": "E. Karner",
@@ -11870,7 +11876,8 @@
             "injury": "Undisclosed",
             "updated": "Sat, Sep 5",
             "detail": "Karner is out of action due to an undisclosed injury, and has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           },
           {
             "player": "K. Reynolds",
@@ -11879,7 +11886,8 @@
             "injury": "Undisclosed",
             "updated": "Sat, Sep 5",
             "detail": "Reynolds has been sidelined due to an undisclosed injury, and has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -14323,7 +14331,10 @@
             "injury": "Knee",
             "updated": "Tue, Oct 6",
             "source": "RotoWire + Covers",
-            "return": "3/1/2027"
+            "return": "3/1/2027",
+            "value": 2.41,
+            "missed": 7,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -30023,7 +30034,10 @@
             "injury": "Undisclosed",
             "updated": "Wed, Oct 7",
             "detail": "Smith is fighting off an undisclosed injury, and he will be idle for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.35,
+            "missed": 4,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -33987,7 +34001,10 @@
             "injury": "Ankle",
             "updated": "Sun, Oct 18",
             "detail": "Kromah is bothered by an ankle injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 1.07,
+            "missed": 2,
+            "value_recent": 0.32
           }
         ],
         "sources": "Covers, RotoWire"
@@ -37949,7 +37966,8 @@
             "injury": "Foot",
             "updated": "Thu, Aug 13",
             "detail": "Thurman is laid up with foot surgery, and he is likely to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           },
           {
             "player": "G. Smith",
@@ -37958,7 +37976,8 @@
             "injury": "Undisclosed",
             "updated": "Sun, Aug 23",
             "detail": "Smith is laid up with an undisclosed injury, and he will be idle for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           },
           {
             "player": "T. Hollinger",
@@ -37967,7 +37986,8 @@
             "injury": "Undisclosed",
             "updated": "Tue, Aug 11",
             "detail": "Hollinger has been out of commission due to an undisclosed injury, and he will be idle for the remainder of the season",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           },
           {
             "player": "A. Perry",
@@ -37976,7 +37996,8 @@
             "injury": "Shoulder",
             "updated": "Thu, Aug 13",
             "detail": "Perry is batting with a shoulder injury and will undergo surgery, and team officials have yet to provide an exact return date.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -39372,7 +39393,10 @@
             "injury": "Leg",
             "updated": "Mon, Oct 19",
             "source": "RotoWire + Covers",
-            "return": "3/1/2027"
+            "return": "3/1/2027",
+            "value": 2.96,
+            "missed": 4,
+            "value_recent": 0.0
           },
           {
             "player": "M. Matthews",
@@ -39381,7 +39405,10 @@
             "injury": "Undisclosed",
             "updated": "Mon, Sep 21",
             "detail": "Matthews is dealing with a lower-leg injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.05,
+            "missed": 7,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -41935,7 +41962,10 @@
             "injury": "Leg",
             "updated": "Mon, Oct 5",
             "detail": "Hebert is laid up with a lower leg injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.1,
+            "missed": 4,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -47220,31 +47250,36 @@
       "home_injuries": {
         "players": [
           {
+            "player": "Salahadin Allah",
+            "position": "RB",
+            "status": "Out For Season",
+            "injury": "Lower Leg",
+            "return": "Mar 1st",
+            "updated": "Nov 14 12:00 PM",
+            "source": "RotoWire",
+            "value": null
+          },
+          {
+            "player": "Braden Awls",
+            "position": "S",
+            "status": "Out For Season",
+            "injury": "Knee",
+            "return": "Mar 1st",
+            "updated": "Nov 14 12:00 PM",
+            "source": "RotoWire",
+            "value": null
+          },
+          {
             "player": "C. Pabst",
             "position": "WR",
             "status": "Out",
             "injury": "Knee",
             "updated": "Sat, Oct 3",
             "detail": "Pabst is sidelined due to knee injury, and he is expected to miss the remainder of the season.",
-            "source": "Covers"
-          },
-          {
-            "player": "Salahadin Allah",
-            "position": "RB",
-            "status": "OFS",
-            "injury": "Lower Leg",
-            "return": "Mar 1st",
-            "updated": "Nov 14 12:00 PM",
-            "source": "RotoWire"
-          },
-          {
-            "player": "Braden Awls",
-            "position": "S",
-            "status": "OFS",
-            "injury": "Knee",
-            "return": "Mar 1st",
-            "updated": "Nov 14 12:00 PM",
-            "source": "RotoWire"
+            "source": "Covers",
+            "value": 0.02,
+            "missed": 6,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -47270,13 +47305,13 @@
       "home_color": "#f47321",
       "away_record": "7-2",
       "home_record": "8-1",
-      "away_score": "3",
-      "home_score": "10",
+      "away_score": "10",
+      "home_score": "13",
       "venue": "Hard Rock Stadium",
       "venue_city": "Miami Gardens, FL",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 71,
+      "weather_temp": 70,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -49816,7 +49851,9 @@
             "injury": "Undisclosed",
             "updated": "Mon, Oct 12",
             "detail": "Salas is dealing with an undisclosed injury, and he will be idle for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null,
+            "missed": 5
           }
         ],
         "sources": "Covers, RotoWire"
@@ -51170,12 +51207,12 @@
       "away_record": "8-2",
       "home_record": "4-5",
       "away_score": "13",
-      "home_score": "16",
+      "home_score": "17",
       "venue": "Pratt & Whitney Stadium",
       "venue_city": "East Hartford, CT",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 42,
+      "weather_temp": 43,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -55142,7 +55179,7 @@
       "venue_city": "Columbus, OH",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 41,
+      "weather_temp": 42,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -57682,7 +57719,10 @@
             "injury": "Undisclosed",
             "return": "Nov 21st",
             "updated": "Nov 14 12:00 PM",
-            "source": "RotoWire"
+            "source": "RotoWire",
+            "value": 0.19,
+            "missed": 4,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -59086,7 +59126,10 @@
             "injury": "Foot",
             "updated": "Wed, Oct 21",
             "detail": "Jackson underwent surgery for a Lisfranc injury in his foot, and he will miss an undetermined length of time.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.75,
+            "missed": 3,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -59113,12 +59156,12 @@
       "away_record": "4-5",
       "home_record": "4-5",
       "away_score": "6",
-      "home_score": "7",
+      "home_score": "14",
       "venue": "Carter-Finley Stadium",
       "venue_city": "Raleigh, NC",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 54,
+      "weather_temp": 53,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -61660,7 +61703,10 @@
             "injury": "Undisclosed",
             "return": "Nov 21st",
             "updated": "Nov 14 12:00 PM",
-            "source": "RotoWire"
+            "source": "RotoWire",
+            "value": 0.51,
+            "missed": 0,
+            "value_recent": 0.04
           }
         ],
         "sources": "Covers, RotoWire"
@@ -63062,7 +63108,10 @@
             "injury": "Undisclosed",
             "updated": "Mon, Oct 19",
             "detail": "Ploog is dealing with an undisclosed injury, and he will be idle for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.05,
+            "missed": 8,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -63088,7 +63137,7 @@
       "home_color": "#d70000",
       "away_record": "8-1",
       "home_record": "7-2",
-      "away_score": "28",
+      "away_score": "42",
       "home_score": "0",
       "venue": "Gerald J. Ford Stadium",
       "venue_city": "Dallas, TX",
@@ -66961,7 +67010,9 @@
             "injury": "Undisclosed",
             "updated": "Tue, Sep 29",
             "detail": "Singleton is sidelined with an undisclosed injury, and he is expected to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null,
+            "missed": 6
           },
           {
             "player": "L. Rhodes",
@@ -66970,7 +67021,8 @@
             "injury": "Knee",
             "updated": "Wed, Aug 26",
             "detail": "Rhodes has been out of the lineup with a tore ACL injury, and he will be out of commission for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           },
           {
             "player": "T. Polley Jr.",
@@ -66979,7 +67031,9 @@
             "injury": "Pectoral",
             "updated": "Tue, Oct 20",
             "detail": "Polley is battling due to a pectoral injury, and he will be idle for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null,
+            "missed": 3
           }
         ],
         "sources": "Covers, RotoWire"
@@ -67011,7 +67065,7 @@
       "venue_city": "College Park, MD",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 49,
+      "weather_temp": 48,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -70919,7 +70973,8 @@
             "injury": "Leg",
             "updated": "Thu, Aug 13",
             "detail": "Mathis is battling with a leg injury, and he will be idle for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -70945,13 +71000,13 @@
       "home_color": "#f56600",
       "away_record": "2-7",
       "home_record": "6-3",
-      "away_score": "7",
+      "away_score": "10",
       "home_score": "0",
       "venue": "Memorial Stadium (Clemson, SC)",
       "venue_city": "Clemson, SC",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 55,
+      "weather_temp": 57,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -74879,7 +74934,10 @@
             "injury": "Leg",
             "updated": "Mon, Sep 28",
             "detail": "Eziomume is liad up with a leg injury, and he will be idle for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.09,
+            "missed": 8,
+            "value_recent": 0.0
           },
           {
             "player": "P. Streko",
@@ -74888,7 +74946,8 @@
             "injury": "Undisclosed",
             "updated": "Tue, Aug 11",
             "detail": "Streko has been out of commission due to an undisclosed injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -74914,7 +74973,7 @@
       "home_color": "#ce0e2d",
       "away_record": "5-4",
       "home_record": "2-7",
-      "away_score": "7",
+      "away_score": "14",
       "home_score": "0",
       "venue": "SHI Stadium",
       "venue_city": "Piscataway, NJ",
@@ -77395,7 +77454,10 @@
             "injury": "Undisclosed",
             "updated": "Mon, Oct 19",
             "detail": "Genatone is managing due to an undisclosed injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.09,
+            "missed": 2,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -78797,7 +78859,9 @@
             "injury": "Undisclosed",
             "updated": "Tue, Oct 20",
             "detail": "Sanders is dealing with an undisclosed injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null,
+            "missed": 4
           }
         ],
         "sources": "Covers, RotoWire"
@@ -78829,7 +78893,7 @@
       "venue_city": "Nashville, TN",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 50,
+      "weather_temp": 51,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -82712,13 +82776,13 @@
       "home_color": "#006f71",
       "away_record": "4-5",
       "home_record": "3-6",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "7",
+      "home_score": "7",
       "venue": "Brooks Stadium (SC)",
       "venue_city": "Conway, SC",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 56,
+      "weather_temp": 58,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -85132,7 +85196,8 @@
             "injury": "Knee",
             "updated": "Mon, Aug 17",
             "detail": "Spencer is dealing with a knee injury, and he is projected to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -86542,8 +86607,8 @@
       "home_color": "#005035",
       "away_record": "5-4",
       "home_record": "1-8",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "6",
+      "home_score": "3",
       "venue": "Jerry Richardson Stadium",
       "venue_city": "Charlotte, NC",
       "roof": "Outdoor",
@@ -90494,14 +90559,14 @@
       "home_color": "#a41e35",
       "away_record": "5-4",
       "home_record": "2-7",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "7",
+      "home_score": "7",
       "venue": "Lincoln Financial Field",
       "venue_city": "Philadelphia, PA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 45,
-      "weather_cond": "A shower",
+      "weather_temp": 46,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -94432,7 +94497,8 @@
             "injury": "Undisclosed",
             "updated": "Sat, Oct 17",
             "detail": "Uzoma is battling due to an undisclosed injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -98396,7 +98462,8 @@
             "injury": "Undisclosed",
             "updated": "Thu, Oct 8",
             "detail": "Kuhl is battling with an undisclosed injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -100968,7 +101035,8 @@
             "injury": "Leg",
             "updated": "Fri, Aug 21",
             "detail": "Pastore has been shut down for the remainder of the season with a lower leg injury.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           },
           {
             "player": "W. Anciaux",
@@ -100977,7 +101045,10 @@
             "injury": "Leg",
             "updated": "Mon, Oct 5",
             "detail": "Anciaux is nursing with a lower leg injury, and he will be idle for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.03,
+            "missed": 6,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -106299,7 +106370,10 @@
             "injury": "Undisclosed",
             "updated": "Sun, Sep 13",
             "detail": "Spiller is managing with an undisclosed injury, and has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.09,
+            "missed": 8,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -112823,7 +112897,8 @@
             "injury": "Knee",
             "updated": "Mon, Sep 7",
             "detail": "Harmon has been shut down for the remainder of the season due to ACL tear.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           },
           {
             "player": "W. Moe Jr.",
@@ -112832,7 +112907,8 @@
             "injury": "Undisclosed",
             "updated": "Wed, Sep 30",
             "detail": "Moe Jr has been shut down for the remainder of the season due to an undisclosed injury.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -114241,7 +114317,7 @@
       "roof": "Outdoor",
       "broadcast": "NBC",
       "weather_temp": 44,
-      "weather_cond": "Cloudy",
+      "weather_cond": "Showers",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -118132,7 +118208,8 @@
             "injury": "Knee",
             "updated": "Mon, Sep 28",
             "detail": "Porter is sidelined due to knee injury, and he is expected to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -124622,7 +124699,10 @@
             "injury": "Shoulder",
             "updated": "Thu, Oct 1",
             "detail": "Hollins is liad up with a shoulder injury, and he will be idle for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.06,
+            "missed": 6,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -132477,7 +132557,8 @@
             "injury": "Undisclosed",
             "updated": "Tue, Aug 11",
             "detail": "Thurman has been sidelined due to an undisclosed injury, and he is expected to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           },
           {
             "player": "K. Amachree",
@@ -132486,7 +132567,8 @@
             "injury": "Undisclosed",
             "updated": "Fri, Oct 2",
             "detail": "Amachree is expected to miss the remainder of the season due to an undisclosed injury.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           },
           {
             "player": "Y. Willis",
@@ -132495,7 +132577,10 @@
             "injury": "Foot",
             "updated": "Mon, Sep 28",
             "detail": "Willis has been out of the lineup with an foot injury, and he is expected to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.53,
+            "missed": 6,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -133854,7 +133939,7 @@
       "venue_city": "Eugene, OR",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 59,
+      "weather_temp": 60,
       "weather_cond": "Showers",
       "away_form": {
         "rates": {
@@ -137786,7 +137871,9 @@
             "injury": "Undisclosed",
             "updated": "Wed, Oct 14",
             "detail": "Flowers has been shut down for the remainder of the season due to an undisclosed injury.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null,
+            "missed": 5
           }
         ],
         "sources": "Covers, RotoWire"
@@ -141765,7 +141852,7 @@
       "roof": "Outdoor",
       "broadcast": "CBSSN",
       "weather_temp": 50,
-      "weather_cond": "Mostly sunny",
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -145688,7 +145775,9 @@
             "injury": "Leg",
             "updated": "Thu, Oct 8",
             "detail": "Marshall is hampered by leg injury, and he will be idle for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null,
+            "missed": 2
           }
         ],
         "sources": "Covers, RotoWire"
@@ -152182,7 +152271,8 @@
             "injury": "Undisclosed",
             "updated": "Tue, Aug 11",
             "detail": "O'Connor has been sidelined due to an undisclosed injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           },
           {
             "player": "C. Simms",
@@ -152191,7 +152281,10 @@
             "injury": "Knee",
             "updated": "Fri, Oct 2",
             "detail": "Simms is sidelined due to knee injury, and he is expected to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.05,
+            "missed": 5,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -156155,7 +156248,8 @@
             "injury": "Undisclosed",
             "updated": "Tue, Aug 11",
             "detail": "Ramirez is out of action due to an undisclosed injury, and he is projected to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -161442,7 +161536,7 @@
       "venue_city": "Houston, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 65,
+      "weather_temp": 64,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -165374,7 +165468,8 @@
             "injury": "Undisclosed",
             "updated": "Sat, Oct 10",
             "detail": "Cole has been out of lineup due to an undisclosed injury, and he is expected to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -169336,7 +169431,8 @@
             "injury": "Undisclosed",
             "updated": "Thu, Oct 8",
             "detail": "Benedix is nursing with an undisclosed injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -171908,7 +172004,8 @@
             "injury": "Knee",
             "updated": "Tue, Aug 25",
             "detail": "Fiaseu is sidelined with a knee injury, and he is projected to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           },
           {
             "player": "K. Anderson",
@@ -171917,7 +172014,10 @@
             "injury": "Leg",
             "updated": "Mon, Sep 21",
             "detail": "Anderson is sidelined with a leg injury, and it is anticipated that he will miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.02,
+            "missed": 7,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -175881,7 +175981,10 @@
             "injury": "Undisclosed",
             "updated": "Mon, Sep 7",
             "detail": "Carr will undergo surgery due to an undisclosed injury, and he is without a definitive timetable for return.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.45,
+            "missed": 8,
+            "value_recent": 0.0
           },
           {
             "player": "C. Christian",
@@ -175890,7 +175993,8 @@
             "injury": "Achilles",
             "updated": "Sat, Oct 3",
             "detail": "Christian is sidelined due to achilles injury, and he is expected to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -187680,7 +187784,8 @@
             "injury": "Undisclosed",
             "updated": "Sat, Sep 5",
             "detail": "Jimenez is dealing with an undisclosed injury, and he is expected to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -189017,7 +189122,8 @@
             "injury": "Undisclosed",
             "updated": "Sat, Aug 22",
             "detail": "Mizell is laid up with an undisclosed injury, and he is projected to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -193150,7 +193256,10 @@
             "injury": "Lower Leg",
             "updated": "Mon, Oct 5",
             "source": "RotoWire + Covers",
-            "return": "3/1/2027"
+            "return": "3/1/2027",
+            "value": 3.47,
+            "missed": 5,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -195722,7 +195831,8 @@
             "injury": "Knee",
             "updated": "Sat, Sep 5",
             "detail": "Redding has been out of commission due to knee injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -199587,7 +199697,9 @@
             "injury": "Knee",
             "updated": "Fri, Sep 25",
             "detail": "Watts has been out of commission due to a knee injury, and it is anticipated that he will miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null,
+            "missed": 6
           },
           {
             "player": "K. Hughes",
@@ -199596,7 +199708,8 @@
             "injury": "Lower Body",
             "updated": "Tue, Aug 11",
             "detail": "Huges has been out of commission due to lower body injury, and it is anticipated that he will miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -203430,7 +203543,10 @@
             "injury": "Knee",
             "updated": "Mon, Sep 7",
             "detail": "Estrada is out of action due to a knee injury, and he is expected to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.22,
+            "missed": 8,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -204800,7 +204916,9 @@
             "injury": "Undisclosed",
             "updated": "Sat, Sep 12",
             "detail": "Granville has been shut down for the remainder of the season with an undisclosed injury.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null,
+            "missed": 8
           }
         ],
         "sources": "Covers, RotoWire"
@@ -207372,7 +207490,10 @@
             "injury": "Undisclosed",
             "updated": "Sat, Oct 3",
             "detail": "Worley has been out of the lineup due to undisclosed injury, and he is expected to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.03,
+            "missed": 7,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -208774,7 +208895,8 @@
             "injury": "Undisclosed",
             "updated": "Thu, Oct 1",
             "detail": "Lynch has been out of commission due to an undisclosed injury, and it is anticipated that he will miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           },
           {
             "player": "B. Barnes",
@@ -208783,7 +208905,8 @@
             "injury": "Undisclosed",
             "updated": "Thu, Oct 1",
             "detail": "Barnes has been out of commission due to an undisclosed injury, and it is anticipated that he will miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           },
           {
             "player": "K. Marion",
@@ -208792,7 +208915,8 @@
             "injury": "Undisclosed",
             "updated": "Thu, Oct 1",
             "detail": "Marion has been out of commission due to an undisclosed injury, and it is anticipated that he will miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -224292,7 +224416,9 @@
             "injury": "Knee",
             "updated": "Mon, Sep 21",
             "detail": "Spears has been sidelined due to a torn ACL, and he is likely to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null,
+            "missed": 7
           },
           {
             "player": "P. Wright III",
@@ -224301,7 +224427,10 @@
             "injury": "Undisclosed",
             "updated": "Mon, Sep 21",
             "detail": "Wright III is hampered by an undisclosed injury, and he is likely to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.05,
+            "missed": 7,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -228265,7 +228394,8 @@
             "injury": "Knee",
             "updated": "Tue, Aug 11",
             "detail": "Olsen is battling with a knee ACL injury, and he will miss an undetermined length of time.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -230837,7 +230967,8 @@
             "injury": "Lower Body",
             "updated": "Mon, Aug 17",
             "detail": "Gibson is batting with a lower body injury, and he will be idle for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           },
           {
             "player": "J. Sellers",
@@ -230846,7 +230977,8 @@
             "injury": "Lower Body",
             "updated": "Mon, Aug 17",
             "detail": "Sellers is fighting off a lower body injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -232248,7 +232380,8 @@
             "injury": "Upper Body",
             "updated": "Sun, Aug 16",
             "detail": "Lassiter has been shut down for the remainder of the season due to an upper body injury.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -236148,7 +236281,8 @@
             "injury": "Undisclosed",
             "updated": "Sat, Oct 10",
             "detail": "Donnell has been out of lineup due to an undisclosed injury, and he is likely to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -238720,7 +238854,10 @@
             "injury": "Knee",
             "updated": "Mon, Oct 19",
             "detail": "Lee is dealing with a knee torn ACL injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.02,
+            "missed": 4,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -242619,7 +242756,9 @@
             "injury": "Undisclosed",
             "updated": "Thu, Oct 1",
             "detail": "Nelson is dealing with an undisclosed injury, and he is projected to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null,
+            "missed": 8
           },
           {
             "player": "N. Boncore",
@@ -242628,7 +242767,10 @@
             "injury": "Undisclosed",
             "updated": "Wed, Oct 7",
             "detail": "Boncore is dealing with an undisclosed injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.04,
+            "missed": 5,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -246592,7 +246734,8 @@
             "injury": "Knee",
             "updated": "Tue, Aug 11",
             "source": "RotoWire + Covers",
-            "return": "3/1/2027"
+            "return": "3/1/2027",
+            "value": null
           },
           {
             "player": "T. Nystrom",
@@ -246601,7 +246744,8 @@
             "injury": "Knee",
             "updated": "Tue, Aug 11",
             "detail": "Nystrom has been out of lineup due to knee injury, and he is likely to miss the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -251955,7 +252099,8 @@
             "injury": "Leg",
             "updated": "Mon, Sep 14",
             "detail": "Freeman has been shut down for the remainder of the season with a torn ACL.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null
           }
         ],
         "sources": "Covers, RotoWire"
@@ -255895,7 +256040,9 @@
             "injury": "Undisclosed",
             "updated": "Fri, Sep 25",
             "detail": "Austin has been shut down for the remainder of the season due to an undisclosed injury.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": null,
+            "missed": 6
           },
           {
             "player": "T. Spivey",
@@ -255904,7 +256051,10 @@
             "injury": "Ankle",
             "updated": "Sun, Oct 4",
             "detail": "Spivey has been out of commission due to ankle injury, and he has been shut down for the remainder of the season.",
-            "source": "Covers"
+            "source": "Covers",
+            "value": 0.07,
+            "missed": 4,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
