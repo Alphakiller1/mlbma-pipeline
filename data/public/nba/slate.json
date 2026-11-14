@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-14",
- "generated_at_utc": "2026-11-14T09:27:26+00:00",
+ "generated_at_utc": "2026-11-14T18:09:51+00:00",
  "data_through_utc": "2026-11-14T03:30Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -3937,15 +3937,136 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "away_player_values": [
+    {
+     "player_id": "3112335",
+     "player_name": "Nikola Jokic",
+     "value": 3.2
+    },
+    {
+     "player_id": "3936299",
+     "player_name": "Jamal Murray",
+     "value": 2.9
+    },
+    {
+     "player_id": "4431767",
+     "player_name": "Christian Braun",
+     "value": 1.53
+    },
+    {
+     "player_id": "4432181",
+     "player_name": "Julian Strawther",
+     "value": 1.51
+    },
+    {
+     "player_id": "3138196",
+     "player_name": "Cameron Johnson",
+     "value": 1.24
+    },
+    {
+     "player_id": "3064290",
+     "player_name": "Aaron Gordon",
+     "value": 1.2
+    },
+    {
+     "player_id": "3978",
+     "player_name": "DeMar DeRozan",
+     "value": 0.94
+    },
+    {
+     "player_id": "4698719",
+     "player_name": "Trevon Brazile",
+     "value": 0.81
+    },
+    {
+     "player_id": "4592427",
+     "player_name": "Spencer Jones",
+     "value": 0.68
+    },
+    {
+     "player_id": "4565698",
+     "player_name": "Bryce Hopkins",
+     "value": 0.52
+    },
+    {
+     "player_id": "4277848",
+     "player_name": "Marvin Bagley III",
+     "value": 0.49
+    },
+    {
+     "player_id": "3135046",
+     "player_name": "Tyus Jones",
+     "value": 0.37
+    },
+    {
+     "player_id": "4065813",
+     "player_name": "Alpha Diallo",
+     "value": 0.26
+    },
+    {
+     "player_id": "5105592",
+     "player_name": "Cam Whitmore",
+     "value": 0.26
+    },
+    {
+     "player_id": "4433629",
+     "player_name": "Ryan Nembhard",
+     "value": 0.13
+    },
+    {
+     "player_id": "4433607",
+     "player_name": "DaRon Holmes II",
+     "value": 0.09
+    }
+   ],
    "away_injuries": [
     {
      "player_id": "4432181",
      "player_name": "Julian Strawther",
      "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Left Knee Sprain",
      "detail": "Left Knee Sprain",
      "comment": "Strawther (knee) was diagnosed with a left knee sprain Friday and will be re-evaluated in six weeks, Vinny Benedetto of The Denver Gazette reports.",
      "date": "2026-10-17T00:52Z",
-     "return_date": "2026-11-29"
+     "return_date": "2026-11-29",
+     "value": 1.51
+    },
+    {
+     "player_id": "5105592",
+     "player_name": "Cam Whitmore",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.26
+    },
+    {
+     "player_id": "4433629",
+     "player_name": "Ryan Nembhard",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.13
+    },
+    {
+     "player_id": "4433607",
+     "player_name": "DaRon Holmes II",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - On Assignment",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.09
     }
    ],
    "home_form": {
@@ -7841,51 +7962,138 @@
     "tz_shift": 0,
     "altitude": false
    },
-   "home_injuries": [
+   "home_player_values": [
     {
-     "player_id": "3907497",
-     "player_name": "Dejounte Murray",
-     "status": "Out",
-     "detail": "Ankle",
-     "comment": "Murray (ankle) is out for Friday's game against Memphis.",
-     "date": "2026-11-13T20:19Z",
-     "return_date": "2026-11-20"
+     "player_id": "4395628",
+     "player_name": "Zion Williamson",
+     "value": 2.41
     },
     {
-     "player_id": "4576086",
-     "player_name": "Bryce McGowens",
-     "status": "Out",
-     "detail": "Left Elbow Infection",
-     "comment": "McGowens (elbow) is listed as out for Friday's game against the Grizzlies.",
-     "date": "2026-11-13T18:12Z",
-     "return_date": "2026-11-14"
-    },
-    {
-     "player_id": "5061589",
-     "player_name": "Yves Missi",
-     "status": "Out",
-     "detail": "Left Knee Bruise",
-     "comment": "Missi (knee) is out for Friday's game against the Grizzlies.",
-     "date": "2026-11-13T18:11Z",
-     "return_date": "2026-11-14"
+     "player_id": "5144091",
+     "player_name": "Jeremiah Fears",
+     "value": 1.74
     },
     {
      "player_id": "4397688",
      "player_name": "Trey Murphy III",
+     "value": 1.66
+    },
+    {
+     "player_id": "4397136",
+     "player_name": "Saddiq Bey",
+     "value": 1.55
+    },
+    {
+     "player_id": "3907497",
+     "player_name": "Dejounte Murray",
+     "value": 1.48
+    },
+    {
+     "player_id": "5061589",
+     "player_name": "Yves Missi",
+     "value": 1.34
+    },
+    {
+     "player_id": "4869780",
+     "player_name": "Derik Queen",
+     "value": 0.99
+    },
+    {
+     "player_id": "4277813",
+     "player_name": "Herbert Jones",
+     "value": 0.88
+    },
+    {
+     "player_id": "4997538",
+     "player_name": "Karlo Matkovic",
+     "value": 0.87
+    },
+    {
+     "player_id": "4277956",
+     "player_name": "Jordan Poole",
+     "value": 0.82
+    },
+    {
+     "player_id": "4431675",
+     "player_name": "Trendon Watford",
+     "value": 0.75
+    },
+    {
+     "player_id": "3442",
+     "player_name": "DeAndre Jordan",
+     "value": 0.65
+    },
+    {
+     "player_id": "4683634",
+     "player_name": "Bennedict Mathurin",
+     "value": 0.5
+    },
+    {
+     "player_id": "4576086",
+     "player_name": "Bryce McGowens",
+     "value": 0.38
+    }
+   ],
+   "home_injuries": [
+    {
+     "player_id": "4397688",
+     "player_name": "Trey Murphy III",
      "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Bilateral Patellar Tendinopathy",
      "detail": "Knee Tendinitis",
-     "comment": "Murphy (knee) is out for Friday's game against Memphis.",
-     "date": "2026-11-13T18:07Z",
-     "return_date": "2026-11-14"
+     "comment": "Murphy (knees) has been ruled out for Saturday's game against the Nuggets.",
+     "date": "2026-11-14T17:53Z",
+     "return_date": "2026-11-16",
+     "value": 1.66
+    },
+    {
+     "player_id": "3907497",
+     "player_name": "Dejounte Murray",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Left Ankle Sprain",
+     "detail": "Ankle",
+     "comment": "Murray (ankle) is out for Friday's game against Memphis.",
+     "date": "2026-11-13T20:19Z",
+     "return_date": "2026-11-20",
+     "value": 1.48
     },
     {
      "player_id": "4431675",
      "player_name": "Trendon Watford",
      "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Right Ankle Sprain",
      "detail": "Right Ankle Sprain",
-     "comment": "Watford (ankle) is listed as out for Friday's game against the Grizzlies.",
-     "date": "2026-11-12T20:53Z",
-     "return_date": "2026-11-14"
+     "comment": "Watford (ankle) has been ruled out for Saturday's game against Denver.",
+     "date": "2026-11-14T17:58Z",
+     "return_date": "2026-11-16",
+     "value": 0.75
+    },
+    {
+     "player_id": "4576086",
+     "player_name": "Bryce McGowens",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Left Elbow Infection",
+     "detail": "Left Elbow Infection",
+     "comment": "McGowens (elbow) has been ruled out for Saturday's game against the Nuggets.",
+     "date": "2026-11-14T17:55Z",
+     "return_date": "2026-11-16",
+     "value": 0.38
+    },
+    {
+     "player_id": "5061589",
+     "player_name": "Yves Missi",
+     "status": "Probable",
+     "source": "official",
+     "reason": "Injury/Illness - Left Knee Contusion / Bone Bruise",
+     "detail": "Left Knee Bruise",
+     "comment": "Missi (knee) has been upgraded to probable for Saturday's game versus the Nuggets.",
+     "date": "2026-11-14T18:01Z",
+     "return_date": "2026-11-14",
+     "value": 1.34
     }
    ]
   },
@@ -11600,51 +11808,138 @@
     "tz_shift": 1,
     "altitude": false
    },
-   "away_injuries": [
+   "away_player_values": [
     {
-     "player_id": "4432582",
-     "player_name": "Max Christie",
-     "status": "Day-To-Day",
-     "detail": "Ankle",
-     "comment": "Christie is questionable for Saturday's game against the Cavaliers due to a sprained left ankle.",
-     "date": "2026-11-13T22:06Z",
-     "return_date": "2026-11-14"
+     "player_id": "5041939",
+     "player_name": "Cooper Flagg",
+     "value": 2.73
+    },
+    {
+     "player_id": "6442",
+     "player_name": "Kyrie Irving",
+     "value": 1.92
+    },
+    {
+     "player_id": "4278078",
+     "player_name": "P.J. Washington",
+     "value": 1.45
+    },
+    {
+     "player_id": "4278049",
+     "player_name": "Daniel Gafford",
+     "value": 1.17
+    },
+    {
+     "player_id": "4278594",
+     "player_name": "Naji Marshall",
+     "value": 1.1
+    },
+    {
+     "player_id": "5211175",
+     "player_name": "Zaccharie Risacher",
+     "value": 0.96
+    },
+    {
+     "player_id": "4896372",
+     "player_name": "Walter Clayton Jr.",
+     "value": 0.77
+    },
+    {
+     "player_id": "3138160",
+     "player_name": "Caleb Martin",
+     "value": 0.66
     },
     {
      "player_id": "4873153",
      "player_name": "Morez Johnson Jr.",
-     "status": "Day-To-Day",
-     "detail": "Left Lower Leg",
-     "comment": "Johnson (left shin contusion) is listed as probable for Saturday against Cleveland.",
-     "date": "2026-11-13T22:05Z",
-     "return_date": "2026-11-14"
+     "value": 0.66
     },
     {
      "player_id": "4683688",
      "player_name": "Dereck Lively II",
+     "value": 0.62
+    },
+    {
+     "player_id": "4432582",
+     "player_name": "Max Christie",
+     "value": 0.6
+    },
+    {
+     "player_id": "4593125",
+     "player_name": "Santi Aldama",
+     "value": 0.56
+    },
+    {
+     "player_id": "4432107",
+     "player_name": "Marcus Sasser",
+     "value": 0.55
+    },
+    {
+     "player_id": "5279129",
+     "player_name": "Sergio de Larrea",
+     "value": 0.42
+    }
+   ],
+   "away_injuries": [
+    {
+     "player_id": "4683688",
+     "player_name": "Dereck Lively II",
      "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Right Foot Surgery",
      "detail": "Right Foot Surgery",
      "comment": "Lively (foot) is listed as out for Thursday's game in Minnesota.",
      "date": "2026-11-11T22:13Z",
-     "return_date": "2026-11-18"
-    },
-    {
-     "player_id": "5148538",
-     "player_name": "Tarik Biberovic",
-     "status": "Out",
-     "detail": "Right Heel Inflammation",
-     "comment": "Biberovic (heel) is out for Thursday's game against Minnesota.",
-     "date": "2026-11-11T22:12Z",
-     "return_date": "2026-11-18"
+     "return_date": "2026-11-18",
+     "value": 0.62
     },
     {
      "player_id": "5279129",
      "player_name": "Sergio de Larrea",
      "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Right Knee Sprain",
      "detail": "Right Knee Strain",
      "comment": "De Larrea (knee) has been ruled out for Thursday's game at Minnesota.",
      "date": "2026-11-11T22:10Z",
-     "return_date": "2026-11-18"
+     "return_date": "2026-11-18",
+     "value": 0.42
+    },
+    {
+     "player_id": "5148538",
+     "player_name": "Tarik Biberovic",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Right Heel Bursitis",
+     "detail": "Right Heel Inflammation",
+     "comment": "Biberovic (heel) is out for Thursday's game against Minnesota.",
+     "date": "2026-11-11T22:12Z",
+     "return_date": "2026-11-18",
+     "value": null
+    },
+    {
+     "player_id": "4432582",
+     "player_name": "Max Christie",
+     "status": "Doubtful",
+     "source": "official",
+     "reason": "Injury/Illness - Left Ankle Sprain",
+     "detail": "Ankle",
+     "comment": "Christie is questionable for Saturday's game against the Cavaliers due to a sprained left ankle.",
+     "date": "2026-11-13T22:06Z",
+     "return_date": "2026-11-14",
+     "value": 0.6
+    },
+    {
+     "player_id": "4873153",
+     "player_name": "Morez Johnson Jr.",
+     "status": "Probable",
+     "source": "official",
+     "reason": "Injury/Illness - Left Shin / Tibia Contusion",
+     "detail": "Left Lower Leg",
+     "comment": "Johnson (left shin contusion) is listed as probable for Saturday against Cleveland.",
+     "date": "2026-11-13T22:05Z",
+     "return_date": "2026-11-14",
+     "value": 0.66
     }
    ],
    "home_form": {
@@ -14352,7 +14647,7 @@
       "player_name": "Evan Mobley",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4432158.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 32.1,
       "ppg": 16.9,
       "height_in": 83.0,
@@ -15487,33 +15782,109 @@
     "tz_shift": 0,
     "altitude": false
    },
-   "home_injuries": [
+   "home_player_values": [
+    {
+     "player_id": "3908809",
+     "player_name": "Donovan Mitchell",
+     "value": 2.06
+    },
     {
      "player_id": "4432158",
      "player_name": "Evan Mobley",
+     "value": 1.84
+    },
+    {
+     "player_id": "3992",
+     "player_name": "James Harden",
+     "value": 1.78
+    },
+    {
+     "player_id": "4066328",
+     "player_name": "Jarrett Allen",
+     "value": 1.5
+    },
+    {
+     "player_id": "5106268",
+     "player_name": "Nae'Qwan Tomlin",
+     "value": 1.27
+    },
+    {
+     "player_id": "4576087",
+     "player_name": "Peyton Watson",
+     "value": 1.12
+    },
+    {
+     "player_id": "5041951",
+     "player_name": "Meleek Thomas",
+     "value": 1.07
+    },
+    {
+     "player_id": "4066757",
+     "player_name": "Sam Merrill",
+     "value": 0.93
+    },
+    {
+     "player_id": "5023693",
+     "player_name": "Tyrese Proctor",
+     "value": 0.92
+    },
+    {
+     "player_id": "4683747",
+     "player_name": "Jaylon Tyson",
+     "value": 0.86
+    },
+    {
+     "player_id": "2995706",
+     "player_name": "Mario Hezonja",
+     "value": 0.75
+    },
+    {
+     "player_id": "3934723",
+     "player_name": "Thomas Bryant",
+     "value": 0.58
+    },
+    {
+     "player_id": "5177362",
+     "player_name": "Riley Minix",
+     "value": 0.37
+    }
+   ],
+   "home_injuries": [
+    {
+     "player_id": "5106268",
+     "player_name": "Nae'Qwan Tomlin",
      "status": "Out",
-     "detail": "Toe",
-     "comment": "Mobley (toe) is out for Friday's game against the Heat.",
-     "date": "2026-11-12T22:08Z",
-     "return_date": "2026-11-14"
+     "source": "espn",
+     "reason": null,
+     "detail": "Back",
+     "comment": "Tomlin is set to miss several weeks with a lower back stress reaction, Chris Fedor of The Cleveland Plain Dealer reports.",
+     "date": "2026-10-20T15:11Z",
+     "return_date": "2026-11-16",
+     "value": 1.27
     },
     {
      "player_id": "4066757",
      "player_name": "Sam Merrill",
      "status": "Out",
+     "source": "espn",
+     "reason": null,
      "detail": "Right Elbow",
      "comment": "Merrill (elbow) is listed as out for Wednesday's game against the Knicks.",
      "date": "2026-11-10T22:12Z",
-     "return_date": "2026-11-16"
+     "return_date": "2026-11-16",
+     "value": 0.93
     },
     {
-     "player_id": "5106268",
-     "player_name": "Nae'Qwan Tomlin",
-     "status": "Out",
-     "detail": "Back",
-     "comment": "Tomlin is set to miss several weeks with a lower back stress reaction, Chris Fedor of The Cleveland Plain Dealer reports.",
-     "date": "2026-10-20T15:11Z",
-     "return_date": "2026-11-16"
+     "player_id": "4432158",
+     "player_name": "Evan Mobley",
+     "status": "Day-To-Day",
+     "source": "espn",
+     "reason": null,
+     "detail": "Toe",
+     "comment": "Mobley (toe) is out for Friday's game against the Heat.",
+     "date": "2026-11-14T15:01Z",
+     "return_date": "2026-11-14",
+     "value": 1.84
     }
    ]
   },
@@ -19415,33 +19786,131 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "away_player_values": [
+    {
+     "player_id": "4432166",
+     "player_name": "Cade Cunningham",
+     "value": 2.83
+    },
+    {
+     "player_id": "3157465",
+     "player_name": "Duncan Robinson",
+     "value": 1.71
+    },
+    {
+     "player_id": "5107199",
+     "player_name": "Daniss Jenkins",
+     "value": 1.52
+    },
+    {
+     "player_id": "4684742",
+     "player_name": "Ausar Thompson",
+     "value": 1.4
+    },
+    {
+     "player_id": "4278562",
+     "player_name": "Paul Reed",
+     "value": 1.38
+    },
+    {
+     "player_id": "4433621",
+     "player_name": "Jalen Duren",
+     "value": 1.28
+    },
+    {
+     "player_id": "3908845",
+     "player_name": "John Collins",
+     "value": 1.14
+    },
+    {
+     "player_id": "4066372",
+     "player_name": "Kevin Huerter",
+     "value": 0.99
+    },
+    {
+     "player_id": "4683771",
+     "player_name": "Ronald Holland II",
+     "value": 0.62
+    },
+    {
+     "player_id": "2596112",
+     "player_name": "Javonte Green",
+     "value": 0.62
+    },
+    {
+     "player_id": "4395702",
+     "player_name": "Isaiah Joe",
+     "value": 0.5
+    },
+    {
+     "player_id": "2990962",
+     "player_name": "Taurean Prince",
+     "value": 0.22
+    },
+    {
+     "player_id": "5258459",
+     "player_name": "Ebuka Okorie",
+     "value": 0.14
+    },
+    {
+     "player_id": "5107818",
+     "player_name": "Isaac Jones",
+     "value": 0.11
+    },
+    {
+     "player_id": "4397449",
+     "player_name": "Elijah Harkless",
+     "value": 0.09
+    }
+   ],
    "away_injuries": [
     {
-     "player_id": "5037878",
-     "player_name": "Ugonna Onyenso",
-     "status": "Day-To-Day",
-     "detail": "Left Foot",
-     "comment": "Onyenso agreed to a two-way contract with the Pistons on Thursday.",
-     "date": "2026-11-11T15:16Z",
-     "return_date": "2026-11-14"
+     "player_id": "4433621",
+     "player_name": "Jalen Duren",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Right Hamstring Strain",
+     "detail": "Right Hamstring Strain",
+     "comment": "Duren (hamstring) has begun on-court activity and will be re-evaluated in two weeks, Hunter Patterson of The Athletic reports.",
+     "date": "2026-11-08T16:05Z",
+     "return_date": "2026-11-24",
+     "value": 1.28
     },
     {
      "player_id": "4395702",
      "player_name": "Isaiah Joe",
      "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Right Hip Contusion",
      "detail": "Right Hip Bruise",
      "comment": "Joe (hip) is out for Monday against the Wizards.",
      "date": "2026-11-09T18:54Z",
-     "return_date": "2026-11-17"
+     "return_date": "2026-11-17",
+     "value": 0.5
     },
     {
-     "player_id": "4433621",
-     "player_name": "Jalen Duren",
+     "player_id": "5258459",
+     "player_name": "Ebuka Okorie",
      "status": "Out",
-     "detail": "Right Hamstring Strain",
-     "comment": "Duren (hamstring) has begun on-court activity and will be re-evaluated in two weeks, Hunter Patterson of The Athletic reports.",
-     "date": "2026-11-08T16:05Z",
-     "return_date": "2026-11-24"
+     "source": "official",
+     "reason": "G League - On Assignment",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.14
+    },
+    {
+     "player_id": "5037878",
+     "player_name": "Ugonna Onyenso",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": "Left Foot",
+     "comment": "Onyenso agreed to a two-way contract with the Pistons on Thursday.",
+     "date": "2026-11-11T15:16Z",
+     "return_date": "2026-11-14",
+     "value": null
     }
    ],
    "home_form": {
@@ -22388,7 +22857,7 @@
       "player_name": "Pelle Larsson",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4601025.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 29.5,
       "ppg": 11.4,
       "height_in": 77.0,
@@ -22716,7 +23185,7 @@
       "player_name": "Klay Thompson",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/6475.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 24.7,
       "ppg": 14.4,
       "height_in": 77.0,
@@ -23351,24 +23820,126 @@
     "tz_shift": 0,
     "altitude": false
    },
-   "home_injuries": [
+   "home_player_values": [
     {
-     "player_id": "6475",
-     "player_name": "Klay Thompson",
-     "status": "Out",
-     "detail": "Left Ankle Soreness",
-     "comment": "Thompson (ankle) is out for Friday's game against the Cavaliers.",
-     "date": "2026-11-13T23:21Z",
-     "return_date": "2026-11-14"
+     "player_id": "3032977",
+     "player_name": "Giannis Antetokounmpo",
+     "value": 3.03
+    },
+    {
+     "player_id": "4066261",
+     "player_name": "Bam Adebayo",
+     "value": 2.64
+    },
+    {
+     "player_id": "4278053",
+     "player_name": "Davion Mitchell",
+     "value": 2.19
     },
     {
      "player_id": "4601025",
      "player_name": "Pelle Larsson",
+     "value": 1.39
+    },
+    {
+     "player_id": "6475",
+     "player_name": "Klay Thompson",
+     "value": 1.16
+    },
+    {
+     "player_id": "3059319",
+     "player_name": "Andrew Wiggins",
+     "value": 0.98
+    },
+    {
+     "player_id": "4431786",
+     "player_name": "Keshad Johnson",
+     "value": 0.78
+    },
+    {
+     "player_id": "3064482",
+     "player_name": "Bobby Portis",
+     "value": 0.72
+    },
+    {
+     "player_id": "5107157",
+     "player_name": "Ryan Conwell",
+     "value": 0.53
+    },
+    {
+     "player_id": "2528210",
+     "player_name": "Tim Hardaway Jr.",
+     "value": 0.49
+    },
+    {
+     "player_id": "4997528",
+     "player_name": "Nikola Jovic",
+     "value": 0.4
+    },
+    {
+     "player_id": "4066993",
+     "player_name": "Dru Smith",
+     "value": 0.27
+    },
+    {
+     "player_id": "4431772",
+     "player_name": "Myron Gardner",
+     "value": 0.18
+    },
+    {
+     "player_id": "4700818",
+     "player_name": "Vladislav Goldin",
+     "value": 0.08
+    }
+   ],
+   "home_injuries": [
+    {
+     "player_id": "4700818",
+     "player_name": "Vladislav Goldin",
      "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.08
+    },
+    {
+     "player_id": "4601025",
+     "player_name": "Pelle Larsson",
+     "status": "Doubtful",
+     "source": "official",
+     "reason": "Injury/Illness - Illness",
      "detail": "Illness",
      "comment": "Larsson (illness) is out for Friday's game against Cleveland.",
-     "date": "2026-11-13T23:04Z",
-     "return_date": "2026-11-14"
+     "date": "2026-11-14T15:02Z",
+     "return_date": "2026-11-14",
+     "value": 1.39
+    },
+    {
+     "player_id": "3032977",
+     "player_name": "Giannis Antetokounmpo",
+     "status": "Probable",
+     "source": "official",
+     "reason": "Injury/Illness - Right Wrist Sprain",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 3.03
+    },
+    {
+     "player_id": "6475",
+     "player_name": "Klay Thompson",
+     "status": "Probable",
+     "source": "official",
+     "reason": "Injury/Illness - Left Ankle Sprain",
+     "detail": "Left Ankle Soreness",
+     "comment": "Thompson (ankle) is out for Friday's game against the Cavaliers.",
+     "date": "2026-11-14T15:01Z",
+     "return_date": "2026-11-14",
+     "value": 1.16
     }
    ]
   },
@@ -27275,24 +27846,160 @@
     "tz_shift": 0,
     "altitude": false
    },
-   "away_injuries": [
+   "away_player_values": [
     {
-     "player_id": "5101761",
-     "player_name": "Mikel Brown Jr.",
-     "status": "Day-To-Day",
-     "detail": "Illness Not Specified",
-     "comment": "Brown (illness) is listed as questionable for Saturday's game against Memphis.",
-     "date": "2026-11-13T22:08Z",
-     "return_date": "2026-11-14"
+     "player_id": "4278104",
+     "player_name": "Michael Porter Jr.",
+     "value": 1.94
+    },
+    {
+     "player_id": "3064514",
+     "player_name": "Julius Randle",
+     "value": 1.65
+    },
+    {
+     "player_id": "4432194",
+     "player_name": "Day'Ron Sharpe",
+     "value": 1.09
     },
     {
      "player_id": "5279130",
      "player_name": "Nolan Traore",
-     "status": "Day-To-Day",
+     "value": 1.08
+    },
+    {
+     "player_id": "5107173",
+     "player_name": "Danny Wolf",
+     "value": 1.02
+    },
+    {
+     "player_id": "5101761",
+     "player_name": "Mikel Brown Jr.",
+     "value": 0.96
+    },
+    {
+     "player_id": "3150844",
+     "player_name": "Moritz Wagner",
+     "value": 0.93
+    },
+    {
+     "player_id": "5175643",
+     "player_name": "Egor Demin",
+     "value": 0.91
+    },
+    {
+     "player_id": "4702177",
+     "player_name": "Keon Ellis",
+     "value": 0.82
+    },
+    {
+     "player_id": "5174655",
+     "player_name": "Chaney Johnson",
+     "value": 0.7
+    },
+    {
+     "player_id": "4712896",
+     "player_name": "Noah Clowney",
+     "value": 0.7
+    },
+    {
+     "player_id": "3907823",
+     "player_name": "Terance Mann",
+     "value": 0.52
+    },
+    {
+     "player_id": "4687718",
+     "player_name": "Josh Minott",
+     "value": 0.37
+    },
+    {
+     "player_id": "4702670",
+     "player_name": "Grant Nelson",
+     "value": 0.32
+    },
+    {
+     "player_id": "5242502",
+     "player_name": "Ben Saraf",
+     "value": 0.14
+    },
+    {
+     "player_id": "4870564",
+     "player_name": "Joshua Jefferson",
+     "value": 0.13
+    }
+   ],
+   "away_injuries": [
+    {
+     "player_id": "4702670",
+     "player_name": "Grant Nelson",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.32
+    },
+    {
+     "player_id": "5242502",
+     "player_name": "Ben Saraf",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - On Assignment",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.14
+    },
+    {
+     "player_id": "4870564",
+     "player_name": "Joshua Jefferson",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - On Assignment",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.13
+    },
+    {
+     "player_id": "5105626",
+     "player_name": "Tyler Bilodeau",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": null
+    },
+    {
+     "player_id": "5279130",
+     "player_name": "Nolan Traore",
+     "status": "Probable",
+     "source": "official",
+     "reason": "Injury/Illness - Right Calf Tightness / Soreness",
      "detail": "Right Calf Soreness",
      "comment": "Traore (calf) is listed as probable for Saturday's game against Memphis.",
      "date": "2026-11-13T22:07Z",
-     "return_date": "2026-11-14"
+     "return_date": "2026-11-14",
+     "value": 1.08
+    },
+    {
+     "player_id": "5101761",
+     "player_name": "Mikel Brown Jr.",
+     "status": "Probable",
+     "source": "official",
+     "reason": "Injury/Illness - Illness",
+     "detail": "Illness Not Specified",
+     "comment": "Brown (illness) has been upgraded to probable for Saturday's game at Memphis.",
+     "date": "2026-11-14T17:19Z",
+     "return_date": "2026-11-14",
+     "value": 0.96
     }
    ],
    "home_form": {
@@ -30691,7 +31398,7 @@
       "player_name": "Zach Edey",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4600663.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 20.8,
       "ppg": 7.6,
       "height_in": 88.0,
@@ -31163,42 +31870,121 @@
     "tz_shift": 0,
     "altitude": false
    },
-   "home_injuries": [
+   "home_player_values": [
     {
-     "player_id": "4593016",
-     "player_name": "Quinten Post",
-     "status": "Out",
-     "detail": "Concussion",
-     "comment": "Post (concussion) has been ruled out for Friday's game against New Orleans.",
-     "date": "2026-11-12T23:17Z",
-     "return_date": "2026-11-14"
+     "player_id": "4065733",
+     "player_name": "Ty Jerome",
+     "value": 1.96
+    },
+    {
+     "player_id": "5041935",
+     "player_name": "Cameron Boozer",
+     "value": 1.6
+    },
+    {
+     "player_id": "4903027",
+     "player_name": "Cedric Coward",
+     "value": 1.53
+    },
+    {
+     "player_id": "5112087",
+     "player_name": "Jaylen Wells",
+     "value": 1.15
+    },
+    {
+     "player_id": "4433083",
+     "player_name": "Cam Spencer",
+     "value": 1.12
+    },
+    {
+     "player_id": "2991070",
+     "player_name": "Jerami Grant",
+     "value": 1.04
+    },
+    {
+     "player_id": "4432810",
+     "player_name": "Isaiah Stewart",
+     "value": 0.91
     },
     {
      "player_id": "4600663",
      "player_name": "Zach Edey",
-     "status": "Out",
-     "detail": "Left Ankle",
-     "comment": "Edey won't play in Friday's game against the Pelicans due to left ankle injury management.",
-     "date": "2026-11-12T23:16Z",
-     "return_date": "2026-11-14"
+     "value": 0.9
+    },
+    {
+     "player_id": "4781746",
+     "player_name": "Javon Small",
+     "value": 0.8
     },
     {
      "player_id": "4431785",
      "player_name": "Scotty Pippen Jr.",
+     "value": 0.6
+    },
+    {
+     "player_id": "5105550",
+     "player_name": "GG Jackson",
+     "value": 0.57
+    },
+    {
+     "player_id": "4593016",
+     "player_name": "Quinten Post",
+     "value": 0.45
+    },
+    {
+     "player_id": "4594326",
+     "player_name": "Kris Murray",
+     "value": 0.35
+    }
+   ],
+   "home_injuries": [
+    {
+     "player_id": "4431785",
+     "player_name": "Scotty Pippen Jr.",
      "status": "Out",
+     "source": "espn",
+     "reason": null,
      "detail": "Back Soreness",
      "comment": "Pippen (back) remains out for Wednesday's game against Denver, Michael Wallace of the Grizzlies' official site reports.",
      "date": "2026-11-10T23:09Z",
-     "return_date": "2026-11-21"
+     "return_date": "2026-11-21",
+     "value": 0.6
     },
     {
      "player_id": "5105462",
      "player_name": "Richie Saunders",
      "status": "Out",
+     "source": "espn",
+     "reason": null,
      "detail": "Right Knee Surgery",
      "comment": "Saunders signed a two-way contract with the Grizzlies on Saturday, Shams Charania of ESPN reports.",
      "date": "2026-11-07T17:24Z",
-     "return_date": "2026-12-01"
+     "return_date": "2026-12-01",
+     "value": null
+    },
+    {
+     "player_id": "4600663",
+     "player_name": "Zach Edey",
+     "status": "Day-To-Day",
+     "source": "espn",
+     "reason": null,
+     "detail": "Left Ankle",
+     "comment": "Edey won't play in Friday's game against the Pelicans due to left ankle injury management.",
+     "date": "2026-11-14T15:02Z",
+     "return_date": "2026-11-14",
+     "value": 0.9
+    },
+    {
+     "player_id": "4593016",
+     "player_name": "Quinten Post",
+     "status": "Day-To-Day",
+     "source": "espn",
+     "reason": null,
+     "detail": "Concussion",
+     "comment": "Post (concussion) has been ruled out for Friday's game against New Orleans.",
+     "date": "2026-11-14T15:02Z",
+     "return_date": "2026-11-14",
+     "value": 0.45
     }
    ]
   },
@@ -34326,7 +35112,7 @@
       "player_name": "Norman Powell",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/2595516.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 29.1,
       "ppg": 20.8,
       "height_in": 76.0,
@@ -35116,42 +35902,172 @@
     "tz_shift": 0,
     "altitude": false
    },
-   "away_injuries": [
+   "away_player_values": [
+    {
+     "player_id": "2595516",
+     "player_name": "Norman Powell",
+     "value": 1.67
+    },
+    {
+     "player_id": "5095151",
+     "player_name": "Caleb Wilson",
+     "value": 1.59
+    },
+    {
+     "player_id": "4871145",
+     "player_name": "Josh Giddey",
+     "value": 1.46
+    },
     {
      "player_id": "4397189",
      "player_name": "Jalen Smith",
-     "status": "Day-To-Day",
-     "detail": "Left Hand",
-     "comment": "Smith (hand) exited Friday's 125-117 win over the Hawks in overtime and did not return, finishing with 15 points (6-15 FG, 1-6 3Pt, 2-2 FT), 12 rebounds, three assists and three steals across 32 minutes.",
-     "date": "2026-11-14T03:50Z",
-     "return_date": "2026-11-14"
+     "value": 1.37
+    },
+    {
+     "player_id": "4711294",
+     "player_name": "Matas Buzelis",
+     "value": 1.13
+    },
+    {
+     "player_id": "4431687",
+     "player_name": "Patrick Williams",
+     "value": 1.03
+    },
+    {
+     "player_id": "4278067",
+     "player_name": "Nic Claxton",
+     "value": 0.92
+    },
+    {
+     "player_id": "4395626",
+     "player_name": "Tre Jones",
+     "value": 0.85
+    },
+    {
+     "player_id": "4432822",
+     "player_name": "Isaac Okoro",
+     "value": 0.76
+    },
+    {
+     "player_id": "5044385",
+     "player_name": "Leonard Miller",
+     "value": 0.59
+    },
+    {
+     "player_id": "2990984",
+     "player_name": "Buddy Hield",
+     "value": 0.54
+    },
+    {
+     "player_id": "5242496",
+     "player_name": "Noa Essengue",
+     "value": 0.48
+    },
+    {
+     "player_id": "5105555",
+     "player_name": "Tobe Awaka",
+     "value": 0.38
+    },
+    {
+     "player_id": "4683750",
+     "player_name": "Jordan Hawkins",
+     "value": 0.36
     },
     {
      "player_id": "4848625",
      "player_name": "Dailyn Swain",
+     "value": 0.31
+    },
+    {
+     "player_id": "4898010",
+     "player_name": "Jaylin Sellers",
+     "value": 0.28
+    }
+   ],
+   "away_injuries": [
+    {
+     "player_id": "5095151",
+     "player_name": "Caleb Wilson",
      "status": "Out",
-     "detail": "Right Back",
-     "comment": "Swain (back) is out for Friday's game against the Hawks.",
-     "date": "2026-11-14T00:17Z",
-     "return_date": "2026-11-14"
+     "source": "official",
+     "reason": "Injury/Illness - Right Metacarpal Fracture",
+     "detail": "Right Hand",
+     "comment": "Wilson (hand) is expected to miss four to six weeks, Shams Charania of ESPN reports.",
+     "date": "2026-11-12T21:35Z",
+     "return_date": "2026-12-13",
+     "value": 1.59
     },
     {
      "player_id": "5105555",
      "player_name": "Tobe Awaka",
      "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Disc Irritation",
      "detail": "Back",
      "comment": "Awaka (back) has been ruled out for Friday's game against the Hawks.",
-     "date": "2026-11-12T21:40Z",
-     "return_date": "2026-11-14"
+     "date": "2026-11-14T15:00Z",
+     "return_date": "2026-11-14",
+     "value": 0.38
     },
     {
-     "player_id": "5095151",
-     "player_name": "Caleb Wilson",
+     "player_id": "4848625",
+     "player_name": "Dailyn Swain",
      "status": "Out",
-     "detail": "Right Hand",
-     "comment": "Wilson (hand) is expected to miss four to six weeks, Shams Charania of ESPN reports.",
-     "date": "2026-11-12T21:35Z",
-     "return_date": "2026-12-13"
+     "source": "official",
+     "reason": "G League - On Assignment",
+     "detail": "Right Back",
+     "comment": "Swain (back) is out for Friday's game against the Hawks.",
+     "date": "2026-11-14T15:00Z",
+     "return_date": "2026-11-14",
+     "value": 0.31
+    },
+    {
+     "player_id": "4898010",
+     "player_name": "Jaylin Sellers",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.28
+    },
+    {
+     "player_id": "2595516",
+     "player_name": "Norman Powell",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Low Back Injury Management",
+     "detail": "Back",
+     "comment": "Powell (back) is listed as questionable for Saturday's game against Minnesota.",
+     "date": "2026-11-14T17:57Z",
+     "return_date": "2026-11-14",
+     "value": 1.67
+    },
+    {
+     "player_id": "4397189",
+     "player_name": "Jalen Smith",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Left Finger Sprain",
+     "detail": "Left Finger Sprain",
+     "comment": "Smith (finger) is listed as questionable for Saturday's game at Minnesota.",
+     "date": "2026-11-14T18:00Z",
+     "return_date": "2026-11-14",
+     "value": 1.37
+    },
+    {
+     "player_id": "4278067",
+     "player_name": "Nic Claxton",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Left Hamstring Injury Management",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.92
     }
    ],
    "home_form": {
@@ -39026,27 +39942,233 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "home_player_values": [
+    {
+     "player_id": "4594268",
+     "player_name": "Anthony Edwards",
+     "value": 2.85
+    },
+    {
+     "player_id": "4397002",
+     "player_name": "Ayo Dosunmu",
+     "value": 1.78
+    },
+    {
+     "player_id": "4431671",
+     "player_name": "Jaden McDaniels",
+     "value": 1.78
+    },
+    {
+     "player_id": "3934673",
+     "player_name": "Donte DiVincenzo",
+     "value": 1.75
+    },
+    {
+     "player_id": "4432816",
+     "player_name": "LaMelo Ball",
+     "value": 1.62
+    },
+    {
+     "player_id": "4433247",
+     "player_name": "Jonathan Kuminga",
+     "value": 1.37
+    },
+    {
+     "player_id": "3032976",
+     "player_name": "Rudy Gobert",
+     "value": 1.27
+    },
+    {
+     "player_id": "4432847",
+     "player_name": "Terrence Shannon Jr.",
+     "value": 0.91
+    },
+    {
+     "player_id": "4592492",
+     "player_name": "Bones Hyland",
+     "value": 0.82
+    },
+    {
+     "player_id": "5279133",
+     "player_name": "Joan Beringer",
+     "value": 0.79
+    },
+    {
+     "player_id": "3136196",
+     "player_name": "Trey Lyles",
+     "value": 0.73
+    },
+    {
+     "player_id": "4432247",
+     "player_name": "Jaylen Clark",
+     "value": 0.58
+    },
+    {
+     "player_id": "4433569",
+     "player_name": "Johni Broome",
+     "value": 0.15
+    }
+   ],
    "home_injuries": [
     {
      "player_id": "4594268",
      "player_name": "Anthony Edwards",
      "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Right Knee Arthroscopy",
      "detail": "Right Knee Surgery",
      "comment": "Edwards underwent a successful arthroscopic procedure on his right knee Thursday, the Timberwolves announced.",
      "date": "2026-10-29T18:33Z",
-     "return_date": "2026-12-21"
+     "return_date": "2026-12-21",
+     "value": 2.85
     },
     {
      "player_id": "3934673",
      "player_name": "Donte DiVincenzo",
      "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Right Achilles Tendon Repair / Surgery",
      "detail": "Right Achilles Surgery",
      "comment": "DiVincenzo (Achilles) remains confident that he'll return during the 2026-27 season, Jon Krawczynski of The Athletic reports.",
      "date": "2026-10-05T20:53Z",
-     "return_date": "2027-04-02"
+     "return_date": "2027-04-02",
+     "value": 1.75
     }
    ]
   }
  ],
- "published_at_utc": "2026-11-14T14:59:27+00:00"
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-14_01_00PM.pdf",
+ "designation_play_rates": {
+  "by_status": {
+   "Available": {
+    "played": 0.8274,
+    "n": 2642
+   },
+   "Doubtful": {
+    "played": 0.0131,
+    "n": 535
+   },
+   "Out": {
+    "played": 0.0016,
+    "n": 18930
+   },
+   "Probable": {
+    "played": 0.9171,
+    "n": 1073
+   },
+   "Questionable": {
+    "played": 0.5092,
+    "n": 2824
+   }
+  },
+  "by_status_reason": {
+   "Available|g-league": {
+    "played": 0.458,
+    "n": 369
+   },
+   "Available|injury": {
+    "played": 0.9187,
+    "n": 1932
+   },
+   "Available|other": {
+    "played": 0.7099,
+    "n": 324
+   },
+   "Available|personal": {
+    "played": 0.6923,
+    "n": 13
+   },
+   "Available|rest": {
+    "played": 0.75,
+    "n": 4
+   },
+   "Doubtful|g-league": {
+    "played": 0.0155,
+    "n": 129
+   },
+   "Doubtful|injury": {
+    "played": 0.0129,
+    "n": 388
+   },
+   "Doubtful|other": {
+    "played": 0.0,
+    "n": 6
+   },
+   "Doubtful|personal": {
+    "played": 0.0,
+    "n": 3
+   },
+   "Doubtful|rest": {
+    "played": 0.0,
+    "n": 9
+   },
+   "Out|g-league": {
+    "played": 0.0046,
+    "n": 5849
+   },
+   "Out|injury": {
+    "played": 0.0003,
+    "n": 12266
+   },
+   "Out|other": {
+    "played": 0.0,
+    "n": 364
+   },
+   "Out|personal": {
+    "played": 0.0,
+    "n": 149
+   },
+   "Out|rest": {
+    "played": 0.0,
+    "n": 189
+   },
+   "Out|suspension": {
+    "played": 0.0,
+    "n": 113
+   },
+   "Probable|g-league": {
+    "played": 0.6667,
+    "n": 93
+   },
+   "Probable|injury": {
+    "played": 0.9422,
+    "n": 969
+   },
+   "Probable|other": {
+    "played": 0.8571,
+    "n": 7
+   },
+   "Probable|personal": {
+    "played": 0.75,
+    "n": 4
+   },
+   "Questionable|g-league": {
+    "played": 0.2386,
+    "n": 306
+   },
+   "Questionable|injury": {
+    "played": 0.5438,
+    "n": 2466
+   },
+   "Questionable|other": {
+    "played": 0.5517,
+    "n": 29
+   },
+   "Questionable|personal": {
+    "played": 0.4211,
+    "n": 19
+   },
+   "Questionable|rest": {
+    "played": 0.0,
+    "n": 4
+   }
+  },
+  "seasons": [
+   2025,
+   2026,
+   2027
+  ],
+  "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
+ },
+ "published_at_utc": "2026-11-14T18:11:01+00:00"
 }
