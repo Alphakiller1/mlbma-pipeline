@@ -116,7 +116,8 @@
     "zone_policy",
     "zones_basis",
     "window_seconds",
-    "event"
+    "event",
+    "official_injury_report"
   ],
   "identity": [
     "Cut",
@@ -273,7 +274,9 @@
     "home_split_record",
     "record",
     "moved",
-    "comment"
+    "comment",
+    "reason",
+    "practice"
   ],
   "descriptive": [
     "official_box",
@@ -1150,7 +1153,13 @@
     "home_power",
     "away_predictability",
     "home_predictability",
-    "power"
+    "power",
+    "away_player_values",
+    "home_player_values",
+    "designation_play_rates",
+    "by_status",
+    "by_status_reason",
+    "by_status_practice"
   ],
   "contextual_environment": [
     "away_rest_days",
@@ -1347,7 +1356,10 @@
       "$.seasons.*.teams",
       "$.predictability",
       "$.adjusted.teams",
-      "$.logs"
+      "$.logs",
+      "$.designation_play_rates.by_status",
+      "$.designation_play_rates.by_status_reason",
+      "$.designation_play_rates.by_status_practice"
     ],
     "exact_note": "Whole-path rules, anchored at the artifact root. `note` and `teams` are both named in model_derived_label, where they mean a model's own note and a model's team block. At the root of a published artifact they are the human-readable caveat and the container everything else hangs off, so they resolve by position rather than by name.",
     "exact": {

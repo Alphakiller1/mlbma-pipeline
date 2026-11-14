@@ -6293,3 +6293,9 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-detail-eyebrow,
 .ca-public-page__eyebrow,
 .ca-analysis-scope__eyebrow { display: none !important; }
+
+/* Injury reports: each player's value and the club's expected missing value
+   (owner 2026-11-13). */
+.ca-injury-value small,
+.ca-injury-total small { color: var(--text-muted); font-weight: 500; }
+.ca-injury-total td { font-weight: 700; border-top: 1px solid var(--border-default); }

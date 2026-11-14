@@ -3602,20 +3602,51 @@
     'Did Not Practice': ['DNP', 'c-weak'], 'Limited Practice': ['LP', 'c-mid']
   };
 
-  function injuryReport(entries) {
+  /* How often a player listed this way played (outputs/nfl_injury_value.py:
+     nflverse weekly reports joined to snap counts): game status with the
+     week's last practice when that rests on 20+ listings, else the status.
+     A practice-only listing is "no game status"; roster statuses (IR, PUP, a
+     suspension) sit. */
+  var NFL_PRACTICE_WORD = { DNP: 'did not practice', Limited: 'limited practice', Full: 'full practice' };
+  function nflPlays(game, entry) {
+    var rates = game.designation_play_rates;
+    if (!rates) return null;
+    var st = /^(Out|Doubtful|Questionable)$/.test(entry.status) ? entry.status
+      : /^(Did Not Practice|Limited Practice)$/.test(entry.status) ? 'None' : null;
+    if (!st) return null;
+    var label = st === 'None' ? 'no game status' : st;
+    var both = entry.practice && (rates.by_status_practice || {})[st + '|' + entry.practice];
+    if (both && both.n >= 20) {
+      return { played: both.played, n: both.n, basis: label + ', ' + NFL_PRACTICE_WORD[entry.practice] };
+    }
+    var one = (rates.by_status || {})[st];
+    return one && one.n >= 20 ? { played: one.played, n: one.n, basis: label } : null;
+  }
+
+  function injuryReport(game, entries) {
     if (!entries) return pending('Injury report not published for this club.');
     if (!entries.length) return pending('No designations reported.');
-    var rows = entries.map(function (entry) {
-      return '<li class="ca-avail-row"><span class="ca-avail-pos">' +
-        esc(entry.position || '—') + '</span><strong class="ca-avail-name">' +
-        esc(entry.name) + '</strong><span class="ca-avail-detail">' +
-        esc(entry.detail || 'No detail') + '</span><span class="ca-status-pill" data-status="' +
-        esc(String(entry.status || '').toLowerCase().replace(/\s+/g, '-')) + '">' +
-        esc(entry.status) + '</span></li>';
-    }).join('');
+    var players = entries.map(function (entry) {
+      var rate = nflPlays(game, entry);
+      return { player: entry.name, position: entry.position, status: entry.status, injury: entry.detail,
+        value: entry.value != null ? Number(entry.value) : null,
+        plays: rate ? rate.played : null, plays_n: rate ? rate.n : null, plays_basis: rate ? rate.basis : null };
+    });
+    var valueNote = 'Points of the spread his club gives up without him: his position\u2019s price on ' +
+      'closing lines (2019\u201325) times his snap share when he plays';
+    var playsNote = 'nflverse weekly reports joined to snap counts, 2019\u201325';
+    var rows = players.map(function (pl) {
+      return '<tr><td>' + esc(pl.player) +
+        (pl.position ? ' <span class="ca-lineup-player__position">' + esc(pl.position) + '</span>' : '') + '</td>' +
+        '<td><span class="ca-status-pill" data-status="' +
+        esc(String(pl.status || '').toLowerCase().replace(/\s+/g, '-')) + '">' + esc(pl.status) + '</span></td>' +
+        injuryPlaysCell(pl, playsNote) + injuryValueCell(pl, valueNote) +
+        '<td>' + esc(pl.injury ? titleCase(pl.injury) : 'Undisclosed') + '</td></tr>';
+    });
+    rows.push(injuryExpectedRow(players, 4));
     return '<details class="ca-injury-report"><summary><span class="ca-injury-report__label">Full Injury Report</span><span class="ca-injury-report__count">' +
-      entries.length + ' Player' + (entries.length === 1 ? '' : 's') +
-      '</span></summary><ul class="ca-avail-list">' + rows + '</ul></details>';
+      entries.length + ' Player' + (entries.length === 1 ? '' : 's') + '</span></summary>' +
+      nflSplitTable(['Status', 'Plays', 'Value', 'Injury'], rows, 'Player', false) + '</details>';
   }
 
   function lineupBoard(sport, game, side) {
@@ -3638,7 +3669,7 @@
       '" aria-selected="false" tabindex="-1" class="ca-lineup-tab" data-lineup-unit="defense">Defense</button>' +
       '</div>' + lineupUnit(game, side, 'offense', entries, offenseTab, offensePanel) +
       lineupUnit(game, side, 'defense', entries, defenseTab, defensePanel) +
-      injuryReport(entries) + '</article>';
+      injuryReport(game, entries) + '</article>';
   }
 
   function safeTotal() {
@@ -6517,6 +6548,57 @@ function seasonToggle(game) {
   var CFB_STATUS_TONE = { Out: 'c-poor', IR: 'c-poor', Doubtful: 'c-weak', Questionable: 'c-mid',
     'Day-To-Day': 'c-mid', Probable: 'c-good' };
 
+  /* Owner 2026-11-13: every player on an injury report carries his value -
+     the points of the spread his club gives up without him - and how often a
+     player listed the same way has played. The club's expected missing value
+     is each value times the chance he sits (a player ruled Out sits). The
+     sport's adapter supplies the figures and the words for the tooltips
+     (report.value_note, report.plays_note). */
+  function injuryPlaysCell(pl, note) {
+    if (pl.plays == null) return '<td class="num ca-vs-none">No history</td>';
+    var pct = Math.round(pl.plays * 100);
+    var title = 'Listed ' + (pl.plays_basis || pl.status) + ': played ' + pct + '%' +
+      (pl.plays_n ? ' of ' + pl.plays_n + ' listings' : '') + (note ? ' · ' + note : '');
+    return '<td class="num" title="' + esc(title) + '">' + pct + '%</td>';
+  }
+  function injuryValueCell(pl, note) {
+    if (pl.value == null) return '<td class="num ca-vs-none">Not rated</td>';
+    var v = Number(pl.value);
+    return '<td class="num ca-injury-value" title="' + esc((note || 'Points of the spread his club gives up without him')) +
+      '">' + esc((v < 0 ? '−' : '') + Math.abs(v).toFixed(1)) + '<small> pts</small></td>';
+  }
+  function injurySits(pl) {
+    if (pl.plays != null) return 1 - pl.plays;
+    return /^(out|ir|injured reserve|suspended|suspension|out for season|out indefinitely)\b/i.test(pl.status || '') ? 1 : null;
+  }
+  // Σ value × chance he sits, over the listed players both are known for.
+  function injuryExpected(players) {
+    var total = 0, counted = 0, open = 0;
+    players.forEach(function (pl) {
+      var sits = injurySits(pl);
+      if (pl.value == null || sits == null) { if (pl.value != null) open++; return; }
+      total += Math.max(0, Number(pl.value)) * sits;
+      counted++;
+    });
+    return { total: total, counted: counted, open: open };
+  }
+  function injuryExpectedRow(players, span, label) {
+    var e = injuryExpected(players);
+    if (!e.counted) return '';
+    return '<tr class="ca-injury-total"><td>' + esc(label || 'Expected Missing') + '</td><td class="num" colspan="' + span +
+      '" title="' + esc('Each listed player\u2019s value times his chance of sitting, summed' +
+        (e.open ? '; ' + e.open + ' listed without a play history not counted' : '')) + '">' +
+      esc(e.total.toFixed(1)) + '<small> pts</small></td></tr>';
+  }
+
+  // "2026-11-22" reads "Nov 22"; a date already in words is left as it is.
+  function injuryDate(text) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(text || ''));
+    if (!m) return String(text || '');
+    return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][Number(m[2]) - 1] +
+      ' ' + Number(m[3]);
+  }
+
   function cfbInjuryPanel(sport, game, side) {
     var report = game[side + '_injuries'];
     var head = '<section class="ca-form-panel ca-cfb-panel ca-cfb-injury-panel"><h3>' +
@@ -6535,16 +6617,22 @@ function seasonToggle(game) {
     var summary = ['Out', 'IR', 'Doubtful', 'Questionable', 'Probable'].filter(function (k) {
       return counts[k];
     }).map(function (k) { return counts[k] + ' ' + k; }).join(' · ');
+    var rated = players.some(function (pl) { return pl.plays != null; });
+    var valued = players.some(function (pl) { return pl.value != null; });
     var rows = players.map(function (pl) {
       var tone = CFB_STATUS_TONE[pl.status] || '';
       return '<tr' + (pl.detail ? ' title="' + esc(pl.detail) + '"' : '') + '><td>' + esc(pl.player) +
         (pl.position ? ' <span class="ca-lineup-player__position">' + esc(pl.position) + '</span>' : '') +
         '</td><td><span class="ca-rank ' + tone + '">' + esc(pl.status) + '</span></td>' +
+        (rated ? injuryPlaysCell(pl, report.plays_note) : '') +
+        (valued ? injuryValueCell(pl, report.value_note) : '') +
         '<td>' + esc(pl.injury || 'Undisclosed') + '</td>' +
-        '<td>' + esc(pl['return'] ? 'Return ' + pl['return'] : (pl.updated || 'Date Not Listed')) + '</td></tr>';
+        '<td>' + esc(pl['return'] ? 'Return ' + injuryDate(pl['return']) : (pl.updated ? injuryDate(pl.updated) : 'Date Not Listed')) + '</td></tr>';
     });
+    if (valued) rows.push(injuryExpectedRow(players, (rated ? 1 : 0) + 4));
+    var heads = ['Status'].concat(rated ? ['Plays'] : []).concat(valued ? ['Value'] : []).concat(['Injury', 'Updated']);
     return head + '<p class="ca-lineup-context">' + esc(summary + ' · ' + (report.sources || '')) + '</p>' +
-      nflSplitTable(['Status', 'Injury', 'Updated'], rows, 'Player', false) + '</section>';
+      nflSplitTable(heads, rows, 'Player', false) + '</section>';
   }
 
   /* ---------------------------------------------------------------------
@@ -8587,6 +8675,35 @@ function seasonToggle(game) {
     return cbbPanel(title,cbbSeason(game)+' · listed heights'+startSource,
       rows.length?cbbTable(['Position','Starters (by starts)','Whole roster'],rows,'ca-cbb-factor-table'):pending('Reported heights are not available.'));
   }
+  /* What a listed player is worth to the spread (scripts/fit_cbb_injury_value.py,
+     outputs/cbb_injury_value.json): closing lines over 2024-25 and 2025-26
+     priced an absent regular at role x minutes/40 plus star x (game score)^2/10,
+     the game score read from his Basketball Quant line - points, shooting,
+     rebounds and assists per game (makes and attempts are season totals).
+     A college report has no history of its own yet, so how often a player
+     listed this way played is the NBA official report's record (nba-model
+     designation_rates.json, 2024-25 to 2026-27); a game-time decision reads
+     as Questionable. */
+  var CBB_INJURY_VALUE = { role: 0.4411, star: 0.0233 };
+  var CBB_PLAY_RATES = { Questionable: [0.5092, 2824], Doubtful: [0.0131, 535], Probable: [0.9171, 1073],
+    Out: [0.002, 18930] };
+  function cbbPlayerValue(game, side, playerId) {
+    var team = cbbTeam(game, side);
+    var p = team && (team.players || []).find(function (x) { return String(x.athlete_id) === String(playerId); });
+    var g = p && Number(p.G);
+    if (!p || !(g > 0)) return null;
+    var minutes = (Number(p.Min_pct) || 0) / 100 * 40;
+    var gs = (Number(p.Pts) || 0) + 0.4 * (Number(p.FGM) || 0) / g - 0.7 * (Number(p.FGA) || 0) / g -
+      0.4 * ((Number(p.FTA) || 0) - (Number(p.FTM) || 0)) / g + 0.45 * (Number(p.Reb) || 0) + 0.7 * (Number(p.Ast) || 0);
+    gs = Math.max(gs, 0);
+    return CBB_INJURY_VALUE.role * minutes / 40 + CBB_INJURY_VALUE.star * gs * gs / 10;
+  }
+  function cbbPlays(status) {
+    var key = status === 'Game Time Decision' ? 'Questionable' : status;
+    var r = CBB_PLAY_RATES[key];
+    return r ? { played: r[0], n: r[1], basis: key + ' (NBA official report record)' } : null;
+  }
+
   function cbbAvailability(sport,game,side) {
     var title = cbbSchool(game,side) + ' Availability';
     var asOf = game.cbb_availability_as_of;
@@ -8601,22 +8718,31 @@ function seasonToggle(game) {
       return /^https:\/\/www\.(covers\.com|actionnetwork\.com|rotowire\.com)\//.test(url || '')
         ? '<a href="'+esc(url)+'">'+esc(name)+'</a>' : esc(name);
     }
-    var rows = players.map(function (player) {
+    var valued = players.map(function (player) {
+      var rate = cbbPlays(player.status), value = cbbPlayerValue(game, side, player.player_id);
+      return { status: player.status, value: value == null ? null : Math.round(value * 100) / 100,
+        plays: rate ? rate.played : null, plays_n: rate ? rate.n : null, plays_basis: rate ? rate.basis : null };
+    });
+    var valueNote = 'Points of the spread his school gives up without him: closing lines (2024\u201326) ' +
+      'priced his minutes and box-score production';
+    var rows = players.map(function (player, i) {
       var tone = player.status === 'Game Time Decision' ? 'c-mid' : availability.isOut(player.status) ? 'c-poor' : CFB_STATUS_TONE[player.status] || 'c-na';
       var source = sourceLink(player.source, player.source_url) +
         (player.updated ? ' · ' + esc(player.updated.slice(0,10)) : '');
       return '<tr><td>' + esc(player.player) +
         (player.position ? ' <span class="ca-lineup-player__position">' + esc(player.position) + '</span>' : '') +
-        '</td><td><span class="ca-rank ' + tone + '">' + esc(player.status) + '</span></td><td>' +
+        '</td><td><span class="ca-rank ' + tone + '">' + esc(player.status) + '</span></td>' +
+        injuryPlaysCell(valued[i], 'no college history yet') + injuryValueCell(valued[i], valueNote) + '<td>' +
         esc(player.injury || 'Undisclosed') +
         (player.detail ? '<small class="ca-cbb-count">'+esc(player.detail)+'</small>' : '') +
         '<small class="ca-cbb-count">'+source+'</small></td></tr>';
     });
+    if (rows.length) rows.push(injuryExpectedRow(valued, 4));
     var count = fixture[side + '_listings'];
     var empty = count === 0 ? 'Covers lists no injuries for this school.' :
       count > 0 ? 'The matchup report lists entries awaiting a verified roster match.' :
         'No checked public source lists an injury for this school.';
-    return cbbPanel(title,caption,(rows.length ? nflSplitTable(['Status','Injury'],rows,'Player',false) :
+    return cbbPanel(title,caption,(rows.length ? nflSplitTable(['Status','Plays','Value','Injury'],rows,'Player',false) :
       pending(empty)) +
       (fixture.source_url ? '<p class="ca-cbb-note ca-cbb-cite">'+sourceLink('Covers matchup injury report',fixture.source_url)+
         (fixture.retrieved_at_utc ? ' · checked '+esc(nbaEvidenceStamp(fixture.retrieved_at_utc)) : '')+'</p>' : ''));

@@ -163,6 +163,9 @@ def project_slate(sport: str, producer: dict) -> dict:
         "data_through_utc": producer.get("data_through_utc") or producer.get("data_through"),
         "games": [project_game(sport, g if isinstance(g, dict) else {}) for g in games],
     }
+    # How often a player listed each way has played (NFL: nfl_injury_value).
+    if isinstance(producer.get("designation_play_rates"), dict):
+        out["designation_play_rates"] = producer["designation_play_rates"]
     assert_clean(out)
     return out
 

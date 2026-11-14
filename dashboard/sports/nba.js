@@ -66,16 +66,53 @@
     return { players: now, basis: seasonLabel(g.season) + ' Per Game' };
   }
 
-  function injuryReport(list) {
+  /* Why a player is listed, from the official report's reason (nba-model
+     official_report.Row.category). */
+  function reasonCategory(reason) {
+    var r = String(reason || '').toLowerCase();
+    if (/^injury/.test(r)) return 'injury';
+    if (/^g league/.test(r)) return 'g-league';
+    if (/rest/.test(r)) return 'rest';
+    if (/personal/.test(r)) return 'personal';
+    if (/suspension/.test(r)) return 'suspension';
+    return 'other';
+  }
+
+  /* How often a player listed this way played (nba-model
+     scripts/designation_rates.py: the official report an hour before tip
+     joined to box scores). The status-and-reason rate when it rests on at
+     least 20 listings, else the status rate; none for ESPN's own
+     "Day-To-Day", which is not an official designation. */
+  var RATE_FLOOR = 20;
+  function playRate(rates, status, reason, official) {
+    if (!rates || !official) return null;
+    var both = (rates.by_status_reason || {})[status + '|' + reasonCategory(reason)];
+    if (both && both.n >= RATE_FLOOR) return { played: both.played, n: both.n, basis: status + ', ' + reasonCategory(reason) };
+    var one = (rates.by_status || {})[status];
+    return one && one.n >= RATE_FLOOR ? { played: one.played, n: one.n, basis: status } : null;
+  }
+
+  function injuryReport(list, rates) {
     var order = { Out: 0, Doubtful: 1, Questionable: 2, 'Day-To-Day': 3, Probable: 4 };
+    var official = false;
     var players = (list || []).map(function (i) {
-      return { player: i.player_name, status: i.status, injury: i.detail || null,
-        detail: i.comment || null, 'return': i.return_date || null,
-        updated: i.date ? String(i.date).slice(0, 10) : null, player_id: i.player_id || null };
+      var isOfficial = i.source === 'official';
+      official = official || isOfficial;
+      var rate = playRate(rates, i.status, i.reason, isOfficial);
+      return { player: i.player_name, status: i.status, injury: i.detail || (i.reason || '').replace(/^[^-]*-\s*/, '') || null,
+        detail: [i.reason, i.comment].filter(Boolean).join(' · ') || null, 'return': i.return_date || null,
+        updated: i.date ? String(i.date).slice(0, 10) : null, player_id: i.player_id || null,
+        value: i.value != null ? Number(i.value) : null, official: isOfficial,
+        plays: rate ? rate.played : null, plays_n: rate ? rate.n : null, plays_basis: rate ? rate.basis : null };
     }).sort(function (a, b) {
-      return (order[a.status] == null ? 9 : order[a.status]) - (order[b.status] == null ? 9 : order[b.status]);
+      return (order[a.status] == null ? 9 : order[a.status]) - (order[b.status] == null ? 9 : order[b.status]) ||
+        (b.value || 0) - (a.value || 0);
     });
-    return { players: players, sources: 'ESPN injury report' };
+    return { players: players, sources: official ? 'NBA official injury report, ESPN' : 'ESPN injury report',
+      value_note: 'Points of tonight’s margin his club gives up without him: the player model (RAPM ' +
+        '× expected minutes) with him minus without him, his minutes going to the next men up',
+      plays_note: rates && rates.seasons ? 'official report an hour before tip, joined to box scores, ' +
+        rates.seasons.length + ' seasons' : null };
   }
 
   // The injury feed names no position; the club's player lines do.
@@ -147,7 +184,7 @@
       var rot = chooseRotation(g, side);
       mapped[side + '_rotation'] = rot.players;
       mapped[side + '_rotation_basis'] = rot.basis;
-      mapped[side + '_injuries'] = slate.fixture_only ? null : injuryReport(g[side + '_injuries']);
+      mapped[side + '_injuries'] = slate.fixture_only ? null : injuryReport(g[side + '_injuries'], slate.designation_play_rates);
       mapped[side + '_availability_list'] = slate.fixture_only ? null : availabilityList(g[side + '_injuries'], positionsOf(g, side));
       mapped[side + '_game_log'] = g[side + '_game_log'] || [];
       // How the club plays and who it plays (nba-model profiles.py), and the
@@ -261,10 +298,31 @@
     }).catch(function () { return null; });
   }
 
+  /* ESPN's live list, keeping what the published slate knows that ESPN does
+     not: a player's official designation (ESPN's later "Out" is newer news
+     and wins; its "Day-To-Day" does not), the officially listed players ESPN
+     omits, and every player's value. */
   function withLiveInjuries(slate, live) {
     if (!live) return slate;
     slate.games.forEach(function (g) {
-      ['away', 'home'].forEach(function (side) { g[side + '_injuries'] = live.teams[g[side]] || []; });
+      ['away', 'home'].forEach(function (side) {
+        var published = g[side + '_injuries'] || [], byId = {}, values = {}, seen = {};
+        published.forEach(function (r) { if (r.player_id) byId[r.player_id] = r; });
+        (g[side + '_player_values'] || []).forEach(function (v) { values[v.player_id] = v.value; });
+        var merged = (live.teams[g[side]] || []).map(function (r) {
+          var pub = byId[r.player_id], official = !!pub && pub.source === 'official';
+          seen[r.player_id] = true;
+          var row = {};
+          Object.keys(r).forEach(function (k) { row[k] = r[k]; });
+          row.status = official && !/^out$/i.test(r.status) ? pub.status : r.status;
+          row.source = official ? 'official' : 'espn';
+          row.reason = pub ? pub.reason || null : null;
+          row.value = pub && pub.value != null ? pub.value : (values[r.player_id] != null ? values[r.player_id] : null);
+          return row;
+        });
+        published.forEach(function (r) { if (r.source === 'official' && !seen[r.player_id]) merged.push(r); });
+        g[side + '_injuries'] = merged;
+      });
     });
     return slate;
   }
