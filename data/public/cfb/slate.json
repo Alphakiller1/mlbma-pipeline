@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 11,
-  "generated_at_utc": "2026-11-14T18:46:49Z",
+  "generated_at_utc": "2026-11-14T19:07:38Z",
   "data_through_utc": "2026-11-14T01:25:34Z",
   "games": [
     {
@@ -1996,7 +1996,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 24.55,
+          "value": 24.54,
           "rank": 116,
           "of": 138
         },
@@ -7304,7 +7304,7 @@
           "of": 138
         },
         "defense": {
-          "value": 29.55,
+          "value": 29.54,
           "rank": 137,
           "of": 138
         },
@@ -11854,7 +11854,7 @@
             "injury": "Upper Body",
             "updated": "Sat, Oct 10",
             "source": "RotoWire + Covers",
-            "return": "3/1/2027",
+            "return": "2027-03-01",
             "value": 3.04,
             "missed": 5,
             "value_recent": 0.0
@@ -11866,7 +11866,7 @@
             "injury": "Undisclosed",
             "updated": "Mon, Aug 24",
             "source": "RotoWire + Covers",
-            "return": "3/1/2027",
+            "return": "2027-03-01",
             "value": null
           },
           {
@@ -14331,7 +14331,7 @@
             "injury": "Knee",
             "updated": "Tue, Oct 6",
             "source": "RotoWire + Covers",
-            "return": "3/1/2027",
+            "return": "2027-03-01",
             "value": 2.41,
             "missed": 7,
             "value_recent": 0.0
@@ -19031,7 +19031,7 @@
           "of": 138
         },
         "offense": {
-          "value": 31.62,
+          "value": 31.61,
           "rank": 65,
           "of": 138
         },
@@ -22645,126 +22645,126 @@
           "depth_rank": 1
         },
         {
-          "player_id": "5084769",
-          "player_name": "Angel H Flores",
+          "player_id": "5295480",
+          "player_name": "Marcus Beamon",
           "position": "QB",
-          "ranked": true,
+          "ranked": false,
           "line": {
-            "attempts": 92,
-            "completions": 54,
-            "interceptions": 2,
+            "attempts": 11,
+            "completions": 6,
+            "interceptions": 0,
             "completion_pct": {
               "label": "Completion %",
-              "value": 0.587,
+              "value": 0.5455,
               "better": "high",
               "format": "pct",
-              "rank": 146,
+              "rank": 186,
               "of": 206
             },
             "yards_per_attempt": {
               "label": "Yards per attempt",
-              "value": 5.163,
+              "value": 4.3636,
               "better": "high",
               "format": "num",
-              "rank": 198,
+              "rank": 206,
               "of": 206
             },
             "td_rate": {
               "label": "TD rate",
-              "value": 0.0217,
+              "value": 0.0,
               "better": "high",
               "format": "pct",
-              "rank": 189,
+              "rank": 206,
               "of": 206
             },
             "int_rate": {
               "label": "INT rate",
-              "value": 0.0217,
+              "value": 0.0,
               "better": "low",
               "format": "pct",
-              "rank": 96,
+              "rank": 1,
               "of": 206
             },
             "yards": {
               "label": "Passing yards",
-              "value": 475.0,
+              "value": 48.0,
               "better": "high",
               "format": "int",
-              "rank": 173,
+              "rank": 207,
               "of": 206
             },
             "touchdowns": {
               "label": "Passing TDs",
-              "value": 2.0,
+              "value": 0.0,
               "better": "high",
               "format": "int",
-              "rank": 177,
+              "rank": 206,
               "of": 206
             }
           },
           "epa_splits": {
             "all": {
               "label": "All plays EPA per play",
-              "value": 0.017,
+              "value": 0.025,
               "better": "high",
               "format": "ppa",
-              "rank": 172,
+              "rank": 168,
               "of": 206
             },
             "pass": {
               "label": "Dropbacks EPA per play",
-              "value": -0.142,
+              "value": 0.296,
               "better": "high",
               "format": "ppa",
-              "rank": 194,
+              "rank": 64,
               "of": 205
             },
             "rush": {
               "label": "Rushes EPA per play",
-              "value": 0.201,
+              "value": -1.605,
               "better": "high",
               "format": "ppa",
-              "rank": 93,
+              "rank": 203,
               "of": 203
             },
             "standardDowns": {
               "label": "Standard downs EPA per play",
-              "value": -0.034,
+              "value": 0.846,
               "better": "high",
               "format": "ppa",
-              "rank": 154,
+              "rank": 4,
               "of": 206
             },
             "passingDowns": {
               "label": "Passing downs EPA per play",
-              "value": 0.104,
+              "value": -0.591,
               "better": "high",
               "format": "ppa",
-              "rank": 163,
+              "rank": 204,
               "of": 205
             },
             "firstDown": {
               "label": "1st down EPA per play",
-              "value": -0.377,
+              "value": 0.822,
               "better": "high",
               "format": "ppa",
-              "rank": 199,
+              "rank": 3,
               "of": 205
             },
             "secondDown": {
               "label": "2nd down EPA per play",
-              "value": 0.153,
+              "value": 0.011,
               "better": "high",
               "format": "ppa",
-              "rank": 112,
+              "rank": 169,
               "of": 204
             },
             "thirdDown": {
               "label": "3rd down EPA per play",
-              "value": 0.082,
+              "value": -0.347,
               "better": "high",
               "format": "ppa",
-              "rank": 185,
+              "rank": 201,
               "of": 205
             }
           },
@@ -22851,7 +22851,9 @@
             "format": "int",
             "rank": 126,
             "of": 562
-          }
+          },
+          "status": "Out For Season",
+          "injury": "Ankle"
         },
         {
           "player_id": "5157391",
@@ -23562,7 +23564,20 @@
         }
       },
       "home_injuries": {
-        "players": [],
+        "players": [
+          {
+            "player": "A. Flores",
+            "position": "QB",
+            "status": "Out For Season",
+            "injury": "Ankle",
+            "updated": "Mon, Oct 19",
+            "source": "RotoWire + Covers",
+            "return": "2027-03-01",
+            "value": 3.66,
+            "missed": 2,
+            "value_recent": 1.46
+          }
+        ],
         "sources": "Covers, RotoWire"
       },
       "away_starter": "Jackson Sharman",
@@ -34481,6 +34496,132 @@
           "depth_rank": 1
         },
         {
+          "player_id": "5207640",
+          "player_name": "Corey Dailey",
+          "position": "QB",
+          "ranked": true,
+          "line": {
+            "attempts": 69,
+            "completions": 33,
+            "interceptions": 4,
+            "completion_pct": {
+              "label": "Completion %",
+              "value": 0.4783,
+              "better": "high",
+              "format": "pct",
+              "rank": 204,
+              "of": 206
+            },
+            "yards_per_attempt": {
+              "label": "Yards per attempt",
+              "value": 6.8551,
+              "better": "high",
+              "format": "num",
+              "rank": 138,
+              "of": 206
+            },
+            "td_rate": {
+              "label": "TD rate",
+              "value": 0.058,
+              "better": "high",
+              "format": "pct",
+              "rank": 72,
+              "of": 206
+            },
+            "int_rate": {
+              "label": "INT rate",
+              "value": 0.058,
+              "better": "low",
+              "format": "pct",
+              "rank": 205,
+              "of": 206
+            },
+            "yards": {
+              "label": "Passing yards",
+              "value": 473.0,
+              "better": "high",
+              "format": "int",
+              "rank": 174,
+              "of": 206
+            },
+            "touchdowns": {
+              "label": "Passing TDs",
+              "value": 4.0,
+              "better": "high",
+              "format": "int",
+              "rank": 144,
+              "of": 206
+            }
+          },
+          "epa_splits": {
+            "all": {
+              "label": "All plays EPA per play",
+              "value": 0.007,
+              "better": "high",
+              "format": "ppa",
+              "rank": 175,
+              "of": 206
+            },
+            "pass": {
+              "label": "Dropbacks EPA per play",
+              "value": 0.027,
+              "better": "high",
+              "format": "ppa",
+              "rank": 166,
+              "of": 205
+            },
+            "rush": {
+              "label": "Rushes EPA per play",
+              "value": 0.58,
+              "better": "high",
+              "format": "ppa",
+              "rank": 18,
+              "of": 203
+            },
+            "standardDowns": {
+              "label": "Standard downs EPA per play",
+              "value": -0.062,
+              "better": "high",
+              "format": "ppa",
+              "rank": 163,
+              "of": 206
+            },
+            "passingDowns": {
+              "label": "Passing downs EPA per play",
+              "value": 0.082,
+              "better": "high",
+              "format": "ppa",
+              "rank": 168,
+              "of": 205
+            },
+            "firstDown": {
+              "label": "1st down EPA per play",
+              "value": 0.168,
+              "better": "high",
+              "format": "ppa",
+              "rank": 46,
+              "of": 205
+            },
+            "secondDown": {
+              "label": "2nd down EPA per play",
+              "value": 0.075,
+              "better": "high",
+              "format": "ppa",
+              "rank": 147,
+              "of": 204
+            },
+            "thirdDown": {
+              "label": "3rd down EPA per play",
+              "value": 0.165,
+              "better": "high",
+              "format": "ppa",
+              "rank": 176,
+              "of": 205
+            }
+          },
+          "depth_rank": 2
+        },
+        {
           "player_id": "5208095",
           "player_name": "Mason Heintschel",
           "position": "QB",
@@ -34604,7 +34745,9 @@
               "of": 205
             }
           },
-          "depth_rank": 2
+          "status": "Out For Season",
+          "injury": "Knee",
+          "depth_rank": 3
         }
       ],
       "home_defense_splits": {
@@ -34804,7 +34947,9 @@
             "format": "int",
             "rank": 426,
             "of": 562
-          }
+          },
+          "status": "Out For Season",
+          "injury": "Knee"
         }
       ],
       "home_power": {
@@ -35398,7 +35543,20 @@
         }
       },
       "home_injuries": {
-        "players": [],
+        "players": [
+          {
+            "player": "M. Heintschel",
+            "position": "QB",
+            "status": "Out For Season",
+            "injury": "Knee",
+            "updated": "Sat, Oct 17",
+            "source": "RotoWire + Covers",
+            "return": "2027-03-01",
+            "value": 2.55,
+            "missed": 4,
+            "value_recent": 0.0
+          }
+        ],
         "sources": "Covers, RotoWire"
       },
       "away_starter": "Ashton Daniels",
@@ -39393,7 +39551,7 @@
             "injury": "Leg",
             "updated": "Mon, Oct 19",
             "source": "RotoWire + Covers",
-            "return": "3/1/2027",
+            "return": "2027-03-01",
             "value": 2.96,
             "missed": 4,
             "value_recent": 0.0
@@ -43389,7 +43547,7 @@
       "venue_city": "Ames, IA",
       "roof": "Outdoor",
       "broadcast": "TNT",
-      "weather_temp": 43,
+      "weather_temp": 45,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -47311,7 +47469,7 @@
       "venue_city": "Miami Gardens, FL",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 70,
+      "weather_temp": 72,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -51207,7 +51365,7 @@
       "away_record": "8-2",
       "home_record": "4-5",
       "away_score": "13",
-      "home_score": "17",
+      "home_score": "20",
       "venue": "Pratt & Whitney Stadium",
       "venue_city": "East Hartford, CT",
       "roof": "Outdoor",
@@ -55149,7 +55307,19 @@
         }
       },
       "home_injuries": {
-        "players": [],
+        "players": [
+          {
+            "player": "J. Merklinger",
+            "position": "QB",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "updated": "Sun, Oct 11",
+            "detail": "Merklinger is dealing with an undisclosed injury, and it is unknown if he will face Minutemen on Friday , October 23rd.",
+            "source": "RotoWire + Covers",
+            "return": "2026-11-14",
+            "value": null
+          }
+        ],
         "sources": "Covers, RotoWire"
       },
       "away_starter": "JC Evans",
@@ -55173,13 +55343,13 @@
       "home_color": "#ba0c2f",
       "away_record": "6-3",
       "home_record": "6-3",
-      "away_score": "6",
+      "away_score": "13",
       "home_score": "14",
       "venue": "Ohio Stadium",
       "venue_city": "Columbus, OH",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 42,
+      "weather_temp": 41,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -58199,6 +58369,67 @@
           "depth_rank": 1
         },
         {
+          "player_id": "5146824",
+          "player_name": "Tavien St. Clair",
+          "position": "QB",
+          "ranked": false,
+          "line": {
+            "attempts": 7,
+            "completions": 5,
+            "interceptions": 1,
+            "completion_pct": {
+              "label": "Completion %",
+              "value": 0.7143,
+              "better": "high",
+              "format": "pct",
+              "rank": 11,
+              "of": 206
+            },
+            "yards_per_attempt": {
+              "label": "Yards per attempt",
+              "value": 7.4286,
+              "better": "high",
+              "format": "num",
+              "rank": 94,
+              "of": 206
+            },
+            "td_rate": {
+              "label": "TD rate",
+              "value": 0.1429,
+              "better": "high",
+              "format": "pct",
+              "rank": 2,
+              "of": 206
+            },
+            "int_rate": {
+              "label": "INT rate",
+              "value": 0.1429,
+              "better": "low",
+              "format": "pct",
+              "rank": 207,
+              "of": 206
+            },
+            "yards": {
+              "label": "Passing yards",
+              "value": 52.0,
+              "better": "high",
+              "format": "int",
+              "rank": 207,
+              "of": 206
+            },
+            "touchdowns": {
+              "label": "Passing TDs",
+              "value": 1.0,
+              "better": "high",
+              "format": "int",
+              "rank": 193,
+              "of": 206
+            }
+          },
+          "epa_splits": {},
+          "depth_rank": 2
+        },
+        {
           "player_id": "5079712",
           "player_name": "Julian Sayin",
           "position": "QB",
@@ -58322,7 +58553,9 @@
               "of": 205
             }
           },
-          "depth_rank": 2
+          "status": "Out",
+          "injury": "Arm",
+          "depth_rank": 3
         }
       ],
       "home_defense_splits": {
@@ -58524,7 +58757,9 @@
             "format": "int",
             "rank": 556,
             "of": 562
-          }
+          },
+          "status": "Out",
+          "injury": "Arm"
         }
       ],
       "home_power": {
@@ -59120,6 +59355,19 @@
       "home_injuries": {
         "players": [
           {
+            "player": "J. Sayin",
+            "position": "QB",
+            "status": "Out",
+            "injury": "Arm",
+            "updated": "Wed, Oct 21",
+            "detail": "Sayin has been out of the lineup due to a arm injury, and he will miss an undetermined length of time.",
+            "source": "RotoWire + Covers",
+            "return": "2026-11-28",
+            "value": 3.17,
+            "missed": 2,
+            "value_recent": 0.82
+          },
+          {
             "player": "J. Jackson",
             "position": "RB",
             "status": "Out",
@@ -59155,14 +59403,14 @@
       "home_color": "#cc0000",
       "away_record": "4-5",
       "home_record": "4-5",
-      "away_score": "6",
-      "home_score": "14",
+      "away_score": "13",
+      "home_score": "21",
       "venue": "Carter-Finley Stadium",
       "venue_city": "Raleigh, NC",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
       "weather_temp": 53,
-      "weather_cond": "Sunny",
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -61697,6 +61945,18 @@
       "away_injuries": {
         "players": [
           {
+            "player": "A. Odom",
+            "position": "QB",
+            "status": "Out For Season",
+            "injury": "Shoulder",
+            "updated": "Sun, Oct 18",
+            "source": "RotoWire + Covers",
+            "return": "2027-03-01",
+            "value": 1.48,
+            "missed": 5,
+            "value_recent": 0.0
+          },
+          {
             "player": "Shavane Anderson",
             "position": "RB",
             "status": "Out",
@@ -63143,7 +63403,7 @@
       "venue_city": "Dallas, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN, Disney+",
-      "weather_temp": 64,
+      "weather_temp": 62,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -70381,7 +70641,7 @@
           "of": 138
         },
         "offense": {
-          "value": 29.1,
+          "value": 29.09,
           "rank": 91,
           "of": 138
         },
@@ -71001,7 +71261,7 @@
       "away_record": "2-7",
       "home_record": "6-3",
       "away_score": "10",
-      "home_score": "0",
+      "home_score": "3",
       "venue": "Memorial Stadium (Clemson, SC)",
       "venue_city": "Clemson, SC",
       "roof": "Outdoor",
@@ -74980,7 +75240,7 @@
       "roof": "Outdoor",
       "broadcast": "BTN",
       "weather_temp": 44,
-      "weather_cond": "Cloudy",
+      "weather_cond": "A shower",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -77934,6 +78194,132 @@
           "depth_rank": 1
         },
         {
+          "player_id": "5172031",
+          "player_name": "Sean Ashenfelder",
+          "position": "QB",
+          "ranked": false,
+          "line": {
+            "attempts": 10,
+            "completions": 3,
+            "interceptions": 1,
+            "completion_pct": {
+              "label": "Completion %",
+              "value": 0.3,
+              "better": "high",
+              "format": "pct",
+              "rank": 207,
+              "of": 206
+            },
+            "yards_per_attempt": {
+              "label": "Yards per attempt",
+              "value": 5.0,
+              "better": "high",
+              "format": "num",
+              "rank": 200,
+              "of": 206
+            },
+            "td_rate": {
+              "label": "TD rate",
+              "value": 0.0,
+              "better": "high",
+              "format": "pct",
+              "rank": 206,
+              "of": 206
+            },
+            "int_rate": {
+              "label": "INT rate",
+              "value": 0.1,
+              "better": "low",
+              "format": "pct",
+              "rank": 207,
+              "of": 206
+            },
+            "yards": {
+              "label": "Passing yards",
+              "value": 50.0,
+              "better": "high",
+              "format": "int",
+              "rank": 207,
+              "of": 206
+            },
+            "touchdowns": {
+              "label": "Passing TDs",
+              "value": 0.0,
+              "better": "high",
+              "format": "int",
+              "rank": 206,
+              "of": 206
+            }
+          },
+          "epa_splits": {
+            "all": {
+              "label": "All plays EPA per play",
+              "value": -0.964,
+              "better": "high",
+              "format": "ppa",
+              "rank": 207,
+              "of": 206
+            },
+            "pass": {
+              "label": "Dropbacks EPA per play",
+              "value": -1.004,
+              "better": "high",
+              "format": "ppa",
+              "rank": 206,
+              "of": 205
+            },
+            "rush": {
+              "label": "Rushes EPA per play",
+              "value": -0.643,
+              "better": "high",
+              "format": "ppa",
+              "rank": 189,
+              "of": 203
+            },
+            "standardDowns": {
+              "label": "Standard downs EPA per play",
+              "value": -1.555,
+              "better": "high",
+              "format": "ppa",
+              "rank": 207,
+              "of": 206
+            },
+            "passingDowns": {
+              "label": "Passing downs EPA per play",
+              "value": -0.491,
+              "better": "high",
+              "format": "ppa",
+              "rank": 203,
+              "of": 205
+            },
+            "firstDown": {
+              "label": "1st down EPA per play",
+              "value": -0.998,
+              "better": "high",
+              "format": "ppa",
+              "rank": 206,
+              "of": 205
+            },
+            "secondDown": {
+              "label": "2nd down EPA per play",
+              "value": -0.662,
+              "better": "high",
+              "format": "ppa",
+              "rank": 205,
+              "of": 204
+            },
+            "thirdDown": {
+              "label": "3rd down EPA per play",
+              "value": -0.478,
+              "better": "high",
+              "format": "ppa",
+              "rank": 205,
+              "of": 205
+            }
+          },
+          "depth_rank": 2
+        },
+        {
           "player_id": "4870900",
           "player_name": "Dylan Lonergan",
           "position": "QB",
@@ -78057,7 +78443,9 @@
               "of": 205
             }
           },
-          "depth_rank": 2
+          "status": "Out",
+          "injury": "Head",
+          "depth_rank": 3
         }
       ],
       "home_defense_splits": {
@@ -78257,7 +78645,9 @@
             "format": "int",
             "rank": 548,
             "of": 562
-          }
+          },
+          "status": "Out",
+          "injury": "Head"
         }
       ],
       "home_power": {
@@ -78287,7 +78677,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 21.04,
+          "value": 21.03,
           "rank": 24,
           "of": 138
         },
@@ -78862,6 +79252,19 @@
             "source": "Covers",
             "value": null,
             "missed": 4
+          },
+          {
+            "player": "D. Lonergan",
+            "position": "QB",
+            "status": "Out",
+            "injury": "Head",
+            "updated": "Sun, Oct 4",
+            "detail": "Lonergan is dealing with an head injury, and there is no timetable for his return.",
+            "source": "RotoWire + Covers",
+            "return": "2026-11-21",
+            "value": 1.71,
+            "missed": 2,
+            "value_recent": 0.02
           }
         ],
         "sources": "Covers, RotoWire"
@@ -78887,14 +79290,14 @@
       "home_color": "#000000",
       "away_record": "7-2",
       "home_record": "4-5",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "6",
+      "home_score": "3",
       "venue": "FirstBank Stadium",
       "venue_city": "Nashville, TN",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
       "weather_temp": 51,
-      "weather_cond": "Mostly sunny",
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -82776,7 +83179,7 @@
       "home_color": "#006f71",
       "away_record": "4-5",
       "home_record": "3-6",
-      "away_score": "7",
+      "away_score": "14",
       "home_score": "7",
       "venue": "Brooks Stadium (SC)",
       "venue_city": "Conway, SC",
@@ -86607,13 +87010,13 @@
       "home_color": "#005035",
       "away_record": "5-4",
       "home_record": "1-8",
-      "away_score": "6",
-      "home_score": "3",
+      "away_score": "7",
+      "home_score": "10",
       "venue": "Jerry Richardson Stadium",
       "venue_city": "Charlotte, NC",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 50,
+      "weather_temp": 51,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -90559,8 +90962,8 @@
       "home_color": "#a41e35",
       "away_record": "5-4",
       "home_record": "2-7",
-      "away_score": "7",
-      "home_score": "7",
+      "away_score": "10",
+      "home_score": "10",
       "venue": "Lincoln Financial Field",
       "venue_city": "Philadelphia, PA",
       "roof": "Outdoor",
@@ -94510,7 +94913,7 @@
       "id": "KENN@SHSU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-14T19:00Z",
       "away": "KENN",
       "home": "SHSU",
@@ -94530,8 +94933,8 @@
       "venue_city": "Huntsville, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 65,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 61,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -98475,7 +98878,7 @@
       "id": "KSU@TCU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-14T19:00Z",
       "away": "KSU",
       "home": "TCU",
@@ -98496,7 +98899,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPNU",
       "weather_temp": 60,
-      "weather_cond": "Intermittent clouds",
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -101037,6 +101440,18 @@
             "detail": "Pastore has been shut down for the remainder of the season with a lower leg injury.",
             "source": "Covers",
             "value": null
+          },
+          {
+            "player": "J. Knuth",
+            "position": "QB",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "updated": "Sat, Oct 17",
+            "source": "RotoWire + Covers",
+            "return": "2026-11-21",
+            "value": 2.14,
+            "missed": 2,
+            "value_recent": 1.32
           },
           {
             "player": "W. Anciaux",
@@ -106406,7 +106821,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN+",
       "weather_temp": 50,
-      "weather_cond": "Mostly sunny",
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -109743,7 +110158,7 @@
           "of": 138
         },
         "offense": {
-          "value": 27.55,
+          "value": 27.54,
           "rank": 107,
           "of": 138
         },
@@ -110358,7 +110773,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN",
       "weather_temp": 67,
-      "weather_cond": "Cloudy",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -117641,7 +118056,7 @@
           "of": 138
         },
         "luck": {
-          "value": 0.1721,
+          "value": 0.1722,
           "rank": 119,
           "of": 138
         },
@@ -120189,7 +120604,7 @@
           "of": 138
         },
         "offense": {
-          "value": 27.08,
+          "value": 27.07,
           "rank": 115,
           "of": 138
         },
@@ -121554,7 +121969,7 @@
           "of": 138
         },
         "defense": {
-          "value": 20.52,
+          "value": 20.51,
           "rank": 42,
           "of": 138
         },
@@ -153119,7 +153534,7 @@
           "of": 138
         },
         "luck": {
-          "value": 0.193,
+          "value": 0.1931,
           "rank": 126,
           "of": 138
         },
@@ -157608,7 +158023,7 @@
       "venue_city": "Starkville, MS",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 57,
+      "weather_temp": 56,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -164876,7 +165291,7 @@
           "of": 138
         },
         "offense": {
-          "value": 28.48,
+          "value": 28.47,
           "rank": 99,
           "of": 138
         },
@@ -171437,7 +171852,7 @@
           "of": 138
         },
         "luck": {
-          "value": 0.0524,
+          "value": 0.0525,
           "rank": 84,
           "of": 138
         },
@@ -175053,6 +175468,8 @@
               "of": 205
             }
           },
+          "status": "Probable",
+          "injury": "Undisclosed",
           "depth_rank": 1
         },
         {
@@ -175262,7 +175679,9 @@
             "format": "int",
             "rank": 262,
             "of": 562
-          }
+          },
+          "status": "Probable",
+          "injury": "Undisclosed"
         },
         {
           "player_id": "5200430",
@@ -175995,6 +176414,18 @@
             "detail": "Christian is sidelined due to achilles injury, and he is expected to miss the remainder of the season.",
             "source": "Covers",
             "value": null
+          },
+          {
+            "player": "D. Williams Jr.",
+            "position": "QB",
+            "status": "Probable",
+            "injury": "Undisclosed",
+            "updated": "Sat, Oct 17",
+            "source": "RotoWire + Covers",
+            "return": "2026-11-14",
+            "value": 2.0,
+            "missed": 0,
+            "value_recent": 1.56
           }
         ],
         "sources": "Covers, RotoWire"
@@ -177380,7 +177811,21 @@
         }
       },
       "home_injuries": {
-        "players": [],
+        "players": [
+          {
+            "player": "C. Fancher",
+            "position": "QB",
+            "status": "Questionable",
+            "injury": "Knee",
+            "updated": "Sat, Oct 17",
+            "detail": "Fancher is dealing with a knee injury, and it remains to be seen if he will be available against UCLA on Saturday.",
+            "source": "RotoWire + Covers",
+            "return": "2026-11-14",
+            "value": 0.34,
+            "missed": 4,
+            "value_recent": 0.0
+          }
+        ],
         "sources": "Covers, RotoWire"
       },
       "away_starter": "Demond Williams Jr.",
@@ -184630,7 +185075,7 @@
           "of": 138
         },
         "offense": {
-          "value": 38.27,
+          "value": 38.26,
           "rank": 4,
           "of": 138
         },
@@ -188535,7 +188980,7 @@
           "of": 138
         },
         "defense": {
-          "value": 19.94,
+          "value": 19.93,
           "rank": 36,
           "of": 138
         },
@@ -192689,7 +193134,7 @@
           "of": 138
         },
         "luck": {
-          "value": 0.1982,
+          "value": 0.1983,
           "rank": 127,
           "of": 138
         },
@@ -193256,7 +193701,7 @@
             "injury": "Lower Leg",
             "updated": "Mon, Oct 5",
             "source": "RotoWire + Covers",
-            "return": "3/1/2027",
+            "return": "2027-03-01",
             "value": 3.47,
             "missed": 5,
             "value_recent": 0.0
@@ -199105,7 +199550,7 @@
           "of": 138
         },
         "offense": {
-          "value": 37.02,
+          "value": 37.01,
           "rank": 11,
           "of": 138
         },
@@ -204324,7 +204769,7 @@
           "of": 138
         },
         "offense": {
-          "value": 32.18,
+          "value": 32.17,
           "rank": 57,
           "of": 138
         },
@@ -204339,7 +204784,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 31.08,
+          "value": 31.07,
           "rank": 58,
           "of": 138
         },
@@ -208308,7 +208753,7 @@
           "of": 138
         },
         "defense": {
-          "value": 27.89,
+          "value": 27.88,
           "rank": 126,
           "of": 138
         },
@@ -218654,7 +219099,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 21.54,
+          "value": 21.53,
           "rank": 32,
           "of": 138
         },
@@ -222453,12 +222898,12 @@
       ],
       "away_power": {
         "net": {
-          "value": 18.34,
+          "value": 18.35,
           "rank": 11,
           "of": 138
         },
         "offense": {
-          "value": 33.22,
+          "value": 33.21,
           "rank": 46,
           "of": 138
         },
@@ -222478,7 +222923,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 20.26,
+          "value": 20.25,
           "rank": 11,
           "of": 138
         },
@@ -228388,6 +228833,16 @@
       "home_injuries": {
         "players": [
           {
+            "player": "J. Layne",
+            "position": "QB",
+            "status": "Out For Season",
+            "injury": "Elbow",
+            "updated": "Thu, Aug 27",
+            "source": "RotoWire + Covers",
+            "return": "2027-03-01",
+            "value": null
+          },
+          {
             "player": "J. Olsen",
             "position": "TE",
             "status": "Out",
@@ -230390,7 +230845,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 31.65,
+          "value": 31.64,
           "rank": 41,
           "of": 138
         },
@@ -231793,7 +232248,7 @@
           "of": 138
         },
         "defense": {
-          "value": 22.97,
+          "value": 22.96,
           "rank": 77,
           "of": 138
         },
@@ -234387,7 +234842,7 @@
           "of": 138
         },
         "luck": {
-          "value": 0.1481,
+          "value": 0.1482,
           "rank": 112,
           "of": 138
         },
@@ -243370,6 +243825,8 @@
               "of": 205
             }
           },
+          "status": "Probable",
+          "injury": "Ankle",
           "depth_rank": 2
         }
       ],
@@ -243570,7 +244027,9 @@
             "format": "int",
             "rank": 470,
             "of": 562
-          }
+          },
+          "status": "Probable",
+          "injury": "Ankle"
         }
       ],
       "home_power": {
@@ -244164,7 +244623,20 @@
         }
       },
       "home_injuries": {
-        "players": [],
+        "players": [
+          {
+            "player": "J. Denegal",
+            "position": "QB",
+            "status": "Probable",
+            "injury": "Ankle",
+            "updated": "Sun, Oct 18",
+            "source": "RotoWire + Covers",
+            "return": "2026-11-14",
+            "value": 2.24,
+            "missed": 2,
+            "value_recent": 0.43
+          }
+        ],
         "sources": "Covers, RotoWire"
       },
       "away_starter": "McCae Hillstead",
@@ -246734,7 +247206,7 @@
             "injury": "Knee",
             "updated": "Tue, Aug 11",
             "source": "RotoWire + Covers",
-            "return": "3/1/2027",
+            "return": "2027-03-01",
             "value": null
           },
           {
@@ -263790,7 +264262,7 @@
     }
   ],
   "power": {
-    "home_court": 3.261,
+    "home_court": 3.26,
     "league_mean": 26.694,
     "through_week": 11
   }
