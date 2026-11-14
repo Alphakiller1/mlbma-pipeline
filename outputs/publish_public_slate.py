@@ -16,7 +16,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from outputs import nfl_public_context, nfl_venues
+from outputs import nfl_injury_value, nfl_public_context, nfl_venues
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -769,6 +769,12 @@ NFL_PRACTICE_STATUS = {
     "did not participate in practice": "Did Not Practice",
     "limited participation in practice": "Limited Practice",
 }
+# The week's last practice, as the play-rate table names it (nfl_injury_value).
+NFL_PRACTICE_SHORT = {
+    "did not participate in practice": "DNP",
+    "limited participation in practice": "Limited",
+    "full participation in practice": "Full",
+}
 
 
 def _player_key(name: str) -> str:
@@ -833,7 +839,8 @@ def parse_nfl_official_report(page: str) -> dict[tuple[str, str], dict[str, list
                 status = NFL_GAME_STATUS.get(r["game"]) or NFL_PRACTICE_STATUS.get(r["practice"])
                 if status:
                     entries.append({"name": r["name"], "position": r["position"],
-                                    "status": status, "detail": r["injury"].lower() if r["injury"] else ""})
+                                    "status": status, "detail": r["injury"].lower() if r["injury"] else "",
+                                    "practice": NFL_PRACTICE_SHORT.get(r["practice"])})
             report[club] = entries
         games[(codes[0], codes[1])] = report
     return games
@@ -914,6 +921,26 @@ def merge_nfl_injuries(espn: dict[str, list[dict]],
     for team, rows in by_team.items():
         rows.sort(key=lambda e: NFL_STATUS_ORDER.get(e["status"], 5))
     return by_team
+
+
+def attach_nfl_values(injuries: dict[str, list[dict]], season: int) -> int:
+    """Each listed player's value to the spread (outputs/nfl_injury_value.py):
+    his position group's price on closing lines times his snap share when he
+    plays. Returns how many entries carry one; the lists ship without values
+    when nflverse is unreachable."""
+    try:
+        table = nfl_injury_value.team_values(season)
+    except Exception as exc:  # noqa: BLE001
+        print(f"  WARNING nfl injury values unavailable: {exc}")
+        return 0
+    found = 0
+    for team, entries in injuries.items():
+        people = table.get(team, {})
+        for entry in entries:
+            row = people.get(nfl_injury_value.name_key(entry.get("name", "")))
+            entry["value"] = row["value"] if row else None
+            found += row is not None
+    return found
 
 
 def fetch_nfl_injuries(games: set[tuple[str, str]] | None = None) -> dict:
@@ -1620,7 +1647,12 @@ def publish_nfl() -> bool:
                          for c in comp.get("competitors") or []}
                 if sides.get("away") and sides.get("home"):
                     pairs.add((sides["away"], sides["home"]))
-        nfl = nfl_producer_from_espn(espn, fetch_nfl_injuries(pairs), context, rest)
+        injuries = fetch_nfl_injuries(pairs)
+        season = int(((espn.get("season") or {}).get("year")) or datetime.now(ET).year)
+        valued = attach_nfl_values(injuries, season)
+        print(f"  nfl injury values: {valued} of {sum(len(v) for v in injuries.values())} listed players")
+        nfl = nfl_producer_from_espn(espn, injuries, context, rest)
+        nfl["designation_play_rates"] = nfl_injury_value.play_rates()
         dvoa = fetch_ftn_dvoa(datetime.now(ET).year)
         attached = attach_nfl_dvoa(nfl, dvoa)
         expected = len(nfl.get("games") or []) * 2

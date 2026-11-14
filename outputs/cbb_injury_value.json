@@ -1,0 +1,31 @@
+{
+  "seasons": [
+    2025,
+    2026
+  ],
+  "games": 10500,
+  "regular_minutes": 12.0,
+  "terms": [
+    "role",
+    "lite2"
+  ],
+  "points": {
+    "role": 0.4411,
+    "lite2": 0.0233
+  },
+  "se": {
+    "role": 0.0672,
+    "lite2": 0.004
+  },
+  "home_court": 2.964,
+  "heldout_rmse": {
+    "teams_only": 2.3185,
+    "role": 2.2844,
+    "role+lite": 2.2844,
+    "role+lite2": 2.2826,
+    "lite2": 2.2854,
+    "role+lite+lite2": 2.2797,
+    "role+full2": 2.2834
+  },
+  "method": "CBB: what a missing player is worth to the closing spread (owner 2026-11-13).\n\n    python scripts/fit_cbb_injury_value.py ../cbb-model/data 2025 2026\n\nSame design as nba-model scripts/injury_value_fit.py: per team-game, the\nregulars (>= REGULAR_MIN minutes averaged over the team's previous ten games,\nat least three appearances) who log no minutes; per absent regular, role =\nminutes/40 and production = a box game score that Basketball Quant's season\nlines can reproduce (points, shooting, rebounds, assists - no steals, blocks\nor turnovers there). The closing home spread (cbb-model data/market) against\na strength per team-season, held out on odd/even games."
+}

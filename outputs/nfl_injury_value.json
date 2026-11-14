@@ -1,0 +1,172 @@
+{
+  "value": {
+    "points_per_share": {
+      "QB": 3.461,
+      "RB": 0.928,
+      "WR": 0.64,
+      "TE": 0.7,
+      "OL": 0.461,
+      "EDGE": 0.698,
+      "DL": 1.164,
+      "LB": 0.501,
+      "CB": 0.392,
+      "S": 0.369,
+      "qbq": 13.71
+    },
+    "se": {
+      "QB": 0.242,
+      "RB": 0.333,
+      "WR": 0.171,
+      "TE": 0.278,
+      "OL": 0.112,
+      "EDGE": 0.3,
+      "DL": 0.309,
+      "LB": 0.172,
+      "CB": 0.132,
+      "S": 0.158,
+      "qbq": 2.202
+    },
+    "home_field": 1.598,
+    "league_qb_epa_per_play": 0.04147,
+    "qb_window_games": 16,
+    "qb_shrink_plays": 150.0,
+    "regular_share": 0.4,
+    "prior_games": 3,
+    "games": 1759,
+    "seasons": [
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "heldout_rmse": {
+      "teams_only": 3.4182,
+      "with_absences": 2.9866
+    }
+  },
+  "play_rates": {
+    "by_status": {
+      "Doubtful": {
+        "played": 0.0083,
+        "n": 1084
+      },
+      "None": {
+        "played": 0.9297,
+        "n": 20398
+      },
+      "Out": {
+        "played": 0.0004,
+        "n": 7252
+      },
+      "Questionable": {
+        "played": 0.6644,
+        "n": 9828
+      }
+    },
+    "by_status_practice": {
+      "Doubtful|DNP": {
+        "played": 0.0095,
+        "n": 733
+      },
+      "Doubtful|Full": {
+        "played": 0.0,
+        "n": 55
+      },
+      "Doubtful|Limited": {
+        "played": 0.0068,
+        "n": 292
+      },
+      "Doubtful|Unknown": {
+        "played": 0.0,
+        "n": 4
+      },
+      "None|DNP": {
+        "played": 0.7631,
+        "n": 2258
+      },
+      "None|Full": {
+        "played": 0.9518,
+        "n": 15512
+      },
+      "None|Limited": {
+        "played": 0.9424,
+        "n": 2623
+      },
+      "None|Unknown": {
+        "played": 0.8,
+        "n": 5
+      },
+      "Out|DNP": {
+        "played": 0.0002,
+        "n": 6421
+      },
+      "Out|Full": {
+        "played": 0.0,
+        "n": 187
+      },
+      "Out|Limited": {
+        "played": 0.0,
+        "n": 573
+      },
+      "Out|Unknown": {
+        "played": 0.0282,
+        "n": 71
+      },
+      "Questionable|DNP": {
+        "played": 0.4617,
+        "n": 1631
+      },
+      "Questionable|Full": {
+        "played": 0.7722,
+        "n": 1923
+      },
+      "Questionable|Limited": {
+        "played": 0.6841,
+        "n": 6116
+      },
+      "Questionable|Unknown": {
+        "played": 0.6835,
+        "n": 158
+      }
+    },
+    "listings": 38562,
+    "seasons": [
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "method": "nflverse final weekly injury reports (regular season) joined to snap counts: played = any offensive, defensive or special-teams snap."
+  },
+  "groups": {
+    "QB": "QB",
+    "RB": "RB",
+    "FB": "RB",
+    "WR": "WR",
+    "TE": "TE",
+    "T": "OL",
+    "G": "OL",
+    "C": "OL",
+    "OT": "OL",
+    "OG": "OL",
+    "DE": "EDGE",
+    "OLB": "EDGE",
+    "DT": "DL",
+    "NT": "DL",
+    "LB": "LB",
+    "ILB": "LB",
+    "MLB": "LB",
+    "CB": "CB",
+    "DB": "CB",
+    "S": "S",
+    "FS": "S",
+    "SS": "S"
+  },
+  "method": "Owner 2026-11-13: \"a player rating for every player across the platform that\nshows up on injury reports as an indication of how important that player is\nto the spread\"."
+}

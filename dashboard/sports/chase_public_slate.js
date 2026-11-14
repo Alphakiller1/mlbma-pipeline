@@ -201,7 +201,12 @@
       sport: sport,
       generated_at: slate.generated_at_utc || slate.generated_at || slate.published_at || null,
       data_through: slate.data_through_utc || slate.data_through || null,
-      games: sortGames(raw.map(function (g) { return mapGame(sport, g); }))
+      games: sortGames(raw.map(function (g) {
+        var mapped = mapGame(sport, g);
+        // How often a player listed each way has played (the slate's table).
+        mapped.designation_play_rates = slate.designation_play_rates || null;
+        return mapped;
+      }))
     };
   }
 
