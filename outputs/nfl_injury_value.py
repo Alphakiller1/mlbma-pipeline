@@ -46,9 +46,15 @@ def _read(tag: str, name: str, columns=None):
 
 
 def team_values(season: int, constants: dict | None = None) -> dict[str, dict[str, dict]]:
-    """{team: {name key: {"value", "share", "group"}}} for every player who
-    took a snap in his club's last six games this season, his share read
-    over his last three appearances."""
+    """{team: {name key: {"value", "value_recent", "missed", "share", "group"}}}
+    for every player who took a snap for his club this season.
+
+    value         his share over his last three appearances: his role when
+                  he plays, so a game he missed is not a zero.
+    value_recent  his share over the club's last three games, a missed game
+                  a zero - the measure the fit priced, so a long absence fades
+                  from it the way it faded from the closing lines.
+    missed        the club's games in a row, newest first, without a snap."""
     import numpy as np
     import pandas as pd
     constants = constants or fit()
@@ -72,23 +78,25 @@ def team_values(season: int, constants: dict | None = None) -> dict[str, dict[st
         last = g.tail(window)
         quality[name_key(name)] = (last.epa.sum() + shrink * league) / (last.plays.sum() + shrink) - league
     out: dict[str, dict[str, dict]] = {}
+    n = v["prior_games"]
     for team, tg in snaps.groupby("team"):
-        # His role when he plays: his share over his last three appearances
-        # in the club's last six games, so a game he missed is not a zero.
-        weeks = sorted(tg.week.unique())[-2 * v["prior_games"]:]
-        recent = tg[tg.week.isin(weeks) & (tg.share > 0)].sort_values("week")
-        shares = recent.groupby(["player", "group"]).share.apply(lambda s: s.tail(v["prior_games"]).mean())
+        weeks = sorted(tg.week.unique())
+        played = tg[tg.share > 0].sort_values("week")
+        shares = played.groupby(["player", "group"]).share.apply(lambda s: s.tail(n).mean())
+        lately = played[played.week.isin(weeks[-n:])].groupby(["player", "group"]).share.sum() / min(n, len(weeks))
+        last = played.groupby(["player", "group"]).week.max()
         table = {}
         for (player, group), share in shares.items():
             if group not in pts or share <= 0:
                 continue
             key = name_key(player)
-            value = pts[group] * share
-            q = None
-            if group == "QB":
-                q = quality.get(key, 0.0)
-                value += pts["qbq"] * q * share
-            row = {"value": round(float(max(value, 0.0)), 2), "share": round(float(share), 3), "group": group}
+            q = quality.get(key, 0.0) if group == "QB" else None
+            price = float(pts[group] + (pts["qbq"] * q if q is not None else 0.0))  # points per full share
+            recent = float(lately.get((player, group), 0.0))
+            row = {"value": round(max(price * float(share), 0.0), 2),
+                   "value_recent": round(max(price * recent, 0.0), 2),
+                   "missed": sum(1 for w in weeks if w > last[(player, group)]),
+                   "share": round(float(share), 3), "group": group}
             if q is not None:
                 row["qb_quality"] = round(float(q), 4)
             if key not in table or table[key]["value"] < row["value"]:

@@ -6299,3 +6299,13 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-injury-value small,
 .ca-injury-total small { color: var(--text-muted); font-weight: 500; }
 .ca-injury-total td { font-weight: 700; border-top: 1px solid var(--border-default); }
+/* An injury report is a list, not a stat grid: its columns size to what they
+   hold, so the figures stay narrow and the injury words get the room. */
+.ca-cfb-injury-panel .ca-nfl-split { table-layout: auto; }
+.ca-cfb-panel.ca-cfb-injury-panel .ca-lineup-table.ca-split-table thead th:first-child,
+.ca-cfb-panel.ca-cfb-injury-panel .ca-lineup-table.ca-split-table tbody td:first-child {
+  width: auto; min-width: 0; white-space: normal; overflow: visible;
+}
+.ca-cfb-injury-panel .ca-nfl-split td { white-space: normal; }
+.ca-cfb-injury-panel .ca-nfl-split td.num,
+.ca-cfb-injury-panel .ca-nfl-split td .ca-rank { white-space: nowrap; }

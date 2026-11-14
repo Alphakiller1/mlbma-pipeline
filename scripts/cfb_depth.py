@@ -404,6 +404,115 @@ def _box_players(event_id: str) -> dict | None:
     return teams
 
 
+USAGE_STATS = ("att", "pyds", "car", "rec", "tkl")
+
+
+def _box_usage(event_id: str) -> dict | None:
+    """{ESPN team id: {athlete id: {"name", "att", "pyds", "car", "rec", "tkl"}}}
+    for a completed game, cached beside the other box files."""
+    name = f"usage_{event_id}.json"
+    hit = _cached(name)
+    if hit is not None:
+        return hit
+    try:
+        raw = _get(f"{ESPN}/summary?event={event_id}")
+    except Exception:
+        return None
+    want = {"passing": {"C/ATT": "att", "YDS": "pyds"}, "rushing": {"CAR": "car"},
+            "receiving": {"REC": "rec"}, "defensive": {"TOT": "tkl"}}
+    teams: dict[str, dict] = {}
+    for block in (raw.get("boxscore") or {}).get("players") or []:
+        tid = str((block.get("team") or {}).get("id") or "")
+        people = teams.setdefault(tid, {})
+        for category in block.get("statistics") or []:
+            fields = want.get(category.get("name"))
+            labels = category.get("labels") or []
+            for row in category.get("athletes") or []:
+                athlete = row.get("athlete") or {}
+                pid = str(athlete.get("id") or "")
+                if not pid or pid.startswith("-"):
+                    continue
+                entry = people.setdefault(pid, {"name": athlete.get("displayName") or ""})
+                for label, key in (fields or {}).items():
+                    if label in labels:
+                        cell = str((row.get("stats") or [""] * len(labels))[labels.index(label)])
+                        part = cell.split("/")[-1] if label == "C/ATT" else cell
+                        entry[key] = _num(part) or 0.0
+    if not teams:
+        return None
+    _store(name, teams)
+    return teams
+
+
+def recent_usage(season: int, through_week: int, wanted: dict[str, str], games: int = 3) -> dict[str, dict]:
+    """{board abbreviation: {athlete id: {"name", "shares", "recent", "missed", "ypa"}}}
+    for every player in each published school's completed games this season
+    before ``through_week``.
+
+    shares  his share of the school's attempts, carries, receptions and
+            tackles over his last ``games`` appearances: his role when he
+            plays (a player out since September is read on his September games).
+    recent  the same over the school's last ``games`` games, appearances or
+            not - the measure scripts/fit_cfb_injury_value.py priced, so a
+            long absence fades from it the way it faded from the closing lines.
+    missed  the school's games in a row, newest first, without a line from him.
+    ypa     his yards per attempt over those appearances (20+ attempts).
+
+    Box files are cached, so a week costs only its own games."""
+    pending: dict[str, list[tuple[str, str]]] = {}
+    for week in range(max(1, through_week) - 1, 0, -1):
+        for event in _week_events(season, week):
+            if not ((event.get("status") or {}).get("type") or {}).get("completed"):
+                continue
+            for side in (event.get("competitions") or [{}])[0].get("competitors") or []:
+                team = side.get("team") or {}
+                board = (wanted.get(str(team.get("abbreviation") or "").upper())
+                         or wanted.get(_norm(team.get("location") or "")))
+                if board:
+                    pending.setdefault(board, []).append((str(event.get("id")), str(team.get("id") or "")))
+    events = sorted({e for v in pending.values() for e, _ in v})
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        boxes = dict(zip(events, pool.map(_box_usage, events)))
+    out: dict[str, dict] = {}
+    shared = ("att", "car", "rec", "tkl")
+
+    def share(own: dict, team: dict) -> dict:
+        return {s: round(own[s] / team[s], 4) if team[s] else 0.0 for s in shared}
+
+    for board, items in pending.items():  # newest first
+        seen: dict[str, dict] = {}
+        played = [(event, (boxes.get(event) or {}).get(tid)) for event, tid in items]
+        played = [mine for _, mine in played if mine]
+        window = dict.fromkeys(USAGE_STATS, 0.0)  # the school over its last `games` games
+        for n, mine in enumerate(played):
+            totals = {s: sum(p.get(s, 0.0) for p in mine.values()) for s in USAGE_STATS}
+            if n < games:
+                for s in USAGE_STATS:
+                    window[s] += totals[s]
+            for pid, p in mine.items():
+                acc = seen.setdefault(pid, {"name": p.get("name", ""), "games": 0, "missed": n,
+                                            "own": dict.fromkeys(USAGE_STATS, 0.0),
+                                            "team": dict.fromkeys(USAGE_STATS, 0.0),
+                                            "recent": dict.fromkeys(USAGE_STATS, 0.0)})
+                if n < games:
+                    for s in USAGE_STATS:
+                        acc["recent"][s] += p.get(s, 0.0)
+                if acc["games"] >= games:
+                    continue
+                acc["games"] += 1
+                for s in USAGE_STATS:
+                    acc["own"][s] += p.get(s, 0.0)
+                    acc["team"][s] += totals[s]
+        if seen:
+            out[board] = {pid: {"name": acc["name"], "missed": acc["missed"],
+                                "shares": share(acc["own"], acc["team"]),
+                                "recent": share(acc["recent"], window),
+                                "ypa": round(acc["own"]["pyds"] / acc["own"]["att"], 3)
+                                if acc["own"]["att"] >= 20 else None}
+                          for pid, acc in seen.items()}
+    return out
+
+
 def last_game_players(season: int, through_week: int, wanted: dict[str, str]) -> dict[str, dict]:
     """{board abbreviation: {"date", "passers", "appeared"}} from each published
     school's most recent completed game before ``through_week``.

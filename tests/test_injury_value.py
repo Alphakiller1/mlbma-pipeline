@@ -41,13 +41,16 @@ class NflFitTests(unittest.TestCase):
 class NflAttachTests(unittest.TestCase):
     def test_values_attach_by_name(self):
         original = nfl_injury_value.team_values
-        nfl_injury_value.team_values = lambda season: {"NYG": {"maliknabers": {"value": 0.49, "share": 0.77, "group": "WR"}}}
+        nfl_injury_value.team_values = lambda season: {"NYG": {"maliknabers": {
+            "value": 0.49, "value_recent": 0.33, "missed": 1, "share": 0.77, "group": "WR"}}}
         try:
             injuries = {"NYG": [{"name": "Malik Nabers", "status": "Questionable"},
                                 {"name": "Somebody Else", "status": "Out"}]}
             self.assertEqual(slate.attach_nfl_values(injuries, 2026), 1)
-            self.assertEqual(injuries["NYG"][0]["value"], 0.49)
-            self.assertIsNone(injuries["NYG"][1]["value"])
+            nabers, other = injuries["NYG"]
+            self.assertEqual((nabers["value"], nabers["value_recent"], nabers["missed"]), (0.49, 0.33, 1))
+            self.assertIsNone(other["value"])
+            self.assertNotIn("missed", other)
         finally:
             nfl_injury_value.team_values = original
 
@@ -75,6 +78,78 @@ class CbbConstantsTests(unittest.TestCase):
         self.assertEqual(float(m.group(1)), fit["points"]["role"])
         self.assertEqual(float(m.group(2)), fit["points"]["lite2"])
         self.assertLess(fit["heldout_rmse"]["role+lite2"], fit["heldout_rmse"]["teams_only"])
+
+
+class CfbValueTests(unittest.TestCase):
+    """A QB who started weeks 1-2 then sat, the QB who replaced him, a defender."""
+
+    def setUp(self):
+        import cfb_depth
+        self.depth = cfb_depth
+        lines = {1: {"1": {"name": "Ace Passer", "att": 30.0, "pyds": 240.0}},
+                 2: {"1": {"name": "Ace Passer", "att": 30.0, "pyds": 210.0}},
+                 3: {"2": {"name": "Ben Backup", "att": 25.0, "pyds": 150.0}},
+                 4: {"2": {"name": "Ben Backup", "att": 25.0, "pyds": 160.0}},
+                 5: {"2": {"name": "Ben Backup", "att": 25.0, "pyds": 170.0},
+                     "3": {"name": "Cal Tackler", "tkl": 8.0}}}
+        def event(week):
+            return {"id": f"e{week}", "status": {"type": {"completed": True}},
+                    "competitions": [{"competitors": [{"team": {"abbreviation": "PITT", "id": "221"}}]}]}
+        self.saved = (cfb_depth._week_events, cfb_depth._box_usage)
+        cfb_depth._week_events = lambda season, week: [event(week)] if week in lines else []
+        cfb_depth._box_usage = lambda eid: {"221": lines[int(eid[1:])]}
+        self.usage = cfb_depth.recent_usage(2026, 6, {"PITT": "PITT"})["PITT"]
+
+    def tearDown(self):
+        self.depth._week_events, self.depth._box_usage = self.saved
+
+    def test_usage_reads_his_role_and_how_long_he_has_been_out(self):
+        ace, ben = self.usage["1"], self.usage["2"]
+        self.assertEqual(ace["missed"], 3)
+        self.assertEqual(ace["shares"]["att"], 1.0)   # his own appearances
+        self.assertEqual(ace["recent"]["att"], 0.0)   # the school's last three games
+        self.assertEqual((ben["missed"], ben["shares"]["att"], ben["recent"]["att"]), (0, 1.0, 1.0))
+
+    def test_a_long_absence_keeps_his_value_but_not_his_recent_value(self):
+        import cfb_injury_value
+        coef = cfb_injury_value.coefficients()
+        entries = [{"player": "Ace Passer", "status": "Out For Season"},
+                   {"player": "C. Tackler", "status": "Out"},
+                   {"player": "Nobody Listed", "status": "Out"}]
+        self.assertEqual(cfb_injury_value.attach(entries, self.usage, coef), 1)
+        ace, cal, nobody = entries
+        self.assertEqual(ace["value"], round(coef["QB"], 2))
+        self.assertEqual((ace["value_recent"], ace["missed"]), (0.0, 3))
+        self.assertIsNone(cal["value"])              # defenders are not rated
+        self.assertEqual(cal["missed"], 0)           # but his tackles say he played
+        self.assertIsNone(nobody["value"])
+        self.assertNotIn("missed", nobody)
+
+    def test_the_fit_beats_team_strength_held_out(self):
+        fit = json.loads((ROOT / "outputs/cfb_injury_value.json").read_text(encoding="utf-8"))
+        rmse = fit["heldout_rmse"]
+        self.assertLess(rmse["+".join(fit["terms"])], rmse["teams_only"])
+        self.assertGreater(fit["games"], 1500)
+        for term in ("QB", "RB", "WR"):
+            self.assertGreater(fit["points_per_share"][term], 0, term)
+
+    def test_rotowire_table_tags_read_as_the_report_words(self):
+        import cfb_injuries
+        rows = json.dumps([{"RotoSchoolName": "Pittsburgh", "player": "Mason Heintschel", "position": "QB",
+                            "IR": "OFS", "injury_type": "Knee"},
+                           {"RotoSchoolName": "Pittsburgh", "player": "Holden Geriner", "position": "QB",
+                            "IR": "Doubtful"}])
+        listed = cfb_injuries.parse_rotowire(rows)["pittsburgh"]
+        self.assertEqual([e["status"] for e in listed], ["Out For Season", "Doubtful"])
+
+    def test_page_play_rates_are_the_nfl_record(self):
+        rates = nfl_injury_value.fit()["play_rates"]["by_status"]
+        m = re.search(r"CFB_PLAY_RATES = \{ Questionable: \[([\d.]+), (\d+)\], Doubtful: \[([\d.]+), (\d+)\], "
+                      r"Out: \[([\d.]+), (\d+)\] \}", JS)
+        self.assertIsNotNone(m)
+        for i, status in enumerate(("Questionable", "Doubtful", "Out")):
+            self.assertAlmostEqual(float(m.group(2 * i + 1)), round(rates[status]["played"], 4), places=4)
+            self.assertEqual(int(m.group(2 * i + 2)), rates[status]["n"])
 
 
 if __name__ == "__main__":

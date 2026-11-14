@@ -1,0 +1,50 @@
+{
+  "games": 1746,
+  "terms": [
+    "QB",
+    "RB",
+    "WR"
+  ],
+  "league_ypa": 7.6992,
+  "thresholds": {
+    "QB": [
+      "att",
+      0.5
+    ],
+    "RB": [
+      "car",
+      0.25
+    ],
+    "WR": [
+      "rec",
+      0.15
+    ],
+    "DEF": [
+      "tkl",
+      0.07
+    ]
+  },
+  "points_per_share": {
+    "QB": 2.8445,
+    "RB": 2.4139,
+    "WR": 0.3429
+  },
+  "se": {
+    "QB": 0.4441,
+    "RB": 0.954,
+    "WR": 1.008
+  },
+  "home_field": 2.248,
+  "heldout_rmse": {
+    "teams_only": 8.8162,
+    "QB+RB+WR+DEF": 8.7841,
+    "QB+RB+WR+DEF+qbq": 8.8013,
+    "QB+qbq": 8.7813,
+    "QB+RB+WR": 8.7716
+  },
+  "seasons": [
+    2024,
+    2025
+  ],
+  "method": "CFBD closing lines (DraftKings, else the first book) for 2024-25 regular-season games with an FBS side, joined to ESPN box scores. Per team-game, regulars over the team's previous three games by usage share (QB >= 50% of pass attempts, runner >= 25% of carries, receiver >= 15% of receptions); a regular absent from the box is missing. Closing home spread = strength per team-season + points per share x (home missing share - away), held out on odd/even games. Tackle share as a defender's measure and a QB yards-per-attempt term did not help and are not used."
+}
