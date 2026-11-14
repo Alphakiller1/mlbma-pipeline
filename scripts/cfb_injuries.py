@@ -27,9 +27,9 @@ from zoneinfo import ZoneInfo
 
 COVERS_URL = "https://www.covers.com/sport/football/ncaaf/injuries"
 ROTOWIRE_URL = "https://www.rotowire.com/cfootball/tables/injury-report.php?team=ALL&pos=ALL"
+# An honest client name: Covers and RotoWire both serve it (checked 2026-11-14).
 HEADERS = {
-    "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                   "(KHTML, like Gecko) Chrome/126 Safari/537.36"),
+    "User-Agent": "ChaseAnalytics/1.0 (+https://chase-analytics.com)",
     "Accept": "text/html,application/json;q=0.9,*/*;q=0.8",
 }
 # Out first, then the doubtful end of the scale.
@@ -192,9 +192,13 @@ def parse_card(page: str) -> dict:
     fields = {_clean(k): _clean(v) for k, v in
               re.findall(r'p-card__injury-data">(.*?)<b>(.*?)</b>', body, re.S)}
     status = _clean(tag.group(1)) if tag else None
+    back = fields.get("Est. Return") or None
+    us = re.fullmatch(r"(\d{1,2})/(\d{1,2})/(\d{4})", back or "")
+    if us:  # "3/1/2027" -> ISO, which the page writes "Mar 1"
+        back = f"{us[3]}-{int(us[1]):02d}-{int(us[2]):02d}"
     return {"status": CARD_STATUS.get(status, status),
             "injury": fields.get("Injury") or None,
-            "return": fields.get("Est. Return") or None}
+            "return": back}
 
 
 def rotowire_card(player: str, school: str, position: str) -> dict | None:
@@ -216,7 +220,7 @@ def rotowire_card(player: str, school: str, position: str) -> dict | None:
     return card
 
 
-def verify(merged: dict[str, list[dict]], lookup=rotowire_card) -> dict[str, int]:
+def verify(merged: dict[str, list[dict]], lookup=None) -> dict[str, int]:
     """Check every Covers-only entry at VERIFY_POSITIONS against the player's
     RotoWire card: the card's designation wins, and a player RotoWire lists
     healthy leaves the report. A card that cannot be read keeps the entry."""
@@ -225,7 +229,7 @@ def verify(merged: dict[str, list[dict]], lookup=rotowire_card) -> dict[str, int
 
     def check(job):
         try:
-            return lookup(job[1]["player"], job[0], job[1]["position"])
+            return (lookup or rotowire_card)(job[1]["player"], job[0], job[1]["position"])
         except Exception:
             return None
     with ThreadPoolExecutor(max_workers=6) as pool:
@@ -255,8 +259,79 @@ def verify(merged: dict[str, list[dict]], lookup=rotowire_card) -> dict[str, int
     return counts
 
 
-def load() -> dict[str, list[dict]]:
-    """{normalized school: [injury, ...]} - empty when both reports fail."""
+# Statuses that hold past one game, and are carried while RotoWire's table
+# looks at other schools (carry_forward).
+LONG_STATUSES = {"Out For Season", "IR", "Suspended"}
+MONTHS = {m: i for i, m in enumerate(("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep",
+                                      "oct", "nov", "dec"), 1)}
+
+
+def return_date(text: str | None, today: date) -> date | None:
+    """RotoWire's estimated return ("Nov 21st", "Mar 1st", "2026-11-21") as a
+    date: the year that puts it nearest after today, allowing two months back."""
+    raw = str(text or "").strip()
+    try:
+        return date.fromisoformat(raw[:10])
+    except ValueError:
+        pass
+    us = re.fullmatch(r"(\d{1,2})/(\d{1,2})/(\d{4})", raw)
+    if us:
+        try:
+            return date(int(us[3]), int(us[1]), int(us[2]))
+        except ValueError:
+            return None
+    m = re.match(r"([A-Za-z]{3})[a-z]*\.?\s+(\d{1,2})", raw)
+    if not m or m[1].lower() not in MONTHS:
+        return None
+    for year in (today.year - 1, today.year, today.year + 1):
+        try:
+            day = date(year, MONTHS[m[1].lower()], int(m[2]))
+        except ValueError:
+            return None
+        if (day - today).days >= -60:
+            return day
+    return None
+
+
+def carry_forward(merged: dict[str, list[dict]], previous: dict[str, list[dict]],
+                  covered: set[str], today: date) -> int:
+    """Keep what RotoWire said last time about schools its table no longer shows.
+
+    RotoWire's table covers only its current game window (4 schools on
+    2026-11-14) and Covers stopped updating around 2026-10-21, so a school
+    rotating out of the window lost its designations: Pittsburgh's Mason
+    Heintschel, out for the season, vanished between two runs. A previously
+    published RotoWire entry is carried when it is a long status (out for the
+    season, IR, suspended) or an Out with an estimated return still ahead,
+    for a school RotoWire's table does not cover now (one it covers is
+    current, so a player it no longer lists is back) and a player not listed
+    again. Returns how many were carried."""
+    carried = 0
+    for school, entries in previous.items():
+        if school in covered:
+            continue
+        rows = merged.setdefault(school, [])
+        have = {_key(e.get("player")) for e in rows}
+        for e in entries:
+            if "RotoWire" not in str(e.get("source") or "") or _key(e.get("player")) in have:
+                continue
+            back = return_date(e.get("return"), today)
+            if back is not None and back < today:
+                continue
+            if e.get("status") in LONG_STATUSES or (e.get("status") == "Out" and back is not None):
+                rows.append({k: v for k, v in e.items() if k not in ("value", "value_recent", "missed")})
+                carried += 1
+        rows.sort(key=lambda e: (STATUS_ORDER.get(e["status"], 4), e.get("position") or "", e.get("player") or ""))
+    return carried
+
+
+def load(previous: dict[str, list[dict]] | None = None) -> dict[str, list[dict]]:
+    """{normalized school: [injury, ...]} - empty when both reports fail.
+
+    ``previous`` is the last published report by normalized school
+    (carry_forward). Covers-only QBs are checked against their RotoWire cards
+    before stale designations are dropped, so a stale Covers row whose card
+    is current survives with the card's words."""
     covers = roto = {}
     try:
         covers = parse_covers(_fetch(COVERS_URL))
@@ -266,13 +341,17 @@ def load() -> dict[str, list[dict]]:
         roto = parse_rotowire(_fetch(ROTOWIRE_URL))
     except Exception as exc:
         print(f"  injuries: RotoWire unavailable: {exc}")
+    if not covers and not roto:
+        return {}
+    today = datetime.now(ZoneInfo("America/New_York")).date()
     merged = merge(covers, roto)
-    dropped = expire(merged, datetime.now(ZoneInfo("America/New_York")).date())
-    print(f"  injuries: {dropped} Covers designations past their game dropped")
     counts = verify(merged)
+    dropped = expire(merged, today)
+    carried = carry_forward(merged, previous or {}, set(roto), today)
     print(f"  injuries: {sum(len(v) for v in merged.values())} players across "
           f"{sum(1 for v in merged.values() if v)} schools "
           f"(Covers {len(covers)}, RotoWire {len(roto)}); QBs checked against RotoWire cards: "
           f"{counts['confirmed']} confirmed, {counts['changed']} changed, "
-          f"{counts['cleared']} cleared, {counts['unverified']} not found")
+          f"{counts['cleared']} cleared, {counts['unverified']} not found; "
+          f"{dropped} stale Covers designations dropped; {carried} RotoWire designations carried")
     return merged
