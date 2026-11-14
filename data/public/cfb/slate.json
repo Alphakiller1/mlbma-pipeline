@@ -3,8 +3,8 @@
   "sport": "cfb",
   "season": 2026,
   "week": 11,
-  "generated_at_utc": "2026-11-13T19:55:03Z",
-  "data_through_utc": "2026-11-13T06:49:55Z",
+  "generated_at_utc": "2026-11-14T00:56:37Z",
+  "data_through_utc": "2026-11-13T20:53:06Z",
   "games": [
     {
       "id": "KENT@BGSU",
@@ -31427,7 +31427,7 @@
       "id": "FSU@PITT",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-14T00:00Z",
       "away": "FSU",
       "home": "PITT",
@@ -31441,14 +31441,14 @@
       "home_color": "#003594",
       "away_record": "4-5",
       "home_record": "6-3",
-      "away_score": "0",
+      "away_score": "6",
       "home_score": "0",
       "venue": "Acrisure Stadium",
       "venue_city": "Pittsburgh, PA",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 41,
-      "weather_cond": "Rain and snow",
+      "weather_temp": 38,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -34349,134 +34349,6 @@
       },
       "home_qbs": [
         {
-          "player_id": "4714300",
-          "player_name": "Holden Geriner",
-          "position": "QB",
-          "ranked": true,
-          "line": {
-            "attempts": 132,
-            "completions": 77,
-            "interceptions": 2,
-            "completion_pct": {
-              "label": "Completion %",
-              "value": 0.5833,
-              "better": "high",
-              "format": "pct",
-              "rank": 149,
-              "of": 205
-            },
-            "yards_per_attempt": {
-              "label": "Yards per attempt",
-              "value": 6.7121,
-              "better": "high",
-              "format": "num",
-              "rank": 143,
-              "of": 205
-            },
-            "td_rate": {
-              "label": "TD rate",
-              "value": 0.0303,
-              "better": "high",
-              "format": "pct",
-              "rank": 168,
-              "of": 205
-            },
-            "int_rate": {
-              "label": "INT rate",
-              "value": 0.0152,
-              "better": "low",
-              "format": "pct",
-              "rank": 58,
-              "of": 205
-            },
-            "yards": {
-              "label": "Passing yards",
-              "value": 886.0,
-              "better": "high",
-              "format": "int",
-              "rank": 134,
-              "of": 205
-            },
-            "touchdowns": {
-              "label": "Passing TDs",
-              "value": 4.0,
-              "better": "high",
-              "format": "int",
-              "rank": 144,
-              "of": 205
-            }
-          },
-          "epa_splits": {
-            "all": {
-              "label": "All plays EPA per play",
-              "value": -0.043,
-              "better": "high",
-              "format": "ppa",
-              "rank": 183,
-              "of": 205
-            },
-            "pass": {
-              "label": "Dropbacks EPA per play",
-              "value": -0.026,
-              "better": "high",
-              "format": "ppa",
-              "rank": 179,
-              "of": 204
-            },
-            "rush": {
-              "label": "Rushes EPA per play",
-              "value": -0.213,
-              "better": "high",
-              "format": "ppa",
-              "rank": 166,
-              "of": 202
-            },
-            "standardDowns": {
-              "label": "Standard downs EPA per play",
-              "value": -0.18,
-              "better": "high",
-              "format": "ppa",
-              "rank": 188,
-              "of": 205
-            },
-            "passingDowns": {
-              "label": "Passing downs EPA per play",
-              "value": 0.102,
-              "better": "high",
-              "format": "ppa",
-              "rank": 164,
-              "of": 204
-            },
-            "firstDown": {
-              "label": "1st down EPA per play",
-              "value": 0.114,
-              "better": "high",
-              "format": "ppa",
-              "rank": 74,
-              "of": 204
-            },
-            "secondDown": {
-              "label": "2nd down EPA per play",
-              "value": 0.124,
-              "better": "high",
-              "format": "ppa",
-              "rank": 130,
-              "of": 203
-            },
-            "thirdDown": {
-              "label": "3rd down EPA per play",
-              "value": 0.26,
-              "better": "high",
-              "format": "ppa",
-              "rank": 160,
-              "of": 204
-            }
-          },
-          "status": "Questionable",
-          "injury": "Undisclosed",
-          "depth_rank": 1
-        },
-        {
           "player_id": "5208095",
           "player_name": "Mason Heintschel",
           "position": "QB",
@@ -34602,6 +34474,132 @@
           },
           "status": "OFS",
           "injury": "Knee",
+          "depth_rank": 1
+        },
+        {
+          "player_id": "5207640",
+          "player_name": "Corey Dailey",
+          "position": "QB",
+          "ranked": false,
+          "line": {
+            "attempts": 35,
+            "completions": 17,
+            "interceptions": 3,
+            "completion_pct": {
+              "label": "Completion %",
+              "value": 0.4857,
+              "better": "high",
+              "format": "pct",
+              "rank": 203,
+              "of": 205
+            },
+            "yards_per_attempt": {
+              "label": "Yards per attempt",
+              "value": 9.0286,
+              "better": "high",
+              "format": "num",
+              "rank": 23,
+              "of": 205
+            },
+            "td_rate": {
+              "label": "TD rate",
+              "value": 0.0857,
+              "better": "high",
+              "format": "pct",
+              "rank": 16,
+              "of": 205
+            },
+            "int_rate": {
+              "label": "INT rate",
+              "value": 0.0857,
+              "better": "low",
+              "format": "pct",
+              "rank": 205,
+              "of": 205
+            },
+            "yards": {
+              "label": "Passing yards",
+              "value": 316.0,
+              "better": "high",
+              "format": "int",
+              "rank": 195,
+              "of": 205
+            },
+            "touchdowns": {
+              "label": "Passing TDs",
+              "value": 3.0,
+              "better": "high",
+              "format": "int",
+              "rank": 161,
+              "of": 205
+            }
+          },
+          "epa_splits": {
+            "all": {
+              "label": "All plays EPA per play",
+              "value": 0.246,
+              "better": "high",
+              "format": "ppa",
+              "rank": 73,
+              "of": 205
+            },
+            "pass": {
+              "label": "Dropbacks EPA per play",
+              "value": 0.512,
+              "better": "high",
+              "format": "ppa",
+              "rank": 8,
+              "of": 204
+            },
+            "rush": {
+              "label": "Rushes EPA per play",
+              "value": 0.503,
+              "better": "high",
+              "format": "ppa",
+              "rank": 28,
+              "of": 202
+            },
+            "standardDowns": {
+              "label": "Standard downs EPA per play",
+              "value": 0.488,
+              "better": "high",
+              "format": "ppa",
+              "rank": 8,
+              "of": 205
+            },
+            "passingDowns": {
+              "label": "Passing downs EPA per play",
+              "value": -0.117,
+              "better": "high",
+              "format": "ppa",
+              "rank": 191,
+              "of": 204
+            },
+            "firstDown": {
+              "label": "1st down EPA per play",
+              "value": 0.267,
+              "better": "high",
+              "format": "ppa",
+              "rank": 25,
+              "of": 204
+            },
+            "secondDown": {
+              "label": "2nd down EPA per play",
+              "value": 0.326,
+              "better": "high",
+              "format": "ppa",
+              "rank": 61,
+              "of": 203
+            },
+            "thirdDown": {
+              "label": "3rd down EPA per play",
+              "value": -0.014,
+              "better": "high",
+              "format": "ppa",
+              "rank": 190,
+              "of": 204
+            }
+          },
           "depth_rank": 2
         }
       ],
@@ -35400,6 +35398,15 @@
       "home_injuries": {
         "players": [
           {
+            "player": "Sean FitzSimmons",
+            "position": "DT",
+            "status": "Out",
+            "injury": "Undisclosed",
+            "return": "Nov 21st",
+            "updated": "Nov 13 7:00 PM",
+            "source": "RotoWire"
+          },
+          {
             "player": "Rodney Dunbar",
             "position": "WR",
             "status": "Out",
@@ -35409,18 +35416,9 @@
             "source": "RotoWire"
           },
           {
-            "player": "Sean FitzSimmons",
-            "position": "DT",
-            "status": "Questionable",
-            "injury": "Undisclosed",
-            "return": "Nov 13th",
-            "updated": "Nov 13 7:00 PM",
-            "source": "RotoWire"
-          },
-          {
             "player": "Holden Geriner",
             "position": "QB",
-            "status": "Questionable",
+            "status": "Doubtful",
             "injury": "Undisclosed",
             "return": "Nov 13th",
             "updated": "Nov 13 7:00 PM",
@@ -35440,7 +35438,7 @@
         "sources": "Covers, RotoWire"
       },
       "away_starter": "Ashton Daniels",
-      "home_starter": "Holden Geriner"
+      "home_starter": "Mason Heintschel"
     },
     {
       "id": "ILL@UCLA",
@@ -35466,8 +35464,8 @@
       "venue_city": "Pasadena, CA",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 62,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 61,
+      "weather_cond": "Showers",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -39447,7 +39445,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN",
       "weather_temp": 47,
-      "weather_cond": "Mostly clear",
+      "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -43394,7 +43392,7 @@
       "venue_city": "Starkville, MS",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 51,
+      "weather_temp": 52,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -59087,7 +59085,7 @@
       "venue_city": "Columbus, OH",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 40,
+      "weather_temp": 41,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -67017,7 +67015,7 @@
       "venue_city": "Dallas, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN, Disney+",
-      "weather_temp": 57,
+      "weather_temp": 56,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -102351,7 +102349,7 @@
       "venue_city": "Fort Worth, TX",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 61,
+      "weather_temp": 59,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -106292,7 +106290,7 @@
       "venue_city": "Houston, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 64,
+      "weather_temp": 65,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -110256,7 +110254,7 @@
       "venue_city": "Newark, DE",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 50,
+      "weather_temp": 49,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -114218,7 +114216,7 @@
       "venue_city": "Springfield, MO",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 48,
+      "weather_temp": 50,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -118170,7 +118168,7 @@
       "venue_city": "College Station, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 65,
+      "weather_temp": 68,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -129997,7 +129995,7 @@
       "venue_city": "Notre Dame, IN",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 42,
+      "weather_temp": 43,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -137843,7 +137841,7 @@
       "venue_city": "Tulsa, OK",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 54,
+      "weather_temp": 55,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -141765,7 +141763,7 @@
       "venue_city": "Atlanta, GA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 55,
+      "weather_temp": 56,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -145725,7 +145723,7 @@
       "venue_city": "Bowling Green, KY",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 51,
+      "weather_temp": 52,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -149614,7 +149612,7 @@
       "venue_city": "Eugene, OR",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 59,
+      "weather_temp": 60,
       "weather_cond": "Showers",
       "away_form": {
         "rates": {
@@ -157524,7 +157522,7 @@
       "venue_city": "Lynchburg, VA",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 50,
+      "weather_temp": 51,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -165434,7 +165432,7 @@
       "venue_city": "Bloomington, IN",
       "roof": "Outdoor",
       "broadcast": "CBS",
-      "weather_temp": 49,
+      "weather_temp": 48,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -173274,7 +173272,7 @@
       "venue_city": "Norman, OK",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 56,
+      "weather_temp": 55,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -177098,7 +177096,7 @@
       "venue_city": "East Lansing, MI",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 44,
+      "weather_temp": 43,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -181063,7 +181061,7 @@
       "venue_city": "Ruston, LA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 58,
+      "weather_temp": 57,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -188944,7 +188942,7 @@
       "venue_city": "Huntington, WV",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 44,
+      "weather_temp": 43,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -204820,7 +204818,7 @@
       "venue_city": "Chapel Hill, NC",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 42,
+      "weather_temp": 43,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -212573,7 +212571,7 @@
       "venue_city": "Mobile, AL",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 52,
+      "weather_temp": 51,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -216565,7 +216563,7 @@
       "venue_city": "Iowa City, IA",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 40,
+      "weather_temp": 37,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -224270,7 +224268,7 @@
       "venue_city": "Baton Rouge, LA",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 56,
+      "weather_temp": 55,
       "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
@@ -228152,7 +228150,7 @@
       "venue_city": "Albuquerque, NM",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 53,
+      "weather_temp": 51,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -232116,7 +232114,7 @@
       "venue_city": "Tucson, AZ",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 67,
+      "weather_temp": 69,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -236065,7 +236063,7 @@
       "venue_city": "Fayetteville, AR",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 46,
+      "weather_temp": 47,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -243948,7 +243946,7 @@
       "venue_city": "Stillwater, OK",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 49,
+      "weather_temp": 48,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -247847,7 +247845,7 @@
       "venue_city": "San Diego, CA",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 64,
+      "weather_temp": 65,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -251820,7 +251818,7 @@
       "venue_city": "El Paso, TX",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 62,
+      "weather_temp": 60,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -259755,7 +259753,7 @@
       "venue_city": "Honolulu, HI",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 78,
+      "weather_temp": 77,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
