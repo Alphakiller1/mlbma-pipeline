@@ -926,8 +926,9 @@ def merge_nfl_injuries(espn: dict[str, list[dict]],
 def attach_nfl_values(injuries: dict[str, list[dict]], season: int) -> int:
     """Each listed player's value to the spread (outputs/nfl_injury_value.py):
     his position group's price on closing lines times his snap share when he
-    plays. Returns how many entries carry one; the lists ship without values
-    when nflverse is unreachable."""
+    plays, the part of it on the club's last three games (value_recent), and
+    the club's games in a row he has missed. Returns how many entries carry a
+    value; the lists ship without values when nflverse is unreachable."""
     try:
         table = nfl_injury_value.team_values(season)
     except Exception as exc:  # noqa: BLE001
@@ -939,6 +940,8 @@ def attach_nfl_values(injuries: dict[str, list[dict]], season: int) -> int:
         for entry in entries:
             row = people.get(nfl_injury_value.name_key(entry.get("name", "")))
             entry["value"] = row["value"] if row else None
+            if row:
+                entry["value_recent"], entry["missed"] = row.get("value_recent"), row.get("missed")
             found += row is not None
     return found
 

@@ -103,14 +103,16 @@
         detail: [i.reason, i.comment].filter(Boolean).join(' · ') || null, 'return': i.return_date || null,
         updated: i.date ? String(i.date).slice(0, 10) : null, player_id: i.player_id || null,
         value: i.value != null ? Number(i.value) : null, official: isOfficial,
+        value_recent: i.value_recent != null ? Number(i.value_recent) : null,
+        missed: i.missed != null ? Number(i.missed) : null,
         plays: rate ? rate.played : null, plays_n: rate ? rate.n : null, plays_basis: rate ? rate.basis : null };
     }).sort(function (a, b) {
       return (order[a.status] == null ? 9 : order[a.status]) - (order[b.status] == null ? 9 : order[b.status]) ||
         (b.value || 0) - (a.value || 0);
     });
     return { players: players, sources: official ? 'NBA official injury report, ESPN' : 'ESPN injury report',
-      value_note: 'Points of tonight’s margin his club gives up without him: the player model (RAPM ' +
-        '× expected minutes) with him minus without him, his minutes going to the next men up',
+      value_note: 'Points of the spread his club gives up without him: closing lines (2025–26) priced ' +
+        'a missing regular’s minutes and his box-score production, read over his last ten appearances',
       plays_note: rates && rates.seasons ? 'official report an hour before tip, joined to box scores, ' +
         rates.seasons.length + ' seasons' : null };
   }
@@ -318,6 +320,9 @@
           row.source = official ? 'official' : 'espn';
           row.reason = pub ? pub.reason || null : null;
           row.value = pub && pub.value != null ? pub.value : (values[r.player_id] != null ? values[r.player_id] : null);
+          // A player listed since the publish has no recent read; his value stands.
+          row.value_recent = pub && pub.value_recent != null ? pub.value_recent : null;
+          row.missed = pub && pub.missed != null ? pub.missed : null;
           return row;
         });
         published.forEach(function (r) { if (r.source === 'official' && !seen[r.player_id]) merged.push(r); });

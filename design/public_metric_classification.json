@@ -1159,7 +1159,9 @@
     "designation_play_rates",
     "by_status",
     "by_status_reason",
-    "by_status_practice"
+    "by_status_practice",
+    "value_recent",
+    "missed"
   ],
   "contextual_environment": [
     "away_rest_days",

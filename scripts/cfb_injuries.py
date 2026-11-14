@@ -84,9 +84,11 @@ def parse_rotowire(text: str) -> dict[str, list[dict]]:
         school = row.get("RotoSchoolName") or row.get("team")
         if not school or not row.get("player"):
             continue
+        tag = str(row.get("IR") or "").strip()
         out.setdefault(_norm(school), []).append({
             "player": row.get("player"), "position": row.get("position"),
-            "status": str(row.get("IR") or "").strip() or None,
+            # The table tags as the player card does ("OFS"); the report's words.
+            "status": CARD_STATUS.get(tag.upper(), tag) or None,
             "injury": row.get("injury_type") or None,
             "return": row.get("ReturnDate") or None,
             "updated": row.get("date") or None, "source": "RotoWire",

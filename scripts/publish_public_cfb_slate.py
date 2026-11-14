@@ -20,9 +20,10 @@ from pathlib import Path
 try:  # run as a script (scripts/ on the path) or imported as scripts.*
     import cfb_depth
     import cfb_injuries
+    import cfb_injury_value
     import cfb_power
 except ImportError:  # pragma: no cover - package import in tests
-    from scripts import cfb_depth, cfb_injuries, cfb_power
+    from scripts import cfb_depth, cfb_injuries, cfb_injury_value, cfb_power
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "public" / "cfb" / "slate.json"
@@ -918,8 +919,10 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict,
         # An empty list is a published report with nobody listed; None is no report.
         injuries = depth.get("injuries") or {}
         if injuries:
-            row[side + "_injuries"] = {"players": injuries.get(key, []),
-                                       "sources": "Covers, RotoWire"}
+            # Each listed player's value to the spread (cfb_injury_value.py).
+            players = [dict(entry) for entry in injuries.get(key, [])]
+            cfb_injury_value.attach(players, (depth.get("usage") or {}).get(abbr) or {})
+            row[side + "_injuries"] = {"players": players, "sources": "Covers, RotoWire"}
         if not row.get(side + "_record"):
             row[side + "_record"] = _record((log or {}).get("games"))
     return {key: value for key, value in row.items() if value not in (None, "", [], {})}
@@ -964,6 +967,7 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
             if key.startswith("name:") and (profile.get("overall") or {}).get("value") is not None}),
         "injuries": cfb_injuries.load(),
         "last_game": cfb_depth.last_game_players(season, week, wanted),
+        "usage": cfb_depth.recent_usage(season, week, wanted),
         "power": load_power(season),
     }
     print(f"  depth: {len(advanced)} CFBD team profiles, {len(depth['qbs'])} QB rooms, "
