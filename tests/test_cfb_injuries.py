@@ -47,7 +47,7 @@ CARD = """<div class="p-card__injury"> <div class="tag">{tag}</div>
 
 def test_card_reads_designation_injury_and_return():
     assert ci.parse_card(CARD.format(tag="Questionable")) == {
-        "status": "Questionable", "injury": "Leg", "return": "10/20/2026"}
+        "status": "Questionable", "injury": "Leg", "return": "2026-10-20"}   # ISO: the page writes "Oct 20"
     assert ci.parse_card(CARD.format(tag="OFS"))["status"] == "Out For Season"
     assert ci.parse_card("<div class='p-card__player'>healthy</div>")["status"] is None
 
@@ -113,3 +113,49 @@ def test_designations_past_their_game_expire():
     ]}
     assert ci.expire(merged, date(2026, 11, 12)) == 2
     assert [e["player"] for e in merged["memphis"]] == ["L. Szarka", "R. Ir", "M. Fresh", "Michael Van Buren"]
+
+
+def test_return_dates_read_every_rotowire_form():
+    from datetime import date
+    today = date(2026, 11, 14)
+    assert ci.return_date("Nov 21st", today) == date(2026, 11, 21)
+    assert ci.return_date("Mar 1st", today) == date(2027, 3, 1)      # next spring, not last
+    assert ci.return_date("Oct 8th", today) == date(2026, 10, 8)     # recent past stays past
+    assert ci.return_date("3/1/2027", today) == ci.return_date("2027-03-01", today) == date(2027, 3, 1)
+    assert ci.return_date("Undisclosed", today) is None and ci.return_date(None, today) is None
+
+
+def test_long_designations_survive_rotowire_rotating_to_other_schools():
+    """2026-11-14: RotoWire's table moved on from Pittsburgh and Mason
+    Heintschel (out for the season) vanished from the report."""
+    from datetime import date
+    previous = {
+        "pittsburgh": [
+            {"player": "Mason Heintschel", "position": "QB", "status": "Out For Season", "return": "Mar 1st",
+             "source": "RotoWire + Covers", "value": 2.55, "value_recent": 0.0, "missed": 4},
+            {"player": "Sean FitzSimmons", "position": "DT", "status": "Out", "return": "Nov 21st", "source": "RotoWire"},
+            {"player": "Holden Geriner", "position": "QB", "status": "Doubtful", "return": "Nov 13th", "source": "RotoWire"},
+            {"player": "Old Ankle", "position": "WR", "status": "Out", "return": "Nov 1st", "source": "RotoWire"},
+            {"player": "Covers Only", "position": "RB", "status": "Out For Season", "source": "Covers"},
+            {"player": "Open Ended", "position": "LB", "status": "Out", "source": "RotoWire"},
+        ],
+        "ncstate": [{"player": "Popo Aguirre", "status": "Out", "return": "Dec 1st", "source": "RotoWire"}],
+    }
+    merged = {"pittsburgh": [{"player": "S. FitzSimmons", "position": "DT", "status": "Out", "source": "Covers"}],
+              "ncstate": []}
+    carried = ci.carry_forward(merged, previous, covered={"ncstate"}, today=date(2026, 11, 14))
+    assert carried == 1
+    pitt = merged["pittsburgh"]
+    assert [e["player"] for e in pitt] == ["S. FitzSimmons", "Mason Heintschel"]   # not listed twice
+    assert "value" not in pitt[1] and "missed" not in pitt[1]   # re-valued on this run's box scores
+    assert merged["ncstate"] == []   # RotoWire covers NC State now: a player it dropped is back
+
+
+def test_a_stale_covers_qb_is_checked_before_it_expires(monkeypatch):
+    stale = COVERS.replace("G. Reimer</span></td><td>TE", "G. Reimer</span></td><td>QB").replace(
+        "(Mon, Sep 28)", "(Sat, Oct 17)")
+    monkeypatch.setattr(ci, "_fetch", lambda url: stale if "covers" in url else "[]")
+    monkeypatch.setattr(ci, "rotowire_card", lambda player, school, position: {
+        "status": "Out For Season", "injury": "Knee", "return": "2027-03-01"})
+    merged = ci.load()
+    assert [(e["player"], e["status"]) for e in merged["westernkentucky"]] == [("G. Reimer", "Out For Season")]

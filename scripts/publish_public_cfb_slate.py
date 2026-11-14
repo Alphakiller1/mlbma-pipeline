@@ -942,6 +942,21 @@ def load_power(season: int) -> dict:
     return built
 
 
+def previous_injuries(path: Path = OUT) -> dict[str, list[dict]]:
+    """The last published injury report by school, for cfb_injuries.carry_forward."""
+    try:
+        slate = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    out: dict[str, list[dict]] = {}
+    for game in slate.get("games") or []:
+        for side in ("away", "home"):
+            players = (game.get(side + "_injuries") or {}).get("players")
+            if game.get(side + "_name") and players:
+                out[cfb_depth._norm(game[side + "_name"])] = players
+    return out
+
+
 def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | None = None) -> dict:
     """Run game, scheme stats, QBs, ball carriers and game logs (cfb_depth)."""
     rows = cfb_depth.advanced_rows(season)
@@ -965,7 +980,7 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
         "schedule": cfb_depth.schedule_strength(season, {
             key[5:]: profile["overall"]["value"] for key, profile in (adjusted or {}).items()
             if key.startswith("name:") and (profile.get("overall") or {}).get("value") is not None}),
-        "injuries": cfb_injuries.load(),
+        "injuries": cfb_injuries.load(previous_injuries()),
         "last_game": cfb_depth.last_game_players(season, week, wanted),
         "usage": cfb_depth.recent_usage(season, week, wanted),
         "power": load_power(season),
