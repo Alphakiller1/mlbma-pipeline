@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-14",
- "generated_at_utc": "2026-11-14T18:09:51+00:00",
+ "generated_at_utc": "2026-11-14T18:46:18+00:00",
  "data_through_utc": "2026-11-14T03:30Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -4030,7 +4030,9 @@
      "comment": "Strawther (knee) was diagnosed with a left knee sprain Friday and will be re-evaluated in six weeks, Vinny Benedetto of The Denver Gazette reports.",
      "date": "2026-10-17T00:52Z",
      "return_date": "2026-11-29",
-     "value": 1.51
+     "value": 1.51,
+     "value_recent": 0.0,
+     "missed": null
     },
     {
      "player_id": "5105592",
@@ -4042,7 +4044,9 @@
      "comment": null,
      "date": null,
      "return_date": null,
-     "value": 0.26
+     "value": 0.26,
+     "value_recent": 0.0,
+     "missed": 7
     },
     {
      "player_id": "4433629",
@@ -4054,7 +4058,9 @@
      "comment": null,
      "date": null,
      "return_date": null,
-     "value": 0.13
+     "value": 0.13,
+     "value_recent": 0.13,
+     "missed": 3
     },
     {
      "player_id": "4433607",
@@ -4066,7 +4072,9 @@
      "comment": null,
      "date": null,
      "return_date": null,
-     "value": 0.09
+     "value": 0.09,
+     "value_recent": 0.09,
+     "missed": 1
     }
    ],
    "home_form": {
@@ -8045,7 +8053,9 @@
      "comment": "Murphy (knees) has been ruled out for Saturday's game against the Nuggets.",
      "date": "2026-11-14T17:53Z",
      "return_date": "2026-11-16",
-     "value": 1.66
+     "value": 1.66,
+     "value_recent": 1.73,
+     "missed": 3
     },
     {
      "player_id": "3907497",
@@ -8057,7 +8067,9 @@
      "comment": "Murray (ankle) is out for Friday's game against Memphis.",
      "date": "2026-11-13T20:19Z",
      "return_date": "2026-11-20",
-     "value": 1.48
+     "value": 1.48,
+     "value_recent": 1.23,
+     "missed": 1
     },
     {
      "player_id": "4431675",
@@ -8069,7 +8081,9 @@
      "comment": "Watford (ankle) has been ruled out for Saturday's game against Denver.",
      "date": "2026-11-14T17:58Z",
      "return_date": "2026-11-16",
-     "value": 0.75
+     "value": 0.75,
+     "value_recent": 0.75,
+     "missed": 3
     },
     {
      "player_id": "4576086",
@@ -8081,7 +8095,9 @@
      "comment": "McGowens (elbow) has been ruled out for Saturday's game against the Nuggets.",
      "date": "2026-11-14T17:55Z",
      "return_date": "2026-11-16",
-     "value": 0.38
+     "value": 0.38,
+     "value_recent": 0.38,
+     "missed": 1
     },
     {
      "player_id": "5061589",
@@ -8093,7 +8109,9 @@
      "comment": "Missi (knee) has been upgraded to probable for Saturday's game versus the Nuggets.",
      "date": "2026-11-14T18:01Z",
      "return_date": "2026-11-14",
-     "value": 1.34
+     "value": 1.34,
+     "value_recent": 0.0,
+     "missed": 11
     }
    ]
   },
@@ -11891,7 +11909,9 @@
      "comment": "Lively (foot) is listed as out for Thursday's game in Minnesota.",
      "date": "2026-11-11T22:13Z",
      "return_date": "2026-11-18",
-     "value": 0.62
+     "value": 0.62,
+     "value_recent": 0.0,
+     "missed": null
     },
     {
      "player_id": "5279129",
@@ -11903,7 +11923,9 @@
      "comment": "De Larrea (knee) has been ruled out for Thursday's game at Minnesota.",
      "date": "2026-11-11T22:10Z",
      "return_date": "2026-11-18",
-     "value": 0.42
+     "value": 0.42,
+     "value_recent": 0.0,
+     "missed": 8
     },
     {
      "player_id": "5148538",
@@ -11923,11 +11945,13 @@
      "status": "Doubtful",
      "source": "official",
      "reason": "Injury/Illness - Left Ankle Sprain",
-     "detail": "Ankle",
-     "comment": "Christie is questionable for Saturday's game against the Cavaliers due to a sprained left ankle.",
-     "date": "2026-11-13T22:06Z",
+     "detail": "Left Ankle Sprain",
+     "comment": "Christie (ankle) has been downgraded to doubtful for Saturday's game against the Cavaliers",
+     "date": "2026-11-14T18:23Z",
      "return_date": "2026-11-14",
-     "value": 0.6
+     "value": 0.6,
+     "value_recent": 0.51,
+     "missed": 0
     },
     {
      "player_id": "4873153",
@@ -11939,7 +11963,9 @@
      "comment": "Johnson (left shin contusion) is listed as probable for Saturday against Cleveland.",
      "date": "2026-11-13T22:05Z",
      "return_date": "2026-11-14",
-     "value": 0.66
+     "value": 0.66,
+     "value_recent": 0.66,
+     "missed": 0
     }
    ],
    "home_form": {
@@ -14287,7 +14313,7 @@
       "player_name": "James Harden",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3992.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 32.8,
       "ppg": 16.9,
       "height_in": 76.0,
@@ -14463,7 +14489,7 @@
       "player_name": "Donovan Mitchell",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3908809.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 32.8,
       "ppg": 23.0,
       "height_in": 74.0,
@@ -14647,7 +14673,7 @@
       "player_name": "Evan Mobley",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4432158.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 32.1,
       "ppg": 16.9,
       "height_in": 83.0,
@@ -14831,7 +14857,7 @@
       "player_name": "Peyton Watson",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4576087.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 28.0,
       "ppg": 10.4,
       "height_in": 79.0,
@@ -15000,7 +15026,7 @@
       "player_name": "Jarrett Allen",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066328.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 25.8,
       "ppg": 12.5,
       "height_in": 81.0,
@@ -15851,40 +15877,102 @@
    ],
    "home_injuries": [
     {
+     "player_id": "4432158",
+     "player_name": "Evan Mobley",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Left Great Toe Sprain",
+     "detail": "Left Toe Sprain",
+     "comment": "Mobley (toe) is out for Friday's game against the Heat.",
+     "date": "2026-11-14T18:32Z",
+     "return_date": "2026-11-16",
+     "value": 1.84,
+     "value_recent": 1.8,
+     "missed": 1
+    },
+    {
      "player_id": "5106268",
      "player_name": "Nae'Qwan Tomlin",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Low Back Stress Reaction",
      "detail": "Back",
      "comment": "Tomlin is set to miss several weeks with a lower back stress reaction, Chris Fedor of The Cleveland Plain Dealer reports.",
      "date": "2026-10-20T15:11Z",
      "return_date": "2026-11-16",
-     "value": 1.27
+     "value": 1.27,
+     "value_recent": 0.0,
+     "missed": null
     },
     {
      "player_id": "4066757",
      "player_name": "Sam Merrill",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Right Elbow Injury Management",
      "detail": "Right Elbow",
      "comment": "Merrill (elbow) is listed as out for Wednesday's game against the Knicks.",
      "date": "2026-11-10T22:12Z",
      "return_date": "2026-11-16",
-     "value": 0.93
+     "value": 0.93,
+     "value_recent": 0.89,
+     "missed": 4
     },
     {
-     "player_id": "4432158",
-     "player_name": "Evan Mobley",
-     "status": "Day-To-Day",
-     "source": "espn",
-     "reason": null,
-     "detail": "Toe",
-     "comment": "Mobley (toe) is out for Friday's game against the Heat.",
-     "date": "2026-11-14T15:01Z",
+     "player_id": "3908809",
+     "player_name": "Donovan Mitchell",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Left Knee Contusion/Injury Management",
+     "detail": "Left Knee Bruise",
+     "comment": "Mitchell (knee) is listed as questionable for Saturday's game against the Mavericks.",
+     "date": "2026-11-14T18:31Z",
      "return_date": "2026-11-14",
-     "value": 1.84
+     "value": 2.06,
+     "value_recent": 2.06,
+     "missed": 0
+    },
+    {
+     "player_id": "3992",
+     "player_name": "James Harden",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Left Lower Leg/Calf Tightness",
+     "detail": "Left Calf",
+     "comment": "Harden (left lower leg/calf tightness) is listed as questionable for Saturday's game against the Mavericks.",
+     "date": "2026-11-14T18:28Z",
+     "return_date": "2026-11-14",
+     "value": 1.78,
+     "value_recent": 1.78,
+     "missed": 0
+    },
+    {
+     "player_id": "4066328",
+     "player_name": "Jarrett Allen",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Right Knee Injury",
+     "detail": "Right Knee",
+     "comment": "Allen (knee) is listed as questionable for Saturday's game against Dallas.",
+     "date": "2026-11-14T18:31Z",
+     "return_date": "2026-11-14",
+     "value": 1.5,
+     "value_recent": 1.42,
+     "missed": 0
+    },
+    {
+     "player_id": "4576087",
+     "player_name": "Peyton Watson",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Right Hamstring Injury Management",
+     "detail": "Right Hamstring",
+     "comment": "Watson supplied seven points (2-12 FG, 2-5 3Pt, 1-2 FT), five rebounds, four assists and four blocks over 30 minutes in Wednesday's 115-107 win over the Knicks.",
+     "date": "2026-11-14T18:32Z",
+     "return_date": "2026-11-14",
+     "value": 1.12,
+     "value_recent": 1.03,
+     "missed": 0
     }
    ]
   },
@@ -19828,13 +19916,13 @@
      "value": 0.99
     },
     {
-     "player_id": "4683771",
-     "player_name": "Ronald Holland II",
+     "player_id": "2596112",
+     "player_name": "Javonte Green",
      "value": 0.62
     },
     {
-     "player_id": "2596112",
-     "player_name": "Javonte Green",
+     "player_id": "4683771",
+     "player_name": "Ronald Holland II",
      "value": 0.62
     },
     {
@@ -19874,7 +19962,9 @@
      "comment": "Duren (hamstring) has begun on-court activity and will be re-evaluated in two weeks, Hunter Patterson of The Athletic reports.",
      "date": "2026-11-08T16:05Z",
      "return_date": "2026-11-24",
-     "value": 1.28
+     "value": 1.28,
+     "value_recent": 0.0,
+     "missed": 9
     },
     {
      "player_id": "4395702",
@@ -19886,7 +19976,9 @@
      "comment": "Joe (hip) is out for Monday against the Wizards.",
      "date": "2026-11-09T18:54Z",
      "return_date": "2026-11-17",
-     "value": 0.5
+     "value": 0.5,
+     "value_recent": 0.0,
+     "missed": 8
     },
     {
      "player_id": "5258459",
@@ -19898,7 +19990,9 @@
      "comment": null,
      "date": null,
      "return_date": null,
-     "value": 0.14
+     "value": 0.14,
+     "value_recent": 0.14,
+     "missed": 1
     },
     {
      "player_id": "5037878",
@@ -22673,7 +22767,7 @@
       "player_name": "Giannis Antetokounmpo",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3032977.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 32.6,
       "ppg": 28.5,
       "height_in": 83.0,
@@ -23903,7 +23997,9 @@
      "comment": null,
      "date": null,
      "return_date": null,
-     "value": 0.08
+     "value": 0.08,
+     "value_recent": 0.0,
+     "missed": null
     },
     {
      "player_id": "4601025",
@@ -23912,10 +24008,12 @@
      "source": "official",
      "reason": "Injury/Illness - Illness",
      "detail": "Illness",
-     "comment": "Larsson (illness) is out for Friday's game against Cleveland.",
-     "date": "2026-11-14T15:02Z",
+     "comment": "Larsson (illness) is listed as doubtful for Saturday's game against Detroit.",
+     "date": "2026-11-14T18:12Z",
      "return_date": "2026-11-14",
-     "value": 1.39
+     "value": 1.39,
+     "value_recent": 1.46,
+     "missed": 1
     },
     {
      "player_id": "3032977",
@@ -23923,11 +24021,13 @@
      "status": "Probable",
      "source": "official",
      "reason": "Injury/Illness - Right Wrist Sprain",
-     "detail": null,
-     "comment": null,
-     "date": null,
-     "return_date": null,
-     "value": 3.03
+     "detail": "Right Wrist Sprain",
+     "comment": "Antetokounmpo (wrist) is listed as probable for Saturday's game against Detroit.",
+     "date": "2026-11-14T18:07Z",
+     "return_date": "2026-11-14",
+     "value": 3.03,
+     "value_recent": 3.03,
+     "missed": 0
     },
     {
      "player_id": "6475",
@@ -23935,11 +24035,13 @@
      "status": "Probable",
      "source": "official",
      "reason": "Injury/Illness - Left Ankle Sprain",
-     "detail": "Left Ankle Soreness",
-     "comment": "Thompson (ankle) is out for Friday's game against the Cavaliers.",
-     "date": "2026-11-14T15:01Z",
+     "detail": "Left Ankle Sprain",
+     "comment": "Thompson (ankle) is listed as probable for Saturday's game against the Pistons.",
+     "date": "2026-11-14T18:10Z",
      "return_date": "2026-11-14",
-     "value": 1.16
+     "value": 1.16,
+     "value_recent": 1.24,
+     "missed": 1
     }
    ]
   },
@@ -27939,7 +28041,9 @@
      "comment": null,
      "date": null,
      "return_date": null,
-     "value": 0.32
+     "value": 0.32,
+     "value_recent": 0.0,
+     "missed": null
     },
     {
      "player_id": "5242502",
@@ -27951,7 +28055,9 @@
      "comment": null,
      "date": null,
      "return_date": null,
-     "value": 0.14
+     "value": 0.14,
+     "value_recent": 0.0,
+     "missed": 8
     },
     {
      "player_id": "4870564",
@@ -27963,7 +28069,9 @@
      "comment": null,
      "date": null,
      "return_date": null,
-     "value": 0.13
+     "value": 0.13,
+     "value_recent": 0.0,
+     "missed": 8
     },
     {
      "player_id": "5105626",
@@ -27987,7 +28095,9 @@
      "comment": "Traore (calf) is listed as probable for Saturday's game against Memphis.",
      "date": "2026-11-13T22:07Z",
      "return_date": "2026-11-14",
-     "value": 1.08
+     "value": 1.08,
+     "value_recent": 1.2,
+     "missed": 1
     },
     {
      "player_id": "5101761",
@@ -27999,7 +28109,9 @@
      "comment": "Brown (illness) has been upgraded to probable for Saturday's game at Memphis.",
      "date": "2026-11-14T17:19Z",
      "return_date": "2026-11-14",
-     "value": 0.96
+     "value": 0.96,
+     "value_recent": 1.03,
+     "missed": 2
     }
    ],
    "home_form": {
@@ -31948,7 +32060,9 @@
      "comment": "Pippen (back) remains out for Wednesday's game against Denver, Michael Wallace of the Grizzlies' official site reports.",
      "date": "2026-11-10T23:09Z",
      "return_date": "2026-11-21",
-     "value": 0.6
+     "value": 0.6,
+     "value_recent": 0.5,
+     "missed": 7
     },
     {
      "player_id": "5105462",
@@ -31972,7 +32086,9 @@
      "comment": "Edey won't play in Friday's game against the Pelicans due to left ankle injury management.",
      "date": "2026-11-14T15:02Z",
      "return_date": "2026-11-14",
-     "value": 0.9
+     "value": 0.9,
+     "value_recent": 0.85,
+     "missed": 1
     },
     {
      "player_id": "4593016",
@@ -31984,7 +32100,9 @@
      "comment": "Post (concussion) has been ruled out for Friday's game against New Orleans.",
      "date": "2026-11-14T15:02Z",
      "return_date": "2026-11-14",
-     "value": 0.45
+     "value": 0.45,
+     "value_recent": 0.39,
+     "missed": 2
     }
    ]
   },
@@ -35995,7 +36113,9 @@
      "comment": "Wilson (hand) is expected to miss four to six weeks, Shams Charania of ESPN reports.",
      "date": "2026-11-12T21:35Z",
      "return_date": "2026-12-13",
-     "value": 1.59
+     "value": 1.59,
+     "value_recent": 1.73,
+     "missed": 1
     },
     {
      "player_id": "5105555",
@@ -36004,10 +36124,12 @@
      "source": "official",
      "reason": "Injury/Illness - Disc Irritation",
      "detail": "Back",
-     "comment": "Awaka (back) has been ruled out for Friday's game against the Hawks.",
-     "date": "2026-11-14T15:00Z",
-     "return_date": "2026-11-14",
-     "value": 0.38
+     "comment": "Awaka has been ruled out for Saturday's game against the Timberwolves.",
+     "date": "2026-11-14T18:10Z",
+     "return_date": "2026-11-16",
+     "value": 0.38,
+     "value_recent": 0.31,
+     "missed": 4
     },
     {
      "player_id": "4848625",
@@ -36015,11 +36137,13 @@
      "status": "Out",
      "source": "official",
      "reason": "G League - On Assignment",
-     "detail": "Right Back",
-     "comment": "Swain (back) is out for Friday's game against the Hawks.",
-     "date": "2026-11-14T15:00Z",
-     "return_date": "2026-11-14",
-     "value": 0.31
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.31,
+     "value_recent": 0.0,
+     "missed": 3
     },
     {
      "player_id": "4898010",
@@ -36031,7 +36155,9 @@
      "comment": null,
      "date": null,
      "return_date": null,
-     "value": 0.28
+     "value": 0.28,
+     "value_recent": 0.25,
+     "missed": 1
     },
     {
      "player_id": "2595516",
@@ -36043,7 +36169,9 @@
      "comment": "Powell (back) is listed as questionable for Saturday's game against Minnesota.",
      "date": "2026-11-14T17:57Z",
      "return_date": "2026-11-14",
-     "value": 1.67
+     "value": 1.67,
+     "value_recent": 1.73,
+     "missed": 0
     },
     {
      "player_id": "4397189",
@@ -36055,7 +36183,9 @@
      "comment": "Smith (finger) is listed as questionable for Saturday's game at Minnesota.",
      "date": "2026-11-14T18:00Z",
      "return_date": "2026-11-14",
-     "value": 1.37
+     "value": 1.37,
+     "value_recent": 1.37,
+     "missed": 0
     },
     {
      "player_id": "4278067",
@@ -36063,11 +36193,13 @@
      "status": "Questionable",
      "source": "official",
      "reason": "Injury/Illness - Left Hamstring Injury Management",
-     "detail": null,
-     "comment": null,
-     "date": null,
-     "return_date": null,
-     "value": 0.92
+     "detail": "Left Hamstring",
+     "comment": "Claxton (hamstring) is listed as questionable for Saturday's game against the Timberwolves.",
+     "date": "2026-11-14T18:08Z",
+     "return_date": "2026-11-14",
+     "value": 0.92,
+     "value_recent": 0.92,
+     "missed": 0
     }
    ],
    "home_form": {
@@ -40020,7 +40152,9 @@
      "comment": "Edwards underwent a successful arthroscopic procedure on his right knee Thursday, the Timberwolves announced.",
      "date": "2026-10-29T18:33Z",
      "return_date": "2026-12-21",
-     "value": 2.85
+     "value": 2.85,
+     "value_recent": 0.0,
+     "missed": 8
     },
     {
      "player_id": "3934673",
@@ -40032,12 +40166,14 @@
      "comment": "DiVincenzo (Achilles) remains confident that he'll return during the 2026-27 season, Jon Krawczynski of The Athletic reports.",
      "date": "2026-10-05T20:53Z",
      "return_date": "2027-04-02",
-     "value": 1.75
+     "value": 1.75,
+     "value_recent": 0.0,
+     "missed": null
     }
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-14_01_00PM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-14_01_45PM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -40170,5 +40306,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-14T18:11:01+00:00"
+ "published_at_utc": "2026-11-14T18:47:52+00:00"
 }
