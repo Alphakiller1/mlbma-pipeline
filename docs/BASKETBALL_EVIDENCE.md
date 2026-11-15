@@ -24,6 +24,10 @@ directions appropriately.
 Zone/eFG comparisons use the same shot-source definitions as their counts.
 CBBAnalytics zones6 and Chase coordinate zones keep separate league baselines.
 Never use a box-score baseline to shade a differently defined shot sample.
+The current-season export reconciles the Basketball Quant team-rate game
+counts against the D-I fixture calendar to choose a cutoff for coordinate
+shots and ESPN box estimates. The publisher requires at least 97% agreement
+across the rated teams. Fixture scores and statuses update independently.
 
 The added Defense tab compares each offense's shot mix, rim/three-point accuracy
 and turnover patterns with the opposing defense. These are observed tendencies.
