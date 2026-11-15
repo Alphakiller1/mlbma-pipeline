@@ -770,6 +770,7 @@ NFL_NOTABLE_STATUS = {
 # A game designation is issued for one game by the club's official report;
 # a roster status (IR, PUP, a suspension) holds until the club changes it.
 NFL_GAME_DESIGNATIONS = {"out", "doubtful", "questionable"}
+NFL_UNAVAILABLE_QB = NFL_NOTABLE_STATUS - {"questionable"}
 NFL_COM_ALIASES = {"WAS": "WSH", "AZ": "ARI"}
 NFL_GAME_STATUS = {"out": "Out", "doubtful": "Doubtful", "questionable": "Questionable"}
 NFL_PRACTICE_STATUS = {
@@ -1072,6 +1073,22 @@ def availability_summary(entries: list[dict] | None) -> str:
     return " · ".join(parts) or f"{len(entries)} designated"
 
 
+def expected_nfl_qb(lineup: dict, players: list[dict], injuries: list[dict]) -> str | None:
+    """Project a quarterback from depth and game availability."""
+    unavailable = {_player_key(entry["name"]) for entry in injuries
+                   if entry["status"].lower() in NFL_UNAVAILABLE_QB}
+    offense = (lineup.get("offense") or {}).get("players") or []
+    depth = sorted(
+        (player for player in players if player.get("position") == "QB"),
+        key=lambda player: player.get("depth_rank") or 99,
+    )
+    for player in [*offense, *depth]:
+        name = player.get("name")
+        if player.get("position") == "QB" and name and _player_key(name) not in unavailable:
+            return name
+    return None
+
+
 ESPN_NFL_SCHEDULE = (
     "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/{team}/schedule"
 )
@@ -1178,6 +1195,7 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
     scheme = context.get("scheme") or {}
     players = context.get("players") or {}
     lineups = context.get("lineups") or {}
+    injuries = injuries or {}
     player_coverage = context.get("player_coverage") or {}
     player_scheme = context.get("player_scheme") or {}
     team_stats = context.get("team_stats") or {}
@@ -1286,13 +1304,12 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             broadcast = broadcasts[0].get("names", [None])[0] if isinstance(broadcasts[0], dict) else None
             if not broadcast and isinstance(broadcasts[0], dict):
                 broadcast = (broadcasts[0].get("media") or {}).get("shortName")
-        qbs = {}
-        for side, block in (("away", away), ("home", home)):
-            for athlete in (block.get("leaders") or []):
-                if str(athlete.get("name") or "").lower() in {"passingleader", "passing yards"}:
-                    leaders = athlete.get("leaders") or []
-                    if leaders:
-                        qbs[side] = (leaders[0].get("athlete") or {}).get("shortName")
+        def expected_qb(club: str) -> str | None:
+            if state != "scheduled":
+                return None
+            return expected_nfl_qb(lineups.get(club) or {}, players.get(club) or [],
+                                   injuries.get(club) or [])
+
         def record(block: dict) -> str | None:
             rows = block.get("records") or []
             return str(rows[0].get("summary")) if rows and rows[0].get("summary") else None
@@ -1330,12 +1347,12 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
                 "Indoor" if venue_data.get("indoor") is True
                 else ("Outdoor" if venue_data.get("indoor") is False else None)
             ),
-            "away_starter": qbs.get("away"),
-            "home_starter": qbs.get("home"),
-            "away_availability": availability_summary((injuries or {}).get(away_abbr)),
-            "home_availability": availability_summary((injuries or {}).get(home_abbr)),
-            "away_availability_list": (injuries or {}).get(away_abbr),
-            "home_availability_list": (injuries or {}).get(home_abbr),
+            "away_starter": expected_qb(away_abbr),
+            "home_starter": expected_qb(home_abbr),
+            "away_availability": availability_summary(injuries.get(away_abbr)),
+            "home_availability": availability_summary(injuries.get(home_abbr)),
+            "away_availability_list": injuries.get(away_abbr),
+            "home_availability_list": injuries.get(home_abbr),
             "away_score": away.get("score"),
             "home_score": home.get("score"),
             "game_state": state,
