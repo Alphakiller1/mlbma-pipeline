@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-14",
- "generated_at_utc": "2026-11-14T18:46:18+00:00",
+ "generated_at_utc": "2026-11-14T20:45:05+00:00",
  "data_through_utc": "2026-11-14T03:30Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -121,8 +121,8 @@
    "id": "401909980",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/14 - 7:00 PM EST",
+   "game_state": "live",
+   "status_detail": "6:36 - 2nd",
    "kickoff_utc": "2026-11-15T00:00Z",
    "away": "DEN",
    "home": "NO",
@@ -136,8 +136,8 @@
    "home_record": "4-9",
    "away_split_record": "3-2",
    "home_split_record": "3-5",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 40,
+   "home_score": 36,
    "venue": "Smoothie King Center",
    "venue_city": "New Orleans, LA",
    "broadcast": "GCSEN / Pelicans.com",
@@ -8040,6 +8040,21 @@
      "player_id": "4576086",
      "player_name": "Bryce McGowens",
      "value": 0.38
+    },
+    {
+     "player_id": "4683742",
+     "player_name": "Julian Reese",
+     "value": 0.17
+    },
+    {
+     "player_id": "4703115",
+     "player_name": "Jaron Pierre Jr.",
+     "value": 0.17
+    },
+    {
+     "player_id": "4712862",
+     "player_name": "Malik Dia",
+     "value": 0.13
     }
    ],
    "home_injuries": [
@@ -8100,6 +8115,34 @@
      "missed": 1
     },
     {
+     "player_id": "4683742",
+     "player_name": "Julian Reese",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.17,
+     "value_recent": 0.17,
+     "missed": 0
+    },
+    {
+     "player_id": "4712862",
+     "player_name": "Malik Dia",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.13,
+     "value_recent": 0.0,
+     "missed": 0
+    },
+    {
      "player_id": "5061589",
      "player_name": "Yves Missi",
      "status": "Probable",
@@ -8112,6 +8155,20 @@
      "value": 1.34,
      "value_recent": 0.0,
      "missed": 11
+    },
+    {
+     "player_id": "4703115",
+     "player_name": "Jaron Pierre Jr.",
+     "status": "Probable",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.17,
+     "value_recent": 0.0,
+     "missed": 0
     }
    ]
   },
@@ -8119,8 +8176,8 @@
    "id": "401909981",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/14 - 7:30 PM EST",
+   "game_state": "live",
+   "status_detail": "7:32 - 1st",
    "kickoff_utc": "2026-11-15T00:30Z",
    "away": "DAL",
    "home": "CLE",
@@ -8134,8 +8191,8 @@
    "home_record": "6-7",
    "away_split_record": "2-3",
    "home_split_record": "4-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 12,
+   "home_score": 13,
    "venue": "Rocket Arena",
    "venue_city": "Cleveland, OH",
    "broadcast": "KFAA-TV / MavsTV",
@@ -15883,8 +15940,8 @@
      "source": "official",
      "reason": "Injury/Illness - Left Great Toe Sprain",
      "detail": "Left Toe Sprain",
-     "comment": "Mobley (toe) is out for Friday's game against the Heat.",
-     "date": "2026-11-14T18:32Z",
+     "comment": "Mobley (toe) has been ruled out for Saturday's meeting with Dallas.",
+     "date": "2026-11-14T18:33Z",
      "return_date": "2026-11-16",
      "value": 1.84,
      "value_recent": 1.8,
@@ -15951,7 +16008,7 @@
      "player_name": "Jarrett Allen",
      "status": "Questionable",
      "source": "official",
-     "reason": "Injury/Illness - Right Knee Injury",
+     "reason": "Injury/Illness - Right Knee Injury Management",
      "detail": "Right Knee",
      "comment": "Allen (knee) is listed as questionable for Saturday's game against Dallas.",
      "date": "2026-11-14T18:31Z",
@@ -15967,8 +16024,8 @@
      "source": "official",
      "reason": "Injury/Illness - Right Hamstring Injury Management",
      "detail": "Right Hamstring",
-     "comment": "Watson supplied seven points (2-12 FG, 2-5 3Pt, 1-2 FT), five rebounds, four assists and four blocks over 30 minutes in Wednesday's 115-107 win over the Knicks.",
-     "date": "2026-11-14T18:32Z",
+     "comment": "Watson (hamstring) is listed as questionable for Saturday's game against the Mavericks.",
+     "date": "2026-11-14T18:38Z",
      "return_date": "2026-11-14",
      "value": 1.12,
      "value_recent": 1.03,
@@ -28090,7 +28147,7 @@
      "player_name": "Nolan Traore",
      "status": "Probable",
      "source": "official",
-     "reason": "Injury/Illness - Right Calf Tightness / Soreness",
+     "reason": "Injury/Illness - Right Calf Tightness /",
      "detail": "Right Calf Soreness",
      "comment": "Traore (calf) is listed as probable for Saturday's game against Memphis.",
      "date": "2026-11-13T22:07Z",
@@ -30686,7 +30743,7 @@
       "player_name": "Ty Jerome",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4065733.png",
-      "status": null,
+      "status": "Out",
       "mpg": 30.6,
       "ppg": 25.4,
       "height_in": 77.0,
@@ -31198,7 +31255,7 @@
       "player_name": "Jerami Grant",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/2991070.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 23.7,
       "ppg": 11.7,
       "height_in": 79.0,
@@ -32051,11 +32108,25 @@
    ],
    "home_injuries": [
     {
+     "player_id": "4065733",
+     "player_name": "Ty Jerome",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Right Hip Soreness",
+     "detail": "Right Hip Soreness",
+     "comment": "Jerome (hip) has been ruled out for Saturday's game against the Nets.",
+     "date": "2026-11-14T19:44Z",
+     "return_date": "2026-11-16",
+     "value": 1.96,
+     "value_recent": 1.95,
+     "missed": 0
+    },
+    {
      "player_id": "4431785",
      "player_name": "Scotty Pippen Jr.",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Lumbar Disc Herniation",
      "detail": "Back Soreness",
      "comment": "Pippen (back) remains out for Wednesday's game against Denver, Michael Wallace of the Grizzlies' official site reports.",
      "date": "2026-11-10T23:09Z",
@@ -32065,11 +32136,25 @@
      "missed": 7
     },
     {
+     "player_id": "4593016",
+     "player_name": "Quinten Post",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Concussion Protocol",
+     "detail": "Concussion",
+     "comment": "Post (concussion) has been ruled out for Saturday's game against the Nets.",
+     "date": "2026-11-14T19:47Z",
+     "return_date": "2026-11-16",
+     "value": 0.45,
+     "value_recent": 0.39,
+     "missed": 2
+    },
+    {
      "player_id": "5105462",
      "player_name": "Richie Saunders",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Right Knee Surgery",
      "detail": "Right Knee Surgery",
      "comment": "Saunders signed a two-way contract with the Grizzlies on Saturday, Shams Charania of ESPN reports.",
      "date": "2026-11-07T17:24Z",
@@ -32077,32 +32162,32 @@
      "value": null
     },
     {
+     "player_id": "2991070",
+     "player_name": "Jerami Grant",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Head Injury",
+     "detail": "Head",
+     "comment": "Grant (head) is questionable for Saturday's game against the Nets.",
+     "date": "2026-11-14T19:46Z",
+     "return_date": "2026-11-14",
+     "value": 1.04,
+     "value_recent": 1.04,
+     "missed": 0
+    },
+    {
      "player_id": "4600663",
      "player_name": "Zach Edey",
-     "status": "Day-To-Day",
-     "source": "espn",
-     "reason": null,
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Left Ankle Injury Management",
      "detail": "Left Ankle",
-     "comment": "Edey won't play in Friday's game against the Pelicans due to left ankle injury management.",
-     "date": "2026-11-14T15:02Z",
+     "comment": "Edey (ankle) is listed as questionable for Saturday's game against Brooklyn.",
+     "date": "2026-11-14T19:45Z",
      "return_date": "2026-11-14",
      "value": 0.9,
      "value_recent": 0.85,
      "missed": 1
-    },
-    {
-     "player_id": "4593016",
-     "player_name": "Quinten Post",
-     "status": "Day-To-Day",
-     "source": "espn",
-     "reason": null,
-     "detail": "Concussion",
-     "comment": "Post (concussion) has been ruled out for Friday's game against New Orleans.",
-     "date": "2026-11-14T15:02Z",
-     "return_date": "2026-11-14",
-     "value": 0.45,
-     "value_recent": 0.39,
-     "missed": 2
     }
    ]
   },
@@ -40173,7 +40258,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-14_01_45PM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-14_03_45PM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -40306,5 +40391,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-14T18:47:52+00:00"
+ "published_at_utc": "2026-11-15T00:50:18+00:00"
 }
