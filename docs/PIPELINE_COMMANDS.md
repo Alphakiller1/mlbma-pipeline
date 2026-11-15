@@ -275,6 +275,10 @@ Replace `C:\Users\chase\crawl_env\Scripts\python.exe` with `$PY` if you set the 
 PALS is pushed inside `scrapers.scrape_pals` → tab `PALS`.  
 Signals are pushed inside `core.compute_signals` → `Signals_Today`, `Signals_Convergence`.  
 Matchups/lineups are pushed from their scrapers → `Today_Matchups`, `Today_Lineups`.
+On an MLB off day, an explicit zero in the official schedule clears the
+current matchup sheet and hub. The public publisher records a dated empty
+slate when MLB confirms no games across its seven-day lookahead. Failed or
+incomplete schedule responses retain the last good publication.
 `scrapers.scrape_matchups` pushes the freshly built `Today_Matchups` slate directly into
 `hub_dataset`; the end-of-run `outputs.push_supabase` mirror publishes `Today_Lineups`,
 `Last_Updated`, and the configured research datasets without re-reading and overwriting the
@@ -483,11 +487,13 @@ C:\Users\chase\crawl_env\Scripts\python.exe scripts\integrate_chase_nav.py
 
 The Publish CBB Slate workflow refreshes the current team and shot evidence daily during the season. It checks the public Action Network, Covers and RotoWire injury reports at additional scheduled times and verifies each listed player against the current ESPN roster.
 
+The CFB matchup desk refreshes game states, scores, records and posted market lines from one ESPN scoreboard request for the displayed week. The displayed analysis still uses the evidence windows in the published CFB slate.
+
 The injury refresh also joins Covers fixture reports by date and both school identities. The matchup Availability tab links those checks, including explicit zero listings. A dated public snapshot preserves the source date for earlier fixtures. If an injury source is unavailable, the publisher retains its verified entries from the same Eastern date with their original timestamps. Fresh reports for the same player take precedence.
 
 Public matchup views use the fixture's published availability to exclude ruled-out players from previews, lineups, and player-level analysis in both evidence seasons. The full injury reports retain the source designations. Season statistics and grading baselines keep their original samples.
 
-NFL matchup analysis opens on the current season. The Sharp Football Analysis matchup export supplies man and zone rates among classified dropbacks, EPA and sample counts. The middle-of-field report carries its own publication date. The current personnel table joins Sharp's charted offensive snaps to the scheduled opponent and shows usage and EPA per play for each grouping. FTN DVOA preserves the source's edition suffix when a weekly release has one.
+NFL matchup analysis opens on the current season. Before kickoff, the slate's expected quarterbacks come from the depth chart and the latest available injury designations. The Sharp Football Analysis matchup export supplies man and zone rates among classified dropbacks, EPA and sample counts. The middle-of-field report carries its own publication date. The current personnel table joins Sharp's charted offensive snaps to the scheduled opponent and shows usage and EPA per play for each grouping. FTN DVOA preserves the source's edition suffix when a weekly release has one.
 
 The NBA matchup desk checks its published slate against the selected Eastern date. When the dated snapshot is delayed, it uses the ESPN schedule and labels fixture-specific player evidence as pending. The current slate keeps its published injury and rest data when the daily snapshot arrives.
 

@@ -440,18 +440,14 @@
   }
 
   function loadLastUpdatedFromSheet() {
+    // The Model Center supplies the timestamp of its own board.
+    if (/^\/(model-center|models)(\/|$)/.test(location.pathname)) return Promise.resolve();
     if (!window.ChaseDataStatus || !ChaseDataStatus.fetchLastUpdated) {
       setTimestampText('unknown');
       window.ChaseNav.setPipelineStatus('stale');
       return Promise.resolve();
     }
     var sport = String((document.body && document.body.getAttribute('data-sport')) || 'mlb').toLowerCase();
-    // Model Center shows one sport at a time, named in ?sport=.
-    if (/^\/model-center\//.test(location.pathname)) {
-      var picked = String(new URLSearchParams(location.search).get('sport') || 'nfl').toLowerCase();
-      if (picked === 'cbb') return Promise.resolve();
-      if (/^(mlb|nfl|nba|wnba|cfb|cbb)$/.test(picked)) sport = picked;
-    }
     var publicResearch = document.body && document.body.getAttribute('data-ca-product') === 'research';
     return ChaseDataStatus.fetchLastUpdated({
       source: publicResearch || sport !== 'mlb' ? 'public-slate' : 'sheet',

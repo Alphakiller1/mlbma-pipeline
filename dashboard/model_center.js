@@ -751,6 +751,17 @@
       '. ' + esc(board.method_note || '') + '</p>';
   }
 
+  function dailySlateTitle(sport, board) {
+    var today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+    var day = sport === 'cbb' ? qs().get('date') || today : board.slate_date;
+    if (day === today) return "Today's Slate";
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day || '')) return 'Published Slate';
+    var date = new Date(day + 'T12:00:00Z');
+    return Number.isFinite(date.getTime()) ? date.toLocaleDateString('en-US', {
+      timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric'
+    }) + ' Slate' : 'Published Slate';
+  }
+
   function renderBoard(sport, payload) {
     var host = $('mcBoard');
     if (!host) return;
@@ -802,7 +813,7 @@
       return;
     }
     var weekly = sport === 'nfl' || sport === 'cfb';
-    var title = weekly ? 'This Week’s Slate' : "Today's Slate";
+    var title = weekly ? 'This Week’s Slate' : dailySlateTitle(sport, board);
     var body = weekly ? groupedGrid(sport, games, groups)
       : '<div class="mc-grid' + (sport === 'cbb' ? ' mc-grid--cbb' : '') + '">' + games.map(function (g) {
           return gameCard(sport, g, groups);
@@ -819,11 +830,23 @@
     if (covered.length) wirePropsDialog(host, sport, groups, covered);
   }
 
+  function applyBoardStatus(sport, board) {
+    if (!global.ChaseDataStatus || !global.ChaseNav || !ChaseNav.applyDataStatus) return;
+    var source = sport === 'cbb' ? 'Chase CBB score model' : 'Chase ' + sport.toUpperCase() + ' model';
+    var fields = ChaseDataStatus.unknownFields({ sport: sport, source: source });
+    if (board) {
+      fields.publishedAt = board.generated_at_utc || board.generated_at || null;
+      fields.dataCutoff = board.data_through_utc || board.data_through || null;
+    }
+    ChaseNav.applyDataStatus(fields);
+  }
+
   function loadBoard(sport) {
     return fetch('/api/model-center/board?sport=' + encodeURIComponent(sport), {
       headers: { Accept: 'application/json' },
       cache: 'no-store'
     }).then(function (r) {
+      if (!r.ok) applyBoardStatus(sport);
       if (r.status === 503 || r.status === 404) {
         paintGate(sport, 'Board unavailable', 'This sport’s model feed is not attached to the current environment.');
         return;
@@ -833,16 +856,18 @@
         return;
       }
       return r.json().then(function (payload) {
-        if (sport === 'cbb' && payload.board) {
+        var board = payload.board;
+        if (sport === 'cbb' && board) {
           var day = qs().get('date') || new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
           if (!qs().get('game')) {
-            payload.board.games = (payload.board.games || []).filter(function (g) { return g.slate_date === day; });
+            board.games = (board.games || []).filter(function (g) { return g.slate_date === day; });
           }
-          if (global.ChaseNav && ChaseNav.applyDataStatus) ChaseNav.applyDataStatus({sport:'cbb',state:'ok',publishedAt:payload.board.generated_at_utc,dataCutoff:payload.board.data_through_utc,source:'Chase CBB score model'});
         }
         renderBoard(sport, payload);
+        applyBoardStatus(sport, board);
       });
     }).catch(function () {
+      applyBoardStatus(sport);
       paintGate(sport, 'Unavailable', 'Model Center could not reach the board service.');
     });
   }

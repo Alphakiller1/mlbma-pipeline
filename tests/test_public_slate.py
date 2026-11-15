@@ -51,7 +51,11 @@ class PublicSlateProjectionTests(unittest.TestCase):
             slate = json.loads((ROOT / "data" / "public" / sport / "slate.json").read_text(encoding="utf-8"))
             assert_clean(slate)
             self.assertEqual(slate["schema"], "chase-public-slate/1")
-            self.assertTrue(slate["games"])
+            if sport == "mlb" and slate["games"] == []:
+                self.assertEqual(slate["source"], "MLB Stats API")
+                self.assertRegex(slate["slate_date"], r"^\d{4}-\d{2}-\d{2}$")
+            else:
+                self.assertTrue(slate["games"])
 
     def test_nfl_starting_units_survive_the_public_allowlist(self):
         import sys
@@ -308,7 +312,7 @@ class MlbOffDayLookaheadTests(unittest.TestCase):
     def schedule(self, games_by_day):
         def fetch(day):
             count = games_by_day.get(day, 0)
-            return {"dates": [{"date": day, "games": [{}] * count}] if count else []}
+            return {"totalGames": count, "dates": [{"date": day, "games": [{}] * count}] if count else []}
         return fetch
 
     def test_off_day_publishes_the_next_slate(self):
@@ -324,6 +328,17 @@ class MlbOffDayLookaheadTests(unittest.TestCase):
     def test_unreachable_schedule_does_not_jump(self):
         self.publisher.fetch_mlb_schedule = lambda day: None
         self.assertEqual(self.publisher.next_mlb_slate("2026-09-28"), ("2026-09-28", None))
+
+    def test_verified_empty_window_is_distinct_from_partial_outage(self):
+        self.publisher.fetch_mlb_schedule = self.schedule({})
+        date, schedule = self.publisher.next_mlb_slate("2026-11-11")
+        self.assertEqual(date, "2026-11-11")
+        self.assertTrue(self.publisher.mlb_schedule_is_empty(schedule))
+
+        self.publisher.fetch_mlb_schedule = self.schedule({"2026-11-12": 0})
+        complete = self.publisher.fetch_mlb_schedule
+        self.publisher.fetch_mlb_schedule = lambda day: {} if day == "2026-11-13" else complete(day)
+        self.assertEqual(self.publisher.next_mlb_slate("2026-11-11"), ("2026-11-11", None))
 
     def test_curated_rows_from_another_day_are_dropped(self):
         curated = {"games": [{"id": "2026-09-27-bos-nyy"}, {"id": "2026-09-29-bos-nyy"},

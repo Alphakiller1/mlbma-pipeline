@@ -82,5 +82,43 @@ class MergeTests(unittest.TestCase):
         self.assertEqual(slate.availability_summary(merged["WSH"]), "2 out · 1 DNP · 1 limited")
 
 
+class ExpectedQuarterbackTests(unittest.TestCase):
+    def test_slate_uses_available_depth_chart_quarterbacks(self):
+        def quarterback(name, rank=1):
+            return {"name": name, "position": "QB", "depth_rank": rank}
+
+        def event(status):
+            return {"id": "401873059", "competitions": [{
+                "status": {"type": {"name": status}},
+                "competitors": [
+                    {"homeAway": "away", "team": {"abbreviation": "MIA"}, "leaders": [
+                        {"name": "passingLeader", "leaders": [{"athlete": {"shortName": "B. Pinion"}}]},
+                    ]},
+                    {"homeAway": "home", "team": {"abbreviation": "IND"}},
+                ],
+            }]}
+
+        context = {
+            "players": {"MIA": [quarterback("Brady Cook", 2), quarterback("Kyle McCord")]},
+            "lineups": {"MIA": {"offense": {"players": [quarterback("Kyle McCord")]}}},
+        }
+        reports = {"MIA": [espn("Kyle McCord", "Doubtful", "QB"), espn("Brady Cook", "Questionable", "QB")]}
+        scheduled = slate.nfl_producer_from_espn(
+            {"events": [event("STATUS_SCHEDULED")]}, reports, context
+        )["games"][0]
+        self.assertEqual(scheduled["away_starter"], "Brady Cook")
+        self.assertIsNone(scheduled["home_starter"])
+
+        scheduled = slate.nfl_producer_from_espn(
+            {"events": [event("STATUS_SCHEDULED")]}, {}, context
+        )["games"][0]
+        self.assertEqual(scheduled["away_starter"], "Kyle McCord")
+
+        final = slate.nfl_producer_from_espn(
+            {"events": [event("STATUS_FINAL")]}, {}, context
+        )["games"][0]
+        self.assertIsNone(final["away_starter"])
+
+
 if __name__ == "__main__":
     unittest.main()

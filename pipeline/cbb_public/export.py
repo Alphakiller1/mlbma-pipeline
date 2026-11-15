@@ -30,22 +30,30 @@ FORBIDDEN={'predicted_score','predicted_margin','home_probability','home_win_pro
 UNTAGGED_SHOT_TYPES=('driving','floater','pullup')
 
 def live_cutoff(stats, schedule, as_of):
-    """Shot coordinates and ESPN boxes post a game within minutes; Basketball
-    Quant's team rates count it overnight. When most of the day's D-I finals
-    are not yet in the rates, the live feeds are read through the day before,
-    so every section of a team counts the same games."""
+    """Find the latest D-I fixture cutoff that best matches the source's team rates."""
     counted = {s['team_id']: int(s.get('games_all') or 0) for s in stats}
     days = defaultdict(list)
+    seen = set()
     for g in schedule:
         h, a = g.get('home_id'), g.get('away_id')
-        if g.get('status_type_name') == 'STATUS_FINAL' and g['game_date'] <= as_of and h in counted and a in counted:
-            days[h].append(g['game_date']); days[a].append(g['game_date'])
-    today = [t for t, d in days.items() if as_of in d]
-    behind = sum(1 for t in today if len(days[t]) > counted[t])
-    if today and behind > len(today) / 2:
-        print(f'Team rates do not count {behind} of {len(today)} D-I teams that finished on {as_of}; live feeds read through the day before.')
-        return (date.fromisoformat(as_of) - timedelta(days=1)).isoformat()
-    return as_of
+        if (g.get('status_type_name') == 'STATUS_FINAL' and g['game_date'] <= as_of
+                and h in counted and a in counted and g['game_id'] not in seen):
+            days[g['game_date']].extend((h, a))
+            seen.add(g['game_id'])
+    if not days:
+        return as_of
+    # Rates can trail the fixture calendar by more than one day. Compare
+    # accumulated games to the full rated cohort at each candidate boundary.
+    totals = Counter()
+    before_first = (date.fromisoformat(min(days)) - timedelta(days=1)).isoformat()
+    best = (sum(games == 0 for games in counted.values()), before_first)
+    for day in sorted({*days, as_of}):
+        totals.update(days[day])
+        matched = sum(totals[team] == games for team, games in counted.items())
+        best = max(best, (matched, day))
+    if best[1] != as_of:
+        print(f'Team-rate cutoff {best[1]} aligns {best[0]} of {len(counted)} D-I teams.')
+    return best[1]
 
 def mark_untracked_shot_types(rates):
     """Play-by-play from some feeds never labels drives, floaters or pull-ups.

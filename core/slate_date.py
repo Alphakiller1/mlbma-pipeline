@@ -58,6 +58,18 @@ def _calendar_iso(now=None) -> str:
     return now.strftime("%Y-%m-%d")
 
 
+def mlb_schedule_is_empty(payload) -> bool:
+    """An explicit zero from MLB, distinct from an incomplete response."""
+    return (
+        isinstance(payload, dict) and type(payload.get("totalGames")) is int
+        and payload["totalGames"] == 0 and payload.get("dates") == []
+    )
+
+
+def confirmed_empty_mlb_date(date_iso: str) -> bool:
+    return _slate_status(date_iso) == "empty"
+
+
 def _slate_status(date_iso: str):
     """Classify a date's MLB slate via the stats API.
 
@@ -75,12 +87,16 @@ def _slate_status(date_iso: str):
     except Exception:
         return None
 
+    if not isinstance(payload, dict) or not isinstance(payload.get("dates"), list):
+        return None
     games = []
-    for day in payload.get("dates", []) or []:
-        games.extend(day.get("games", []) or [])
+    for day in payload["dates"]:
+        if not isinstance(day, dict) or not isinstance(day.get("games"), list):
+            return None
+        games.extend(day["games"])
 
     if not games:
-        return "empty"
+        return "empty" if mlb_schedule_is_empty(payload) else None
 
     for game in games:
         state = (game.get("status", {}) or {}).get("abstractGameState", "")

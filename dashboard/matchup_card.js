@@ -927,11 +927,24 @@
   function withScoreboard(result, sport) {
     if (!result.games.length || (sport === 'nba' && !result.dateIso)) return result;
     var url = '/api/game-status?sport=' + sport + (sport === 'nba' ? '&date=' + encodeURIComponent(result.dateIso) : '');
+    if (sport === 'cfb') {
+      var meta = result.meta || {};
+      if (!meta.season || !meta.week) return result;
+      url += '&season=' + encodeURIComponent(meta.season) + '&week=' + encodeURIComponent(meta.week);
+      result.games.forEach(function (game) {
+        if (!game.market_lines) game.lines_state = 'checking';
+      });
+    }
     result.statusReady = loadJson(url).then(function (payload) {
-      var byId = new Map((payload.games || []).map(function (row) { return [row.id, row]; }));
+      var rows = payload.games || [];
+      var byId = new Map(rows.map(function (row) { return [row.id, row]; }));
       var observed = false;
       result.games.forEach(function (game) {
-        var current = byId.get(String(game.id));
+        var current = sport === 'cfb' ? lineMatch(game, rows) : byId.get(String(game.id));
+        if (sport === 'cfb') {
+          if (current && current.lines) game.market_lines = current.lines;
+          game.lines_state = payload.status === 'unavailable' && !game.market_lines ? 'unavailable' : 'checked';
+        }
         if (!current || (game.game_state === 'final' && current.state !== 'final') ||
             (game.game_state === 'live' && current.state === 'scheduled')) return;
         var scored = current.state === 'live' || current.state === 'final';
@@ -943,17 +956,26 @@
         if (current.home.record) game.home_record = current.home.record;
         observed = true;
       });
-      if (observed) result.statusObservedAt = new Date().toISOString();
+      if (observed) result.statusObservedAt = payload.observed_at_utc || new Date().toISOString();
+      if (sport === 'cfb') result.linesObservedAt = payload.observed_at_utc || new Date().toISOString();
       return result;
-    }).catch(function () { return result; });
+    }).catch(function () {
+      if (sport === 'cfb') {
+        result.games.forEach(function (game) {
+          game.lines_state = game.market_lines ? 'checked' : 'unavailable';
+        });
+        result.linesObservedAt = new Date().toISOString();
+      }
+      return result;
+    });
     return result;
   }
 
-  /* One /api/market-lines call for the days an NFL, CFB or NBA slate covers.
+  /* One /api/market-lines call for the days an NFL or NBA slate covers.
      A card is matched on ESPN's event id, then on both club codes, then on the
      school or club names; a pair seen on the card's own day wins over the
      same pair on another day. */
-  var LINE_SPORTS = { nfl: 1, cfb: 1, nba: 1 };
+  var LINE_SPORTS = { nfl: 1, nba: 1 };
   function lineKey(text) {
     return String(text || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
       .replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
@@ -1009,7 +1031,7 @@
     // same desk result shape the SLATE_URL path does.
     if (adapter && typeof adapter.load === 'function') {
       var loaded = adapter.load(dateIso);
-      return sport === 'nba' ? loaded.then(function (result) {
+      return sport === 'nba' || sport === 'cfb' ? loaded.then(function (result) {
         return result.scoreboardLoaded ? result : withScoreboard(result, sport);
       }) : loaded;
     }

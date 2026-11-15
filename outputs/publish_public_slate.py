@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build allowlisted public MLB/NFL slates from factual pipeline CSVs (and ESPN for NFL).
 
-Fail closed: never write an empty slate over a known-good file; never copy model fields.
+Keep the last good slate on source failure and keep model fields private.
 """
 from __future__ import annotations
 
@@ -23,6 +23,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from project_public_slate import assert_clean, project_slate  # noqa: E402
 
 from core.config import DATA_DIR  # noqa: E402
+from core.slate_date import mlb_schedule_is_empty  # noqa: E402
 
 ET = ZoneInfo("America/New_York")
 PUBLIC_DIR = ROOT / "data" / "public"
@@ -229,10 +230,14 @@ def _batting_order(players) -> list[dict] | None:
 def fetch_mlb_schedule(date_iso: str) -> dict | None:
     try:
         with urllib.request.urlopen(MLB_SCHEDULE.format(date=date_iso), timeout=30) as response:
-            return json.loads(response.read().decode("utf-8"))
+            data = json.loads(response.read().decode("utf-8"))
+        if isinstance(data, dict) and isinstance(data.get("dates"), list):
+            if all(isinstance(day, dict) and isinstance(day.get("games"), list) for day in data["dates"]):
+                return data
+        print("  WARNING: MLB schedule response is missing game dates")
     except Exception as exc:
         print(f"  WARNING: MLB schedule fetch failed ({exc})")
-        return None
+    return None
 
 
 # How far ahead an off day looks for the next slate. The longest gap in an
@@ -258,6 +263,7 @@ def next_mlb_slate(today: str) -> tuple[str, dict | None]:
     schedule = fetch_mlb_schedule(today)
     if schedule is None or _schedule_games(schedule):
         return today, schedule
+    all_empty = mlb_schedule_is_empty(schedule)
     start = datetime.fromisoformat(today).date()
     for ahead in range(1, MLB_LOOKAHEAD_DAYS + 1):
         day = (start + timedelta(days=ahead)).isoformat()
@@ -265,7 +271,8 @@ def next_mlb_slate(today: str) -> tuple[str, dict | None]:
         if _schedule_games(found):
             print(f"  mlb: no games on {today}; publishing the next slate, {day}")
             return day, found
-    return today, schedule
+        all_empty = all_empty and mlb_schedule_is_empty(found)
+    return today, schedule if all_empty else None
 
 
 def _public_team_code(value: str) -> str:
@@ -763,6 +770,7 @@ NFL_NOTABLE_STATUS = {
 # A game designation is issued for one game by the club's official report;
 # a roster status (IR, PUP, a suspension) holds until the club changes it.
 NFL_GAME_DESIGNATIONS = {"out", "doubtful", "questionable"}
+NFL_UNAVAILABLE_QB = NFL_NOTABLE_STATUS - {"questionable"}
 NFL_COM_ALIASES = {"WAS": "WSH", "AZ": "ARI"}
 NFL_GAME_STATUS = {"out": "Out", "doubtful": "Doubtful", "questionable": "Questionable"}
 NFL_PRACTICE_STATUS = {
@@ -1065,6 +1073,22 @@ def availability_summary(entries: list[dict] | None) -> str:
     return " · ".join(parts) or f"{len(entries)} designated"
 
 
+def expected_nfl_qb(lineup: dict, players: list[dict], injuries: list[dict]) -> str | None:
+    """Project a quarterback from depth and game availability."""
+    unavailable = {_player_key(entry["name"]) for entry in injuries
+                   if entry["status"].lower() in NFL_UNAVAILABLE_QB}
+    offense = (lineup.get("offense") or {}).get("players") or []
+    depth = sorted(
+        (player for player in players if player.get("position") == "QB"),
+        key=lambda player: player.get("depth_rank") or 99,
+    )
+    for player in [*offense, *depth]:
+        name = player.get("name")
+        if player.get("position") == "QB" and name and _player_key(name) not in unavailable:
+            return name
+    return None
+
+
 ESPN_NFL_SCHEDULE = (
     "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/{team}/schedule"
 )
@@ -1171,6 +1195,7 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
     scheme = context.get("scheme") or {}
     players = context.get("players") or {}
     lineups = context.get("lineups") or {}
+    injuries = injuries or {}
     player_coverage = context.get("player_coverage") or {}
     player_scheme = context.get("player_scheme") or {}
     team_stats = context.get("team_stats") or {}
@@ -1279,13 +1304,12 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             broadcast = broadcasts[0].get("names", [None])[0] if isinstance(broadcasts[0], dict) else None
             if not broadcast and isinstance(broadcasts[0], dict):
                 broadcast = (broadcasts[0].get("media") or {}).get("shortName")
-        qbs = {}
-        for side, block in (("away", away), ("home", home)):
-            for athlete in (block.get("leaders") or []):
-                if str(athlete.get("name") or "").lower() in {"passingleader", "passing yards"}:
-                    leaders = athlete.get("leaders") or []
-                    if leaders:
-                        qbs[side] = (leaders[0].get("athlete") or {}).get("shortName")
+        def expected_qb(club: str) -> str | None:
+            if state != "scheduled":
+                return None
+            return expected_nfl_qb(lineups.get(club) or {}, players.get(club) or [],
+                                   injuries.get(club) or [])
+
         def record(block: dict) -> str | None:
             rows = block.get("records") or []
             return str(rows[0].get("summary")) if rows and rows[0].get("summary") else None
@@ -1323,12 +1347,12 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
                 "Indoor" if venue_data.get("indoor") is True
                 else ("Outdoor" if venue_data.get("indoor") is False else None)
             ),
-            "away_starter": qbs.get("away"),
-            "home_starter": qbs.get("home"),
-            "away_availability": availability_summary((injuries or {}).get(away_abbr)),
-            "home_availability": availability_summary((injuries or {}).get(home_abbr)),
-            "away_availability_list": (injuries or {}).get(away_abbr),
-            "home_availability_list": (injuries or {}).get(home_abbr),
+            "away_starter": expected_qb(away_abbr),
+            "home_starter": expected_qb(home_abbr),
+            "away_availability": availability_summary(injuries.get(away_abbr)),
+            "home_availability": availability_summary(injuries.get(home_abbr)),
+            "away_availability_list": injuries.get(away_abbr),
+            "home_availability_list": injuries.get(home_abbr),
             "away_score": away.get("score"),
             "home_score": home.get("score"),
             "game_state": state,
@@ -1629,6 +1653,22 @@ def write_if_better(sport: str, producer: dict, dest: Path) -> bool:
     return True
 
 
+def _publish_empty_mlb_slate(slate_date: str, dest: Path) -> None:
+    if dest.is_file():
+        try:
+            old = json.loads(dest.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            old = {}
+        if isinstance(old, dict) and old.get("slate_date") == slate_date and old.get("games") == []:
+            return
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    out = project_slate("mlb", {"generated_at_utc": now, "data_through_utc": now, "games": []})
+    out.update(slate_date=slate_date, source="MLB Stats API")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
+    print(f"  wrote {dest} (MLB confirmed no games in the schedule window)")
+
+
 def publish_nfl() -> bool:
     """Rebuild and publish the NFL slate (injuries, depth charts, starters,
     scores and the scheme context). True when the public slate was written."""
@@ -1677,6 +1717,12 @@ def run(data_dir: Path | None = None, mlb_only: bool = False) -> int:
     data_dir = Path(data_dir or DATA_DIR)
     ok = False
     slate_date, schedule = next_mlb_slate(datetime.now(ET).strftime("%Y-%m-%d"))
+    dest = PUBLIC_DIR / "mlb" / "slate.json"
+    if mlb_schedule_is_empty(schedule):
+        _publish_empty_mlb_slate(slate_date, dest)
+        if not mlb_only:
+            publish_nfl()
+        return 0
     curated = _for_day(mlb_producer(data_dir), slate_date)
     if schedule:
         rotowire_starters = add_rotowire_starter_ids(
@@ -1707,7 +1753,7 @@ def run(data_dir: Path | None = None, mlb_only: bool = False) -> int:
     else:
         mlb = curated
         print("  mlb: schedule unreachable; falling back to the curated rows only")
-    ok = write_if_better("mlb", mlb, PUBLIC_DIR / "mlb" / "slate.json") or ok
+    ok = write_if_better("mlb", mlb, dest) or ok
     if mlb_only:
         return 0 if (PUBLIC_DIR / "mlb" / "slate.json").is_file() else 1
     ok = publish_nfl() or ok
