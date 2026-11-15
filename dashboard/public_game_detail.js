@@ -8145,28 +8145,6 @@ function seasonToggle(game) {
   function filmEvidenceLink(label, url) {
     return /^https:\/\//i.test(url || '') ? '<a href="'+esc(url)+'">'+esc(label)+'</a>' : '';
   }
-  function nflFilmCoverage(game) {
-    var archive = game.nfl_film_coverage;
-    var kickoff = String(game.kickoff_utc || '');
-    var season = Number(kickoff.slice(0,4)) - (Number(kickoff.slice(5,7)) <= 2 ? 1 : 0);
-    var teams = [String(game.away),String(game.home)];
-    return (archive && archive.film_samples || []).filter(function (sample) {
-      return sample.season === season && [sample.away.team_id,sample.home.team_id].some(function (id) { return teams.indexOf(id) !== -1; });
-    }).map(function (sample) {
-      var rows = sample.film_plays.map(function (play) {
-        var other = play.side === 'away' ? 'home' : 'away';
-        var epa = (play.play_epa >= 0 ? '+' : '') + play.play_epa.toFixed(2);
-        return ['<strong>'+esc(play.kind)+'</strong><br><small>'+esc(sample[play.side].team_id+' O vs '+sample[other].team_id+' D · Q'+play.period+' '+play.game_clock)+'</small>',
-          esc(play.result), '<span class="ca-basketball-value">'+epa+'</span>'];
-      });
-      return deskPanel('Reviewed coverage plays: '+sample.away.team_name+' at '+sample.home.team_name,
-        'Week '+sample.week+' · '+sample.game_date+' · '+rows.length+(rows.length===1?' example':' examples'),
-        cbbTable(['Coverage','Result','Offense EPA'],rows,'ca-nba-evidence-table ca-film-table')+
-        '<p class="ca-cbb-note">Selected plays from the team’s film review. EPA is from nflverse and is shown for each play. '+
-        filmEvidenceLink('Patriots film review',sample.film_url)+' · '+filmEvidenceLink('Play-by-play',sample.results_url)+
-        ' · <a href="/data/public/nfl/film-coverage.json">Charted plays</a></p>');
-    }).join('');
-  }
   function filmCoverageCards(sport, game, season) {
     var archive = game[sport + '_film_coverage'];
     var teams = [String(game.away), String(game.home)];
@@ -9066,11 +9044,7 @@ function seasonToggle(game) {
         });
         var status=host.querySelector('.ca-detail-facts .ca-detail-fact:last-child strong');if(status)status.textContent=gameStatus(game);
       });
-      return ((sport === 'cbb' || sport === 'nba' || sport === 'nfl') && adapter.detail ? adapter.detail(game) : Promise.resolve(game)).then(function () {
-      if (sport === 'nfl') {
-        var coverageBody=host.querySelector('[data-body="coverage"]');
-        if(coverageBody) coverageBody.insertAdjacentHTML('beforeend',nflFilmCoverage(game));
-      }
+      return ((sport === 'cbb' || sport === 'nba') && adapter.detail ? adapter.detail(game) : Promise.resolve(game)).then(function () {
       if (sport === 'nba') repaintNba(host,game);
       if (sport === 'cbb') {
         function repaintCbbEvidence() {
