@@ -6,6 +6,21 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts'))
 import validate_public_fields as guard
 
+MIN_ALIGNED_SHARE = 0.97
+
+
+def aligned_sample_share(contexts):
+    aligned = rated = 0
+    for context in contexts:
+        games = context['rates'].get('games_all')
+        if not games:
+            continue
+        rated += 1
+        shots = context['shots']['coordinates']['offense']['totals']['games']
+        pace = ((context.get('official_box') or {}).get('pace') or {}).get('games')
+        aligned += shots == games and pace in (games, games - 1)
+    return aligned / rated if rated else 1.0
+
 def validate_context(value,old=None):
     if not isinstance(value.get('identity',{}).get('name'),str):raise ValueError('Missing team identity')
     for k,n in value['rates'].items():
@@ -118,12 +133,20 @@ def publish(source):
         staged.append((file.relative_to(source),value))
     for year in [2026,2027]:
         if len(list((source/f'{year}/teams').glob('*.json')))!=365:raise ValueError('Incomplete CBB cohort; retaining existing publication')
+    sample_share = aligned_sample_share(value for rel, value in staged if rel.parts[:2] == ('2027', 'teams'))
+    if sample_share < MIN_ALIGNED_SHARE:
+        raise ValueError(f'CBB rates, shots and pace align for {sample_share:.1%}; retaining existing publication')
     target=ROOT/'data/public/cbb';old=target/'manifest.json'
     if old.exists():
         previous_cutoff=json.loads(old.read_text(encoding='utf-8')).get('data_through_utc')
         cutoff=manifest.get('data_through_utc')
         if previous_cutoff and (not cutoff or datetime.fromisoformat(previous_cutoff)>datetime.fromisoformat(cutoff)):
-            raise ValueError('Older evidence would replace newer evidence')
+            previous_share = aligned_sample_share(
+                json.loads(path.read_text(encoding='utf-8')) for path in (target/'2027/teams').glob('*.json')
+            )
+            if not cutoff or previous_share >= MIN_ALIGNED_SHARE:
+                raise ValueError('Older evidence would replace newer evidence')
+            print(f'Correcting the previous misaligned CBB cutoff ({previous_share:.1%} of teams aligned).')
     # Validate every file first; each destination replacement is atomic.
     for rel,value in staged:
         dest=target/rel;dest.parent.mkdir(parents=True,exist_ok=True);temp=dest.with_suffix('.json.tmp')
