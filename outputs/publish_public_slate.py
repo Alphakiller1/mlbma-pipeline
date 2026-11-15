@@ -230,10 +230,14 @@ def _batting_order(players) -> list[dict] | None:
 def fetch_mlb_schedule(date_iso: str) -> dict | None:
     try:
         with urllib.request.urlopen(MLB_SCHEDULE.format(date=date_iso), timeout=30) as response:
-            return json.loads(response.read().decode("utf-8"))
+            data = json.loads(response.read().decode("utf-8"))
+        if isinstance(data, dict) and isinstance(data.get("dates"), list):
+            if all(isinstance(day, dict) and isinstance(day.get("games"), list) for day in data["dates"]):
+                return data
+        print("  WARNING: MLB schedule response is missing game dates")
     except Exception as exc:
         print(f"  WARNING: MLB schedule fetch failed ({exc})")
-        return None
+    return None
 
 
 # How far ahead an off day looks for the next slate. The longest gap in an
