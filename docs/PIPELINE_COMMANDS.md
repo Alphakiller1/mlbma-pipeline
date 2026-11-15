@@ -487,6 +487,8 @@ C:\Users\chase\crawl_env\Scripts\python.exe scripts\integrate_chase_nav.py
 
 The Publish CBB Slate workflow refreshes the current team and shot evidence daily during the season. It checks the public Action Network, Covers and RotoWire injury reports at additional scheduled times and verifies each listed player against the current ESPN roster.
 
+The CFB matchup desk refreshes game states, scores, records and posted market lines from one ESPN scoreboard request for the displayed week. The displayed analysis still uses the evidence windows in the published CFB slate.
+
 The injury refresh also joins Covers fixture reports by date and both school identities. The matchup Availability tab links those checks, including explicit zero listings. A dated public snapshot preserves the source date for earlier fixtures. If an injury source is unavailable, the publisher retains its verified entries from the same Eastern date with their original timestamps. Fresh reports for the same player take precedence.
 
 Public matchup views use the fixture's published availability to exclude ruled-out players from previews, lineups, and player-level analysis in both evidence seasons. The full injury reports retain the source designations. Season statistics and grading baselines keep their original samples.

@@ -1,4 +1,5 @@
 import { json } from '../_shared/http.js';
+import { marketLines, scoreboardClub, scoreboardText } from '../_shared/market-lines.js';
 
 const ESPN = 'https://site.api.espn.com/apis/site/v2/sports/';
 
@@ -38,7 +39,7 @@ function nbaFixture(event, comp, day, status, away, home) {
   };
 }
 
-function scores(events, fixtureDay) {
+function scores(events, fixtureDay, sport) {
   return events.flatMap(event => {
     const comp = event.competitions?.[0];
     const state = gameState((event.status || comp?.status)?.type || {});
@@ -47,6 +48,12 @@ function scores(events, fixtureDay) {
     if (!state || !away || !home || !/^\d+$/.test(String(event.id))) return [];
     const scored = state === 'live' || state === 'final';
     const status = { id: String(event.id), state, away: team(away, scored), home: team(home, scored) };
+    if (sport === 'cfb') {
+      return [{ ...status, kickoff_utc: scoreboardText(event.date),
+        away: { ...status.away, ...scoreboardClub(away) },
+        home: { ...status.home, ...scoreboardClub(home) },
+        lines: marketLines(comp, sport) }];
+    }
     if (!fixtureDay) return [status];
     const fixture = nbaFixture(event, comp, fixtureDay, status, away, home);
     return fixture ? [fixture] : [];
@@ -59,6 +66,13 @@ export async function onRequestGet({ request }) {
   let source, fixtureDay;
   if (sport === 'nfl') {
     source = ESPN + 'football/nfl/scoreboard?limit=100';
+  } else if (sport === 'cfb') {
+    const season = params.get('season') || '';
+    const week = params.get('week') || '';
+    if (!/^20\d{2}$/.test(season) || !/^(?:[1-9]|1\d|20)$/.test(week)) {
+      return json({ error: 'invalid_season_week' }, 400);
+    }
+    source = ESPN + 'football/college-football/scoreboard?groups=80&limit=100&seasontype=2&week=' + week + '&dates=' + season;
   } else if (sport === 'nba') {
     const day = params.get('date') || '';
     if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !Number.isFinite(Date.parse(day)) ||
@@ -76,7 +90,14 @@ export async function onRequestGet({ request }) {
     });
     if (upstream.ok) {
       const { events } = await upstream.json();
-      if (Array.isArray(events)) return json({ games: scores(events, fixtureDay) }, 200, { 'cache-control': 'public, max-age=30' });
+      if (Array.isArray(events)) {
+        const payload = { games: scores(events, fixtureDay, sport) };
+        if (sport === 'cfb') {
+          const age = Math.max(0, Number(upstream.headers?.get('age')) || 0);
+          payload.observed_at_utc = new Date(Date.now() - age * 1000).toISOString();
+        }
+        return json(payload, 200, { 'cache-control': 'public, max-age=30' });
+      }
     }
   } catch (_) { /* Keep the published slate during a scoreboard outage. */ }
   return json({ games: [], status: 'unavailable' });

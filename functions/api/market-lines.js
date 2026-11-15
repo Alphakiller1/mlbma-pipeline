@@ -3,7 +3,7 @@
  * day the slate covers. Only the posted numbers and enough identity to place
  * them on a card leave this function. */
 import { json } from '../_shared/http.js';
-import { marketLines } from '../_shared/market-lines.js';
+import { marketLines, scoreboardClub, scoreboardText } from '../_shared/market-lines.js';
 
 const ESPN = 'https://site.api.espn.com/apis/site/v2/sports/';
 const FEEDS = {
@@ -13,19 +13,6 @@ const FEEDS = {
 };
 const MAX_DAYS = 8;
 
-function text(value) {
-  return typeof value === 'string' && value.trim() ? value.trim().slice(0, 60) : null;
-}
-
-function club(competitor) {
-  const team = (competitor || {}).team || {};
-  return {
-    abbr: /^[A-Z0-9&.'-]{1,8}$/i.test(team.abbreviation || '') ? team.abbreviation : null,
-    name: text(team.displayName),
-    location: text(team.location)
-  };
-}
-
 export function linedGames(payload, sport) {
   return ((payload || {}).events || []).flatMap(event => {
     const comp = (event.competitions || [])[0] || {};
@@ -33,7 +20,8 @@ export function linedGames(payload, sport) {
     const away = sides.find(c => c.homeAway === 'away'), home = sides.find(c => c.homeAway === 'home');
     const lines = marketLines(comp, sport);
     if (!away || !home || !lines || !/^\d+$/.test(String(event.id))) return [];
-    return [{ id: String(event.id), kickoff_utc: text(event.date), away: club(away), home: club(home), lines }];
+    return [{ id: String(event.id), kickoff_utc: scoreboardText(event.date),
+      away: scoreboardClub(away), home: scoreboardClub(home), lines }];
   });
 }
 

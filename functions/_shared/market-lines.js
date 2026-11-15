@@ -10,6 +10,19 @@ const RANGES = {
   nba: { spread: 35, total: [150, 300] }
 };
 
+export function scoreboardText(value) {
+  return typeof value === 'string' && value.trim() ? value.trim().slice(0, 60) : null;
+}
+
+export function scoreboardClub(competitor) {
+  const team = competitor.team || {};
+  return {
+    abbr: /^[A-Z0-9&.'-]{1,8}$/i.test(team.abbreviation || '') ? team.abbreviation : null,
+    name: scoreboardText(team.displayName),
+    location: scoreboardText(team.location)
+  };
+}
+
 function num(v, lo, hi) {
   const text = String(v == null ? '' : v).trim().replace(/^[ou]/i, '');
   if (!/^[+-]?\d+(\.\d+)?$/.test(text) && !/^(pk|even)$/i.test(text)) return null;
