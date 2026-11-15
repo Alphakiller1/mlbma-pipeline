@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-11-15T20:29:36Z",
-  "data_through_utc": "2026-11-12T22:18:09+00:00",
+  "generated_at_utc": "2026-11-15T23:07:58Z",
+  "data_through_utc": "2026-11-15T21:00:11+00:00",
   "season": 2026,
   "week": 10,
   "note": "Ten observed rates per club with ranks recomputed from each rate against the 32-team pool. No power rating, projected win total or playoff probability is present.",
@@ -4910,28 +4910,28 @@
       "through": "2026-11-08"
     },
     "ATL": {
-      "games": 9,
-      "through": "2026-11-08"
+      "games": 10,
+      "through": "2026-11-15"
     },
     "BAL": {
       "games": 9,
       "through": "2026-11-06"
     },
     "BUF": {
-      "games": 8,
-      "through": "2026-11-10"
+      "games": 9,
+      "through": "2026-11-15"
     },
     "CAR": {
-      "games": 8,
-      "through": "2026-11-08"
+      "games": 9,
+      "through": "2026-11-15"
     },
     "CIN": {
       "games": 8,
       "through": "2026-11-08"
     },
     "CLE": {
-      "games": 9,
-      "through": "2026-11-08"
+      "games": 10,
+      "through": "2026-11-15"
     },
     "DAL": {
       "games": 9,
@@ -4942,24 +4942,24 @@
       "through": "2026-11-15"
     },
     "GB": {
-      "games": 9,
-      "through": "2026-11-08"
+      "games": 10,
+      "through": "2026-11-15"
     },
     "HOU": {
-      "games": 8,
-      "through": "2026-11-08"
+      "games": 9,
+      "through": "2026-11-15"
     },
     "IND": {
-      "games": 9,
-      "through": "2026-11-08"
+      "games": 10,
+      "through": "2026-11-15"
     },
     "JAX": {
-      "games": 8,
-      "through": "2026-11-06"
+      "games": 9,
+      "through": "2026-11-15"
     },
     "KC": {
-      "games": 8,
-      "through": "2026-11-08"
+      "games": 9,
+      "through": "2026-11-15"
     },
     "LAC": {
       "games": 8,
@@ -4974,28 +4974,28 @@
       "through": "2026-11-08"
     },
     "MIA": {
-      "games": 8,
-      "through": "2026-11-08"
+      "games": 9,
+      "through": "2026-11-15"
     },
     "MIN": {
-      "games": 8,
-      "through": "2026-11-10"
+      "games": 9,
+      "through": "2026-11-15"
     },
     "NE": {
       "games": 10,
       "through": "2026-11-15"
     },
     "NO": {
-      "games": 8,
-      "through": "2026-11-08"
+      "games": 9,
+      "through": "2026-11-15"
     },
     "NYG": {
       "games": 9,
       "through": "2026-11-13"
     },
     "NYJ": {
-      "games": 9,
-      "through": "2026-11-08"
+      "games": 10,
+      "through": "2026-11-15"
     },
     "PIT": {
       "games": 8,
@@ -5010,8 +5010,8 @@
       "through": "2026-11-08"
     },
     "TEN": {
-      "games": 8,
-      "through": "2026-11-01"
+      "games": 9,
+      "through": "2026-11-15"
     },
     "WSH": {
       "games": 9,
