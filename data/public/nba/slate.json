@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-15",
- "generated_at_utc": "2026-11-15T09:28:25+00:00",
+ "generated_at_utc": "2026-11-15T17:13:01+00:00",
  "data_through_utc": "2026-11-15T01:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -121,8 +121,8 @@
    "id": "401909985",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/15 - 1:00 PM EST",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-11-15T18:00Z",
    "away": "IND",
    "home": "PHI",
@@ -132,12 +132,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/phi.png",
    "away_color": "#002d62",
    "home_color": "#1d428a",
-   "away_record": "5-8",
-   "home_record": "10-3",
+   "away_record": "5-9",
+   "home_record": "11-3",
    "away_split_record": "3-3",
    "home_split_record": "5-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 124,
+   "home_score": 131,
    "venue": "Xfinity Mobile Arena",
    "venue_city": "Philadelphia, PA",
    "broadcast": "DAZN IND",
@@ -2683,7 +2683,7 @@
       "player_name": "Andrew Nembhard",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4395712.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 33.4,
       "ppg": 16.6,
       "height_in": 76.0,
@@ -4123,9 +4123,9 @@
      "source": "official",
      "reason": "Injury/Illness - Left Hip Soreness / Tightness",
      "detail": "Left Hip Soreness",
-     "comment": "Nembhard is questionable for Sunday's game against the 76ers due to left hip soreness.",
-     "date": "2026-11-15T01:14Z",
-     "return_date": "2026-11-15",
+     "comment": "Nembhard (hip) has been ruled out for Sunday's game against the 76ers, Tony East of Forbes.com reports.",
+     "date": "2026-11-15T16:44Z",
+     "return_date": "2026-11-18",
      "value": 1.68,
      "value_recent": 1.72,
      "missed": 0
@@ -8222,8 +8222,8 @@
    "id": "401909986",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/15 - 4:00 PM EST",
+   "game_state": "live",
+   "status_detail": "6:57 - 3rd",
    "kickoff_utc": "2026-11-15T21:00Z",
    "away": "LAL",
    "home": "PHX",
@@ -8237,8 +8237,8 @@
    "home_record": "5-6",
    "away_split_record": "6-1",
    "home_split_record": "5-3",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 81,
+   "home_score": 61,
    "venue": "Mortgage Matchup Center",
    "venue_city": "Phoenix, AZ",
    "broadcast": "Spectrum Sports Net / Spectrum Sports Net + / Arizona's Family 3TV / Suns Live",
@@ -16151,8 +16151,8 @@
    "id": "401909987",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/15 - 4:30 PM EST",
+   "game_state": "live",
+   "status_detail": "Halftime",
    "kickoff_utc": "2026-11-15T21:30Z",
    "away": "CHA",
    "home": "LAC",
@@ -16166,8 +16166,8 @@
    "home_record": "3-8",
    "away_split_record": "1-4",
    "home_split_record": "3-3",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 52,
+   "home_score": 51,
    "venue": "Intuit Dome",
    "venue_city": "Inglewood, CA",
    "broadcast": "ClipperVision",
@@ -24166,8 +24166,8 @@
    "id": "401909988",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/15 - 5:00 PM EST",
+   "game_state": "live",
+   "status_detail": "8:59 - 2nd",
    "kickoff_utc": "2026-11-15T22:00Z",
    "away": "SA",
    "home": "UTAH",
@@ -24181,8 +24181,8 @@
    "home_record": "1-12",
    "away_split_record": "6-0",
    "home_split_record": "1-6",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 38,
+   "home_score": 45,
    "venue": "Delta Center",
    "venue_city": "Salt Lake City, UT",
    "broadcast": "KJZZ-TV / Jazz+ / DAZN SAS",
@@ -35143,7 +35143,7 @@
       "player_name": "Daniel Gafford",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4278049.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 21.2,
       "ppg": 9.2,
       "height_in": 82.0,
@@ -35479,7 +35479,7 @@
       "player_name": "Max Christie",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4432582.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 18.6,
       "ppg": 5.3,
       "height_in": 77.0,
@@ -35983,13 +35983,13 @@
      "value": 1.4
     },
     {
-     "player_id": "4278049",
-     "player_name": "Daniel Gafford",
+     "player_id": "4278594",
+     "player_name": "Naji Marshall",
      "value": 1.11
     },
     {
-     "player_id": "4278594",
-     "player_name": "Naji Marshall",
+     "player_id": "4278049",
+     "player_name": "Daniel Gafford",
      "value": 1.11
     },
     {
@@ -36040,20 +36040,6 @@
    ],
    "away_injuries": [
     {
-     "player_id": "4278049",
-     "player_name": "Daniel Gafford",
-     "status": "Out",
-     "source": "espn",
-     "reason": null,
-     "detail": "Face",
-     "comment": "Gafford (face) won't return to Saturday's game against the Cavaliers, Grant Afseth of DallasHoopsJournal.com reports.",
-     "date": "2026-11-15T02:31Z",
-     "return_date": "2026-11-15",
-     "value": 1.11,
-     "value_recent": 1.11,
-     "missed": 0
-    },
-    {
      "player_id": "4683688",
      "player_name": "Dereck Lively II",
      "status": "Out",
@@ -36066,20 +36052,6 @@
      "value": 0.62,
      "value_recent": 0.0,
      "missed": null
-    },
-    {
-     "player_id": "4432582",
-     "player_name": "Max Christie",
-     "status": "Out",
-     "source": "espn",
-     "reason": null,
-     "detail": "Left Ankle Sprain",
-     "comment": "Christie (ankle) has been ruled out for Saturday's game against Cleveland.",
-     "date": "2026-11-14T23:02Z",
-     "return_date": "2026-11-15",
-     "value": 0.6,
-     "value_recent": 0.47,
-     "missed": 1
     },
     {
      "player_id": "5279129",
@@ -36106,6 +36078,34 @@
      "date": "2026-11-11T22:12Z",
      "return_date": "2026-11-18",
      "value": null
+    },
+    {
+     "player_id": "4278049",
+     "player_name": "Daniel Gafford",
+     "status": "Day-To-Day",
+     "source": "espn",
+     "reason": null,
+     "detail": "Face",
+     "comment": "Gafford (face) won't return to Saturday's game against the Cavaliers, Grant Afseth of DallasHoopsJournal.com reports.",
+     "date": "2026-11-15T15:22Z",
+     "return_date": "2026-11-15",
+     "value": 1.11,
+     "value_recent": 1.11,
+     "missed": 0
+    },
+    {
+     "player_id": "4432582",
+     "player_name": "Max Christie",
+     "status": "Day-To-Day",
+     "source": "espn",
+     "reason": null,
+     "detail": "Left Ankle Sprain",
+     "comment": "Christie (ankle) has been ruled out for Saturday's game against Cleveland.",
+     "date": "2026-11-15T15:22Z",
+     "return_date": "2026-11-15",
+     "value": 0.6,
+     "value_recent": 0.47,
+     "missed": 1
     }
    ],
    "home_form": {
@@ -40059,13 +40059,13 @@
      "value": 0.72
     },
     {
-     "player_id": "4683689",
-     "player_name": "Jordan Walsh",
+     "player_id": "4277951",
+     "player_name": "Luka Garza",
      "value": 0.57
     },
     {
-     "player_id": "4277951",
-     "player_name": "Luka Garza",
+     "player_id": "4683689",
+     "player_name": "Jordan Walsh",
      "value": 0.57
     },
     {
@@ -47928,7 +47928,7 @@
      "detail": "Illness",
      "comment": "McCullar signed a two-way contract with the Raptors on Thursday, Michael Scotto of HoopsHype.com reports.",
      "date": "2026-11-13T15:37Z",
-     "return_date": "2026-11-14",
+     "return_date": "2026-11-16",
      "value": 0.45,
      "value_recent": 0.0,
      "missed": null
@@ -51888,13 +51888,13 @@
      "value": 1.76
     },
     {
-     "player_id": "4684740",
-     "player_name": "Amen Thompson",
+     "player_id": "2991230",
+     "player_name": "Fred VanVleet",
      "value": 1.58
     },
     {
-     "player_id": "2991230",
-     "player_name": "Fred VanVleet",
+     "player_id": "4684740",
+     "player_name": "Amen Thompson",
      "value": 1.58
     },
     {
@@ -72206,7 +72206,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-15_04_15AM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-15_12_00PM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -72339,5 +72339,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-15T16:59:43+00:00"
+ "published_at_utc": "2026-11-15T22:44:57+00:00"
 }
