@@ -5,7 +5,7 @@ Normalised adapter output used by `dashboard/sports/*.js`.
 | Field | Meaning |
 |-------|---------|
 | `schema` | Always `chase-board/1` |
-| `sport` | `mlb` \| `nfl` \| `wnba` \| `cfb` |
+| `sport` | `mlb` \| `nfl` \| `nba` \| `wnba` \| `cfb` \| `cbb` |
 | `generated_at` | Producer timestamp (ISO if present) |
 | `authority.level` | Opaque string or producer dict `level` |
 | `authority.may_bet` | Boolean, never upgraded in the UI |
@@ -16,3 +16,9 @@ Normalised adapter output used by `dashboard/sports/*.js`.
 | `priced_markets` / `flagged_tiles` | MLB only (Picks / Gems semantics) |
 
 Producers remain the source of truth. Adapters must not recompute edge.
+
+Model Center reports the producer board's publication time from
+`generated_at_utc` or `generated_at`. The data cutoff comes from
+`data_through_utc` or `data_through` when the producer supplies it.
+Daily slates use the published NBA slate date or the selected CBB date in
+Eastern time.

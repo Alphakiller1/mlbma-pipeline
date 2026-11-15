@@ -262,7 +262,8 @@
     var cutoff = parseTs(fields.dataCutoff || fields.as_of);
     var quote = parseTs(fields.quoteTimestamp);
     var published = parseTs(fields.publishedAt);
-    var displaySrc = published != null ? published : cutoff;
+    // An explicit missing publication time is unknown even when the data cutoff is known.
+    var displaySrc = Object.prototype.hasOwnProperty.call(fields, 'publishedAt') ? published : cutoff;
     var state = fields.state || fields.freshness || (displaySrc == null ? 'unknown' : 'unknown');
     if (state === 'unknown' && displaySrc != null) {
       state = freshnessFromAsOf(displaySrc, fields.sport);
