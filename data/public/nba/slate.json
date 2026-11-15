@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-15",
- "generated_at_utc": "2026-11-15T08:29:04+00:00",
+ "generated_at_utc": "2026-11-15T09:28:25+00:00",
  "data_through_utc": "2026-11-15T01:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -20083,13 +20083,13 @@
      "value": 0.55
     },
     {
-     "player_id": "5281370",
-     "player_name": "Hannes Steinbach",
+     "player_id": "5060701",
+     "player_name": "Christian Anderson",
      "value": 0.42
     },
     {
-     "player_id": "5060701",
-     "player_name": "Christian Anderson",
+     "player_id": "5281370",
+     "player_name": "Hannes Steinbach",
      "value": 0.42
     },
     {
@@ -72206,7 +72206,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-15_03_15AM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-15_04_15AM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -72339,5 +72339,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-15T09:13:40+00:00"
+ "published_at_utc": "2026-11-15T16:59:43+00:00"
 }
