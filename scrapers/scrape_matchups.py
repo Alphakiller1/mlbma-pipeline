@@ -7,7 +7,7 @@ import gspread
 from core.config import DATA_DIR, SHEET_ID, SHEET_TABS, TEAM_MAP, check_google_credentials
 from core.compute_pitching import calc_individual_pitching_scores
 from core.name_utils import normalize_player_name, player_last_name
-from core.slate_date import eastern_slate_date_iso
+from core.slate_date import confirmed_empty_mlb_date, eastern_slate_date_iso
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0"
@@ -530,12 +530,23 @@ def run(touch_sync: bool = True):
         push_to_hub(df)
         print("\nMatchup sheet:")
         print(df[["Time", "Away", "Home", "Away_SP", "Away_Hand", "Home_SP", "Home_Hand", "Away_OSI", "Home_OSI", "Lineup_Edge"]].to_string())
-    else:
+    elif confirmed_empty_mlb_date(eastern_slate_date_iso()):
+        from outputs.push_supabase import upsert_dataset
+
+        tab = SHEET_TABS["today_matchups"]
+        try:
+            upsert_dataset(tab, [])
+            print(f"  Cleared hub_dataset[{tab}] (MLB confirmed no games)")
+        except Exception as exc:
+            print(f"  WARNING: could not clear the verified empty hub slate ({exc})")
         stale_path = os.path.join(DATA_DIR, "today_matchups.csv")
         if os.path.exists(stale_path):
             os.remove(stale_path)
             print("  Removed stale today_matchups.csv")
         clear_matchups_sheet()
+    else:
+        print("  WARNING: MLB did not confirm an empty slate; keeping published matchups")
+        return
     if touch_sync:
         try:
             from outputs.push_sheets import touch_last_updated

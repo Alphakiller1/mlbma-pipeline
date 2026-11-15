@@ -191,7 +191,7 @@ def assert_slate_fresh(expected_date: str | None = None):
     """Hard guardrail against the silent stale-slate failure.
 
     The dashboard reads Today_Matchups from the Supabase hub first, so a run is only truly
-    healthy if the hub slate is *today's*. A stale slate previously masqueraded as a
+    healthy if the hub slate is today's or empty on a verified off day. A stale slate previously masqueraded as a
     successful run: analytics refreshed via Supabase while the Sheets-gated slate write
     silently skipped, leaving chase-analytics on yesterday's pitchers. Verify the hub slate
     date and fail loudly. Returns True (fresh), False (stale -> exit non-zero), or None
@@ -202,7 +202,7 @@ def assert_slate_fresh(expected_date: str | None = None):
     flags a perfectly good slate as stale if the run happens to cross local midnight. Callers
     that just want a standalone check (e.g. from a shell) can omit it to use the current date.
     """
-    from core.slate_date import eastern_slate_date_iso
+    from core.slate_date import confirmed_empty_mlb_date, eastern_slate_date_iso
 
     today = expected_date or eastern_slate_date_iso()
     try:
@@ -237,6 +237,9 @@ def assert_slate_fresh(expected_date: str | None = None):
 
     if rows and today in slate_dates:
         print(f"  [OK] slate guardrail: hub Today_Matchups is {today} ({len(rows)} games)")
+        return True
+    if not rows and confirmed_empty_mlb_date(today):
+        print(f"  [OK] slate guardrail: MLB confirmed no games for {today}")
         return True
     bar = "!" * 68
     print("\n" + bar)

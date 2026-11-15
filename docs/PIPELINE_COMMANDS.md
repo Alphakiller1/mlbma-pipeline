@@ -275,6 +275,10 @@ Replace `C:\Users\chase\crawl_env\Scripts\python.exe` with `$PY` if you set the 
 PALS is pushed inside `scrapers.scrape_pals` → tab `PALS`.  
 Signals are pushed inside `core.compute_signals` → `Signals_Today`, `Signals_Convergence`.  
 Matchups/lineups are pushed from their scrapers → `Today_Matchups`, `Today_Lineups`.
+On an MLB off day, an explicit zero in the official schedule clears the
+current matchup sheet and hub. The public publisher records a dated empty
+slate when MLB confirms no games across its seven-day lookahead. Failed or
+incomplete schedule responses retain the last good publication.
 `scrapers.scrape_matchups` pushes the freshly built `Today_Matchups` slate directly into
 `hub_dataset`; the end-of-run `outputs.push_supabase` mirror publishes `Today_Lineups`,
 `Last_Updated`, and the configured research datasets without re-reading and overwriting the

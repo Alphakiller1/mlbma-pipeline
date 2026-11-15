@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build allowlisted public MLB/NFL slates from factual pipeline CSVs (and ESPN for NFL).
 
-Fail closed: never write an empty slate over a known-good file; never copy model fields.
+Keep the last good slate on source failure and keep model fields private.
 """
 from __future__ import annotations
 
@@ -23,6 +23,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from project_public_slate import assert_clean, project_slate  # noqa: E402
 
 from core.config import DATA_DIR  # noqa: E402
+from core.slate_date import mlb_schedule_is_empty  # noqa: E402
 
 ET = ZoneInfo("America/New_York")
 PUBLIC_DIR = ROOT / "data" / "public"
@@ -258,6 +259,7 @@ def next_mlb_slate(today: str) -> tuple[str, dict | None]:
     schedule = fetch_mlb_schedule(today)
     if schedule is None or _schedule_games(schedule):
         return today, schedule
+    all_empty = mlb_schedule_is_empty(schedule)
     start = datetime.fromisoformat(today).date()
     for ahead in range(1, MLB_LOOKAHEAD_DAYS + 1):
         day = (start + timedelta(days=ahead)).isoformat()
@@ -265,7 +267,8 @@ def next_mlb_slate(today: str) -> tuple[str, dict | None]:
         if _schedule_games(found):
             print(f"  mlb: no games on {today}; publishing the next slate, {day}")
             return day, found
-    return today, schedule
+        all_empty = all_empty and mlb_schedule_is_empty(found)
+    return today, schedule if all_empty else None
 
 
 def _public_team_code(value: str) -> str:
@@ -1629,6 +1632,22 @@ def write_if_better(sport: str, producer: dict, dest: Path) -> bool:
     return True
 
 
+def _publish_empty_mlb_slate(slate_date: str, dest: Path) -> None:
+    if dest.is_file():
+        try:
+            old = json.loads(dest.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            old = {}
+        if isinstance(old, dict) and old.get("slate_date") == slate_date and old.get("games") == []:
+            return
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    out = project_slate("mlb", {"generated_at_utc": now, "data_through_utc": now, "games": []})
+    out.update(slate_date=slate_date, source="MLB Stats API")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
+    print(f"  wrote {dest} (MLB confirmed no games in the schedule window)")
+
+
 def publish_nfl() -> bool:
     """Rebuild and publish the NFL slate (injuries, depth charts, starters,
     scores and the scheme context). True when the public slate was written."""
@@ -1677,6 +1696,12 @@ def run(data_dir: Path | None = None, mlb_only: bool = False) -> int:
     data_dir = Path(data_dir or DATA_DIR)
     ok = False
     slate_date, schedule = next_mlb_slate(datetime.now(ET).strftime("%Y-%m-%d"))
+    dest = PUBLIC_DIR / "mlb" / "slate.json"
+    if mlb_schedule_is_empty(schedule):
+        _publish_empty_mlb_slate(slate_date, dest)
+        if not mlb_only:
+            publish_nfl()
+        return 0
     curated = _for_day(mlb_producer(data_dir), slate_date)
     if schedule:
         rotowire_starters = add_rotowire_starter_ids(
@@ -1707,7 +1732,7 @@ def run(data_dir: Path | None = None, mlb_only: bool = False) -> int:
     else:
         mlb = curated
         print("  mlb: schedule unreachable; falling back to the curated rows only")
-    ok = write_if_better("mlb", mlb, PUBLIC_DIR / "mlb" / "slate.json") or ok
+    ok = write_if_better("mlb", mlb, dest) or ok
     if mlb_only:
         return 0 if (PUBLIC_DIR / "mlb" / "slate.json").is_file() else 1
     ok = publish_nfl() or ok
