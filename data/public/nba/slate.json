@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-16",
- "generated_at_utc": "2026-11-16T06:31:50+00:00",
+ "generated_at_utc": "2026-11-16T08:38:12+00:00",
  "data_through_utc": "2026-11-16T02:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -19904,13 +19904,13 @@
      "value": 1.24
     },
     {
-     "player_id": "2991070",
-     "player_name": "Jerami Grant",
+     "player_id": "5112087",
+     "player_name": "Jaylen Wells",
      "value": 1.04
     },
     {
-     "player_id": "5112087",
-     "player_name": "Jaylen Wells",
+     "player_id": "2991070",
+     "player_name": "Jerami Grant",
      "value": 1.04
     },
     {
@@ -40180,13 +40180,13 @@
      "value": 0.4
     },
     {
-     "player_id": "4066993",
-     "player_name": "Dru Smith",
+     "player_id": "4431772",
+     "player_name": "Myron Gardner",
      "value": 0.27
     },
     {
-     "player_id": "4431772",
-     "player_name": "Myron Gardner",
+     "player_id": "4066993",
+     "player_name": "Dru Smith",
      "value": 0.27
     },
     {
@@ -64039,13 +64039,13 @@
      "value": 0.62
     },
     {
-     "player_id": "4565698",
-     "player_name": "Bryce Hopkins",
+     "player_id": "4277848",
+     "player_name": "Marvin Bagley III",
      "value": 0.52
     },
     {
-     "player_id": "4277848",
-     "player_name": "Marvin Bagley III",
+     "player_id": "4565698",
+     "player_name": "Bryce Hopkins",
      "value": 0.52
     },
     {
@@ -64134,7 +64134,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-16_01_30AM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-16_03_30AM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -64267,5 +64267,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-16T07:43:11+00:00"
+ "published_at_utc": "2026-11-16T18:23:01+00:00"
 }
