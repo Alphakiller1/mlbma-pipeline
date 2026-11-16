@@ -226,6 +226,7 @@ MATCHUPS_JS = r"""
 
 def matchup_page(sport: str) -> str:
     spec = SPORTS[sport]
+    detail_assets = f"{STAMP}&amp;rev=injury-layout"
     cbb_runtime = f'  <script src="/dashboard/cbb_charts.js?v={STAMP}"></script>' if sport == "cbb" else ""
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -241,7 +242,7 @@ def matchup_page(sport: str) -> str:
   <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/chase_nav.css?v={STAMP}">
-  <link rel="stylesheet" href="/dashboard/styles/chase-public.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-public.css?v={detail_assets}">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="evidence" data-sport="{sport}" data-ca-product="research">
@@ -262,7 +263,7 @@ def matchup_page(sport: str) -> str:
   <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
   <script src="/dashboard/chase_shell.js?v={STAMP}"></script>
 {cbb_runtime}
-  <script src="/dashboard/public_game_detail.js?v={STAMP}"></script>
+  <script src="/dashboard/public_game_detail.js?v={detail_assets}"></script>
   <script>
     window.CHASE_SPORT_PAGE = {spec['global']};
     if (window.ChaseShell) ChaseShell.mount({{ sport: {json.dumps(sport)}, mode: 'evidence', surface: 'matchup', search: false, context: false }});
