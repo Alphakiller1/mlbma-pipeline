@@ -93,14 +93,16 @@ def rank(pool: list[float], value: float, better: str) -> int:
     return 1 + sum(1 for other in pool if other > value + 1e-12)
 
 
-def _entry(label: str, value, better: str, fmt: str, pool: list[float]) -> dict | None:
+def _entry(label: str, value, better: str, fmt: str, pool: list[float], *, place_outside: bool = False) -> dict | None:
     if value is None:
         return None
     v = float(value)
     out = {"label": label, "value": round(v, 4), "better": better, "format": fmt}
-    if pool:
-        out["rank"] = rank(pool, v, "high" if better == "neutral" else better)
-        out["of"] = len(pool)
+    if len(pool) > 1:
+        place = rank(pool, v, "high" if better == "neutral" else better)
+        if place <= len(pool) or place_outside:
+            # A comparison from outside the sample uses its nearest endpoint.
+            out.update(rank=min(place, len(pool)), of=len(pool))
     return out
 
 
@@ -250,13 +252,14 @@ def quarterbacks(season: int, fbs: set[str]) -> dict[str, list[dict]]:
         # Every passer is placed against the qualified pool (owner rule: no
         # grey numbers); ``ranked`` records whether he is in that pool himself.
         for name, label, better, fmt in specs:
-            e = _entry(label, d[name], better, fmt, pools[name])
+            e = _entry(label, d[name], better, fmt, pools[name], place_outside=not ranked)
             if e:
                 line[name] = e
         splits = {}
         avg = (ppa.get(key) or {}).get("averagePPA") or {}
         for split, label in PPA_SPLITS:
-            e = _entry(label + " EPA per play", avg.get(split), "high", "ppa", ppa_splits_pool(split))
+            e = _entry(label + " EPA per play", avg.get(split), "high", "ppa", ppa_splits_pool(split),
+                       place_outside=not ranked)
             if e:
                 splits[split] = e
         out.setdefault(key[0], []).append({
@@ -304,7 +307,7 @@ def rushers(season: int, fbs: set[str]) -> dict[str, list[dict]]:
         row = {"player_id": key[1], "player_name": v.get("player"), "position": v.get("position"),
                "carries": int(v["CAR"]), "ranked": ranked}
         for name, field, label, better, fmt in specs:
-            e = _entry(label, value(v, name, field), better, fmt, pools[name])
+            e = _entry(label, value(v, name, field), better, fmt, pools[name], place_outside=not ranked)
             if e:
                 row[name] = e
         out.setdefault(key[0], []).append(row)
@@ -566,7 +569,12 @@ LOG_STATS = (("points", "high"), ("opponent_points", "low"), ("total_yards", "hi
 def _ranked(pool: list[float], value, better: str) -> dict | None:
     if value is None:
         return None
-    return {"value": round(float(value), 4), "rank": rank(pool, float(value), better), "of": len(pool)}
+    out = {"value": round(float(value), 4)}
+    if len(pool) > 1:
+        place = rank(pool, float(value), better)
+        if place <= len(pool):
+            out.update(rank=place, of=len(pool))
+    return out
 
 
 def game_logs(season: int, through_week: int, wanted: dict[str, str],
@@ -640,8 +648,8 @@ def game_logs(season: int, through_week: int, wanted: dict[str, str],
         season_rows[tid] = row
     for field, better in LOG_STATS:
         pool = [r[field] for tid, r in season_rows.items() if r[field] is not None and is_fbs(tid)]
-        for r in season_rows.values():
-            r[field] = _ranked(pool, r[field], better)
+        for tid, row in season_rows.items():
+            row[field] = _ranked(pool if is_fbs(tid) else [], row[field], better)
     out: dict[str, dict] = {}
     for tid, games in raw.items():
         abbr, location = names[tid]

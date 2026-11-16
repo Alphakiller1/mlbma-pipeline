@@ -360,6 +360,14 @@ The NFL, NBA, CFB and CBB matchup pages share an injury-report table. It shows
 unavailable players first, puts the injury next to the designation, and stacks
 the labeled details and figures under each player in narrow panels.
 
+Matchup ranks use one eligible entry per team for a team figure in the same
+season, unit, and split. NFL run-direction ranks use the league pools published
+with the team splits. Older slates use the eligible clubs in the snapshot.
+Efficiency and stuff-rate ranks require five carries in that direction.
+Player figures keep their qualified position or metric cohort. Game-log ranks
+use the league team scale when a week's sample includes more team-games than
+teams. Rank badges identify the denominator and the weekly sample where used.
+
 ---
 
 *Generated for handoff while batter-splits scrape runs. Update this doc when you change `PROFILE_COLUMNS`, sheet tabs, or dashboard SSOT rules.*

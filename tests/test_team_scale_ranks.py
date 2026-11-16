@@ -15,7 +15,8 @@ JS = (ROOT / "dashboard/public_game_detail.js").read_text(encoding="utf-8")
 class TeamScaleTests(unittest.TestCase):
     def scale(self, *cases):
         body = JS.split("function teamScaled(", 1)[1].split("function teamScaledLabel", 1)[0]
-        src = "function teamScaled(" + body + "\nconsole.log(JSON.stringify(" + json.dumps(cases) + \
+        rank = JS.split("function rankPosition(", 1)[1].split("function rankLabel", 1)[0]
+        src = "function rankPosition(" + rank + "function teamScaled(" + body + "\nconsole.log(JSON.stringify(" + json.dumps(cases) + \
             ".map(c => teamScaled(c[0], c[1], c[2]))));"
         out = subprocess.run(["node", "-e", src], text=True, capture_output=True, check=True)
         return json.loads(out.stdout)
@@ -29,10 +30,16 @@ class TeamScaleTests(unittest.TestCase):
         self.assertEqual(small, {"rank": 112, "of": 121, "pool": None}, "a smaller pool prints as it is")
         self.assertIsNone(none)
 
-    def test_both_game_logs_use_it(self):
+    def test_invalid_ranks_do_not_become_team_scale_ranks(self):
+        self.assertEqual(self.scale([218, 217, 138], [0, 32, 32], [4.5, 32, 32]),
+                         [None, None, None])
+
+    def test_basketball_and_football_game_logs_use_it(self):
         self.assertIn("teamScaled(e.rank,e.of,teams)", JS)
         self.assertIn("cbbLogCell(g,c[0],teams)", JS)
         self.assertIn("teamScaled(entry.rank, entry.of, teams)", JS)
+        self.assertIn("teamScaled(rawRank.rank, rawRank.of, NFL_TEAM_COUNT)", JS)
+        self.assertIn("label, NBA_TEAM_COUNT", JS)
 
 
 if __name__ == "__main__":

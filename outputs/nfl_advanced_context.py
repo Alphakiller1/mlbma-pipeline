@@ -452,6 +452,34 @@ def _run_front(rows) -> dict[str, dict[str, float | int]]:
     }
 
 
+def _rank_run_lanes(teams: dict[str, dict]) -> None:
+    """Rank each direction against the same metric for eligible NFL clubs."""
+    for group, metrics in (
+        ("offense_run_lanes", (("usage", True), ("yards_per_carry", True))),
+        ("defense_run_front", (("yards_per_carry_allowed", False), ("stuff_rate", True))),
+    ):
+        lanes = {key for team in teams.values() for key in team[group] if key != "carries"}
+        for lane in lanes:
+            for metric, higher in metrics:
+                pool = []
+                for team in teams.values():
+                    splits = team[group]
+                    sample = splits.get(lane)
+                    if not sample:
+                        continue
+                    if metric == "usage":
+                        if splits["carries"]:
+                            pool.append((sample, sample["carries"] / splits["carries"]))
+                    elif sample["carries"] >= 5 and sample.get(metric) is not None:
+                        pool.append((sample, sample[metric]))
+                if len(pool) < 2:
+                    continue
+                values = [value for _, value in pool]
+                for sample, value in pool:
+                    ahead = sum(other > value if higher else other < value for other in values)
+                    sample.setdefault("league_ranks", {})[metric] = {"place": ahead + 1, "of": len(pool)}
+
+
 def _pfr_contact_entry(rows, field: str, label: str, better: str) -> dict | None:
     carries = float(rows["carries"].fillna(0).sum()) if len(rows) else 0
     value = _safe_ratio(rows[field].fillna(0).sum(), carries) if carries else None
@@ -545,6 +573,7 @@ def _team_line(frame, season: int, pfr_rushing=None) -> dict[str, dict]:
             rows.sort(key=lambda item: item[1]["value"], reverse=(better == "high"))
             for place, (_club, entry) in enumerate(rows, 1):
                 entry.update({"rank": place, "of": len(rows)})
+    _rank_run_lanes(out)
     return out
 
 

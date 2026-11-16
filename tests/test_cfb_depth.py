@@ -21,6 +21,12 @@ def test_team_advanced_ranks_both_sides_in_the_right_direction():
     assert out["a"]["scheme"]["rates"]["off_pass_rate"]["better"] == "neutral"
 
 
+def test_below_threshold_player_keeps_pool_size_at_the_lower_endpoint():
+    entry = d._entry("Passing yards", 10, "high", "int", [100, 120, 140], place_outside=True)
+    assert entry == {"label": "Passing yards", "value": 10, "better": "high", "format": "int", "rank": 3, "of": 3}
+    assert "rank" not in d._entry("Passing yards", 10, "high", "int", [100, 120, 140])
+
+
 def test_game_logs_rank_against_fbs_only_and_build_a_season_row(monkeypatch):
     def event(eid, home, away, hs, as_):
         return {"id": eid, "date": "2026-09-06T00:00Z", "status": {"type": {"completed": True}},
