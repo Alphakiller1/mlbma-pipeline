@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-11-16T00:22:20Z",
+  "generated_at_utc": "2026-11-16T06:17:32Z",
   "data_through_utc": "2026-11-15T21:00:11+00:00",
   "season": 2026,
   "week": 10,
@@ -4926,16 +4926,16 @@
       "through": "2026-11-15"
     },
     "CIN": {
-      "games": 8,
-      "through": "2026-11-08"
+      "games": 9,
+      "through": "2026-11-16"
     },
     "CLE": {
       "games": 10,
       "through": "2026-11-15"
     },
     "DAL": {
-      "games": 9,
-      "through": "2026-11-08"
+      "games": 10,
+      "through": "2026-11-15"
     },
     "DET": {
       "games": 9,
@@ -4998,16 +4998,16 @@
       "through": "2026-11-15"
     },
     "PIT": {
-      "games": 8,
-      "through": "2026-11-01"
+      "games": 9,
+      "through": "2026-11-16"
     },
     "SEA": {
       "games": 10,
       "through": "2026-11-15"
     },
     "SF": {
-      "games": 8,
-      "through": "2026-11-08"
+      "games": 9,
+      "through": "2026-11-15"
     },
     "TEN": {
       "games": 9,
