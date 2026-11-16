@@ -43,7 +43,7 @@ LIGHT_RE = re.compile(r"\[data-theme=\"light\"\]\s*\{[^{}]*\}", re.DOTALL)
 VAR_HEX = re.compile(r"var\((--[A-Za-z0-9_-]+)\s*,\s*#[0-9A-Fa-f]{3,8}\)")
 VAR_RGB = re.compile(r"var\((--[A-Za-z0-9_-]+)\s*,\s*rgba?\([^)]*\)\)")
 HREF_V = re.compile(
-    r'(href=")((?:[\w./-]+)?)(' + "|".join(re.escape(f) for f in DS_FILES) + r')(\?v=)[^"]+(")'
+    r'(href=")((?:[\w./-]+)?)(' + "|".join(re.escape(f) for f in DS_FILES) + r')(\?v=)[^"&]+([^"]*")'
 )
 
 

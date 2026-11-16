@@ -356,6 +356,10 @@ Compare against:
 | `outputs/nfl_public_context.py` | Identity-only NFL depth-chart projection plus observed team/scheme context |
 | `docs/AUDIT_BACKLOG.md` | Prioritized fix list |
 
+The NFL, NBA, CFB and CBB matchup pages share an injury-report table. It shows
+unavailable players first, puts the injury next to the designation, and stacks
+the labeled details and figures under each player in narrow panels.
+
 ---
 
 *Generated for handoff while batter-splits scrape runs. Update this doc when you change `PROFILE_COLUMNS`, sheet tabs, or dashboard SSOT rules.*
