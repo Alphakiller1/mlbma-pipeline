@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-11-15T23:07:58Z",
+  "generated_at_utc": "2026-11-16T00:22:20Z",
   "data_through_utc": "2026-11-15T21:00:11+00:00",
   "season": 2026,
   "week": 10,
@@ -4906,8 +4906,8 @@
   },
   "recent": {
     "ARI": {
-      "games": 9,
-      "through": "2026-11-08"
+      "games": 10,
+      "through": "2026-11-15"
     },
     "ATL": {
       "games": 10,
@@ -4966,12 +4966,12 @@
       "through": "2026-11-08"
     },
     "LAR": {
-      "games": 9,
-      "through": "2026-11-08"
+      "games": 10,
+      "through": "2026-11-15"
     },
     "LV": {
-      "games": 9,
-      "through": "2026-11-08"
+      "games": 10,
+      "through": "2026-11-15"
     },
     "MIA": {
       "games": 9,
@@ -5002,8 +5002,8 @@
       "through": "2026-11-01"
     },
     "SEA": {
-      "games": 9,
-      "through": "2026-11-08"
+      "games": 10,
+      "through": "2026-11-15"
     },
     "SF": {
       "games": 8,
