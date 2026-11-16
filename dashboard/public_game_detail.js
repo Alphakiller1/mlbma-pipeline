@@ -972,6 +972,19 @@
     return ['th', 'st', 'nd', 'rd'][n % 10] || 'th';
   }
 
+  function rankPosition(entry, maxOf) {
+    if (!entry) return null;
+    var rank = Number(entry.rank != null ? entry.rank : entry.place);
+    var of = Number(entry.of);
+    if (!Number.isInteger(rank) || !Number.isInteger(of) || of < 2 ||
+        rank < 1 || rank > of || (maxOf != null && of > maxOf)) return null;
+    return { rank: rank, of: of };
+  }
+
+  function rankLabel(place, cohort) {
+    return place.rank + ordinal(place.rank) + ' of ' + place.of + (cohort ? ' ' + cohort : '');
+  }
+
   /* The bar is the league percentile of the value beside it and nothing else.
      Rank 1 of 30 fills it, rank 30 of 30 empties it. It never encodes a
      rating, a projection, or an ordering borrowed from anywhere else. */
@@ -980,14 +993,18 @@
      second reading of a fact that is already legible without it. */
   function rankTone(rank, of) {
     var A = global.MLBMAAssets;
-    return A && A.rankChipClass ? A.rankChipClass(rank, of) : '';
+    var place = rankPosition({ rank: rank, of: of });
+    return place && A && A.rankChipClass ? A.rankChipClass(place.rank, place.of) : '';
   }
 
-  function rankBadge(entry, tone, label) {
-    if (!entry || !(entry.of > 1)) return '';
-    return '<span class="ca-rank ' + (tone || rankTone(entry.rank, entry.of)) + '"' +
-      (label ? ' title="' + esc(label) + '" aria-label="' + esc(label) + '"' : '') + '>' +
-      entry.rank + ordinal(entry.rank) + '</span>';
+  function rankBadge(entry, tone, label, extraClass) {
+    var place = rankPosition(entry);
+    if (!place) return '';
+    var words = label || rankLabel(place, entry.cohort);
+    return '<span class="ca-rank ' + (tone || rankTone(place.rank, place.of)) +
+      (extraClass ? ' ' + extraClass : '') + '" data-rank="' + place.rank + '" data-rank-of="' + place.of +
+      '" title="' + esc(words) + '" aria-label="' + esc(words) + '">' +
+      place.rank + ordinal(place.rank) + '</span>';
   }
 
   /* A game-log figure is placed among that week's team-games, a pool that can
@@ -996,24 +1013,27 @@
      no place runs past the number of teams (owner 2026-11-13). {rank, of,
      pool}; a pool no larger than the league prints as it is. */
   function teamScaled(rank, of, teams) {
-    if (!rank || !(of > 1)) return null;
-    if (!(teams > 1) || of <= teams) return { rank: rank, of: of, pool: null };
-    return { rank: 1 + Math.round((rank - 1) * (teams - 1) / (of - 1)), of: teams, pool: of };
+    var place = rankPosition({ rank: rank, of: of });
+    if (!place) return null;
+    if (!(teams > 1) || place.of <= teams) return { rank: place.rank, of: place.of, pool: null };
+    return { rank: 1 + Math.round((place.rank - 1) * (teams - 1) / (place.of - 1)), of: teams, pool: place.of };
   }
   function teamScaledLabel(place, raw, cohort, poolLabel) {
-    return place.rank + ordinal(place.rank) + ' of ' + place.of + ' ' + cohort +
+    return rankLabel(place, cohort) +
       (place.pool ? ' · ' + raw + ordinal(raw) + ' of ' + place.pool + ' ' + poolLabel : '');
   }
 
   // The rank pill for either shape a place comes in: {rank, of} or {place, of}.
-  function nflBadge(r) {
-    return r ? rankBadge({ rank: r.rank != null ? r.rank : r.place, of: r.of }) : '';
+  function nflBadge(r, cohort) {
+    var place = rankPosition(r);
+    return place ? rankBadge(r, '', cohort ? rankLabel(place, cohort) : '') : '';
   }
 
   function percentBar(rank, of) {
-    if (!(of > 1) || !(rank >= 1)) return '';
-    var pct = Math.round(((of - rank) / (of - 1)) * 100);
-    return segmentedMeter(pct, rankTone(rank, of), pct +
+    var place = rankPosition({ rank: rank, of: of });
+    if (!place) return '';
+    var pct = Math.round(((place.of - place.rank) / (place.of - 1)) * 100);
+    return segmentedMeter(pct, rankTone(place.rank, place.of), pct +
       ' percent of clubs rate below this value');
   }
 
@@ -1099,9 +1119,8 @@
   }
 
   function percentOf(entry) {
-    var place = entry && (entry.rank || entry.place);
-    if (!entry || !(entry.of > 1) || !(place >= 1)) return null;
-    return ((entry.of - place) / (entry.of - 1)) * 100;
+    var place = rankPosition(entry);
+    return place ? ((place.of - place.rank) / (place.of - 1)) * 100 : null;
   }
 
   function mirrorRow(label, away, home, format, styles) {
@@ -2159,7 +2178,8 @@
     var p = Number(percentile);
     if (percentile == null || !isFinite(p)) return '';
     var n = Math.round(p);
-    return '<span class="ca-rank ' + percentileClass(p) + '">' + n + ordinal(n) + '</span>';
+    return '<span class="ca-rank ' + percentileClass(p) + '" aria-label="' + n + ordinal(n) +
+      ' percentile">' + n + '%ile</span>';
   }
 
   function vsStarterCell(history) {
@@ -3422,24 +3442,6 @@
     return z >= 0 ? 0.5 * (1 + erf) : 0.5 * (1 - erf);
   }
 
-  function responseEntry(scheme, phase, key, value) {
-    if (value == null || value === '') return null;
-    var n = Number(value);
-    if (!isFinite(n)) return null;
-    var base = ((((scheme || {}).league_response || {})[phase] || {})[key]) || {};
-    var of = Number(base.n) || 32;
-    var mean = Number(base.mean);
-    var std = Number(base.std);
-    var entry = { value: n, of: of };
-    if (isFinite(mean) && isFinite(std) && std > 0) {
-      var z = (n - mean) / std;
-      if (phase === 'defense') z = -z;
-      var pct = schemeNorm(z);
-      entry.rank = Math.max(1, Math.min(of, Math.round((1 - pct) * (of - 1) + 1)));
-    }
-    return entry;
-  }
-
   function epaText(value, isRate) {
     var v = Number(value);
     if (!isFinite(v)) return '—';
@@ -3766,15 +3768,16 @@ function seasonToggle(game) {
 
   // Every club on the published slate, so a result can be placed by its real
   // rank rather than a rank inferred from a normal curve. Set per render.
+  var NFL_TEAM_COUNT = 32;
   var nflPool = null;
 
   function nflLeaguePool(games) {
     var teams = {};
     (games || []).forEach(function (g) {
       ['away', 'home'].forEach(function (side) {
-        if (!g || !g[side] || !g[side + '_scheme']) return;
+        if (!g || !g[side]) return;
         teams[g[side]] = {
-          scheme: g[side + '_scheme'],
+          scheme: g[side + '_scheme'] || null,
           schemeCurrent: g[side + '_scheme_current'] || null,
           line: g[side + '_line_stats'] || {},
           stats: g[side + '_team_stats'] || {},
@@ -3791,22 +3794,28 @@ function seasonToggle(game) {
     return Object.keys(teams).length ? teams : null;
   }
 
-  // Every value the slate pool yields for one field.
-  function nflPoolValues(read) {
-    if (!nflPool) return [];
-    var out = [];
-    Object.keys(nflPool).forEach(function (team) {
-      var v = read(nflPool[team]);
-      (Array.isArray(v) ? v : [v]).forEach(function (x) {
-        if (x != null && isFinite(Number(x))) out.push(Number(x));
-      });
-    });
-    return out;
+  function rankValues(values) {
+    return values.filter(function (x) {
+      return (typeof x === 'number' || (typeof x === 'string' && x.trim() !== '')) && Number.isFinite(Number(x));
+    }).map(Number);
+  }
+
+  function nflTeamValues(read) {
+    return rankValues(Object.values(nflPool || {}).map(read));
+  }
+
+  function nflPlayerValues(read) {
+    return rankValues(Object.values(nflPool || {}).flatMap(read));
+  }
+
+  function nflTeamRank(entry, cohort) {
+    var place = rankPosition(entry, NFL_TEAM_COUNT);
+    return place ? Object.assign(place, { cohort: cohort || 'NFL teams' }) : null;
   }
 
   // A value's place in a pool (1st = highest when hi, lowest otherwise).
-  function nflPlace(values, raw, hi) {
-    if (raw == null || !isFinite(Number(raw)) || values.length < 8) return null;
+  function nflPlace(values, raw, hi, minimum) {
+    if (raw == null || raw === '' || !isFinite(Number(raw)) || values.length < (minimum || 8)) return null;
     var v = Number(raw);
     var ahead = values.filter(function (x) { return hi ? x > v : x < v; }).length;
     // A value from outside the pool (a thin sample) that trails all of it is last.
@@ -3815,27 +3824,25 @@ function seasonToggle(game) {
 
   // A graded cell: tier colour from its place, the place on hover. A thin
   // sample prints the number and takes no colour.
-  function nflPlacedTd(html, place, thin) {
-    var tone = place && !thin ? rankTone(place.rank, place.of) : '';
+  function nflPlacedTd(html, place, thin, cohort) {
+    var shown = thin ? null : rankPosition(place);
+    var tone = shown ? rankTone(shown.rank, shown.of) : '';
+    var label = shown ? rankLabel(shown, cohort || place.cohort) : '';
     return '<td class="num' + (tone ? ' ' + tone : '') + (thin ? ' is-low-cell' : '') + '"' +
       (thin ? ' title="Thin sample: printed, not graded"'
-        : (place ? ' title="' + place.rank + ordinal(place.rank) + ' of ' + place.of + '"' : '')) + '>' +
-      html + (thin ? '' : nflBadge(place)) + '</td>';
+        : (label ? ' title="' + esc(label) + '"' : '')) + '>' +
+      html + rankBadge(shown, tone, label) + '</td>';
   }
 
   // A published {place, of} read as a frequency place for the league marker.
-  function nflAsFreq(place) {
-    return place ? { place: place.rank, of: place.of } : null;
+  function nflAsFreq(place, cohort) {
+    return place ? { place: place.rank, of: place.of, cohort: cohort || place.cohort } : null;
   }
 
   function nflResponse(scheme, phase) {
     return (((scheme || {})[phase] || {}).response) || {};
   }
 
-  /* A situational EPA placed among the clubs that publish the same field. With
-     fewer than twenty clubs in the pool (a bye-heavy week, a partial slate) the
-     league mean and spread published with the scheme stand in, which is the
-     estimate the page has always used. */
   /* Which season window the scheme panels are reading. The combined window
      is the model board's charting (participation + FTN, prior season in); the
      current window is this season alone, built from FTN charting and the
@@ -3856,20 +3863,12 @@ function seasonToggle(game) {
   }
 
   function nflResultRank(scheme, phase, key, raw) {
-    if (raw == null || !isFinite(Number(raw))) return null;
-    var v = Number(raw);
-    var hi = phase === 'offense';
-    if (nflPool) {
-      var pool = Object.keys(nflPool).map(function (team) {
-        return nflResponse(nflPool[team][nflWindow.pool], phase)[key];
-      }).filter(function (x) { return x != null && isFinite(Number(x)); }).map(Number);
-      if (pool.length >= 20) {
-        var ahead = pool.filter(function (x) { return hi ? x > v : x < v; }).length;
-        return { rank: ahead + 1, of: pool.length };
-      }
-    }
-    var est = responseEntry(scheme, phase, key, v);
-    return est && est.rank ? { rank: est.rank, of: est.of } : null;
+    var seasons = ((scheme || {}).source_seasons || []).join(',');
+    var pool = nflTeamValues(function (team) {
+      var other = team[nflWindow.pool];
+      return other && (other.source_seasons || []).join(',') === seasons ? nflResponse(other, phase)[key] : null;
+    });
+    return nflTeamRank(nflPlace(pool, raw, phase === 'offense'), 'NFL teams with comparable charting');
   }
 
   /* How often, against the league: the club's league rank as a colour-coded
@@ -3878,15 +3877,17 @@ function seasonToggle(game) {
      The pill reads in the direction the colour does: for a rate where less is
      better (invert), 1st is the club that does it least. */
   function nflFreqRank(scheme, phase, group, key) {
-    return (((((scheme || {}).league_frequency_ranks || {})[phase] || {})[group] || {})[key]) || null;
+    var rank = (((((scheme || {}).league_frequency_ranks || {})[phase] || {})[group] || {})[key]);
+    return nflAsFreq(nflTeamRank(rank));
   }
 
   function nflFreqMark(rank, invert) {
-    if (!rank || !(rank.of > 1) || !(rank.place >= 1)) return '';
-    var shown = invert ? rank.of + 1 - rank.place : rank.place;
-    var words = rank.place + ordinal(rank.place) + ' most of ' + rank.of;
-    return '<span class="ca-rank ca-freq-mark ' + rankTone(shown, rank.of) + '" title="' + esc(words) +
-      '" aria-label="' + esc(words) + '">' + shown + ordinal(shown) + '</span>';
+    var place = rankPosition(rank);
+    if (!place) return '';
+    if (invert) place.rank = place.of + 1 - place.rank;
+    var words = place.rank + ordinal(place.rank) + (invert ? ' least' : ' most') + ' of ' + place.of +
+      (rank.cohort ? ' ' + rank.cohort : '');
+    return rankBadge(place, '', words, 'ca-freq-mark');
   }
 
   function nflUsageCell(rate, rank, invert) {
@@ -4009,7 +4010,7 @@ function seasonToggle(game) {
     var rows = (list || []).filter(function (d) { return d && d.targets > 0; });
     if (!rows.length) return pending('Coverage charting is not published for this defense.');
     function pool(key) {
-      return nflPoolValues(function (t) {
+      return nflPlayerValues(function (t) {
         return (t.defenders || []).filter(function (d) { return d.targets >= NFL_DEFENDER_FLOOR; })
           .map(function (d) { return d[key]; });
       });
@@ -4043,7 +4044,7 @@ function seasonToggle(game) {
         graded('yards_per_target', d.yards_per_target == null ? '' : Number(d.yards_per_target).toFixed(1)) +
         graded('passer_rating', d.passer_rating == null ? '' : Number(d.passer_rating).toFixed(1)) +
         '<td class="num">' + (d.adot == null ? '&mdash;' : esc(Number(d.adot).toFixed(1)) +
-          (thin ? '' : nflFreqMark(nflAsFreq(adotPlace)))) + '</td></tr>';
+          (thin ? '' : nflFreqMark(nflAsFreq(adotPlace, 'defenders with ' + NFL_DEFENDER_FLOOR + '+ targets')))) + '</td></tr>';
     });
     return '<p class="ca-lineup-context">Coverage allowed by defender</p>' +
       nflSplitTable(['Tgt', 'Cmp%', 'Yds/Tgt', 'Rating', 'aDOT'], body, 'Defender');
@@ -4609,7 +4610,7 @@ function seasonToggle(game) {
           return '<td class="num' + (tone ? ' ' + tone : '') + '"' +
             (rank ? ' title="' + rank.place + ordinal(rank.place) + ' of ' + rank.of +
               ' at his position in this look"' : '') + '>' + esc(nflFormat(r[col[0]], col[3])) +
-            nflBadge(rank) + '</td>';
+            nflBadge(rank, 'qualified players at his position in this look') + '</td>';
         }).join('') + (showCol ? '<td class="num ca-opp-shows">' +
           (shows == null ? '' : esc(pctText(shows)) + nflOppShowsMark(opp.scheme, r.look)) +
           '</td>' : '') + '</tr>';
@@ -4631,12 +4632,15 @@ function seasonToggle(game) {
           var rank = (r.league_ranks || {}).epa_per_dropback || null;
           var shows = opp ? nflOppShows(opp.defense, r.look) : null;
           var ofOffenses = /^team_/.test(r.look);
+          var teamRank = ofOffenses ? nflTeamRank(rank) : null;
+          if (ofOffenses) rank = nflAsFreq(teamRank);
           return '<tr><td>' + esc(NFL_LOOK_LABEL[r.look] || r.look) + '</td>' +
             '<td class="num">' + esc(String(r.dropbacks)) + '</td>' +
             '<td class="num' + (rank ? ' ' + nflRankTone(rank) : '') + '"' +
             (rank ? ' title="' + rank.place + ordinal(rank.place) + ' of ' + rank.of +
               (ofOffenses ? ' offenses' : ' at his position') + '"' : '') + '>' +
-            esc(nflFormat(r.epa_per_dropback, 'epa')) + nflBadge(rank) + '</td>' +
+            esc(nflFormat(r.epa_per_dropback, 'epa')) +
+            nflBadge(rank, ofOffenses ? 'NFL offenses in this look' : 'qualified players at his position') + '</td>' +
             (epaShow ? '<td class="num ca-opp-shows">' + (shows == null ? '' :
               esc(pctText(shows)) + nflOppShowsMark(opp.scheme, r.look)) + '</td>' : '') + '</tr>';
         }).join('') + '</tbody></table></div>';
@@ -4705,7 +4709,7 @@ function seasonToggle(game) {
         return '<div class="ca-stat"><span class="ca-stat__label">' + esc(labelText) +
           (thin ? lowTag : '') + '</span><strong class="ca-stat__value' + (tone ? ' ' + tone : '') + '"' +
           (rank ? ' title="' + rank.place + ordinal(rank.place) + ' of ' + rank.of + '"' : '') + '>' +
-          esc(nflFormat(raw, kind)) + nflBadge(rank) + '</strong></div>';
+          esc(nflFormat(raw, kind)) + nflBadge(rank, 'qualified ' + position + 's in this window') + '</strong></div>';
       }
       // Next Gen tracking, graded like the tiles beside it. The pipeline
       // places these 1st = highest; where less is better for the player (a
@@ -4718,7 +4722,7 @@ function seasonToggle(game) {
         return '<div class="ca-stat"><span class="ca-stat__label">' + esc(labelText) +
           (r ? '' : lowTag) + '</span><strong class="ca-stat__value' + (tone ? ' ' + tone : '') + '"' +
           (r ? ' title="' + r.place + ordinal(r.place) + ' of ' + r.of + '"' : '') + '>' +
-          valueHtml + nflBadge(r) + '</strong></div>';
+          valueHtml + nflBadge(r, position + 's with qualifying tracking data') + '</strong></div>';
       }
       var html = position === 'QB'
         ? tile('EPA / DB', all.epa_per_dropback, 'epa', ranks.epa_per_dropback) +
@@ -4756,7 +4760,8 @@ function seasonToggle(game) {
         esc(games + (games === 1 ? ' game' : ' games') + ' · ' + bits.join(' · ')) +
         (position === 'RB' && tracking.eight_plus_box_rate != null
           ? esc(' · 8+ box ' + pctText(tracking.eight_plus_box_rate)) +
-            nflFreqMark(trackRanks.eight_plus_box_rate) : '') + '</p>';
+            nflFreqMark(nflAsFreq(rankPosition(trackRanks.eight_plus_box_rate), 'RBs with qualifying tracking data')) :
+          '') + '</p>';
     }
 
     var currentSeasonNo = current ? current.source_season : (stats && stats.season);
@@ -4778,20 +4783,21 @@ function seasonToggle(game) {
 
   function nflGradedCell(entry, kind) {
     if (!entry || entry.value == null) return '<td class="num">&mdash;</td>';
-    var tone = entry.rank ? rankTone(entry.rank, entry.of || 32) : '';
+    var place = nflTeamRank(entry);
+    var tone = place ? rankTone(place.rank, place.of) : '';
     return '<td class="num' + (tone ? ' ' + tone : '') + '" title="' +
-      esc((entry.label || '') + (entry.rank ? ' · ' + entry.rank + ordinal(entry.rank) +
-        ' of ' + (entry.of || 32) : '')) + '">' + esc(nflFormat(entry.value, kind)) +
-      (entry.rank ? nflBadge({ rank: entry.rank, of: entry.of || 32 }) : '') + '</td>';
+      esc(entry.label || '') + '">' + esc(nflFormat(entry.value, kind)) + nflBadge(place) + '</td>';
   }
 
   function nflLedgerEntry(raw, kind, place, label) {
     if (raw == null || !isFinite(Number(raw))) return null;
+    var ranked = nflTeamRank(place, place && place.cohort);
     return {
       value: raw,
       text: nflFormat(raw, kind),
-      rank: place && (place.rank || place.place),
-      of: place && place.of,
+      rank: ranked && ranked.rank,
+      of: ranked && ranked.of,
+      cohort: ranked && ranked.cohort,
       label: label
     };
   }
@@ -4842,7 +4848,7 @@ function seasonToggle(game) {
     }
     function entry(unit, stat) {
       var rank = (unit.ranks || {})[stat[0]] || {};
-      return nflLedgerEntry(unit[stat[0]], stat[2], { rank: rank.place, of: rank.of || 32 }, stat[1]);
+      return nflLedgerEntry(unit[stat[0]], stat[2], rank, stat[1]);
     }
     var off = mine.offense || {}, def = theirs.defense || {};
     var sample = [seasons.join(' + '),
@@ -4857,7 +4863,7 @@ function seasonToggle(game) {
     // Every ball carrier, graded among the slate's carriers in this window.
     var floor = win === 'current' ? 10 : 30;
     function pool(key) {
-      return nflPoolValues(function (t) {
+      return nflPlayerValues(function (t) {
         return (((t.runGame || {})[win] || {}).carriers || [])
           .filter(function (c) { return c.carries >= floor; })
           .map(function (c) { return c[key]; });
@@ -4974,16 +4980,17 @@ function seasonToggle(game) {
       function perCell(read) {
         var v = perGame(stats, read);
         if (v == null) return '<td class="num">—</td>';
-        var pool = nflPoolValues(function (t) {
+        var pool = nflTeamValues(function (t) {
           return perGame(prior ? nflCombineTeam(t.stats, t.statsPrior) : (t.stats || {}), read);
         });
-        return nflPlacedTd(v.toFixed(1), nflPlace(pool, v, true));
+        return nflPlacedTd(v.toFixed(1), nflTeamRank(nflPlace(pool, v, true), 'NFL teams on the published slate'));
       }
       var pace = stats.offensive_plays_per_game;
       var pacePlace = prior
-        ? nflAsFreq(nflPlace(nflPoolValues(function (t) {
-            var c = nflCombineTeam(t.stats, t.statsPrior); return c && c.offensive_plays_per_game; }), pace, true))
-        : (stats.offensive_pace_rank ? { place: stats.offensive_pace_rank, of: stats.offensive_pace_of || 32 } : null);
+        ? nflTeamRank(nflPlace(nflTeamValues(function (t) {
+            var c = nflCombineTeam(t.stats, t.statsPrior); return c && c.offensive_plays_per_game;
+          }), pace, true), 'NFL teams on the published slate')
+        : nflTeamRank({ rank: stats.offensive_pace_rank, of: stats.offensive_pace_of });
       html += '<div class="ca-split-block"><h4>' + esc(oNick + ' Per Game · ' + windowLabel + ' · ' + g + ' Games') + '</h4>' +
         nflSplitTable(['Pass Yds', 'Rush Yds', 'TD', '1st Downs', 'Plays'], [
           '<tr><td>Offense</td>' +
@@ -4992,7 +4999,7 @@ function seasonToggle(game) {
           perCell(function (st) { return safeTotal(st.passing_tds, st.rushing_tds); }) +
           perCell(function (st) { return safeTotal(st.passing_first_downs, st.rushing_first_downs); }) +
           '<td class="num">' + (pace == null ? '—' : esc(Number(pace).toFixed(1)) +
-            nflFreqMark(pacePlace)) + '</td></tr>']) + '</div>';
+            nflFreqMark(nflAsFreq(pacePlace))) + '</td></tr>']) + '</div>';
     return html;
     }
     var teamNow = game[offSide + '_team_stats'] || {};
@@ -5012,25 +5019,41 @@ function seasonToggle(game) {
   ];
 
   var NFL_LANES = [
-    ['left', 'lane_left', 'Run Left'], ['middle', 'lane_middle', 'Run Middle'],
-    ['right', 'lane_right', 'Run Right'], ['gap_guard', 'gap_guard', 'At The Guards'],
-    ['gap_tackle', 'gap_tackle', 'At The Tackles'], ['gap_end', 'gap_end', 'Outside The Ends']
+    ['lane_left', 'Run Left'], ['lane_middle', 'Run Middle'], ['lane_right', 'Run Right'],
+    ['gap_guard', 'At The Guards'], ['gap_tackle', 'At The Tackles'], ['gap_end', 'Outside The Ends']
   ];
+  var NFL_RUN_LANE_MIN = 5;
 
-  /* The lead back's direction splits for this possession. The current season
-     once it holds a real sample, otherwise the latest season that does, and
-     the heading always says which one it is. */
-  function nflRunProfile(game, side) {
-    var back = availability.nflStarter(game, side, 'RB');
-    if (!back) return null;
-    var key = playerNameKey(back.name);
-    var seasons = (game[side + '_player_scheme'] || []).filter(function (p) {
-      return p.play_family === 'rushing' && playerNameKey(p.player_name) === key;
-    }).sort(function (a, b) { return Number(b.source_season) - Number(a.source_season); });
-    function carries(p) {
-      return Number(((p.splits || []).filter(function (s) { return s.look === 'all'; })[0] || {}).carries) || 0;
+  function nflRunLanePlace(line, group, lane, metric, higher) {
+    function eligibleValue(peer) {
+      var splits = peer[group] || {};
+      var sample = splits[lane];
+      if (!sample) return null;
+      if (metric === 'usage') return splits.carries > 0 ? sample.carries / splits.carries : null;
+      return sample.carries >= NFL_RUN_LANE_MIN ? sample[metric] : null;
     }
-    return seasons.filter(function (p) { return carries(p) >= 40; })[0] || seasons[0] || null;
+    var value = eligibleValue(line);
+    if (value == null || !Number.isFinite(Number(value))) return null;
+    var sample = line[group][lane];
+    var basis = metric === 'usage' ? 'NFL offenses with recorded carries in this lane' :
+      (group === 'offense_run_lanes' ? 'NFL offenses' : 'NFL defenses') + ' with 5+ carries in this lane';
+    var published = nflTeamRank((sample.league_ranks || {})[metric], basis);
+    if (published) return published;
+    // Older boards carry observed splits. Compare one eligible club at a
+    // time, using the same season and direction on the published slate.
+    var pool = nflTeamValues(function (t) {
+      return Number(t.line.season) === Number(line.season) ? eligibleValue(t.line) : null;
+    });
+    return nflTeamRank(nflPlace(pool, value, higher, 2), basis + ' on the published slate');
+  }
+
+  function nflRunLaneCell(line, group, lane, metric, kind, higher) {
+    var sample = (line[group] || {})[lane];
+    if (!sample || sample[metric] == null) return '<td class="num">&mdash;</td>';
+    var thin = !(sample.carries >= NFL_RUN_LANE_MIN);
+    var value = esc(nflFormat(sample[metric], kind)) + (thin ? ' <small class="is-low">' +
+      esc(sample.carries) + ' car</small>' : '');
+    return nflPlacedTd(value, nflRunLanePlace(line, group, lane, metric, higher), thin);
   }
 
   /* One possession in the trenches: this offense's line directly above the
@@ -5054,73 +5077,21 @@ function seasonToggle(game) {
       }).join('') + '</tr>';
     }));
 
-    var front = dLine.defense_run_front || {};
-    var profile = nflRunProfile(game, offSide);
-    var looks = {};
-    ((profile && profile.splits) || []).forEach(function (s) { looks[s.look] = s; });
-    var all = looks.all || {};
-    var season = profile ? profile.source_season : null;
     var teamRuns = offLine.offense_run_lanes || {};
-    var useTeam = Number(teamRuns.carries) > 0 &&
-      (season !== offLine.season || (Number(all.carries) || 0) < 40 || NFL_LANES.some(function (lane) {
-        return front[lane[1]] && !looks[lane[0]];
-      }));
-    var total = Number(useTeam ? teamRuns.carries : all.carries) || 0;
-    // How much of a back's work goes each way, for every back on the slate in
-    // the same season with a real sample: the pool behind the usage marker.
-    function shareOf(p, look) {
-      var ls = {};
-      (p.splits || []).forEach(function (x) { ls[x.look] = x; });
-      var total = Number((ls.all || {}).carries) || 0;
-      return total >= 15 && ls[look] ? Number(ls[look].carries) / total : null;
-    }
-    var rows = NFL_LANES.map(function (lane) {
-      var mine = useTeam ? teamRuns[lane[1]] : looks[lane[0]];
-      var theirs = front[lane[1]];
-      if (!mine || !theirs || !total) return '';
-      var share = Number(mine.carries) / total;
-      var sharePool = nflPoolValues(function (t) {
-        if (useTeam) {
-          var runs = (t.line || {}).offense_run_lanes || {};
-          return runs.carries && runs[lane[1]] ? Number(runs[lane[1]].carries) / Number(runs.carries) : null;
-        }
-        return (t.backs || []).filter(function (p) {
-          return p.play_family === 'rushing' && p.source_season === season;
-        }).map(function (p) { return shareOf(p, lane[0]); });
-      });
-      function ypc(value, carries) {
-        var low = Number(carries) < 5;
-        return nflFormat(value, 'num1') + (low ? ' <small class="is-low" title="Under 5 carries">' +
-          esc(carries) + '</small>' : '');
-      }
-      var mineRank = (mine.league_ranks || {}).yards_per_carry;
-      var minePlace = mineRank ? { rank: mineRank.place, of: mineRank.of } : null;
-      if (useTeam) {
-        var teamYpc = nflPoolValues(function (t) {
-          var run = ((t.line || {}).offense_run_lanes || {})[lane[1]];
-          return run && Number(run.carries) >= 5 ? run.yards_per_carry : null;
-        });
-        minePlace = nflPlace(teamYpc, mine.yards_per_carry, true);
-      }
-      var frontYpc = nflPoolValues(function (t) {
-        return (((t.line || {}).defense_run_front || {})[lane[1]] || {}).yards_per_carry_allowed;
-      });
-      var frontStuff = nflPoolValues(function (t) {
-        return (((t.line || {}).defense_run_front || {})[lane[1]] || {}).stuff_rate;
-      });
-      var thinTheirs = Number(theirs.carries) < 5;
-      return '<tr><td class="ca-lineup-name">' + esc(lane[2]) + '</td>' +
-        nflUsageCell(share, nflAsFreq(nflPlace(sharePool, share, true))) +
-        nflPlacedTd(ypc(mine.yards_per_carry, mine.carries), minePlace, Number(mine.carries) < 5) +
-        nflPlacedTd(ypc(theirs.yards_per_carry_allowed, theirs.carries),
-          nflPlace(frontYpc, theirs.yards_per_carry_allowed, false), thinTheirs) +
-        nflPlacedTd(esc(nflFormat(theirs.stuff_rate, 'pct')),
-          nflPlace(frontStuff, theirs.stuff_rate, true), thinTheirs) + '</tr>';
+    var front = dLine.defense_run_front || {};
+    var rows = NFL_LANES.map(function (spec) {
+      var lane = spec[0], mine = teamRuns[lane];
+      if (!mine && !front[lane]) return '';
+      var share = mine && teamRuns.carries > 0 ? Number(mine.carries) / teamRuns.carries : null;
+      var usage = nflAsFreq(nflRunLanePlace(offLine, 'offense_run_lanes', lane, 'usage', true));
+      return '<tr><td class="ca-lineup-name">' + esc(spec[1]) + '</td>' + nflUsageCell(share, usage) +
+        nflRunLaneCell(offLine, 'offense_run_lanes', lane, 'yards_per_carry', 'num1', true) +
+        nflRunLaneCell(dLine, 'defense_run_front', lane, 'yards_per_carry_allowed', 'num1', false) +
+        nflRunLaneCell(dLine, 'defense_run_front', lane, 'stuff_rate', 'pct', true) + '</tr>';
     }).filter(Boolean);
     if (rows.length) {
-      var who = useTeam ? oNick + ' team designed runs' : profile.player_name;
-      var sampleNote = who + ' vs ' + dNick + ' D-Line · ' + (useTeam ? offLine.season : season) + ' · ' + total + ' carries';
-      html += '<div class="ca-split-block"><h4>Run Direction</h4>' +
+      var sampleNote = oNick + ' designed runs vs ' + dNick + ' run defense · ' + (offLine.season || dLine.season);
+      html += '<div class="ca-split-block"><h4>Team Run Direction</h4>' +
         '<p class="ca-lineup-context">' + esc(sampleNote) + '</p>' +
         nflMixTable('Direction', [oNick + ' YPC', dNick + ' Allowed', 'Stuff'], rows) +
         '</div>';
@@ -5139,7 +5110,7 @@ function seasonToggle(game) {
       esc(nflVs(sport, game, side, 'Pass Catchers', 'Pass Defense')) + '</h3>';
     if (!players.length) return head + pending('Receiving totals are not published yet.') + '</section>';
     // Receivers are placed among players at the same position on the slate
-    // with at least five targets. Receptions, yards and yards per target are
+    // with at least three targets. Receptions, yards and yards per target are
     // production, so they are graded; targets and target share are
     // opportunity, so they carry the league marker instead.
     var MIN_TARGETS = 3;
@@ -5152,7 +5123,7 @@ function seasonToggle(game) {
     }
     function volumeTable(list, combinedPool) {
     function posPool(position, read) {
-      return nflPoolValues(function (t) {
+      return nflPlayerValues(function (t) {
         var rowsForTeam = combinedPool ? nflCombineRows(t.players, t.playersPrior) : (t.players || []);
         return rowsForTeam.filter(function (x) {
           return x.position === position && Number(x.targets) >= MIN_TARGETS;
@@ -5167,15 +5138,17 @@ function seasonToggle(game) {
       // Every row is graded (owner rule): a player under the target floor is
       // placed against the players above it; his targets are in the row.
       var thin = false;
+      var cohort = p.position + 's with ' + MIN_TARGETS + '+ targets on the published slate' +
+        (p.targets < MIN_TARGETS ? ' · placement for a below-threshold sample' : '');
       function placed(value, read, digits) {
         if (value == null) return '<td class="num">—</td>';
         return nflPlacedTd(esc(Number(value).toFixed(digits)),
-          thin ? null : nflPlace(posPool(p.position, read), value, true), thin);
+          thin ? null : nflPlace(posPool(p.position, read), value, true), thin, cohort);
       }
       function marked(text, value, read) {
         if (value == null) return '<td class="num">—</td>';
         return '<td class="num">' + esc(text) +
-          (thin ? '' : nflFreqMark(nflAsFreq(nflPlace(posPool(p.position, read), value, true)))) + '</td>';
+          (thin ? '' : nflFreqMark(nflAsFreq(nflPlace(posPool(p.position, read), value, true), cohort))) + '</td>';
       }
       var tgtG = perG(p, 'targets');
       return '<tr' + (thin ? ' class="is-thin"' : '') + '><td>' + esc(p.player_name) +
@@ -5312,7 +5285,7 @@ function seasonToggle(game) {
               (thin ? ' · under ' + NFL_REC_FLOOR + ' targets, not graded' : '')) + '">' +
               esc(metricText(sp[key], metric[2])) +
               (thin ? '<span class="ca-rank is-sample">' + esc(sp.targets) + ' tgt</span>'
-                : nflBadge(rank)) + '</td>';
+                : nflBadge(rank, 'qualified ' + byName[k][0].position + 's in this look')) + '</td>';
           }).join('');
           var shows = oppDef ? nflOppShows(oppDef, look) : null;
           body += '<tr><td>' + esc(NFL_LOOK_LABEL[look] || look) + '</td>' + cells +
@@ -5370,10 +5343,6 @@ function seasonToggle(game) {
   ];
   var NFL_RZ_FLOOR = { target_share: 3, carry_share: 3, qb: 8 };
 
-  function nflRzPlace(rank) {
-    return rank && rank.place ? { rank: rank.place, of: rank.of } : null;
-  }
-
   function nflRzThinTag(floor, unit) {
     return ' <span class="ca-thin-tag" title="Under ' + floor + ' red zone ' + unit +
       ': printed, not graded">Low n</span>';
@@ -5401,7 +5370,7 @@ function seasonToggle(game) {
     // Pass rate keeps its frequency rank without a performance bar.
     unitRows.push(cfbLedgerRow('Pass Rate',
       nflLedgerEntry(off.pass_rate, 'pct'), nflLedgerEntry(def.pass_rate, 'pct'),
-      [nflFreqMark(oRanks.pass_rate), nflFreqMark(dRanks.pass_rate)]));
+      [nflFreqMark(nflAsFreq(nflTeamRank(oRanks.pass_rate))), nflFreqMark(nflAsFreq(nflTeamRank(dRanks.pass_rate)))]));
     html += cfbLedgerTable([oNick, 'Offense'], [dNick, 'Defense'], [{ rows: unitRows }]);
 
     // Where the targets go inside the 20, beside where this defense lets them go.
@@ -5411,11 +5380,11 @@ function seasonToggle(game) {
       .map(function (g) {
         var mine = ownPos[g[0]] || {}, theirs = oppPos[g[0]] || {};
         return '<tr><td class="ca-lineup-name">' + esc(g[1]) + '</td>' +
-          nflUsageCell(mine.target_share, mine.target_share_rank) +
-          nflRateCell(theirs.target_share, theirs.target_share_rank) +
+          nflUsageCell(mine.target_share, nflAsFreq(nflTeamRank(mine.target_share_rank))) +
+          nflRateCell(theirs.target_share, nflAsFreq(nflTeamRank(theirs.target_share_rank))) +
           (theirs.receiving_tds_per_game == null ? '<td class="num">&mdash;</td>'
             : nflPlacedTd(esc(nflFormat(theirs.receiving_tds_per_game, 'num2')),
-              nflRzPlace(theirs.receiving_tds_rank), false)) + '</tr>';
+              nflTeamRank(theirs.receiving_tds_rank), false)) + '</tr>';
       });
     if (posRows.length) {
       html += '<div class="ca-split-block"><h4>Targets By Position</h4>' +
@@ -5426,7 +5395,7 @@ function seasonToggle(game) {
     function shareCell(p, metric) {
       var rank = (p.ranks || {})[metric];
       var thin = !rank;
-      return nflPlacedTd(esc(nflFormat(p[metric], 'pct')), nflRzPlace(rank), thin);
+      return nflPlacedTd(esc(nflFormat(p[metric], 'pct')), rank, thin, 'qualified ' + p.position + 's inside the 20');
     }
     function nameCell(p, thin, floor, unit, showPos) {
       return '<td>' + esc(p.player_name) +
@@ -5445,10 +5414,11 @@ function seasonToggle(game) {
           return '<tr' + (thin ? ' class="is-thin"' : '') + '>' +
             nameCell(p, thin, NFL_RZ_FLOOR.qb, 'dropbacks') +
             '<td class="num">' + p.dropbacks + '</td><td class="num">' + p.attempts + '</td>' +
-            nflPlacedTd(esc(nflFormat(p.completion_rate, 'pct')), nflRzPlace(r.completion_rate),
-              thin || !r.completion_rate) +
+            nflPlacedTd(esc(nflFormat(p.completion_rate, 'pct')), r.completion_rate,
+              thin || !r.completion_rate, 'qualified passers inside the 20') +
             '<td class="num">' + p.passing_tds + '</td><td class="num">' + p.interceptions + '</td>' +
-            nflPlacedTd(esc(nflFormat(p.epa_per_dropback, 'epa')), nflRzPlace(r.epa_per_dropback), thin) +
+            nflPlacedTd(esc(nflFormat(p.epa_per_dropback, 'epa')), r.epa_per_dropback, thin,
+              'qualified passers inside the 20') +
             '</tr>';
         }), 'Quarterback') + '</div>';
     }
@@ -5652,11 +5622,14 @@ function seasonToggle(game) {
         NFL_LOG_RATES.map(function (spec) {
           var e = g[spec[0]];
           if (!e || e.value == null) return '<td class="num ca-vs-none">No Plays</td>';
-          var r = (weekRanks[g.game_id + '|' + g.opp] || {})[spec[0]];
+          var rawRank = (weekRanks[g.game_id + '|' + g.opp] || {})[spec[0]];
+          var r = rawRank && teamScaled(rawRank.rank, rawRank.of, NFL_TEAM_COUNT);
           var extra = spec[0] === 'third_down' ? ' (' + g.third_down_made + '/' + g.third_down_att + ')' : '';
+          var week = 'NFL team-games in Week ' + g.week;
+          var label = r ? teamScaledLabel(r, rawRank.rank, r.pool ? 'on the NFL team scale' : week, week) : '';
           return '<td class="num ' + (r ? rankTone(r.rank, r.of) : '') + '" title="' + esc(spec[1] + ' · ' +
-            (r ? r.rank + ordinal(r.rank) + ' of ' + r.of + ' clubs in Week ' + g.week : '') + extra) + '">' +
-            esc(nflLogValue(e.value, spec[2])) + rankBadge(r) + '</td>';
+            label + extra) + '">' +
+            esc(nflLogValue(e.value, spec[2])) + rankBadge(r, '', label) + '</td>';
         }).join('') + '</tr>';
     }).join('');
     var seasonRow = season ? '<tr class="ca-log-season"><td>Season Avg</td>' +
@@ -5667,7 +5640,7 @@ function seasonToggle(game) {
         if (!e) return '<td class="num ca-vs-none">No Plays</td>';
         return '<td class="num ' + rankTone(e.rank, e.of) + '">' +
           esc(spec[2] === 'signed' ? (e.value > 0 ? '+' : '') + e.value.toFixed(1)
-            : nflLogValue(e.value, spec[2])) + rankBadge(e) + '</td>';
+            : nflLogValue(e.value, spec[2])) + nflBadge(nflTeamRank(e), 'NFL team season averages') + '</td>';
       }).join('') + '</tr>' : '';
     var table = nflSplitTable(heads, [rows + seasonRow], 'Game').replace('<th class="num">Noise-Adj</th>',
       '<th class="num" title="' + esc(NFL_NOISE_NOTE) + '">Noise-Adj</th>');
@@ -6022,8 +5995,7 @@ function seasonToggle(game) {
     var rows = displayRows.map(function (row) {
       var entry = feed[row[0]];
       var shown = nflDvoaValue(entry);
-      var place = entry && typeof entry === 'object' && entry.rank && entry.of
-        ? { rank: entry.rank, of: entry.of } : null;
+      var place = nflTeamRank(entry);
       var tone = place ? rankTone(place.rank, place.of) : '';
       return '<tr><td>' + esc(row[1]) + '</td><td class="num' + (tone ? ' ' + tone : '') + '">' +
         (shown == null ? '<span class="ca-vs-none">Not Published</span>' : esc(shown)) +
@@ -6223,13 +6195,14 @@ function seasonToggle(game) {
   function cfbCell(entry, extraClass, suffix) {
     var cls = extraClass ? ' ' + extraClass : '';
     if (!entry || entry.value == null) return '<td class="num ca-vs-none' + cls + '">Not Rated</td>';
-    var place = entry.rank ? { rank: entry.rank, of: entry.of } : null;
+    var place = rankPosition(entry);
     var tone = entry.better === 'neutral' ? 'c-volume' : place ? rankTone(place.rank, place.of) : '';
+    var label = place ? rankLabel(place, entry.cohort) : '';
+    if (label && entry.better === 'neutral') label = label.replace(' of ', ' most of ');
     return '<td class="num' + cls + (tone ? ' ' + tone : '') + '" title="' +
-      esc(titleCase(entry.label || '') + (place ? ' · ' + place.rank + ordinal(place.rank) +
-        (entry.better === 'neutral' ? ' most' : '') + ' of ' + place.of : '')) + '">' +
+      esc(titleCase(entry.label || '') + (label ? ' · ' + label : '')) + '">' +
       esc(entry.text == null ? cfbValue(entry) : entry.text) + (suffix || '') +
-      rankBadge(place, tone) + '</td>';
+      rankBadge(place, tone, label) + '</td>';
   }
 
   function cfbSample(sport, game, sides) {
@@ -6407,6 +6380,21 @@ function seasonToggle(game) {
   var CFB_QB_SPLITS = [['all', 'All Plays'], ['pass', 'Dropbacks'], ['rush', 'Rushes'],
     ['standardDowns', 'Standard Downs'], ['passingDowns', 'Passing Downs']];
 
+  function cfbPlayerRank(entry, qualified, cohort) {
+    if (!entry) return null;
+    var place = rankPosition(entry);
+    // Older exports placed an unqualified player below the entire pool at
+    // N+1. Render the lower endpoint of the comparison for those rows.
+    if (!place && qualified === false && Number(entry.rank) === Number(entry.of) + 1) {
+      place = rankPosition({ rank: entry.of, of: entry.of });
+    }
+    return Object.assign({}, entry, {
+      rank: place && place.rank,
+      of: place && place.of,
+      cohort: cohort + (qualified === false ? ' · placement for a below-threshold sample' : '')
+    });
+  }
+
   function cfbQbPanel(sport, game, offSide) {
     var defSide = offSide === 'away' ? 'home' : 'away';
     var qbs = availability.available(game, offSide, game[offSide + '_qbs']);
@@ -6421,14 +6409,15 @@ function seasonToggle(game) {
       return '<tr>' + cfbPlayerCell(q, q.depth_rank === 1 ? 'QB · Starting' : 'QB', volume,
         availability.status(game, offSide, q)) +
         CFB_QB_LINE.map(function (c) {
-          return line[c[0]] ? cfbCell(line[c[0]]) : '<td class="num ca-vs-none">Not Rated</td>';
+          return cfbCell(cfbPlayerRank(line[c[0]], q.ranked, 'qualified FBS passers'));
         }).join('') + '</tr>';
     });
     var lead = qbs[0];
     var splitRows = CFB_QB_SPLITS.filter(function (sp) {
       return (lead.epa_splits || {})[sp[0]] && defense[sp[0]];
     }).map(function (sp) {
-      return cfbLedgerRow(sp[1], (lead.epa_splits || {})[sp[0]], defense[sp[0]]);
+      return cfbLedgerRow(sp[1], cfbPlayerRank(lead.epa_splits[sp[0]], lead.ranked, 'qualified FBS passers in this split'),
+        defense[sp[0]]);
     });
     return head + '<div class="ca-split-block"><h4>Season Line</h4>' +
       nflSplitTable(CFB_QB_LINE.map(function (c) { return c[1]; }), lineRows, 'Passer') + '</div>' +
@@ -6450,7 +6439,7 @@ function seasonToggle(game) {
     var rows = list.map(function (r) {
       return '<tr>' + cfbPlayerCell(r, r.position || '', r.carries + ' car', availability.status(game, side, r)) +
         CFB_RUSHER_COLS.map(function (c) {
-          return r[c[0]] ? cfbCell(r[c[0]]) : '<td class="num ca-vs-none">Not Rated</td>';
+          return cfbCell(cfbPlayerRank(r[c[0]], r.ranked, 'qualified FBS rushers'));
         }).join('') + '</tr>';
     });
     return head + nflSplitTable(CFB_RUSHER_COLS.map(function (c) { return c[1]; }), rows, 'Player') +
@@ -6465,10 +6454,10 @@ function seasonToggle(game) {
     if (!entry || entry.value == null) return '<td class="num ca-vs-none">Not Charted</td>';
     var e = { value: entry.value, rank: entry.rank, of: entry.of, format: kind };
     var place = teamScaled(entry.rank, entry.of, teams);
+    var label = place ? teamScaledLabel(place, entry.rank, place.pool ? 'on the FBS team scale' : 'eligible FBS teams',
+      'FBS team-games that week') : '';
     return '<td class="num ' + (place ? rankTone(place.rank, place.of) : '') + '" title="' +
-      esc((place ? teamScaledLabel(place, entry.rank, place.pool ? 'on the FBS scale' : '', 'team-games that week') : '') +
-        (extra || '')) + '">' +
-      esc(cfbValue(e)) + (place ? rankBadge(place) : '') + '</td>';
+      esc(label + (extra || '')) + '">' + esc(cfbValue(e)) + rankBadge(place, '', label) + '</td>';
   }
 
   function cfbGameLogPanel(sport, game, side) {
@@ -6907,6 +6896,7 @@ function seasonToggle(game) {
 
   var NBA_NOISE_NOTE = 'Final score with half of each team\u2019s three-point and free-throw luck taken out: ' +
     'makes against the team\u2019s own season rate, regressed toward the league.';
+  var NBA_TEAM_COUNT = 30;
   var NBA_LOG_COLS = [['off_rtg', 'Off/100'], ['def_rtg', 'Def/100'], ['pace', 'Pace']];
 
   function nbaGameLogPanel(sport, game, side) {
@@ -6951,8 +6941,8 @@ function seasonToggle(game) {
         NBA_LOG_COLS.map(function (c) {
           var e = g[c[0]];
           var neutral = c[0] === 'pace';
-          return powerCell(e, neutral ? 'neutral' : '', Number(e.value).toFixed(1),
-            'NBA team-games the week of ' + nbaShortDate(g.week) + (neutral ? ' · most possessions first' : ''));
+          var label = 'NBA team-games the week of ' + nbaShortDate(g.week) + (neutral ? ' · most possessions first' : '');
+          return powerCell(e, neutral ? 'neutral' : '', e && Number(e.value).toFixed(1), label, NBA_TEAM_COUNT);
         }).join('') + '</tr>';
     });
     var table = nflSplitTable(['Opp', 'Final', 'Noise-Adj'].concat(NBA_LOG_COLS.map(function (c) { return c[1]; })),
@@ -7491,8 +7481,7 @@ function seasonToggle(game) {
 
   // Rank 1 sits at the right end of a track: further right is better.
   function nbaRankX(rank, of) {
-    if (!rank || !(of > 1)) return null;
-    return 100 * (of - rank) / (of - 1);
+    return percentOf({ rank: rank, of: of });
   }
 
   var NBA_EDGE_DIMS = [
@@ -8079,11 +8068,11 @@ function seasonToggle(game) {
     supports: 'The record the team\u2019s play supports: each game played, the chance a team this good wins it against that opponent there.',
     luck: 'Wins above the record its play supports. First is the fewest above it: the record its play best backs. Last runs furthest ahead of its play.'
   };
-  function powerCell(entry, tone, text, label) {
+  function powerCell(entry, tone, text, label, teamCount) {
     if (!entry || entry.value == null) return '<td class="num ca-vs-none">Not Rated</td>';
-    var place = entry.rank ? { rank: entry.rank, of: entry.of } : null;
+    var place = teamCount ? teamScaled(entry.rank, entry.of, teamCount) : rankPosition(entry);
     var cls = tone === 'neutral' ? 'c-volume' : place ? rankTone(place.rank, place.of) : '';
-    var lab = place ? place.rank + ordinal(place.rank) + (tone === 'neutral' ? '' : '') + ' of ' + place.of + ' ' + label : '';
+    var lab = place ? teamScaledLabel(place, entry.rank, place.pool ? 'on the team scale' : label, label) : '';
     return '<td class="num ca-stack-rank ' + cls + '" title="' + esc(lab) + '">' + esc(text) +
       rankBadge(place, cls, lab) + '</td>';
   }

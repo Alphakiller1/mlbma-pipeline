@@ -262,7 +262,7 @@ def matchup_page(sport: str) -> str:
   <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
   <script src="/dashboard/chase_shell.js?v={STAMP}"></script>
 {cbb_runtime}
-  <script src="/dashboard/public_game_detail.js?v={STAMP}"></script>
+  <script src="/dashboard/public_game_detail.js?v={STAMP}&amp;rev=rank-pools"></script>
   <script>
     window.CHASE_SPORT_PAGE = {spec['global']};
     if (window.ChaseShell) ChaseShell.mount({{ sport: {json.dumps(sport)}, mode: 'evidence', surface: 'matchup', search: false, context: false }});
