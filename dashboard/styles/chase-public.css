@@ -5610,6 +5610,14 @@ body[data-sport="nfl"] .ca-detail-nav {
   white-space: nowrap;
   color: var(--text-primary);
 }
+.ca-ledger-basis {
+  display: block;
+  color: var(--text-muted);
+  font-size: var(--type-meta);
+}
+body[data-sport="cfb"] .ca-cfb-panel .ca-lineup-table td.num:not(.ca-vs-none) {
+  color: var(--text-secondary);
+}
 .ca-cfb-ledger-table tr.ca-ledger-group th {
   padding-top: var(--space-4);
   padding-bottom: var(--space-1);
@@ -5655,6 +5663,10 @@ body[data-sport="nfl"] .ca-detail-nav {
   .ca-cfb-ledger-table .ca-ledger-col-bars { width: 18%; }
   /* The panel title names both schools; the column heads keep the unit. */
   .ca-ledger-school { display: none; }
+  body[data-sport="cfb"] .ca-cfb-ledger-table thead th {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
   .ca-lineup-table.ca-cfb-ledger-table th,
   .ca-lineup-table.ca-cfb-ledger-table td { padding-inline: var(--space-1); }
   .ca-cfb-ledger-table td.num .ca-rank { display: block; width: max-content; margin: 2px 0 0 auto; }

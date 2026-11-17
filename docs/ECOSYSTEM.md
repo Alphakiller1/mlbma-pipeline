@@ -368,6 +368,14 @@ Player figures keep their qualified position or metric cohort. Game-log ranks
 use the league team scale when a week's sample includes more team-games than
 teams. Rank badges identify the denominator and the weekly sample where used.
 
+CFB player tables show percentiles within qualified positional pools. The
+quarterback matchup uses percentiles for both the passer and the opposing
+defense, with each original rank and denominator on the badge. Team ledgers
+show ranks within the eligible FBS units. Badge and bar colors follow the same
+grade. Defensive production allowed grades lower first, and disruptions
+created grade higher first. Volume uses its own color. Below-threshold players
+keep a visible sample label and a muted comparison.
+
 ---
 
 *Generated for handoff while batter-splits scrape runs. Update this doc when you change `PROFILE_COLUMNS`, sheet tabs, or dashboard SSOT rules.*

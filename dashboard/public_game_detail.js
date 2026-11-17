@@ -997,14 +997,16 @@
     return place && A && A.rankChipClass ? A.rankChipClass(place.rank, place.of) : '';
   }
 
-  function rankBadge(entry, tone, label, extraClass) {
+  function rankBadge(entry, tone, label, extraClass, percentile) {
     var place = rankPosition(entry);
     if (!place) return '';
     var words = label || rankLabel(place, entry.cohort);
+    var mark = percentile == null ? place.rank + ordinal(place.rank) : percentile + '%ile';
+    var data = percentile == null ? ' data-rank="' + place.rank + '" data-rank-of="' + place.of + '"'
+      : ' data-percentile="' + percentile + '"';
     return '<span class="ca-rank ' + (tone || rankTone(place.rank, place.of)) +
-      (extraClass ? ' ' + extraClass : '') + '" data-rank="' + place.rank + '" data-rank-of="' + place.of +
-      '" title="' + esc(words) + '" aria-label="' + esc(words) + '">' +
-      place.rank + ordinal(place.rank) + '</span>';
+      (extraClass ? ' ' + extraClass : '') + '"' + data +
+      ' title="' + esc(words) + '" aria-label="' + esc(words) + '">' + mark + '</span>';
   }
 
   /* A game-log figure is placed among that week's team-games, a pool that can
@@ -6076,8 +6078,8 @@ function seasonToggle(game) {
    * The CFB desk, in the NFL desk's design layer.
    *
    * Read a tab at a time. Every table puts one club's unit above the unit
-   * it meets, and every figure carries its place among the FBS clubs (rank
-   * pill, tier colour). Only evidence: no verdict lines, no gap ordering,
+   * it meets. Team ranks use eligible FBS clubs and comparisons involving
+   * players use percentiles. Only evidence: no verdict lines, no gap ordering,
    * no explanations (owner rules, 2026-09-26).
    * ------------------------------------------------------------------ */
   var CFB_TABS = [
@@ -6182,20 +6184,33 @@ function seasonToggle(game) {
       ? v.toFixed(2) : v.toFixed(1);
   }
 
-  // A rate with its league place. The label rides in the tooltip, because one
-  // column can mean "sacks taken" for an offense and "sacks made" for the
-  // defense beside it.
-  function cfbCell(entry, extraClass, suffix) {
+  function cfbGrade(entry) {
+    var place = entry && entry.value != null && rankPosition(entry);
+    if (!place) return null;
+    var percentile = percentOf(place);
+    var badgePercentile = entry.showPercentile ? Math.round(percentile) : null;
+    var volume = entry.better === 'neutral';
+    var label = rankLabel(place, entry.cohort);
+    if (volume) label = label.replace(' of ', ' most of ');
+    if (badgePercentile != null) label = badgePercentile + ordinal(badgePercentile) + ' percentile · ' + label;
+    return {
+      place: place, percentile: percentile, badgePercentile: badgePercentile, label: label,
+      tone: entry.lowSample ? 'c-na' : volume ? 'c-volume' : rankTone(place.rank, place.of)
+    };
+  }
+
+  var CFB_RANK_DIRECTION = { high: 'Higher is better', low: 'Lower is better', neutral: 'Highest value first' };
+
+  // A shared ledger cell. CFB shows the grade on the badge and bar.
+  function cfbCell(entry, extraClass, suffix, grade = cfbGrade(entry)) {
     var cls = extraClass ? ' ' + extraClass : '';
     if (!entry || entry.value == null) return '<td class="num ca-vs-none' + cls + '">Not Rated</td>';
-    var place = rankPosition(entry);
-    var tone = entry.better === 'neutral' ? 'c-volume' : place ? rankTone(place.rank, place.of) : '';
-    var label = place ? rankLabel(place, entry.cohort) : '';
-    if (label && entry.better === 'neutral') label = label.replace(' of ', ' most of ');
-    return '<td class="num' + cls + (tone ? ' ' + tone : '') + '" title="' +
-      esc(titleCase(entry.label || '') + (label ? ' · ' + label : '')) + '">' +
+    var title = [titleCase(entry.label || ''), grade && grade.label,
+      grade && CFB_RANK_DIRECTION[entry.better]].filter(Boolean).join(' · ');
+    var tone = grade ? grade.tone : entry.better === 'neutral' ? 'c-volume' : '';
+    return '<td class="num' + cls + (tone ? ' ' + tone : '') + '" title="' + esc(title) + '">' +
       esc(entry.text == null ? cfbValue(entry) : entry.text) + (suffix || '') +
-      rankBadge(place, tone, label) + '</td>';
+      (grade ? rankBadge(grade.place, grade.tone, grade.label, '', grade.badgePercentile) : '') + '</td>';
   }
 
   function cfbSample(sport, game, sides) {
@@ -6212,34 +6227,31 @@ function seasonToggle(game) {
       .join(' · ')) + '</p>';
   }
 
-  // Each side uses its own cohort. A 1st-place rank fills the bar.
-  function cfbBar(entry, side) {
-    var rankPct = entry && entry.value != null && entry.rank ? percentOf(entry) : null;
-    var ranked = rankPct != null;
-    var pct = ranked ? Math.max(4, Math.round(rankPct)) : 0;
-    var tone = ranked ? (entry.better === 'neutral' ? ' c-volume' : ' ' + rankTone(entry.rank, entry.of)) : '';
-    return '<span class="ca-ledger-bar ' + side + tone +
+  function cfbBar(grade, side) {
+    var pct = grade ? Math.max(4, Math.round(grade.percentile)) : 0;
+    return '<span class="ca-ledger-bar ' + side + (grade ? ' ' + grade.tone : '') +
       '"><i style="width:' + pct + '%"></i></span>';
   }
 
   function cfbLedgerRow(label, left, right, marks) {
-    return '<tr><td role="rowheader">' + esc(label) + '</td>' + cfbCell(left, '', marks && marks[0]) +
+    var leftGrade = cfbGrade(left), rightGrade = cfbGrade(right);
+    return '<tr><td role="rowheader">' + esc(label) + '</td>' + cfbCell(left, '', marks && marks[0], leftGrade) +
       '<td class="ca-ledger-bars" aria-hidden="true"><span class="ca-ledger-pair">' +
-      cfbBar(left, 'is-left') + cfbBar(right, 'is-right') + '</span></td>' +
-      cfbCell(right, 'ca-ledger-right', marks && marks[1]) + '</tr>';
+      cfbBar(leftGrade, 'is-left') + cfbBar(rightGrade, 'is-right') + '</span></td>' +
+      cfbCell(right, 'ca-ledger-right', marks && marks[1], rightGrade) + '</tr>';
   }
 
   function cfbLedgerTable(left, right, groups) {
-    function head(name, unit, cls) {
-      return '<th scope="col" class="num' + cls + '"><span class="ca-ledger-school">' + esc(name) + '</span>' +
-        esc(unit) + '</th>';
+    function head(column, cls) {
+      return '<th scope="col" class="num' + cls + '"><span class="ca-ledger-school">' + esc(column[0]) + '</span>' +
+        esc(column[1]) + (column[2] ? '<span class="ca-ledger-basis">' + esc(column[2]) + '</span>' : '') + '</th>';
     }
     return '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-cfb-ledger-table">' +
       '<colgroup><col class="ca-ledger-col-stat"><col class="ca-ledger-col-val">' +
       '<col class="ca-ledger-col-bars"><col class="ca-ledger-col-val"></colgroup>' +
-      '<thead><tr><th scope="col">Stat</th>' + head(left[0], left[1], '') +
+      '<thead><tr><th scope="col">Stat</th>' + head(left, '') +
       '<th class="ca-ledger-bars" aria-hidden="true"></th>' +
-      head(right[0], right[1], ' ca-ledger-right') + '</tr></thead><tbody>' +
+      head(right, ' ca-ledger-right') + '</tr></thead><tbody>' +
       groups.map(function (g) {
         if (!g.rows.length) return '';
         return (g.title ? '<tr class="ca-ledger-group"><th colspan="4">' + esc(g.title) + '</th></tr>' : '') +
@@ -6266,6 +6278,10 @@ function seasonToggle(game) {
     return line ? '<p class="ca-lineup-context">' + esc(line) + '</p>' : '';
   }
 
+  function cfbTeamMetric(entry, cohort, showPercentile) {
+    return entry && Object.assign({}, entry, { cohort: cohort, showPercentile: showPercentile });
+  }
+
   function cfbLedgerPanel(sport, game, offSide, area) {
     var defSide = offSide === 'away' ? 'home' : 'away';
     var offName = cfbName(sport, game, offSide), defName = cfbName(sport, game, defSide);
@@ -6276,8 +6292,9 @@ function seasonToggle(game) {
       return {
         title: group[0],
         rows: group[1].filter(function (spec) { return cfbLedgerShown(game, spec); }).map(function (spec) {
-          return cfbLedgerRow(spec[2], cfbFeed(game, offSide, spec[0])['off_' + spec[1]],
-            cfbFeed(game, defSide, spec[0])['def_' + spec[1]]);
+          var offense = cfbFeed(game, offSide, spec[0])['off_' + spec[1]];
+          var defense = cfbFeed(game, defSide, spec[0])['def_' + spec[1]];
+          return cfbLedgerRow(spec[2], cfbTeamMetric(offense, 'FBS offenses'), cfbTeamMetric(defense, 'FBS defenses'));
         })
       };
     });
@@ -6286,7 +6303,7 @@ function seasonToggle(game) {
     }
     return head + cfbSample(sport, game, [offSide, defSide]) +
       (area === 'passing' ? cfbSchemeLine(sport, game, offSide, defSide) : '') +
-      cfbLedgerTable([offName, 'Offense'], [defName, 'Defense'], groups) + '</section>';
+      cfbLedgerTable([offName, 'Offense', 'FBS Rank'], [defName, 'Defense', 'FBS Rank'], groups) + '</section>';
   }
 
   /* School against school on the same figure (SP+, special teams): the same
@@ -6298,7 +6315,9 @@ function seasonToggle(game) {
     if (!shown.length) return head + pending('Ratings are not published for this pairing yet.') + '</section>';
     return head + cfbLedgerTable([cfbName(sport, game, 'away'), 'Away'],
       [cfbName(sport, game, 'home'), 'Home'],
-      [{ title: '', rows: shown.map(function (r) { return cfbLedgerRow(r[0], r[1], r[2], r[3]); }) }]) +
+      [{ title: '', rows: shown.map(function (r) {
+        return cfbLedgerRow(r[0], cfbTeamMetric(r[1], 'FBS teams'), cfbTeamMetric(r[2], 'FBS teams'), r[3]);
+      }) }]) +
       '</section>';
   }
 
@@ -6347,9 +6366,10 @@ function seasonToggle(game) {
         'loading="lazy" decoding="async" data-initials="' + esc(initials(player.player_name)) + '">'
       : cfbInitials(player.player_name);
     var label = [position, status].filter(Boolean).join(' · ');
+    var sample = [volume, player.ranked === false ? 'Low Sample' : ''].filter(Boolean).join(' · ');
     return '<td><span class="ca-cfb-player">' + shot + '<span class="ca-cfb-player__id">' +
       esc(player.player_name) + ' <span class="ca-lineup-player__position">' + esc(label) +
-      '</span><small class="ca-qb-volume">' + esc(volume) + '</small></span></span></td>';
+      '</span><small class="ca-qb-volume">' + esc(sample) + '</small></span></span></td>';
   }
 
   // A portrait ESPN does not have swaps for the initials in place.
@@ -6384,6 +6404,8 @@ function seasonToggle(game) {
     return Object.assign({}, entry, {
       rank: place && place.rank,
       of: place && place.of,
+      showPercentile: true,
+      lowSample: qualified === false,
       cohort: cohort + (qualified === false ? ' · placement for a below-threshold sample' : '')
     });
   }
@@ -6410,13 +6432,14 @@ function seasonToggle(game) {
       return (lead.epa_splits || {})[sp[0]] && defense[sp[0]];
     }).map(function (sp) {
       return cfbLedgerRow(sp[1], cfbPlayerRank(lead.epa_splits[sp[0]], lead.ranked, 'qualified FBS passers in this split'),
-        defense[sp[0]]);
+        cfbTeamMetric(defense[sp[0]], 'FBS defenses in this split', true));
     });
-    return head + '<div class="ca-split-block"><h4>Season Line</h4>' +
+    return head + '<div class="ca-split-block"><h4>Season Line · FBS Passer Percentiles</h4>' +
       nflSplitTable(CFB_QB_LINE.map(function (c) { return c[1]; }), lineRows, 'Passer') + '</div>' +
       (splitRows.length ? '<div class="ca-split-block"><h4>' + esc(lead.player_name +
         ' EPA Per Play vs ' + defName + ' Allowed') + '</h4>' +
-        cfbLedgerTable([lead.player_name, 'EPA/Play'], [defName, 'Allows'],
+        cfbLedgerTable([lead.player_name, 'QB EPA/Play', lead.ranked === false ? 'Low Sample' : ''],
+          [defName, 'EPA/Play Allowed'],
           [{ title: '', rows: splitRows }]) + '</div>' : '') +
       '</section>';
   }
@@ -6511,7 +6534,7 @@ function seasonToggle(game) {
           (games ? '<small class="ca-qb-volume">' + esc(games + (games === 1 ? ' FBS game' : ' FBS games')) +
             '</small>' : '') + '</td>' +
           (Object.keys(block).length
-            ? CFB_SOS_COLS.map(function (c) { return cfbCell(block[c[0]]); }).join('')
+            ? CFB_SOS_COLS.map(function (c) { return cfbCell(cfbTeamMetric(block[c[0]], 'FBS teams')); }).join('')
             : '<td class="num ca-vs-none" colspan="' + CFB_SOS_COLS.length + '">' +
               (window === 'remaining' ? 'No FBS Games Remaining' : 'No FBS Games Played') + '</td>') +
           '</tr>';
@@ -8882,7 +8905,7 @@ function seasonToggle(game) {
         nflDuo(cfbLedgerPanel, sport, game, 'passing')),
       section('cfb-rushing', 'Run Game', 'Efficiency, Volume And Line Play',
         nflDuo(cfbLedgerPanel, sport, game, 'rushing')),
-      section('cfb-rushers', 'Ball Carriers', 'Season Rushing Lines, Ranked Of FBS Rushers',
+      section('cfb-rushers', 'Ball Carriers', 'Season Rushing Lines And FBS Rusher Percentiles',
         nflDuo(cfbRushersPanel, sport, game)),
       section('cfb-situational', 'Situational', 'Downs, Tempo, Play Mix And Havoc',
         nflDuo(cfbLedgerPanel, sport, game, 'situational')),
