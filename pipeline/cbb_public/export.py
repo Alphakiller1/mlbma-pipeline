@@ -29,6 +29,23 @@ FORBIDDEN={'predicted_score','predicted_margin','home_probability','home_win_pro
 
 UNTAGGED_SHOT_TYPES=('driving','floater','pullup')
 
+# The original 112–69 score stayed in Basketball Quant after both schools
+# updated the official final. Key by the entire old result before replacing it.
+# https://seminoles.com/sports/mens-basketball/stats/2026-27/florida-am/boxscore/16827
+FINAL_SCORE_CORRECTIONS = {
+    (401909694, '2026-11-02', 50, 52, 69, 112): (69, 113),
+}
+
+
+def correct_final_scores(schedule):
+    for game in schedule:
+        if game.get('status_type_name') == 'STATUS_FINAL':
+            key = (game['game_id'], game['game_date'], game.get('home_id'), game.get('away_id'),
+                   game.get('home_score'), game.get('away_score'))
+            if scores := FINAL_SCORE_CORRECTIONS.get(key):
+                game['home_score'], game['away_score'] = scores
+
+
 def live_cutoff(stats, schedule, as_of):
     """Find the latest D-I fixture cutoff that best matches the source's team rates."""
     counted = {s['team_id']: int(s.get('games_all') or 0) for s in stats}
@@ -276,6 +293,7 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
     for year in (2026,2027):
         stats=table(snapshot,'mbb_team_seasons',year);cohort={r['team_id'] for r in stats};ratings={r['team_id']:r for r in table(snapshot,'mbb_team_ratings',year)}
         players=table(snapshot,'basketball_players',year);schedules[year]=table(snapshot,'mbb_sched',year)
+        correct_final_scores(schedules[year])
         live=date.fromisoformat(live_cutoff(stats,schedules[year],as_of) if year==2027 else as_of).isoformat()
         players_by_team=defaultdict(list)
         for p in players:players_by_team[p.get('Team')].append({k:p.get(k) for k in PLAYER_FIELDS})

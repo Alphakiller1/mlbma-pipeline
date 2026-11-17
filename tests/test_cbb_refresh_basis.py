@@ -1,6 +1,6 @@
 import unittest
 
-from pipeline.cbb_public.export import live_cutoff
+from pipeline.cbb_public.export import correct_final_scores, live_cutoff
 from scripts.publish_public_cbb import aligned_sample_share
 
 
@@ -15,6 +15,16 @@ def final(game_id, day, home, away):
 
 
 class CbbRefreshBasisTests(unittest.TestCase):
+    def test_official_score_correction_requires_the_known_final(self):
+        old = {**final(401909694, '2026-11-02', 50, 52), 'home_score': 69, 'away_score': 112}
+        stale, official = old.copy(), {**old, 'away_score': 113}
+        other = {**old, 'game_id': 401909695}
+        live = {**old, 'status_type_name': 'STATUS_IN_PROGRESS'}
+        correct_final_scores([stale, official, other, live])
+        self.assertEqual(stale, official)
+        self.assertEqual(other['away_score'], 112)
+        self.assertEqual(live['away_score'], 112)
+
     def test_rates_can_lag_two_fixture_days(self):
         stats = [{'team_id': team, 'games_all': 1} for team in (1, 2, 3, 4)]
         schedule = [
