@@ -640,6 +640,10 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             if (!bar || tone(bar) !== tone(badge)) return false;
             const width = parseFloat(bar.firstElementChild.style.width);
             const {rank, rankOf, percentile} = badge.dataset;
+            if (percentile != null && !['c-na', 'c-volume'].includes(tone(badge))) {
+              const assets = window.MLBMAAssets;
+              if (tone(badge) !== assets.TIER_CHIP[assets.percentileTier(percentile / 100)]) return false;
+            }
             const expected = percentile ?? 100 * (rankOf - rank) / (rankOf - 1);
             return width === Math.max(4, Math.round(expected));
           }).length;

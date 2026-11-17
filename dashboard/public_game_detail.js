@@ -6193,9 +6193,12 @@ function seasonToggle(game) {
     var label = rankLabel(place, entry.cohort);
     if (volume) label = label.replace(' of ', ' most of ');
     if (badgePercentile != null) label = badgePercentile + ordinal(badgePercentile) + ' percentile · ' + label;
+    var tone = badgePercentile == null ? rankTone(place.rank, place.of) : percentileClass(badgePercentile);
+    if (entry.lowSample) tone = 'c-na';
+    else if (volume) tone = 'c-volume';
     return {
       place: place, percentile: percentile, badgePercentile: badgePercentile, label: label,
-      tone: entry.lowSample ? 'c-na' : volume ? 'c-volume' : rankTone(place.rank, place.of)
+      tone: tone
     };
   }
 
