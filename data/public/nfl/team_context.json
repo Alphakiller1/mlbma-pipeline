@@ -1,7 +1,7 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-11-17T03:07:06Z",
+  "generated_at_utc": "2026-11-17T04:26:53Z",
   "data_through_utc": "2026-11-17T00:12:54+00:00",
   "season": 2026,
   "week": 11,
@@ -4909,13 +4909,9 @@
       "games": 10,
       "through": "2026-11-15"
     },
-    "ATL": {
-      "games": 10,
-      "through": "2026-11-15"
-    },
     "BAL": {
-      "games": 9,
-      "through": "2026-11-06"
+      "games": 10,
+      "through": "2026-11-17"
     },
     "BUF": {
       "games": 9,
@@ -4925,24 +4921,24 @@
       "games": 9,
       "through": "2026-11-15"
     },
+    "CHI": {
+      "games": 9,
+      "through": "2026-11-09"
+    },
     "CIN": {
       "games": 9,
       "through": "2026-11-16"
-    },
-    "CLE": {
-      "games": 10,
-      "through": "2026-11-15"
     },
     "DAL": {
       "games": 10,
       "through": "2026-11-15"
     },
+    "DEN": {
+      "games": 9,
+      "through": "2026-11-08"
+    },
     "DET": {
       "games": 9,
-      "through": "2026-11-15"
-    },
-    "GB": {
-      "games": 10,
       "through": "2026-11-15"
     },
     "HOU": {
@@ -4962,12 +4958,8 @@
       "through": "2026-11-15"
     },
     "LAC": {
-      "games": 8,
-      "through": "2026-11-08"
-    },
-    "LAR": {
-      "games": 10,
-      "through": "2026-11-15"
+      "games": 9,
+      "through": "2026-11-17"
     },
     "LV": {
       "games": 10,
@@ -4979,10 +4971,6 @@
     },
     "MIN": {
       "games": 9,
-      "through": "2026-11-15"
-    },
-    "NE": {
-      "games": 10,
       "through": "2026-11-15"
     },
     "NO": {
@@ -4997,17 +4985,21 @@
       "games": 10,
       "through": "2026-11-15"
     },
+    "PHI": {
+      "games": 9,
+      "through": "2026-11-08"
+    },
     "PIT": {
       "games": 9,
       "through": "2026-11-16"
     },
-    "SEA": {
-      "games": 10,
-      "through": "2026-11-15"
-    },
     "SF": {
       "games": 9,
       "through": "2026-11-15"
+    },
+    "TB": {
+      "games": 9,
+      "through": "2026-11-09"
     },
     "TEN": {
       "games": 9,
