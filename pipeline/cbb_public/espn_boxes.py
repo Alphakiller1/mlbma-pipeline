@@ -307,13 +307,15 @@ def box_pace(games):
             "games": len(values), "data_through": games[-1][0]}
 
 
-def supplement(contexts, schedule, year, as_of, cache):
+def supplement(contexts, schedule, year, as_of, cache, *, season_through=None):
     """Box-score facts for every team, plus fills where a source has nothing.
 
     Pace is estimated for every team from its D-I finals, the same games the
     team rates count; the possession-tagged source misses whole games. Teams
-    with no D-I rate row are measured over every final they played.
+    with no D-I rate row are measured over all their finals in the window.
+    Game-log figures can use verified finals through the current slate date.
     """
+    season_through = season_through or as_of
     division = {str(team) for team in contexts}
     fill = {str(team): c for team, c in contexts.items() if not c["rates"].get("games_all")
             or not c["observed_tactics"]["pace"]["games"]
@@ -348,7 +350,9 @@ def supplement(contexts, schedule, year, as_of, cache):
             if box is None:
                 continue
             day, home, away, h_score, a_score = box["fixture"]
-            if home in division and away in division and box.get("pressure"):
+            season_game = day <= season_through
+            season_division_game = season_game and home in division and away in division
+            if season_division_game and box.get("pressure"):
                 for tid, counts in box["pressure"].items():
                     pressure.add(pressed[tid], counts)
                     pressed_days[tid].append(day)
@@ -356,7 +360,7 @@ def supplement(contexts, schedule, year, as_of, cache):
                 row = box["teams"][tid]
                 row["ftm"] = row["pts"] - 2 * row["fgm"] - row["tpm"]
             scored.append((str(g["game_id"]), home, away, box["teams"]))
-            if home in division and away in division:
+            if season_division_game:
                 finals.append({"id": str(g["game_id"]), "date": day, "home": home, "away": away,
                                "neutral": bool(g.get("neutral_site")),
                                **{f"{side}_shots": [box["teams"][tid][k] for k in ("tpm", "tpa", "ftm", "fta")]
@@ -368,6 +372,8 @@ def supplement(contexts, schedule, year, as_of, cache):
                 if own not in division:
                     continue
                 lines[own][str(g["game_id"])] = (day, game_lines.line(box["teams"][own], box["teams"][opp], box["minutes"]))
+                if not season_game:
+                    continue
                 matches = [p for tid, p in exact[(day, side, own, h_score, a_score)] if tid is None or tid == opp]
                 observations[own].append((day, box["minutes"], box["teams"][own], box["teams"][opp],
                                           matches[0] if len(matches) == 1 else None, opp in division))

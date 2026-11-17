@@ -29,23 +29,48 @@ FORBIDDEN={'predicted_score','predicted_margin','home_probability','home_win_pro
 
 UNTAGGED_SHOT_TYPES=('driving','floater','pullup')
 
+# The original 112–69 score stayed in Basketball Quant after both schools
+# updated the official final. Key by the entire old result before replacing it.
+# https://seminoles.com/sports/mens-basketball/stats/2026-27/florida-am/boxscore/16827
+FINAL_SCORE_CORRECTIONS = {
+    (401909694, '2026-11-02', 50, 52, 69, 112): (69, 113),
+}
+
+
+def correct_final_scores(schedule):
+    for game in schedule:
+        if game.get('status_type_name') == 'STATUS_FINAL':
+            key = (game['game_id'], game['game_date'], game.get('home_id'), game.get('away_id'),
+                   game.get('home_score'), game.get('away_score'))
+            if scores := FINAL_SCORE_CORRECTIONS.get(key):
+                game['home_score'], game['away_score'] = scores
+
+
 def live_cutoff(stats, schedule, as_of):
-    """Shot coordinates and ESPN boxes post a game within minutes; Basketball
-    Quant's team rates count it overnight. When most of the day's D-I finals
-    are not yet in the rates, the live feeds are read through the day before,
-    so every section of a team counts the same games."""
+    """Find the latest D-I fixture cutoff that best matches the source's team rates."""
     counted = {s['team_id']: int(s.get('games_all') or 0) for s in stats}
     days = defaultdict(list)
+    seen = set()
     for g in schedule:
         h, a = g.get('home_id'), g.get('away_id')
-        if g.get('status_type_name') == 'STATUS_FINAL' and g['game_date'] <= as_of and h in counted and a in counted:
-            days[h].append(g['game_date']); days[a].append(g['game_date'])
-    today = [t for t, d in days.items() if as_of in d]
-    behind = sum(1 for t in today if len(days[t]) > counted[t])
-    if today and behind > len(today) / 2:
-        print(f'Team rates do not count {behind} of {len(today)} D-I teams that finished on {as_of}; live feeds read through the day before.')
-        return (date.fromisoformat(as_of) - timedelta(days=1)).isoformat()
-    return as_of
+        if (g.get('status_type_name') == 'STATUS_FINAL' and g['game_date'] <= as_of
+                and h in counted and a in counted and g['game_id'] not in seen):
+            days[g['game_date']].extend((h, a))
+            seen.add(g['game_id'])
+    if not days:
+        return as_of
+    # Rates can trail the fixture calendar by more than one day. Compare
+    # accumulated games to the full rated cohort at each candidate boundary.
+    totals = Counter()
+    before_first = (date.fromisoformat(min(days)) - timedelta(days=1)).isoformat()
+    best = (sum(games == 0 for games in counted.values()), before_first)
+    for day in sorted({*days, as_of}):
+        totals.update(days[day])
+        matched = sum(totals[team] == games for team, games in counted.items())
+        best = max(best, (matched, day))
+    if best[1] != as_of:
+        print(f'Team-rate cutoff {best[1]} aligns {best[0]} of {len(counted)} D-I teams.')
+    return best[1]
 
 def mark_untracked_shot_types(rates):
     """Play-by-play from some feeds never labels drives, floaters or pull-ups.
@@ -268,6 +293,7 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
     for year in (2026,2027):
         stats=table(snapshot,'mbb_team_seasons',year);cohort={r['team_id'] for r in stats};ratings={r['team_id']:r for r in table(snapshot,'mbb_team_ratings',year)}
         players=table(snapshot,'basketball_players',year);schedules[year]=table(snapshot,'mbb_sched',year)
+        correct_final_scores(schedules[year])
         live=date.fromisoformat(live_cutoff(stats,schedules[year],as_of) if year==2027 else as_of).isoformat()
         players_by_team=defaultdict(list)
         for p in players:players_by_team[p.get('Team')].append({k:p.get(k) for k in PLAYER_FIELDS})
@@ -333,7 +359,8 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
         finals=None
         if year==2027 and observed_tactics and box_cache:
             from .espn_boxes import supplement
-            finals=supplement({tid:all_context[(year,tid)] for tid in cohort},schedules[year],year,live,box_cache)
+            finals=supplement({tid:all_context[(year,tid)] for tid in cohort},schedules[year],year,as_of,
+                              box_cache,season_through=live)
         # Published shortcut metadata maps the provider IDs to the validated institution IDs.
         reference={103765:96,103549:150,103903:127,103296:12,103757:2305,103257:2509}
         for file in (snapshot/'data').glob(f'cbb-shots-{year}-*-offense.ndjson.gz'):

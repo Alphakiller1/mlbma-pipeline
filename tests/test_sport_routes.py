@@ -598,9 +598,9 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertIn("rankBadge(entry)", nfl)
         self.assertIn("nflResultRank(oScheme, 'offense'", nfl)
         self.assertIn("nflResultRank(dScheme, 'defense'", nfl)
-        # Real ranks from the slate, with the published league spread as fallback.
+        # Scheme rank pills use comparable clubs in the active evidence window.
         self.assertIn("nflSections(sport, game, (result && result.games) || [])", detail)
-        self.assertIn("pool.length >= 20", nfl)
+        self.assertIn("nflTeamRank(nflPlace(pool, raw, phase === 'offense')", nfl)
         # Evidence, never verdicts: no gap summaries, no winner labels, no side toggles.
         for gone in ("Largest Matchup Gaps", "Quick Read", "ca-nfl-signal", "is-off", "is-def",
                      "data-matchup-side", "data-scheme-direction", "data-player-side"):
@@ -613,7 +613,7 @@ class AdapterHoleTests(unittest.TestCase):
         # 2026-10-01: rank, not arrows), read from the published frequency ranks.
         self.assertIn("function nflFreqMark(rank, invert)", nfl)
         mark = nfl[nfl.index("function nflFreqMark"):nfl.index("function nflUsageCell")]
-        self.assertIn("'<span class=\"ca-rank ca-freq-mark ' + rankTone(shown, rank.of)", mark)
+        self.assertIn("rankBadge(place, '', words, 'ca-freq-mark')", mark)
         self.assertNotIn("\u25b2", mark)
         self.assertNotIn("\u25bc", mark)
         self.assertIn("nflFreqRank(oScheme, 'offense', 'personnel', spec[1])", tendency)

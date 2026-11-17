@@ -87,6 +87,12 @@ UNPILLED_AUDIT = r"""
 }
 """
 
+TEAM_RANK_AUDIT = """
+(badges, cap) => badges.map(el => ({
+  rank: Number(el.dataset.rank), of: Number(el.dataset.rankOf), label: el.title
+})).filter(p => !(p.rank >= 1 && p.rank <= p.of && p.of <= cap && p.label.includes(' of ')))
+"""
+
 
 def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
     results: list[Result] = []
@@ -270,6 +276,9 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             nba_pills = page.evaluate(UNPILLED_AUDIT)
             check('NBA every graded figure carries its rank pill',
                   nba_pills['graded'] > 100 and nba_pills['unpilled'] == 0, str(nba_pills))
+            log_ranks = page.locator("#nba-game-log .ca-log-panel td.num .ca-rank")
+            bad_nba_ranks = log_ranks.evaluate_all(TEAM_RANK_AUDIT, 30)
+            check("NBA game-log ranks use the team scale", not bad_nba_ranks, str(bad_nba_ranks[:4]))
 
         for sport in ("cbb", "nfl", "cfb", "nba"):
             response = page.request.get(f"{base_url.rstrip('/')}/{sport}/results.html")
@@ -530,6 +539,11 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                all(label in trench_text for label in ("line yds", "havoc", "ybc", "run direction",
                                                       "at the guards", "outside the ends"))) or
               section_unpublished("#trenches"))
+        direction_ranks = page.locator("#trenches .ca-nfl-mix .ca-rank")
+        bad_direction_ranks = direction_ranks.evaluate_all(TEAM_RANK_AUDIT, 32)
+        check("NFL run directions use eligible club pools",
+              (direction_ranks.count() > 0 and not bad_direction_ranks) or section_unpublished("#trenches"),
+              str(bad_direction_ranks[:4]))
         rz = page.locator("#redzone")
         page.locator("[role='tab'][data-nfl-tab='redzone']").click()
         combined_rz = rz.locator("[data-season-view='combined']:visible").inner_text().lower()

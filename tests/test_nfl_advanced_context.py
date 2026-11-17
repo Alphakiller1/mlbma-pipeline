@@ -95,6 +95,23 @@ class NflAdvancedContextTests(unittest.TestCase):
         self.assertEqual(result["gap_guard"]["stuff_rate"], .5)
         self.assertNotIn("zone", result)
 
+    def test_run_direction_pools_use_one_eligible_observation_per_club(self):
+        def club(carries, ypc, allowed, stuffed):
+            return {
+                "offense_run_lanes": {"carries": 20, "lane_left": {"carries": carries, "yards_per_carry": ypc}},
+                "defense_run_front": {"lane_left": {"carries": carries, "yards_per_carry_allowed": allowed, "stuff_rate": stuffed}},
+            }
+
+        teams = {"A": club(10, 5, 3, .4), "B": club(8, 5, 4, .2), "C": club(2, 9, 1, .7)}
+        ctx._rank_run_lanes(teams)
+        offense = teams["A"]["offense_run_lanes"]["lane_left"]["league_ranks"]
+        defense = teams["A"]["defense_run_front"]["lane_left"]["league_ranks"]
+        self.assertEqual(offense, {"usage": {"place": 1, "of": 3}, "yards_per_carry": {"place": 1, "of": 2}})
+        self.assertEqual(teams["B"]["offense_run_lanes"]["lane_left"]["league_ranks"]["yards_per_carry"],
+                         {"place": 1, "of": 2})
+        self.assertEqual(defense, {"yards_per_carry_allowed": {"place": 1, "of": 2}, "stuff_rate": {"place": 1, "of": 2}})
+        self.assertNotIn("league_ranks", teams["C"]["defense_run_front"]["lane_left"])
+
 
 if __name__ == "__main__":
     unittest.main()
