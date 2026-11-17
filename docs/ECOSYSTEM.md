@@ -371,8 +371,8 @@ teams. Rank badges identify the denominator and the weekly sample where used.
 CFB player tables show percentiles within qualified positional pools. The
 quarterback matchup uses percentiles for both the passer and the opposing
 defense, with each original rank and denominator on the badge. Team ledgers
-show ranks within the eligible FBS units. Badges and bars share the grade and
-use the displayed percentile for color. Lower production allowed and more
+show ranks within the eligible FBS units. Badges and bars use the same rounded
+percentile for color in both views. Lower production allowed and more
 disruptions created earn stronger defensive grades. Volume uses its own color.
 Below-threshold players keep a visible sample label and a muted comparison.
 

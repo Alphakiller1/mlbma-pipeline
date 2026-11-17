@@ -6187,13 +6187,14 @@ function seasonToggle(game) {
   function cfbGrade(entry) {
     var place = entry && entry.value != null && rankPosition(entry);
     if (!place) return null;
-    var percentile = percentOf(place);
-    var badgePercentile = entry.showPercentile ? Math.round(percentile) : null;
+    var percentile = Math.round(percentOf(place));
+    var badgePercentile = entry.rankDisplay === 'percentile' ? percentile : null;
     var volume = entry.better === 'neutral';
     var label = rankLabel(place, entry.cohort);
     if (volume) label = label.replace(' of ', ' most of ');
     if (badgePercentile != null) label = badgePercentile + ordinal(badgePercentile) + ' percentile · ' + label;
-    var tone = badgePercentile == null ? rankTone(place.rank, place.of) : percentileClass(badgePercentile);
+    // A CFB defense uses the same grade when its EPA appears as a rank or percentile.
+    var tone = entry.rankDisplay ? percentileClass(percentile) : rankTone(place.rank, place.of);
     if (entry.lowSample) tone = 'c-na';
     else if (volume) tone = 'c-volume';
     return {
@@ -6231,7 +6232,7 @@ function seasonToggle(game) {
   }
 
   function cfbBar(grade, side) {
-    var pct = grade ? Math.max(4, Math.round(grade.percentile)) : 0;
+    var pct = grade ? Math.max(4, grade.percentile) : 0;
     return '<span class="ca-ledger-bar ' + side + (grade ? ' ' + grade.tone : '') +
       '"><i style="width:' + pct + '%"></i></span>';
   }
@@ -6281,8 +6282,8 @@ function seasonToggle(game) {
     return line ? '<p class="ca-lineup-context">' + esc(line) + '</p>' : '';
   }
 
-  function cfbTeamMetric(entry, cohort, showPercentile) {
-    return entry && Object.assign({}, entry, { cohort: cohort, showPercentile: showPercentile });
+  function cfbTeamMetric(entry, cohort, rankDisplay = 'rank') {
+    return entry && Object.assign({}, entry, { cohort: cohort, rankDisplay: rankDisplay });
   }
 
   function cfbLedgerPanel(sport, game, offSide, area) {
@@ -6407,7 +6408,7 @@ function seasonToggle(game) {
     return Object.assign({}, entry, {
       rank: place && place.rank,
       of: place && place.of,
-      showPercentile: true,
+      rankDisplay: 'percentile',
       lowSample: qualified === false,
       cohort: cohort + (qualified === false ? ' · placement for a below-threshold sample' : '')
     });
@@ -6435,7 +6436,7 @@ function seasonToggle(game) {
       return (lead.epa_splits || {})[sp[0]] && defense[sp[0]];
     }).map(function (sp) {
       return cfbLedgerRow(sp[1], cfbPlayerRank(lead.epa_splits[sp[0]], lead.ranked, 'qualified FBS passers in this split'),
-        cfbTeamMetric(defense[sp[0]], 'FBS defenses in this split', true));
+        cfbTeamMetric(defense[sp[0]], 'FBS defenses in this split', 'percentile'));
     });
     return head + '<div class="ca-split-block"><h4>Season Line · FBS Passer Percentiles</h4>' +
       nflSplitTable(CFB_QB_LINE.map(function (c) { return c[1]; }), lineRows, 'Passer') + '</div>' +
