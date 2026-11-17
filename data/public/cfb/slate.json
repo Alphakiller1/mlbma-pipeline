@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 12,
-  "generated_at_utc": "2026-11-16T22:24:09Z",
+  "generated_at_utc": "2026-11-17T00:12:10Z",
   "data_through_utc": "2026-11-15T20:31:39Z",
   "games": [
     {
@@ -8182,7 +8182,7 @@
       "venue_city": "Kent, OH",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 43,
+      "weather_temp": 42,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -52976,7 +52976,7 @@
       "venue_city": "Cincinnati, OH",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 61,
+      "weather_temp": 62,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -68959,7 +68959,7 @@
       "venue_city": "Lincoln, NE",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 53,
+      "weather_temp": 51,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -97301,7 +97301,7 @@
       "venue_city": "Morgantown, WV",
       "roof": "Outdoor",
       "broadcast": "TNT",
-      "weather_temp": 63,
+      "weather_temp": 66,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -101281,7 +101281,7 @@
       "venue_city": "Lynchburg, VA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 62,
+      "weather_temp": 60,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -109375,7 +109375,7 @@
       "venue_city": "Jacksonville, AL",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 70,
+      "weather_temp": 69,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -133589,7 +133589,7 @@
       "venue_city": "Las Cruces, NM",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 64,
+      "weather_temp": 62,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -137648,7 +137648,7 @@
       "venue_city": "Kennesaw, GA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 66,
+      "weather_temp": 67,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -161930,7 +161930,7 @@
       "venue_city": "University Park, PA",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 60,
+      "weather_temp": 59,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -198282,7 +198282,7 @@
       "venue_city": "Los Angeles, CA",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 66,
+      "weather_temp": 68,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -206416,7 +206416,7 @@
       "venue_city": "Ruston, LA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 67,
+      "weather_temp": 66,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -238651,7 +238651,7 @@
       "roof": "Outdoor",
       "broadcast": "SEC Network",
       "weather_temp": 64,
-      "weather_cond": "Mostly cloudy w/ showers",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -246638,7 +246638,7 @@
       "venue_city": "Fort Worth, TX",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 61,
+      "weather_temp": 63,
       "weather_cond": "Mostly cloudy w/ showers",
       "away_form": {
         "rates": {
