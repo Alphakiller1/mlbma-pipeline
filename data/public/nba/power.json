@@ -2,91 +2,275 @@
  "schema": "chase-public-nba-power/1",
  "sport": "nba",
  "season": 2027,
- "games": 200,
+ "games": 203,
  "through": "2026-11-16",
  "units": "points per 100 possessions",
- "home_court": 1.665,
- "league_mean": 110.984,
+ "home_court": 1.797,
+ "league_mean": 111.059,
  "teams": {
-  "HOU": {
+  "POR": {
    "net": {
-    "value": 6.26,
-    "rank": 5,
+    "value": 4.04,
+    "rank": 9,
     "of": 30
    },
    "offense": {
-    "value": 116.16,
-    "rank": 2,
+    "value": 113.81,
+    "rank": 7,
     "of": 30
    },
    "defense": {
-    "value": 109.9,
-    "rank": 13,
+    "value": 109.77,
+    "rank": 10,
     "of": 30
    },
    "schedule": {
-    "value": 0.54,
-    "rank": 10,
+    "value": 0.69,
+    "rank": 9,
     "of": 30
    },
    "schedule_offense": {
-    "value": 110.97,
-    "rank": 14,
+    "value": 111.61,
+    "rank": 9,
     "of": 30
    },
    "schedule_defense": {
-    "value": 110.43,
-    "rank": 10,
+    "value": 110.91,
+    "rank": 15,
     "of": 30
    },
    "luck": {
-    "value": 0.1281,
+    "value": 0.1684,
+    "rank": 28,
+    "of": 30
+   },
+   "record": {
+    "wins": 9,
+    "losses": 3,
+    "games": 12
+   },
+   "expected_record": {
+    "wins": 7.0,
+    "losses": 5.0
+   }
+  },
+  "LAC": {
+   "net": {
+    "value": -2.33,
+    "rank": 21,
+    "of": 30
+   },
+   "offense": {
+    "value": 110.14,
+    "rank": 18,
+    "of": 30
+   },
+   "defense": {
+    "value": 112.47,
+    "rank": 23,
+    "of": 30
+   },
+   "schedule": {
+    "value": 1.2,
+    "rank": 8,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.34,
+    "rank": 10,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.14,
+    "rank": 4,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.0766,
+    "rank": 9,
+    "of": 30
+   },
+   "record": {
+    "wins": 4,
+    "losses": 8,
+    "games": 12
+   },
+   "expected_record": {
+    "wins": 4.9,
+    "losses": 7.1
+   }
+  },
+  "GS": {
+   "net": {
+    "value": 1.02,
+    "rank": 14,
+    "of": 30
+   },
+   "offense": {
+    "value": 111.18,
+    "rank": 16,
+    "of": 30
+   },
+   "defense": {
+    "value": 110.16,
+    "rank": 12,
+    "of": 30
+   },
+   "schedule": {
+    "value": 1.28,
+    "rank": 7,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 112.68,
+    "rank": 2,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 111.39,
+    "rank": 19,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0785,
+    "rank": 24,
+    "of": 30
+   },
+   "record": {
+    "wins": 8,
+    "losses": 6,
+    "games": 14
+   },
+   "expected_record": {
+    "wins": 6.9,
+    "losses": 7.1
+   }
+  },
+  "MEM": {
+   "net": {
+    "value": 0.08,
+    "rank": 17,
+    "of": 30
+   },
+   "offense": {
+    "value": 112.38,
+    "rank": 9,
+    "of": 30
+   },
+   "defense": {
+    "value": 112.3,
+    "rank": 21,
+    "of": 30
+   },
+   "schedule": {
+    "value": -3.41,
+    "rank": 30,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.41,
+    "rank": 30,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 112.82,
+    "rank": 29,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.1166,
     "rank": 27,
     "of": 30
    },
    "record": {
-    "wins": 11,
-    "losses": 3,
+    "wins": 10,
+    "losses": 4,
     "games": 14
    },
    "expected_record": {
-    "wins": 9.2,
-    "losses": 4.8
+    "wins": 8.4,
+    "losses": 5.6
+   }
+  },
+  "PHX": {
+   "net": {
+    "value": -0.87,
+    "rank": 19,
+    "of": 30
+   },
+   "offense": {
+    "value": 111.05,
+    "rank": 17,
+    "of": 30
+   },
+   "defense": {
+    "value": 111.93,
+    "rank": 17,
+    "of": 30
+   },
+   "schedule": {
+    "value": 2.81,
+    "rank": 1,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 112.45,
+    "rank": 4,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.63,
+    "rank": 2,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.0073,
+    "rank": 15,
+    "of": 30
+   },
+   "record": {
+    "wins": 5,
+    "losses": 7,
+    "games": 12
+   },
+   "expected_record": {
+    "wins": 5.1,
+    "losses": 6.9
    }
   },
   "CHA": {
    "net": {
-    "value": -3.23,
+    "value": -3.21,
     "rank": 22,
     "of": 30
    },
    "offense": {
-    "value": 105.98,
+    "value": 105.94,
     "rank": 30,
     "of": 30
    },
    "defense": {
-    "value": 109.21,
+    "value": 109.14,
     "rank": 8,
     "of": 30
    },
    "schedule": {
-    "value": -0.79,
-    "rank": 23,
+    "value": -0.74,
+    "rank": 21,
     "of": 30
    },
    "schedule_offense": {
-    "value": 110.69,
+    "value": 110.92,
     "rank": 15,
     "of": 30
    },
    "schedule_defense": {
-    "value": 111.48,
-    "rank": 21,
+    "value": 111.66,
+    "rank": 22,
     "of": 30
    },
    "luck": {
-    "value": -0.1297,
+    "value": -0.1298,
     "rank": 5,
     "of": 30
    },
@@ -100,132 +284,40 @@
     "losses": 7.3
    }
   },
-  "CHI": {
-   "net": {
-    "value": -5.42,
-    "rank": 24,
-    "of": 30
-   },
-   "offense": {
-    "value": 109.49,
-    "rank": 21,
-    "of": 30
-   },
-   "defense": {
-    "value": 114.91,
-    "rank": 26,
-    "of": 30
-   },
-   "schedule": {
-    "value": 2.24,
-    "rank": 3,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 111.72,
-    "rank": 8,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 109.48,
-    "rank": 1,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.0527,
-    "rank": 11,
-    "of": 30
-   },
-   "record": {
-    "wins": 3,
-    "losses": 10,
-    "games": 13
-   },
-   "expected_record": {
-    "wins": 3.7,
-    "losses": 9.3
-   }
-  },
-  "BKN": {
-   "net": {
-    "value": -6.6,
-    "rank": 25,
-    "of": 30
-   },
-   "offense": {
-    "value": 106.78,
-    "rank": 26,
-    "of": 30
-   },
-   "defense": {
-    "value": 113.38,
-    "rank": 24,
-    "of": 30
-   },
-   "schedule": {
-    "value": -0.51,
-    "rank": 18,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 110.18,
-    "rank": 25,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.69,
-    "rank": 12,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.0701,
-    "rank": 9,
-    "of": 30
-   },
-   "record": {
-    "wins": 3,
-    "losses": 9,
-    "games": 12
-   },
-   "expected_record": {
-    "wins": 3.8,
-    "losses": 8.2
-   }
-  },
   "UTAH": {
    "net": {
-    "value": -7.09,
-    "rank": 26,
+    "value": -7.03,
+    "rank": 27,
     "of": 30
    },
    "offense": {
-    "value": 106.61,
+    "value": 106.66,
     "rank": 27,
     "of": 30
    },
    "defense": {
     "value": 113.69,
-    "rank": 25,
+    "rank": 24,
     "of": 30
    },
    "schedule": {
-    "value": 2.57,
+    "value": 2.66,
     "rank": 2,
     "of": 30
    },
    "schedule_offense": {
-    "value": 112.82,
-    "rank": 2,
+    "value": 112.94,
+    "rank": 1,
     "of": 30
    },
    "schedule_defense": {
-    "value": 110.25,
-    "rank": 9,
+    "value": 110.27,
+    "rank": 7,
     "of": 30
    },
    "luck": {
-    "value": -0.1898,
-    "rank": 2,
+    "value": -0.1901,
+    "rank": 1,
     "of": 30
    },
    "record": {
@@ -238,449 +330,35 @@
     "losses": 10.3
    }
   },
-  "PHX": {
-   "net": {
-    "value": -0.72,
-    "rank": 19,
-    "of": 30
-   },
-   "offense": {
-    "value": 111.08,
-    "rank": 16,
-    "of": 30
-   },
-   "defense": {
-    "value": 111.81,
-    "rank": 17,
-    "of": 30
-   },
-   "schedule": {
-    "value": 3.04,
-    "rank": 1,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 112.54,
-    "rank": 3,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 109.5,
-    "rank": 2,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.0023,
-    "rank": 18,
-    "of": 30
-   },
-   "record": {
-    "wins": 5,
-    "losses": 7,
-    "games": 12
-   },
-   "expected_record": {
-    "wins": 5.0,
-    "losses": 7.0
-   }
-  },
-  "IND": {
-   "net": {
-    "value": -4.25,
-    "rank": 23,
-    "of": 30
-   },
-   "offense": {
-    "value": 108.09,
-    "rank": 25,
-    "of": 30
-   },
-   "defense": {
-    "value": 112.34,
-    "rank": 21,
-    "of": 30
-   },
-   "schedule": {
-    "value": -2.33,
-    "rank": 29,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 110.06,
-    "rank": 26,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 112.38,
-    "rank": 28,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.083,
-    "rank": 7,
-    "of": 30
-   },
-   "record": {
-    "wins": 5,
-    "losses": 9,
-    "games": 14
-   },
-   "expected_record": {
-    "wins": 6.2,
-    "losses": 7.8
-   }
-  },
-  "NO": {
-   "net": {
-    "value": -7.65,
-    "rank": 28,
-    "of": 30
-   },
-   "offense": {
-    "value": 109.11,
-    "rank": 23,
-    "of": 30
-   },
-   "defense": {
-    "value": 116.76,
-    "rank": 30,
-    "of": 30
-   },
-   "schedule": {
-    "value": -1.41,
-    "rank": 25,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 110.56,
-    "rank": 19,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 111.97,
-    "rank": 27,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.0557,
-    "rank": 10,
-    "of": 30
-   },
-   "record": {
-    "wins": 4,
-    "losses": 10,
-    "games": 14
-   },
-   "expected_record": {
-    "wins": 4.8,
-    "losses": 9.2
-   }
-  },
-  "BOS": {
-   "net": {
-    "value": 7.44,
-    "rank": 2,
-    "of": 30
-   },
-   "offense": {
-    "value": 114.52,
-    "rank": 5,
-    "of": 30
-   },
-   "defense": {
-    "value": 107.08,
-    "rank": 4,
-    "of": 30
-   },
-   "schedule": {
-    "value": -1.76,
-    "rank": 26,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 109.62,
-    "rank": 29,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 111.38,
-    "rank": 20,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.0549,
-    "rank": 22,
-    "of": 30
-   },
-   "record": {
-    "wins": 11,
-    "losses": 3,
-    "games": 14
-   },
-   "expected_record": {
-    "wins": 10.2,
-    "losses": 3.8
-   }
-  },
-  "GS": {
-   "net": {
-    "value": 1.99,
-    "rank": 13,
-    "of": 30
-   },
-   "offense": {
-    "value": 111.88,
-    "rank": 12,
-    "of": 30
-   },
-   "defense": {
-    "value": 109.89,
-    "rank": 12,
-    "of": 30
-   },
-   "schedule": {
-    "value": 1.89,
-    "rank": 5,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 112.83,
-    "rank": 1,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.94,
-    "rank": 16,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.1094,
-    "rank": 25,
-    "of": 30
-   },
-   "record": {
-    "wins": 8,
-    "losses": 5,
-    "games": 13
-   },
-   "expected_record": {
-    "wins": 6.6,
-    "losses": 6.4
-   }
-  },
-  "NY": {
-   "net": {
-    "value": 4.05,
-    "rank": 8,
-    "of": 30
-   },
-   "offense": {
-    "value": 111.61,
-    "rank": 13,
-    "of": 30
-   },
-   "defense": {
-    "value": 107.56,
-    "rank": 6,
-    "of": 30
-   },
-   "schedule": {
-    "value": -0.93,
-    "rank": 24,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 110.56,
-    "rank": 20,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 111.48,
-    "rank": 22,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.0963,
-    "rank": 6,
-    "of": 30
-   },
-   "record": {
-    "wins": 7,
-    "losses": 6,
-    "games": 13
-   },
-   "expected_record": {
-    "wins": 8.3,
-    "losses": 4.7
-   }
-  },
-  "MIA": {
-   "net": {
-    "value": 1.43,
-    "rank": 14,
-    "of": 30
-   },
-   "offense": {
-    "value": 112.77,
-    "rank": 8,
-    "of": 30
-   },
-   "defense": {
-    "value": 111.34,
-    "rank": 15,
-    "of": 30
-   },
-   "schedule": {
-    "value": -0.28,
-    "rank": 17,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 110.46,
-    "rank": 23,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.74,
-    "rank": 14,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.0059,
-    "rank": 15,
-    "of": 30
-   },
-   "record": {
-    "wins": 7,
-    "losses": 6,
-    "games": 13
-   },
-   "expected_record": {
-    "wins": 7.1,
-    "losses": 5.9
-   }
-  },
-  "CLE": {
-   "net": {
-    "value": 2.04,
-    "rank": 12,
-    "of": 30
-   },
-   "offense": {
-    "value": 114.4,
-    "rank": 6,
-    "of": 30
-   },
-   "defense": {
-    "value": 112.36,
-    "rank": 22,
-    "of": 30
-   },
-   "schedule": {
-    "value": -0.27,
-    "rank": 16,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 109.97,
-    "rank": 27,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.24,
-    "rank": 8,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.0333,
-    "rank": 12,
-    "of": 30
-   },
-   "record": {
-    "wins": 8,
-    "losses": 7,
-    "games": 15
-   },
-   "expected_record": {
-    "wins": 8.5,
-    "losses": 6.5
-   }
-  },
-  "ORL": {
-   "net": {
-    "value": -0.65,
-    "rank": 18,
-    "of": 30
-   },
-   "offense": {
-    "value": 109.17,
-    "rank": 22,
-    "of": 30
-   },
-   "defense": {
-    "value": 109.82,
-    "rank": 11,
-    "of": 30
-   },
-   "schedule": {
-    "value": -0.04,
-    "rank": 15,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 110.53,
-    "rank": 21,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.57,
-    "rank": 11,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.0078,
-    "rank": 14,
-    "of": 30
-   },
-   "record": {
-    "wins": 6,
-    "losses": 7,
-    "games": 13
-   },
-   "expected_record": {
-    "wins": 6.1,
-    "losses": 6.9
-   }
-  },
   "LAL": {
    "net": {
-    "value": 4.73,
+    "value": 4.7,
     "rank": 6,
     "of": 30
    },
    "offense": {
-    "value": 116.23,
+    "value": 116.27,
     "rank": 1,
     "of": 30
    },
    "defense": {
-    "value": 111.5,
+    "value": 111.57,
     "rank": 16,
     "of": 30
    },
    "schedule": {
-    "value": -0.69,
-    "rank": 21,
+    "value": -0.78,
+    "rank": 23,
     "of": 30
    },
    "schedule_offense": {
-    "value": 110.58,
-    "rank": 18,
+    "value": 110.55,
+    "rank": 21,
     "of": 30
    },
    "schedule_defense": {
-    "value": 111.27,
-    "rank": 19,
+    "value": 111.33,
+    "rank": 17,
     "of": 30
    },
    "luck": {
@@ -698,39 +376,223 @@
     "losses": 5.0
    }
   },
+  "MIL": {
+   "net": {
+    "value": -9.25,
+    "rank": 29,
+    "of": 30
+   },
+   "offense": {
+    "value": 106.54,
+    "rank": 28,
+    "of": 30
+   },
+   "defense": {
+    "value": 115.79,
+    "rank": 28,
+    "of": 30
+   },
+   "schedule": {
+    "value": 1.7,
+    "rank": 6,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 112.02,
+    "rank": 6,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.32,
+    "rank": 8,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.1612,
+    "rank": 3,
+    "of": 30
+   },
+   "record": {
+    "wins": 1,
+    "losses": 13,
+    "games": 14
+   },
+   "expected_record": {
+    "wins": 3.3,
+    "losses": 10.7
+   }
+  },
+  "MIN": {
+   "net": {
+    "value": 6.31,
+    "rank": 4,
+    "of": 30
+   },
+   "offense": {
+    "value": 112.31,
+    "rank": 10,
+    "of": 30
+   },
+   "defense": {
+    "value": 106.0,
+    "rank": 3,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.76,
+    "rank": 22,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.03,
+    "rank": 14,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 111.8,
+    "rank": 25,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0054,
+    "rank": 18,
+    "of": 30
+   },
+   "record": {
+    "wins": 9,
+    "losses": 4,
+    "games": 13
+   },
+   "expected_record": {
+    "wins": 8.9,
+    "losses": 4.1
+   }
+  },
+  "OKC": {
+   "net": {
+    "value": 6.52,
+    "rank": 3,
+    "of": 30
+   },
+   "offense": {
+    "value": 111.27,
+    "rank": 15,
+    "of": 30
+   },
+   "defense": {
+    "value": 104.74,
+    "rank": 1,
+    "of": 30
+   },
+   "schedule": {
+    "value": 0.45,
+    "rank": 11,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 112.28,
+    "rank": 5,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 111.82,
+    "rank": 26,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.0034,
+    "rank": 16,
+    "of": 30
+   },
+   "record": {
+    "wins": 9,
+    "losses": 5,
+    "games": 14
+   },
+   "expected_record": {
+    "wins": 9.0,
+    "losses": 5.0
+   }
+  },
+  "CLE": {
+   "net": {
+    "value": 2.07,
+    "rank": 13,
+    "of": 30
+   },
+   "offense": {
+    "value": 114.37,
+    "rank": 6,
+    "of": 30
+   },
+   "defense": {
+    "value": 112.3,
+    "rank": 22,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.2,
+    "rank": 16,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.19,
+    "rank": 27,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.39,
+    "rank": 9,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.0315,
+    "rank": 11,
+    "of": 30
+   },
+   "record": {
+    "wins": 8,
+    "losses": 7,
+    "games": 15
+   },
+   "expected_record": {
+    "wins": 8.5,
+    "losses": 6.5
+   }
+  },
   "SA": {
    "net": {
-    "value": 10.46,
+    "value": 10.4,
     "rank": 1,
     "of": 30
    },
    "offense": {
-    "value": 115.45,
+    "value": 115.47,
     "rank": 3,
     "of": 30
    },
    "defense": {
-    "value": 105.0,
+    "value": 105.07,
     "rank": 2,
     "of": 30
    },
    "schedule": {
-    "value": -1.81,
+    "value": -1.93,
     "rank": 27,
     "of": 30
    },
    "schedule_offense": {
-    "value": 109.87,
+    "value": 109.84,
     "rank": 28,
     "of": 30
    },
    "schedule_defense": {
-    "value": 111.68,
-    "rank": 23,
+    "value": 111.77,
+    "rank": 24,
     "of": 30
    },
    "luck": {
-    "value": 0.0579,
+    "value": 0.0584,
     "rank": 23,
     "of": 30
    },
@@ -744,361 +606,177 @@
     "losses": 2.8
    }
   },
-  "POR": {
+  "BKN": {
    "net": {
-    "value": 4.04,
-    "rank": 9,
+    "value": -6.79,
+    "rank": 25,
     "of": 30
    },
    "offense": {
-    "value": 113.76,
+    "value": 107.46,
+    "rank": 26,
+    "of": 30
+   },
+   "defense": {
+    "value": 114.25,
+    "rank": 25,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.34,
+    "rank": 17,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.28,
+    "rank": 26,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.61,
+    "rank": 12,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.0849,
     "rank": 7,
     "of": 30
    },
-   "defense": {
-    "value": 109.73,
-    "rank": 10,
-    "of": 30
-   },
-   "schedule": {
-    "value": 0.7,
-    "rank": 9,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 111.57,
-    "rank": 9,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.87,
-    "rank": 15,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.1678,
-    "rank": 28,
-    "of": 30
-   },
    "record": {
-    "wins": 9,
-    "losses": 3,
-    "games": 12
-   },
-   "expected_record": {
-    "wins": 7.0,
-    "losses": 5.0
-   }
-  },
-  "SAC": {
-   "net": {
-    "value": -9.35,
-    "rank": 30,
-    "of": 30
-   },
-   "offense": {
-    "value": 106.26,
-    "rank": 29,
-    "of": 30
-   },
-   "defense": {
-    "value": 115.61,
-    "rank": 27,
-    "of": 30
-   },
-   "schedule": {
-    "value": 2.22,
-    "rank": 4,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 112.43,
-    "rank": 4,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.21,
-    "rank": 6,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.1384,
-    "rank": 4,
-    "of": 30
-   },
-   "record": {
-    "wins": 1,
-    "losses": 12,
+    "wins": 3,
+    "losses": 10,
     "games": 13
    },
    "expected_record": {
-    "wins": 2.8,
-    "losses": 10.2
+    "wins": 4.1,
+    "losses": 8.9
    }
   },
-  "DET": {
+  "ORL": {
    "net": {
-    "value": 4.59,
-    "rank": 7,
+    "value": -0.68,
+    "rank": 18,
     "of": 30
    },
    "offense": {
-    "value": 112.02,
-    "rank": 11,
+    "value": 109.22,
+    "rank": 23,
     "of": 30
    },
    "defense": {
-    "value": 107.43,
-    "rank": 5,
+    "value": 109.91,
+    "rank": 11,
     "of": 30
    },
    "schedule": {
-    "value": -0.69,
-    "rank": 20,
+    "value": -0.12,
+    "rank": 15,
     "of": 30
    },
    "schedule_offense": {
-    "value": 110.47,
+    "value": 110.49,
     "rank": 22,
     "of": 30
    },
    "schedule_defense": {
-    "value": 111.15,
-    "rank": 17,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.0286,
-    "rank": 20,
-    "of": 30
-   },
-   "record": {
-    "wins": 8,
-    "losses": 4,
-    "games": 12
-   },
-   "expected_record": {
-    "wins": 7.7,
-    "losses": 4.3
-   }
-  },
-  "TOR": {
-   "net": {
-    "value": 2.77,
-    "rank": 10,
-    "of": 30
-   },
-   "offense": {
-    "value": 111.29,
-    "rank": 14,
-    "of": 30
-   },
-   "defense": {
-    "value": 108.52,
-    "rank": 7,
-    "of": 30
-   },
-   "schedule": {
-    "value": -0.02,
-    "rank": 13,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 111.21,
+    "value": 110.61,
     "rank": 11,
     "of": 30
    },
+   "luck": {
+    "value": -0.0089,
+    "rank": 14,
+    "of": 30
+   },
+   "record": {
+    "wins": 6,
+    "losses": 7,
+    "games": 13
+   },
+   "expected_record": {
+    "wins": 6.1,
+    "losses": 6.9
+   }
+  },
+  "IND": {
+   "net": {
+    "value": -4.17,
+    "rank": 23,
+    "of": 30
+   },
+   "offense": {
+    "value": 108.05,
+    "rank": 25,
+    "of": 30
+   },
+   "defense": {
+    "value": 112.22,
+    "rank": 20,
+    "of": 30
+   },
+   "schedule": {
+    "value": -2.2,
+    "rank": 28,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.36,
+    "rank": 24,
+    "of": 30
+   },
    "schedule_defense": {
-    "value": 111.22,
-    "rank": 18,
+    "value": 112.57,
+    "rank": 28,
     "of": 30
    },
    "luck": {
-    "value": -0.1906,
-    "rank": 1,
+    "value": -0.0823,
+    "rank": 8,
     "of": 30
    },
    "record": {
     "wins": 5,
-    "losses": 8,
-    "games": 13
-   },
-   "expected_record": {
-    "wins": 7.5,
-    "losses": 5.5
-   }
-  },
-  "MEM": {
-   "net": {
-    "value": 0.03,
-    "rank": 17,
-    "of": 30
-   },
-   "offense": {
-    "value": 112.31,
-    "rank": 9,
-    "of": 30
-   },
-   "defense": {
-    "value": 112.28,
-    "rank": 20,
-    "of": 30
-   },
-   "schedule": {
-    "value": -3.46,
-    "rank": 30,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 109.34,
-    "rank": 30,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 112.81,
-    "rank": 29,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.1154,
-    "rank": 26,
-    "of": 30
-   },
-   "record": {
-    "wins": 10,
-    "losses": 4,
+    "losses": 9,
     "games": 14
    },
    "expected_record": {
-    "wins": 8.4,
-    "losses": 5.6
-   }
-  },
-  "PHI": {
-   "net": {
-    "value": 0.33,
-    "rank": 16,
-    "of": 30
-   },
-   "offense": {
-    "value": 110.52,
-    "rank": 17,
-    "of": 30
-   },
-   "defense": {
-    "value": 110.2,
-    "rank": 14,
-    "of": 30
-   },
-   "schedule": {
-    "value": -0.02,
-    "rank": 14,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 110.68,
-    "rank": 16,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.7,
-    "rank": 13,
-    "of": 30
-   },
-   "luck": {
-    "value": 0.2696,
-    "rank": 30,
-    "of": 30
-   },
-   "record": {
-    "wins": 11,
-    "losses": 3,
-    "games": 14
-   },
-   "expected_record": {
-    "wins": 7.2,
-    "losses": 6.8
-   }
-  },
-  "MIL": {
-   "net": {
-    "value": -9.22,
-    "rank": 29,
-    "of": 30
-   },
-   "offense": {
-    "value": 106.54,
-    "rank": 28,
-    "of": 30
-   },
-   "defense": {
-    "value": 115.76,
-    "rank": 28,
-    "of": 30
-   },
-   "schedule": {
-    "value": 1.72,
-    "rank": 7,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 111.95,
-    "rank": 6,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.23,
-    "rank": 7,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.1585,
-    "rank": 3,
-    "of": 30
-   },
-   "record": {
-    "wins": 1,
-    "losses": 13,
-    "games": 14
-   },
-   "expected_record": {
-    "wins": 3.2,
-    "losses": 10.8
+    "wins": 6.2,
+    "losses": 7.8
    }
   },
   "DEN": {
    "net": {
-    "value": 2.67,
+    "value": 2.74,
     "rank": 11,
     "of": 30
    },
    "offense": {
-    "value": 114.83,
+    "value": 114.94,
     "rank": 4,
     "of": 30
    },
    "defense": {
-    "value": 112.16,
-    "rank": 18,
+    "value": 112.2,
+    "rank": 19,
     "of": 30
    },
    "schedule": {
-    "value": -0.57,
+    "value": -0.52,
     "rank": 19,
     "of": 30
    },
    "schedule_offense": {
-    "value": 111.19,
+    "value": 111.21,
     "rank": 12,
     "of": 30
    },
    "schedule_defense": {
-    "value": 111.77,
-    "rank": 26,
+    "value": 111.73,
+    "rank": 23,
     "of": 30
    },
    "luck": {
-    "value": 0.0531,
+    "value": 0.0533,
     "rank": 21,
     "of": 30
    },
@@ -1112,85 +790,39 @@
     "losses": 4.6
    }
   },
-  "OKC": {
+  "ATL": {
    "net": {
-    "value": 6.52,
-    "rank": 3,
-    "of": 30
-   },
-   "offense": {
-    "value": 111.23,
-    "rank": 15,
-    "of": 30
-   },
-   "defense": {
-    "value": 104.71,
-    "rank": 1,
-    "of": 30
-   },
-   "schedule": {
-    "value": 0.51,
-    "rank": 11,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 112.25,
-    "rank": 5,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 111.74,
-    "rank": 25,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.0045,
+    "value": 0.57,
     "rank": 16,
     "of": 30
    },
-   "record": {
-    "wins": 9,
-    "losses": 5,
-    "games": 14
-   },
-   "expected_record": {
-    "wins": 9.1,
-    "losses": 4.9
-   }
-  },
-  "ATL": {
-   "net": {
-    "value": 0.55,
-    "rank": 15,
-    "of": 30
-   },
    "offense": {
-    "value": 110.1,
-    "rank": 18,
+    "value": 110.09,
+    "rank": 19,
     "of": 30
    },
    "defense": {
-    "value": 109.55,
+    "value": 109.52,
     "rank": 9,
     "of": 30
    },
    "schedule": {
-    "value": -2.23,
-    "rank": 28,
+    "value": -2.25,
+    "rank": 29,
     "of": 30
    },
    "schedule_offense": {
-    "value": 110.63,
-    "rank": 17,
+    "value": 110.75,
+    "rank": 18,
     "of": 30
    },
    "schedule_defense": {
-    "value": 112.86,
+    "value": 113.0,
     "rank": 30,
     "of": 30
    },
    "luck": {
-    "value": -0.0035,
+    "value": -0.0027,
     "rank": 17,
     "of": 30
    },
@@ -1204,40 +836,178 @@
     "losses": 6.0
    }
   },
+  "BOS": {
+   "net": {
+    "value": 7.42,
+    "rank": 2,
+    "of": 30
+   },
+   "offense": {
+    "value": 114.49,
+    "rank": 5,
+    "of": 30
+   },
+   "defense": {
+    "value": 107.07,
+    "rank": 4,
+    "of": 30
+   },
+   "schedule": {
+    "value": -1.8,
+    "rank": 26,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 109.74,
+    "rank": 29,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 111.54,
+    "rank": 20,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.057,
+    "rank": 22,
+    "of": 30
+   },
+   "record": {
+    "wins": 11,
+    "losses": 3,
+    "games": 14
+   },
+   "expected_record": {
+    "wins": 10.2,
+    "losses": 3.8
+   }
+  },
+  "DET": {
+   "net": {
+    "value": 4.68,
+    "rank": 7,
+    "of": 30
+   },
+   "offense": {
+    "value": 111.99,
+    "rank": 11,
+    "of": 30
+   },
+   "defense": {
+    "value": 107.3,
+    "rank": 5,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.54,
+    "rank": 20,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.8,
+    "rank": 17,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 111.35,
+    "rank": 18,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0325,
+    "rank": 20,
+    "of": 30
+   },
+   "record": {
+    "wins": 8,
+    "losses": 4,
+    "games": 12
+   },
+   "expected_record": {
+    "wins": 7.6,
+    "losses": 4.4
+   }
+  },
+  "MIA": {
+   "net": {
+    "value": 2.09,
+    "rank": 12,
+    "of": 30
+   },
+   "offense": {
+    "value": 113.54,
+    "rank": 8,
+    "of": 30
+   },
+   "defense": {
+    "value": 111.45,
+    "rank": 15,
+    "of": 30
+   },
+   "schedule": {
+    "value": 0.09,
+    "rank": 13,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.81,
+    "rank": 16,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.72,
+    "rank": 13,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.0155,
+    "rank": 19,
+    "of": 30
+   },
+   "record": {
+    "wins": 8,
+    "losses": 6,
+    "games": 14
+   },
+   "expected_record": {
+    "wins": 7.8,
+    "losses": 6.2
+   }
+  },
   "DAL": {
    "net": {
-    "value": -2.21,
+    "value": -2.24,
     "rank": 20,
     "of": 30
    },
    "offense": {
-    "value": 109.98,
+    "value": 109.94,
     "rank": 20,
     "of": 30
    },
    "defense": {
     "value": 112.19,
-    "rank": 19,
+    "rank": 18,
     "of": 30
    },
    "schedule": {
-    "value": 1.83,
-    "rank": 6,
+    "value": 1.76,
+    "rank": 5,
     "of": 30
    },
    "schedule_offense": {
-    "value": 111.73,
-    "rank": 7,
+    "value": 111.84,
+    "rank": 8,
     "of": 30
    },
    "schedule_defense": {
-    "value": 109.9,
+    "value": 110.07,
     "rank": 3,
     "of": 30
    },
    "luck": {
-    "value": 0.1069,
-    "rank": 24,
+    "value": 0.1052,
+    "rank": 26,
     "of": 30
    },
    "record": {
@@ -1250,39 +1020,315 @@
     "losses": 8.5
    }
   },
-  "WSH": {
+  "NY": {
    "net": {
-    "value": -7.47,
-    "rank": 27,
+    "value": 4.07,
+    "rank": 8,
     "of": 30
    },
    "offense": {
-    "value": 108.95,
-    "rank": 24,
-    "of": 30
-   },
-   "defense": {
-    "value": 116.42,
-    "rank": 29,
-    "of": 30
-   },
-   "schedule": {
-    "value": 0.13,
+    "value": 111.6,
     "rank": 12,
     "of": 30
    },
-   "schedule_offense": {
-    "value": 110.33,
+   "defense": {
+    "value": 107.53,
+    "rank": 6,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.87,
     "rank": 24,
     "of": 30
    },
+   "schedule_offense": {
+    "value": 110.74,
+    "rank": 19,
+    "of": 30
+   },
    "schedule_defense": {
-    "value": 110.2,
+    "value": 111.62,
+    "rank": 21,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.094,
+    "rank": 6,
+    "of": 30
+   },
+   "record": {
+    "wins": 7,
+    "losses": 6,
+    "games": 13
+   },
+   "expected_record": {
+    "wins": 8.2,
+    "losses": 4.8
+   }
+  },
+  "PHI": {
+   "net": {
+    "value": 0.63,
+    "rank": 15,
+    "of": 30
+   },
+   "offense": {
+    "value": 111.42,
+    "rank": 13,
+    "of": 30
+   },
+   "defense": {
+    "value": 110.79,
+    "rank": 14,
+    "of": 30
+   },
+   "schedule": {
+    "value": -0.43,
+    "rank": 18,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.45,
+    "rank": 23,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.88,
+    "rank": 14,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.2673,
+    "rank": 30,
+    "of": 30
+   },
+   "record": {
+    "wins": 12,
+    "losses": 3,
+    "games": 15
+   },
+   "expected_record": {
+    "wins": 8.0,
+    "losses": 7.0
+   }
+  },
+  "SAC": {
+   "net": {
+    "value": -9.3,
+    "rank": 30,
+    "of": 30
+   },
+   "offense": {
+    "value": 106.33,
+    "rank": 29,
+    "of": 30
+   },
+   "defense": {
+    "value": 115.62,
+    "rank": 27,
+    "of": 30
+   },
+   "schedule": {
+    "value": 2.32,
+    "rank": 3,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 112.54,
+    "rank": 3,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.22,
     "rank": 5,
     "of": 30
    },
    "luck": {
-    "value": -0.0252,
+    "value": -0.1395,
+    "rank": 4,
+    "of": 30
+   },
+   "record": {
+    "wins": 1,
+    "losses": 12,
+    "games": 13
+   },
+   "expected_record": {
+    "wins": 2.8,
+    "losses": 10.2
+   }
+  },
+  "NO": {
+   "net": {
+    "value": -6.87,
+    "rank": 26,
+    "of": 30
+   },
+   "offense": {
+    "value": 109.37,
+    "rank": 22,
+    "of": 30
+   },
+   "defense": {
+    "value": 116.24,
+    "rank": 29,
+    "of": 30
+   },
+   "schedule": {
+    "value": -1.29,
+    "rank": 25,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.64,
+    "rank": 20,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 111.93,
+    "rank": 27,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.0298,
+    "rank": 12,
+    "of": 30
+   },
+   "record": {
+    "wins": 5,
+    "losses": 10,
+    "games": 15
+   },
+   "expected_record": {
+    "wins": 5.4,
+    "losses": 9.6
+   }
+  },
+  "HOU": {
+   "net": {
+    "value": 5.48,
+    "rank": 5,
+    "of": 30
+   },
+   "offense": {
+    "value": 116.14,
+    "rank": 2,
+    "of": 30
+   },
+   "defense": {
+    "value": 110.67,
+    "rank": 13,
+    "of": 30
+   },
+   "schedule": {
+    "value": 0.57,
+    "rank": 10,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.1,
+    "rank": 13,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.53,
+    "rank": 10,
+    "of": 30
+   },
+   "luck": {
+    "value": 0.1003,
+    "rank": 25,
+    "of": 30
+   },
+   "record": {
+    "wins": 11,
+    "losses": 4,
+    "games": 15
+   },
+   "expected_record": {
+    "wins": 9.5,
+    "losses": 5.5
+   }
+  },
+  "TOR": {
+   "net": {
+    "value": 2.79,
+    "rank": 10,
+    "of": 30
+   },
+   "offense": {
+    "value": 111.32,
+    "rank": 14,
+    "of": 30
+   },
+   "defense": {
+    "value": 108.53,
+    "rank": 7,
+    "of": 30
+   },
+   "schedule": {
+    "value": 0.01,
+    "rank": 14,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.31,
+    "rank": 11,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 111.3,
+    "rank": 16,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.1893,
+    "rank": 2,
+    "of": 30
+   },
+   "record": {
+    "wins": 5,
+    "losses": 8,
+    "games": 13
+   },
+   "expected_record": {
+    "wins": 7.5,
+    "losses": 5.5
+   }
+  },
+  "WSH": {
+   "net": {
+    "value": -7.48,
+    "rank": 28,
+    "of": 30
+   },
+   "offense": {
+    "value": 109.01,
+    "rank": 24,
+    "of": 30
+   },
+   "defense": {
+    "value": 116.49,
+    "rank": 30,
+    "of": 30
+   },
+   "schedule": {
+    "value": 0.1,
+    "rank": 12,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 110.32,
+    "rank": 25,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 110.22,
+    "rank": 6,
+    "of": 30
+   },
+   "luck": {
+    "value": -0.0274,
     "rank": 13,
     "of": 30
    },
@@ -1296,96 +1342,50 @@
     "losses": 10.6
    }
   },
-  "LAC": {
+  "CHI": {
    "net": {
-    "value": -2.35,
-    "rank": 21,
-    "of": 30
-   },
-   "offense": {
-    "value": 110.08,
-    "rank": 19,
-    "of": 30
-   },
-   "defense": {
-    "value": 112.43,
-    "rank": 23,
-    "of": 30
-   },
-   "schedule": {
-    "value": 1.17,
-    "rank": 8,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 111.3,
-    "rank": 10,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 110.13,
-    "rank": 4,
-    "of": 30
-   },
-   "luck": {
-    "value": -0.0754,
-    "rank": 8,
-    "of": 30
-   },
-   "record": {
-    "wins": 4,
-    "losses": 8,
-    "games": 12
-   },
-   "expected_record": {
-    "wins": 4.9,
-    "losses": 7.1
-   }
-  },
-  "MIN": {
-   "net": {
-    "value": 6.32,
-    "rank": 4,
-    "of": 30
-   },
-   "offense": {
-    "value": 112.28,
-    "rank": 10,
-    "of": 30
-   },
-   "defense": {
-    "value": 105.96,
-    "rank": 3,
-    "of": 30
-   },
-   "schedule": {
-    "value": -0.74,
-    "rank": 22,
-    "of": 30
-   },
-   "schedule_offense": {
-    "value": 110.99,
-    "rank": 13,
-    "of": 30
-   },
-   "schedule_defense": {
-    "value": 111.74,
+    "value": -5.38,
     "rank": 24,
     "of": 30
    },
+   "offense": {
+    "value": 109.51,
+    "rank": 21,
+    "of": 30
+   },
+   "defense": {
+    "value": 114.89,
+    "rank": 26,
+    "of": 30
+   },
+   "schedule": {
+    "value": 2.28,
+    "rank": 4,
+    "of": 30
+   },
+   "schedule_offense": {
+    "value": 111.85,
+    "rank": 7,
+    "of": 30
+   },
+   "schedule_defense": {
+    "value": 109.57,
+    "rank": 1,
+    "of": 30
+   },
    "luck": {
-    "value": 0.0044,
-    "rank": 19,
+    "value": -0.0538,
+    "rank": 10,
     "of": 30
    },
    "record": {
-    "wins": 9,
-    "losses": 4,
+    "wins": 3,
+    "losses": 10,
     "games": 13
    },
    "expected_record": {
-    "wins": 8.9,
-    "losses": 4.1
+    "wins": 3.7,
+    "losses": 9.3
    }
   }
  },
@@ -1428,7 +1428,7 @@
     "points": 144,
     "opp_points": 140,
     "adj_points": 142.1,
-    "opp_adj_points": 136.3,
+    "opp_adj_points": 136.2,
     "off_rtg": {
      "value": 125.0,
      "rank": 16,
@@ -1509,7 +1509,7 @@
     "points": 106,
     "opp_points": 112,
     "adj_points": 106.3,
-    "opp_adj_points": 109.6,
+    "opp_adj_points": 109.7,
     "off_rtg": {
      "value": 104.8,
      "rank": 77,
@@ -1644,7 +1644,7 @@
     "points": 106,
     "opp_points": 93,
     "adj_points": 105.1,
-    "opp_adj_points": 98.7,
+    "opp_adj_points": 98.8,
     "off_rtg": {
      "value": 106.0,
      "rank": 56,
@@ -1730,18 +1730,18 @@
     "opp_adj_points": 113.0,
     "off_rtg": {
      "value": 104.5,
-     "rank": 6,
-     "of": 6
+     "rank": 11,
+     "of": 12
     },
     "def_rtg": {
      "value": 118.6,
-     "rank": 5,
-     "of": 6
+     "rank": 8,
+     "of": 12
     },
     "pace": {
      "value": 98.7,
-     "rank": 5,
-     "of": 6
+     "rank": 9,
+     "of": 12
     }
    },
    {
@@ -1753,7 +1753,7 @@
     "neutral": false,
     "points": 131,
     "opp_points": 94,
-    "adj_points": 126.9,
+    "adj_points": 126.8,
     "opp_adj_points": 93.9,
     "off_rtg": {
      "value": 135.0,
@@ -1781,7 +1781,7 @@
     "points": 98,
     "opp_points": 93,
     "adj_points": 97.8,
-    "opp_adj_points": 91.3,
+    "opp_adj_points": 91.2,
     "off_rtg": {
      "value": 103.9,
      "rank": 81,
@@ -1808,7 +1808,7 @@
     "points": 123,
     "opp_points": 101,
     "adj_points": 116.3,
-    "opp_adj_points": 102.9,
+    "opp_adj_points": 103.0,
     "off_rtg": {
      "value": 125.3,
      "rank": 15,
@@ -1916,7 +1916,7 @@
     "points": 93,
     "opp_points": 109,
     "adj_points": 97.3,
-    "opp_adj_points": 107.7,
+    "opp_adj_points": 107.6,
     "off_rtg": {
      "value": 98.1,
      "rank": 95,
@@ -1969,7 +1969,7 @@
     "neutral": false,
     "points": 125,
     "opp_points": 111,
-    "adj_points": 127.6,
+    "adj_points": 127.5,
     "opp_adj_points": 115.8,
     "off_rtg": {
      "value": 118.4,
@@ -2431,7 +2431,7 @@
     "points": 100,
     "opp_points": 106,
     "adj_points": 102.3,
-    "opp_adj_points": 110.6,
+    "opp_adj_points": 110.7,
     "off_rtg": {
      "value": 93.6,
      "rank": 77,
@@ -2451,6 +2451,33 @@
   ],
   "PHI": [
    {
+    "id": "401909997",
+    "date": "2026-11-16",
+    "week": "2026-11-16",
+    "opp": "BKN",
+    "home": false,
+    "neutral": false,
+    "points": 135,
+    "opp_points": 123,
+    "adj_points": 132.9,
+    "opp_adj_points": 121.9,
+    "off_rtg": {
+     "value": 132.7,
+     "rank": 1,
+     "of": 12
+    },
+    "def_rtg": {
+     "value": 119.5,
+     "rank": 9,
+     "of": 12
+    },
+    "pace": {
+     "value": 102.3,
+     "rank": 5,
+     "of": 12
+    }
+   },
+   {
     "id": "401909985",
     "date": "2026-11-15",
     "week": "2026-11-09",
@@ -2459,7 +2486,7 @@
     "neutral": false,
     "points": 131,
     "opp_points": 124,
-    "adj_points": 126.4,
+    "adj_points": 126.5,
     "opp_adj_points": 127.3,
     "off_rtg": {
      "value": 127.2,
@@ -2486,7 +2513,7 @@
     "neutral": false,
     "points": 123,
     "opp_points": 112,
-    "adj_points": 119.3,
+    "adj_points": 119.4,
     "opp_adj_points": 109.9,
     "off_rtg": {
      "value": 126.6,
@@ -2513,7 +2540,7 @@
     "neutral": false,
     "points": 101,
     "opp_points": 123,
-    "adj_points": 102.9,
+    "adj_points": 103.0,
     "opp_adj_points": 116.3,
     "off_rtg": {
      "value": 103.8,
@@ -2540,7 +2567,7 @@
     "neutral": false,
     "points": 127,
     "opp_points": 121,
-    "adj_points": 123.2,
+    "adj_points": 123.3,
     "opp_adj_points": 123.8,
     "off_rtg": {
      "value": 128.3,
@@ -2567,8 +2594,8 @@
     "neutral": false,
     "points": 95,
     "opp_points": 119,
-    "adj_points": 100.9,
-    "opp_adj_points": 119.4,
+    "adj_points": 101.0,
+    "opp_adj_points": 119.3,
     "off_rtg": {
      "value": 91.6,
      "rank": 104,
@@ -2594,7 +2621,7 @@
     "neutral": false,
     "points": 112,
     "opp_points": 106,
-    "adj_points": 109.6,
+    "adj_points": 109.7,
     "opp_adj_points": 106.3,
     "off_rtg": {
      "value": 108.4,
@@ -2621,7 +2648,7 @@
     "neutral": false,
     "points": 126,
     "opp_points": 107,
-    "adj_points": 126.9,
+    "adj_points": 127.0,
     "opp_adj_points": 112.8,
     "off_rtg": {
      "value": 121.3,
@@ -2648,7 +2675,7 @@
     "neutral": false,
     "points": 109,
     "opp_points": 104,
-    "adj_points": 107.9,
+    "adj_points": 108.0,
     "opp_adj_points": 102.1,
     "off_rtg": {
      "value": 119.6,
@@ -2729,7 +2756,7 @@
     "neutral": false,
     "points": 93,
     "opp_points": 106,
-    "adj_points": 98.7,
+    "adj_points": 98.8,
     "opp_adj_points": 105.1,
     "off_rtg": {
      "value": 91.1,
@@ -2756,7 +2783,7 @@
     "neutral": false,
     "points": 127,
     "opp_points": 116,
-    "adj_points": 121.0,
+    "adj_points": 121.1,
     "opp_adj_points": 117.2,
     "off_rtg": {
      "value": 112.4,
@@ -2783,7 +2810,7 @@
     "neutral": false,
     "points": 114,
     "opp_points": 106,
-    "adj_points": 118.5,
+    "adj_points": 118.6,
     "opp_adj_points": 111.3,
     "off_rtg": {
      "value": 100.7,
@@ -2810,7 +2837,7 @@
     "neutral": false,
     "points": 106,
     "opp_points": 100,
-    "adj_points": 110.6,
+    "adj_points": 110.7,
     "opp_adj_points": 102.3,
     "off_rtg": {
      "value": 99.2,
@@ -2867,7 +2894,7 @@
     "points": 123,
     "opp_points": 85,
     "adj_points": 125.2,
-    "opp_adj_points": 85.6,
+    "opp_adj_points": 85.4,
     "off_rtg": {
      "value": 121.6,
      "rank": 27,
@@ -2921,7 +2948,7 @@
     "points": 122,
     "opp_points": 96,
     "adj_points": 121.7,
-    "opp_adj_points": 95.3,
+    "opp_adj_points": 95.2,
     "off_rtg": {
      "value": 125.8,
      "rank": 14,
@@ -3002,7 +3029,7 @@
     "points": 112,
     "opp_points": 111,
     "adj_points": 122.4,
-    "opp_adj_points": 109.9,
+    "opp_adj_points": 109.8,
     "off_rtg": {
      "value": 111.8,
      "rank": 52,
@@ -3083,7 +3110,7 @@
     "points": 117,
     "opp_points": 111,
     "adj_points": 118.8,
-    "opp_adj_points": 107.1,
+    "opp_adj_points": 107.0,
     "off_rtg": {
      "value": 110.1,
      "rank": 50,
@@ -3109,8 +3136,8 @@
     "neutral": false,
     "points": 130,
     "opp_points": 103,
-    "adj_points": 124.0,
-    "opp_adj_points": 102.9,
+    "adj_points": 123.9,
+    "opp_adj_points": 102.8,
     "off_rtg": {
      "value": 125.8,
      "rank": 12,
@@ -3163,8 +3190,8 @@
     "neutral": false,
     "points": 110,
     "opp_points": 114,
-    "adj_points": 112.4,
-    "opp_adj_points": 111.1,
+    "adj_points": 112.3,
+    "opp_adj_points": 111.0,
     "off_rtg": {
      "value": 105.8,
      "rank": 57,
@@ -3190,7 +3217,7 @@
     "neutral": false,
     "points": 104,
     "opp_points": 116,
-    "adj_points": 107.4,
+    "adj_points": 107.3,
     "opp_adj_points": 111.3,
     "off_rtg": {
      "value": 96.3,
@@ -3246,7 +3273,7 @@
     "neutral": false,
     "points": 112,
     "opp_points": 113,
-    "adj_points": 115.0,
+    "adj_points": 114.9,
     "opp_adj_points": 111.3,
     "off_rtg": {
      "value": 107.3,
@@ -3436,7 +3463,7 @@
     "points": 98,
     "opp_points": 119,
     "adj_points": 98.8,
-    "opp_adj_points": 114.0,
+    "opp_adj_points": 113.9,
     "off_rtg": {
      "value": 102.5,
      "rank": 74,
@@ -3571,7 +3598,7 @@
     "points": 116,
     "opp_points": 104,
     "adj_points": 111.3,
-    "opp_adj_points": 107.4,
+    "opp_adj_points": 107.3,
     "off_rtg": {
      "value": 107.6,
      "rank": 52,
@@ -3590,6 +3617,33 @@
    }
   ],
   "MIA": [
+   {
+    "id": "401909998",
+    "date": "2026-11-16",
+    "week": "2026-11-16",
+    "opp": "HOU",
+    "home": true,
+    "neutral": false,
+    "points": 128,
+    "opp_points": 110,
+    "adj_points": 127.4,
+    "opp_adj_points": 114.5,
+    "off_rtg": {
+     "value": 129.3,
+     "rank": 2,
+     "of": 12
+    },
+    "def_rtg": {
+     "value": 112.0,
+     "rank": 4,
+     "of": 12
+    },
+    "pace": {
+     "value": 98.6,
+     "rank": 11,
+     "of": 12
+    }
+   },
    {
     "id": "401909982",
     "date": "2026-11-14",
@@ -3707,8 +3761,8 @@
     "neutral": false,
     "points": 100,
     "opp_points": 120,
-    "adj_points": 103.5,
-    "opp_adj_points": 118.8,
+    "adj_points": 103.6,
+    "opp_adj_points": 118.6,
     "off_rtg": {
      "value": 91.6,
      "rank": 103,
@@ -4061,7 +4115,7 @@
     "points": 117,
     "opp_points": 107,
     "adj_points": 115.0,
-    "opp_adj_points": 107.7,
+    "opp_adj_points": 107.5,
     "off_rtg": {
      "value": 120.2,
      "rank": 20,
@@ -4087,7 +4141,7 @@
     "neutral": false,
     "points": 112,
     "opp_points": 100,
-    "adj_points": 114.4,
+    "adj_points": 114.3,
     "opp_adj_points": 103.0,
     "off_rtg": {
      "value": 114.9,
@@ -4169,7 +4223,7 @@
     "points": 114,
     "opp_points": 119,
     "adj_points": 115.7,
-    "opp_adj_points": 121.8,
+    "opp_adj_points": 121.6,
     "off_rtg": {
      "value": 103.7,
      "rank": 69,
@@ -4441,7 +4495,7 @@
     "points": 116,
     "opp_points": 103,
     "adj_points": 117.0,
-    "opp_adj_points": 105.2,
+    "opp_adj_points": 105.1,
     "off_rtg": {
      "value": 119.9,
      "rank": 23,
@@ -4522,7 +4576,7 @@
     "points": 95,
     "opp_points": 112,
     "adj_points": 100.4,
-    "opp_adj_points": 104.3,
+    "opp_adj_points": 104.1,
     "off_rtg": {
      "value": 96.4,
      "rank": 89,
@@ -4548,7 +4602,7 @@
     "neutral": false,
     "points": 103,
     "opp_points": 87,
-    "adj_points": 107.7,
+    "adj_points": 107.6,
     "opp_adj_points": 87.2,
     "off_rtg": {
      "value": 105.6,
@@ -4603,7 +4657,7 @@
     "points": 132,
     "opp_points": 123,
     "adj_points": 126.9,
-    "opp_adj_points": 126.1,
+    "opp_adj_points": 126.0,
     "off_rtg": {
      "value": 127.3,
      "rank": 3,
@@ -4657,7 +4711,7 @@
     "points": 127,
     "opp_points": 105,
     "adj_points": 124.6,
-    "opp_adj_points": 113.3,
+    "opp_adj_points": 113.1,
     "off_rtg": {
      "value": 125.9,
      "rank": 5,
@@ -4677,6 +4731,33 @@
   ],
   "GS": [
    {
+    "id": "401910000",
+    "date": "2026-11-16",
+    "week": "2026-11-16",
+    "opp": "NO",
+    "home": false,
+    "neutral": false,
+    "points": 94,
+    "opp_points": 115,
+    "adj_points": 101.3,
+    "opp_adj_points": 113.9,
+    "off_rtg": {
+     "value": 95.7,
+     "rank": 12,
+     "of": 12
+    },
+    "def_rtg": {
+     "value": 115.5,
+     "rank": 6,
+     "of": 12
+    },
+    "pace": {
+     "value": 98.9,
+     "rank": 7,
+     "of": 12
+    }
+   },
+   {
     "id": "401909302",
     "date": "2026-11-13",
     "week": "2026-11-09",
@@ -4685,7 +4766,7 @@
     "neutral": false,
     "points": 85,
     "opp_points": 123,
-    "adj_points": 85.6,
+    "adj_points": 85.4,
     "opp_adj_points": 125.2,
     "off_rtg": {
      "value": 83.5,
@@ -4712,8 +4793,8 @@
     "neutral": false,
     "points": 108,
     "opp_points": 115,
-    "adj_points": 111.7,
-    "opp_adj_points": 115.7,
+    "adj_points": 111.4,
+    "opp_adj_points": 115.6,
     "off_rtg": {
      "value": 112.0,
      "rank": 57,
@@ -4739,7 +4820,7 @@
     "neutral": false,
     "points": 138,
     "opp_points": 87,
-    "adj_points": 130.0,
+    "adj_points": 129.8,
     "opp_adj_points": 88.7,
     "off_rtg": {
      "value": 138.9,
@@ -4766,7 +4847,7 @@
     "neutral": false,
     "points": 126,
     "opp_points": 119,
-    "adj_points": 121.2,
+    "adj_points": 121.1,
     "opp_adj_points": 120.8,
     "off_rtg": {
      "value": 114.9,
@@ -4793,8 +4874,8 @@
     "neutral": false,
     "points": 120,
     "opp_points": 100,
-    "adj_points": 118.8,
-    "opp_adj_points": 103.5,
+    "adj_points": 118.6,
+    "opp_adj_points": 103.6,
     "off_rtg": {
      "value": 116.5,
      "rank": 31,
@@ -4820,7 +4901,7 @@
     "neutral": false,
     "points": 116,
     "opp_points": 113,
-    "adj_points": 119.1,
+    "adj_points": 119.0,
     "opp_adj_points": 113.2,
     "off_rtg": {
      "value": 114.5,
@@ -4847,7 +4928,7 @@
     "neutral": false,
     "points": 124,
     "opp_points": 112,
-    "adj_points": 118.8,
+    "adj_points": 118.5,
     "opp_adj_points": 110.9,
     "off_rtg": {
      "value": 129.0,
@@ -4874,7 +4955,7 @@
     "neutral": false,
     "points": 112,
     "opp_points": 95,
-    "adj_points": 104.3,
+    "adj_points": 104.1,
     "opp_adj_points": 100.4,
     "off_rtg": {
      "value": 113.7,
@@ -4901,7 +4982,7 @@
     "neutral": false,
     "points": 119,
     "opp_points": 114,
-    "adj_points": 121.8,
+    "adj_points": 121.6,
     "opp_adj_points": 115.7,
     "off_rtg": {
      "value": 108.9,
@@ -4928,7 +5009,7 @@
     "neutral": false,
     "points": 134,
     "opp_points": 114,
-    "adj_points": 123.8,
+    "adj_points": 123.6,
     "opp_adj_points": 113.3,
     "off_rtg": {
      "value": 135.0,
@@ -4955,7 +5036,7 @@
     "neutral": false,
     "points": 122,
     "opp_points": 131,
-    "adj_points": 119.5,
+    "adj_points": 119.3,
     "opp_adj_points": 129.8,
     "off_rtg": {
      "value": 118.4,
@@ -4982,7 +5063,7 @@
     "neutral": false,
     "points": 108,
     "opp_points": 111,
-    "adj_points": 108.4,
+    "adj_points": 108.2,
     "opp_adj_points": 111.3,
     "off_rtg": {
      "value": 111.6,
@@ -5009,7 +5090,7 @@
     "neutral": false,
     "points": 105,
     "opp_points": 127,
-    "adj_points": 113.3,
+    "adj_points": 113.1,
     "opp_adj_points": 124.6,
     "off_rtg": {
      "value": 100.1,
@@ -5042,18 +5123,18 @@
     "opp_adj_points": 107.8,
     "off_rtg": {
      "value": 118.6,
-     "rank": 2,
-     "of": 6
+     "rank": 5,
+     "of": 12
     },
     "def_rtg": {
      "value": 104.5,
-     "rank": 1,
-     "of": 6
+     "rank": 2,
+     "of": 12
     },
     "pace": {
      "value": 98.7,
-     "rank": 5,
-     "of": 6
+     "rank": 9,
+     "of": 12
     }
    },
    {
@@ -5120,7 +5201,7 @@
     "points": 107,
     "opp_points": 100,
     "adj_points": 109.8,
-    "opp_adj_points": 93.3,
+    "opp_adj_points": 93.2,
     "off_rtg": {
      "value": 107.1,
      "rank": 68,
@@ -5147,7 +5228,7 @@
     "points": 119,
     "opp_points": 126,
     "adj_points": 120.8,
-    "opp_adj_points": 121.2,
+    "opp_adj_points": 121.1,
     "off_rtg": {
      "value": 106.0,
      "rank": 71,
@@ -5282,7 +5363,7 @@
     "points": 99,
     "opp_points": 129,
     "adj_points": 102.1,
-    "opp_adj_points": 123.0,
+    "opp_adj_points": 122.9,
     "off_rtg": {
      "value": 95.4,
      "rank": 90,
@@ -5580,7 +5661,7 @@
     "neutral": false,
     "points": 99,
     "opp_points": 121,
-    "adj_points": 109.2,
+    "adj_points": 109.1,
     "opp_adj_points": 119.5,
     "off_rtg": {
      "value": 93.3,
@@ -5662,7 +5743,7 @@
     "points": 110,
     "opp_points": 120,
     "adj_points": 114.3,
-    "opp_adj_points": 122.6,
+    "opp_adj_points": 122.5,
     "off_rtg": {
      "value": 102.6,
      "rank": 73,
@@ -5689,7 +5770,7 @@
     "points": 114,
     "opp_points": 121,
     "adj_points": 120.4,
-    "opp_adj_points": 117.8,
+    "opp_adj_points": 117.6,
     "off_rtg": {
      "value": 111.5,
      "rank": 41,
@@ -5715,7 +5796,7 @@
     "neutral": false,
     "points": 128,
     "opp_points": 81,
-    "adj_points": 125.8,
+    "adj_points": 125.7,
     "opp_adj_points": 90.0,
     "off_rtg": {
      "value": 121.1,
@@ -5775,18 +5856,18 @@
     "opp_adj_points": 132.6,
     "off_rtg": {
      "value": 117.8,
-     "rank": 3,
-     "of": 6
+     "rank": 6,
+     "of": 12
     },
     "def_rtg": {
      "value": 127.7,
-     "rank": 6,
-     "of": 6
+     "rank": 10,
+     "of": 12
     },
     "pace": {
      "value": 104.2,
      "rank": 3,
-     "of": 6
+     "of": 12
     }
    },
    {
@@ -5799,7 +5880,7 @@
     "points": 119,
     "opp_points": 147,
     "adj_points": 116.7,
-    "opp_adj_points": 142.1,
+    "opp_adj_points": 142.0,
     "off_rtg": {
      "value": 115.6,
      "rank": 45,
@@ -5825,7 +5906,7 @@
     "neutral": false,
     "points": 140,
     "opp_points": 144,
-    "adj_points": 136.3,
+    "adj_points": 136.2,
     "opp_adj_points": 142.1,
     "off_rtg": {
      "value": 117.9,
@@ -5852,7 +5933,7 @@
     "neutral": false,
     "points": 101,
     "opp_points": 114,
-    "adj_points": 103.0,
+    "adj_points": 102.9,
     "opp_adj_points": 114.6,
     "off_rtg": {
      "value": 101.3,
@@ -6041,7 +6122,7 @@
     "neutral": false,
     "points": 111,
     "opp_points": 121,
-    "adj_points": 114.5,
+    "adj_points": 114.4,
     "opp_adj_points": 118.3,
     "off_rtg": {
      "value": 116.3,
@@ -6368,7 +6449,7 @@
     "points": 100,
     "opp_points": 112,
     "adj_points": 103.0,
-    "opp_adj_points": 114.4,
+    "opp_adj_points": 114.3,
     "off_rtg": {
      "value": 96.8,
      "rank": 100,
@@ -6422,7 +6503,7 @@
     "points": 100,
     "opp_points": 132,
     "adj_points": 103.1,
-    "opp_adj_points": 126.1,
+    "opp_adj_points": 126.0,
     "off_rtg": {
      "value": 97.2,
      "rank": 87,
@@ -6476,7 +6557,7 @@
     "points": 116,
     "opp_points": 127,
     "adj_points": 117.2,
-    "opp_adj_points": 121.0,
+    "opp_adj_points": 121.1,
     "off_rtg": {
      "value": 108.1,
      "rank": 50,
@@ -6550,6 +6631,33 @@
   ],
   "BKN": [
    {
+    "id": "401909997",
+    "date": "2026-11-16",
+    "week": "2026-11-16",
+    "opp": "PHI",
+    "home": true,
+    "neutral": false,
+    "points": 123,
+    "opp_points": 135,
+    "adj_points": 121.9,
+    "opp_adj_points": 132.9,
+    "off_rtg": {
+     "value": 119.5,
+     "rank": 4,
+     "of": 12
+    },
+    "def_rtg": {
+     "value": 132.7,
+     "rank": 12,
+     "of": 12
+    },
+    "pace": {
+     "value": 102.3,
+     "rank": 5,
+     "of": 12
+    }
+   },
+   {
     "id": "401909983",
     "date": "2026-11-14",
     "week": "2026-11-09",
@@ -6585,7 +6693,7 @@
     "neutral": false,
     "points": 145,
     "opp_points": 111,
-    "adj_points": 135.3,
+    "adj_points": 135.2,
     "opp_adj_points": 108.4,
     "off_rtg": {
      "value": 142.9,
@@ -6666,7 +6774,7 @@
     "neutral": false,
     "points": 114,
     "opp_points": 104,
-    "adj_points": 113.4,
+    "adj_points": 113.3,
     "opp_adj_points": 105.7,
     "off_rtg": {
      "value": 115.9,
@@ -6720,7 +6828,7 @@
     "neutral": false,
     "points": 98,
     "opp_points": 90,
-    "adj_points": 98.6,
+    "adj_points": 98.5,
     "opp_adj_points": 89.5,
     "off_rtg": {
      "value": 100.4,
@@ -6801,7 +6909,7 @@
     "neutral": false,
     "points": 109,
     "opp_points": 136,
-    "adj_points": 111.4,
+    "adj_points": 111.3,
     "opp_adj_points": 126.5,
     "off_rtg": {
      "value": 101.6,
@@ -6884,7 +6992,7 @@
     "neutral": false,
     "points": 105,
     "opp_points": 113,
-    "adj_points": 104.8,
+    "adj_points": 104.7,
     "opp_adj_points": 107.2,
     "off_rtg": {
      "value": 105.2,
@@ -6993,7 +7101,7 @@
     "points": 104,
     "opp_points": 114,
     "adj_points": 105.7,
-    "opp_adj_points": 113.4,
+    "opp_adj_points": 113.3,
     "off_rtg": {
      "value": 105.2,
      "rank": 75,
@@ -7047,7 +7155,7 @@
     "points": 104,
     "opp_points": 109,
     "adj_points": 102.1,
-    "opp_adj_points": 107.9,
+    "opp_adj_points": 108.0,
     "off_rtg": {
      "value": 113.0,
      "rank": 42,
@@ -7182,7 +7290,7 @@
     "points": 81,
     "opp_points": 128,
     "adj_points": 90.0,
-    "opp_adj_points": 125.8,
+    "opp_adj_points": 125.7,
     "off_rtg": {
      "value": 80.8,
      "rank": 86,
@@ -7265,7 +7373,7 @@
     "points": 112,
     "opp_points": 123,
     "adj_points": 109.9,
-    "opp_adj_points": 119.3,
+    "opp_adj_points": 119.4,
     "off_rtg": {
      "value": 111.4,
      "rank": 58,
@@ -7291,7 +7399,7 @@
     "neutral": false,
     "points": 93,
     "opp_points": 98,
-    "adj_points": 91.3,
+    "adj_points": 91.2,
     "opp_adj_points": 97.8,
     "off_rtg": {
      "value": 97.0,
@@ -7480,7 +7588,7 @@
     "neutral": false,
     "points": 129,
     "opp_points": 99,
-    "adj_points": 123.0,
+    "adj_points": 122.9,
     "opp_adj_points": 102.1,
     "off_rtg": {
      "value": 118.7,
@@ -7594,18 +7702,18 @@
     "opp_adj_points": 129.7,
     "off_rtg": {
      "value": 106.2,
-     "rank": 5,
-     "of": 6
+     "rank": 10,
+     "of": 12
     },
     "def_rtg": {
      "value": 112.3,
-     "rank": 3,
-     "of": 6
+     "rank": 5,
+     "of": 12
     },
     "pace": {
      "value": 110.3,
      "rank": 1,
-     "of": 6
+     "of": 12
     }
    },
    {
@@ -7699,7 +7807,7 @@
     "points": 121,
     "opp_points": 127,
     "adj_points": 123.8,
-    "opp_adj_points": 123.2,
+    "opp_adj_points": 123.3,
     "off_rtg": {
      "value": 118.5,
      "rank": 27,
@@ -7753,7 +7861,7 @@
     "points": 107,
     "opp_points": 126,
     "adj_points": 112.8,
-    "opp_adj_points": 126.9,
+    "opp_adj_points": 127.0,
     "off_rtg": {
      "value": 101.8,
      "rank": 86,
@@ -7780,7 +7888,7 @@
     "points": 111,
     "opp_points": 125,
     "adj_points": 115.8,
-    "opp_adj_points": 127.6,
+    "opp_adj_points": 127.5,
     "off_rtg": {
      "value": 105.1,
      "rank": 64,
@@ -7947,18 +8055,18 @@
     "opp_adj_points": 119.5,
     "off_rtg": {
      "value": 127.7,
-     "rank": 1,
-     "of": 6
+     "rank": 3,
+     "of": 12
     },
     "def_rtg": {
      "value": 117.8,
-     "rank": 4,
-     "of": 6
+     "rank": 7,
+     "of": 12
     },
     "pace": {
      "value": 104.2,
      "rank": 3,
-     "of": 6
+     "of": 12
     }
    },
    {
@@ -8268,7 +8376,7 @@
     "points": 111,
     "opp_points": 108,
     "adj_points": 111.3,
-    "opp_adj_points": 108.4,
+    "opp_adj_points": 108.2,
     "off_rtg": {
      "value": 106.0,
      "rank": 55,
@@ -8351,7 +8459,7 @@
     "points": 118,
     "opp_points": 125,
     "adj_points": 116.3,
-    "opp_adj_points": 125.7,
+    "opp_adj_points": 125.5,
     "off_rtg": {
      "value": 117.5,
      "rank": 40,
@@ -8566,7 +8674,7 @@
     "neutral": false,
     "points": 111,
     "opp_points": 117,
-    "adj_points": 107.1,
+    "adj_points": 107.0,
     "opp_adj_points": 118.8,
     "off_rtg": {
      "value": 103.4,
@@ -8620,7 +8728,7 @@
     "neutral": false,
     "points": 123,
     "opp_points": 132,
-    "adj_points": 126.1,
+    "adj_points": 126.0,
     "opp_adj_points": 126.9,
     "off_rtg": {
      "value": 118.4,
@@ -8695,6 +8803,33 @@
   ],
   "NO": [
    {
+    "id": "401910000",
+    "date": "2026-11-16",
+    "week": "2026-11-16",
+    "opp": "GS",
+    "home": true,
+    "neutral": false,
+    "points": 115,
+    "opp_points": 94,
+    "adj_points": 113.9,
+    "opp_adj_points": 101.3,
+    "off_rtg": {
+     "value": 115.5,
+     "rank": 7,
+     "of": 12
+    },
+    "def_rtg": {
+     "value": 95.7,
+     "rank": 1,
+     "of": 12
+    },
+    "pace": {
+     "value": 98.9,
+     "rank": 7,
+     "of": 12
+    }
+   },
+   {
     "id": "401909980",
     "date": "2026-11-14",
     "week": "2026-11-09",
@@ -8758,7 +8893,7 @@
     "points": 111,
     "opp_points": 145,
     "adj_points": 108.4,
-    "opp_adj_points": 135.3,
+    "opp_adj_points": 135.2,
     "off_rtg": {
      "value": 110.2,
      "rank": 61,
@@ -8785,7 +8920,7 @@
     "points": 87,
     "opp_points": 138,
     "adj_points": 88.7,
-    "opp_adj_points": 130.0,
+    "opp_adj_points": 129.8,
     "off_rtg": {
      "value": 91.0,
      "rank": 100,
@@ -8920,7 +9055,7 @@
     "points": 121,
     "opp_points": 99,
     "adj_points": 119.5,
-    "opp_adj_points": 109.2,
+    "opp_adj_points": 109.1,
     "off_rtg": {
      "value": 113.7,
      "rank": 41,
@@ -8946,8 +9081,8 @@
     "neutral": false,
     "points": 132,
     "opp_points": 120,
-    "adj_points": 134.0,
-    "opp_adj_points": 121.1,
+    "adj_points": 133.9,
+    "opp_adj_points": 121.0,
     "off_rtg": {
      "value": 115.7,
      "rank": 33,
@@ -9084,7 +9219,7 @@
     "points": 124,
     "opp_points": 131,
     "adj_points": 127.3,
-    "opp_adj_points": 126.4,
+    "opp_adj_points": 126.5,
     "off_rtg": {
      "value": 120.2,
      "rank": 31,
@@ -9138,7 +9273,7 @@
     "points": 114,
     "opp_points": 101,
     "adj_points": 114.6,
-    "opp_adj_points": 103.0,
+    "opp_adj_points": 102.9,
     "off_rtg": {
      "value": 118.1,
      "rank": 38,
@@ -9273,7 +9408,7 @@
     "points": 90,
     "opp_points": 98,
     "adj_points": 89.5,
-    "opp_adj_points": 98.6,
+    "opp_adj_points": 98.5,
     "off_rtg": {
      "value": 100.9,
      "rank": 79,
@@ -9381,7 +9516,7 @@
     "points": 136,
     "opp_points": 109,
     "adj_points": 126.5,
-    "opp_adj_points": 111.4,
+    "opp_adj_points": 111.3,
     "off_rtg": {
      "value": 128.7,
      "rank": 2,
@@ -9455,6 +9590,33 @@
   ],
   "HOU": [
    {
+    "id": "401909998",
+    "date": "2026-11-16",
+    "week": "2026-11-16",
+    "opp": "MIA",
+    "home": false,
+    "neutral": false,
+    "points": 110,
+    "opp_points": 128,
+    "adj_points": 114.5,
+    "opp_adj_points": 127.4,
+    "off_rtg": {
+     "value": 112.0,
+     "rank": 9,
+     "of": 12
+    },
+    "def_rtg": {
+     "value": 129.3,
+     "rank": 11,
+     "of": 12
+    },
+    "pace": {
+     "value": 98.6,
+     "rank": 11,
+     "of": 12
+    }
+   },
+   {
     "id": "401909991",
     "date": "2026-11-15",
     "week": "2026-11-09",
@@ -9463,7 +9625,7 @@
     "neutral": false,
     "points": 147,
     "opp_points": 119,
-    "adj_points": 142.1,
+    "adj_points": 142.0,
     "opp_adj_points": 116.7,
     "off_rtg": {
      "value": 145.6,
@@ -9490,7 +9652,7 @@
     "neutral": false,
     "points": 125,
     "opp_points": 118,
-    "adj_points": 125.7,
+    "adj_points": 125.5,
     "opp_adj_points": 116.3,
     "off_rtg": {
      "value": 130.3,
@@ -9517,8 +9679,8 @@
     "neutral": false,
     "points": 115,
     "opp_points": 108,
-    "adj_points": 115.7,
-    "opp_adj_points": 111.7,
+    "adj_points": 115.6,
+    "opp_adj_points": 111.4,
     "off_rtg": {
      "value": 116.9,
      "rank": 42,
@@ -9544,7 +9706,7 @@
     "neutral": false,
     "points": 110,
     "opp_points": 100,
-    "adj_points": 109.5,
+    "adj_points": 109.3,
     "opp_adj_points": 104.1,
     "off_rtg": {
      "value": 116.4,
@@ -9571,7 +9733,7 @@
     "neutral": false,
     "points": 99,
     "opp_points": 102,
-    "adj_points": 102.2,
+    "adj_points": 102.0,
     "opp_adj_points": 102.4,
     "off_rtg": {
      "value": 97.7,
@@ -9598,7 +9760,7 @@
     "neutral": false,
     "points": 107,
     "opp_points": 117,
-    "adj_points": 107.7,
+    "adj_points": 107.5,
     "opp_adj_points": 115.0,
     "off_rtg": {
      "value": 103.7,
@@ -9625,7 +9787,7 @@
     "neutral": false,
     "points": 109,
     "opp_points": 93,
-    "adj_points": 107.7,
+    "adj_points": 107.6,
     "opp_adj_points": 97.3,
     "off_rtg": {
      "value": 121.5,
@@ -9652,7 +9814,7 @@
     "neutral": false,
     "points": 119,
     "opp_points": 98,
-    "adj_points": 114.0,
+    "adj_points": 113.9,
     "opp_adj_points": 98.8,
     "off_rtg": {
      "value": 122.5,
@@ -9679,7 +9841,7 @@
     "neutral": false,
     "points": 111,
     "opp_points": 116,
-    "adj_points": 117.6,
+    "adj_points": 117.4,
     "opp_adj_points": 115.7,
     "off_rtg": {
      "value": 107.2,
@@ -9706,7 +9868,7 @@
     "neutral": false,
     "points": 132,
     "opp_points": 100,
-    "adj_points": 126.1,
+    "adj_points": 126.0,
     "opp_adj_points": 103.1,
     "off_rtg": {
      "value": 128.9,
@@ -9733,7 +9895,7 @@
     "neutral": false,
     "points": 120,
     "opp_points": 110,
-    "adj_points": 122.6,
+    "adj_points": 122.5,
     "opp_adj_points": 114.3,
     "off_rtg": {
      "value": 114.2,
@@ -9760,7 +9922,7 @@
     "neutral": false,
     "points": 121,
     "opp_points": 114,
-    "adj_points": 117.8,
+    "adj_points": 117.6,
     "opp_adj_points": 120.4,
     "off_rtg": {
      "value": 118.5,
@@ -9787,8 +9949,8 @@
     "neutral": false,
     "points": 114,
     "opp_points": 110,
-    "adj_points": 111.1,
-    "opp_adj_points": 112.4,
+    "adj_points": 111.0,
+    "opp_adj_points": 112.3,
     "off_rtg": {
      "value": 115.6,
      "rank": 28,
@@ -9814,7 +9976,7 @@
     "neutral": false,
     "points": 128,
     "opp_points": 110,
-    "adj_points": 124.6,
+    "adj_points": 124.5,
     "opp_adj_points": 114.9,
     "off_rtg": {
      "value": 130.6,
@@ -9844,7 +10006,7 @@
     "points": 94,
     "opp_points": 131,
     "adj_points": 93.9,
-    "opp_adj_points": 126.9,
+    "opp_adj_points": 126.8,
     "off_rtg": {
      "value": 96.4,
      "rank": 97,
@@ -10005,7 +10167,7 @@
     "neutral": false,
     "points": 111,
     "opp_points": 112,
-    "adj_points": 109.9,
+    "adj_points": 109.8,
     "opp_adj_points": 122.4,
     "off_rtg": {
      "value": 107.3,
@@ -10060,7 +10222,7 @@
     "points": 116,
     "opp_points": 111,
     "adj_points": 115.7,
-    "opp_adj_points": 117.6,
+    "opp_adj_points": 117.4,
     "off_rtg": {
      "value": 117.3,
      "rank": 30,
@@ -10195,7 +10357,7 @@
     "points": 110,
     "opp_points": 128,
     "adj_points": 114.9,
-    "opp_adj_points": 124.6,
+    "opp_adj_points": 124.5,
     "off_rtg": {
      "value": 105.3,
      "rank": 58,
@@ -10359,7 +10521,7 @@
     "points": 132,
     "opp_points": 119,
     "adj_points": 133.0,
-    "opp_adj_points": 121.8,
+    "opp_adj_points": 121.7,
     "off_rtg": {
      "value": 124.5,
      "rank": 13,
@@ -10630,7 +10792,7 @@
     "neutral": false,
     "points": 96,
     "opp_points": 122,
-    "adj_points": 95.3,
+    "adj_points": 95.2,
     "opp_adj_points": 121.7,
     "off_rtg": {
      "value": 102.8,
@@ -10658,7 +10820,7 @@
     "points": 102,
     "opp_points": 99,
     "adj_points": 102.4,
-    "opp_adj_points": 102.2,
+    "opp_adj_points": 102.0,
     "off_rtg": {
      "value": 105.3,
      "rank": 74,
@@ -10711,7 +10873,7 @@
     "neutral": false,
     "points": 119,
     "opp_points": 132,
-    "adj_points": 121.8,
+    "adj_points": 121.7,
     "opp_adj_points": 133.0,
     "off_rtg": {
      "value": 114.8,
@@ -10739,7 +10901,7 @@
     "points": 113,
     "opp_points": 116,
     "adj_points": 113.2,
-    "opp_adj_points": 119.1,
+    "opp_adj_points": 119.0,
     "off_rtg": {
      "value": 108.4,
      "rank": 65,
@@ -10820,7 +10982,7 @@
     "points": 131,
     "opp_points": 122,
     "adj_points": 129.8,
-    "opp_adj_points": 119.5,
+    "opp_adj_points": 119.3,
     "off_rtg": {
      "value": 126.4,
      "rank": 4,
@@ -10876,7 +11038,7 @@
     "points": 113,
     "opp_points": 105,
     "adj_points": 107.2,
-    "opp_adj_points": 104.8,
+    "opp_adj_points": 104.7,
     "off_rtg": {
      "value": 118.1,
      "rank": 36,
@@ -10903,7 +11065,7 @@
     "points": 113,
     "opp_points": 112,
     "adj_points": 111.3,
-    "opp_adj_points": 115.0,
+    "opp_adj_points": 114.9,
     "off_rtg": {
      "value": 115.0,
      "rank": 48,
@@ -11038,7 +11200,7 @@
     "points": 112,
     "opp_points": 124,
     "adj_points": 110.9,
-    "opp_adj_points": 118.8,
+    "opp_adj_points": 118.5,
     "off_rtg": {
      "value": 112.7,
      "rank": 44,
@@ -11092,7 +11254,7 @@
     "points": 87,
     "opp_points": 103,
     "adj_points": 87.2,
-    "opp_adj_points": 107.7,
+    "opp_adj_points": 107.6,
     "off_rtg": {
      "value": 88.9,
      "rank": 95,
@@ -11255,7 +11417,7 @@
     "neutral": false,
     "points": 100,
     "opp_points": 107,
-    "adj_points": 93.3,
+    "adj_points": 93.2,
     "opp_adj_points": 109.8,
     "off_rtg": {
      "value": 98.3,
@@ -11336,7 +11498,7 @@
     "neutral": false,
     "points": 103,
     "opp_points": 116,
-    "adj_points": 105.2,
+    "adj_points": 105.1,
     "opp_adj_points": 117.0,
     "off_rtg": {
      "value": 97.8,
@@ -11417,8 +11579,8 @@
     "neutral": false,
     "points": 120,
     "opp_points": 132,
-    "adj_points": 121.1,
-    "opp_adj_points": 134.0,
+    "adj_points": 121.0,
+    "opp_adj_points": 133.9,
     "off_rtg": {
      "value": 104.5,
      "rank": 66,
@@ -11444,8 +11606,8 @@
     "neutral": false,
     "points": 103,
     "opp_points": 130,
-    "adj_points": 102.9,
-    "opp_adj_points": 124.0,
+    "adj_points": 102.8,
+    "opp_adj_points": 123.9,
     "off_rtg": {
      "value": 102.3,
      "rank": 75,
@@ -11558,18 +11720,18 @@
     "opp_adj_points": 119.2,
     "off_rtg": {
      "value": 112.3,
-     "rank": 4,
-     "of": 6
+     "rank": 8,
+     "of": 12
     },
     "def_rtg": {
      "value": 106.2,
-     "rank": 2,
-     "of": 6
+     "rank": 3,
+     "of": 12
     },
     "pace": {
      "value": 110.3,
      "rank": 1,
-     "of": 6
+     "of": 12
     }
    },
    {
@@ -11716,8 +11878,8 @@
     "neutral": false,
     "points": 119,
     "opp_points": 95,
-    "adj_points": 119.4,
-    "opp_adj_points": 100.9,
+    "adj_points": 119.3,
+    "opp_adj_points": 101.0,
     "off_rtg": {
      "value": 114.5,
      "rank": 44,
@@ -11852,7 +12014,7 @@
     "points": 121,
     "opp_points": 111,
     "adj_points": 118.3,
-    "opp_adj_points": 114.5,
+    "opp_adj_points": 114.4,
     "off_rtg": {
      "value": 122.6,
      "rank": 13,
@@ -11933,7 +12095,7 @@
     "points": 106,
     "opp_points": 114,
     "adj_points": 111.3,
-    "opp_adj_points": 118.5,
+    "opp_adj_points": 118.6,
     "off_rtg": {
      "value": 96.1,
      "rank": 74,
@@ -12016,7 +12178,7 @@
     "points": 100,
     "opp_points": 110,
     "adj_points": 104.1,
-    "opp_adj_points": 109.5,
+    "opp_adj_points": 109.3,
     "off_rtg": {
      "value": 101.0,
      "rank": 88,
@@ -12178,7 +12340,7 @@
     "points": 114,
     "opp_points": 134,
     "adj_points": 113.3,
-    "opp_adj_points": 123.8,
+    "opp_adj_points": 123.6,
     "off_rtg": {
      "value": 118.6,
      "rank": 27,
@@ -12251,5 +12413,5 @@
    }
   ]
  },
- "generated_at_utc": "2026-11-17T02:53:41+00:00"
+ "generated_at_utc": "2026-11-17T03:28:14+00:00"
 }
