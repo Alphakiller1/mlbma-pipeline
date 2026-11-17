@@ -359,7 +359,8 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
         finals=None
         if year==2027 and observed_tactics and box_cache:
             from .espn_boxes import supplement
-            finals=supplement({tid:all_context[(year,tid)] for tid in cohort},schedules[year],year,live,box_cache)
+            finals=supplement({tid:all_context[(year,tid)] for tid in cohort},schedules[year],year,as_of,
+                              box_cache,season_through=live)
         # Published shortcut metadata maps the provider IDs to the validated institution IDs.
         reference={103765:96,103549:150,103903:127,103296:12,103757:2305,103257:2509}
         for file in (snapshot/'data').glob(f'cbb-shots-{year}-*-offense.ndjson.gz'):

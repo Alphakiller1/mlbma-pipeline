@@ -27,7 +27,8 @@ Never use a box-score baseline to shade a differently defined shot sample.
 The current-season export reconciles the Basketball Quant team-rate game
 counts against the D-I fixture calendar to choose a cutoff for coordinate
 shots and ESPN box estimates. The publisher requires at least 97% agreement
-across the rated teams. Fixture scores and statuses update independently.
+across the rated teams. Fixture scores, statuses, and verified game-log figures
+continue updating through the slate date.
 
 The added Defense tab compares each offense's shot mix, rim/three-point accuracy
 and turnover patterns with the opposing defense. These are observed tendencies.
