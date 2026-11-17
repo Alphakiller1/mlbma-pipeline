@@ -226,7 +226,8 @@ MATCHUPS_JS = r"""
 
 def matchup_page(sport: str) -> str:
     spec = SPORTS[sport]
-    detail_assets = f"{STAMP}&amp;rev=matchup-updates"
+    detail_rev = "cfb-rank-colors" if sport == "cfb" else "matchup-updates"
+    detail_assets = f"{STAMP}&amp;rev={detail_rev}"
     cbb_runtime = f'  <script src="/dashboard/cbb_charts.js?v={STAMP}"></script>' if sport == "cbb" else ""
     return f"""<!DOCTYPE html>
 <html lang="en">

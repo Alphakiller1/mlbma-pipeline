@@ -631,10 +631,23 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             out[id] = { panels: panels.length, same: labels.length === 2 && labels[0] === labels[1],
                         rows: labels.length ? labels[0].split('|').filter(Boolean) : [] };
           }
-          const ranked = [...document.querySelectorAll('.ca-cfb-ledger-table td.num .ca-rank')].length;
-          const bars = [...document.querySelectorAll('.ca-cfb-ledger-table .ca-ledger-bar i')]
-            .filter(i => parseFloat(i.style.width) > 0).length;
-          return { sections: out, ranked, bars }; }""")
+          const tone = el => [...el.classList].find(name => /^c-(elite|good|mid|weak|poor|volume|na)$/.test(name));
+          const badges = [...document.querySelectorAll('.ca-cfb-ledger-table td.num .ca-rank')];
+          const matchingBars = badges.filter(badge => {
+            const cell = badge.closest('td');
+            const side = cell.classList.contains('ca-ledger-right') ? 'right' : 'left';
+            const bar = cell.parentElement.querySelector('.ca-ledger-bar.is-' + side);
+            if (!bar || tone(bar) !== tone(badge)) return false;
+            const width = parseFloat(bar.firstElementChild.style.width);
+            const {rank, rankOf, percentile} = badge.dataset;
+            const expected = Math.round(percentile ?? 100 * (rankOf - rank) / (rankOf - 1));
+            if (!['c-na', 'c-volume'].includes(tone(badge))) {
+              const assets = window.MLBMAAssets;
+              if (tone(badge) !== assets.TIER_CHIP[assets.percentileTier(expected / 100)]) return false;
+            }
+            return width === Math.max(4, expected);
+          }).length;
+          return { sections: out, ranked: badges.length, matchingBars }; }""")
         for sid, info in ledger["sections"].items():
             check(f"CFB {sid} reads both directions on identical ledger rows",
                   info["panels"] == 2 and info["same"] and len(info["rows"]) >= 6,
@@ -642,9 +655,9 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         all_rows = [r for info in ledger["sections"].values() for r in info["rows"]]
         repeated = sorted({r for r in all_rows if all_rows.count(r) > 1} - {"Success", "Explosive"})
         check("CFB ledger lists each stat once across the desk", not repeated, ", ".join(repeated))
-        check("CFB every ranked ledger figure carries its rank bar",
-              ledger["ranked"] > 40 and ledger["bars"] == ledger["ranked"],
-              f"{ledger['ranked']} ranked, {ledger['bars']} bars")
+        check("CFB ledger badges and bars use the same grade and percentile",
+              ledger["ranked"] > 40 and ledger["matchingBars"] == ledger["ranked"],
+              f"{ledger['matchingBars']} matching bars for {ledger['ranked']} badges")
         efficiency_text = page.locator("#cfb-efficiency").inner_text().lower()
         check("CFB efficiency carries scoring, yardage and per-play evidence",
               all(label in efficiency_text for label in ("points/g", "pts/play", "yds/play", "success")))
@@ -663,15 +676,16 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               and "fbs rank" not in dvoa_lower)
         cfb_cells = page.evaluate("""() => {
           const tds = [...document.querySelectorAll('.ca-cfb-panel td')];
-          const graded = td => /(^|\\s)c-(elite|good|mid|weak|poor)(\\s|$)/.test(td.className);
+          const badges = [...document.querySelectorAll('.ca-cfb-panel .ca-lineup-table td.num > .ca-rank')];
+          const graded = badges.filter(el => /(^|\\s)c-(elite|good|mid|weak|poor|volume)(\\s|$)/.test(el.className));
           return {
             dashes: tds.filter(td => td.innerText.trim() === '—').length,
-            unpilled: tds.filter(td => graded(td) && !td.querySelector('.ca-rank')).length,
-            graded: tds.filter(graded).length
+            tintedValues: graded.filter(badge => getComputedStyle(badge).color === getComputedStyle(badge.parentElement).color).length,
+            gradedBadges: graded.length
           }; }""")
-        check("CFB every graded number carries its rank pill",
-              cfb_cells["unpilled"] == 0 and cfb_cells["graded"] > 0,
-              f"{cfb_cells['graded']} graded, {cfb_cells['unpilled']} without a pill")
+        check("CFB grade colors live on badges beside neutral stat values",
+              cfb_cells["tintedValues"] == 0 and cfb_cells["gradedBadges"] > 40,
+              f"{cfb_cells['gradedBadges']} graded badges, {cfb_cells['tintedValues']} tinted values")
         check("CFB desk has no empty (dash) cells", cfb_cells["dashes"] == 0,
               f"{cfb_cells['dashes']} dash cells")
         stack_text = page.locator(".ca-detail-stack").inner_text().lower()
@@ -687,7 +701,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         qb_panels = page.locator("#cfb-quarterbacks.is-tab-on .ca-cfb-panel").count()
         qb_tables = page.locator("#cfb-quarterbacks .ca-cfb-ledger-table").count()
         qb_complete = all(label in qb_text for label in (
-            "season line", "comp%", "yds/att", "dropbacks", "passing downs", "allows"))
+            "season line", "comp%", "yds/att", "dropbacks", "passing downs", "epa/play allowed"))
         # CFBD depth can be partial during a provider outage. Keep the two-sided
         # frame visible when one school's QB table is present and the other
         # panel is explicitly unavailable; do not invent a replacement line.
@@ -696,12 +710,30 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               (qb_panels == 2 and qb_tables >= 1 and qb_complete)
               or qb_partial or "not published" in qb_text,
               qb_text[:200])
+        quarterback_badges = page.locator("#cfb-quarterbacks td .ca-rank")
+        check("CFB quarterback and defense comparisons show percentiles with their actual peer groups",
+              quarterback_badges.count() == page.locator("#cfb-quarterbacks td [data-percentile]").count()
+              and (qb_tables == 0 or page.locator(
+                  "#cfb-quarterbacks [data-percentile][title*='FBS defenses']").count() > 0))
+        check("CFB below-threshold passer percentiles are muted",
+              page.locator("#cfb-quarterbacks [data-percentile][title*='below-threshold']:not(.c-na)").count() == 0)
         passing_text = page.locator("#cfb-passing").inner_text().lower()
         check("CFB pass game carries coverage outcomes, scheme rates and protection",
               all(label in passing_text for label in (
                   "comp%", "yds/att", "yds/comp", "rating", "epa/pass", "td rate",
                   "int rate", "pass 1d%", "sack%", "dropbacks/g", "db havoc")),
               passing_text[:200])
+        directions = page.locator("#cfb-passing tbody tr").evaluate_all("""rows => {
+          const polarity = {'EPA/Pass': ['Higher', 'Lower'], 'Sack%': ['Lower', 'Higher'],
+                            'INT Rate': ['Lower', 'Higher']};
+          return rows.filter(row => Object.hasOwn(polarity, row.cells[0].textContent)).map(row =>
+            [...row.querySelectorAll('td.num')].every((cell, side) =>
+              cell.title.includes(polarity[row.cells[0].textContent][side] + ' is better') &&
+              cell.title.includes(side ? 'FBS defenses' : 'FBS offenses') &&
+              cell.querySelector('.ca-rank[data-rank-of]') !== null));
+        }""")
+        check("CFB pass game grades allowed output low and defensive disruptions high",
+              len(directions) == 6 and all(directions))
         check("CFB quarterback rows lead with a headshot or initials",
               page.locator("#cfb-quarterbacks tbody td:first-child .ca-cfb-player__shot").count() > 0
               and page.locator("#cfb-quarterbacks tbody td:first-child .ca-cfb-player__shot").count()
@@ -713,6 +745,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               and all(label in run_text for label in (
                   "epa/rush", "rush 1d%", "line yds", "2nd level", "power", "stuffed", "front-7 havoc")),
               run_text[:200])
+        check("CFB ball carrier figures use rushers' percentiles",
+              page.locator("#cfb-rushers td .ca-rank[data-rank]").count() == 0)
         page.locator("a[data-nfl-tab='situational']").click()
         situational_text = page.locator("#cfb-situational").inner_text().lower()
         check("CFB situational carries downs, tempo, play mix and havoc",
