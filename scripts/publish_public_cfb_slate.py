@@ -466,14 +466,20 @@ def _ratio(numerator: float | None, denominator: float | None) -> float | None:
     return numerator / denominator
 
 
+def split_games(team: dict, split: str) -> float | None:
+    return _number(team, split, "general", "gamesPlayed")
+
+
 def derived_rate(team: dict, split: str, metric: str) -> float | None:
     """Calculate transparent season-to-date rates from ESPN counting stats."""
-    games = float(team.get("games") or 0)
+    games = split_games(team, split)
     pass_attempts = _number(team, split, "passing", "passingAttempts")
     sacks = _number(team, split, "passing", "sacks")
     rush_attempts = _number(team, split, "rushing", "rushingAttempts")
     dropbacks = None if pass_attempts is None or sacks is None else pass_attempts + sacks
-    plays = None if dropbacks is None or rush_attempts is None else dropbacks + rush_attempts
+    # The NCAA box score counts sacks as rushes. They belong in dropbacks
+    # for passing rates, but are already included in scrimmage plays.
+    plays = None if pass_attempts is None or rush_attempts is None else pass_attempts + rush_attempts
 
     if metric == "plays_per_game":
         return _ratio(plays, games)
@@ -510,9 +516,11 @@ def derived_rate(team: dict, split: str, metric: str) -> float | None:
     if metric == "dropbacks_per_game":
         return _ratio(dropbacks, games)
     if metric == "disruption_rate":
+        # Recoveries are on the defending team's own line. Its opponent
+        # split sometimes lags by a game, so only combine matching samples.
+        if not games or games != split_games(team, "own"):
+            return None
         interceptions = _number(team, split, "passing", "interceptions")
-        # ESPN stores fumble recoveries on the defending team's own/general
-        # line, while sacks and interceptions live in its opponent split.
         fumbles = _number(team, "own", "general", "fumblesRecovered")
         if sacks is None or interceptions is None or fumbles is None:
             return None
@@ -563,7 +571,6 @@ def load_espn_stats(season: int) -> dict[str, dict]:
             bucket = opp if split == "opp" else own
             cat = block.get("name")
             bucket[cat] = category_map(block, names_by_cat.get(cat) or [])
-        games = ((own.get("general") or {}).get("gamesPlayed"))
         entry = {
             "id": str(meta.get("id") or ""),
             "season": season,
@@ -572,7 +579,6 @@ def load_espn_stats(season: int) -> dict[str, dict]:
             "display": meta.get("displayName") or "",
             "own": own,
             "opp": opp,
-            "games": games,
         }
         for key in filter(None, (
             entry["abbreviation"],
@@ -677,11 +683,10 @@ def lookup_team(stats: dict[str, dict], abbr: str, school: str) -> dict | None:
 def form_for(team: dict | None, pools: dict[str, list[float]], season: int) -> dict | None:
     if not team or int(team.get("season") or 0) != season:
         return None
-    games = team.get("games")
     rates = {}
     for key, split, cat, field, label, better, fmt in FORM_SPEC:
         bucket = team[split].get(cat) or {}
-        value = as_rate(bucket.get(field), fmt, games)
+        value = as_rate(bucket.get(field), fmt, split_games(team, split))
         pool = pools.get(key) or []
         if value is None or not pool:
             continue
@@ -715,8 +720,12 @@ def form_for(team: dict | None, pools: dict[str, list[float]], season: int) -> d
     if not rates:
         return None
     out = {"rates": rates, "source": "espn", "season": season}
+    games = split_games(team, "own")
+    opponent_games = split_games(team, "opp")
     if games:
-        out["games"] = games
+        out["games"] = int(games)
+    if opponent_games:
+        out["opponent_games"] = int(opponent_games)
     return out
 
 
@@ -1056,7 +1065,7 @@ def main() -> int:
     }
     for team in unique:
         for key, split, cat, field, _label, _better, fmt in FORM_SPEC:
-            value = as_rate((team[split].get(cat) or {}).get(field), fmt, team.get("games"))
+            value = as_rate((team[split].get(cat) or {}).get(field), fmt, split_games(team, split))
             if value is not None:
                 pools[key].append(value)
         for key, split, metric, _label, better, _fmt in DERIVED_SPEC:

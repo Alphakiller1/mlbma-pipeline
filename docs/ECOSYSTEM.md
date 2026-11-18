@@ -368,6 +368,23 @@ Player figures keep their qualified position or metric cohort. Game-log ranks
 use the league team scale when a week's sample includes more team-games than
 teams. Rank badges identify the denominator and the weekly sample where used.
 
+CFB counts pass attempts plus official rush attempts for total scrimmage
+plays. Sacks are already in NCAA rushing attempts and also count as
+dropbacks for dropback share and sack rate. ESPN per-game rates use the game count for
+each split. The matchup shows offense and defense samples when they differ.
+The disruption rate is withheld until both splits cover the same sample.
+
+CFB team comparisons show ranks in eligible FBS units. Quarterbacks,
+rushing, receiving and individual defense use qualified player percentiles.
+The QB EPA table also expresses the opposing defense on its own percentile
+scale. Badges and bars share one grade. Pace and play mix use the volume
+color, and below-threshold player comparisons are muted.
+
+CBB final scores reconcile by fixture and opponent with the stored game
+log. The D-I team scale comes from the season index on the first render.
+Pace and shot shares use the volume color. On active matchup desks, wide
+tables with additional columns carry a scroll cue and keyboard focus.
+
 ---
 
 *Generated for handoff while batter-splits scrape runs. Update this doc when you change `PROFILE_COLUMNS`, sheet tabs, or dashboard SSOT rules.*

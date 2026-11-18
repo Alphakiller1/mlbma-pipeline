@@ -5610,6 +5610,16 @@ body[data-sport="nfl"] .ca-detail-nav {
   white-space: nowrap;
   color: var(--text-primary);
 }
+.ca-ledger-basis {
+  display: block;
+  color: var(--text-muted);
+  font-size: var(--type-meta);
+}
+.ca-cfb-split-sample {
+  margin: 0 0 var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--type-meta);
+}
 .ca-cfb-ledger-table tr.ca-ledger-group th {
   padding-top: var(--space-4);
   padding-bottom: var(--space-1);
@@ -6509,3 +6519,55 @@ body[data-sport="nfl"] .ca-detail-nav {
 /* Five-man units: five surnames wrap inside the unit column rather than
    clipping to an ellipsis (2026-11-18). */
 .ca-cfb-panel.ca-nba-units .ca-lineup-table td:first-child { white-space: normal; overflow: visible; text-overflow: clip; }
+
+/* The visible table can scroll within the desk while its page stays in view. */
+.ca-table-scroll-note {
+  margin: 0;
+  padding: var(--space-1) var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--type-meta);
+  text-align: right;
+}
+.ca-table-scroll-note[hidden] { display: none; }
+.ca-lineup-scroll[data-table-scroll]:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: -2px;
+}
+.ca-lineup-scroll[data-table-scroll] .ca-cbb-rotation-table tr > :first-child,
+.ca-nba-player-type-panel .ca-lineup-scroll[data-table-scroll] tr > :first-child,
+body[data-sport="nfl"] #game-log .ca-lineup-scroll[data-table-scroll] .ca-split-table tr > :first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--surface-board);
+}
+.ca-cbb-rotation-table tr > :first-child {
+  min-width: 8rem;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 720px) {
+  body:is([data-sport="nfl"], [data-sport="cfb"], [data-sport="nba"], [data-sport="cbb"])
+    .ca-detail-stack .ca-lineup-table thead th {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    vertical-align: bottom;
+  }
+  .ca-nfl-pace-panel .ca-arsenal-table.ca-nfl-mix th:first-child { width: 25%; }
+}
+
+@media (max-width: 560px) {
+  #cbb-resume .ca-split-table {
+    width: 100%;
+    min-width: 0;
+  }
+  .ca-nba-player-type-panel .ca-lineup-table { min-width: 21rem; }
+  .ca-cfb-panel.ca-nba-player-type-panel .ca-lineup-table.ca-split-table thead th:first-child { width: 33%; }
+  .ca-nba-player-type-panel .ca-lineup-table :is(th, td) { padding-inline: var(--space-1); }
+  .ca-cfb-panel.ca-nba-player-type-panel .ca-lineup-table td {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  #cbb-resume .ca-split-table thead th:first-child { width: 40%; }
+  #cbb-resume .ca-split-table th.num { width: auto; }
+}
