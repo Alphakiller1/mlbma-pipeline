@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import json
 import unittest
 from unittest.mock import patch
 
 from scripts import publish_public_cfb_slate as cfb
+from scripts import validate_public_fields as public_fields
 
 
 class CfbCurrentSeasonTests(unittest.TestCase):
@@ -151,6 +153,10 @@ class CfbCurrentSeasonTests(unittest.TestCase):
         self.assertEqual(form["rates"]["def_sacks"]["value"], 1.5)
         self.assertEqual(form["rates"]["def_plays_pg"]["value"], 63.5)
         self.assertNotIn("def_disruption_rate", form["rates"])
+        classification = json.loads(public_fields.CLASSIFICATION.read_text(encoding="utf-8"))
+        self.assertEqual(public_fields.classify_artifact(
+            classification, {"games": [{"away_form": form, "home_form": form}]}, "CFB slate"
+        ), [])
 
 
 if __name__ == "__main__":
