@@ -87,6 +87,14 @@ UNPILLED_AUDIT = r"""
 }
 """
 
+# Owner rule: no dash cells anywhere - a missing figure says why ("No PA",
+# "Not Applicable", "No Close Games"). Returns where each dash cell sits.
+DASH_AUDIT = """() => [...document.querySelectorAll('.ca-detail-stack td')]
+  .filter(td => td.offsetParent && /^[—–-]$/.test(td.innerText.trim()))
+  .map(td => ((td.closest('.ca-detail-section') || {}).id || '?') + ': ' +
+    (td.closest('tr') || td).innerText.replace(/\s+/g, ' ').trim().slice(0, 40)).slice(0, 5)"""
+
+
 TEAM_RANK_AUDIT = """
 (badges, cap) => badges.map(el => ({
   rank: Number(el.dataset.rank), of: Number(el.dataset.rankOf), label: el.title
@@ -257,6 +265,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         cbb_pills = page.evaluate(UNPILLED_AUDIT)
         check("CBB every graded figure carries its rank pill",
               cbb_pills["graded"] > 40 and cbb_pills["unpilled"] == 0, str(cbb_pills))
+        cbb_dashes = page.evaluate(DASH_AUDIT)
+        check("CBB desk has no dash cells", not cbb_dashes, str(cbb_dashes))
 
         nba = page.request.get(base_url.rstrip('/') + '/data/public/nba/slate.json').json()
         if nba.get('games'):
@@ -276,6 +286,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             nba_pills = page.evaluate(UNPILLED_AUDIT)
             check('NBA every graded figure carries its rank pill',
                   nba_pills['graded'] > 100 and nba_pills['unpilled'] == 0, str(nba_pills))
+            nba_dashes = page.evaluate(DASH_AUDIT)
+            check('NBA desk has no dash cells', not nba_dashes, str(nba_dashes))
             log_ranks = page.locator("#nba-game-log .ca-log-panel td.num .ca-rank")
             bad_nba_ranks = log_ranks.evaluate_all(TEAM_RANK_AUDIT, 30)
             check("NBA game-log ranks use the team scale", not bad_nba_ranks, str(bad_nba_ranks[:4]))
@@ -739,6 +751,11 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         cfb_text = page.locator("main").inner_text()
         match = PROHIBITED.search(cfb_text)
         check("CFB detail public copy boundary", match is None, match.group(0) if match else "")
+        page.evaluate("document.querySelector('.ca-detail-stack').setAttribute('data-nfl-tab', 'all')")
+        page.wait_for_timeout(800)
+        cfb_dashes = page.evaluate(DASH_AUDIT)
+        check("CFB desk has no dash cells", not cfb_dashes, str(cfb_dashes))
+        page.locator("a[data-nfl-tab='availability']").click()
         check("CFB detail no horizontal overflow",
               page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
         page.set_viewport_size({"width": 390, "height": 844})

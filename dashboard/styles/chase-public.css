@@ -6029,6 +6029,10 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-edge-chip.is-away { background: color-mix(in srgb, var(--nba-away, var(--viz-away)) 22%, transparent); }
 .ca-edge-chip.is-home { background: color-mix(in srgb, var(--nba-home, var(--viz-home)) 22%, transparent); }
 .ca-edge-chip.is-even { color: var(--text-meta); }
+/* Evidence, not verdicts: the link between the two ranks is drawn in no club's
+   colour, and the chip states both ranks rather than who leads. */
+.ca-edge-link.is-neutral { background: var(--text-meta); opacity: 0.35; }
+.ca-edge-chip.is-ranks { color: var(--text-secondary); font-weight: 600; }
 .ca-edge-more {
   display: block;
   min-height: 44px;

@@ -169,8 +169,9 @@
   }
 
   function paceLegend() {
+    // A key, not an explanation: the site carries no section explanations.
     return '<p class="ca-cbb-note ca-pace-legend">' + icon('zap', '', 12) + ' Faster · ' + icon('snail', '', 12) +
-      ' Slower · Three marks the outer 10%, two the next 10%, and one the rest of the outer third. The middle third has no icon.</p>';
+      ' Slower</p>';
   }
 
   global.ChaseIcons = {
