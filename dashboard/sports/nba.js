@@ -193,6 +193,8 @@
       // schedule's toll into tonight.
       mapped[side + '_profile'] = g[side + '_profile'] || null;
       mapped[side + '_schedule'] = g[side + '_schedule'] || null;
+      mapped[side + '_lineup_units'] = g[side + '_lineup_units'] || null;
+      mapped[side + '_splits'] = g[side + '_splits'] || null;
       mapped[side + '_rest_days'] = g[side + '_rest_days'] != null ? g[side + '_rest_days'] : null;
       mapped[side + '_b2b'] = g[side + '_b2b'] === true;
       mapped[side + '_rest_label'] = slate.fixture_only ? 'Not Published' : restLabel(g[side + '_rest_days'], g[side + '_b2b'] === true);

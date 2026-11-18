@@ -119,7 +119,8 @@
     'nba-player-bio': 'users', 'nba-schedule': 'plane', 'nba-edge-map': 'target', 'nba-fingerprint': 'lineup',
     'nba-tape': 'gauge', 'nba-aging': 'trend', 'nba-shot-maps': 'target', 'nba-onfloor': 'users',
     'special-teams': 'football', situational: 'target', 'cfb-receivers': 'users', 'cfb-defenders': 'users',
-    'cbb-resume': 'gauge', 'cbb-regression': 'trend', 'cbb-schedule': 'plane'
+    'cbb-resume': 'gauge', 'cbb-regression': 'trend', 'cbb-schedule': 'plane',
+    'nba-lineups': 'lineup', 'nba-splits': 'trend'
   };
 
   function ico(name, cls, px) {
@@ -6783,10 +6784,10 @@ function seasonToggle(game) {
     ['style', 'Coach And Style', ['nba-style']],
     ['regression', 'Regression Watch', ['nba-aging', 'nba-regression', 'nba-shooter-regression']],
     ['players', 'Players', ['nba-player-types', 'nba-player-zones', 'nba-player-bio']],
-    ['rotation', 'Rotation', ['nba-rotation']],
+    ['rotation', 'Rotation', ['nba-rotation', 'nba-lineups']],
     ['availability', 'Availability', ['nba-availability']],
     ['games', 'Games', ['nba-game-log']],
-    ['context', 'Context', ['team-context', 'nba-schedule']]
+    ['context', 'Context', ['team-context', 'nba-schedule', 'nba-splits']]
   ];
 
   var NBA_LEDGER = {
@@ -7533,6 +7534,46 @@ function seasonToggle(game) {
       nflSplitTable(['Ht', 'Wt', 'Age', 'Usage', 'TS%', 'Speed', 'Drives/G'], rows, 'Player') + '</section>';
   }
 
+  /* Five-man units and situational splits (2026-11-18 audit; nba-model
+     lineups.py). Units come from pbpstats.com: the club's most-used fives,
+     points per 100 possessions both ways, plain figures (no league pool of
+     units to place them in). Splits are the club's net rating at home, on
+     the road, on the second night of a back-to-back and with rest, each
+     placed among the 30 clubs, the games behind it in the tooltip. */
+  function nbaLineupsPanel(sport, game, side) {
+    var units = game[side + '_lineup_units'] || [];
+    var head = '<section class="ca-form-panel ca-cfb-panel ca-nba-units"><h3>' + esc(fullName(sport, game, side) + ' Five-Man Units') + '</h3>';
+    if (!units.length) return head + pending('Five-man units are not published for this club yet.') + '</section>';
+    function one(v) { return v == null ? 'Not Published' : Number(v).toFixed(1); }
+    var rows = units.map(function (u) {
+      var names = (u.players || []).map(function (n) {
+        var parts = String(n).split(' ');
+        return parts.length > 1 ? parts.slice(1).join(' ') : String(n);
+      }).join(', ');
+      var net = u.net_rating;
+      return '<tr><td title="' + esc((u.players || []).join(', ')) + '">' + esc(names) + '</td>' +
+        '<td class="num">' + esc(one(u.minutes)) + '</td><td class="num">' + esc(one(u.off_rating)) + '</td>' +
+        '<td class="num">' + esc(one(u.def_rating)) + '</td><td class="num">' +
+        esc(net == null ? 'Not Published' : (net > 0 ? '+' : '') + Number(net).toFixed(1)) + '</td></tr>';
+    });
+    return head + nflSplitTable(['Min', 'Off/100', 'Def/100', 'Net/100'], rows, 'Unit') + '</section>';
+  }
+  var NBA_SPLITS = [['at_home', 'At Home'], ['on_road', 'On The Road'], ['back_to_back', 'Back-To-Back'],
+    ['rested', 'With Rest']];
+  function nbaSplitsBody(sport, game) {
+    var a = game.away_splits || {}, h = game.home_splits || {};
+    function entry(splits, key) {
+      var e = splits[key];
+      if (!e) return Object.keys(splits).length ? { value: null, missing: 'No Games' } : null;
+      var n = (splits.games || {})[key], out = {};
+      Object.keys(e).forEach(function (k) { out[k] = e[k]; });
+      out.label = e.label + (n ? ' · ' + n + (n === 1 ? ' game' : ' games') : '');
+      return out;
+    }
+    return cfbHeadToHead(sport, game, fullName(sport, game, 'away') + ' vs ' + fullName(sport, game, 'home') +
+      ' Situational Splits', '', NBA_SPLITS.map(function (r) { return [r[1], entry(a, r[0]), entry(h, r[0])]; }));
+  }
+
   function nbaSchedulePanel(sport, game, side) {
     var s = game[side + '_schedule'] || {};
     return teamPanel(sport, game, side, [
@@ -7908,7 +7949,9 @@ function seasonToggle(game) {
       section('nba-player-bio', 'Bodies And Engines', 'Height, Weight, Age, Usage, Speed',
         nflDuo(nbaPlayerBioPanel, sport, game)),
       section('nba-schedule', 'Schedule Load', 'Travel, Density And Altitude Into Tonight',
-        nflDuo(nbaSchedulePanel, sport, game))
+        nflDuo(nbaSchedulePanel, sport, game)),
+      section('nba-splits', 'Situational Splits', 'Net Rating At Home, On The Road, Back-To-Back And Rested',
+        nbaSplitsBody(sport, game))
     ].join('');
   }
 
@@ -7951,6 +7994,8 @@ function seasonToggle(game) {
       section('nba-shooting', 'Shooting', 'Shot Mix, Accuracy And Ball Movement',
         nflDuo(nbaLedgerPanel, sport, game, 'shooting')),
       section('nba-rotation', 'Rotation', 'Per-Game Lines, Most Minutes First', nflDuo(nbaRotationPanel, sport, game)),
+      section('nba-lineups', 'Five-Man Units', 'Most-Used Lineups, Points Per 100 Possessions',
+        nflDuo(nbaLineupsPanel, sport, game)),
       section('nba-availability', 'Current Injury Report', 'Current Fixture Availability, Independent Of Selected Stats Season',
         nflDuo(cfbInjuryPanel, sport, game)),
       section('nba-game-log', 'Game Log', 'This Season, Most Recent First', nbaGameLogs(sport, game)),
