@@ -120,7 +120,9 @@
     "official_injury_report",
     "rates_basis",
     "box_scores_through",
-    "basketball_quant_through"
+    "basketball_quant_through",
+    "net_source",
+    "net_through"
   ],
   "identity": [
     "Cut",
@@ -1164,7 +1166,20 @@
     "by_status_reason",
     "by_status_practice",
     "value_recent",
-    "missed"
+    "missed",
+    "resume",
+    "quadrants",
+    "q1",
+    "q2",
+    "q3",
+    "q4",
+    "torvik",
+    "adj_off",
+    "adj_def",
+    "barthag",
+    "wab",
+    "adj_tempo",
+    "trank"
   ],
   "contextual_environment": [
     "away_rest_days",
@@ -1191,7 +1206,12 @@
     "tz_shift",
     "weather_cond",
     "weather_temp",
-    "weather_wind"
+    "weather_wind",
+    "rest_days",
+    "venue_elevation_ft",
+    "away_rest_label",
+    "home_rest_label",
+    "venue_state"
   ],
   "model_private": [
     "projOSI",

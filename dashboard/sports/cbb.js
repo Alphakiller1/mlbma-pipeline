@@ -85,7 +85,8 @@
         var row = {};
         ['id','sport','season','slate_date','game_state','kickoff_utc','away','home','away_name','home_name',
           'away_logo','home_logo','away_record','home_record','away_color','home_color','away_score','home_score',
-          'venue','venue_city','broadcast','neutral','availability_summary'].forEach(function (key) { row[key] = g[key]; });
+          'venue','venue_city','venue_state','broadcast','neutral','availability_summary',
+          'away_schedule','home_schedule','away_rest_label','home_rest_label'].forEach(function (key) { row[key] = g[key]; });
         ['away','home'].forEach(function (side) {
           row[side + '_summary'] = ((teams[g[side]] || {}).seasons || {})[String(slate.season)] || {};
           row[side + '_evidence_seasons'] = Object.keys((teams[g[side]] || {}).seasons || {});

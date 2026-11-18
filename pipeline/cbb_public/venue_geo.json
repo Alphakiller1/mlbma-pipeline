@@ -1,0 +1,2162 @@
+{
+ "Abilene, TX": {
+  "lat": 32.44874,
+  "lon": -99.73314,
+  "elevation_ft": 1719,
+  "timezone": "America/Chicago"
+ },
+ "Akron, OH": {
+  "lat": 41.08144,
+  "lon": -81.51901,
+  "elevation_ft": 955,
+  "timezone": "America/New_York"
+ },
+ "Albany, NY": {
+  "lat": 42.65258,
+  "lon": -73.75623,
+  "elevation_ft": 148,
+  "timezone": "America/New_York"
+ },
+ "Albuquerque, NM": {
+  "lat": 35.08449,
+  "lon": -106.65114,
+  "elevation_ft": 4957,
+  "timezone": "America/Denver"
+ },
+ "Ames, IA": {
+  "lat": 42.03471,
+  "lon": -93.61994,
+  "elevation_ft": 942,
+  "timezone": "America/Chicago"
+ },
+ "Amherst, MA": {
+  "lat": 42.36723,
+  "lon": -72.51852,
+  "elevation_ft": 269,
+  "timezone": "America/New_York"
+ },
+ "Anaheim, CA": {
+  "lat": 33.83529,
+  "lon": -117.9145,
+  "elevation_ft": 157,
+  "timezone": "America/Los_Angeles"
+ },
+ "Ann Arbor, MI": {
+  "lat": 42.27756,
+  "lon": -83.74088,
+  "elevation_ft": 883,
+  "timezone": "America/Detroit"
+ },
+ "Annapolis, MD": {
+  "lat": 38.97859,
+  "lon": -76.49184,
+  "elevation_ft": 39,
+  "timezone": "America/New_York"
+ },
+ "Arlington, TX": {
+  "lat": 32.73569,
+  "lon": -97.10807,
+  "elevation_ft": 604,
+  "timezone": "America/Chicago"
+ },
+ "Asheville, NC": {
+  "lat": 35.60095,
+  "lon": -82.55402,
+  "elevation_ft": 2129,
+  "timezone": "America/New_York"
+ },
+ "Ashwaubenon, WI": {
+  "lat": 44.48221,
+  "lon": -88.0701,
+  "elevation_ft": 607,
+  "timezone": "America/Chicago"
+ },
+ "Athens, GA": {
+  "lat": 33.96095,
+  "lon": -83.37794,
+  "elevation_ft": 748,
+  "timezone": "America/New_York"
+ },
+ "Athens, OH": {
+  "lat": 39.32924,
+  "lon": -82.10126,
+  "elevation_ft": 719,
+  "timezone": "America/New_York"
+ },
+ "Atlanta, GA": {
+  "lat": 33.749,
+  "lon": -84.38798,
+  "elevation_ft": 1050,
+  "timezone": "America/New_York"
+ },
+ "Atlantic City, NJ": {
+  "lat": 39.36415,
+  "lon": -74.42306,
+  "elevation_ft": 7,
+  "timezone": "America/New_York"
+ },
+ "Auburn, AL": {
+  "lat": 32.60986,
+  "lon": -85.48078,
+  "elevation_ft": 705,
+  "timezone": "America/Chicago"
+ },
+ "Austin, TX": {
+  "lat": 30.26715,
+  "lon": -97.74306,
+  "elevation_ft": 489,
+  "timezone": "America/Chicago"
+ },
+ "Bakersfield, CA": {
+  "lat": 35.37329,
+  "lon": -119.01871,
+  "elevation_ft": 404,
+  "timezone": "America/Los_Angeles"
+ },
+ "Baltimore, MD": {
+  "lat": 39.29038,
+  "lon": -76.61219,
+  "elevation_ft": 33,
+  "timezone": "America/New_York"
+ },
+ "Baton Rouge, LA": {
+  "lat": 30.44332,
+  "lon": -91.18747,
+  "elevation_ft": 46,
+  "timezone": "America/Chicago"
+ },
+ "Beaumont, TX": {
+  "lat": 30.08605,
+  "lon": -94.10185,
+  "elevation_ft": 16,
+  "timezone": "America/Chicago"
+ },
+ "Berkeley, CA": {
+  "lat": 37.87159,
+  "lon": -122.27275,
+  "elevation_ft": 171,
+  "timezone": "America/Los_Angeles"
+ },
+ "Bethlehem, PA": {
+  "lat": 40.62593,
+  "lon": -75.37046,
+  "elevation_ft": 358,
+  "timezone": "America/New_York"
+ },
+ "Biloxi, MS": {
+  "lat": 30.39603,
+  "lon": -88.88531,
+  "elevation_ft": 20,
+  "timezone": "America/Chicago"
+ },
+ "Binghamton, NY": {
+  "lat": 42.09869,
+  "lon": -75.91797,
+  "elevation_ft": 866,
+  "timezone": "America/New_York"
+ },
+ "Birmingham, AL": {
+  "lat": 33.52066,
+  "lon": -86.80249,
+  "elevation_ft": 614,
+  "timezone": "America/Chicago"
+ },
+ "Blacksburg, VA": {
+  "lat": 37.22957,
+  "lon": -80.41394,
+  "elevation_ft": 2077,
+  "timezone": "America/New_York"
+ },
+ "Bloomington, IN": {
+  "lat": 39.16533,
+  "lon": -86.52639,
+  "elevation_ft": 771,
+  "timezone": "America/Indiana/Indianapolis"
+ },
+ "Boca Raton, FL": {
+  "lat": 26.35869,
+  "lon": -80.0831,
+  "elevation_ft": 13,
+  "timezone": "America/New_York"
+ },
+ "Boiling Springs, NC": {
+  "lat": 35.25429,
+  "lon": -81.66704,
+  "elevation_ft": 883,
+  "timezone": "America/New_York"
+ },
+ "Boise, ID": {
+  "lat": 43.6135,
+  "lon": -116.20345,
+  "elevation_ft": 2700,
+  "timezone": "America/Boise"
+ },
+ "Boone, NC": {
+  "lat": 36.21679,
+  "lon": -81.67455,
+  "elevation_ft": 3219,
+  "timezone": "America/New_York"
+ },
+ "Boston, MA": {
+  "lat": 42.35843,
+  "lon": -71.05977,
+  "elevation_ft": 46,
+  "timezone": "America/New_York"
+ },
+ "Boulder, CO": {
+  "lat": 40.01499,
+  "lon": -105.27055,
+  "elevation_ft": 5328,
+  "timezone": "America/Denver"
+ },
+ "Bowling Green, KY": {
+  "lat": 36.99032,
+  "lon": -86.4436,
+  "elevation_ft": 528,
+  "timezone": "America/Chicago"
+ },
+ "Bowling Green, OH": {
+  "lat": 41.37477,
+  "lon": -83.65132,
+  "elevation_ft": 696,
+  "timezone": "America/New_York"
+ },
+ "Bozeman, MT": {
+  "lat": 45.67965,
+  "lon": -111.03856,
+  "elevation_ft": 4816,
+  "timezone": "America/Denver"
+ },
+ "Bronx, NY": {
+  "lat": 40.93815,
+  "lon": -73.83208,
+  "elevation_ft": 92,
+  "timezone": "America/New_York"
+ },
+ "Brookings, SD": {
+  "lat": 44.31136,
+  "lon": -96.79839,
+  "elevation_ft": 1621,
+  "timezone": "America/Chicago"
+ },
+ "Brooklyn, NY": {
+  "lat": 40.6501,
+  "lon": -73.94958,
+  "elevation_ft": 49,
+  "timezone": "America/New_York"
+ },
+ "Buffalo, NY": {
+  "lat": 42.88645,
+  "lon": -78.87837,
+  "elevation_ft": 600,
+  "timezone": "America/New_York"
+ },
+ "Buies Creek, NC": {
+  "lat": 35.41322,
+  "lon": -78.73557,
+  "elevation_ft": 207,
+  "timezone": "America/New_York"
+ },
+ "Burlington, VT": {
+  "lat": 44.47588,
+  "lon": -73.21207,
+  "elevation_ft": 200,
+  "timezone": "America/New_York"
+ },
+ "Cambridge, MA": {
+  "lat": 42.3751,
+  "lon": -71.10561,
+  "elevation_ft": 16,
+  "timezone": "America/New_York"
+ },
+ "Cancun, Mexico": {
+  "lat": 21.17429,
+  "lon": -86.84656,
+  "elevation_ft": 36,
+  "timezone": "America/Cancun"
+ },
+ "Canton, IL": {
+  "lat": 40.55809,
+  "lon": -90.03512,
+  "elevation_ft": 646,
+  "timezone": "America/Chicago"
+ },
+ "Cape Girardeau, MO": {
+  "lat": 37.30588,
+  "lon": -89.51815,
+  "elevation_ft": 354,
+  "timezone": "America/Chicago"
+ },
+ "Carbondale, IL": {
+  "lat": 37.72727,
+  "lon": -89.21675,
+  "elevation_ft": 413,
+  "timezone": "America/Chicago"
+ },
+ "Carrollton, GA": {
+  "lat": 33.58011,
+  "lon": -85.07661,
+  "elevation_ft": 1102,
+  "timezone": "America/New_York"
+ },
+ "Cedar City, UT": {
+  "lat": 37.67748,
+  "lon": -113.06189,
+  "elevation_ft": 5846,
+  "timezone": "America/Denver"
+ },
+ "Cedar Falls, IA": {
+  "lat": 42.52776,
+  "lon": -92.44547,
+  "elevation_ft": 879,
+  "timezone": "America/Chicago"
+ },
+ "Champaign, IL": {
+  "lat": 40.11642,
+  "lon": -88.24338,
+  "elevation_ft": 738,
+  "timezone": "America/Chicago"
+ },
+ "Chapel Hill, NC": {
+  "lat": 35.9132,
+  "lon": -79.05584,
+  "elevation_ft": 486,
+  "timezone": "America/New_York"
+ },
+ "Charleston, IL": {
+  "lat": 39.49615,
+  "lon": -88.17615,
+  "elevation_ft": 669,
+  "timezone": "America/Chicago"
+ },
+ "Charleston, SC": {
+  "lat": 32.77632,
+  "lon": -79.93275,
+  "elevation_ft": 20,
+  "timezone": "America/New_York"
+ },
+ "Charleston, WV": {
+  "lat": 38.34982,
+  "lon": -81.63262,
+  "elevation_ft": 597,
+  "timezone": "America/New_York"
+ },
+ "Charlotte Amalie, Virgin Islands": {
+  "lat": 18.3419,
+  "lon": -64.9307,
+  "elevation_ft": 30,
+  "timezone": "America/St_Thomas"
+ },
+ "Charlotte, NC": {
+  "lat": 35.22709,
+  "lon": -80.84313,
+  "elevation_ft": 751,
+  "timezone": "America/New_York"
+ },
+ "Charlottesville, VA": {
+  "lat": 38.02931,
+  "lon": -78.47668,
+  "elevation_ft": 466,
+  "timezone": "America/New_York"
+ },
+ "Chattanooga, TN": {
+  "lat": 35.04563,
+  "lon": -85.30968,
+  "elevation_ft": 676,
+  "timezone": "America/New_York"
+ },
+ "Cheney, WA": {
+  "lat": 47.48739,
+  "lon": -117.57576,
+  "elevation_ft": 2352,
+  "timezone": "America/Los_Angeles"
+ },
+ "Chestnut Hill, MA": {
+  "lat": 42.33065,
+  "lon": -71.16616,
+  "elevation_ft": 197,
+  "timezone": "America/New_York"
+ },
+ "Chicago, IL": {
+  "lat": 41.85003,
+  "lon": -87.65005,
+  "elevation_ft": 587,
+  "timezone": "America/Chicago"
+ },
+ "Cincinnati, OH": {
+  "lat": 39.12711,
+  "lon": -84.51439,
+  "elevation_ft": 627,
+  "timezone": "America/New_York"
+ },
+ "Clarksville, TN": {
+  "lat": 36.52977,
+  "lon": -87.35945,
+  "elevation_ft": 476,
+  "timezone": "America/Chicago"
+ },
+ "Clemson, SC": {
+  "lat": 34.68344,
+  "lon": -82.83737,
+  "elevation_ft": 725,
+  "timezone": "America/New_York"
+ },
+ "Cleveland, OH": {
+  "lat": 41.4995,
+  "lon": -81.69541,
+  "elevation_ft": 653,
+  "timezone": "America/New_York"
+ },
+ "Clinton, SC": {
+  "lat": 34.47263,
+  "lon": -81.88066,
+  "elevation_ft": 676,
+  "timezone": "America/New_York"
+ },
+ "College Park, GA": {
+  "lat": 33.65344,
+  "lon": -84.44937,
+  "elevation_ft": 1050,
+  "timezone": "America/New_York"
+ },
+ "College Park, MD": {
+  "lat": 38.98067,
+  "lon": -76.93692,
+  "elevation_ft": 69,
+  "timezone": "America/New_York"
+ },
+ "College Station, TX": {
+  "lat": 30.62798,
+  "lon": -96.33441,
+  "elevation_ft": 338,
+  "timezone": "America/Chicago"
+ },
+ "Colorado Springs, CO": {
+  "lat": 38.83388,
+  "lon": -104.82136,
+  "elevation_ft": 6010,
+  "timezone": "America/Denver"
+ },
+ "Columbia, MO": {
+  "lat": 38.95171,
+  "lon": -92.33407,
+  "elevation_ft": 705,
+  "timezone": "America/Chicago"
+ },
+ "Columbia, SC": {
+  "lat": 34.00071,
+  "lon": -81.03481,
+  "elevation_ft": 292,
+  "timezone": "America/New_York"
+ },
+ "Columbus, OH": {
+  "lat": 39.96118,
+  "lon": -82.99879,
+  "elevation_ft": 771,
+  "timezone": "America/New_York"
+ },
+ "Commerce, TX": {
+  "lat": 33.24706,
+  "lon": -95.89997,
+  "elevation_ft": 554,
+  "timezone": "America/Chicago"
+ },
+ "Conway, AR": {
+  "lat": 35.0887,
+  "lon": -92.4421,
+  "elevation_ft": 312,
+  "timezone": "America/Chicago"
+ },
+ "Conway, SC": {
+  "lat": 33.836,
+  "lon": -79.04781,
+  "elevation_ft": 33,
+  "timezone": "America/New_York"
+ },
+ "Cookeville, TN": {
+  "lat": 36.16284,
+  "lon": -85.50164,
+  "elevation_ft": 1096,
+  "timezone": "America/Chicago"
+ },
+ "Coral Gables, FL": {
+  "lat": 25.72149,
+  "lon": -80.26838,
+  "elevation_ft": 10,
+  "timezone": "America/New_York"
+ },
+ "Corpus Christi, TX": {
+  "lat": 27.80058,
+  "lon": -97.39638,
+  "elevation_ft": 7,
+  "timezone": "America/Chicago"
+ },
+ "Corvallis, OR": {
+  "lat": 44.56457,
+  "lon": -123.26204,
+  "elevation_ft": 233,
+  "timezone": "America/Los_Angeles"
+ },
+ "Cullowhee, NC": {
+  "lat": 35.31371,
+  "lon": -83.17653,
+  "elevation_ft": 2116,
+  "timezone": "America/New_York"
+ },
+ "Dallas, PA": {
+  "lat": 41.33619,
+  "lon": -75.96325,
+  "elevation_ft": 1129,
+  "timezone": "America/New_York"
+ },
+ "Dallas, TX": {
+  "lat": 32.78306,
+  "lon": -96.80667,
+  "elevation_ft": 420,
+  "timezone": "America/Chicago"
+ },
+ "Davidson, NC": {
+  "lat": 35.50233,
+  "lon": -80.83912,
+  "elevation_ft": 840,
+  "timezone": "America/New_York"
+ },
+ "Davis, CA": {
+  "lat": 38.54491,
+  "lon": -121.74052,
+  "elevation_ft": 52,
+  "timezone": "America/Los_Angeles"
+ },
+ "Dayton, OH": {
+  "lat": 39.75895,
+  "lon": -84.19161,
+  "elevation_ft": 738,
+  "timezone": "America/New_York"
+ },
+ "Daytona Beach, FL": {
+  "lat": 29.21081,
+  "lon": -81.02283,
+  "elevation_ft": 13,
+  "timezone": "America/New_York"
+ },
+ "DeLand, FL": {
+  "lat": 29.02832,
+  "lon": -81.30312,
+  "elevation_ft": 39,
+  "timezone": "America/New_York"
+ },
+ "Dekalb, IL": {
+  "lat": 41.92947,
+  "lon": -88.75036,
+  "elevation_ft": 879,
+  "timezone": "America/Chicago"
+ },
+ "Denton, TX": {
+  "lat": 33.21484,
+  "lon": -97.13307,
+  "elevation_ft": 659,
+  "timezone": "America/Chicago"
+ },
+ "Denver, CO": {
+  "lat": 39.73915,
+  "lon": -104.9847,
+  "elevation_ft": 5279,
+  "timezone": "America/Denver"
+ },
+ "Des Moines, IA": {
+  "lat": 41.60054,
+  "lon": -93.60911,
+  "elevation_ft": 873,
+  "timezone": "America/Chicago"
+ },
+ "Destin, FL": {
+  "lat": 30.39353,
+  "lon": -86.49578,
+  "elevation_ft": 23,
+  "timezone": "America/Chicago"
+ },
+ "Detroit, MI": {
+  "lat": 42.33143,
+  "lon": -83.04575,
+  "elevation_ft": 600,
+  "timezone": "America/Detroit"
+ },
+ "Dover, DE": {
+  "lat": 39.15817,
+  "lon": -75.52437,
+  "elevation_ft": 30,
+  "timezone": "America/New_York"
+ },
+ "Durham, NC": {
+  "lat": 35.99403,
+  "lon": -78.89862,
+  "elevation_ft": 404,
+  "timezone": "America/New_York"
+ },
+ "Durham, NH": {
+  "lat": 43.13397,
+  "lon": -70.92645,
+  "elevation_ft": 49,
+  "timezone": "America/New_York"
+ },
+ "East Lansing, MI": {
+  "lat": 42.73698,
+  "lon": -84.48387,
+  "elevation_ft": 856,
+  "timezone": "America/Detroit"
+ },
+ "Easton, PA": {
+  "lat": 40.68843,
+  "lon": -75.22073,
+  "elevation_ft": 318,
+  "timezone": "America/New_York"
+ },
+ "Edinburg, TX": {
+  "lat": 26.30174,
+  "lon": -98.16334,
+  "elevation_ft": 98,
+  "timezone": "America/Chicago"
+ },
+ "Edwardsville, IL": {
+  "lat": 38.81144,
+  "lon": -89.95316,
+  "elevation_ft": 541,
+  "timezone": "America/Chicago"
+ },
+ "El Paso, TX": {
+  "lat": 31.75872,
+  "lon": -106.48693,
+  "elevation_ft": 3717,
+  "timezone": "America/Denver"
+ },
+ "Elon, NC": {
+  "lat": 36.10291,
+  "lon": -79.50669,
+  "elevation_ft": 705,
+  "timezone": "America/New_York"
+ },
+ "Emmitsburg, MD": {
+  "lat": 39.70454,
+  "lon": -77.32693,
+  "elevation_ft": 436,
+  "timezone": "America/New_York"
+ },
+ "Erie, PA": {
+  "lat": 42.12922,
+  "lon": -80.08506,
+  "elevation_ft": 653,
+  "timezone": "America/New_York"
+ },
+ "Eugene, OR": {
+  "lat": 44.05207,
+  "lon": -123.08675,
+  "elevation_ft": 430,
+  "timezone": "America/Los_Angeles"
+ },
+ "Evanston, IL": {
+  "lat": 42.04114,
+  "lon": -87.69006,
+  "elevation_ft": 614,
+  "timezone": "America/Chicago"
+ },
+ "Evansville, IN": {
+  "lat": 37.97476,
+  "lon": -87.55585,
+  "elevation_ft": 387,
+  "timezone": "America/Chicago"
+ },
+ "Everett, WA": {
+  "lat": 47.97898,
+  "lon": -122.20208,
+  "elevation_ft": 82,
+  "timezone": "America/Los_Angeles"
+ },
+ "Fairfax, VA": {
+  "lat": 38.84622,
+  "lon": -77.30637,
+  "elevation_ft": 430,
+  "timezone": "America/New_York"
+ },
+ "Fairfield, CT": {
+  "lat": 41.14121,
+  "lon": -73.26373,
+  "elevation_ft": 33,
+  "timezone": "America/New_York"
+ },
+ "Fargo, ND": {
+  "lat": 46.87719,
+  "lon": -96.7898,
+  "elevation_ft": 906,
+  "timezone": "America/Chicago"
+ },
+ "Farmville, VA": {
+  "lat": 37.3021,
+  "lon": -78.39194,
+  "elevation_ft": 308,
+  "timezone": "America/New_York"
+ },
+ "Fayetteville, AR": {
+  "lat": 36.06258,
+  "lon": -94.15743,
+  "elevation_ft": 1401,
+  "timezone": "America/Chicago"
+ },
+ "Flagstaff, AZ": {
+  "lat": 35.19807,
+  "lon": -111.65127,
+  "elevation_ft": 6903,
+  "timezone": "America/Phoenix"
+ },
+ "Florence, AL": {
+  "lat": 34.79981,
+  "lon": -87.67725,
+  "elevation_ft": 548,
+  "timezone": "America/Chicago"
+ },
+ "Fort Collins, CO": {
+  "lat": 40.58526,
+  "lon": -105.08442,
+  "elevation_ft": 5003,
+  "timezone": "America/Denver"
+ },
+ "Fort Lauderdale, FL": {
+  "lat": 26.12231,
+  "lon": -80.14338,
+  "elevation_ft": 3,
+  "timezone": "America/New_York"
+ },
+ "Fort Myers, FL": {
+  "lat": 26.62168,
+  "lon": -81.84059,
+  "elevation_ft": 10,
+  "timezone": "America/New_York"
+ },
+ "Fort Wayne, IN": {
+  "lat": 41.1306,
+  "lon": -85.12886,
+  "elevation_ft": 810,
+  "timezone": "America/Indiana/Indianapolis"
+ },
+ "Fort Worth, TX": {
+  "lat": 32.72541,
+  "lon": -97.32085,
+  "elevation_ft": 653,
+  "timezone": "America/Chicago"
+ },
+ "Fresno, CA": {
+  "lat": 36.74773,
+  "lon": -119.77237,
+  "elevation_ft": 308,
+  "timezone": "America/Los_Angeles"
+ },
+ "Frisco, TX": {
+  "lat": 33.15067,
+  "lon": -96.82361,
+  "elevation_ft": 696,
+  "timezone": "America/Chicago"
+ },
+ "Fullerton, CA": {
+  "lat": 33.87029,
+  "lon": -117.92534,
+  "elevation_ft": 164,
+  "timezone": "America/Los_Angeles"
+ },
+ "Gainesville, FL": {
+  "lat": 29.65163,
+  "lon": -82.32483,
+  "elevation_ft": 177,
+  "timezone": "America/New_York"
+ },
+ "George Town, Cayman Islands": {
+  "lat": 19.2869,
+  "lon": -81.3674,
+  "elevation_ft": 10,
+  "timezone": "America/Cayman"
+ },
+ "Grambling, LA": {
+  "lat": 32.52765,
+  "lon": -92.71404,
+  "elevation_ft": 305,
+  "timezone": "America/Chicago"
+ },
+ "Grand Forks, ND": {
+  "lat": 47.92526,
+  "lon": -97.03285,
+  "elevation_ft": 830,
+  "timezone": "America/Chicago"
+ },
+ "Greeley, CO": {
+  "lat": 40.42331,
+  "lon": -104.70913,
+  "elevation_ft": 4675,
+  "timezone": "America/Denver"
+ },
+ "Green Bay, WI": {
+  "lat": 44.51916,
+  "lon": -88.01983,
+  "elevation_ft": 591,
+  "timezone": "America/Chicago"
+ },
+ "Greensboro, NC": {
+  "lat": 36.07264,
+  "lon": -79.79198,
+  "elevation_ft": 873,
+  "timezone": "America/New_York"
+ },
+ "Greenville, NC": {
+  "lat": 35.61266,
+  "lon": -77.36635,
+  "elevation_ft": 59,
+  "timezone": "America/New_York"
+ },
+ "Greenville, SC": {
+  "lat": 34.85262,
+  "lon": -82.39401,
+  "elevation_ft": 1007,
+  "timezone": "America/New_York"
+ },
+ "Hackensack, NJ": {
+  "lat": 40.88593,
+  "lon": -74.04347,
+  "elevation_ft": 20,
+  "timezone": "America/New_York"
+ },
+ "Hamden, CT": {
+  "lat": 41.39593,
+  "lon": -72.89677,
+  "elevation_ft": 102,
+  "timezone": "America/New_York"
+ },
+ "Hamilton, NY": {
+  "lat": 42.82701,
+  "lon": -75.54462,
+  "elevation_ft": 1122,
+  "timezone": "America/New_York"
+ },
+ "Hammond, LA": {
+  "lat": 30.50463,
+  "lon": -90.46293,
+  "elevation_ft": 43,
+  "timezone": "America/Chicago"
+ },
+ "Hampton, VA": {
+  "lat": 37.02987,
+  "lon": -76.34522,
+  "elevation_ft": 3,
+  "timezone": "America/New_York"
+ },
+ "Hanover, NH": {
+  "lat": 43.70229,
+  "lon": -72.28954,
+  "elevation_ft": 531,
+  "timezone": "America/New_York"
+ },
+ "Harrisonburg, VA": {
+  "lat": 38.44957,
+  "lon": -78.86892,
+  "elevation_ft": 1325,
+  "timezone": "America/New_York"
+ },
+ "Hartford, CT": {
+  "lat": 41.76371,
+  "lon": -72.68509,
+  "elevation_ft": 59,
+  "timezone": "America/New_York"
+ },
+ "Hattiesburg, MS": {
+  "lat": 31.32712,
+  "lon": -89.29034,
+  "elevation_ft": 171,
+  "timezone": "America/Chicago"
+ },
+ "Hempstead, NY": {
+  "lat": 40.70621,
+  "lon": -73.61874,
+  "elevation_ft": 56,
+  "timezone": "America/New_York"
+ },
+ "Henderson, NV": {
+  "lat": 36.0397,
+  "lon": -114.98194,
+  "elevation_ft": 1867,
+  "timezone": "America/Los_Angeles"
+ },
+ "Hershey, PA": {
+  "lat": 40.28592,
+  "lon": -76.65025,
+  "elevation_ft": 423,
+  "timezone": "America/New_York"
+ },
+ "Hickory, NC": {
+  "lat": 35.73319,
+  "lon": -81.3412,
+  "elevation_ft": 1148,
+  "timezone": "America/New_York"
+ },
+ "High Point, NC": {
+  "lat": 35.95569,
+  "lon": -80.00532,
+  "elevation_ft": 922,
+  "timezone": "America/New_York"
+ },
+ "Highland Heights, KY": {
+  "lat": 39.03312,
+  "lon": -84.45189,
+  "elevation_ft": 853,
+  "timezone": "America/New_York"
+ },
+ "Hoffman Estates, IL": {
+  "lat": 42.04281,
+  "lon": -88.0798,
+  "elevation_ft": 784,
+  "timezone": "America/Chicago"
+ },
+ "Homewood, AL": {
+  "lat": 33.47177,
+  "lon": -86.80082,
+  "elevation_ft": 666,
+  "timezone": "America/Chicago"
+ },
+ "Honolulu, HI": {
+  "lat": 21.30694,
+  "lon": -157.85834,
+  "elevation_ft": 16,
+  "timezone": "Pacific/Honolulu"
+ },
+ "Hot Springs, AR": {
+  "lat": 34.5037,
+  "lon": -93.05518,
+  "elevation_ft": 597,
+  "timezone": "America/Chicago"
+ },
+ "Houston, TX": {
+  "lat": 29.76328,
+  "lon": -95.36327,
+  "elevation_ft": 39,
+  "timezone": "America/Chicago"
+ },
+ "Huntington, WV": {
+  "lat": 38.41925,
+  "lon": -82.44515,
+  "elevation_ft": 568,
+  "timezone": "America/New_York"
+ },
+ "Huntsville, AL": {
+  "lat": 34.7304,
+  "lon": -86.58594,
+  "elevation_ft": 633,
+  "timezone": "America/Chicago"
+ },
+ "Huntsville, TX": {
+  "lat": 30.72353,
+  "lon": -95.55078,
+  "elevation_ft": 371,
+  "timezone": "America/Chicago"
+ },
+ "Idaho Falls, ID": {
+  "lat": 43.46658,
+  "lon": -112.03414,
+  "elevation_ft": 4705,
+  "timezone": "America/Boise"
+ },
+ "Indianapolis, IN": {
+  "lat": 39.76838,
+  "lon": -86.15804,
+  "elevation_ft": 715,
+  "timezone": "America/Indiana/Indianapolis"
+ },
+ "Inglewood, CA": {
+  "lat": 33.96168,
+  "lon": -118.35313,
+  "elevation_ft": 131,
+  "timezone": "America/Los_Angeles"
+ },
+ "Iowa City, IA": {
+  "lat": 41.66113,
+  "lon": -91.53017,
+  "elevation_ft": 669,
+  "timezone": "America/Chicago"
+ },
+ "Irvine, CA": {
+  "lat": 33.66946,
+  "lon": -117.82311,
+  "elevation_ft": 56,
+  "timezone": "America/Los_Angeles"
+ },
+ "Ithaca, NY": {
+  "lat": 42.44063,
+  "lon": -76.49661,
+  "elevation_ft": 410,
+  "timezone": "America/New_York"
+ },
+ "Itta Bena, MS": {
+  "lat": 33.49512,
+  "lon": -90.31981,
+  "elevation_ft": 131,
+  "timezone": "America/Chicago"
+ },
+ "Jackson, MS": {
+  "lat": 32.29876,
+  "lon": -90.18481,
+  "elevation_ft": 279,
+  "timezone": "America/Chicago"
+ },
+ "Jacksonville, AL": {
+  "lat": 33.81382,
+  "lon": -85.7613,
+  "elevation_ft": 709,
+  "timezone": "America/Chicago"
+ },
+ "Jacksonville, FL": {
+  "lat": 30.33218,
+  "lon": -81.65565,
+  "elevation_ft": 16,
+  "timezone": "America/New_York"
+ },
+ "Jersey City, NJ": {
+  "lat": 40.72816,
+  "lon": -74.07764,
+  "elevation_ft": 30,
+  "timezone": "America/New_York"
+ },
+ "Johnson City, TN": {
+  "lat": 36.31344,
+  "lon": -82.35347,
+  "elevation_ft": 1634,
+  "timezone": "America/New_York"
+ },
+ "Jonesboro, AR": {
+  "lat": 35.8423,
+  "lon": -90.70428,
+  "elevation_ft": 325,
+  "timezone": "America/Chicago"
+ },
+ "Kalamazoo, MI": {
+  "lat": 42.29171,
+  "lon": -85.58723,
+  "elevation_ft": 784,
+  "timezone": "America/Detroit"
+ },
+ "Kansas City, MO": {
+  "lat": 39.09973,
+  "lon": -94.57857,
+  "elevation_ft": 899,
+  "timezone": "America/Chicago"
+ },
+ "Katy, TX": {
+  "lat": 29.78579,
+  "lon": -95.8244,
+  "elevation_ft": 138,
+  "timezone": "America/Chicago"
+ },
+ "Kennesaw, GA": {
+  "lat": 34.02343,
+  "lon": -84.61549,
+  "elevation_ft": 1089,
+  "timezone": "America/New_York"
+ },
+ "Kent, OH": {
+  "lat": 41.15367,
+  "lon": -81.35789,
+  "elevation_ft": 1066,
+  "timezone": "America/New_York"
+ },
+ "Kingston, RI": {
+  "lat": 41.48038,
+  "lon": -71.52256,
+  "elevation_ft": 246,
+  "timezone": "America/New_York"
+ },
+ "Kissimmee, FL": {
+  "lat": 28.30468,
+  "lon": -81.41667,
+  "elevation_ft": 66,
+  "timezone": "America/New_York"
+ },
+ "Knoxville, TN": {
+  "lat": 35.96064,
+  "lon": -83.92074,
+  "elevation_ft": 906,
+  "timezone": "America/New_York"
+ },
+ "Lafayette, LA": {
+  "lat": 30.22409,
+  "lon": -92.01984,
+  "elevation_ft": 36,
+  "timezone": "America/Chicago"
+ },
+ "Lake Charles, LA": {
+  "lat": 30.21309,
+  "lon": -93.2044,
+  "elevation_ft": 13,
+  "timezone": "America/Chicago"
+ },
+ "Laramie, WY": {
+  "lat": 41.31137,
+  "lon": -105.5911,
+  "elevation_ft": 7165,
+  "timezone": "America/Denver"
+ },
+ "Las Cruces, NM": {
+  "lat": 32.31232,
+  "lon": -106.77834,
+  "elevation_ft": 3907,
+  "timezone": "America/Denver"
+ },
+ "Las Vegas, NV": {
+  "lat": 36.17497,
+  "lon": -115.13722,
+  "elevation_ft": 2001,
+  "timezone": "America/Los_Angeles"
+ },
+ "Laval, PQ": {
+  "lat": 45.56995,
+  "lon": -73.692,
+  "elevation_ft": 112,
+  "timezone": "America/Toronto"
+ },
+ "Lawrence, KS": {
+  "lat": 38.97167,
+  "lon": -95.23525,
+  "elevation_ft": 863,
+  "timezone": "America/Chicago"
+ },
+ "Lawrenceville, NJ": {
+  "lat": 40.29733,
+  "lon": -74.7296,
+  "elevation_ft": 121,
+  "timezone": "America/New_York"
+ },
+ "Lewisburg, PA": {
+  "lat": 40.96453,
+  "lon": -76.88441,
+  "elevation_ft": 472,
+  "timezone": "America/New_York"
+ },
+ "Lexington, KY": {
+  "lat": 37.98869,
+  "lon": -84.47772,
+  "elevation_ft": 968,
+  "timezone": "America/New_York"
+ },
+ "Lexington, VA": {
+  "lat": 37.78402,
+  "lon": -79.44282,
+  "elevation_ft": 1063,
+  "timezone": "America/New_York"
+ },
+ "Lincoln, NE": {
+  "lat": 40.8,
+  "lon": -96.66696,
+  "elevation_ft": 1204,
+  "timezone": "America/Chicago"
+ },
+ "Little Rock, AR": {
+  "lat": 34.74648,
+  "lon": -92.28959,
+  "elevation_ft": 335,
+  "timezone": "America/Chicago"
+ },
+ "Logan, UT": {
+  "lat": 41.73549,
+  "lon": -111.83439,
+  "elevation_ft": 4534,
+  "timezone": "America/Denver"
+ },
+ "Long Beach, CA": {
+  "lat": 33.76696,
+  "lon": -118.18923,
+  "elevation_ft": 30,
+  "timezone": "America/Los_Angeles"
+ },
+ "Loretto, PA": {
+  "lat": 40.50313,
+  "lon": -78.6303,
+  "elevation_ft": 1952,
+  "timezone": "America/New_York"
+ },
+ "Lorman, MS": {
+  "lat": 31.82044,
+  "lon": -91.05011,
+  "elevation_ft": 217,
+  "timezone": "America/Chicago"
+ },
+ "Los Angeles, CA": {
+  "lat": 34.05223,
+  "lon": -118.24368,
+  "elevation_ft": 292,
+  "timezone": "America/Los_Angeles"
+ },
+ "Louisville, KY": {
+  "lat": 38.25424,
+  "lon": -85.75941,
+  "elevation_ft": 466,
+  "timezone": "America/Kentucky/Louisville"
+ },
+ "Lowell, MA": {
+  "lat": 42.63342,
+  "lon": -71.31617,
+  "elevation_ft": 118,
+  "timezone": "America/New_York"
+ },
+ "Lubbock, TX": {
+  "lat": 33.57786,
+  "lon": -101.85517,
+  "elevation_ft": 3202,
+  "timezone": "America/Chicago"
+ },
+ "Lynchburg, VA": {
+  "lat": 37.41375,
+  "lon": -79.14225,
+  "elevation_ft": 630,
+  "timezone": "America/New_York"
+ },
+ "Macomb, IL": {
+  "lat": 40.45921,
+  "lon": -90.6718,
+  "elevation_ft": 705,
+  "timezone": "America/Chicago"
+ },
+ "Macon, GA": {
+  "lat": 32.84069,
+  "lon": -83.6324,
+  "elevation_ft": 367,
+  "timezone": "America/New_York"
+ },
+ "Madison, WI": {
+  "lat": 43.07305,
+  "lon": -89.40123,
+  "elevation_ft": 876,
+  "timezone": "America/Chicago"
+ },
+ "Malibu, CA": {
+  "lat": 34.02577,
+  "lon": -118.7804,
+  "elevation_ft": 105,
+  "timezone": "America/Los_Angeles"
+ },
+ "Manhattan, KS": {
+  "lat": 39.18361,
+  "lon": -96.57167,
+  "elevation_ft": 1020,
+  "timezone": "America/Chicago"
+ },
+ "Martin, TN": {
+  "lat": 36.3434,
+  "lon": -88.85034,
+  "elevation_ft": 407,
+  "timezone": "America/Chicago"
+ },
+ "Maui, HI": {
+  "lat": 20.77024,
+  "lon": -156.26816,
+  "elevation_ft": 5312,
+  "timezone": "Pacific/Honolulu"
+ },
+ "Memphis, TN": {
+  "lat": 35.14953,
+  "lon": -90.04898,
+  "elevation_ft": 256,
+  "timezone": "America/Chicago"
+ },
+ "Miami, FL": {
+  "lat": 25.77427,
+  "lon": -80.19366,
+  "elevation_ft": 7,
+  "timezone": "America/New_York"
+ },
+ "Milwaukee, WI": {
+  "lat": 43.0389,
+  "lon": -87.90647,
+  "elevation_ft": 617,
+  "timezone": "America/Chicago"
+ },
+ "Minneapolis, MN": {
+  "lat": 44.97997,
+  "lon": -93.26384,
+  "elevation_ft": 830,
+  "timezone": "America/Chicago"
+ },
+ "Missoula, MT": {
+  "lat": 46.87215,
+  "lon": -113.994,
+  "elevation_ft": 3209,
+  "timezone": "America/Denver"
+ },
+ "Mobile, AL": {
+  "lat": 30.69436,
+  "lon": -88.04305,
+  "elevation_ft": 10,
+  "timezone": "America/Chicago"
+ },
+ "Monroe, LA": {
+  "lat": 32.50931,
+  "lon": -92.1193,
+  "elevation_ft": 75,
+  "timezone": "America/Chicago"
+ },
+ "Montgomery, AL": {
+  "lat": 32.36681,
+  "lon": -86.29997,
+  "elevation_ft": 240,
+  "timezone": "America/Chicago"
+ },
+ "Moon Township, PA": {
+  "lat": 40.50896,
+  "lon": -80.23923,
+  "elevation_ft": 1175,
+  "timezone": "America/New_York"
+ },
+ "Moraga, CA": {
+  "lat": 37.83493,
+  "lon": -122.12969,
+  "elevation_ft": 499,
+  "timezone": "America/Los_Angeles"
+ },
+ "Morehead, KY": {
+  "lat": 38.18397,
+  "lon": -83.43268,
+  "elevation_ft": 738,
+  "timezone": "America/New_York"
+ },
+ "Morgantown, WV": {
+  "lat": 39.62953,
+  "lon": -79.9559,
+  "elevation_ft": 889,
+  "timezone": "America/New_York"
+ },
+ "Moscow, ID": {
+  "lat": 46.73239,
+  "lon": -117.00017,
+  "elevation_ft": 2579,
+  "timezone": "America/Los_Angeles"
+ },
+ "Mount Pleasant, MI": {
+  "lat": 43.59781,
+  "lon": -84.76751,
+  "elevation_ft": 771,
+  "timezone": "America/Detroit"
+ },
+ "Muncie, IN": {
+  "lat": 40.19338,
+  "lon": -85.38636,
+  "elevation_ft": 932,
+  "timezone": "America/Indiana/Indianapolis"
+ },
+ "Murfreesboro, TN": {
+  "lat": 35.84562,
+  "lon": -86.39027,
+  "elevation_ft": 610,
+  "timezone": "America/Chicago"
+ },
+ "Murray, KY": {
+  "lat": 36.61033,
+  "lon": -88.31476,
+  "elevation_ft": 535,
+  "timezone": "America/Chicago"
+ },
+ "Nacogdoches, TX": {
+  "lat": 31.60351,
+  "lon": -94.65549,
+  "elevation_ft": 302,
+  "timezone": "America/Chicago"
+ },
+ "Nashville, TN": {
+  "lat": 36.16589,
+  "lon": -86.78444,
+  "elevation_ft": 558,
+  "timezone": "America/Chicago"
+ },
+ "Nassau, Bahamas": {
+  "lat": 25.05823,
+  "lon": -77.34306,
+  "elevation_ft": 16,
+  "timezone": "America/Nassau"
+ },
+ "Natchitoches, LA": {
+  "lat": 31.76072,
+  "lon": -93.08627,
+  "elevation_ft": 118,
+  "timezone": "America/Chicago"
+ },
+ "New Britain, CT": {
+  "lat": 41.66121,
+  "lon": -72.77954,
+  "elevation_ft": 167,
+  "timezone": "America/New_York"
+ },
+ "New Haven, CT": {
+  "lat": 41.30815,
+  "lon": -72.92816,
+  "elevation_ft": 59,
+  "timezone": "America/New_York"
+ },
+ "New Orleans, LA": {
+  "lat": 29.95465,
+  "lon": -90.07507,
+  "elevation_ft": 0,
+  "timezone": "America/Chicago"
+ },
+ "New Rochelle, NY": {
+  "lat": 40.91149,
+  "lon": -73.78235,
+  "elevation_ft": 85,
+  "timezone": "America/New_York"
+ },
+ "New York, NY": {
+  "lat": 40.71427,
+  "lon": -74.00597,
+  "elevation_ft": 33,
+  "timezone": "America/New_York"
+ },
+ "Newark, DE": {
+  "lat": 39.68372,
+  "lon": -75.74966,
+  "elevation_ft": 125,
+  "timezone": "America/New_York"
+ },
+ "Newark, NJ": {
+  "lat": 40.73566,
+  "lon": -74.17237,
+  "elevation_ft": 30,
+  "timezone": "America/New_York"
+ },
+ "Niagara Falls, NY": {
+  "lat": 43.0945,
+  "lon": -79.05671,
+  "elevation_ft": 614,
+  "timezone": "America/New_York"
+ },
+ "Norfolk, VA": {
+  "lat": 36.84681,
+  "lon": -76.28522,
+  "elevation_ft": 7,
+  "timezone": "America/New_York"
+ },
+ "Normal, IL": {
+  "lat": 40.5142,
+  "lon": -88.99063,
+  "elevation_ft": 801,
+  "timezone": "America/Chicago"
+ },
+ "Norman, OK": {
+  "lat": 35.22257,
+  "lon": -97.43948,
+  "elevation_ft": 1171,
+  "timezone": "America/Chicago"
+ },
+ "North Andover, MA": {
+  "lat": 42.6987,
+  "lon": -71.13506,
+  "elevation_ft": 95,
+  "timezone": "America/New_York"
+ },
+ "North Little Rock, AR": {
+  "lat": 34.76954,
+  "lon": -92.26709,
+  "elevation_ft": 266,
+  "timezone": "America/Chicago"
+ },
+ "Northridge, CA": {
+  "lat": 34.22834,
+  "lon": -118.53675,
+  "elevation_ft": 807,
+  "timezone": "America/Los_Angeles"
+ },
+ "Oceanside, CA": {
+  "lat": 33.19587,
+  "lon": -117.37948,
+  "elevation_ft": 66,
+  "timezone": "America/Los_Angeles"
+ },
+ "Ogden, UT": {
+  "lat": 41.223,
+  "lon": -111.97383,
+  "elevation_ft": 4301,
+  "timezone": "America/Denver"
+ },
+ "Oklahoma City, OK": {
+  "lat": 35.46756,
+  "lon": -97.51643,
+  "elevation_ft": 1201,
+  "timezone": "America/Chicago"
+ },
+ "Omaha, NE": {
+  "lat": 41.25626,
+  "lon": -95.94043,
+  "elevation_ft": 1060,
+  "timezone": "America/Chicago"
+ },
+ "Orangeburg, SC": {
+  "lat": 33.49182,
+  "lon": -80.85565,
+  "elevation_ft": 243,
+  "timezone": "America/New_York"
+ },
+ "Orem, UT": {
+  "lat": 40.2969,
+  "lon": -111.69465,
+  "elevation_ft": 4774,
+  "timezone": "America/Denver"
+ },
+ "Orlando, FL": {
+  "lat": 28.53834,
+  "lon": -81.37924,
+  "elevation_ft": 98,
+  "timezone": "America/New_York"
+ },
+ "Orono, ME": {
+  "lat": 44.88312,
+  "lon": -68.67198,
+  "elevation_ft": 125,
+  "timezone": "America/New_York"
+ },
+ "Oxford, MS": {
+  "lat": 34.3665,
+  "lon": -89.51925,
+  "elevation_ft": 505,
+  "timezone": "America/Chicago"
+ },
+ "Oxford, OH": {
+  "lat": 39.507,
+  "lon": -84.74523,
+  "elevation_ft": 928,
+  "timezone": "America/New_York"
+ },
+ "Palm Springs, CA": {
+  "lat": 33.8303,
+  "lon": -116.54529,
+  "elevation_ft": 479,
+  "timezone": "America/Los_Angeles"
+ },
+ "Pensacola, FL": {
+  "lat": 30.42131,
+  "lon": -87.21691,
+  "elevation_ft": 102,
+  "timezone": "America/Chicago"
+ },
+ "Peoria, IL": {
+  "lat": 40.69365,
+  "lon": -89.58899,
+  "elevation_ft": 502,
+  "timezone": "America/Chicago"
+ },
+ "Philadelphia, PA": {
+  "lat": 39.95238,
+  "lon": -75.16362,
+  "elevation_ft": 39,
+  "timezone": "America/New_York"
+ },
+ "Phoenix, AZ": {
+  "lat": 33.44838,
+  "lon": -112.07404,
+  "elevation_ft": 1086,
+  "timezone": "America/Phoenix"
+ },
+ "Pine Bluff, AR": {
+  "lat": 34.22843,
+  "lon": -92.0032,
+  "elevation_ft": 220,
+  "timezone": "America/Chicago"
+ },
+ "Piscataway, NJ": {
+  "lat": 40.49927,
+  "lon": -74.39904,
+  "elevation_ft": 98,
+  "timezone": "America/New_York"
+ },
+ "Pittsburgh, PA": {
+  "lat": 40.44062,
+  "lon": -79.99589,
+  "elevation_ft": 764,
+  "timezone": "America/New_York"
+ },
+ "Pocatello, ID": {
+  "lat": 42.8713,
+  "lon": -112.44553,
+  "elevation_ft": 4462,
+  "timezone": "America/Boise"
+ },
+ "Portland, OR": {
+  "lat": 45.52345,
+  "lon": -122.67621,
+  "elevation_ft": 39,
+  "timezone": "America/Los_Angeles"
+ },
+ "Poughkeepsie, NY": {
+  "lat": 41.70037,
+  "lon": -73.92097,
+  "elevation_ft": 203,
+  "timezone": "America/New_York"
+ },
+ "Prairie View, TX": {
+  "lat": 30.09327,
+  "lon": -95.98773,
+  "elevation_ft": 269,
+  "timezone": "America/Chicago"
+ },
+ "Princess Anne, MD": {
+  "lat": 38.2029,
+  "lon": -75.69243,
+  "elevation_ft": 16,
+  "timezone": "America/New_York"
+ },
+ "Princeton, NJ": {
+  "lat": 40.34872,
+  "lon": -74.65905,
+  "elevation_ft": 203,
+  "timezone": "America/New_York"
+ },
+ "Providence, RI": {
+  "lat": 41.82399,
+  "lon": -71.41283,
+  "elevation_ft": 7,
+  "timezone": "America/New_York"
+ },
+ "Provo, UT": {
+  "lat": 40.23384,
+  "lon": -111.65853,
+  "elevation_ft": 4551,
+  "timezone": "America/Denver"
+ },
+ "Pullman, WA": {
+  "lat": 46.73127,
+  "lon": -117.17962,
+  "elevation_ft": 2352,
+  "timezone": "America/Los_Angeles"
+ },
+ "Queens, NY": {
+  "lat": 40.68149,
+  "lon": -73.83652,
+  "elevation_ft": 39,
+  "timezone": "America/New_York"
+ },
+ "Radford, VA": {
+  "lat": 37.13179,
+  "lon": -80.57645,
+  "elevation_ft": 1860,
+  "timezone": "America/New_York"
+ },
+ "Raleigh, NC": {
+  "lat": 35.7721,
+  "lon": -78.63861,
+  "elevation_ft": 315,
+  "timezone": "America/New_York"
+ },
+ "Rapid City, SD": {
+  "lat": 44.08054,
+  "lon": -103.23101,
+  "elevation_ft": 3241,
+  "timezone": "America/Denver"
+ },
+ "Reno, NV": {
+  "lat": 39.52963,
+  "lon": -119.8138,
+  "elevation_ft": 4505,
+  "timezone": "America/Los_Angeles"
+ },
+ "Richmond, KY": {
+  "lat": 37.74786,
+  "lon": -84.29465,
+  "elevation_ft": 948,
+  "timezone": "America/New_York"
+ },
+ "Richmond, VA": {
+  "lat": 37.55376,
+  "lon": -77.46026,
+  "elevation_ft": 210,
+  "timezone": "America/New_York"
+ },
+ "Riverdale, NY": {
+  "lat": 40.93815,
+  "lon": -73.83208,
+  "elevation_ft": 92,
+  "timezone": "America/New_York"
+ },
+ "Riverside, CA": {
+  "lat": 33.95335,
+  "lon": -117.39616,
+  "elevation_ft": 827,
+  "timezone": "America/Los_Angeles"
+ },
+ "Rochester, MI": {
+  "lat": 42.68059,
+  "lon": -83.13382,
+  "elevation_ft": 751,
+  "timezone": "America/Detroit"
+ },
+ "Rock Hill, SC": {
+  "lat": 34.92487,
+  "lon": -81.02508,
+  "elevation_ft": 679,
+  "timezone": "America/New_York"
+ },
+ "Rome, Italy": {
+  "lat": 41.89193,
+  "lon": 12.51133,
+  "elevation_ft": 66,
+  "timezone": "Europe/Rome"
+ },
+ "Ruston, LA": {
+  "lat": 32.52321,
+  "lon": -92.63793,
+  "elevation_ft": 335,
+  "timezone": "America/Chicago"
+ },
+ "Sacramento, CA": {
+  "lat": 38.58157,
+  "lon": -121.4944,
+  "elevation_ft": 30,
+  "timezone": "America/Los_Angeles"
+ },
+ "Saint Bonaventure, NY": {
+  "lat": 42.08034,
+  "lon": -78.47502,
+  "elevation_ft": 1427,
+  "timezone": "America/New_York"
+ },
+ "Saint Charles, MO": {
+  "lat": 38.78394,
+  "lon": -90.48123,
+  "elevation_ft": 482,
+  "timezone": "America/Chicago"
+ },
+ "Saint Paul, MN": {
+  "lat": 44.94441,
+  "lon": -93.09327,
+  "elevation_ft": 794,
+  "timezone": "America/Chicago"
+ },
+ "Saint Thomas, Virgin Islands": {
+  "lat": 18.3419,
+  "lon": -64.9307,
+  "elevation_ft": 30,
+  "timezone": "America/St_Thomas"
+ },
+ "Salt Lake City, UT": {
+  "lat": 40.76078,
+  "lon": -111.89105,
+  "elevation_ft": 4262,
+  "timezone": "America/Denver"
+ },
+ "San Antonio, TX": {
+  "lat": 29.42412,
+  "lon": -98.49363,
+  "elevation_ft": 650,
+  "timezone": "America/Chicago"
+ },
+ "San Diego, CA": {
+  "lat": 32.71571,
+  "lon": -117.16472,
+  "elevation_ft": 66,
+  "timezone": "America/Los_Angeles"
+ },
+ "San Francisco, CA": {
+  "lat": 37.77493,
+  "lon": -122.41942,
+  "elevation_ft": 52,
+  "timezone": "America/Los_Angeles"
+ },
+ "San Jose, CA": {
+  "lat": 37.33939,
+  "lon": -121.89496,
+  "elevation_ft": 85,
+  "timezone": "America/Los_Angeles"
+ },
+ "San Juan Capistrano, CA": {
+  "lat": 33.50169,
+  "lon": -117.66255,
+  "elevation_ft": 121,
+  "timezone": "America/Los_Angeles"
+ },
+ "San Luis Obispo, CA": {
+  "lat": 35.28275,
+  "lon": -120.65962,
+  "elevation_ft": 233,
+  "timezone": "America/Los_Angeles"
+ },
+ "San Marcos, TX": {
+  "lat": 29.88327,
+  "lon": -97.94139,
+  "elevation_ft": 617,
+  "timezone": "America/Chicago"
+ },
+ "Santa Barbara, CA": {
+  "lat": 34.42083,
+  "lon": -119.69819,
+  "elevation_ft": 49,
+  "timezone": "America/Los_Angeles"
+ },
+ "Santa Clara, CA": {
+  "lat": 37.35411,
+  "lon": -121.95524,
+  "elevation_ft": 75,
+  "timezone": "America/Los_Angeles"
+ },
+ "Santa Cruz, CA": {
+  "lat": 36.97412,
+  "lon": -122.0308,
+  "elevation_ft": 36,
+  "timezone": "America/Los_Angeles"
+ },
+ "Seattle, WA": {
+  "lat": 47.60621,
+  "lon": -122.33207,
+  "elevation_ft": 184,
+  "timezone": "America/Los_Angeles"
+ },
+ "Sioux City, IA": {
+  "lat": 42.49999,
+  "lon": -96.40031,
+  "elevation_ft": 1201,
+  "timezone": "America/Chicago"
+ },
+ "Sioux Falls, SD": {
+  "lat": 43.54369,
+  "lon": -96.72796,
+  "elevation_ft": 1470,
+  "timezone": "America/Chicago"
+ },
+ "Smithfield, RI": {
+  "lat": 41.92204,
+  "lon": -71.54951,
+  "elevation_ft": 276,
+  "timezone": "America/New_York"
+ },
+ "South Bend, IN": {
+  "lat": 41.68338,
+  "lon": -86.25001,
+  "elevation_ft": 692,
+  "timezone": "America/Indiana/Indianapolis"
+ },
+ "South Easton, MA": {
+  "lat": 42.04732,
+  "lon": -71.08144,
+  "elevation_ft": 108,
+  "timezone": "America/New_York"
+ },
+ "South Orange, NJ": {
+  "lat": 40.74899,
+  "lon": -74.26126,
+  "elevation_ft": 148,
+  "timezone": "America/New_York"
+ },
+ "Southaven, MS": {
+  "lat": 34.98898,
+  "lon": -90.01259,
+  "elevation_ft": 312,
+  "timezone": "America/Chicago"
+ },
+ "Spartanburg, SC": {
+  "lat": 34.94957,
+  "lon": -81.93205,
+  "elevation_ft": 807,
+  "timezone": "America/New_York"
+ },
+ "Spokane, WA": {
+  "lat": 47.65966,
+  "lon": -117.42908,
+  "elevation_ft": 1873,
+  "timezone": "America/Los_Angeles"
+ },
+ "Springfield, MA": {
+  "lat": 42.10148,
+  "lon": -72.58981,
+  "elevation_ft": 82,
+  "timezone": "America/New_York"
+ },
+ "Springfield, MO": {
+  "lat": 37.21533,
+  "lon": -93.29824,
+  "elevation_ft": 1299,
+  "timezone": "America/Chicago"
+ },
+ "St. George, UT": {
+  "lat": 37.10415,
+  "lon": -113.58412,
+  "elevation_ft": 2700,
+  "timezone": "America/Denver"
+ },
+ "St. Louis, MO": {
+  "lat": 38.62727,
+  "lon": -90.19789,
+  "elevation_ft": 466,
+  "timezone": "America/Chicago"
+ },
+ "St. Petersburg, FL": {
+  "lat": 27.77086,
+  "lon": -82.67927,
+  "elevation_ft": 43,
+  "timezone": "America/New_York"
+ },
+ "Stanford, CA": {
+  "lat": 37.42411,
+  "lon": -122.16608,
+  "elevation_ft": 75,
+  "timezone": "America/Los_Angeles"
+ },
+ "Starkville, MS": {
+  "lat": 33.45049,
+  "lon": -88.81961,
+  "elevation_ft": 331,
+  "timezone": "America/Chicago"
+ },
+ "Stateline, NV": {
+  "lat": 38.96241,
+  "lon": -119.9399,
+  "elevation_ft": 6283,
+  "timezone": "America/Los_Angeles"
+ },
+ "Staten Island, NY": {
+  "lat": 40.56233,
+  "lon": -74.13986,
+  "elevation_ft": 69,
+  "timezone": "America/New_York"
+ },
+ "Statesboro, GA": {
+  "lat": 32.44879,
+  "lon": -81.78317,
+  "elevation_ft": 253,
+  "timezone": "America/New_York"
+ },
+ "Stephenville, TX": {
+  "lat": 32.2207,
+  "lon": -98.20226,
+  "elevation_ft": 1273,
+  "timezone": "America/Chicago"
+ },
+ "Stillwater, OK": {
+  "lat": 36.11561,
+  "lon": -97.05837,
+  "elevation_ft": 896,
+  "timezone": "America/Chicago"
+ },
+ "Stockton, CA": {
+  "lat": 37.9577,
+  "lon": -121.29078,
+  "elevation_ft": 13,
+  "timezone": "America/Los_Angeles"
+ },
+ "Stony Brook, NY": {
+  "lat": 40.92565,
+  "lon": -73.14094,
+  "elevation_ft": 89,
+  "timezone": "America/New_York"
+ },
+ "Storrs, CT": {
+  "lat": 41.80843,
+  "lon": -72.24952,
+  "elevation_ft": 614,
+  "timezone": "America/New_York"
+ },
+ "Sunrise, FL": {
+  "lat": 26.13397,
+  "lon": -80.1131,
+  "elevation_ft": 3,
+  "timezone": "America/New_York"
+ },
+ "Syracuse, NY": {
+  "lat": 43.04812,
+  "lon": -76.14742,
+  "elevation_ft": 397,
+  "timezone": "America/New_York"
+ },
+ "Tallahassee, FL": {
+  "lat": 30.43826,
+  "lon": -84.28073,
+  "elevation_ft": 203,
+  "timezone": "America/New_York"
+ },
+ "Tampa, FL": {
+  "lat": 27.94752,
+  "lon": -82.45843,
+  "elevation_ft": 3,
+  "timezone": "America/New_York"
+ },
+ "Tempe, AZ": {
+  "lat": 33.41477,
+  "lon": -111.90931,
+  "elevation_ft": 1181,
+  "timezone": "America/Phoenix"
+ },
+ "Terre Haute, IN": {
+  "lat": 39.4667,
+  "lon": -87.41391,
+  "elevation_ft": 499,
+  "timezone": "America/Indiana/Indianapolis"
+ },
+ "Thibodaux, LA": {
+  "lat": 29.79576,
+  "lon": -90.82287,
+  "elevation_ft": 13,
+  "timezone": "America/Chicago"
+ },
+ "Thousand Oaks, CA": {
+  "lat": 34.17056,
+  "lon": -118.83759,
+  "elevation_ft": 886,
+  "timezone": "America/Los_Angeles"
+ },
+ "Toledo, OH": {
+  "lat": 41.66394,
+  "lon": -83.55521,
+  "elevation_ft": 610,
+  "timezone": "America/New_York"
+ },
+ "Towson, MD": {
+  "lat": 39.4015,
+  "lon": -76.60191,
+  "elevation_ft": 463,
+  "timezone": "America/New_York"
+ },
+ "Trenton, NJ": {
+  "lat": 40.21705,
+  "lon": -74.74294,
+  "elevation_ft": 56,
+  "timezone": "America/New_York"
+ },
+ "Troy, AL": {
+  "lat": 31.80877,
+  "lon": -85.96995,
+  "elevation_ft": 541,
+  "timezone": "America/Chicago"
+ },
+ "Tucson, AZ": {
+  "lat": 32.22174,
+  "lon": -110.92648,
+  "elevation_ft": 2490,
+  "timezone": "America/Phoenix"
+ },
+ "Tulsa, OK": {
+  "lat": 36.15398,
+  "lon": -95.99277,
+  "elevation_ft": 722,
+  "timezone": "America/Chicago"
+ },
+ "Tupelo, MS": {
+  "lat": 34.25807,
+  "lon": -88.70464,
+  "elevation_ft": 279,
+  "timezone": "America/Chicago"
+ },
+ "Tuscaloosa, AL": {
+  "lat": 33.20984,
+  "lon": -87.56917,
+  "elevation_ft": 223,
+  "timezone": "America/Chicago"
+ },
+ "Uncasville, CT": {
+  "lat": 41.43454,
+  "lon": -72.1098,
+  "elevation_ft": 62,
+  "timezone": "America/New_York"
+ },
+ "University Park, PA": {
+  "lat": 40.80201,
+  "lon": -77.85639,
+  "elevation_ft": 1142,
+  "timezone": "America/New_York"
+ },
+ "Valparaiso, IN": {
+  "lat": 41.47309,
+  "lon": -87.06114,
+  "elevation_ft": 794,
+  "timezone": "America/Chicago"
+ },
+ "Vermillion, SD": {
+  "lat": 42.77944,
+  "lon": -96.92921,
+  "elevation_ft": 1227,
+  "timezone": "America/Chicago"
+ },
+ "Villanova, PA": {
+  "lat": 40.03733,
+  "lon": -75.34908,
+  "elevation_ft": 397,
+  "timezone": "America/New_York"
+ },
+ "Waco, TX": {
+  "lat": 31.54933,
+  "lon": -97.14667,
+  "elevation_ft": 469,
+  "timezone": "America/Chicago"
+ },
+ "Washington, DC": {
+  "lat": 38.89511,
+  "lon": -77.03637,
+  "elevation_ft": 23,
+  "timezone": "America/New_York"
+ },
+ "West Haven, CT": {
+  "lat": 41.27065,
+  "lon": -72.94705,
+  "elevation_ft": 33,
+  "timezone": "America/New_York"
+ },
+ "West Lafayette, IN": {
+  "lat": 40.42587,
+  "lon": -86.90807,
+  "elevation_ft": 610,
+  "timezone": "America/Indiana/Indianapolis"
+ },
+ "West Long Branch, NJ": {
+  "lat": 40.29039,
+  "lon": -74.01764,
+  "elevation_ft": 30,
+  "timezone": "America/New_York"
+ },
+ "West Point, NY": {
+  "lat": 41.39148,
+  "lon": -73.95597,
+  "elevation_ft": 154,
+  "timezone": "America/New_York"
+ },
+ "White Sulphur Springs, WV": {
+  "lat": 37.79651,
+  "lon": -80.29757,
+  "elevation_ft": 1857,
+  "timezone": "America/New_York"
+ },
+ "Wichita, KS": {
+  "lat": 37.69224,
+  "lon": -97.33754,
+  "elevation_ft": 1299,
+  "timezone": "America/Chicago"
+ },
+ "Williamsburg, VA": {
+  "lat": 37.2707,
+  "lon": -76.70746,
+  "elevation_ft": 82,
+  "timezone": "America/New_York"
+ },
+ "Wilmington, NC": {
+  "lat": 34.23556,
+  "lon": -77.94604,
+  "elevation_ft": 30,
+  "timezone": "America/New_York"
+ },
+ "Winston-Salem, NC": {
+  "lat": 36.09986,
+  "lon": -80.24422,
+  "elevation_ft": 961,
+  "timezone": "America/New_York"
+ },
+ "Worcester, MA": {
+  "lat": 42.26259,
+  "lon": -71.80229,
+  "elevation_ft": 482,
+  "timezone": "America/New_York"
+ },
+ "Youngstown, OH": {
+  "lat": 41.09978,
+  "lon": -80.64952,
+  "elevation_ft": 850,
+  "timezone": "America/New_York"
+ },
+ "Ypsilanti, MI": {
+  "lat": 42.24115,
+  "lon": -83.61299,
+  "elevation_ft": 719,
+  "timezone": "America/Detroit"
+ }
+}
