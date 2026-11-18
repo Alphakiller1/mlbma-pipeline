@@ -113,7 +113,8 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("function cfbSpecialBody", js)
         self.assertIn("function cfbDvoaBody", js)
         self.assertIn("['units', 'Units', ['cfb-power', 'cfb-efficiency', 'cfb-dvoa', 'cfb-predictability']]", js)
-        self.assertIn("['passing', 'Passing', ['cfb-quarterbacks', 'cfb-passing']]", js)
+        self.assertIn("['passing', 'Passing', ['cfb-quarterbacks', 'cfb-passing', 'cfb-receivers']]", js)
+        self.assertIn("['defense', 'Defense', ['cfb-defenders']]", js)
         self.assertIn("['rushing', 'Rushing', ['cfb-rushing', 'cfb-rushers']]", js)
         for fn in ("cfbQbPanel", "cfbRushersPanel", "cfbGameLogPanel"):
             self.assertIn("function " + fn, js)
