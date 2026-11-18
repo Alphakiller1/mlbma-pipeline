@@ -312,8 +312,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.goto(base_url.rstrip("/") + detail_url, wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
         check("NFL detail uses team logos", page.locator(".ca-detail-team__logo").count() == 2)
-        check("NFL desk carries the ten evidence tabs",
-              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 10)
+        check("NFL desk carries the eleven evidence tabs",
+              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 11)
         # The desk reads a tab at a time, and where the clubs stack, one club at a time.
         shown = "() => [...document.querySelectorAll('.ca-detail-section')].filter(s => s.offsetParent).map(s => s.id).join(',')"
         check("NFL desk opens on the Units tab alone", page.evaluate(shown) == "power,efficiency,predictability", page.evaluate(shown))

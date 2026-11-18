@@ -502,7 +502,7 @@ PLAYER_TRACKING_FIELDS = (
     "season", "week", "attempts", "eight_plus_box_rate", "avg_time_to_los", "pressure_rate",
     "pressure_dropbacks",
     "avg_time_to_throw", "expected_yards_per_carry", "ryoe_per_carry",
-    "rush_pct_over_expected", "source",
+    "rush_pct_over_expected", "cpoe", "avg_intended_air_yards", "source",
 )
 
 
@@ -609,7 +609,7 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
     # player operates, published as a frequency place (1st = most) that the page
     # marks neutrally, never as a grade.
     TRACKING_RANKED = {
-        "QB": (("avg_time_to_throw", 20), ("pressure_rate", 10)),
+        "QB": (("avg_time_to_throw", 20), ("pressure_rate", 10), ("cpoe", 20), ("avg_intended_air_yards", 20)),
         "RB": (("ryoe_per_carry", 10), ("eight_plus_box_rate", 10)),
     }
     for position, metrics in TRACKING_RANKED.items():
@@ -970,7 +970,7 @@ def build(board: dict | None = None, rooms: dict | None = None,
     if not board:
         return {"form": {}, "scheme": {}, "players": {}, "lineups": {},
                 "player_coverage": {}, "player_scheme": {}, "team_stats": {},
-                "player_stats": {}, "team_line": {}, "red_zone": {}, "source": None}
+                "player_stats": {}, "team_line": {}, "red_zone": {}, "special_teams": {}, "source": None}
     if rooms is None and lineups is None:
         lineups, rooms = fetch_depth_chart_context()
     elif lineups is None:
@@ -1024,6 +1024,9 @@ def build(board: dict | None = None, rooms: dict | None = None,
         # evidence windows, 2026 alone and 2025 + 2026 pooled play by play.
         "red_zone": {window: _canon_keys(clubs) for window, clubs in
                      (advanced_context.get("red_zone") or {}).items()},
+        # Special teams and situational figures, the same two windows.
+        "special_teams": {window: _canon_keys(clubs) for window, clubs in
+                          (advanced_context.get("special_teams") or {}).items()},
         "source": {
             "season": board.get("season"),
             "week": board.get("week"),
