@@ -241,7 +241,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             cbb_counts[year] = f"{total['made']}/{total['attempts']}"
         page.goto(base_url.rstrip("/") + "/cbb/matchup.html?game=401909564#shooting", wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector("#cbb-shot-chart .ca-cbb-court", timeout=timeout_ms)
-        check("CBB uses six evidence tabs", page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 6)
+        check("CBB uses eight evidence tabs", page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 8)
         page.locator('[data-cbb-view="defense"]').click()
         # The court, its badges and the table read one tone per zone; on the
         # allowed view a low FG% is the favorable end.

@@ -7322,20 +7322,29 @@ function seasonToggle(game) {
     ['opp_ft_luck', 'Opp FT% − League'], ['close_win_pct', 'Close-Game Win%'],
     ['wins_over_pythag', 'Wins vs Point Diff']];
 
+  // A regression row's entry, or a word for why it has none (no dashes).
+  function regressionEntry(prof, key) {
+    var e = prof[key];
+    if (e && e.value != null) return e;
+    if (!Object.keys(prof).length) return null;  // nothing published: the panel says so
+    if (key === 'close_win_pct') {
+      // Under three close games has no rate; the record itself still reads.
+      var record = prof.close_record;
+      return { value: null, missing: record && record !== '0-0' ? record + ' Close' : 'No Close Games' };
+    }
+    return { value: null, missing: 'Too Few Games' };
+  }
+
   function nbaRegressionBody(sport, game) {
     var a = nbaProf(game, 'away').regression || {}, h = nbaProf(game, 'home').regression || {};
     var basis = nbaProf(game, 'away').regression_basis || nbaProf(game, 'home').regression_basis || '';
     var context = '<p class="ca-lineup-context">' + esc(basis + ' · Close Games: ' +
       nflNick(sport, game, 'away') + ' ' + (a.close_record || 'None') + ', ' + nflNick(sport, game, 'home') + ' ' +
       (h.close_record || 'None')) + '</p>';
-    function entry(prof, key) {
-      var e = prof[key];
-      if (e && e.value != null) return e;
-      if (!Object.keys(prof).length) return null;  // nothing published: the panel says so
-      return { value: null, missing: key === 'close_win_pct' ? 'No Close Games' : 'Too Few Games' };
-    }
     return cfbHeadToHead(sport, game, fullName(sport, game, 'away') + ' vs ' + fullName(sport, game, 'home') +
-      ' Regression Watch', context, NBA_REGRESSION.map(function (r) { return [r[1], entry(a, r[0]), entry(h, r[0])]; }));
+      ' Regression Watch', context, NBA_REGRESSION.map(function (r) {
+        return [r[1], regressionEntry(a, r[0]), regressionEntry(h, r[0])];
+      }));
   }
 
   function nbaShooterRegressionPanel(sport, game, side) {
@@ -7978,7 +7987,9 @@ function seasonToggle(game) {
     ['possessions','Possessions',['cbb-transition','cbb-situations','cbb-restarts']],
     ['defense','Defense',['cbb-shot-types','cbb-personnel','cbb-tagged-schemes']],
     ['roster','Roster',['cbb-availability','cbb-rotation','cbb-size']],
-    ['games','Games',['cbb-game-log']]
+    ['games','Games',['cbb-game-log']],
+    ['resume','Résumé',['cbb-resume','cbb-regression']],
+    ['context','Context',['cbb-schedule']]
   ];
   function cbbYear(game) { return game.__cbbYear || 2027; }
   function cbbClock(game) { return scoreOrTime(game).replace(/\s+(AM|PM)\s+ET<\/strong>/,'<span class="ca-cbb-meridiem"> $1 ET</span></strong>'); }
@@ -8816,6 +8827,58 @@ function seasonToggle(game) {
       (fixture.source_url ? '<p class="ca-cbb-note ca-cbb-cite">'+sourceLink('Covers matchup injury report',fixture.source_url)+
         (fixture.retrieved_at_utc ? ' · checked '+esc(nbaEvidenceStamp(fixture.retrieved_at_utc)) : '')+'</p>' : ''));
   }
+  /* CBB résumé and luck (2026-11-18 audit; pipeline/cbb_public/resume.py):
+     NET and quadrant records from the NCAA's current-season list (none
+     before its December release), T-Rank from barttorvik.com, and the NBA
+     desk's regression figures over each school's D-I season. */
+  var CBB_TORVIK = [['trank', 'T-Rank'], ['adj_off', 'Adjusted Offense'], ['adj_def', 'Adjusted Defense'],
+    ['barthag', 'Barthag'], ['wab', 'Wins Above Bubble'], ['adj_tempo', 'Adjusted Tempo']];
+  function cbbResume(sport, game) {
+    var a = (cbbTeam(game, 'away') || {}).resume || {}, h = (cbbTeam(game, 'home') || {}).resume || {};
+    var unranked = { value: null, missing: 'Not Ranked' };
+    function row(label, ea, eh) {
+      return '<tr><td>' + esc(label) + '</td>' + cfbCell(ea || unranked) + cfbCell(eh || unranked) + '</tr>';
+    }
+    var rows = [];
+    if (a.net || h.net) {
+      rows.push(row('NET', a.net, h.net));
+      ['q1', 'q2', 'q3', 'q4'].forEach(function (q, i) {
+        rows.push('<tr><td>Quadrant ' + (i + 1) + '</td><td class="num">' + esc((a.quadrants || {})[q] || '0-0') +
+          '</td><td class="num">' + esc((h.quadrants || {})[q] || '0-0') + '</td></tr>');
+      });
+    }
+    if (a.torvik || h.torvik) {
+      CBB_TORVIK.forEach(function (r) { rows.push(row(r[1], (a.torvik || {})[r[0]], (h.torvik || {})[r[0]])); });
+    }
+    if (!rows.length) return pending('Résumé figures are not published for this pairing yet.');
+    var through = a.net_through || h.net_through;
+    var status = (a.net || h.net) ? pending('NET · NCAA · Through ' + injuryDate(through)) :
+      pending('NET not published for this season yet');
+    return status + nflSplitTable([cbbSchool(game, 'away'), cbbSchool(game, 'home')], rows, 'Stat');
+  }
+  function cbbRegression(sport, game) {
+    var a = (cbbTeam(game, 'away') || {}).regression || {}, h = (cbbTeam(game, 'home') || {}).regression || {};
+    var context = '<p class="ca-lineup-context">' + esc('Close Games: ' + cbbSchool(game, 'away') + ' ' +
+      (a.close_record || 'None') + ', ' + cbbSchool(game, 'home') + ' ' + (h.close_record || 'None')) + '</p>';
+    return cfbHeadToHead(sport, game, cbbSchool(game, 'away') + ' vs ' + cbbSchool(game, 'home') + ' Regression Watch',
+      context, NBA_REGRESSION.map(function (r) { return [r[1], regressionEntry(a, r[0]), regressionEntry(h, r[0])]; }));
+  }
+  // Rest, density, travel and altitude into the game (pipeline/cbb_public/venues.py).
+  function cbbSchedulePanel(sport, game, side) {
+    var s = game[side + '_schedule'];
+    if (!s) return teamPanel(sport, game, side, [['Schedule Load', 'Not Published']]);
+    function n(v, none) { return v != null ? String(v) : none; }
+    return teamPanel(sport, game, side, [
+      ['Rest', game[side + '_rest_label'] || 'Not Published'],
+      ['Games In Last 7 Days', n(s.games_last_7, '0')],
+      ['Travel Into This Game (Mi)', n(s.travel_miles, s.rest_days == null ? 'First Game' : 'Not Published')],
+      ['Miles In Last 7 Days', n(s.miles_last_7, s.rest_days == null ? 'First Game' : 'Not Published')],
+      ['Time Zones Crossed', n(s.tz_shift, s.rest_days == null ? 'First Game' : 'Not Published')],
+      ['Venue Elevation (Ft)', n(s.venue_elevation_ft, 'Not Published')],
+      ['Visiting Altitude', s.altitude ? 'Yes' : 'No']
+    ]);
+  }
+
   function cbbSections(sport,game) {
     function part(id,title,note,body) {
       return section(id,title,note,game.cbbDetailReady||id==='cbb-availability' ? body : pending('Loading matchup evidence…'));
@@ -8848,7 +8911,10 @@ function seasonToggle(game) {
       part('cbb-availability','Availability','Current Public Injury Listings',nflDuo(cbbAvailability,sport,game))+
       part('cbb-rotation','Rotation','Per-Game Output · Available Players',nflDuo(cbbRotation,sport,game))+
       part('cbb-size','Size By Position','Average Listed Height',nflDuo(cbbSize,sport,game))+
-      part('cbb-game-log','Game Log','Completed Games · Each Figure Ranked Against That Week',cbbGameLogs(sport,game));
+      part('cbb-game-log','Game Log','Completed Games · Each Figure Ranked Against That Week',cbbGameLogs(sport,game))+
+      part('cbb-resume','Résumé','NET, Quadrant Records And T-Rank',cbbResume(sport,game))+
+      part('cbb-regression','Regression Watch','Shooting Luck And Close Games',cbbRegression(sport,game))+
+      part('cbb-schedule','Schedule Load','Rest, Travel And Altitude Into This Game',nflDuo(cbbSchedulePanel,sport,game));
   }
   function wireCbbControls(host,game) {
     host.addEventListener('click',function(event){

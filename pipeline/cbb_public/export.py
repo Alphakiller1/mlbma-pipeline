@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 import gzip,json,math
 from .data import ZONES,read,write,table
 from .. import power, predictability
-from . import pressure
+from . import pressure, resume, venues
 REPO = Path(__file__).resolve().parents[2]
 
 RATE_FIELDS=['games_all','efg_o_all','efg_d_all','tov_pct_o_all','tov_pct_d_all','orb_pct_all','drb_pct_all',
@@ -457,6 +457,11 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
             scored=predictability.score(events,predictability.CBB)
             for tid,c in season.items():
                 if str(tid) in scored:c['predictability']=scored[str(tid)]
+        # The selection lens and the luck figures (pipeline/cbb_public/resume.py).
+        try:
+            resume.attach(season,cross,year)
+        except Exception as error:  # noqa: BLE001 - the desk publishes without a résumé
+            print(f'  résumé unavailable for {year}: {error}')
         for s in stats:
             tid=s['team_id'];c=all_context[(year,tid)];assert_public(c)
             write(out/f'{year}/teams/{tid}.json',c)
@@ -468,6 +473,13 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
                                data_through=box['data_through'],source=box['source'])
             index.setdefault(str(tid),{'identity':c['identity'],'seasons':{}})['seasons'][str(year)]=summary
     current=2027;games=[]
+    # Rest, density, travel and altitude into each game (pipeline/cbb_public/venues.py).
+    try:
+        places=venues.load_places(schedules[current])
+    except Exception as error:  # noqa: BLE001 - games publish without a schedule load
+        print(f'  venues unavailable: {error}')
+        places={}
+    finals_by_team=venues.team_finals(schedules[current])
     for g in schedules[current]:
         h,a=g.get('home_id'),g.get('away_id')
         if (current,h) not in all_context and (current,a) not in all_context:continue
@@ -490,6 +502,12 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
              'away_score':g.get('away_score') if state in ('final','live') else None,'home_score':g.get('home_score') if state in ('final','live') else None,
              'venue':g.get('venue_full_name'),'venue_city':g.get('venue_address_city'),'broadcast':g.get('broadcast_name'),'neutral':bool(g.get('neutral_site')),
              'availability_summary':'Availability not collected'}
+        if places:
+            row['venue_state']=g.get('venue_address_state')
+            for side,tid in (('away',a),('home',h)):
+                load=venues.schedule_load(finals_by_team,places,tid,g)
+                row[side+'_schedule']=load
+                row[side+'_rest_label']=venues.rest_label(load)
         assert_public(row);games.append(row)
     through=max((c['data_through'] for (y,_),c in all_context.items() if y==current and c['data_through']),default=None)
     cutoff = min(generated, datetime.combine(date.fromisoformat(through), time(23,59,59),

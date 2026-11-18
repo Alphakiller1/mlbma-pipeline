@@ -56,7 +56,7 @@ class CbbMatchupLayoutTests(unittest.TestCase):
     def test_tabs_read_in_matchup_order_and_hold_every_section_once(self):
         import re
         tabs=re.findall(r"\['(\w+)','[^']+',\[([^\]]*)\]\]",self.block[:self.block.index('];')])
-        self.assertEqual([t for t,_ in tabs],['units','shooting','possessions','defense','roster','games'])
+        self.assertEqual([t for t,_ in tabs],['units','shooting','possessions','defense','roster','games','resume','context'])
         ids=[i for _,body in tabs for i in re.findall(r"'(cbb-[\w-]+)'",body)]
         self.assertEqual(len(ids),len(set(ids)))
         rendered=re.findall(r"part\('(cbb-[\w-]+)'",self.block)
