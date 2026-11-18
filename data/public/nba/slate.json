@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-17",
- "generated_at_utc": "2026-11-17T13:53:45+00:00",
+ "generated_at_utc": "2026-11-17T22:26:10+00:00",
  "data_through_utc": "2026-11-17T02:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -121,8 +121,8 @@
    "id": "401910002",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/17 - 7:30 PM EST",
+   "game_state": "live",
+   "status_detail": "3:36 - 4th",
    "kickoff_utc": "2026-11-18T00:30Z",
    "away": "NY",
    "home": "TOR",
@@ -136,8 +136,8 @@
    "home_record": "5-8",
    "away_split_record": "3-3",
    "home_split_record": "2-4",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 98,
+   "home_score": 98,
    "venue": "Scotiabank Arena",
    "venue_city": "Toronto, ON",
    "broadcast": "",
@@ -7058,7 +7058,7 @@
       "player_name": "Scottie Barnes",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4433134.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 33.7,
       "ppg": 24.2,
       "height_in": 80.0,
@@ -7982,6 +7982,20 @@
      "date": "2026-11-14T21:59Z",
      "return_date": "2026-11-23",
      "value": null
+    },
+    {
+     "player_id": "4433134",
+     "player_name": "Scottie Barnes",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Illness",
+     "detail": "Illness",
+     "comment": "Barnes (illness) has been downgraded to questionable for Tuesday's game against the Knicks, Blake Murphy of Sportsnet.ca reports.",
+     "date": "2026-11-17T17:29Z",
+     "return_date": "2026-11-17",
+     "value": 2.26,
+     "value_recent": 2.83,
+     "missed": 0
     }
    ]
   },
@@ -7989,8 +8003,8 @@
    "id": "401910003",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/17 - 8:00 PM EST",
+   "game_state": "live",
+   "status_detail": "6:24 - 3rd",
    "kickoff_utc": "2026-11-18T01:00Z",
    "away": "POR",
    "home": "MIN",
@@ -8004,8 +8018,8 @@
    "home_record": "10-4",
    "away_split_record": "6-2",
    "home_split_record": "6-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 65,
+   "home_score": 58,
    "venue": "Target Center",
    "venue_city": "Minneapolis, MN",
    "broadcast": "BlazerVision / DAZN MIN",
@@ -10213,7 +10227,7 @@
       "player_name": "Deni Avdija",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4683021.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 32.5,
       "ppg": 24.2,
       "height_in": 80.0,
@@ -11775,6 +11789,11 @@
      "player_id": "4703889",
      "player_name": "Jayson Kent",
      "value": 0.33
+    },
+    {
+     "player_id": "4592435",
+     "player_name": "Branden Carlson",
+     "value": 0.31
     }
    ],
    "away_injuries": [
@@ -11782,8 +11801,8 @@
      "player_id": "4914336",
      "player_name": "Shaedon Sharpe",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Right Meniscus Surgery",
      "detail": "Right Knee Surgery",
      "comment": "Sharpe suffered a torn meniscus in his knee and is expected to miss six months, per Shams Charania of ESPN.",
      "date": "2026-08-24T20:23Z",
@@ -11796,8 +11815,8 @@
      "player_id": "4279888",
      "player_name": "Ja Morant",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Left Hamstring Strain",
      "detail": "Left Hamstring Not Specified",
      "comment": "Head coach Micah Nori said Morant met with a doctor in Los Angeles, who gave him a positive outlook on his recovery from the hamstring injury. While Nori declined to update Morant's timetable, he added Morant \"may not be out for as long as we thought,\" Trail Blazers Insider Sean Highkin reports.",
      "date": "2026-11-08T02:18Z",
@@ -11810,12 +11829,12 @@
      "player_id": "4706557",
      "player_name": "Chris Youngblood",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
-     "detail": "Right Foot Bruise",
-     "comment": "Youngblood (foot) is out for Monday's game against the Timberwolves.",
-     "date": "2026-11-15T23:02Z",
-     "return_date": "2026-11-17",
+     "source": "official",
+     "reason": "Injury/Illness - Right Heel Contusion / Bone Bruise",
+     "detail": "Right Heel Bruise",
+     "comment": "Youngblood (heel) has been ruled out for Tuesday's game at Minnesota.",
+     "date": "2026-11-17T19:19Z",
+     "return_date": "2026-11-19",
      "value": 0.49,
      "value_recent": 0.49,
      "missed": 3
@@ -11824,8 +11843,8 @@
      "player_id": "4578893",
      "player_name": "Vit Krejci",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Left Ankle Fracture",
      "detail": "Left Ankle",
      "comment": "Krejci underwent surgery on his fractured left ankle Wednesday and will be re-evaluated in eight weeks, Brett Siegel of ClutchPoints.com reports.",
      "date": "2026-11-11T19:56Z",
@@ -11833,6 +11852,20 @@
      "value": 0.34,
      "value_recent": 0.4,
      "missed": 6
+    },
+    {
+     "player_id": "4683021",
+     "player_name": "Deni Avdija",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Left Foot Inflammation / Soreness",
+     "detail": "Foot",
+     "comment": "Avdija (foot) is questionable for Tuesday's game against the Timberwolves.",
+     "date": "2026-11-17T19:20Z",
+     "return_date": "2026-11-17",
+     "value": 2.46,
+     "value_recent": 2.46,
+     "missed": 0
     }
    ],
    "home_form": {
@@ -14576,7 +14609,7 @@
       "player_name": "Jonathan Kuminga",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4433247.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 30.4,
       "ppg": 12.4,
       "height_in": 79.0,
@@ -15804,6 +15837,11 @@
      "player_id": "4433569",
      "player_name": "Johni Broome",
      "value": 0.15
+    },
+    {
+     "player_id": "4592979",
+     "player_name": "Zyon Pullin",
+     "value": 0.12
     }
    ],
    "home_injuries": [
@@ -15811,8 +15849,8 @@
      "player_id": "4594268",
      "player_name": "Anthony Edwards",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Right Knee Arthroscopy",
      "detail": "Right Knee Surgery",
      "comment": "Edwards underwent a successful arthroscopic procedure on his right knee Thursday, the Timberwolves announced.",
      "date": "2026-10-29T18:33Z",
@@ -15825,8 +15863,8 @@
      "player_id": "3934673",
      "player_name": "Donte DiVincenzo",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Right Achilles Tendon Repair / Surgery",
      "detail": "Right Achilles Surgery",
      "comment": "DiVincenzo (Achilles) remains confident that he'll return during the 2026-27 season, Jon Krawczynski of The Athletic reports.",
      "date": "2026-10-05T20:53Z",
@@ -15836,11 +15874,25 @@
      "missed": null
     },
     {
+     "player_id": "4433247",
+     "player_name": "Jonathan Kuminga",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Right Shoulder Contusion",
+     "detail": "Right Shoulder",
+     "comment": "Kuminga (shoulder) is out for Tuesday's game against Portland.",
+     "date": "2026-11-17T19:03Z",
+     "return_date": "2026-11-19",
+     "value": 1.34,
+     "value_recent": 1.34,
+     "missed": 0
+    },
+    {
      "player_id": "4432247",
      "player_name": "Jaylen Clark",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Right Hamstring Strain",
      "detail": "Right Hamstring Not Specified",
      "comment": "Clark (hamstring) has been ruled out for the next two weeks.",
      "date": "2026-11-15T22:40Z",
@@ -15850,17 +15902,17 @@
      "missed": 1
     },
     {
-     "player_id": "4433247",
-     "player_name": "Jonathan Kuminga",
-     "status": "Day-To-Day",
-     "source": "espn",
-     "reason": null,
-     "detail": "Right Shoulder",
-     "comment": "Kuminga (shoulder) exited in the fourth quarter of Monday's 106-98 win over Portland and did not return. He closed with 13 points (5-12 FG, 1-2 3Pt, 2-2 FT), nine rebounds and one assist across 29 minutes.",
-     "date": "2026-11-17T03:32Z",
-     "return_date": "2026-11-17",
-     "value": 1.34,
-     "value_recent": 1.34,
+     "player_id": "4592979",
+     "player_name": "Zyon Pullin",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Right Quadriceps Contusion",
+     "detail": "Right Quadriceps Bruise",
+     "comment": "Pullin (quadriceps) has been ruled out for Tuesday's game against Portland.",
+     "date": "2026-11-17T19:05Z",
+     "return_date": "2026-11-19",
+     "value": 0.12,
+     "value_recent": 0.0,
      "missed": 0
     }
    ]
@@ -15869,8 +15921,8 @@
    "id": "401910004",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/17 - 8:00 PM EST",
+   "game_state": "live",
+   "status_detail": "3:32 - 3rd",
    "kickoff_utc": "2026-11-18T01:00Z",
    "away": "DET",
    "home": "SA",
@@ -15884,8 +15936,8 @@
    "home_record": "12-2",
    "away_split_record": "5-2",
    "home_split_record": "5-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 70,
+   "home_score": 66,
    "venue": "Frost Bank Center",
    "venue_city": "San Antonio, TX",
    "broadcast": "NBC",
@@ -19785,13 +19837,13 @@
      "value": 1.36
     },
     {
-     "player_id": "4278562",
-     "player_name": "Paul Reed",
+     "player_id": "4433621",
+     "player_name": "Jalen Duren",
      "value": 1.28
     },
     {
-     "player_id": "4433621",
-     "player_name": "Jalen Duren",
+     "player_id": "4278562",
+     "player_name": "Paul Reed",
      "value": 1.28
     },
     {
@@ -19838,9 +19890,9 @@
      "source": "official",
      "reason": "Injury/Illness - Left Quadriceps Strain",
      "detail": "Left Quadriceps Strain",
-     "comment": "Robinson (quadriceps) has been ruled out for Tuesday's game against the Spurs.",
-     "date": "2026-11-16T22:37Z",
-     "return_date": "2026-11-18",
+     "comment": "Robinson will be re-evaluated in one week due to a left quadriceps strain, Coty M. Davis of The Detroit News reports.",
+     "date": "2026-11-17T16:25Z",
+     "return_date": "2026-11-27",
      "value": 1.61,
      "value_recent": 1.61,
      "missed": 0
@@ -19872,6 +19924,20 @@
      "value": 0.6,
      "value_recent": 0.6,
      "missed": 0
+    },
+    {
+     "player_id": "4395702",
+     "player_name": "Isaiah Joe",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Right Hip Contusion",
+     "detail": "Right Hip Bruise",
+     "comment": "Joe (hip) is out for Tuesday's game against the Spurs.",
+     "date": "2026-11-17T18:33Z",
+     "return_date": "2026-11-18",
+     "value": 0.5,
+     "value_recent": 0.0,
+     "missed": 9
     },
     {
      "player_id": "2990962",
@@ -19912,20 +19978,6 @@
      "date": null,
      "return_date": null,
      "value": null
-    },
-    {
-     "player_id": "4395702",
-     "player_name": "Isaiah Joe",
-     "status": "Doubtful",
-     "source": "official",
-     "reason": "Injury/Illness - Right Hip Contusion",
-     "detail": "Right Hip Bruise",
-     "comment": "Joe (hip) is doubtful to play in Tuesday's game against the Spurs.",
-     "date": "2026-11-16T22:40Z",
-     "return_date": "2026-11-17",
-     "value": 0.5,
-     "value_recent": 0.0,
-     "missed": 9
     }
    ],
    "home_form": {
@@ -40002,7 +40054,7 @@
      "player_name": "Walker Kessler",
      "status": "Out",
      "source": "official",
-     "reason": "Injury/Illness - Right Lower Leg",
+     "reason": "Injury/Illness - Right Lower Leg Soreness",
      "detail": "Right Lower Leg Soreness",
      "comment": "Walker (leg) has been ruled out for Tuesday's game against the Hornets.",
      "date": "2026-11-17T01:10Z",
@@ -40014,7 +40066,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-17_08_45AM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-17_05_15PM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -40147,5 +40199,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-17T22:12:53+00:00"
+ "published_at_utc": "2026-11-18T02:45:41+00:00"
 }
