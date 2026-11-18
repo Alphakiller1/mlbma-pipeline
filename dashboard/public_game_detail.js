@@ -118,7 +118,7 @@
     'nba-shooter-regression': 'trend', 'nba-player-types': 'users', 'nba-player-zones': 'target',
     'nba-player-bio': 'users', 'nba-schedule': 'plane', 'nba-edge-map': 'target', 'nba-fingerprint': 'lineup',
     'nba-tape': 'gauge', 'nba-aging': 'trend', 'nba-shot-maps': 'target', 'nba-onfloor': 'users',
-    'special-teams': 'football', situational: 'target',
+    'special-teams': 'football', situational: 'target', 'cfb-receivers': 'users', 'cfb-defenders': 'users',
     'cbb-resume': 'gauge', 'cbb-regression': 'trend', 'cbb-schedule': 'plane'
   };
 
@@ -6125,8 +6125,9 @@ function seasonToggle(game) {
   var CFB_TABS = [
     ['units', 'Units', ['cfb-power', 'cfb-efficiency', 'cfb-dvoa', 'cfb-predictability']],
     ['games', 'Games', ['cfb-game-log', 'cfb-schedule']],
-    ['passing', 'Passing', ['cfb-quarterbacks', 'cfb-passing']],
+    ['passing', 'Passing', ['cfb-quarterbacks', 'cfb-passing', 'cfb-receivers']],
     ['rushing', 'Rushing', ['cfb-rushing', 'cfb-rushers']],
+    ['defense', 'Defense', ['cfb-defenders']],
     ['situational', 'Situational', ['cfb-situational']],
     ['special', 'Special Teams', ['cfb-special']],
     ['availability', 'Availability', ['cfb-availability']],
@@ -6483,6 +6484,32 @@ function seasonToggle(game) {
     });
     return head + nflSplitTable(CFB_RUSHER_COLS.map(function (c) { return c[1]; }), rows, 'Player') +
       '</section>';
+  }
+
+  /* Pass catchers and defensive playmakers (2026-11-18 audit; cfb_depth.
+     receivers / defenders): season lines ranked among FBS players, the Ball
+     Carriers table's shape. */
+  var CFB_RECEIVER_COLS = [['receptions', 'Rec'], ['yards', 'Yards'], ['yards_per_catch', 'Yds/Rec'],
+    ['touchdowns', 'TD'], ['long', 'Long']];
+  var CFB_DEFENDER_COLS = [['tackles', 'Tkl'], ['tfl', 'TFL'], ['sacks', 'Sacks'], ['interceptions', 'INT'],
+    ['passes_defended', 'PD']];
+  function cfbPlayersPanel(sport, game, side, key, title, cols, volume, cohort, empty) {
+    var list = availability.available(game, side, game[side + key]);
+    var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' + esc(cfbName(sport, game, side) + ' ' + title) + '</h3>';
+    if (!list.length) return head + pending(empty) + '</section>';
+    var rows = list.map(function (r) {
+      return '<tr>' + cfbPlayerCell(r, r.position || '', volume(r), availability.status(game, side, r)) +
+        cols.map(function (c) { return cfbCell(cfbPlayerRank(r[c[0]], r.ranked, cohort)); }).join('') + '</tr>';
+    });
+    return head + nflSplitTable(cols.map(function (c) { return c[1]; }), rows, 'Player') + '</section>';
+  }
+  function cfbReceiversPanel(sport, game, side) {
+    return cfbPlayersPanel(sport, game, side, '_receivers', 'Pass Catchers', CFB_RECEIVER_COLS,
+      function (r) { return r.catches + ' rec'; }, 'qualified FBS receivers', 'Receiving lines are not published yet.');
+  }
+  function cfbDefendersPanel(sport, game, side) {
+    return cfbPlayersPanel(sport, game, side, '_defenders', 'Defensive Playmakers', CFB_DEFENDER_COLS,
+      function (r) { return r.tackles_total + ' tkl'; }, 'qualified FBS defenders', 'Defensive lines are not published yet.');
   }
 
   var CFB_LOG_COLS = [['total_yards', 'Yards', 'int'], ['passing_yards', 'Pass', 'int'],
@@ -7413,7 +7440,7 @@ function seasonToggle(game) {
         (gap == null ? '<td class="num ca-vs-none">No Track Record</td>' :
           nbaRankedTd((gap > 0 ? '+' : '') + gap.toFixed(1), nbaPlayerPlace(gap, nbaGapPool(game), null),
             null, 'shooting above track record')) +
-        '<td class="num">' + esc(pr.age != null ? String(Math.round(pr.age)) : '—') + '</td>' +
+        '<td class="num">' + esc(pr.age != null ? String(Math.round(pr.age)) : 'Not Listed') + '</td>' +
         (ageTotal == null ? '<td class="num ca-vs-none">Not Published</td>' :
           nbaRankedTd((ageTotal > 0 ? '+' : '') + ageTotal.toFixed(1), nbaProfileRank(game, 'age_curve', function (x) {
             var a = x.age_change || {}; return a.offense == null ? null : a.offense + (a.defense || 0); }, ageTotal, true),
@@ -7492,9 +7519,9 @@ function seasonToggle(game) {
     var rows = players.map(function (p) {
       var t = p.tracking || {};
       return '<tr>' + nbaPlayerCell(p, availability.status(game, side, p)) +
-        '<td class="num">' + esc(p.height || '—') + '</td>' +
-        '<td class="num">' + esc(p.weight_lb != null ? String(Math.round(p.weight_lb)) : '—') + '</td>' +
-        '<td class="num">' + esc(p.age != null ? String(Math.round(p.age)) : '—') + '</td>' +
+        '<td class="num">' + esc(p.height || 'Not Listed') + '</td>' +
+        '<td class="num">' + esc(p.weight_lb != null ? String(Math.round(p.weight_lb)) : 'Not Listed') + '</td>' +
+        '<td class="num">' + esc(p.age != null ? String(Math.round(p.age)) : 'Not Listed') + '</td>' +
         nbaBioCell(game, 'usage', function (x) { return x.usage; }, p.usage, null, nbaPct(p.usage), 'usage') +
         nbaBioCell(game, 'ts', function (x) { return x.ts; }, p.ts, true, nbaPct(p.ts), 'true shooting') +
         nbaBioCell(game, 'speed', function (x) { return (x.tracking || {}).speed; }, t.speed,
@@ -9006,10 +9033,14 @@ function seasonToggle(game) {
         nflDuo(cfbQbPanel, sport, game)),
       section('cfb-passing', 'Pass Game', 'Efficiency, Volume, Scoring And Protection',
         nflDuo(cfbLedgerPanel, sport, game, 'passing')),
+      section('cfb-receivers', 'Pass Catchers', 'Season Receiving Lines, Ranked Of FBS Receivers',
+        nflDuo(cfbReceiversPanel, sport, game)),
       section('cfb-rushing', 'Run Game', 'Efficiency, Volume And Line Play',
         nflDuo(cfbLedgerPanel, sport, game, 'rushing')),
       section('cfb-rushers', 'Ball Carriers', 'Season Rushing Lines, Ranked Of FBS Rushers',
         nflDuo(cfbRushersPanel, sport, game)),
+      section('cfb-defenders', 'Defensive Playmakers', 'Tackles, Tackles For Loss, Sacks And Takeaways, Ranked Of FBS',
+        nflDuo(cfbDefendersPanel, sport, game)),
       section('cfb-situational', 'Situational', 'Downs, Tempo, Play Mix And Havoc',
         nflDuo(cfbLedgerPanel, sport, game, 'situational')),
       section('cfb-special', 'Special Teams', 'Kicking, Returns And Penalties',

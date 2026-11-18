@@ -1011,7 +1011,13 @@
     "fg2a_share",
     "logs",
     "cpoe",
-    "avg_intended_air_yards"
+    "avg_intended_air_yards",
+    "yards_per_catch",
+    "catches",
+    "tackles",
+    "tfl",
+    "passes_defended",
+    "tackles_total"
   ],
   "derived_descriptive": [
     "estimated_per40",
@@ -1203,7 +1209,13 @@
     "two_min_epa_allowed",
     "xp_pct",
     "away_special_teams",
-    "home_special_teams"
+    "home_special_teams",
+    "away_receivers",
+    "home_receivers",
+    "away_defenders",
+    "home_defenders",
+    "receivers",
+    "defenders"
   ],
   "contextual_environment": [
     "away_rest_days",

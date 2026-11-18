@@ -135,8 +135,8 @@
       if (scheme) mapped[side + '_scheme_profile'] = scheme;
       // CFBD depth (scripts/cfb_depth.py): run game and lines, scheme rates,
       // quarterbacks with the defense's splits, ball carriers, game logs.
-      ['_run_game', '_scheme_stats', '_qbs', '_defense_splits', '_rushers', '_game_log',
-        '_schedule_strength', '_injuries', '_power', '_predictability']
+      ['_run_game', '_scheme_stats', '_qbs', '_defense_splits', '_rushers', '_receivers', '_defenders',
+        '_game_log', '_schedule_strength', '_injuries', '_power', '_predictability']
         .forEach(function (key) {
           if (pub[side + key]) mapped[side + key] = pub[side + key];
         });
@@ -176,7 +176,8 @@
      reports and schedule strength are left out: a week-old copy of either is
      wrong, not merely older. */
   var TEAM_FACTS = ['_qbs', '_adjusted_efficiency', '_scheme_profile', '_run_game',
-    '_scheme_stats', '_defense_splits', '_rushers', '_game_log', '_power', '_predictability'];
+    '_scheme_stats', '_defense_splits', '_rushers', '_receivers', '_defenders', '_game_log', '_power',
+    '_predictability'];
 
   /* When the week's slate is published without a team's facts (the model's
      stats source was out of calls, or the model board rolled to next week
@@ -237,15 +238,37 @@
     });
   }
 
+  /* The week's games from this site's own public slate, shaped like a board
+     with no model fields. 2026-11-18 audit: the public desk read its game
+     list only from the cfb-model site, so an outage there blanked every CFB
+     card although /data/public/cfb/slate.json carried every game. */
+  function boardFromPublic(slate) {
+    if (!slate || !Array.isArray(slate.games) || !slate.games.length) return null;
+    function team(g, side) {
+      return { school: g[side + '_name'] || g[side], abbreviation: g[side],
+        conference: g[side + '_conference'] || null, logo: g[side + '_logo'] || null,
+        color: g[side + '_color'] || null };
+    }
+    return {
+      season: slate.season, week: slate.week, generated_at_utc: slate.generated_at_utc, fromPublic: true,
+      authority: { level: 'public-slate', may_bet: false, unmet_gates: [], evidence: '' },
+      games: slate.games.map(function (g) {
+        return { key: g.id, kickoff_utc: g.kickoff_utc, neutral: g.neutral === true,
+          away: team(g, 'away'), home: team(g, 'home') };
+      })
+    };
+  }
+
   // ChaseMatchupCard.mount() calls load(dateIso). Returns the desk result shape.
   function load() {
     return Promise.all([
-      loadJson(BOARD_URL),
+      loadJson(BOARD_URL).catch(function () { return null; }),
       loadJson(BUILD_URL).catch(function () { return {}; }),
       loadJson('/data/public/cfb/slate.json').catch(function () { return { games: [] }; }),
       loadJson(SLATE_URL).catch(function () { return { games: [] }; })
     ]).then(function (parts) {
-      var board = parts[0] || {};
+      var fromModel = parts[0] && Array.isArray(parts[0].games) && parts[0].games.length;
+      var board = fromModel ? parts[0] : (boardFromPublic(parts[2]) || {});
       var build = parts[1] || {};
       var currentYear = new Date().getUTCFullYear();
       var boardSeason = Number(board.season);
@@ -284,7 +307,7 @@
         generatedAt: board.generated_at || board.generated_at_utc || null,
         dataThrough: build.generated_at || build.generated_at_utc || null,
         state: build.state || null,
-        source: 'CFB model board',
+        source: fromModel ? 'CFB model board' : 'Public slate',
         authority: {
           level: auth.level || 'unknown',
           may_bet: auth.may_bet === true,

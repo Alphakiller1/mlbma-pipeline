@@ -185,7 +185,7 @@
     nfl: '/data/public/nfl/slate.json',
     nba: '/data/public/nba/slate.json',
     cbb: '/data/public/cbb/slate.json',
-    cfb: 'https://alphakiller1.github.io/cfb-model/slate.json'
+    cfb: '/data/public/cfb/slate.json'
   };
 
   /* The publish time from a public slate without downloading the slate.
@@ -226,7 +226,8 @@
       if (!slateUrl && global.ChaseSportMLB && sport === 'mlb') slateUrl = ChaseSportMLB.SLATE_URL;
       // CFB matchup pages set CHASE_SPORT_PAGE only after the nav has asked, so the
       // header read "Published: unknown - no public slate url" there.
-      if (!slateUrl && global.ChaseSportCFB && sport === 'cfb') slateUrl = ChaseSportCFB.SLATE_URL;
+      // The public desk's own slate, not the model site's (2026-11-18 audit).
+      if (!slateUrl && sport === 'cfb') slateUrl = PUBLIC_SLATES.cfb;
       if (!slateUrl && global.ChaseSportNBA && sport === 'nba') slateUrl = ChaseSportNBA.SLATE_URL;
       if (!slateUrl) {
         var page = global.CHASE_SPORT_PAGE;

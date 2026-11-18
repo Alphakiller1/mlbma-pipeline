@@ -317,6 +317,105 @@ def rushers(season: int, fbs: set[str]) -> dict[str, list[dict]]:
     return out
 
 
+MIN_RECEIVER_CATCHES = 12
+MIN_DEFENDER_TACKLES = 15
+PLAYER_CACHE_HOURS = 20
+
+
+def _player_lines_cached(season: int, category: str) -> dict[tuple[str, str], dict]:
+    """_player_lines through a disk cache (CFBD counts every call against the
+    key's allowance; these season lines move once a week). A failed call
+    falls back to the last cached copy."""
+    import time as _time
+    name = f"players_{season}_{category}.json"
+    path = CACHE / name
+    if path.exists() and _time.time() - path.stat().st_mtime < PLAYER_CACHE_HOURS * 3600:
+        hit = _cached(name)
+        if hit:
+            return {tuple(k.split("|", 1)): v for k, v in hit.items()}
+    lines = _player_lines(season, category)
+    if lines:
+        _store(name, {f"{k[0]}|{k[1]}": v for k, v in lines.items()})
+        return lines
+    stale = _cached(name)
+    return {tuple(k.split("|", 1)): v for k, v in stale.items()} if stale else {}
+
+
+def _ranked_players(lines, pool_floor_key, floor, specs, keep, sort_key):
+    """Rows of ranked entries per school, the rushers' shape."""
+    pool = {k: v for k, v in lines.items() if (v.get(pool_floor_key) or 0) >= floor}
+
+    def value(v, name, field):
+        return field(v) if callable(field) else v.get(field)
+    pools = {s[0]: [value(v, s[0], s[1]) for v in pool.values() if value(v, s[0], s[1]) is not None]
+             for s in specs}
+    out: dict[str, list[dict]] = {}
+    for key, v in lines.items():
+        ranked = key in pool
+        row = {"player_id": key[1], "player_name": v.get("player"), "position": v.get("position"), "ranked": ranked}
+        row.update(keep(v))
+        for name, field, label, better, fmt in specs:
+            e = _entry(label, value(v, name, field), better, fmt, pools[name], place_outside=not ranked)
+            if e and not e["value"] and name in ZERO_NEUTRAL:
+                # A zero shared by hundreds of players places by how many
+                # share it: zero interceptions read 597th (green) and zero
+                # tackles for loss 1,878th (orange). It is printed, unranked.
+                e.pop("rank", None)
+                e.pop("of", None)
+            if e:
+                row[name] = e
+        out.setdefault(key[0], []).append(row)
+    for school in out:
+        out[school].sort(key=sort_key)
+    return out
+
+
+ZERO_NEUTRAL = {"touchdowns", "tfl", "sacks", "interceptions", "passes_defended"}
+
+
+def receivers(season: int, fbs: set[str]) -> dict[str, list[dict]]:
+    """{normalized school: [pass catcher, ...]} most receiving yards first, each
+    ranked among FBS receivers with 12+ catches (2026-11-18 audit: the CFB desk
+    had no pass catchers)."""
+    lines = {k: v for k, v in _player_lines_cached(season, "receiving").items()
+             if k[0] in fbs and v.get("REC")}
+    specs = (("receptions", "REC", "Receptions", "high", "int"),
+             ("yards", "YDS", "Receiving yards", "high", "int"),
+             ("yards_per_catch", lambda v: v.get("YDS", 0) / v["REC"], "Yards per catch", "high", "num"),
+             ("touchdowns", "TD", "Receiving TDs", "high", "int"),
+             ("long", "LONG", "Longest catch", "high", "int"))
+    out = _ranked_players(lines, "REC", MIN_RECEIVER_CATCHES, specs,
+                          lambda v: {"catches": int(v["REC"])},
+                          lambda r: -((r.get("yards") or {}).get("value") or 0))
+    return {school: rows[:5] for school, rows in out.items()}
+
+
+def defenders(season: int, fbs: set[str]) -> dict[str, list[dict]]:
+    """{normalized school: [defender, ...]}: the leading tacklers plus anyone
+    with 3+ sacks or 2+ interceptions, each ranked among FBS defenders with
+    15+ tackles."""
+    lines = {k: dict(v) for k, v in _player_lines_cached(season, "defensive").items()
+             if k[0] in fbs and v.get("TOT")}
+    for key, v in _player_lines_cached(season, "interceptions").items():
+        if key in lines:
+            lines[key]["INT"] = v.get("INT")
+    specs = (("tackles", "TOT", "Total tackles", "high", "int"),
+             ("tfl", "TFL", "Tackles for loss", "high", "num"),
+             ("sacks", "SACKS", "Sacks", "high", "num"),
+             ("interceptions", lambda v: v.get("INT") or 0, "Interceptions", "high", "int"),
+             ("passes_defended", "PD", "Passes defended", "high", "int"))
+    out = _ranked_players(lines, "TOT", MIN_DEFENDER_TACKLES, specs,
+                          lambda v: {"tackles_total": int(v["TOT"])},
+                          lambda r: -r["tackles_total"])
+    picked = {}
+    for school, rows in out.items():
+        lead = rows[:6]
+        extra = [r for r in rows[6:] if ((r.get("sacks") or {}).get("value") or 0) >= 3
+                 or ((r.get("interceptions") or {}).get("value") or 0) >= 2]
+        picked[school] = (lead + extra)[:8]
+    return picked
+
+
 # -- game logs (ESPN) ------------------------------------------------------------
 def _cached(name: str) -> dict | None:
     path = CACHE / name

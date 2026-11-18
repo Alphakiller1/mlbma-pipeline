@@ -907,6 +907,8 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict,
         row[side + "_qbs"] = (depth.get("qbs") or {}).get(key)
         row[side + "_defense_splits"] = (depth.get("defense_splits") or {}).get(key)
         row[side + "_rushers"] = (depth.get("rushers") or {}).get(key)
+        row[side + "_receivers"] = (depth.get("receivers") or {}).get(key)
+        row[side + "_defenders"] = (depth.get("defenders") or {}).get(key)
         power = depth.get("power") or {}
         row[side + "_power"] = (power.get("teams") or {}).get(key)
         row[side + "_predictability"] = (power.get("predictability") or {}).get(key)
@@ -976,6 +978,8 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
         "qbs": cfb_depth.quarterbacks(season, fbs) if fbs else {},
         "defense_splits": cfb_depth.defense_splits(rows),
         "rushers": cfb_depth.rushers(season, fbs) if fbs else {},
+        "receivers": cfb_depth.receivers(season, fbs) if fbs else {},
+        "defenders": cfb_depth.defenders(season, fbs) if fbs else {},
         "logs": cfb_depth.game_logs(season, week, wanted, fbs),
         "schedule": cfb_depth.schedule_strength(season, {
             key[5:]: profile["overall"]["value"] for key, profile in (adjusted or {}).items()
@@ -990,7 +994,7 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
     return depth
 
 
-DEPTH_KEYS = ("_run_game", "_scheme_stats", "_qbs", "_defense_splits", "_rushers",
+DEPTH_KEYS = ("_run_game", "_scheme_stats", "_qbs", "_defense_splits", "_rushers", "_receivers", "_defenders",
               "_schedule_strength", "_power", "_predictability")
 
 

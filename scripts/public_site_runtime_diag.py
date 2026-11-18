@@ -625,8 +625,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # each unit above the unit it meets, a rank pill on every graded number,
         # no verdict lines, no gap ordering, no dash cells.
         page.wait_for_selector(".ca-nfl-tabs", timeout=timeout_ms)
-        check("CFB desk carries the eight evidence tabs (ledger restructure 2026-10-03, Availability)",
-              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 8)
+        check("CFB desk carries the nine evidence tabs (ledger 2026-10-03, Availability, Defense 2026-11-18)",
+              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 9)
         check("CFB opens on the Units evidence group alone",
               page.evaluate("[...document.querySelectorAll('.ca-detail-section')]"
                             ".filter(s => s.offsetParent).map(s => s.id).join(',')") ==
