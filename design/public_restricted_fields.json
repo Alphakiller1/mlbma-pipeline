@@ -201,7 +201,11 @@
     "venue_state",
     "away_special_teams",
     "home_special_teams",
-    "weather_precip_pct"
+    "weather_precip_pct",
+    "away_lineup_units",
+    "home_lineup_units",
+    "away_splits",
+    "home_splits"
   ],
   "notes": {
     "away_availability_list": "Official injury designations: name, position, status, body part. factual-status. No projection, snap share or confidence.",
