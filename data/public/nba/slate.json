@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-18",
- "generated_at_utc": "2026-11-18T07:30:28+00:00",
+ "generated_at_utc": "2026-11-18T12:17:58+00:00",
  "data_through_utc": "2026-11-18T04:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -12129,13 +12129,13 @@
      "value": 0.56
     },
     {
-     "player_id": "3037789",
-     "player_name": "Bogdan Bogdanovic",
+     "player_id": "2991235",
+     "player_name": "Steven Adams",
      "value": 0.43
     },
     {
-     "player_id": "2991235",
-     "player_name": "Steven Adams",
+     "player_id": "3037789",
+     "player_name": "Bogdan Bogdanovic",
      "value": 0.43
     },
     {
@@ -20155,13 +20155,13 @@
      "value": 1.29
     },
     {
-     "player_id": "4697268",
-     "player_name": "Kam Jones",
+     "player_id": "5082206",
+     "player_name": "Brayden Burries",
      "value": 1.1
     },
     {
-     "player_id": "5082206",
-     "player_name": "Brayden Burries",
+     "player_id": "4697268",
+     "player_name": "Kam Jones",
      "value": 1.1
     },
     {
@@ -36164,13 +36164,13 @@
      "value": 1.24
     },
     {
-     "player_id": "4431687",
-     "player_name": "Patrick Williams",
+     "player_id": "4395626",
+     "player_name": "Tre Jones",
      "value": 0.92
     },
     {
-     "player_id": "4395626",
-     "player_name": "Tre Jones",
+     "player_id": "4431687",
+     "player_name": "Patrick Williams",
      "value": 0.92
     },
     {
@@ -44277,13 +44277,13 @@
      "value": 1.15
     },
     {
-     "player_id": "5104155",
-     "player_name": "Bilal Coulibaly",
+     "player_id": "4432907",
+     "player_name": "Justin Champagnie",
      "value": 0.92
     },
     {
-     "player_id": "4432907",
-     "player_name": "Justin Champagnie",
+     "player_id": "5104155",
+     "player_name": "Bilal Coulibaly",
      "value": 0.92
     },
     {
@@ -44297,13 +44297,13 @@
      "value": 0.58
     },
     {
-     "player_id": "6609",
-     "player_name": "Khris Middleton",
+     "player_id": "4278129",
+     "player_name": "Deandre Ayton",
      "value": 0.47
     },
     {
-     "player_id": "4278129",
-     "player_name": "Deandre Ayton",
+     "player_id": "6609",
+     "player_name": "Khris Middleton",
      "value": 0.47
     },
     {
@@ -96512,7 +96512,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-18_02_30AM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-18_07_15AM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -96645,5 +96645,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-18T11:16:28+00:00"
+ "published_at_utc": "2026-11-18T17:11:22+00:00"
 }
