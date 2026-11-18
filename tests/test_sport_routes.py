@@ -133,7 +133,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("['availability', 'Availability', ['cfb-availability']]", js)
         self.assertIn("function cfbScheduleBody", js)
         self.assertIn("function cfbInjuryPanel", js)
-        self.assertIn("SP+ Opponent-Adjusted Efficiency By Unit", js)
+        self.assertIn("'SP+ Ratings', 'Opponent-Adjusted Efficiency By Unit'", js)
         self.assertIn("game.away_adjusted_efficiency", js)
         self.assertIn("host.__deskTabs = deskTabsFor(sport)", js)
         self.assertIn("return sport === 'cbb' ? CBB_TABS : (sport === 'cfb' ? CFB_TABS : (sport === 'nba' ? NBA_TABS : NFL_TABS));", js)
@@ -672,6 +672,30 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertNotIn('class="ca-ctx-note"', card)
         self.assertNotIn("ca-wx-note", js)
         self.assertNotIn("ca-analysis-scope__copy", js)
+        # 2026-11-18 audit: the NBA desk carried explanations in other classes.
+        for cls in ("ca-coach-note", "ca-coach-summary", "ca-scheme-flag"):
+            self.assertNotIn(cls, js, cls)
+        # A ca-cbb-note is a citation, the pace key or a data line - never prose.
+        notes = ("<p class=\"ca-cbb-note", "'<p class=\"ca-cbb-note")
+        allowed_notes = (" ca-cbb-cite", " ca-cbb-status", " ca-pace-legend", "\">Offense FGM/FGA")
+        for opener in notes:
+            start = 0
+            while (i := js.find(opener, start)) >= 0:
+                self.assertTrue(any(js[i + len(opener):].startswith(a) for a in allowed_notes),
+                                js[i:i + 120])
+                start = i + 1
+        icons = (ROOT / "dashboard" / "chase_icons.js").read_text(encoding="utf-8")
+        self.assertNotIn("marks the outer", icons)
+
+    def test_nba_matchup_map_ranks_no_gaps(self):
+        """Evidence, not verdicts: the map shows both ranks in one fixed order and
+        never sorts by, labels or colours the side a row favours."""
+        js = (ROOT / "dashboard" / "public_game_detail.js").read_text(encoding="utf-8")
+        start = js.index("function nbaEdgeEntries")
+        block = js[start:js.index("function nbaButterfly", start)]
+        for verdict in ("Rank gap", "Math.abs(b.edge)", "' +' + Math.abs", "is-' + lead", "Gap In Rank"):
+            self.assertNotIn(verdict, block, verdict)
+        self.assertIn("ca-edge-link is-neutral", block)
 
     def test_mlb_detail_has_active_bullpen_splits_and_workload(self):
         detail = (ROOT / "dashboard" / "public_game_detail.js").read_text(encoding="utf-8")

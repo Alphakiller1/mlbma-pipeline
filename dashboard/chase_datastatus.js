@@ -188,6 +188,35 @@
     cfb: 'https://alphakiller1.github.io/cfb-model/slate.json'
   };
 
+  /* The publish time from a public slate without downloading the slate.
+     Every slate writes generated_at_utc in its first hundred bytes, and the
+     header asked for nothing else, yet it fetched the whole file a second
+     time (0.4-0.66 MB a page view on NFL, NBA and CBB, 2026-11-18 audit).
+     The body is read only until the stamp appears; then the stream is
+     cancelled. A browser without streams reads the file as before. */
+  var STAMP_RE = /"(?:generated_at_utc|generated_at|published_at)"\s*:\s*"([^"]+)"/;
+  function readSlateStamp(url) {
+    return fetch(url, { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) throw new Error('slate');
+      if (!r.body || !r.body.getReader || typeof TextDecoder === 'undefined') {
+        return r.json().then(function (s) { return s && (s.generated_at_utc || s.generated_at || s.published_at); });
+      }
+      var reader = r.body.getReader(), decoder = new TextDecoder(), text = '';
+      function pump() {
+        return reader.read().then(function (step) {
+          if (step.value) text += decoder.decode(step.value, { stream: !step.done });
+          var m = STAMP_RE.exec(text);
+          if (m || step.done || text.length > 262144) {
+            if (!step.done) { try { reader.cancel(); } catch (e) { /* already closed */ } }
+            return m ? m[1] : null;
+          }
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
+
   function fetchLastUpdated(opts) {
     opts = opts || {};
     var sport = String(opts.sport || 'mlb').toLowerCase();
@@ -213,13 +242,8 @@
           issues: ['no public slate url']
         }));
       }
-      return fetch(slateUrl + (slateUrl.indexOf('?') >= 0 ? '&' : '?') + '_probe=' + Date.now(), { cache: 'no-store' })
-        .then(function (r) {
-          if (!r.ok) throw new Error('slate');
-          return r.json();
-        })
-        .then(function (slate) {
-          var asOf = slate && (slate.generated_at_utc || slate.generated_at || slate.published_at);
+      return readSlateStamp(slateUrl + (slateUrl.indexOf('?') >= 0 ? '&' : '?') + '_probe=' + Date.now())
+        .then(function (asOf) {
           if (!asOf) return unknownFields({ source: 'public-slate', sport: sport });
           return fieldsFromParsed({ as_of: asOf, slateDateEt: null }, { source: 'public-slate', sport: sport });
         })
