@@ -117,7 +117,9 @@
     'nba-size': 'users', 'nba-tracking': 'gauge', 'nba-style': 'whistle', 'nba-scheme': 'lineup', 'nba-regression': 'trend',
     'nba-shooter-regression': 'trend', 'nba-player-types': 'users', 'nba-player-zones': 'target',
     'nba-player-bio': 'users', 'nba-schedule': 'plane', 'nba-edge-map': 'target', 'nba-fingerprint': 'lineup',
-    'nba-tape': 'gauge', 'nba-aging': 'trend', 'nba-shot-maps': 'target', 'nba-onfloor': 'users'
+    'nba-tape': 'gauge', 'nba-aging': 'trend', 'nba-shot-maps': 'target', 'nba-onfloor': 'users',
+    'special-teams': 'football', situational: 'target',
+    'cbb-resume': 'gauge', 'cbb-regression': 'trend', 'cbb-schedule': 'plane'
   };
 
   function ico(name, cls, px) {
@@ -1692,7 +1694,8 @@
   function wxFact(game) {
     var key = wxKey(game);
     var bits = [game.weather_temp ? game.weather_temp + '\u00b0' : '',
-                game.weather_cond || '', game.weather_wind || ''].filter(Boolean);
+                game.weather_cond || '', game.weather_wind || '',
+                game.weather_precip_pct >= 20 ? game.weather_precip_pct + '% Precip' : ''].filter(Boolean);
     if (!bits.length) {
       var roof = String(game.roof || '');
       if (/indoor|dome|closed|retractable/i.test(roof)) {
@@ -4726,7 +4729,16 @@ function seasonToggle(game) {
               trackRanks.avg_time_to_throw, true) : '') +
           (tracking.pressure_rate != null
             ? trackTile('Pressured', esc(pctText(tracking.pressure_rate)),
-              trackRanks.pressure_rate, true) : '')
+              trackRanks.pressure_rate, true) : '') +
+          (tracking.cpoe != null
+            ? trackTile('CPOE', esc((tracking.cpoe > 0 ? '+' : '') + (tracking.cpoe * 100).toFixed(1) + '%'),
+              trackRanks.cpoe, false) : '') +
+          // How deep he throws is style, not quality: it carries a neutral mark.
+          (tracking.avg_intended_air_yards != null
+            ? '<div class="ca-stat"><span class="ca-stat__label">Air Yds / Att</span><strong class="ca-stat__value">' +
+              esc(Number(tracking.avg_intended_air_yards).toFixed(1)) +
+              nflFreqMark(nflAsFreq(rankPosition(trackRanks.avg_intended_air_yards), 'QBs with qualifying tracking data')) +
+              '</strong></div>' : '')
         : tile('YPC', all.yards_per_carry, 'num1', ranks.yards_per_carry) +
           tile('EPA / Carry', all.epa_per_carry, 'epa', ranks.epa_per_carry) +
           tile('Success', all.success_rate, 'pct', ranks.success_rate) +
@@ -5448,6 +5460,29 @@ function seasonToggle(game) {
   }
 
   // Both evidence windows, as the season toggle expects.
+  /* Special teams and situational figures (2026-11-18 audit;
+     outputs/nfl_special_teams.py), head to head in the page's two evidence
+     windows. Each figure is ranked among the 32 clubs; a kicking or
+     fourth-down rate names the tries it rests on in its tooltip. */
+  var NFL_SPECIAL = [['fg_short', 'FG% Under 40'], ['fg_40s', 'FG% 40-49'], ['fg_long', 'FG% 50+'], ['xp_pct', 'XP%'],
+    ['net_punt', 'Net Punt'], ['opp_net_punt', 'Opp Net Punt'], ['kr_avg', 'Kick Return Avg'],
+    ['kr_allowed', 'Kick Return Allowed'], ['pr_avg', 'Punt Return Avg'], ['pr_allowed', 'Punt Return Allowed'],
+    ['start_own', 'Start (Own Yard Line)'], ['start_opp', 'Opp Start (Own Yard Line)']];
+  var NFL_SITUATIONAL = [['fourth_go_rate', '4th-Down Go Rate'], ['fourth_conv', '4th-Down Conversion'],
+    ['fourth_conv_allowed', '4th-Down Conv Allowed'], ['two_min_epa', 'Two-Minute EPA/Play'],
+    ['two_min_epa_allowed', 'Two-Minute EPA Allowed'], ['penalties_pg', 'Penalties/G'],
+    ['penalty_yds_pg', 'Penalty Yds/G'], ['drawn_pg', 'Penalties Drawn/G']];
+  function nflSpecialTable(sport, game, rows, title, windowKey) {
+    var a = ((game.away_special_teams || {})[windowKey]) || {};
+    var h = ((game.home_special_teams || {})[windowKey]) || {};
+    return cfbHeadToHead(sport, game, fullName(sport, game, 'away') + ' vs ' + fullName(sport, game, 'home') + ' ' + title,
+      '', rows.map(function (r) { return [r[1], a[r[0]] || null, h[r[0]] || null]; }));
+  }
+  function nflSpecial(sport, game, rows, title) {
+    return nflSeasonViews(nflSpecialTable(sport, game, rows, title, 'combined'),
+      nflSpecialTable(sport, game, rows, title, 'current'));
+  }
+
   function nflRedZone(sport, game) {
     return nflSeasonViews(nflDuo(nflRedZonePanel, sport, game, 'combined'),
       nflDuo(nflRedZonePanel, sport, game, 'current'));
@@ -5672,6 +5707,7 @@ function seasonToggle(game) {
     ['rushing', 'Rushing', ['run-game', 'trenches', 'rushing']],
     ['receiving', 'Receiving', ['receivers']],
     ['redzone', 'Red Zone', ['redzone']],
+    ['special', 'Special Teams', ['special-teams', 'situational']],
     ['tendencies', 'Tendencies', ['pace', 'tendencies', 'def-tendencies']],
     ['lineups', 'Lineups', ['availability']],
     ['profile', 'Profile', ['radar', 'team-context']]
@@ -6040,6 +6076,12 @@ function seasonToggle(game) {
 
       section('redzone', 'Red Zone', 'Trips, Conversion And Who Gets The Ball Inside The 20',
         nflRedZone(sport, game)),
+
+      section('special-teams', 'Special Teams', 'Kicking, Punting, Returns And Field Position',
+        nflSpecial(sport, game, NFL_SPECIAL, 'Special Teams')),
+
+      section('situational', 'Situational', 'Fourth Down, Two-Minute Drill And Penalties',
+        nflSpecial(sport, game, NFL_SITUATIONAL, 'Situational')),
 
       section('pace', 'Pace And Possession', 'Tempo By Situation And Time Of Possession',
         nflBothWindows(function () { return nflDuo(nflPacePanel, sport, game); }) + paceKey()),
@@ -9010,7 +9052,7 @@ function seasonToggle(game) {
          ['team-context', 'Venue And Travel']]
       : [['overview', 'Overview'], ['efficiency', 'Units'], ['quarterbacks', 'Passing'],
          ['rushing', 'Rushing'], ['receivers', 'Receiving'], ['redzone', 'Red Zone'],
-         ['tendencies', 'Tendencies'],
+         ['special-teams', 'Special Teams'], ['tendencies', 'Tendencies'],
          ['availability', 'Lineups'], ['radar', 'Radar'], ['team-context', 'Context']];
     var html = '<a class="ca-detail-back" href="/' + sport + '/">← Back To ' + sport.toUpperCase() + ' Matchups</a>' +
       '<article class="ca-detail-hero" id="overview"><header class="ca-detail-hero__meta">' +

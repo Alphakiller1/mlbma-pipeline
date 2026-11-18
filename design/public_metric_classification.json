@@ -1009,7 +1009,9 @@
     "ft_pct",
     "fg3a_share",
     "fg2a_share",
-    "logs"
+    "logs",
+    "cpoe",
+    "avg_intended_air_yards"
   ],
   "derived_descriptive": [
     "estimated_per40",
@@ -1179,7 +1181,29 @@
     "barthag",
     "wab",
     "adj_tempo",
-    "trank"
+    "trank",
+    "drawn_pg",
+    "fg_40s",
+    "fg_long",
+    "fg_short",
+    "fourth_conv",
+    "fourth_conv_allowed",
+    "fourth_go_rate",
+    "kr_allowed",
+    "kr_avg",
+    "net_punt",
+    "opp_net_punt",
+    "penalties_pg",
+    "penalty_yds_pg",
+    "pr_allowed",
+    "pr_avg",
+    "start_opp",
+    "start_own",
+    "two_min_epa",
+    "two_min_epa_allowed",
+    "xp_pct",
+    "away_special_teams",
+    "home_special_teams"
   ],
   "contextual_environment": [
     "away_rest_days",
@@ -1211,7 +1235,8 @@
     "venue_elevation_ft",
     "away_rest_label",
     "home_rest_label",
-    "venue_state"
+    "venue_state",
+    "weather_precip_pct"
   ],
   "model_private": [
     "projOSI",

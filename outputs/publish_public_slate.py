@@ -1184,6 +1184,11 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
     def red_zone_for(club: str) -> dict | None:
         windows = {window: clubs.get(club) for window, clubs in red_zone.items() if clubs.get(club)}
         return windows or None
+    special_teams = context.get("special_teams") or {}
+
+    def special_for(club: str) -> dict | None:
+        windows = {window: clubs.get(club) for window, clubs in special_teams.items() if clubs.get(club)}
+        return windows or None
     # Prior lines are matched by player, across every club: a receiver who
     # changed teams keeps his 2025 season.
     prior_by_id = {
@@ -1293,6 +1298,14 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
         away_ctx = rest_context(rest.get(away_abbr), kickoff, away_abbr, venue)
         home_ctx = rest_context(rest.get(home_abbr), kickoff, home_abbr, venue)
         temperature, condition = espn_weather(event, comp)
+        # Wind, gusts and precipitation at kickoff for an outdoor game not yet
+        # played (nfl_venues.kickoff_forecast); ESPN's forecast has no wind.
+        forecast = (nfl_venues.kickoff_forecast(venue, kickoff)
+                    if venue_data.get("indoor") is False and state != "final" else None) or {}
+        if temperature is None:
+            temperature = forecast.get("temp_f")
+        wind = forecast.get("wind_mph")
+        gust = forecast.get("gust_mph")
         games.append({
             "id": str(event.get("id") or f"{away_abbr}@{home_abbr}"),
             "away": away_abbr,
@@ -1314,6 +1327,9 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             ) if x) or None,
             "weather_temp": temperature,
             "weather_cond": condition,
+            "weather_wind": (f"Wind {wind} mph" + (f", Gusts {gust}" if gust and gust >= wind + 5 else ""))
+            if wind is not None else None,
+            "weather_precip_pct": forecast.get("precip_pct"),
             "surface": (
                 "Grass" if venue_data.get("grass") is True
                 else ("Turf" if venue_data.get("grass") is False else None)
@@ -1356,6 +1372,8 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             "home_player_stats": starter_stats(home_abbr),
             "away_red_zone": red_zone_for(away_abbr),
             "home_red_zone": red_zone_for(home_abbr),
+            "away_special_teams": special_for(away_abbr),
+            "home_special_teams": special_for(home_abbr),
             "away_run_game": run_game.get(away_abbr),
             "home_run_game": run_game.get(home_abbr),
             "away_defenders_current": defenders_current.get(away_abbr),

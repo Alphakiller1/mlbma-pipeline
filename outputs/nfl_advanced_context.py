@@ -112,6 +112,18 @@ def _team(value: object) -> str:
             "STL": "LAR"}.get(str(value or "").upper(), str(value or "").upper())
 
 
+def _season_rows(frame):
+    """One NGS row per player: the season-to-date row (NGS writes it as week 0).
+
+    Each other week is a single game. Until 2026-11-18 the latest week was
+    kept, so Mahomes's "Time To Throw" was his week-10 game (35 attempts)
+    rather than his season (298), and the ranks pooled single games. A
+    player NGS has no season row for keeps his latest game.
+    """
+    frame = frame.assign(_season_row=frame["week"].eq(0))
+    return frame.sort_values(["_season_row", "week"]).drop_duplicates("player_gsis_id", keep="last")
+
+
 def _ngs_rushing(season: int) -> dict[str, dict[str, Any]]:
     """Latest cumulative regular-season NGS rushing row per player."""
     frame = _frame(NGS_RUSHING_URL, (
@@ -125,7 +137,7 @@ def _ngs_rushing(season: int) -> dict[str, dict[str, Any]]:
         return {}
     frame = frame[(frame["season"].eq(season)) & frame["season_type"].eq("REG") &
                   frame["player_position"].eq("RB")].copy()
-    frame = frame.sort_values("week").drop_duplicates("player_gsis_id", keep="last")
+    frame = _season_rows(frame)
     out: dict[str, dict[str, Any]] = {}
     for row in frame.to_dict("records"):
         attempts = _finite(row.get("rush_attempts")) or 0
@@ -155,12 +167,13 @@ def _ngs_passing(season: int) -> dict[str, dict[str, Any]]:
     frame = _frame(NGS_PASSING_URL, (
         "season", "season_type", "week", "player_display_name", "player_position",
         "team_abbr", "avg_time_to_throw", "attempts", "player_gsis_id",
+        "completion_percentage_above_expectation", "avg_intended_air_yards",
     ))
     if frame is None:
         return {}
     frame = frame[(frame["season"].eq(season)) & frame["season_type"].eq("REG") &
                   frame["player_position"].eq("QB")].copy()
-    frame = frame.sort_values("week").drop_duplicates("player_gsis_id", keep="last")
+    frame = _season_rows(frame)
     out: dict[str, dict[str, Any]] = {}
     for row in frame.to_dict("records"):
         attempts = _finite(row.get("attempts")) or 0
@@ -173,6 +186,12 @@ def _ngs_passing(season: int) -> dict[str, dict[str, Any]]:
             "week": int(row.get("week") or 0),
             "attempts": int(attempts),
             "avg_time_to_throw": round(time_to_throw, 3),
+            # Completion % over expected (NGS publishes points: 3.2 = +3.2%) and
+            # intended air yards per attempt, the depth he throws to.
+            "cpoe": (round(_finite(row.get("completion_percentage_above_expectation")) / 100, 4)
+                     if _finite(row.get("completion_percentage_above_expectation")) is not None else None),
+            "avg_intended_air_yards": (round(_finite(row.get("avg_intended_air_yards")), 2)
+                                       if _finite(row.get("avg_intended_air_yards")) is not None else None),
             "source": "NFL Next Gen Stats via nflverse",
         }
     return out
@@ -1028,7 +1047,7 @@ def _credit_offense_coverage(profiles: list[dict], frame, season: int) -> None:
 def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
     """Return derived observed context; any unavailable feed fails soft."""
     # Imported here, not at the top: nfl_red_zone reuses this module's loaders.
-    from outputs import nfl_red_zone
+    from outputs import nfl_red_zone, nfl_special_teams
     names = {
         str(row.get("player_id")): str(row.get("player_name"))
         for rows in player_stats.values() for row in rows
@@ -1074,4 +1093,5 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
         "packages_prior": team_packages(prior),
         "team_line": _team_line(current, season, pfr_rushing) if current is not None else {},
         "red_zone": nfl_red_zone.build(season),
+        "special_teams": nfl_special_teams.build(season),
     }

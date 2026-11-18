@@ -120,3 +120,53 @@ def tz_shift_hours(origin: str, destination: str, when: datetime) -> float | Non
     if start is None or end is None:
         return None
     return round((end - start).total_seconds() / 3600, 1)
+
+
+FORECAST = "https://api.open-meteo.com/v1/forecast"
+FORECAST_HEADERS = {"User-Agent": "ChaseAnalytics/1.0 (+https://chase-analytics.com)"}
+
+
+def kickoff_forecast(venue: str | None, kickoff_utc: str | None, fetch=None) -> dict | None:
+    """Temperature, wind, gusts and chance of precipitation at an outdoor
+    venue in the kickoff hour (2026-11-18 audit: ESPN's forecast has no wind,
+    which is what moves passing and kicking). Open-Meteo's free forecast runs
+    sixteen days out; outside it, or at an unknown venue, None."""
+    import json
+    import urllib.parse
+    import urllib.request
+
+    if not venue or venue not in VENUES or not kickoff_utc:
+        return None
+    try:
+        when = datetime.fromisoformat(str(kickoff_utc).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    lat, lon, _ = VENUES[venue]
+    day = when.strftime("%Y-%m-%d")
+    query = urllib.parse.urlencode({
+        "latitude": lat, "longitude": lon, "start_date": day, "end_date": day, "timezone": "UTC",
+        "hourly": "temperature_2m,wind_speed_10m,wind_gusts_10m,precipitation_probability",
+        "temperature_unit": "fahrenheit", "wind_speed_unit": "mph",
+    })
+    try:
+        if fetch is None:
+            request = urllib.request.Request(f"{FORECAST}?{query}", headers=FORECAST_HEADERS)
+            with urllib.request.urlopen(request, timeout=20) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+        else:
+            payload = fetch(f"{FORECAST}?{query}")
+    except Exception:  # noqa: BLE001 - no forecast is published as none
+        return None
+    hourly = payload.get("hourly") or {}
+    stamp = when.strftime("%Y-%m-%dT%H:00")
+    times = hourly.get("time") or []
+    if stamp not in times:
+        return None
+    i = times.index(stamp)
+
+    def at(key):
+        values = hourly.get(key) or []
+        return values[i] if i < len(values) and values[i] is not None else None
+    out = {"temp_f": at("temperature_2m"), "wind_mph": at("wind_speed_10m"), "gust_mph": at("wind_gusts_10m"),
+           "precip_pct": at("precipitation_probability")}
+    return {k: int(round(v)) for k, v in out.items() if v is not None} or None
