@@ -72,6 +72,57 @@ def live_cutoff(stats, schedule, as_of):
         print(f'Team-rate cutoff {best[1]} aligns {best[0]} of {len(counted)} D-I teams.')
     return best[1]
 
+# Basketball Quant recomputes team rates in batches. From 2026-11-16 the
+# desk waited for them (one sample per team), and their rates stopped at
+# Nov 12 for five days while shots, boxes and game logs ran on. When the
+# rates trail the latest D-I finals by this many days, the rates ESPN's box
+# scores can measure (espn_boxes.rate_rows, on Basketball Quant's own
+# definitions) are read through the finals instead, over the same games as
+# the shot charts; only fields boxes cannot measure keep the older row.
+BOX_RATE_LAG_DAYS = 2
+SAMPLE_ALIGNMENT_FLOOR = 0.97  # tests/test_cbb_desk.py, the deploy gate
+
+
+def latest_division_final(schedule, cohort, as_of):
+    """The latest date, through as_of, of a final between two D-I teams."""
+    days = [g['game_date'] for g in schedule
+            if g.get('status_type_name') == 'STATUS_FINAL' and g['game_date'] <= as_of
+            and g.get('home_id') in cohort and g.get('away_id') in cohort]
+    return max(days, default=None)
+
+
+def lay_box_rates(context, rates_through):
+    """Lay the context's box-score rates over its stale Basketball Quant row.
+    Returns False when the team has no box rates to lay, or when they count
+    fewer games than the row (a team whose shot chart misses games): the
+    publish guard refuses a team's game count going backwards."""
+    box = (context.get('official_box') or {}).get('rates') or {}
+    if not box.get('games_all') or box['games_all'] < (context['rates'].get('games_all') or 0):
+        return False
+    merged = dict(context['rates'])
+    merged.update({k: v for k, v in box.items() if v is not None and k in RATE_FIELDS})
+    mark_untracked_shot_types(merged)
+    context['rates'] = merged
+    context['rates_basis'] = {'box_scores_through': context['official_box'].get('data_through'),
+                              'basketball_quant_through': rates_through}
+    return True
+
+
+def sample_alignment(contexts):
+    """Share of rated teams whose shot chart and pace count their rate games
+    (the deploy gate's own measure)."""
+    aligned = total = 0
+    for c in contexts:
+        games = c['rates'].get('games_all')
+        if not games:
+            continue
+        total += 1
+        shots = ((c.get('shots') or {}).get('coordinates') or {}).get('offense', {}).get('totals', {}).get('games')
+        pace = ((c.get('official_box') or {}).get('pace') or {}).get('games')
+        aligned += shots == games and pace in (games, games - 1)
+    return aligned / total if total else 1.0
+
+
 def mark_untracked_shot_types(rates):
     """Play-by-play from some feeds never labels drives, floaters or pull-ups.
     A side with all three at exactly zero was not tagged, not shut out: those
@@ -282,8 +333,9 @@ def profile(rows,league,schema,through,games):
             'league_efg_pct':(lg_made+.5*lg_threes)/lg_attempts if lg_attempts else None,
             'games':games,'data_through':through},'source':'CBB Analytics' if schema=='cbb-analytics-zones6' else 'Chase zones from Basketball Quant shot coordinates'}
 
-def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordinates=None,box_cache=None):
+def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordinates=None,box_cache=None,box_rates=True):
     out=Path(out); generated=datetime.now(timezone.utc)
+    mode={'rates':'basketball-quant','alignment':None}
     cross=read(snapshot/'data/bq-mbb_institution_crosswalk-all.json');identity={}
     for r in cross:
         if r.get('espn_team_id') is None:continue
@@ -295,6 +347,14 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
         players=table(snapshot,'basketball_players',year);schedules[year]=table(snapshot,'mbb_sched',year)
         correct_final_scores(schedules[year])
         live=date.fromisoformat(live_cutoff(stats,schedules[year],as_of) if year==2027 else as_of).isoformat()
+        rates_through=None
+        if year==2027 and box_rates and observed_tactics and box_cache:
+            latest=latest_division_final(schedules[year],cohort,as_of)
+            if latest and (date.fromisoformat(latest)-date.fromisoformat(live)).days>=BOX_RATE_LAG_DAYS:
+                print(f'Basketball Quant team rates stop at {live}; D-I finals run to {latest}. '
+                      f'Box-score rates, shots and boxes are read through {latest}.')
+                rates_through,live=live,latest
+                mode['rates']='box-scores'
         players_by_team=defaultdict(list)
         for p in players:players_by_team[p.get('Team')].append({k:p.get(k) for k in PLAYER_FIELDS})
         cbb_lg={r['zoneName']:{'made':r['fgm'],'attempts':r['fga']} for r in read(snapshot/f'data/cbb-league-zones-{year}.json') if r.get('zoneSchema')=='zones6' and r.get('divisionId')==1}
@@ -359,8 +419,21 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
         finals=None
         if year==2027 and observed_tactics and box_cache:
             from .espn_boxes import supplement
+            # Box-score rates count only the games the team's shot chart counts:
+            # a game missing from the shot feed (8 teams on 2026-11-18) would
+            # otherwise put the chart a game behind the rates beside it.
+            shot_days=None
+            if rates_through is not None:
+                shot_days=defaultdict(set)
+                for tid,day in conn.execute('SELECT DISTINCT team_id,game_date FROM shots WHERE season=? AND zone IS NOT NULL'+d1,(year,)):
+                    shot_days[str(tid)].add(day)
             finals=supplement({tid:all_context[(year,tid)] for tid in cohort},schedules[year],year,as_of,
-                              box_cache,season_through=live)
+                              box_cache,season_through=live,refresh_rates=rates_through is not None,rate_days=shot_days)
+            if rates_through is not None:
+                laid=sum(lay_box_rates(all_context[(year,tid)],rates_through) for tid in cohort)
+                mode['alignment']=round(sample_alignment([all_context[(year,tid)] for tid in cohort]),4)
+                print(f'Box-score rates laid over {laid} of {len(cohort)} teams; '
+                      f'samples aligned {mode["alignment"]:.1%}.')
         # Published shortcut metadata maps the provider IDs to the validated institution IDs.
         reference={103765:96,103549:150,103903:127,103296:12,103757:2305,103257:2509}
         for file in (snapshot/'data').glob(f'cbb-shots-{year}-*-offense.ndjson.gz'):
@@ -432,4 +505,5 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
     write(out/'matchup-ranks.json',split_matchup_ranks(baselines))
     write(out/'teams.json',{'teams':index,'grade_baselines':baselines})
     write(out/'manifest.json',{k:v for k,v in manifest.items() if k!='games'})
-    return {'team_season_contexts':len(all_context),'scheduled_game_rows':len(games),'data_through':through,'team_index':len(index)}
+    return {'team_season_contexts':len(all_context),'scheduled_game_rows':len(games),'data_through':through,'team_index':len(index),
+            'rates_mode':mode['rates'],'alignment':mode['alignment']}

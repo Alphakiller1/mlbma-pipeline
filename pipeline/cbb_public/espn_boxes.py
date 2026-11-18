@@ -307,13 +307,20 @@ def box_pace(games):
             "games": len(values), "data_through": games[-1][0]}
 
 
-def supplement(contexts, schedule, year, as_of, cache, *, season_through=None):
+def supplement(contexts, schedule, year, as_of, cache, *, season_through=None, refresh_rates=False, rate_days=None):
     """Box-score facts for every team, plus fills where a source has nothing.
 
     Pace is estimated for every team from its D-I finals, the same games the
     team rates count; the possession-tagged source misses whole games. Teams
     with no D-I rate row are measured over all their finals in the window.
     Game-log figures can use verified finals through the current slate date.
+
+    refresh_rates: Basketball Quant's team rates have fallen behind the finals
+    (export.BOX_RATE_LAG_DAYS), so every team also gets box-score rates over
+    its D-I finals through season_through, on the same definitions
+    (rate_rows), for the export to lay over the stale row. rate_days, when
+    given, limits a team's box rates and pace to the days its shot chart
+    counts, so the two sections describe one sample.
     """
     season_through = season_through or as_of
     division = {str(team) for team in contexts}
@@ -407,6 +414,8 @@ def supplement(contexts, schedule, year, as_of, cache, *, season_through=None):
     for team, context in ((str(t), c) for t, c in contexts.items()):
         rows = sorted(observations[team], key=lambda row: row[0])
         measured = [row[:5] for row in rows if team in everything or row[5]]
+        if refresh_rates and rate_days is not None and team not in everything and rate_days.get(team):
+            measured = [row for row in measured if row[0] in rate_days[team]]
         if not measured:
             continue
         box = {"source": BOX_SOURCE, "data_through": measured[-1][0], "games": len(measured),
@@ -414,6 +423,9 @@ def supplement(contexts, schedule, year, as_of, cache, *, season_through=None):
         filled["box pace"] += 1
         if team in fill:
             fill_context(context, box, measured, team, year, filled)
+        if refresh_rates and "rates" not in box:
+            box["rates"] = rate_rows([(own, opp) for _, _, own, opp, _ in measured])
+            filled["refreshed rates"] += 1
         context["official_box"] = box
         # Starter size follows whichever source recorded more opening lineups.
         starts = [(date, own["starters"]) for date, _, own, _, _ in measured if own["starters"]]

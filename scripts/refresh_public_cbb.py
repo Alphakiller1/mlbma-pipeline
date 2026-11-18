@@ -2,7 +2,7 @@
 from pathlib import Path
 from datetime import datetime
 from zoneinfo import ZoneInfo
-import subprocess,sys,tempfile
+import copy,subprocess,sys,tempfile
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 
@@ -26,9 +26,19 @@ def export_snapshot(snapshot, temp, day):
     facts=factual_tactics.build(snapshot,day)
     filled=espn_roster.fill_missing_heights(facts[2027],2027)
     print(f'ESPN roster heights filled for {len(filled)} current-season teams.')
-    export.export_public(snapshot,conn,temp/'public',day,facts,retained,ROOT/'.cache/cbb-tactics/espn-box')
+    target=temp/'public'
+    # The export fills the tactics it is given; a second pass must start clean.
+    result=export.export_public(snapshot,conn,target,day,copy.deepcopy(facts),retained,ROOT/'.cache/cbb-tactics/espn-box')
+    # Box-score rates only publish when every section still counts one sample;
+    # otherwise the desk waits for Basketball Quant's rates, as before.
+    if result['rates_mode']=='box-scores' and (result['alignment'] or 0)<export.SAMPLE_ALIGNMENT_FLOOR:
+        print(f"::warning::Box-score rates aligned only {result['alignment']:.1%} of samples; "
+              'publishing on the Basketball Quant rate cutoff instead.')
+        target=temp/'public-bq'
+        result=export.export_public(snapshot,conn,target,day,facts,retained,ROOT/'.cache/cbb-tactics/espn-box',box_rates=False)
+    print(f"CBB rates from {result['rates_mode']} through {result['data_through']}.")
     conn.close()
-    publish(temp/'public')
+    publish(target)
 
 def main():
     day=datetime.now(ZoneInfo('America/New_York')).date().isoformat()

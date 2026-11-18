@@ -44,6 +44,10 @@ jobs:
           python scripts/validate_public_fields.py
           node --check dashboard/matchup_card.js
           node --check dashboard/public_game_detail.js
+      - name: Report public evidence freshness
+        # Warnings and a summary table only: a stalled source must be seen,
+        # but it never blocks the deploy of everything else.
+        run: python scripts/check_public_freshness.py
       - name: Run unit tests
         run: python -m unittest discover -s tests -p "test_*.py"
       - name: Run public browser and responsive contracts
