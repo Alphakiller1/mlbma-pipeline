@@ -54,13 +54,20 @@ jobs:
         continue-on-error: true
         run: python scripts/publish_public_nfl_game_logs.py
 
+      # Targets to WR, TE and RB by coverage and pressure look, offense and
+      # defense (outputs/nfl_position_coverage.py), once a day with the logs.
+      - name: Refresh NFL coverage by position group
+        if: github.event_name == 'workflow_dispatch' || github.event.schedule == '29 15 * * *'
+        continue-on-error: true
+        run: python scripts/publish_public_nfl_position_coverage.py
+
       - name: Commit the refreshed slate to master
         env:
           TARGET_BRANCH: master
         run: |
           set -euo pipefail
           python scripts/validate_public_fields.py
-          git add -- data/public/nfl/slate.json data/public/nfl/team_context.json data/public/nfl/game_logs.json
+          git add -- data/public/nfl/slate.json data/public/nfl/team_context.json data/public/nfl/game_logs.json             data/public/nfl/position_coverage.json
           if git diff --cached --quiet; then
             echo "NFL slate is already current; no commit needed."
             exit 0

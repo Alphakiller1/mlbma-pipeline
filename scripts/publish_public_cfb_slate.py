@@ -18,12 +18,13 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 try:  # run as a script (scripts/ on the path) or imported as scripts.*
+    import cfb_charting
     import cfb_depth
     import cfb_injuries
     import cfb_injury_value
     import cfb_power
 except ImportError:  # pragma: no cover - package import in tests
-    from scripts import cfb_depth, cfb_injuries, cfb_injury_value, cfb_power
+    from scripts import cfb_charting, cfb_depth, cfb_injuries, cfb_injury_value, cfb_power
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "public" / "cfb" / "slate.json"
@@ -921,6 +922,9 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict,
         log = (depth.get("logs") or {}).get(abbr)
         row[side + "_run_game"] = team.get("run_game")
         row[side + "_scheme_stats"] = team.get("scheme")
+        # Formation, pass depth and direction, air yards, pressure and run
+        # direction from the official scorer's play text (cfb_charting).
+        row[side + "_charting"] = ((depth.get("charting") or {}).get("teams") or {}).get(key)
         # Ordered and trimmed to the room by apply_availability.
         row[side + "_qbs"] = (depth.get("qbs") or {}).get(key)
         row[side + "_defense_splits"] = (depth.get("defense_splits") or {}).get(key)
@@ -1007,12 +1011,20 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
         "usage": cfb_depth.recent_usage(season, week, wanted),
         "power": load_power(season),
     }
+    try:
+        depth["charting"] = cfb_charting.build(season, week, fbs) if fbs else {}
+    except Exception as exc:  # noqa: BLE001 - the slate still publishes without it
+        print(f"  charting: unavailable ({exc})")
+        depth["charting"] = {}
+    matched = cfb_charting.attach_qbs(depth["qbs"], depth["charting"])
+    print(f"  charting: {matched} passers carry looks")
     print(f"  depth: {len(advanced)} CFBD team profiles, {len(depth['qbs'])} QB rooms, "
           f"{len(depth['logs'])} game logs")
     return depth
 
 
-DEPTH_KEYS = ("_run_game", "_scheme_stats", "_qbs", "_defense_splits", "_rushers", "_receivers", "_defenders",
+DEPTH_KEYS = ("_run_game", "_scheme_stats", "_charting", "_qbs", "_defense_splits", "_rushers", "_receivers",
+              "_defenders",
               "_schedule_strength", "_power", "_predictability")
 
 

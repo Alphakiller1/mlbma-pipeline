@@ -370,7 +370,7 @@ def _ranked_players(lines, pool_floor_key, floor, specs, keep, sort_key):
     return out
 
 
-ZERO_NEUTRAL = {"touchdowns", "tfl", "sacks", "interceptions", "passes_defended"}
+ZERO_NEUTRAL = {"touchdowns", "tfl", "sacks", "interceptions", "passes_defended", "hurries"}
 
 
 def receivers(season: int, fbs: set[str]) -> dict[str, list[dict]]:
@@ -403,7 +403,9 @@ def defenders(season: int, fbs: set[str]) -> dict[str, list[dict]]:
              ("tfl", "TFL", "Tackles for loss", "high", "num"),
              ("sacks", "SACKS", "Sacks", "high", "num"),
              ("interceptions", lambda v: v.get("INT") or 0, "Interceptions", "high", "int"),
-             ("passes_defended", "PD", "Passes defended", "high", "int"))
+             ("passes_defended", "PD", "Passes defended", "high", "int"),
+             # The official scorer's "QB hurried by" (2026-11-18).
+             ("hurries", lambda v: v.get("QB HUR") or 0, "QB hurries", "high", "int"))
     out = _ranked_players(lines, "TOT", MIN_DEFENDER_TACKLES, specs,
                           lambda v: {"tackles_total": int(v["TOT"])},
                           lambda r: -r["tackles_total"])
@@ -411,7 +413,8 @@ def defenders(season: int, fbs: set[str]) -> dict[str, list[dict]]:
     for school, rows in out.items():
         lead = rows[:6]
         extra = [r for r in rows[6:] if ((r.get("sacks") or {}).get("value") or 0) >= 3
-                 or ((r.get("interceptions") or {}).get("value") or 0) >= 2]
+                 or ((r.get("interceptions") or {}).get("value") or 0) >= 2
+                 or ((r.get("hurries") or {}).get("value") or 0) >= 6]
         picked[school] = (lead + extra)[:8]
     return picked
 

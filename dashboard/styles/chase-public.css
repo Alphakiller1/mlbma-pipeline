@@ -6571,3 +6571,15 @@ body[data-sport="nfl"] #game-log .ca-lineup-scroll[data-table-scroll] .ca-split-
   #cbb-resume .ca-split-table thead th:first-child { width: 40%; }
   #cbb-resume .ca-split-table th.num { width: auto; }
 }
+
+/* Coverage by position group (2026-11-18): eight columns (look, the
+   defense's usage, then each position group's offense and defense) do not
+   fit a phone at fixed layout. The table keeps a floor and scrolls inside its
+   panel, its look column pinned. */
+.ca-poscov-table th.ca-poscov-group { text-align: center; white-space: nowrap; }
+@media (max-width: 560px) {
+  .ca-poscov-table { table-layout: auto; min-width: 40rem; }
+  .ca-poscov-table tbody td:first-child {
+    position: sticky; left: 0; z-index: 1; background: var(--surface-board-raised);
+  }
+}
