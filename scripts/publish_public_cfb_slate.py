@@ -415,7 +415,16 @@ def load_scheme_profiles(season: int, week: int) -> dict[str, dict]:
         raise RuntimeError(f"CFB scheme index is incomplete: found {len(paths)} matchups")
 
     def load(path: str) -> dict[str, dict]:
-        return parse_scheme_matchup(fetch_text(SCHEME_ORIGIN + path), season)
+        # One truncated page (IncompleteRead, 2026-11-18) failed the whole
+        # publish. Each page gets a second try and is otherwise skipped; the
+        # completeness floor below still refuses a pull that lost too many.
+        for attempt in (1, 2):
+            try:
+                return parse_scheme_matchup(fetch_text(SCHEME_ORIGIN + path), season)
+            except Exception as error:  # noqa: BLE001
+                if attempt == 2:
+                    print(f"  scheme matchup {path}: skipped ({type(error).__name__})")
+        return {}
 
     profiles: dict[str, dict] = {}
     with ThreadPoolExecutor(max_workers=8) as pool:

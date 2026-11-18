@@ -6505,3 +6505,7 @@ body[data-sport="nfl"] .ca-detail-nav {
   .ca-injury-total { display: flex; justify-content: space-between; }
   .ca-injury-table .ca-injury-total > * { padding-inline: var(--space-2); }
 }
+
+/* Five-man units: five surnames wrap inside the unit column rather than
+   clipping to an ellipsis (2026-11-18). */
+.ca-cfb-panel.ca-nba-units .ca-lineup-table td:first-child { white-space: normal; overflow: visible; text-overflow: clip; }

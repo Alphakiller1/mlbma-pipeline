@@ -1017,7 +1017,9 @@
     "tackles",
     "tfl",
     "passes_defended",
-    "tackles_total"
+    "tackles_total",
+    "minutes",
+    "off_poss"
   ],
   "derived_descriptive": [
     "estimated_per40",
@@ -1215,7 +1217,19 @@
     "away_defenders",
     "home_defenders",
     "receivers",
-    "defenders"
+    "defenders",
+    "lineup_units",
+    "away_lineup_units",
+    "home_lineup_units",
+    "off_rating",
+    "def_rating",
+    "net_rating",
+    "away_splits",
+    "home_splits",
+    "at_home",
+    "on_road",
+    "back_to_back",
+    "rested"
   ],
   "contextual_environment": [
     "away_rest_days",
