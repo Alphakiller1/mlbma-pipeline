@@ -288,7 +288,12 @@ class NbaRenderTests(unittest.TestCase):
             self.assertIn('id="' + sec + '"', html)
         first = html.index('class="ca-detail-section" id="')
         self.assertTrue(html[first:].startswith('class="ca-detail-section" id="nba-edge-map"'))
-        self.assertIn("ca-edge-row", html)        # dumbbell rows
+        matchup_map = html[first:html.index('class="ca-detail-section" id="', first + 1)]
+        self.assertIn('id="nba-map-ranks-away"', matchup_map)
+        self.assertRegex(matchup_map, r'ca-ledger-bar is-left[^"]*"><i style="width:[1-9]\d*%"')
+        self.assertRegex(matchup_map, r'ca-ledger-bar is-right[^"]*"><i style="width:[1-9]\d*%"')
+        self.assertIn("NBA offenses", matchup_map)
+        self.assertIn("NBA defenses", matchup_map)
         self.assertIn("ca-fly__bar", html)        # mirrored bars
         self.assertIn("ca-aging__curve", html)    # league age curve
         self.assertIn("ca-dist-seg", html)
@@ -296,7 +301,7 @@ class NbaRenderTests(unittest.TestCase):
         g = self.out["game"]
         self.assertRegex(html, r"<h3>[^<]+ Offense vs [^<]+ Defense</h3>")
         self.assertIn("eFG%", html)
-        self.assertIn("Ranked Of 30 Clubs", html)
+        self.assertIn("NBA team ranks", html)
         self.assertIn("ca-cfb-ledger-table", html)
         self.assertIn(g["away_name"] + " at " + g["home_name"], self.out["title"])
 

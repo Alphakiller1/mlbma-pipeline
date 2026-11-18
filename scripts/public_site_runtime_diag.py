@@ -315,7 +315,37 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             log_ranks = page.locator("#nba-game-log .ca-log-panel td.num .ca-rank")
             bad_nba_ranks = log_ranks.evaluate_all(TEAM_RANK_AUDIT, 30)
             check("NBA game-log ranks use the team scale", not bad_nba_ranks, str(bad_nba_ranks[:4]))
+            page.locator("a[data-nfl-tab='units']").click()
+            maps = page.locator("#nba-edge-map .ca-nba-map")
+            badges = maps.locator("td.num > .ca-rank")
+            mismatches = badges.evaluate_all("""badges => badges.filter(badge => {
+              const rank = Number(badge.dataset.rank), pool = Number(badge.dataset.rankOf);
+              const side = badge.closest('td').classList.contains('ca-ledger-right') ? 'right' : 'left';
+              const bar = badge.closest('tr').querySelector('.ca-ledger-bar.is-' + side);
+              const grade = MLBMAAssets.rankChipClass(rank, pool);
+              return rank < 1 || rank > pool || pool > 30 || !bar ||
+                !bar.classList.contains(grade) || !badge.classList.contains(grade) ||
+                parseFloat(bar.firstElementChild.style.width) !== Math.max(4, Math.round(100 * (pool - rank) / (pool - 1)));
+            }).length""")
+            check("NBA Matchup Map pairs ranks with matching grade-colored bars",
+                  maps.count() == 2 and badges.count() > 0 and mismatches == 0, f"{mismatches} inconsistent bars")
+            more = maps.locator("[data-nba-map-more]:visible").first
+            if more.count():
+                table = page.locator("#" + more.get_attribute("aria-controls"))
+                visible = table.locator("tbody tr:not(.ca-ledger-group):visible")
+                before = visible.count()
+                more.press("Enter")
+                check("NBA Matchup Map opens its additional categories by keyboard",
+                      before == 10 and more.get_attribute("aria-expanded") == "true" and visible.count() > before)
+                more.press("Enter")
+                check("NBA Matchup Map returns to its first ten rows",
+                      more.get_attribute("aria-expanded") == "false" and visible.count() == before)
+            missing_notes = page.locator(".ca-detail-stack > .ca-detail-section").evaluate_all(
+                """sections => sections.filter(s => !s.querySelector('.ca-detail-section__head p')?.textContent.trim())
+                  .map(s => s.id)""")
+            check("NBA sections label the statistics and figures they contain", not missing_notes, str(missing_notes))
             page.set_viewport_size({"width": 375, "height": 824})
+            check("NBA Matchup Map fits a phone", page.evaluate("document.documentElement.scrollWidth") <= 375)
             page.locator("a[data-nfl-tab='players']").click()
             profile_headers = page.locator(".ca-nba-player-type-panel thead th:visible")
             if profile_headers.count():

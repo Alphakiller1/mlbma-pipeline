@@ -692,14 +692,14 @@ class AdapterHoleTests(unittest.TestCase):
         self.assertNotIn("marks the outer", icons)
 
     def test_nba_matchup_map_ranks_no_gaps(self):
-        """Evidence, not verdicts: the map shows both ranks in one fixed order and
-        never sorts by, labels or colours the side a row favours."""
+        """Both sides keep their own rank and grade in a fixed category order."""
         js = (ROOT / "dashboard" / "public_game_detail.js").read_text(encoding="utf-8")
-        start = js.index("function nbaEdgeEntries")
+        start = js.index("function nbaMapMetric")
         block = js[start:js.index("function nbaButterfly", start)]
         for verdict in ("Rank gap", "Math.abs(b.edge)", "' +' + Math.abs", "is-' + lead", "Gap In Rank"):
             self.assertNotIn(verdict, block, verdict)
-        self.assertIn("ca-edge-link is-neutral", block)
+        self.assertIn("rankPosition(entry, NBA_TEAM_COUNT)", block)
+        self.assertIn("cfbLedgerRow(metric[1], off, def", block)
 
     def test_mlb_detail_has_active_bullpen_splits_and_workload(self):
         detail = (ROOT / "dashboard" / "public_game_detail.js").read_text(encoding="utf-8")
