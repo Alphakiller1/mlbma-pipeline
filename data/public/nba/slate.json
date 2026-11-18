@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-18",
- "generated_at_utc": "2026-11-18T12:17:58+00:00",
+ "generated_at_utc": "2026-11-18T18:35:47+00:00",
  "data_through_utc": "2026-11-18T04:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -4019,6 +4019,118 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "away_lineup_units": [
+    {
+     "players": [
+      "Ty Jerome",
+      "Zach Edey",
+      "Cedric Coward",
+      "Cameron Boozer",
+      "Jaylen Wells"
+     ],
+     "minutes": 97.8,
+     "off_poss": 207,
+     "off_rating": 114.2,
+     "def_rating": 97.9,
+     "net_rating": 16.3
+    },
+    {
+     "players": [
+      "Ty Jerome",
+      "Isaiah Stewart",
+      "Cedric Coward",
+      "Cameron Boozer",
+      "Jaylen Wells"
+     ],
+     "minutes": 44.1,
+     "off_poss": 93,
+     "off_rating": 135.1,
+     "def_rating": 107.4,
+     "net_rating": 27.7
+    },
+    {
+     "players": [
+      "Isaiah Stewart",
+      "Cam Spencer",
+      "Cedric Coward",
+      "Cameron Boozer",
+      "Jaylen Wells"
+     ],
+     "minutes": 22.4,
+     "off_poss": 48,
+     "off_rating": 131.0,
+     "def_rating": 117.7,
+     "net_rating": 13.3
+    },
+    {
+     "players": [
+      "Cam Spencer",
+      "Zach Edey",
+      "Cedric Coward",
+      "Cameron Boozer",
+      "Jaylen Wells"
+     ],
+     "minutes": 18.9,
+     "off_poss": 41,
+     "off_rating": 131.1,
+     "def_rating": 89.3,
+     "net_rating": 41.8
+    },
+    {
+     "players": [
+      "Cam Spencer",
+      "Taylor Hendricks",
+      "Cedric Coward",
+      "Cameron Boozer",
+      "Jaylen Wells"
+     ],
+     "minutes": 15.3,
+     "off_poss": 34,
+     "off_rating": 135.9,
+     "def_rating": 95.5,
+     "net_rating": 40.4
+    }
+   ],
+   "away_splits": {
+    "games": {
+     "at_home": 7,
+     "on_road": 7,
+     "back_to_back": 2,
+     "rested": 11
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": 4.0,
+     "better": "high",
+     "rank": 13,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": 14.4,
+     "better": "high",
+     "rank": 1,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": 11.9,
+     "better": "high",
+     "rank": 6,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": 7.7,
+     "better": "high",
+     "rank": 6,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "away_player_values": [
     {
      "player_id": "4065733",
@@ -8005,6 +8117,118 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "home_lineup_units": [
+    {
+     "players": [
+      "Donovan Mitchell",
+      "James Harden",
+      "Jarrett Allen",
+      "Evan Mobley",
+      "Peyton Watson"
+     ],
+     "minutes": 95.8,
+     "off_poss": 202,
+     "off_rating": 109.6,
+     "def_rating": 119.2,
+     "net_rating": -9.6
+    },
+    {
+     "players": [
+      "Donovan Mitchell",
+      "James Harden",
+      "Evan Mobley",
+      "Peyton Watson",
+      "Meleek Thomas"
+     ],
+     "minutes": 28.3,
+     "off_poss": 58,
+     "off_rating": 102.3,
+     "def_rating": 107.2,
+     "net_rating": -4.9
+    },
+    {
+     "players": [
+      "Mario Hezonja",
+      "Donovan Mitchell",
+      "Sam Merrill",
+      "Evan Mobley",
+      "Jaylon Tyson"
+     ],
+     "minutes": 19.1,
+     "off_poss": 39,
+     "off_rating": 111.6,
+     "def_rating": 110.7,
+     "net_rating": 0.9
+    },
+    {
+     "players": [
+      "Donovan Mitchell",
+      "James Harden",
+      "Sam Merrill",
+      "Evan Mobley",
+      "Peyton Watson"
+     ],
+     "minutes": 18.7,
+     "off_poss": 42,
+     "off_rating": 129.8,
+     "def_rating": 94.3,
+     "net_rating": 35.5
+    },
+    {
+     "players": [
+      "Donovan Mitchell",
+      "James Harden",
+      "Jarrett Allen",
+      "Peyton Watson",
+      "Tyrese Proctor"
+     ],
+     "minutes": 16.8,
+     "off_poss": 39,
+     "off_rating": 136.7,
+     "def_rating": 139.7,
+     "net_rating": -3.0
+    }
+   ],
+   "home_splits": {
+    "games": {
+     "at_home": 8,
+     "on_road": 7,
+     "back_to_back": 2,
+     "rested": 12
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": 5.3,
+     "better": "high",
+     "rank": 11,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": -1.4,
+     "better": "high",
+     "rank": 15,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": -1.0,
+     "better": "high",
+     "rank": 14,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": 3.6,
+     "better": "high",
+     "rank": 12,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "home_player_values": [
     {
      "player_id": "3908809",
@@ -8104,26 +8328,38 @@
     {
      "player_id": "4683747",
      "player_name": "Jaylon Tyson",
-     "status": "Doubtful",
+     "status": "Out",
      "source": "official",
      "reason": "Injury/Illness - Right Ankle Injury Management",
      "detail": "Right Ankle",
-     "comment": "Tyson (ankle) is listed as doubtful for Wednesday's game against the Grizzlies.",
-     "date": "2026-11-17T22:15Z",
-     "return_date": "2026-11-18",
+     "comment": "Tyson (ankle) has been ruled out for Wednesday's game against Memphis.",
+     "date": "2026-11-18T18:21Z",
+     "return_date": "2026-11-20",
      "value": 0.94,
      "value_recent": 1.19,
      "missed": 1
     },
     {
+     "player_id": "5106261",
+     "player_name": "Ernest Udeh Jr.",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": null
+    },
+    {
      "player_id": "4576087",
      "player_name": "Peyton Watson",
-     "status": "Questionable",
+     "status": "Doubtful",
      "source": "official",
      "reason": "Injury/Illness - Low Back Contusion",
      "detail": "Back Bruise",
-     "comment": "Watson (back) is listed as questionable for Wednesday's game against Memphis.",
-     "date": "2026-11-17T22:13Z",
+     "comment": "Watson (back) is doubtful for Wednesday's game versus Memphis.",
+     "date": "2026-11-18T18:24Z",
      "return_date": "2026-11-18",
      "value": 1.09,
      "value_recent": 1.01,
@@ -12077,6 +12313,118 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "away_lineup_units": [
+    {
+     "players": [
+      "Fred VanVleet",
+      "Kevin Durant",
+      "Jabari Smith Jr.",
+      "Amen Thompson",
+      "Alperen Sengun"
+     ],
+     "minutes": 112.1,
+     "off_poss": 226,
+     "off_rating": 115.1,
+     "def_rating": 105.3,
+     "net_rating": 9.8
+    },
+    {
+     "players": [
+      "Fred VanVleet",
+      "Kevin Durant",
+      "Jabari Smith Jr.",
+      "Tari Eason",
+      "Amen Thompson"
+     ],
+     "minutes": 29.2,
+     "off_poss": 63,
+     "off_rating": 111.4,
+     "def_rating": 99.9,
+     "net_rating": 11.5
+    },
+    {
+     "players": [
+      "Bogdan Bogdanovic",
+      "Jae'Sean Tate",
+      "Oscar Tshiebwe",
+      "Isaiah Crawford",
+      "Bruce Thornton"
+     ],
+     "minutes": 21.3,
+     "off_poss": 43,
+     "off_rating": 133.4,
+     "def_rating": 119.0,
+     "net_rating": 14.4
+    },
+    {
+     "players": [
+      "Fred VanVleet",
+      "Kevin Durant",
+      "Jabari Smith Jr.",
+      "Tari Eason",
+      "Alperen Sengun"
+     ],
+     "minutes": 19.1,
+     "off_poss": 40,
+     "off_rating": 103.1,
+     "def_rating": 87.6,
+     "net_rating": 15.5
+    },
+    {
+     "players": [
+      "Fred VanVleet",
+      "Clint Capela",
+      "Kevin Durant",
+      "Jabari Smith Jr.",
+      "Amen Thompson"
+     ],
+     "minutes": 17.0,
+     "off_poss": 36,
+     "off_rating": 136.3,
+     "def_rating": 129.1,
+     "net_rating": 7.2
+    }
+   ],
+   "away_splits": {
+    "games": {
+     "at_home": 8,
+     "on_road": 7,
+     "back_to_back": 3,
+     "rested": 11
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": 10.0,
+     "better": "high",
+     "rank": 5,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": 6.4,
+     "better": "high",
+     "rank": 7,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": 3.4,
+     "better": "high",
+     "rank": 8,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": 8.7,
+     "better": "high",
+     "rank": 5,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "away_player_values": [
     {
      "player_id": "4871144",
@@ -12151,10 +12499,10 @@
      "status": "Out",
      "source": "official",
      "reason": "G League - Two-Way",
-     "detail": "Right Wrist",
-     "comment": "Phillips (illness) is available for Wednesday's game against Dallas.",
-     "date": "2026-11-16T15:28Z",
-     "return_date": "2026-11-17",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
      "value": 0.68,
      "value_recent": 0.0,
      "missed": null
@@ -16081,6 +16429,90 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "home_lineup_units": [
+    {
+     "players": [
+      "Kelly Oubre Jr.",
+      "Pascal Siakam",
+      "Ivica Zubac",
+      "Andrew Nembhard",
+      "Aaron Nesmith"
+     ],
+     "minutes": 33.4,
+     "off_poss": 71,
+     "off_rating": 115.2,
+     "def_rating": 110.2,
+     "net_rating": 5.0
+    },
+    {
+     "players": [
+      "Kelly Oubre Jr.",
+      "Pascal Siakam",
+      "Jay Huff",
+      "Andrew Nembhard",
+      "Aaron Nesmith"
+     ],
+     "minutes": 24.9,
+     "off_poss": 52,
+     "off_rating": 94.5,
+     "def_rating": 130.7,
+     "net_rating": -36.2
+    },
+    {
+     "players": [
+      "Pascal Siakam",
+      "Ivica Zubac",
+      "Andrew Nembhard",
+      "Aaron Nesmith",
+      "Braden Smith"
+     ],
+     "minutes": 22.9,
+     "off_poss": 51,
+     "off_rating": 92.0,
+     "def_rating": 113.0,
+     "net_rating": -21.0
+    }
+   ],
+   "home_splits": {
+    "games": {
+     "at_home": 6,
+     "on_road": 8,
+     "back_to_back": 4,
+     "rested": 9
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": -3.0,
+     "better": "high",
+     "rank": 21,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": -1.9,
+     "better": "high",
+     "rank": 16,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": -8.9,
+     "better": "high",
+     "rank": 22,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": -0.1,
+     "better": "high",
+     "rank": 17,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "home_player_values": [
     {
      "player_id": "4396993",
@@ -16108,13 +16540,13 @@
      "value": 1.12
     },
     {
-     "player_id": "3133603",
-     "player_name": "Kelly Oubre Jr.",
+     "player_id": "4017837",
+     "player_name": "Ivica Zubac",
      "value": 1.09
     },
     {
-     "player_id": "4017837",
-     "player_name": "Ivica Zubac",
+     "player_id": "3133603",
+     "player_name": "Kelly Oubre Jr.",
      "value": 1.09
     },
     {
@@ -19301,7 +19733,7 @@
       "player_name": "Ryan Rollins",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4591725.png",
-      "status": null,
+      "status": "Out",
       "mpg": 23.8,
       "ppg": 10.5,
       "height_in": 75.0,
@@ -20138,6 +20570,118 @@
     "tz_shift": 1,
     "altitude": false
    },
+   "away_lineup_units": [
+    {
+     "players": [
+      "Myles Turner",
+      "Kyle Kuzma",
+      "Tyler Herro",
+      "Jaime Jaquez Jr.",
+      "Ryan Rollins"
+     ],
+     "minutes": 77.1,
+     "off_poss": 177,
+     "off_rating": 113.9,
+     "def_rating": 101.0,
+     "net_rating": 12.9
+    },
+    {
+     "players": [
+      "Myles Turner",
+      "Kyle Kuzma",
+      "Tyler Herro",
+      "Jaime Jaquez Jr.",
+      "Brayden Burries"
+     ],
+     "minutes": 48.1,
+     "off_poss": 101,
+     "off_rating": 113.3,
+     "def_rating": 111.1,
+     "net_rating": 2.2
+    },
+    {
+     "players": [
+      "Myles Turner",
+      "Kyle Kuzma",
+      "Jaime Jaquez Jr.",
+      "Ryan Rollins",
+      "Brayden Burries"
+     ],
+     "minutes": 21.5,
+     "off_poss": 42,
+     "off_rating": 103.6,
+     "def_rating": 112.3,
+     "net_rating": -8.7
+    },
+    {
+     "players": [
+      "Myles Turner",
+      "Kyle Kuzma",
+      "Tyler Herro",
+      "Jaime Jaquez Jr.",
+      "Kasparas Jakucionis"
+     ],
+     "minutes": 20.4,
+     "off_poss": 46,
+     "off_rating": 87.4,
+     "def_rating": 164.8,
+     "net_rating": -77.4
+    },
+    {
+     "players": [
+      "AJ Green",
+      "Brayden Burries",
+      "Kel'el Ware",
+      "Nate Ament",
+      "Kasparas Jakucionis"
+     ],
+     "minutes": 20.1,
+     "off_poss": 38,
+     "off_rating": 81.2,
+     "def_rating": 107.9,
+     "net_rating": -26.7
+    }
+   ],
+   "away_splits": {
+    "games": {
+     "at_home": 8,
+     "on_road": 6,
+     "back_to_back": 2,
+     "rested": 11
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": -13.1,
+     "better": "high",
+     "rank": 29,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": -13.6,
+     "better": "high",
+     "rank": 26,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": -10.4,
+     "better": "high",
+     "rank": 24,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": -14.0,
+     "better": "high",
+     "rank": 30,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "away_player_values": [
     {
      "player_id": "4395725",
@@ -20155,13 +20699,13 @@
      "value": 1.29
     },
     {
-     "player_id": "5082206",
-     "player_name": "Brayden Burries",
+     "player_id": "4697268",
+     "player_name": "Kam Jones",
      "value": 1.1
     },
     {
-     "player_id": "4697268",
-     "player_name": "Kam Jones",
+     "player_id": "5082206",
+     "player_name": "Brayden Burries",
      "value": 1.1
     },
     {
@@ -20248,6 +20792,20 @@
      "value": 1.1,
      "value_recent": 0.0,
      "missed": null
+    },
+    {
+     "player_id": "4591725",
+     "player_name": "Ryan Rollins",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Illness",
+     "detail": "Illness",
+     "comment": "Rollins (illness) has been ruled out for Wednesday's game at Miami.",
+     "date": "2026-11-18T18:10Z",
+     "return_date": "2026-11-19",
+     "value": 0.95,
+     "value_recent": 0.88,
+     "missed": 1
     },
     {
      "player_id": "4997526",
@@ -22869,7 +23427,7 @@
       "player_name": "Bam Adebayo",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066261.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 32.5,
       "ppg": 18.4,
       "height_in": 81.0,
@@ -24218,6 +24776,118 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "home_lineup_units": [
+    {
+     "players": [
+      "Giannis Antetokounmpo",
+      "Andrew Wiggins",
+      "Bam Adebayo",
+      "Davion Mitchell",
+      "Klay Thompson"
+     ],
+     "minutes": 98.2,
+     "off_poss": 208,
+     "off_rating": 121.9,
+     "def_rating": 131.4,
+     "net_rating": -9.5
+    },
+    {
+     "players": [
+      "Giannis Antetokounmpo",
+      "Bam Adebayo",
+      "Davion Mitchell",
+      "Pelle Larsson",
+      "Klay Thompson"
+     ],
+     "minutes": 56.4,
+     "off_poss": 127,
+     "off_rating": 104.1,
+     "def_rating": 85.1,
+     "net_rating": 19.0
+    },
+    {
+     "players": [
+      "Andrew Wiggins",
+      "Bobby Portis",
+      "Bam Adebayo",
+      "Davion Mitchell",
+      "Ryan Conwell"
+     ],
+     "minutes": 34.0,
+     "off_poss": 76,
+     "off_rating": 113.5,
+     "def_rating": 110.5,
+     "net_rating": 3.0
+    },
+    {
+     "players": [
+      "Tim Hardaway Jr.",
+      "Giannis Antetokounmpo",
+      "Bobby Portis",
+      "Dru Smith",
+      "Pelle Larsson"
+     ],
+     "minutes": 31.1,
+     "off_poss": 66,
+     "off_rating": 116.4,
+     "def_rating": 107.6,
+     "net_rating": 8.8
+    },
+    {
+     "players": [
+      "Andrew Wiggins",
+      "Bam Adebayo",
+      "Davion Mitchell",
+      "Pelle Larsson",
+      "Klay Thompson"
+     ],
+     "minutes": 17.8,
+     "off_poss": 38,
+     "off_rating": 92.2,
+     "def_rating": 135.5,
+     "net_rating": -43.3
+    }
+   ],
+   "home_splits": {
+    "games": {
+     "at_home": 7,
+     "on_road": 7,
+     "back_to_back": 3,
+     "rested": 10
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": 3.3,
+     "better": "high",
+     "rank": 14,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": -2.8,
+     "better": "high",
+     "rank": 17,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": -1.6,
+     "better": "high",
+     "rank": 15,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": 3.2,
+     "better": "high",
+     "rank": 14,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "home_player_values": [
     {
      "player_id": "3032977",
@@ -24292,6 +24962,20 @@
    ],
    "home_injuries": [
     {
+     "player_id": "4431772",
+     "player_name": "Myron Gardner",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Right Hamstring Tightness / Soreness",
+     "detail": "Hamstring",
+     "comment": "Gardner (hamstring) is out for Wednesday's game against the Bucks.",
+     "date": "2026-11-18T18:09Z",
+     "return_date": "2026-11-22",
+     "value": 0.35,
+     "value_recent": 0.41,
+     "missed": 0
+    },
+    {
      "player_id": "4700818",
      "player_name": "Vladislav Goldin",
      "status": "Out",
@@ -24304,48 +24988,6 @@
      "value": 0.08,
      "value_recent": 0.0,
      "missed": null
-    },
-    {
-     "player_id": "4431772",
-     "player_name": "Myron Gardner",
-     "status": "Questionable",
-     "source": "official",
-     "reason": "Injury/Illness - Right Hamstring Tightness / Soreness",
-     "detail": "Hamstring",
-     "comment": "Gardner (hamstring) is questionable for Wednesday's game against the Bucks, per Ira Winderman of the South Florida Sun Sentinel.",
-     "date": "2026-11-17T21:35Z",
-     "return_date": "2026-11-18",
-     "value": 0.35,
-     "value_recent": 0.41,
-     "missed": 0
-    },
-    {
-     "player_id": "4066261",
-     "player_name": "Bam Adebayo",
-     "status": "Probable",
-     "source": "official",
-     "reason": "Injury/Illness - Right Hip Impingement",
-     "detail": "Right Hip",
-     "comment": "Adebayo (hip) is probable for Wednesday's game against the Bucks, per Ira Winderman of the South Florida Sun Sentinel.",
-     "date": "2026-11-17T21:32Z",
-     "return_date": "2026-11-18",
-     "value": 2.63,
-     "value_recent": 2.63,
-     "missed": 0
-    },
-    {
-     "player_id": "4997528",
-     "player_name": "Nikola Jovic",
-     "status": "Probable",
-     "source": "official",
-     "reason": "Injury/Illness - Illness",
-     "detail": "Illness",
-     "comment": "Jovic (illness) is listed as probable for Wednesday's game against Milwaukee, Ira Winderman of the South Florida Sun Sentinel reports.",
-     "date": "2026-11-17T21:34Z",
-     "return_date": "2026-11-18",
-     "value": 0.4,
-     "value_recent": 0.35,
-     "missed": 1
     }
    ]
   },
@@ -27703,7 +28345,7 @@
       "player_name": "Dean Wade",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3912848.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 26.7,
       "ppg": 4.8,
       "height_in": 81.0,
@@ -28323,6 +28965,118 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "away_lineup_units": [
+    {
+     "players": [
+      "LeBron James",
+      "Joel Embiid",
+      "Jaylen Brown",
+      "Tyrese Maxey",
+      "VJ Edgecombe"
+     ],
+     "minutes": 119.9,
+     "off_poss": 271,
+     "off_rating": 104.1,
+     "def_rating": 104.8,
+     "net_rating": -0.7
+    },
+    {
+     "players": [
+      "Joel Embiid",
+      "Dean Wade",
+      "Jaylen Brown",
+      "Tyrese Maxey",
+      "VJ Edgecombe"
+     ],
+     "minutes": 39.4,
+     "off_poss": 84,
+     "off_rating": 121.7,
+     "def_rating": 125.5,
+     "net_rating": -3.8
+    },
+    {
+     "players": [
+      "LeBron James",
+      "Joel Embiid",
+      "Dean Wade",
+      "Tyrese Maxey",
+      "VJ Edgecombe"
+     ],
+     "minutes": 21.1,
+     "off_poss": 43,
+     "off_rating": 124.4,
+     "def_rating": 107.4,
+     "net_rating": 17.0
+    },
+    {
+     "players": [
+      "LeBron James",
+      "Kentavious Caldwell-Pope",
+      "Dean Wade",
+      "Jaylen Brown",
+      "Tyrese Maxey"
+     ],
+     "minutes": 18.2,
+     "off_poss": 39,
+     "off_rating": 95.8,
+     "def_rating": 135.5,
+     "net_rating": -39.7
+    },
+    {
+     "players": [
+      "LeBron James",
+      "Kentavious Caldwell-Pope",
+      "Joel Embiid",
+      "Tyrese Maxey",
+      "VJ Edgecombe"
+     ],
+     "minutes": 17.1,
+     "off_poss": 38,
+     "off_rating": 108.4,
+     "def_rating": 97.6,
+     "net_rating": 10.8
+    }
+   ],
+   "away_splits": {
+    "games": {
+     "at_home": 8,
+     "on_road": 7,
+     "back_to_back": 3,
+     "rested": 11
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": 3.2,
+     "better": "high",
+     "rank": 15,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": 2.2,
+     "better": "high",
+     "rank": 12,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": -0.7,
+     "better": "high",
+     "rank": 12,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": 3.4,
+     "better": "high",
+     "rank": 13,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "away_player_values": [
     {
      "player_id": "4431678",
@@ -28446,6 +29200,20 @@
      "value": 0.48,
      "value_recent": 0.54,
      "missed": 6
+    },
+    {
+     "player_id": "3912848",
+     "player_name": "Dean Wade",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Left Hamstring Tightness / Soreness",
+     "detail": "Left Hamstring Soreness",
+     "comment": "Wade (hamstring) has been downgraded to questionable for Wednesday's game against the Magic.",
+     "date": "2026-11-18T18:06Z",
+     "return_date": "2026-11-18",
+     "value": 1.02,
+     "value_recent": 1.02,
+     "missed": 0
     }
    ],
    "home_form": {
@@ -32083,6 +32851,118 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "home_lineup_units": [
+    {
+     "players": [
+      "Desmond Bane",
+      "Wendell Carter Jr.",
+      "Franz Wagner",
+      "Anthony Black",
+      "Jase Richardson"
+     ],
+     "minutes": 36.4,
+     "off_poss": 75,
+     "off_rating": 113.5,
+     "def_rating": 108.0,
+     "net_rating": 5.5
+    },
+    {
+     "players": [
+      "Desmond Bane",
+      "Wendell Carter Jr.",
+      "Franz Wagner",
+      "Tristan da Silva",
+      "Anthony Black"
+     ],
+     "minutes": 31.5,
+     "off_poss": 66,
+     "off_rating": 120.7,
+     "def_rating": 110.4,
+     "net_rating": 10.3
+    },
+    {
+     "players": [
+      "Desmond Bane",
+      "Wendell Carter Jr.",
+      "Jalen Suggs",
+      "Paolo Banchero",
+      "Franz Wagner"
+     ],
+     "minutes": 26.9,
+     "off_poss": 58,
+     "off_rating": 114.6,
+     "def_rating": 120.6,
+     "net_rating": -6.0
+    },
+    {
+     "players": [
+      "Desmond Bane",
+      "Wendell Carter Jr.",
+      "Jalen Suggs",
+      "Franz Wagner",
+      "Anthony Black"
+     ],
+     "minutes": 21.4,
+     "off_poss": 46,
+     "off_rating": 117.3,
+     "def_rating": 102.6,
+     "net_rating": 14.7
+    },
+    {
+     "players": [
+      "Desmond Bane",
+      "Wendell Carter Jr.",
+      "Franz Wagner",
+      "Alex Morales",
+      "Anthony Black"
+     ],
+     "minutes": 19.7,
+     "off_poss": 40,
+     "off_rating": 97.3,
+     "def_rating": 120.6,
+     "net_rating": -23.3
+    }
+   ],
+   "home_splits": {
+    "games": {
+     "at_home": 5,
+     "on_road": 8,
+     "back_to_back": 1,
+     "rested": 11
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": -8.2,
+     "better": "high",
+     "rank": 25,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": -0.2,
+     "better": "high",
+     "rank": 13,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": 14.9,
+     "better": "high",
+     "rank": 2,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": -4.6,
+     "better": "high",
+     "rank": 22,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "home_player_values": [
     {
      "player_id": "4432573",
@@ -32200,8 +33080,8 @@
      "source": "official",
      "reason": "Injury/Illness - Left Ankle Injury Recovery",
      "detail": "Left Ankle Surgery",
-     "comment": "Nelson (ankle) has been ruled out for Wednesday's game against the 76ers.",
-     "date": "2026-11-17T21:22Z",
+     "comment": "Head coach Sean Sweeney said Wednesday that Nelson (ankle) has been doing \"some on-court stuff,\" though Sweeney added that the work has been \"minimal,\" Jason Beede of the Orlando Sentinel reports.",
+     "date": "2026-11-18T17:25Z",
      "return_date": "2026-11-28",
      "value": null
     }
@@ -36137,6 +37017,118 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "away_lineup_units": [
+    {
+     "players": [
+      "Norman Powell",
+      "Jalen Smith",
+      "Matas Buzelis",
+      "Josh Giddey",
+      "Caleb Wilson"
+     ],
+     "minutes": 90.6,
+     "off_poss": 206,
+     "off_rating": 106.3,
+     "def_rating": 119.5,
+     "net_rating": -13.2
+    },
+    {
+     "players": [
+      "Norman Powell",
+      "Jalen Smith",
+      "Isaac Okoro",
+      "Matas Buzelis",
+      "Josh Giddey"
+     ],
+     "minutes": 40.1,
+     "off_poss": 90,
+     "off_rating": 113.3,
+     "def_rating": 114.2,
+     "net_rating": -0.9
+    },
+    {
+     "players": [
+      "Jalen Smith",
+      "Isaac Okoro",
+      "Matas Buzelis",
+      "Josh Giddey",
+      "Caleb Wilson"
+     ],
+     "minutes": 34.5,
+     "off_poss": 74,
+     "off_rating": 131.6,
+     "def_rating": 133.6,
+     "net_rating": -2.0
+    },
+    {
+     "players": [
+      "Norman Powell",
+      "Jalen Smith",
+      "Isaac Okoro",
+      "Josh Giddey",
+      "Caleb Wilson"
+     ],
+     "minutes": 23.0,
+     "off_poss": 49,
+     "off_rating": 110.7,
+     "def_rating": 116.2,
+     "net_rating": -5.5
+    },
+    {
+     "players": [
+      "Buddy Hield",
+      "Tre Jones",
+      "Isaac Okoro",
+      "Leonard Miller",
+      "Noa Essengue"
+     ],
+     "minutes": 21.3,
+     "off_poss": 42,
+     "off_rating": 117.1,
+     "def_rating": 102.3,
+     "net_rating": 14.8
+    }
+   ],
+   "away_splits": {
+    "games": {
+     "at_home": 5,
+     "on_road": 8,
+     "back_to_back": 3,
+     "rested": 9
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": -2.4,
+     "better": "high",
+     "rank": 19,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": -15.5,
+     "better": "high",
+     "rank": 30,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": -11.8,
+     "better": "high",
+     "rank": 26,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": -6.8,
+     "better": "high",
+     "rank": 25,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "away_player_values": [
     {
      "player_id": "2595516",
@@ -36281,7 +37273,7 @@
      "player_name": "Patrick Williams",
      "status": "Probable",
      "source": "official",
-     "reason": "Injury/Illness - Right Finger Dislocation",
+     "reason": "Injury/Illness - Right Finger",
      "detail": "Right Finger Dislocated",
      "comment": "Williams (finger) is listed as probable for Wednesday's game against Brooklyn.",
      "date": "2026-11-17T21:04Z",
@@ -40178,6 +41170,118 @@
     "miles_last_7": 1313,
     "tz_shift": 0,
     "altitude": false
+   },
+   "home_lineup_units": [
+    {
+     "players": [
+      "Julius Randle",
+      "Michael Porter Jr.",
+      "Day'Ron Sharpe",
+      "Keon Ellis",
+      "Egor Demin"
+     ],
+     "minutes": 49.4,
+     "off_poss": 109,
+     "off_rating": 110.6,
+     "def_rating": 105.4,
+     "net_rating": 5.2
+    },
+    {
+     "players": [
+      "Julius Randle",
+      "Michael Porter Jr.",
+      "Day'Ron Sharpe",
+      "Chaney Johnson",
+      "Nolan Traore"
+     ],
+     "minutes": 42.5,
+     "off_poss": 83,
+     "off_rating": 105.8,
+     "def_rating": 102.4,
+     "net_rating": 3.4
+    },
+    {
+     "players": [
+      "Julius Randle",
+      "Michael Porter Jr.",
+      "Day'Ron Sharpe",
+      "Danny Wolf",
+      "Nolan Traore"
+     ],
+     "minutes": 36.4,
+     "off_poss": 78,
+     "off_rating": 122.0,
+     "def_rating": 110.8,
+     "net_rating": 11.2
+    },
+    {
+     "players": [
+      "Julius Randle",
+      "Michael Porter Jr.",
+      "Day'Ron Sharpe",
+      "Egor Demin",
+      "Nolan Traore"
+     ],
+     "minutes": 26.4,
+     "off_poss": 56,
+     "off_rating": 126.4,
+     "def_rating": 115.4,
+     "net_rating": 11.0
+    },
+    {
+     "players": [
+      "Julius Randle",
+      "Moritz Wagner",
+      "Keon Ellis",
+      "Noah Clowney",
+      "Mikel Brown Jr."
+     ],
+     "minutes": 21.1,
+     "off_poss": 45,
+     "off_rating": 95.0,
+     "def_rating": 104.1,
+     "net_rating": -9.1
+    }
+   ],
+   "home_splits": {
+    "games": {
+     "at_home": 5,
+     "on_road": 8,
+     "back_to_back": 2,
+     "rested": 10
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": -10.1,
+     "better": "high",
+     "rank": 27,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": -4.3,
+     "better": "high",
+     "rank": 19,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": -30.8,
+     "better": "high",
+     "rank": 28,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": -1.6,
+     "better": "high",
+     "rank": 19,
+     "of": 30,
+     "format": "signed"
+    }
    },
    "home_player_values": [
     {
@@ -44240,6 +45344,118 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "away_lineup_units": [
+    {
+     "players": [
+      "Trae Young",
+      "AJ Dybantsa",
+      "Alex Sarr",
+      "Kyshawn George",
+      "Anthony Davis"
+     ],
+     "minutes": 110.8,
+     "off_poss": 229,
+     "off_rating": 116.0,
+     "def_rating": 111.8,
+     "net_rating": 4.2
+    },
+    {
+     "players": [
+      "Trae Young",
+      "Bilal Coulibaly",
+      "Alex Sarr",
+      "Kyshawn George",
+      "Anthony Davis"
+     ],
+     "minutes": 45.4,
+     "off_poss": 102,
+     "off_rating": 100.4,
+     "def_rating": 116.8,
+     "net_rating": -16.4
+    },
+    {
+     "players": [
+      "Trae Young",
+      "Bilal Coulibaly",
+      "AJ Dybantsa",
+      "Kyshawn George",
+      "Anthony Davis"
+     ],
+     "minutes": 22.5,
+     "off_poss": 37,
+     "off_rating": 92.5,
+     "def_rating": 99.8,
+     "net_rating": -7.3
+    },
+    {
+     "players": [
+      "Trae Young",
+      "Bilal Coulibaly",
+      "AJ Dybantsa",
+      "Alex Sarr",
+      "Kyshawn George"
+     ],
+     "minutes": 21.8,
+     "off_poss": 41,
+     "off_rating": 109.0,
+     "def_rating": 104.4,
+     "net_rating": 4.6
+    },
+    {
+     "players": [
+      "Trae Young",
+      "AJ Dybantsa",
+      "Kyshawn George",
+      "Tre Johnson",
+      "Anthony Davis"
+     ],
+     "minutes": 16.9,
+     "off_poss": 35,
+     "off_rating": 121.9,
+     "def_rating": 129.1,
+     "net_rating": -7.2
+    }
+   ],
+   "away_splits": {
+    "games": {
+     "at_home": 7,
+     "on_road": 8,
+     "back_to_back": 4,
+     "rested": 10
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": -6.1,
+     "better": "high",
+     "rank": 24,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": -9.2,
+     "better": "high",
+     "rank": 22,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": -15.7,
+     "better": "high",
+     "rank": 27,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": -6.4,
+     "better": "high",
+     "rank": 23,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "away_player_values": [
     {
      "player_id": "6583",
@@ -44297,13 +45513,13 @@
      "value": 0.58
     },
     {
-     "player_id": "4278129",
-     "player_name": "Deandre Ayton",
+     "player_id": "6609",
+     "player_name": "Khris Middleton",
      "value": 0.47
     },
     {
-     "player_id": "6609",
-     "player_name": "Khris Middleton",
+     "player_id": "4278129",
+     "player_name": "Deandre Ayton",
      "value": 0.47
     },
     {
@@ -46735,7 +47951,7 @@
       "player_name": "RJ Barrett",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4395625.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 34.1,
       "ppg": 20.9,
       "height_in": 78.0,
@@ -47246,7 +48462,7 @@
       "player_name": "Scottie Barnes",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4433134.png",
-      "status": null,
+      "status": "Out",
       "mpg": 33.7,
       "ppg": 23.8,
       "height_in": 80.0,
@@ -48212,6 +49428,118 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "home_lineup_units": [
+    {
+     "players": [
+      "RJ Barrett",
+      "Immanuel Quickley",
+      "Scottie Barnes",
+      "Ja'Kobe Walter",
+      "Collin Murray-Boyles"
+     ],
+     "minutes": 76.8,
+     "off_poss": 164,
+     "off_rating": 111.7,
+     "def_rating": 111.1,
+     "net_rating": 0.6
+    },
+    {
+     "players": [
+      "Jakob Poeltl",
+      "RJ Barrett",
+      "Immanuel Quickley",
+      "Scottie Barnes",
+      "Ja'Kobe Walter"
+     ],
+     "minutes": 34.3,
+     "off_poss": 64,
+     "off_rating": 108.2,
+     "def_rating": 134.7,
+     "net_rating": -26.5
+    },
+    {
+     "players": [
+      "RJ Barrett",
+      "Jamison Battle",
+      "Jamal Shead",
+      "Ja'Kobe Walter",
+      "Collin Murray-Boyles"
+     ],
+     "minutes": 25.5,
+     "off_poss": 58,
+     "off_rating": 109.0,
+     "def_rating": 123.9,
+     "net_rating": -14.9
+    },
+    {
+     "players": [
+      "Jakob Poeltl",
+      "RJ Barrett",
+      "Immanuel Quickley",
+      "Ja'Kobe Walter",
+      "Collin Murray-Boyles"
+     ],
+     "minutes": 22.5,
+     "off_poss": 45,
+     "off_rating": 120.1,
+     "def_rating": 148.2,
+     "net_rating": -28.1
+    },
+    {
+     "players": [
+      "Jakob Poeltl",
+      "RJ Barrett",
+      "Immanuel Quickley",
+      "Scottie Barnes",
+      "Kawhi Leonard"
+     ],
+     "minutes": 22.4,
+     "off_poss": 52,
+     "off_rating": 94.7,
+     "def_rating": 93.0,
+     "net_rating": 1.7
+    }
+   ],
+   "home_splits": {
+    "games": {
+     "at_home": 7,
+     "on_road": 7,
+     "back_to_back": 2,
+     "rested": 11
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": 4.6,
+     "better": "high",
+     "rank": 12,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": -3.8,
+     "better": "high",
+     "rank": 18,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": -2.0,
+     "better": "high",
+     "rank": 17,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": -3.2,
+     "better": "high",
+     "rank": 20,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "home_player_values": [
     {
      "player_id": "4433134",
@@ -48264,28 +49592,47 @@
      "value": 0.58
     },
     {
-     "player_id": "4411057",
-     "player_name": "Kevin McCullar Jr.",
+     "player_id": "5149115",
+     "player_name": "Allen Graves",
      "value": 0.45
     },
     {
-     "player_id": "5149115",
-     "player_name": "Allen Graves",
+     "player_id": "4411057",
+     "player_name": "Kevin McCullar Jr.",
      "value": 0.45
     },
     {
      "player_id": "2993874",
      "player_name": "Kyle Anderson",
      "value": 0.26
+    },
+    {
+     "player_id": "4397784",
+     "player_name": "Malachi Smith",
+     "value": 0.05
     }
    ],
    "home_injuries": [
     {
+     "player_id": "4433134",
+     "player_name": "Scottie Barnes",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Left Groin Injury Management",
+     "detail": "Groin",
+     "comment": "Barnes (injury management) has been ruled out for Wednesday's game against Washington, Esfandiar Baraheni of The Athletic reports.",
+     "date": "2026-11-18T17:46Z",
+     "return_date": "2026-11-20",
+     "value": 2.24,
+     "value_recent": 2.57,
+     "missed": 0
+    },
+    {
      "player_id": "6450",
      "player_name": "Kawhi Leonard",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Left Knee Injury Management",
      "detail": "Left Knee Inflammation",
      "comment": "Leonard (knee) has progressed in his strength and conditioning program but will miss at least one more week, Michael Scotto of HoopsHype.com reports.",
      "date": "2026-11-17T22:25Z",
@@ -48295,23 +49642,11 @@
      "missed": 12
     },
     {
-     "player_id": "4432586",
-     "player_name": "Nate Bittle",
-     "status": "Out",
-     "source": "espn",
-     "reason": null,
-     "detail": "Right Foot Fracture",
-     "comment": "Bittle (foot) has been ruled out for Sunday's game against the Knicks, Zulfi Sheikh of Sportsnet.ca reports.",
-     "date": "2026-11-14T21:59Z",
-     "return_date": "2026-11-23",
-     "value": null
-    },
-    {
      "player_id": "4411057",
      "player_name": "Kevin McCullar Jr.",
-     "status": "Day-To-Day",
-     "source": "espn",
-     "reason": null,
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
      "detail": "Illness",
      "comment": "McCullar signed a two-way contract with the Raptors on Thursday, Michael Scotto of HoopsHype.com reports.",
      "date": "2026-11-13T15:37Z",
@@ -48319,6 +49654,46 @@
      "value": 0.45,
      "value_recent": 0.0,
      "missed": null
+    },
+    {
+     "player_id": "4397784",
+     "player_name": "Malachi Smith",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.05,
+     "value_recent": 0.0,
+     "missed": 2
+    },
+    {
+     "player_id": "4432586",
+     "player_name": "Nate Bittle",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Right Foot Avulsion Fracture",
+     "detail": "Right Foot Fracture",
+     "comment": "Bittle (foot) has been ruled out for Sunday's game against the Knicks, Zulfi Sheikh of Sportsnet.ca reports.",
+     "date": "2026-11-14T21:59Z",
+     "return_date": "2026-11-23",
+     "value": null
+    },
+    {
+     "player_id": "4395625",
+     "player_name": "RJ Barrett",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Right Hamstring Tightness / Soreness",
+     "detail": "Hamstring Soreness",
+     "comment": "Barrett is questionable for Wednesday's game against the Wizards due to hamstring tightness, Esfandiar Baraheni of The Athletic reports.",
+     "date": "2026-11-18T17:49Z",
+     "return_date": "2026-11-18",
+     "value": 1.87,
+     "value_recent": 1.87,
+     "missed": 0
     }
    ]
   },
@@ -52054,7 +53429,7 @@
       "player_name": "Ronald Holland II",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4683771.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 15.9,
       "ppg": 4.9,
       "height_in": 80.0,
@@ -52220,6 +53595,118 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "away_lineup_units": [
+    {
+     "players": [
+      "Duncan Robinson",
+      "John Collins",
+      "Paul Reed",
+      "Cade Cunningham",
+      "Ausar Thompson"
+     ],
+     "minutes": 67.2,
+     "off_poss": 137,
+     "off_rating": 94.7,
+     "def_rating": 122.6,
+     "net_rating": -27.9
+    },
+    {
+     "players": [
+      "Duncan Robinson",
+      "John Collins",
+      "Cade Cunningham",
+      "Ausar Thompson",
+      "Daniss Jenkins"
+     ],
+     "minutes": 40.4,
+     "off_poss": 82,
+     "off_rating": 134.5,
+     "def_rating": 119.6,
+     "net_rating": 14.9
+    },
+    {
+     "players": [
+      "Javonte Green",
+      "Kevin Huerter",
+      "Paul Reed",
+      "Ronald Holland II",
+      "Daniss Jenkins"
+     ],
+     "minutes": 29.4,
+     "off_poss": 62,
+     "off_rating": 107.2,
+     "def_rating": 72.6,
+     "net_rating": 34.6
+    },
+    {
+     "players": [
+      "Kevin Huerter",
+      "Paul Reed",
+      "Cade Cunningham",
+      "Ausar Thompson",
+      "Daniss Jenkins"
+     ],
+     "minutes": 25.6,
+     "off_poss": 49,
+     "off_rating": 146.3,
+     "def_rating": 100.2,
+     "net_rating": 46.1
+    },
+    {
+     "players": [
+      "John Collins",
+      "Kevin Huerter",
+      "Cade Cunningham",
+      "Ausar Thompson",
+      "Daniss Jenkins"
+     ],
+     "minutes": 24.4,
+     "off_poss": 47,
+     "off_rating": 84.8,
+     "def_rating": 108.3,
+     "net_rating": -23.5
+    }
+   ],
+   "away_splits": {
+    "games": {
+     "at_home": 5,
+     "on_road": 8,
+     "back_to_back": 2,
+     "rested": 10
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": 3.2,
+     "better": "high",
+     "rank": 15,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": 7.4,
+     "better": "high",
+     "rank": 5,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": 10.8,
+     "better": "high",
+     "rank": 7,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": 4.6,
+     "better": "high",
+     "rank": 8,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "away_player_values": [
     {
      "player_id": "4432166",
@@ -52317,20 +53804,6 @@
      "missed": 11
     },
     {
-     "player_id": "4683771",
-     "player_name": "Ronald Holland II",
-     "status": "Out",
-     "source": "espn",
-     "reason": null,
-     "detail": "Left Knee Bruise",
-     "comment": "Holland is out for Tuesday's game against San Antonio due to a left knee contusion.",
-     "date": "2026-11-16T22:53Z",
-     "return_date": "2026-11-18",
-     "value": 0.6,
-     "value_recent": 0.58,
-     "missed": 1
-    },
-    {
      "player_id": "4395702",
      "player_name": "Isaiah Joe",
      "status": "Out",
@@ -52345,14 +53818,28 @@
      "missed": 10
     },
     {
+     "player_id": "4683771",
+     "player_name": "Ronald Holland II",
+     "status": "Day-To-Day",
+     "source": "espn",
+     "reason": null,
+     "detail": "Left Knee Bruise",
+     "comment": "Holland is out for Tuesday's game against San Antonio due to a left knee contusion.",
+     "date": "2026-11-18T15:05Z",
+     "return_date": "2026-11-18",
+     "value": 0.6,
+     "value_recent": 0.58,
+     "missed": 1
+    },
+    {
      "player_id": "2990962",
      "player_name": "Taurean Prince",
-     "status": "Out",
+     "status": "Day-To-Day",
      "source": "espn",
      "reason": null,
      "detail": "Right Knee Soreness",
      "comment": "Prince (knee) has been ruled out for Tuesday's game against the Spurs.",
-     "date": "2026-11-16T22:58Z",
+     "date": "2026-11-18T15:05Z",
      "return_date": "2026-11-18",
      "value": 0.23,
      "value_recent": 0.23,
@@ -56226,6 +57713,118 @@
     "miles_last_7": 0,
     "tz_shift": 0,
     "altitude": false
+   },
+   "home_lineup_units": [
+    {
+     "players": [
+      "Herbert Jones",
+      "Saddiq Bey",
+      "Trendon Watford",
+      "Bennedict Mathurin",
+      "Derik Queen"
+     ],
+     "minutes": 41.2,
+     "off_poss": 89,
+     "off_rating": 105.0,
+     "def_rating": 85.7,
+     "net_rating": 19.3
+    },
+    {
+     "players": [
+      "Herbert Jones",
+      "Zion Williamson",
+      "Trey Murphy III",
+      "Karlo Matkovic",
+      "Jeremiah Fears"
+     ],
+     "minutes": 38.8,
+     "off_poss": 92,
+     "off_rating": 125.1,
+     "def_rating": 92.9,
+     "net_rating": 32.2
+    },
+    {
+     "players": [
+      "Herbert Jones",
+      "Zion Williamson",
+      "Saddiq Bey",
+      "Yves Missi",
+      "Jeremiah Fears"
+     ],
+     "minutes": 27.8,
+     "off_poss": 55,
+     "off_rating": 108.1,
+     "def_rating": 102.8,
+     "net_rating": 5.3
+    },
+    {
+     "players": [
+      "Zion Williamson",
+      "Saddiq Bey",
+      "Trey Murphy III",
+      "Karlo Matkovic",
+      "Jeremiah Fears"
+     ],
+     "minutes": 27.0,
+     "off_poss": 52,
+     "off_rating": 117.2,
+     "def_rating": 142.2,
+     "net_rating": -25.0
+    },
+    {
+     "players": [
+      "Dejounte Murray",
+      "Zion Williamson",
+      "Trey Murphy III",
+      "Yves Missi",
+      "Jeremiah Fears"
+     ],
+     "minutes": 24.0,
+     "off_poss": 50,
+     "off_rating": 111.1,
+     "def_rating": 152.2,
+     "net_rating": -41.1
+    }
+   ],
+   "home_splits": {
+    "games": {
+     "at_home": 10,
+     "on_road": 5,
+     "back_to_back": 5,
+     "rested": 9
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": -3.1,
+     "better": "high",
+     "rank": 23,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": -13.9,
+     "better": "high",
+     "rank": 27,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": -5.8,
+     "better": "high",
+     "rank": 21,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": -7.7,
+     "better": "high",
+     "rank": 26,
+     "of": 30,
+     "format": "signed"
+    }
    },
    "home_player_values": [
     {
@@ -60429,6 +62028,118 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "away_lineup_units": [
+    {
+     "players": [
+      "CJ McCollum",
+      "Nickeil Alexander-Walker",
+      "Onyeka Okongwu",
+      "Jalen Johnson",
+      "Dyson Daniels"
+     ],
+     "minutes": 142.5,
+     "off_poss": 308,
+     "off_rating": 110.0,
+     "def_rating": 101.5,
+     "net_rating": 8.5
+    },
+    {
+     "players": [
+      "Jock Landale",
+      "Nickeil Alexander-Walker",
+      "Luguentz Dort",
+      "Aaron Wiggins",
+      "Kingston Flemings"
+     ],
+     "minutes": 58.7,
+     "off_poss": 129,
+     "off_rating": 113.0,
+     "def_rating": 98.3,
+     "net_rating": 14.7
+    },
+    {
+     "players": [
+      "CJ McCollum",
+      "Nickeil Alexander-Walker",
+      "Luguentz Dort",
+      "Onyeka Okongwu",
+      "Dyson Daniels"
+     ],
+     "minutes": 42.9,
+     "off_poss": 99,
+     "off_rating": 117.6,
+     "def_rating": 109.1,
+     "net_rating": 8.5
+    },
+    {
+     "players": [
+      "Nickeil Alexander-Walker",
+      "Onyeka Okongwu",
+      "Jalen Johnson",
+      "Dyson Daniels",
+      "Kingston Flemings"
+     ],
+     "minutes": 38.1,
+     "off_poss": 87,
+     "off_rating": 101.1,
+     "def_rating": 96.6,
+     "net_rating": 4.5
+    },
+    {
+     "players": [
+      "CJ McCollum",
+      "Aaron Wiggins",
+      "Onyeka Okongwu",
+      "Jalen Johnson",
+      "Dyson Daniels"
+     ],
+     "minutes": 34.6,
+     "off_poss": 83,
+     "off_rating": 113.8,
+     "def_rating": 112.5,
+     "net_rating": 1.3
+    }
+   ],
+   "away_splits": {
+    "games": {
+     "at_home": 6,
+     "on_road": 8,
+     "back_to_back": 3,
+     "rested": 10
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": -2.5,
+     "better": "high",
+     "rank": 20,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": 4.7,
+     "better": "high",
+     "rank": 9,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": -9.5,
+     "better": "high",
+     "rank": 23,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": 4.6,
+     "better": "high",
+     "rank": 8,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "away_player_values": [
     {
      "player_id": "4701230",
@@ -60582,7 +62293,7 @@
     {
      "player_id": "4684443",
      "player_name": "Rafael Castro",
-     "status": "Doubtful",
+     "status": "Out",
      "source": "official",
      "reason": "G League - Two-Way",
      "detail": null,
@@ -64434,6 +66145,90 @@
     "miles_last_7": 2534,
     "tz_shift": 2,
     "altitude": false
+   },
+   "home_lineup_units": [
+    {
+     "players": [
+      "Kenrich Williams",
+      "Isaiah Hartenstein",
+      "Shai Gilgeous-Alexander",
+      "Jared McCain",
+      "Ajay Mitchell"
+     ],
+     "minutes": 56.7,
+     "off_poss": 120,
+     "off_rating": 121.1,
+     "def_rating": 107.7,
+     "net_rating": 13.4
+    },
+    {
+     "players": [
+      "Isaiah Hartenstein",
+      "Shai Gilgeous-Alexander",
+      "Chet Holmgren",
+      "Jalen Williams",
+      "Cason Wallace"
+     ],
+     "minutes": 28.7,
+     "off_poss": 59,
+     "off_rating": 101.0,
+     "def_rating": 108.0,
+     "net_rating": -7.0
+    },
+    {
+     "players": [
+      "Alex Caruso",
+      "Shai Gilgeous-Alexander",
+      "Micah Peavy",
+      "Aday Mara",
+      "Bennett Stirtz"
+     ],
+     "minutes": 16.6,
+     "off_poss": 36,
+     "off_rating": 115.8,
+     "def_rating": 117.7,
+     "net_rating": -1.9
+    }
+   ],
+   "home_splits": {
+    "games": {
+     "at_home": 5,
+     "on_road": 9,
+     "back_to_back": 2,
+     "rested": 11
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": 15.1,
+     "better": "high",
+     "rank": 1,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": -0.7,
+     "better": "high",
+     "rank": 14,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": 14.2,
+     "better": "high",
+     "rank": 3,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": 2.7,
+     "better": "high",
+     "rank": 15,
+     "of": 30,
+     "format": "signed"
+    }
    },
    "home_player_values": [
     {
@@ -68491,6 +70286,118 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "away_lineup_units": [
+    {
+     "players": [
+      "Georges Niang",
+      "Gary Payton II",
+      "Stephen Curry",
+      "De'Anthony Melton",
+      "Draymond Green"
+     ],
+     "minutes": 36.6,
+     "off_poss": 74,
+     "off_rating": 95.4,
+     "def_rating": 104.5,
+     "net_rating": -9.1
+    },
+    {
+     "players": [
+      "Stephen Curry",
+      "Brandin Podziemski",
+      "Gui Santos",
+      "Yaxel Lendeborg",
+      "Draymond Green"
+     ],
+     "minutes": 33.2,
+     "off_poss": 75,
+     "off_rating": 130.0,
+     "def_rating": 106.7,
+     "net_rating": 23.3
+    },
+    {
+     "players": [
+      "Georges Niang",
+      "Stephen Curry",
+      "Brandin Podziemski",
+      "Yaxel Lendeborg",
+      "Draymond Green"
+     ],
+     "minutes": 16.8,
+     "off_poss": 37,
+     "off_rating": 118.7,
+     "def_rating": 102.7,
+     "net_rating": 16.0
+    },
+    {
+     "players": [
+      "Al Horford",
+      "Stephen Curry",
+      "Brandin Podziemski",
+      "Yaxel Lendeborg",
+      "Draymond Green"
+     ],
+     "minutes": 16.3,
+     "off_poss": 33,
+     "off_rating": 93.0,
+     "def_rating": 115.0,
+     "net_rating": -22.0
+    },
+    {
+     "players": [
+      "Stephen Curry",
+      "Brandin Podziemski",
+      "Will Richard",
+      "Yaxel Lendeborg",
+      "Draymond Green"
+     ],
+     "minutes": 15.5,
+     "off_poss": 31,
+     "off_rating": 95.0,
+     "def_rating": 142.4,
+     "net_rating": -47.4
+    }
+   ],
+   "away_splits": {
+    "games": {
+     "at_home": 7,
+     "on_road": 7,
+     "back_to_back": 2,
+     "rested": 11
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": 15.0,
+     "better": "high",
+     "rank": 2,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": -10.1,
+     "better": "high",
+     "rank": 23,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": -2.9,
+     "better": "high",
+     "rank": 18,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": 5.6,
+     "better": "high",
+     "rank": 7,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "away_player_values": [
     {
      "player_id": "3975",
@@ -68621,9 +70528,9 @@
      "status": "Out",
      "source": "official",
      "reason": "Injury/Illness - Left Hamstring Strain",
-     "detail": "Left Hamstring Not Specified",
-     "comment": "Williams (hamstring) will miss at least one week, per Anthony Slater of ESPN.com.",
-     "date": "2026-11-10T21:24Z",
+     "detail": "Left Hamstring Strain",
+     "comment": "Williams (hamstring) has progressed to on-court activities and will be re-evaluated Saturday.",
+     "date": "2026-11-18T17:12Z",
      "return_date": "2026-11-22",
      "value": 0.73,
      "value_recent": 0.71,
@@ -72349,6 +74256,76 @@
     "miles_last_7": 2729,
     "tz_shift": -1,
     "altitude": false
+   },
+   "home_lineup_units": [
+    {
+     "players": [
+      "Caleb Martin",
+      "Daniel Gafford",
+      "P.J. Washington",
+      "Cooper Flagg",
+      "Kyrie Irving"
+     ],
+     "minutes": 49.9,
+     "off_poss": 107,
+     "off_rating": 126.6,
+     "def_rating": 123.2,
+     "net_rating": 3.4
+    },
+    {
+     "players": [
+      "Daniel Gafford",
+      "P.J. Washington",
+      "Max Christie",
+      "Cooper Flagg",
+      "Kyrie Irving"
+     ],
+     "minutes": 39.4,
+     "off_poss": 74,
+     "off_rating": 137.5,
+     "def_rating": 131.0,
+     "net_rating": 6.5
+    }
+   ],
+   "home_splits": {
+    "games": {
+     "at_home": 7,
+     "on_road": 7,
+     "back_to_back": 4,
+     "rested": 9
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": 7.0,
+     "better": "high",
+     "rank": 9,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": -11.8,
+     "better": "high",
+     "rank": 25,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": -3.4,
+     "better": "high",
+     "rank": 19,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": -0.3,
+     "better": "high",
+     "rank": 18,
+     "of": 30,
+     "format": "signed"
+    }
    },
    "home_player_values": [
     {
@@ -76506,6 +78483,118 @@
     "tz_shift": -2,
     "altitude": true
    },
+   "away_lineup_units": [
+    {
+     "players": [
+      "Derrick White",
+      "Jayson Tatum",
+      "Paul George",
+      "Mitchell Robinson",
+      "Jordan Walsh"
+     ],
+     "minutes": 52.2,
+     "off_poss": 108,
+     "off_rating": 119.9,
+     "def_rating": 100.6,
+     "net_rating": 19.3
+    },
+    {
+     "players": [
+      "Derrick White",
+      "Jayson Tatum",
+      "Paul George",
+      "Neemias Queta",
+      "Jordan Walsh"
+     ],
+     "minutes": 43.7,
+     "off_poss": 94,
+     "off_rating": 129.1,
+     "def_rating": 104.1,
+     "net_rating": 25.0
+    },
+    {
+     "players": [
+      "Jayson Tatum",
+      "Sam Hauser",
+      "Payton Pritchard",
+      "Neemias Queta",
+      "Baylor Scheierman"
+     ],
+     "minutes": 22.9,
+     "off_poss": 50,
+     "off_rating": 129.4,
+     "def_rating": 102.5,
+     "net_rating": 26.9
+    },
+    {
+     "players": [
+      "Jayson Tatum",
+      "Sam Hauser",
+      "Payton Pritchard",
+      "Neemias Queta",
+      "Hugo Gonzalez"
+     ],
+     "minutes": 20.3,
+     "off_poss": 45,
+     "off_rating": 147.3,
+     "def_rating": 103.7,
+     "net_rating": 43.6
+    },
+    {
+     "players": [
+      "Jayson Tatum",
+      "Sam Hauser",
+      "Payton Pritchard",
+      "Luka Garza",
+      "Baylor Scheierman"
+     ],
+     "minutes": 17.1,
+     "off_poss": 38,
+     "off_rating": 123.8,
+     "def_rating": 93.0,
+     "net_rating": 30.8
+    }
+   ],
+   "away_splits": {
+    "games": {
+     "at_home": 7,
+     "on_road": 7,
+     "back_to_back": 2,
+     "rested": 11
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": 12.3,
+     "better": "high",
+     "rank": 3,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": 10.9,
+     "better": "high",
+     "rank": 3,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": 2.9,
+     "better": "high",
+     "rank": 9,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": 15.1,
+     "better": "high",
+     "rank": 1,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "away_player_values": [
     {
      "player_id": "4065648",
@@ -80439,6 +82528,109 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "home_lineup_units": [
+    {
+     "players": [
+      "Aaron Gordon",
+      "Nikola Jokic",
+      "Cameron Johnson",
+      "Jamal Murray",
+      "Christian Braun"
+     ],
+     "minutes": 142.1,
+     "off_poss": 298,
+     "off_rating": 118.3,
+     "def_rating": 106.2,
+     "net_rating": 12.1
+    },
+    {
+     "players": [
+      "Aaron Gordon",
+      "Nikola Jokic",
+      "Jamal Murray",
+      "Christian Braun",
+      "Trevon Brazile"
+     ],
+     "minutes": 46.8,
+     "off_poss": 101,
+     "off_rating": 131.2,
+     "def_rating": 92.2,
+     "net_rating": 39.0
+    },
+    {
+     "players": [
+      "Aaron Gordon",
+      "Nikola Jokic",
+      "Jamal Murray",
+      "Christian Braun",
+      "Bryce Hopkins"
+     ],
+     "minutes": 31.2,
+     "off_poss": 71,
+     "off_rating": 91.8,
+     "def_rating": 127.5,
+     "net_rating": -35.7
+    },
+    {
+     "players": [
+      "Nikola Jokic",
+      "Jamal Murray",
+      "DeMar DeRozan",
+      "Christian Braun",
+      "Trevon Brazile"
+     ],
+     "minutes": 27.8,
+     "off_poss": 59,
+     "off_rating": 107.3,
+     "def_rating": 96.2,
+     "net_rating": 11.1
+    },
+    {
+     "players": [
+      "Aaron Gordon",
+      "Nikola Jokic",
+      "Jamal Murray",
+      "DeMar DeRozan",
+      "Christian Braun"
+     ],
+     "minutes": 25.4,
+     "off_poss": 50,
+     "off_rating": 109.4,
+     "def_rating": 122.0,
+     "net_rating": -12.6
+    }
+   ],
+   "home_splits": {
+    "games": {
+     "at_home": 5,
+     "on_road": 7,
+     "rested": 11
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": -3.0,
+     "better": "high",
+     "rank": 21,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": 3.3,
+     "better": "high",
+     "rank": 10,
+     "of": 30,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": 1.8,
+     "better": "high",
+     "rank": 16,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "home_player_values": [
     {
      "player_id": "3112335",
@@ -83556,7 +85748,7 @@
       "player_name": "Jaxson Hayes",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4397077.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 24.0,
       "ppg": 8.8,
       "height_in": 84.0,
@@ -84515,6 +86707,118 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "away_lineup_units": [
+    {
+     "players": [
+      "Lauri Markkanen",
+      "Jaren Jackson Jr.",
+      "Keyonte George",
+      "Ace Bailey",
+      "Darryn Peterson"
+     ],
+     "minutes": 43.2,
+     "off_poss": 89,
+     "off_rating": 119.2,
+     "def_rating": 120.1,
+     "net_rating": -0.9
+    },
+    {
+     "players": [
+      "Lauri Markkanen",
+      "Jaxson Hayes",
+      "Keyonte George",
+      "Ace Bailey",
+      "Darryn Peterson"
+     ],
+     "minutes": 40.9,
+     "off_poss": 90,
+     "off_rating": 76.4,
+     "def_rating": 107.7,
+     "net_rating": -31.3
+    },
+    {
+     "players": [
+      "Jaxson Hayes",
+      "Josh Green",
+      "Keyonte George",
+      "Ace Bailey",
+      "Darryn Peterson"
+     ],
+     "minutes": 37.7,
+     "off_poss": 79,
+     "off_rating": 128.0,
+     "def_rating": 99.1,
+     "net_rating": 28.9
+    },
+    {
+     "players": [
+      "Mo Bamba",
+      "Josh Green",
+      "Keyonte George",
+      "Ace Bailey",
+      "Darryn Peterson"
+     ],
+     "minutes": 31.6,
+     "off_poss": 64,
+     "off_rating": 130.8,
+     "def_rating": 114.6,
+     "net_rating": 16.2
+    },
+    {
+     "players": [
+      "Josh Okogie",
+      "Jaxson Hayes",
+      "Keyonte George",
+      "Ace Bailey",
+      "Darryn Peterson"
+     ],
+     "minutes": 18.9,
+     "off_poss": 38,
+     "off_rating": 108.6,
+     "def_rating": 93.5,
+     "net_rating": 15.1
+    }
+   ],
+   "away_splits": {
+    "games": {
+     "at_home": 8,
+     "on_road": 7,
+     "back_to_back": 3,
+     "rested": 11
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": -8.5,
+     "better": "high",
+     "rank": 26,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": -8.0,
+     "better": "high",
+     "rank": 21,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": -10.6,
+     "better": "high",
+     "rank": 25,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": -6.7,
+     "better": "high",
+     "rank": 24,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "away_player_values": [
     {
      "player_id": "3102530",
@@ -84628,12 +86932,12 @@
     {
      "player_id": "4397077",
      "player_name": "Jaxson Hayes",
-     "status": "Out",
+     "status": "Day-To-Day",
      "source": "espn",
      "reason": null,
      "detail": "Left Knee Strain",
      "comment": "Hayes (knee) has been ruled out for Tuesday's game against the Clippers.",
-     "date": "2026-11-17T01:08Z",
+     "date": "2026-11-18T14:59Z",
      "return_date": "2026-11-18",
      "value": 1.05,
      "value_recent": 1.01,
@@ -87183,7 +89487,7 @@
       "player_name": "Walker Kessler",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4433136.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 30.9,
       "ppg": 14.5,
       "height_in": 85.0,
@@ -87345,7 +89649,7 @@
       "player_name": "Austin Reaves",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066457.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 35.2,
       "ppg": 24.7,
       "height_in": 77.0,
@@ -88512,6 +90816,118 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "home_lineup_units": [
+    {
+     "players": [
+      "Matisse Thybulle",
+      "Luka Doncic",
+      "Austin Reaves",
+      "Walker Kessler",
+      "Jake LaRavia"
+     ],
+     "minutes": 64.7,
+     "off_poss": 137,
+     "off_rating": 119.3,
+     "def_rating": 92.5,
+     "net_rating": 26.8
+    },
+    {
+     "players": [
+      "Matisse Thybulle",
+      "Luka Doncic",
+      "Austin Reaves",
+      "Walker Kessler",
+      "Ziaire Williams"
+     ],
+     "minutes": 57.8,
+     "off_poss": 120,
+     "off_rating": 136.1,
+     "def_rating": 115.6,
+     "net_rating": 20.5
+    },
+    {
+     "players": [
+      "Matisse Thybulle",
+      "Austin Reaves",
+      "Quentin Grimes",
+      "Walker Kessler",
+      "Jake LaRavia"
+     ],
+     "minutes": 38.7,
+     "off_poss": 81,
+     "off_rating": 106.3,
+     "def_rating": 101.2,
+     "net_rating": 5.1
+    },
+    {
+     "players": [
+      "Luka Doncic",
+      "Austin Reaves",
+      "Sandro Mamukelashvili",
+      "Quentin Grimes",
+      "Walker Kessler"
+     ],
+     "minutes": 30.7,
+     "off_poss": 72,
+     "off_rating": 124.2,
+     "def_rating": 105.7,
+     "net_rating": 18.5
+    },
+    {
+     "players": [
+      "Matisse Thybulle",
+      "Austin Reaves",
+      "Collin Sexton",
+      "Walker Kessler",
+      "Ziaire Williams"
+     ],
+     "minutes": 20.8,
+     "off_poss": 42,
+     "off_rating": 141.2,
+     "def_rating": 111.6,
+     "net_rating": 29.6
+    }
+   ],
+   "home_splits": {
+    "games": {
+     "at_home": 7,
+     "on_road": 8,
+     "back_to_back": 4,
+     "rested": 10
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": 8.2,
+     "better": "high",
+     "rank": 8,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": 6.8,
+     "better": "high",
+     "rank": 6,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": 12.6,
+     "better": "high",
+     "rank": 4,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": 4.0,
+     "better": "high",
+     "rank": 10,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "home_player_values": [
     {
      "player_id": "3945274",
@@ -88583,12 +90999,12 @@
     {
      "player_id": "4066457",
      "player_name": "Austin Reaves",
-     "status": "Out",
+     "status": "Day-To-Day",
      "source": "espn",
      "reason": null,
      "detail": "Left Heel Bruise",
      "comment": "Reaves (heel) is out for Tuesday's game against the Hornets, Dave McMenamin of ESPN.com reports.",
-     "date": "2026-11-17T01:11Z",
+     "date": "2026-11-18T15:02Z",
      "return_date": "2026-11-18",
      "value": 2.24,
      "value_recent": 2.25,
@@ -88597,12 +91013,12 @@
     {
      "player_id": "4433136",
      "player_name": "Walker Kessler",
-     "status": "Out",
+     "status": "Day-To-Day",
      "source": "espn",
      "reason": null,
      "detail": "Right Lower Leg Soreness",
      "comment": "Head coach JJ Redick said he expects Walker (leg) to be available for Wednesday's game against the Jazz, Thuc Nhi Nguyen of the Los Angeles Times reports.",
-     "date": "2026-11-18T02:57Z",
+     "date": "2026-11-18T15:02Z",
      "return_date": "2026-11-18",
      "value": 2.02,
      "value_recent": 2.08,
@@ -92467,6 +94883,118 @@
     "miles_last_7": 1471,
     "tz_shift": -1,
     "altitude": false
+   },
+   "away_lineup_units": [
+    {
+     "players": [
+      "Devin Booker",
+      "Dillon Brooks",
+      "Miles Bridges",
+      "Jalen Green",
+      "Oso Ighodaro"
+     ],
+     "minutes": 90.1,
+     "off_poss": 191,
+     "off_rating": 88.0,
+     "def_rating": 112.4,
+     "net_rating": -24.4
+    },
+    {
+     "players": [
+      "Devin Booker",
+      "Dillon Brooks",
+      "Miles Bridges",
+      "Jalen Green",
+      "Khaman Maluach"
+     ],
+     "minutes": 66.0,
+     "off_poss": 135,
+     "off_rating": 115.5,
+     "def_rating": 137.4,
+     "net_rating": -21.9
+    },
+    {
+     "players": [
+      "Devin Booker",
+      "Dillon Brooks",
+      "Collin Gillespie",
+      "Jalen Green",
+      "Khaman Maluach"
+     ],
+     "minutes": 19.9,
+     "off_poss": 40,
+     "off_rating": 114.8,
+     "def_rating": 106.6,
+     "net_rating": 8.2
+    },
+    {
+     "players": [
+      "Luke Kennard",
+      "Miles Bridges",
+      "Jordan Goodwin",
+      "Collin Gillespie",
+      "Oso Ighodaro"
+     ],
+     "minutes": 19.3,
+     "off_poss": 39,
+     "off_rating": 153.1,
+     "def_rating": 82.3,
+     "net_rating": 70.8
+    },
+    {
+     "players": [
+      "Luke Kennard",
+      "Miles Bridges",
+      "Jordan Goodwin",
+      "Collin Gillespie",
+      "Ryan Dunn"
+     ],
+     "minutes": 18.8,
+     "off_poss": 35,
+     "off_rating": 134.7,
+     "def_rating": 107.7,
+     "net_rating": 27.0
+    }
+   ],
+   "away_splits": {
+    "games": {
+     "at_home": 9,
+     "on_road": 4,
+     "back_to_back": 2,
+     "rested": 10
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": -0.1,
+     "better": "high",
+     "rank": 18,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": -10.6,
+     "better": "high",
+     "rank": 24,
+     "of": 30,
+     "format": "signed"
+    },
+    "back_to_back": {
+     "label": "Net Rating, Second Night Of A Back-To-Back",
+     "value": 17.3,
+     "better": "high",
+     "rank": 1,
+     "of": 28,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": -3.9,
+     "better": "high",
+     "rank": 21,
+     "of": 30,
+     "format": "signed"
+    }
    },
    "away_player_values": [
     {
@@ -96354,6 +98882,95 @@
     "tz_shift": 0,
     "altitude": false
    },
+   "home_lineup_units": [
+    {
+     "players": [
+      "Zach LaVine",
+      "Domantas Sabonis",
+      "De'Andre Hunter",
+      "Precious Achiuwa",
+      "Darius Acuff Jr."
+     ],
+     "minutes": 91.3,
+     "off_poss": 199,
+     "off_rating": 100.3,
+     "def_rating": 118.1,
+     "net_rating": -17.8
+    },
+    {
+     "players": [
+      "Zach LaVine",
+      "Domantas Sabonis",
+      "De'Andre Hunter",
+      "Keegan Murray",
+      "Darius Acuff Jr."
+     ],
+     "minutes": 54.0,
+     "off_poss": 107,
+     "off_rating": 103.3,
+     "def_rating": 121.0,
+     "net_rating": -17.7
+    },
+    {
+     "players": [
+      "Domantas Sabonis",
+      "De'Andre Hunter",
+      "Emanuel Sharp",
+      "Jonathan Mogbo",
+      "Darius Acuff Jr."
+     ],
+     "minutes": 18.6,
+     "off_poss": 38,
+     "off_rating": 158.9,
+     "def_rating": 85.9,
+     "net_rating": 73.0
+    },
+    {
+     "players": [
+      "Zach LaVine",
+      "Domantas Sabonis",
+      "Precious Achiuwa",
+      "Keegan Murray",
+      "Darius Acuff Jr."
+     ],
+     "minutes": 18.2,
+     "off_poss": 39,
+     "off_rating": 126.6,
+     "def_rating": 104.7,
+     "net_rating": 21.9
+    }
+   ],
+   "home_splits": {
+    "games": {
+     "at_home": 8,
+     "on_road": 5,
+     "rested": 12
+    },
+    "at_home": {
+     "label": "Net Rating At Home",
+     "value": -11.7,
+     "better": "high",
+     "rank": 28,
+     "of": 30,
+     "format": "signed"
+    },
+    "on_road": {
+     "label": "Net Rating On The Road",
+     "value": -15.2,
+     "better": "high",
+     "rank": 29,
+     "of": 30,
+     "format": "signed"
+    },
+    "rested": {
+     "label": "Net Rating With Rest",
+     "value": -12.1,
+     "better": "high",
+     "rank": 28,
+     "of": 30,
+     "format": "signed"
+    }
+   },
    "home_player_values": [
     {
      "player_id": "4898371",
@@ -96512,7 +99129,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-18_07_15AM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-18_01_30PM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -96645,5 +99262,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-18T17:11:22+00:00"
+ "published_at_utc": "2026-11-18T18:37:20+00:00"
 }
