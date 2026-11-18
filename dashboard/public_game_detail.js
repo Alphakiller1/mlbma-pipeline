@@ -8214,7 +8214,22 @@ function seasonToggle(game) {
   function cbbControls(game) {
     return '<div class="ca-analysis-scope ca-cbb-controls" aria-label="CBB evidence controls"><div><span class="ca-lineup-context">Evidence window</span><strong class="ca-cbb-control-title">Choose the season in view</strong></div>'+cbbOptions('season',[['2027','2026–27'],['2026','2025–26']],String(cbbYear(game)))+
       '<div data-cbb-chart-control>'+cbbOptions('metric',[['fg','FG%'],['share','Shot share']],game.__cbbMetric||'fg')+'</div><div data-cbb-chart-control>'+cbbOptions('view',[['offense','Offense'],['defense','Opponent allowed']],game.__cbbView||'offense')+'</div>'+
-      global.ChaseCbbCharts.metricLegend()+'</div>';
+      global.ChaseCbbCharts.metricLegend()+cbbThroughLine(game)+'</div>';
+  }
+  /* A status line: the last game each school's evidence counts. 2026-11-18
+     audit: the desk sat at Nov 12 for five days and said nothing. When
+     Basketball Quant's rates lag and the box-score rates stand in
+     (export.lay_box_rates), the fields only it measures carry its date. */
+  function cbbThroughLine(game) {
+    var parts = ['away', 'home'].map(function (side) {
+      var t = cbbTeam(game, side);
+      return t && t.data_through ? cbbSchool(game, side) + ' games through ' + injuryDate(t.data_through) : null;
+    }).filter(Boolean);
+    var basis = (cbbTeam(game, 'away') || {}).rates_basis || (cbbTeam(game, 'home') || {}).rates_basis;
+    if (basis && basis.basketball_quant_through) {
+      parts.push('Shot types and transition through ' + injuryDate(basis.basketball_quant_through));
+    }
+    return parts.length ? pending(parts.join(' · ')) : '';
   }
   function cbbOptions(kind,items,selected) { return '<div class="ca-cbb-options" role="group" aria-label="'+esc(kind)+'">'+items.map(function(x){return '<button type="button" data-cbb-'+kind+'="'+x[0]+'" class="'+(selected===x[0]?'is-on':'')+'" aria-pressed="'+(selected===x[0])+'">'+x[1]+'</button>';}).join('')+'</div>'; }
   function cbbRateRead(team) {
@@ -9076,6 +9091,9 @@ function seasonToggle(game) {
         function repaintCbbEvidence() {
           var stack=host.querySelector('.ca-detail-stack'),tab=stack.getAttribute('data-nfl-tab'),club=stack.getAttribute('data-club');
           stack.innerHTML=cbbSections(sport,game);nflSetTab(host,tab);nflSetClub(host,club);
+          // The controls carry the evidence's through-dates, known once the teams load.
+          var controls=host.querySelector('.ca-cbb-controls');
+          if(controls)controls.outerHTML=cbbControls(game);
         }
         host.querySelector('.ca-nfl-club').outerHTML=nflClubSwitch(sport,game);
         repaintCbbEvidence();

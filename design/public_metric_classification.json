@@ -117,7 +117,10 @@
     "zones_basis",
     "window_seconds",
     "event",
-    "official_injury_report"
+    "official_injury_report",
+    "rates_basis",
+    "box_scores_through",
+    "basketball_quant_through"
   ],
   "identity": [
     "Cut",
