@@ -268,6 +268,30 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         cbb_dashes = page.evaluate(DASH_AUDIT)
         check("CBB desk has no dash cells", not cbb_dashes, str(cbb_dashes))
 
+        rank_url = "**/data/public/cbb/matchup-ranks.json"
+        page.route(rank_url, lambda route: route.abort())
+        page.goto(base_url.rstrip("/") + "/cbb/matchup.html?game=401909694&date=2026-11-02#cbb-game-log",
+                  wait_until="domcontentloaded", timeout=timeout_ms)
+        page.wait_for_selector("#cbb-game-log .ca-cbb-log-table", timeout=timeout_ms)
+        final_rows = []
+        for team in ("52", "50"):
+            context_data = page.request.get(f"{base_url.rstrip('/')}/data/public/cbb/2027/teams/{team}.json").json()
+            stored = next(row for row in context_data["games"] if str(row["id"]) == "401909694")
+            mark = "W" if stored["points"] > stored["opponent_points"] else "L"
+            score = f"{mark} {stored['points']}–{stored['opponent_points']}"
+            adjusted = f"{stored['adj_points']:.1f}–{stored['adj_opponent_points']:.1f}"
+            rows = page.locator("#cbb-game-log tbody tr").filter(has_text=score)
+            final_rows.append(rows.count() == 1 and rows.first.locator("td").count() == 13 and
+                              adjusted in rows.first.text_content())
+        check("CBB finals retain both stored box scores and adjusted results", all(final_rows))
+        cbb_index = page.request.get(base_url.rstrip("/") + "/data/public/cbb/teams.json").json()["teams"]
+        team_count = sum("2027" in team["seasons"] for team in cbb_index.values())
+        log_badges = page.locator("#cbb-game-log .ca-rank")
+        invalid_ranks = log_badges.evaluate_all(TEAM_RANK_AUDIT, team_count)
+        check("CBB game-log ranks fit the D-I team scale without the rank file",
+              team_count > 1 and log_badges.count() > 0 and not invalid_ranks, str(invalid_ranks[:4]))
+        page.unroute(rank_url)
+
         nba = page.request.get(base_url.rstrip('/') + '/data/public/nba/slate.json').json()
         if nba.get('games'):
             fixture = nba['games'][0]
@@ -291,6 +315,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             log_ranks = page.locator("#nba-game-log .ca-log-panel td.num .ca-rank")
             bad_nba_ranks = log_ranks.evaluate_all(TEAM_RANK_AUDIT, 30)
             check("NBA game-log ranks use the team scale", not bad_nba_ranks, str(bad_nba_ranks[:4]))
+            page.set_viewport_size({"width": 375, "height": 824})
+            page.locator("a[data-nfl-tab='players']").click()
+            profile_headers = page.locator(".ca-nba-player-type-panel thead th:visible")
+            if profile_headers.count():
+                unreadable = profile_headers.evaluate_all("""headers => headers.filter(th =>
+                  th.clientWidth < 32 || th.scrollWidth > th.clientWidth + 1).map(th => th.textContent)""")
+                check("NBA phone shows readable player play-type columns", not unreadable, str(unreadable))
 
         for sport in ("cbb", "nfl", "cfb", "nba"):
             response = page.request.get(f"{base_url.rstrip('/')}/{sport}/results.html")
@@ -611,6 +642,18 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL phone stacks each duo into one column",
               page.locator("#coverage .ca-detail-duo").first.evaluate(
                   "el => getComputedStyle(el).gridTemplateColumns.split(' ').length") == 1)
+        page.set_viewport_size({"width": 375, "height": 824})
+        page.locator("a[data-nfl-tab='tendencies']").click()
+        clipped_pace = page.locator("#pace thead th:visible").evaluate_all("""headers =>
+          headers.filter(th => th.scrollWidth > th.clientWidth + 1).map(th => th.textContent)""")
+        check("NFL phone keeps the pace headings readable", not clipped_pace, str(clipped_pace))
+        page.locator("a[data-nfl-tab='games']").click()
+        scroll_panel = page.locator("#game-log .ca-lineup-scroll[data-table-scroll]:visible").first
+        scroll_panel.wait_for(timeout=timeout_ms)
+        check("NFL phone marks the wide game log as a focusable scroll region",
+              scroll_panel.get_attribute("tabindex") == "0" and
+              scroll_panel.get_attribute("role") == "region" and
+              page.locator("#game-log .ca-table-scroll-note:visible").count() > 0)
         page.set_viewport_size({"width": 1280, "height": 900})
 
         page.goto(base_url.rstrip("/") + "/cfb/", wait_until="domcontentloaded", timeout=timeout_ms)
@@ -643,10 +686,18 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             out[id] = { panels: panels.length, same: labels.length === 2 && labels[0] === labels[1],
                         rows: labels.length ? labels[0].split('|').filter(Boolean) : [] };
           }
-          const ranked = [...document.querySelectorAll('.ca-cfb-ledger-table td.num .ca-rank')].length;
-          const bars = [...document.querySelectorAll('.ca-cfb-ledger-table .ca-ledger-bar i')]
-            .filter(i => parseFloat(i.style.width) > 0).length;
-          return { sections: out, ranked, bars }; }""")
+          const tone = el => [...el.classList].find(name => /^c-(elite|good|mid|weak|poor|volume|na)$/.test(name));
+          const badges = [...document.querySelectorAll('.ca-cfb-ledger-table td.num .ca-rank')];
+          const bars = badges.filter(badge => {
+            const cell = badge.closest('td');
+            const side = cell.classList.contains('ca-ledger-right') ? 'right' : 'left';
+            const bar = cell.parentElement.querySelector('.ca-ledger-bar.is-' + side);
+            const {rank, rankOf, percentile} = badge.dataset;
+            const expected = Math.round(percentile ?? 100 * (rankOf - rank) / (rankOf - 1));
+            return bar && tone(bar) === tone(badge) &&
+              parseFloat(bar.firstElementChild.style.width) === Math.max(4, expected);
+          }).length;
+          return { sections: out, ranked: badges.length, bars }; }""")
         for sid, info in ledger["sections"].items():
             check(f"CFB {sid} reads both directions on identical ledger rows",
                   info["panels"] == 2 and info["same"] and len(info["rows"]) >= 6,
@@ -654,7 +705,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         all_rows = [r for info in ledger["sections"].values() for r in info["rows"]]
         repeated = sorted({r for r in all_rows if all_rows.count(r) > 1} - {"Success", "Explosive"})
         check("CFB ledger lists each stat once across the desk", not repeated, ", ".join(repeated))
-        check("CFB every ranked ledger figure carries its rank bar",
+        check("CFB ledger badges and bars use the same grade and percentile",
               ledger["ranked"] > 40 and ledger["bars"] == ledger["ranked"],
               f"{ledger['ranked']} ranked, {ledger['bars']} bars")
         efficiency_text = page.locator("#cfb-efficiency").inner_text().lower()
@@ -675,15 +726,17 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               and "fbs rank" not in dvoa_lower)
         cfb_cells = page.evaluate("""() => {
           const tds = [...document.querySelectorAll('.ca-cfb-panel td')];
-          const graded = td => /(^|\\s)c-(elite|good|mid|weak|poor)(\\s|$)/.test(td.className);
+          const badges = [...document.querySelectorAll(
+            '.ca-cfb-panel:not(#cfb-power .ca-cfb-panel) .ca-lineup-table td.num > .ca-rank')];
+          const graded = badges.filter(el => /(^|\\s)c-(elite|good|mid|weak|poor|volume)(\\s|$)/.test(el.className));
           return {
             dashes: tds.filter(td => td.innerText.trim() === '—').length,
-            unpilled: tds.filter(td => graded(td) && !td.querySelector('.ca-rank')).length,
-            graded: tds.filter(graded).length
+            tintedValues: graded.filter(badge => getComputedStyle(badge).color === getComputedStyle(badge.parentElement).color).length,
+            graded: graded.length
           }; }""")
-        check("CFB every graded number carries its rank pill",
-              cfb_cells["unpilled"] == 0 and cfb_cells["graded"] > 0,
-              f"{cfb_cells['graded']} graded, {cfb_cells['unpilled']} without a pill")
+        check("CFB comparison grades live on badges beside neutral stat values",
+              cfb_cells["tintedValues"] == 0 and cfb_cells["graded"] > 40,
+              f"{cfb_cells['graded']} graded badges, {cfb_cells['tintedValues']} tinted values")
         check("CFB desk has no empty (dash) cells", cfb_cells["dashes"] == 0,
               f"{cfb_cells['dashes']} dash cells")
         stack_text = page.locator(".ca-detail-stack").inner_text().lower()
@@ -699,7 +752,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         qb_panels = page.locator("#cfb-quarterbacks.is-tab-on .ca-cfb-panel").count()
         qb_tables = page.locator("#cfb-quarterbacks .ca-cfb-ledger-table").count()
         qb_complete = all(label in qb_text for label in (
-            "season line", "comp%", "yds/att", "dropbacks", "passing downs", "allows"))
+            "season line", "comp%", "yds/att", "dropbacks", "passing downs", "epa/play allowed"))
         # CFBD depth can be partial during a provider outage. Keep the two-sided
         # frame visible when one school's QB table is present and the other
         # panel is explicitly unavailable; do not invent a replacement line.
@@ -708,6 +761,19 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               (qb_panels == 2 and qb_tables >= 1 and qb_complete)
               or qb_partial or "not published" in qb_text,
               qb_text[:200])
+        player_sections = "#cfb-quarterbacks, #cfb-rushers, #cfb-receivers, #cfb-defenders"
+        player_badges = page.locator(":is(" + player_sections + ") td .ca-rank")
+        check("CFB player sections use positional percentiles and mute small samples", player_badges.evaluate_all(
+            """badges => badges.length && badges.every(badge => badge.hasAttribute('data-percentile') &&
+              (!badge.title.includes('below-threshold') || badge.classList.contains('c-na')))"""))
+        check("CFB QB splits identify both passer and FBS defensive percentile pools",
+              qb_tables == 0 or page.locator("#cfb-quarterbacks [data-percentile][title*='FBS defenses']").count() > 0)
+        defense_grades = page.locator("#cfb-passing tr").evaluate_all("""rows => rows
+          .filter(row => ['EPA/Pass', 'Sack%'].includes(row.cells[0].textContent))
+          .map(row => row.querySelector('.ca-ledger-right').title)""")
+        check("CFB grades lower EPA allowed and more sacks as stronger defense",
+              any("EPA" in title and "Lower is better" in title for title in defense_grades) and
+              any("Sack" in title and "Higher is better" in title for title in defense_grades))
         passing_text = page.locator("#cfb-passing").inner_text().lower()
         check("CFB pass game carries coverage outcomes, scheme rates and protection",
               all(label in passing_text for label in (

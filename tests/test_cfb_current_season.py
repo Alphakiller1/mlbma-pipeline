@@ -66,15 +66,14 @@ class CfbCurrentSeasonTests(unittest.TestCase):
                 cfb.load_espn_stats(2026)
 
     def test_team_form_rejects_a_prior_season_row(self):
-        team = {"season": 2025, "own": {}, "opp": {}, "games": 12}
+        team = {"season": 2025, "own": {}, "opp": {}}
         self.assertIsNone(cfb.form_for(team, {}, 2026))
 
     def test_efficiency_and_trench_rates_are_derived_from_observed_counts(self):
         team = {
             "season": 2026,
-            "games": 2,
             "own": {
-                "general": {"fumblesRecovered": 1},
+                "general": {"gamesPlayed": 2, "fumblesRecovered": 1},
                 "passing": {
                     "passingAttempts": 50, "sacks": 5, "sackYardsLost": 35,
                     "completions": 32, "passingYards": 400, "totalPoints": 56,
@@ -86,6 +85,7 @@ class CfbCurrentSeasonTests(unittest.TestCase):
                 },
             },
             "opp": {
+                "general": {"gamesPlayed": 2},
                 "passing": {
                     "passingAttempts": 60, "sacks": 6, "sackYardsLost": 42,
                     "completions": 35, "passingYards": 420, "totalPoints": 34,
@@ -98,9 +98,9 @@ class CfbCurrentSeasonTests(unittest.TestCase):
             },
         }
         self.assertAlmostEqual(cfb.derived_rate(team, "own", "sack_rate"), 5 / 55)
-        self.assertAlmostEqual(cfb.derived_rate(team, "own", "yards_per_play"), 625 / 100)
-        self.assertAlmostEqual(cfb.derived_rate(team, "opp", "points_per_play"), 34 / 100)
-        self.assertAlmostEqual(cfb.derived_rate(team, "opp", "disruption_rate"), 10 / 100)
+        self.assertAlmostEqual(cfb.derived_rate(team, "own", "yards_per_play"), 625 / 95)
+        self.assertAlmostEqual(cfb.derived_rate(team, "opp", "points_per_play"), 34 / 94)
+        self.assertAlmostEqual(cfb.derived_rate(team, "opp", "disruption_rate"), 10 / 94)
         self.assertAlmostEqual(cfb.derived_rate(team, "own", "yards_per_completion"), 12.5)
         self.assertAlmostEqual(cfb.derived_rate(team, "opp", "pass_touchdown_rate"), 3 / 60)
         self.assertAlmostEqual(cfb.derived_rate(team, "opp", "interception_rate"), 3 / 60)
@@ -116,6 +116,41 @@ class CfbCurrentSeasonTests(unittest.TestCase):
         self.assertEqual(form["rates"]["off_plays_pg"]["rank"], 1)
         self.assertEqual(form["rates"]["off_plays_pg"]["better"], "neutral")
         self.assertEqual(form["rates"]["def_sack_rate"]["rank"], 1)
+
+    def test_official_play_counts_and_dropbacks(self):
+        # Eastern Michigan at Western Michigan, November 17, 2026.
+        team = {
+            "own": {
+                "general": {"gamesPlayed": 1},
+                "passing": {"passingAttempts": 25, "sacks": 3},
+                "rushing": {"rushingAttempts": 42},
+            },
+            "opp": {
+                "general": {"gamesPlayed": 1},
+                "passing": {"passingAttempts": 18, "sacks": 1},
+                "rushing": {"rushingAttempts": 43},
+            },
+        }
+        self.assertEqual(cfb.derived_rate(team, "own", "plays_per_game"), 67)
+        self.assertEqual(cfb.derived_rate(team, "opp", "plays_per_game"), 61)
+        self.assertEqual(cfb.derived_rate(team, "own", "dropbacks_per_game"), 28)
+        self.assertAlmostEqual(cfb.derived_rate(team, "opp", "pass_rate"), 19 / 61)
+
+    def test_defensive_rates_keep_their_published_sample(self):
+        team = {
+            "season": 2026,
+            "own": {"general": {"gamesPlayed": 11, "fumblesRecovered": 8}},
+            "opp": {
+                "general": {"gamesPlayed": 10},
+                "passing": {"passingAttempts": 296, "sacks": 15, "interceptions": 7},
+                "rushing": {"rushingAttempts": 339},
+            },
+        }
+        form = cfb.form_for(team, {"def_sacks": [1.5]}, 2026)
+        self.assertEqual((form["games"], form["opponent_games"]), (11, 10))
+        self.assertEqual(form["rates"]["def_sacks"]["value"], 1.5)
+        self.assertEqual(form["rates"]["def_plays_pg"]["value"], 63.5)
+        self.assertNotIn("def_disruption_rate", form["rates"])
 
 
 if __name__ == "__main__":

@@ -226,7 +226,8 @@ MATCHUPS_JS = r"""
 
 def matchup_page(sport: str) -> str:
     spec = SPORTS[sport]
-    detail_assets = f"{STAMP}&amp;rev=matchup-updates"
+    detail_assets = f"{STAMP}&amp;rev=active-desk-audit"
+    adapter_assets = detail_assets if sport == "cbb" else STAMP
     cbb_runtime = f'  <script src="/dashboard/cbb_charts.js?v={STAMP}"></script>' if sport == "cbb" else ""
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -256,7 +257,7 @@ def matchup_page(sport: str) -> str:
   <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
   <script src="/dashboard/sports/public_sport_registry.js?v={STAMP}"></script>
   <script src="/dashboard/sports/chase_public_slate.js?v={STAMP}"></script>
-  <script src="/dashboard/sports/{spec['adapter']}.js?v={STAMP}"></script>
+  <script src="/dashboard/sports/{spec['adapter']}.js?v={adapter_assets}"></script>
   <script src="/dashboard/player_availability_shared.js?v={STAMP}"></script>
   <script src="/dashboard/chase_icons.js?v={STAMP}"></script>
   <script src="/dashboard/matchup_card.js?v={STAMP}"></script>
