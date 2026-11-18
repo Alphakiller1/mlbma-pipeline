@@ -609,6 +609,33 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                   ("trips / g", "trip rate", "td%", "score%", "targets by position",
                    "tgt share", "car share")))
         page.locator("[role='tab'][data-nfl-tab='receiving']").click()
+        # 2026-11-18: targets to WR, TE and RB against each look, read from
+        # data/public/nfl/position_coverage.json after the page opens.
+        try:
+            page.wait_for_selector("#position-coverage .ca-poscov-table", timeout=timeout_ms)
+        except Exception:
+            pass
+        poscov = page.evaluate("""() => {
+          const sec = document.querySelector('#position-coverage');
+          const tds = [...document.querySelectorAll('#position-coverage td')].filter(td => td.offsetParent);
+          return {
+            tables: document.querySelectorAll('#position-coverage .ca-poscov-table').length,
+            panels: document.querySelectorAll('#position-coverage [data-season-view="current"] .ca-nfl-poscov').length,
+            dashes: tds.filter(td => td.innerText.trim() === '—').length,
+            unpilled: tds.filter(td => /(^|\s)c-(elite|good|mid|weak|poor)(\s|$)/.test(td.className)
+              && !td.querySelector('.ca-rank')).length,
+            all: sec ? sec.textContent.toLowerCase() : ''
+          }; }""")
+        check("NFL coverage by position group sets WR, TE and RB against each look, both directions",
+              (poscov["tables"] >= 4 and poscov["panels"] == 2
+               and all(label in poscov["all"] for label in (
+                   "wide receivers", "tight ends", "running backs", "cover 3", "vs man", "vs blitz",
+                   "yards per target allowed by position and alignment")))
+              or "not published" in poscov["all"],
+              str({k: v for k, v in poscov.items() if k != "all"}))
+        check("NFL coverage by position group grades every figure and prints no dash",
+              poscov["unpilled"] == 0 and poscov["dashes"] == 0,
+              str({k: v for k, v in poscov.items() if k != "all"}))
         rec_text = page.locator("#receivers").inner_text().lower()
         receiver_matrix_heads = [head.lower() for head in
                                  page.locator("#receivers .ca-split-block h4").all_inner_texts()
@@ -774,6 +801,14 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CFB grades lower EPA allowed and more sacks as stronger defense",
               any("EPA" in title and "Lower is better" in title for title in defense_grades) and
               any("Sack" in title and "Higher is better" in title for title in defense_grades))
+        # 2026-11-18: the official scorer's charting (scripts/cfb_charting.py).
+        map_text = page.locator("#cfb-pass-map").inner_text().lower()
+        check("CFB pass map carries depth, direction, air yards and the pocket",
+              all(label in map_text for label in (
+                  "deep epa/att", "short comp%", "middle share", "air yds/tgt", "yac/comp",
+                  "hurry+sack%", "pressured epa/db"))
+              or "not published" in map_text,
+              map_text[:200])
         passing_text = page.locator("#cfb-passing").inner_text().lower()
         check("CFB pass game carries coverage outcomes, scheme rates and protection",
               all(label in passing_text for label in (
@@ -785,6 +820,11 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               and page.locator("#cfb-quarterbacks tbody td:first-child .ca-cfb-player__shot").count()
               == page.locator("#cfb-quarterbacks tbody td:first-child .ca-cfb-player").count())
         page.locator("a[data-nfl-tab='rushing']").click()
+        direction_text = page.locator("#cfb-run-direction").inner_text().lower()
+        check("CFB run direction sets each run lane against the defense",
+              all(label in direction_text for label in ("left yds/rush", "middle epa/rush", "right success"))
+              or "not published" in direction_text,
+              direction_text[:200])
         run_text = page.locator("#cfb-rushing").inner_text().lower()
         check("CFB rushing tab carries run game, line play and ball carriers",
               page.locator("#cfb-rushers.is-tab-on .ca-cfb-panel").count() == 2
@@ -792,6 +832,11 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                   "epa/rush", "rush 1d%", "line yds", "2nd level", "power", "stuffed", "front-7 havoc")),
               run_text[:200])
         page.locator("a[data-nfl-tab='situational']").click()
+        formation_text = page.locator("#cfb-formation").inner_text().lower()
+        check("CFB formation and tempo carries shotgun, under center and no huddle",
+              all(label in formation_text for label in ("shotgun", "under center", "no huddle", "shotgun epa/play"))
+              or "not published" in formation_text,
+              formation_text[:200])
         situational_text = page.locator("#cfb-situational").inner_text().lower()
         check("CFB situational carries downs, tempo, play mix and havoc",
               all(label in situational_text for label in (

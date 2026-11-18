@@ -113,9 +113,12 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("function cfbSpecialBody", js)
         self.assertIn("function cfbDvoaBody", js)
         self.assertIn("['units', 'Units', ['cfb-power', 'cfb-efficiency', 'cfb-dvoa', 'cfb-predictability']]", js)
-        self.assertIn("['passing', 'Passing', ['cfb-quarterbacks', 'cfb-passing', 'cfb-receivers']]", js)
+        self.assertIn("['passing', 'Passing', ['cfb-quarterbacks', 'cfb-pass-map', 'cfb-passing', 'cfb-receivers']]", js)
         self.assertIn("['defense', 'Defense', ['cfb-defenders']]", js)
-        self.assertIn("['rushing', 'Rushing', ['cfb-rushing', 'cfb-rushers']]", js)
+        self.assertIn("['rushing', 'Rushing', ['cfb-rushing', 'cfb-run-direction', 'cfb-rushers']]", js)
+        # 2026-11-18: the official scorer's charting (scripts/cfb_charting.py).
+        self.assertIn("['situational', 'Situational', ['cfb-situational', 'cfb-formation']]", js)
+        self.assertIn("function cfbQbLooks", js)
         for fn in ("cfbQbPanel", "cfbRushersPanel", "cfbGameLogPanel"):
             self.assertIn("function " + fn, js)
         for gone in ("function cfbUnitPanel", "function cfbCoverageBody", "function cfbSchemeStatsPanel",
@@ -124,7 +127,7 @@ class SportRouteBuilderTests(unittest.TestCase):
             self.assertNotIn(gone, js)
         ledger = js[js.index("var CFB_LEDGER = {"):js.index("var CFB_LEDGER_UNITS")]
         import re
-        specs = re.findall(r"\['(form|scheme|run|model)', '([a-z_A-Z]+)', '([^']+)'\]", ledger)
+        specs = re.findall(r"\['(form|scheme|run|model|chart)', '([a-z_A-Z]+)', '([^']+)'\]", ledger)
         self.assertGreater(len(specs), 40)
         self.assertEqual(len(specs), len({(f, k) for f, k, _ in specs}), "a stat repeats on the desk")
         for label in ("Yds/Comp", "TD Rate", "INT Rate", "Sack%", "Pts/Play", "Line Yds", "Havoc"):

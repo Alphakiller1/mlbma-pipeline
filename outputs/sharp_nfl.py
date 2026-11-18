@@ -293,3 +293,53 @@ def current_season(season: int) -> dict[str, dict]:
             "personnel_through_week": personnel_week,
         }
     return result
+
+
+POSITION_URL = "https://www.sharpfootballanalysis.com/stats-nfl/nfl-coverage-stats-by-position/"
+POSITION_COLUMNS = {"ypt allowed wr": "wr", "ypt allowed te": "te", "ypt allowed rb": "rb",
+                    "ypt allowed outside": "outside", "ypt allowed slot": "slot"}
+
+
+def position_allowed(season: int) -> dict[str, dict]:
+    """Each defense's yards per target allowed to WRs, TEs and RBs and to the
+    outside and slot alignments (Sharp's charting, 2026-11-18). Slot and
+    outside alignment is in no public play-by-play."""
+    matchup = _json("matchup", season)
+    names = {code: full for code, full in ((matchup or {}).get("names") or {}).items()}
+    raw = _get(POSITION_URL) if names else None
+    if not raw:
+        return {}
+    page = raw.decode("utf-8", errors="ignore")
+    date = re.search(r'"dateModified"\s*:\s*"(\d{4}-\d{2}-\d{2})T', page)
+    if not date or int(date[1][:4]) not in (season, season + 1):
+        return {}
+    start = page.find('id="table_1"')
+    if start < 0:
+        return {}
+    body = page[start:page.find("</table>", start)]
+    heads = [html.unescape(re.sub(r"<[^>]+>", "", h)).strip().lower()
+             for h in re.findall(r"<th[^>]*>(.*?)</th>", body, re.S)]
+    if heads[:1] != ["team"] or not all(h in heads for h in POSITION_COLUMNS):
+        print("  WARNING: Sharp position coverage table changed shape; skipped")
+        return {}
+    code_of = {full.lower(): code for code, full in names.items()}
+    out: dict[str, dict] = {}
+    for row in re.findall(r"<tr[^>]*>(.*?)</tr>", body, re.S):
+        cells = [html.unescape(re.sub(r"<[^>]+>", "", c)).strip()
+                 for c in re.findall(r"<td[^>]*>(.*?)</td>", row, re.S)]
+        code = code_of.get(cells[0].lower()) if len(cells) == len(heads) else None
+        if not code:
+            continue
+        values = {}
+        for head, key in POSITION_COLUMNS.items():
+            try:
+                value = float(cells[heads.index(head)])
+            except ValueError:
+                continue
+            if 0 <= value <= 30:
+                values[key] = value
+        if len(values) == len(POSITION_COLUMNS):
+            out[_code(code)] = values
+    if len(out) != 32:
+        return {}
+    return {"teams": out, "report_date": date[1], "through_week": (matchup or {}).get("latest_played_week")}
