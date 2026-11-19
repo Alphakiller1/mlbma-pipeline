@@ -281,7 +281,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             cbb_counts[year] = f"{total['made']}/{total['attempts']}"
         page.goto(base_url.rstrip("/") + "/cbb/matchup.html?game=401909564#shooting", wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector("#cbb-shot-chart .ca-cbb-court", timeout=timeout_ms)
-        check("CBB uses eight evidence tabs", page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 8)
+        check("CBB uses nine evidence tabs (Halves 2026-11-19)", page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 9)
         page.locator('[data-cbb-view="defense"]').click()
         # The court, its badges and the table read one tone per zone; on the
         # allowed view a low FG% is the favorable end.
@@ -303,6 +303,14 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.evaluate("document.querySelector('.ca-detail-stack').setAttribute('data-nfl-tab', 'all')")
         page.wait_for_timeout(1500)
         cbb_pills = page.evaluate(UNPILLED_AUDIT)
+        # 2026-11-19: first- and second-half figures and pace, where the export publishes them.
+        halves_published = '"h1_ppp_o":0' in page.request.get(
+            base_url.rstrip('/') + '/data/public/cbb/2027/teams/150.json').text().replace(' ', '')
+        halves_text = page.locator("#cbb-halves").inner_text().lower()
+        check("CBB halves set each offense against the defense, half by half, with pace, where published",
+              not halves_published or all(k in halves_text for k in ("first half", "second half", "pts/100", "pace (poss/half)",
+                                                                      "sec/possession")),
+              halves_text[:200])
         cbb_labels = page.evaluate(LABEL_AUDIT)
         check("CBB labels follow the desk label standard", not cbb_labels, str(cbb_labels))
         check("CBB every graded figure carries its rank pill",

@@ -8602,6 +8602,7 @@ function seasonToggle(game) {
      lines up, who is available to play, then the schedule. */
   var CBB_TABS = [
     ['units','Units',['cbb-power','cbb-pace','cbb-efficiency','cbb-sos','cbb-predictability']],
+    ['halves','Halves',['cbb-halves']],
     ['shooting','Shot Profile',['cbb-shot-chart']],
     ['possessions','Possessions',['cbb-transition','cbb-situations','cbb-restarts']],
     ['defense','Defense',['cbb-shot-types','cbb-personnel','cbb-tagged-schemes']],
@@ -8946,6 +8947,24 @@ function seasonToggle(game) {
         ['Assist rate','ast_rate_o_all',true,'ast_rate_d_all',false,cbbPct]
       ]]
     ]);
+  }
+  /* First and second half (pipeline/cbb_public/halves.py, 2026-11-19): each
+     offense against the defense it meets, half by half, then each team's pace
+     in that half. Pace is style: a neutral pill, 1st playing fastest. */
+  function cbbHalves(sport,game,side) {
+    function half(h,title) {
+      return [title,[
+        ['Pts/G',h+'_pts_o',true,h+'_pts_d',false,function(n){return cbbNumber(n);}],
+        ['Pts/100',h+'_ppp_o',true,h+'_ppp_d',false,cbbPer100],
+        ['eFG%',h+'_efg_o',true,h+'_efg_d',false,cbbPct],
+        ['TOV%',h+'_tov_o',false,h+'_tov_d',true,cbbPct],
+        ['ORB% / DRB%',h+'_orb_o',true,h+'_drb_d',true,cbbPct],
+        ['FT Rate (FTA/FGA)',h+'_ftr_o',true,h+'_ftr_d',false,function(n){return cbbNumber(n,3);}],
+        ['Pace (Poss/Half)',h+'_poss','most',h+'_poss','most',function(n){return cbbNumber(n);}],
+        ['Sec/Possession',h+'_spp','least',h+'_spp','least',function(n){return cbbNumber(n);}]
+      ]];
+    }
+    return cbbLedger(game,side,[half('h1','First Half'),half('h2','Second Half')]);
   }
   function cbbTransition(sport,game,side) {
     return cbbLedger(game, side, [['', [
@@ -9556,6 +9575,8 @@ function seasonToggle(game) {
       part('cbb-predictability','Predictability','How Often Each Offense Lands Off The D-I Curve',
         predictabilityPanel(cbbSchool(game,'away'),cbbSchool(game,'home'),cbbTeam(game,'away')&&cbbTeam(game,'away').predictability,
           cbbTeam(game,'home')&&cbbTeam(game,'home').predictability,cbbSeason(game),true))+
+      part('cbb-halves','First And Second Half','Each Offense Against The Defense It Meets, Half By Half · Pace',
+        nflDuo(cbbHalves,sport,game))+
       part('cbb-shot-chart','Shot Chart','Zone Shooting Against The Defense It Meets',nflDuo(cbbShotPanel,sport,game))+
       part('cbb-transition','Transition And Turnovers','Every D-I Game · Each Offense Against The Defense It Meets',nflDuo(cbbTransition,sport,game))+
       part('cbb-situations','Transition And Half Court','Possession-Tagged Efficiency',nflDuo(cbbSituations,sport,game))+
