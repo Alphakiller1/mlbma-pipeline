@@ -27,7 +27,8 @@ import json
 import re
 import urllib.request
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
+from pathlib import Path
 
 HEADERS = {"User-Agent": "ChaseAnalytics/1.0 (+https://chase-analytics.com)"}
 TORVIK = "https://barttorvik.com/{year}_team_results.json"
@@ -265,6 +266,26 @@ def regression(contexts: dict[int, dict]) -> dict[int, dict]:
     return dict(out)
 
 
+PUBLISHED = Path(__file__).resolve().parents[2] / "data" / "public" / "cbb"
+
+
+def previous_torvik(year: int, root: Path = PUBLISHED) -> tuple[dict[int, dict], str | None]:
+    """The T-Rank figures last published for each team this season, and the
+    oldest date among them (a carried figure keeps the day it was fetched)."""
+    out: dict[int, dict] = {}
+    dates = []
+    for path in sorted((root / str(year) / "teams").glob("*.json")):
+        try:
+            resume = json.loads(path.read_text(encoding="utf-8")).get("resume") or {}
+        except (OSError, ValueError):
+            continue
+        if resume.get("torvik"):
+            out[int(path.stem)] = resume["torvik"]
+            if resume.get("torvik_through"):
+                dates.append(resume["torvik_through"])
+    return out, (min(dates) if dates else None)
+
+
 def attach(contexts: dict[int, dict], crosswalk: list[dict], year: int, fetch=_get) -> dict:
     """Set c["resume"] and c["regression"] on a season's D-I contexts; returns counts."""
     counts = {"regression": 0, "net": 0, "torvik": 0}
@@ -272,11 +293,17 @@ def attach(contexts: dict[int, dict], crosswalk: list[dict], year: int, fetch=_g
         contexts[tid]["regression"] = entries
         counts["regression"] += 1
     net, basis = net_ranks(year, crosswalk, fetch)
+    trank_through = datetime.now(timezone.utc).date().isoformat()
     try:
         trank = torvik(year, crosswalk, fetch)
     except Exception as error:  # noqa: BLE001
+        # barttorvik.com answers 403 to the GitHub runner (2026-11-18) while
+        # it serves a desk machine: keep each team's last published T-Rank,
+        # with its own date, rather than drop the résumé.
         print(f"  T-Rank unavailable: {error}")
-        trank = {}
+        trank, trank_through = previous_torvik(year)
+        if trank:
+            print(f"  T-Rank carried from {trank_through} for {len(trank)} teams")
     for tid, c in contexts.items():
         resume = {}
         if tid in net:
@@ -289,6 +316,7 @@ def attach(contexts: dict[int, dict], crosswalk: list[dict], year: int, fetch=_g
             counts["net"] += 1
         if tid in trank:
             resume["torvik"] = trank[tid]
+            resume["torvik_through"] = trank_through
             counts["torvik"] += 1
         if resume:
             c["resume"] = resume

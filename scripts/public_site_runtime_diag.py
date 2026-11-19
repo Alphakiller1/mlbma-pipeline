@@ -377,7 +377,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 11)
         # The desk reads a tab at a time, and where the clubs stack, one club at a time.
         shown = "() => [...document.querySelectorAll('.ca-detail-section')].filter(s => s.offsetParent).map(s => s.id).join(',')"
-        check("NFL desk opens on the Units tab alone", page.evaluate(shown) == "power,efficiency,predictability", page.evaluate(shown))
+        check("NFL desk opens on the Units tab alone", page.evaluate(shown) == "power,strength,efficiency,predictability", page.evaluate(shown))
+        # 2026-11-18: OSI, DSI and NSI (outputs/strength_index.py).
+        strength_text = page.locator("#strength").text_content().lower()
+        check("NFL strength index ranks OSI, DSI and NSI for both clubs with its formula",
+              ("nsi · net" in strength_text and "osi · offense" in strength_text and "dsi · defense" in strength_text
+               and "home field" in strength_text and page.locator("#strength tbody .ca-rank").count() >= 26)
+              or "not published" in strength_text, strength_text[:200])
         page.locator('a[data-nfl-tab="games"]').click()
         try:
             page.wait_for_selector("#game-log .ca-log-panel table", timeout=timeout_ms)
@@ -730,7 +736,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CFB opens on the Units evidence group alone",
               page.evaluate("[...document.querySelectorAll('.ca-detail-section')]"
                             ".filter(s => s.offsetParent).map(s => s.id).join(',')") ==
-              "cfb-power,cfb-efficiency,cfb-dvoa,cfb-predictability")
+              "cfb-power,cfb-strength,cfb-efficiency,cfb-dvoa,cfb-predictability")
         # Owner 2026-10-03: one matchup ledger for every unit comparison - both
         # directions side by side, the same rows in the same order, each stat
         # once on the desk, a rank bar beside every ranked figure.
@@ -831,6 +837,10 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CFB grades lower EPA allowed and more sacks as stronger defense",
               any("EPA" in title and "Lower is better" in title for title in defense_grades) and
               any("Sack" in title and "Higher is better" in title for title in defense_grades))
+        cfb_strength_text = page.locator("#cfb-strength").text_content().lower()
+        check("CFB strength index ranks OSI, DSI and NSI for both schools with its formula",
+              ("nsi · net" in cfb_strength_text and "ppa" in cfb_strength_text and "home field" in cfb_strength_text)
+              or "not published" in cfb_strength_text, cfb_strength_text[:200])
         # 2026-11-18: the official scorer's charting (scripts/cfb_charting.py).
         map_text = page.locator("#cfb-pass-map").inner_text().lower()
         check("CFB pass map carries depth, direction, air yards and the pocket",

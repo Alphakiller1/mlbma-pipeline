@@ -1047,7 +1047,7 @@ def _credit_offense_coverage(profiles: list[dict], frame, season: int) -> None:
 def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
     """Return derived observed context; any unavailable feed fails soft."""
     # Imported here, not at the top: nfl_red_zone reuses this module's loaders.
-    from outputs import nfl_red_zone, nfl_special_teams
+    from outputs import nfl_red_zone, nfl_special_teams, nfl_strength
     names = {
         str(row.get("player_id")): str(row.get("player_name"))
         for rows in player_stats.values() for row in rows
@@ -1094,4 +1094,6 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
         "team_line": _team_line(current, season, pfr_rushing) if current is not None else {},
         "red_zone": nfl_red_zone.build(season),
         "special_teams": nfl_special_teams.build(season),
+        # OSI, DSI and NSI (outputs/strength_index.py).
+        "strength": nfl_strength.build(season),
     }

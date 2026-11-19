@@ -1,4 +1,4 @@
-/* DESIGN_LAYER_VERSION 20261118scheme2 — keep in sync with design/DESIGN_LAYER_VERSION */
+/* DESIGN_LAYER_VERSION 20261119strength1 — keep in sync with design/DESIGN_LAYER_VERSION */
 (function (global) {
-  global.DESIGN_LAYER_VERSION = "20261118scheme2";
+  global.DESIGN_LAYER_VERSION = "20261119strength1";
 })(typeof window !== "undefined" ? window : this);

@@ -1185,6 +1185,7 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
         windows = {window: clubs.get(club) for window, clubs in red_zone.items() if clubs.get(club)}
         return windows or None
     special_teams = context.get("special_teams") or {}
+    strength = context.get("strength") or {}
 
     def special_for(club: str) -> dict | None:
         windows = {window: clubs.get(club) for window, clubs in special_teams.items() if clubs.get(club)}
@@ -1374,6 +1375,8 @@ def nfl_producer_from_espn(payload: dict, injuries: dict | None = None,
             "home_red_zone": red_zone_for(home_abbr),
             "away_special_teams": special_for(away_abbr),
             "home_special_teams": special_for(home_abbr),
+            "away_strength": strength.get(away_abbr),
+            "home_strength": strength.get(home_abbr),
             "away_run_game": run_game.get(away_abbr),
             "home_run_game": run_game.get(home_abbr),
             "away_defenders_current": defenders_current.get(away_abbr),
@@ -1567,7 +1570,7 @@ def _lost_evidence(fresh: dict, published: Path) -> str | None:
 # about the club.
 NFL_CLUB_FIELDS = (
     "player_scheme", "player_coverage", "player_stats", "lineups", "scheme",
-    "scheme_current", "line_stats", "run_game", "defenders_current", "red_zone",
+    "scheme_current", "line_stats", "run_game", "defenders_current", "red_zone", "strength",
     "team_stats", "form", "dvoa",
 )
 

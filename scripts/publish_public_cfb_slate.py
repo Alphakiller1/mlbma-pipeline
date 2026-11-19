@@ -20,11 +20,12 @@ from pathlib import Path
 try:  # run as a script (scripts/ on the path) or imported as scripts.*
     import cfb_charting
     import cfb_depth
+    import cfb_strength
     import cfb_injuries
     import cfb_injury_value
     import cfb_power
 except ImportError:  # pragma: no cover - package import in tests
-    from scripts import cfb_charting, cfb_depth, cfb_injuries, cfb_injury_value, cfb_power
+    from scripts import cfb_charting, cfb_depth, cfb_injuries, cfb_injury_value, cfb_power, cfb_strength
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "public" / "cfb" / "slate.json"
@@ -925,6 +926,8 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict,
         # Formation, pass depth and direction, air yards, pressure and run
         # direction from the official scorer's play text (cfb_charting).
         row[side + "_charting"] = ((depth.get("charting") or {}).get("teams") or {}).get(key)
+        # OSI, DSI and NSI (scripts/cfb_strength.py, outputs/strength_index.py).
+        row[side + "_strength"] = (depth.get("strength") or {}).get(key)
         # Ordered and trimmed to the room by apply_availability.
         row[side + "_qbs"] = (depth.get("qbs") or {}).get(key)
         row[side + "_defense_splits"] = (depth.get("defense_splits") or {}).get(key)
@@ -1017,13 +1020,18 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
         print(f"  charting: unavailable ({exc})")
         depth["charting"] = {}
     matched = cfb_charting.attach_qbs(depth["qbs"], depth["charting"])
+    try:
+        depth["strength"] = cfb_strength.build(season)
+    except Exception as exc:  # noqa: BLE001 - the slate still publishes without it
+        print(f"  strength: unavailable ({exc})")
+        depth["strength"] = {}
     print(f"  charting: {matched} passers carry looks")
     print(f"  depth: {len(advanced)} CFBD team profiles, {len(depth['qbs'])} QB rooms, "
           f"{len(depth['logs'])} game logs")
     return depth
 
 
-DEPTH_KEYS = ("_run_game", "_scheme_stats", "_charting", "_qbs", "_defense_splits", "_rushers", "_receivers",
+DEPTH_KEYS = ("_run_game", "_scheme_stats", "_charting", "_strength", "_qbs", "_defense_splits", "_rushers", "_receivers",
               "_defenders",
               "_schedule_strength", "_power", "_predictability")
 

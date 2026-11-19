@@ -127,7 +127,12 @@
     "qualified",
     "weeks",
     "report_date",
-    "target_floor"
+    "target_floor",
+    "weights",
+    "intercept",
+    "home_field",
+    "prior_season",
+    "torvik_through"
   ],
   "identity": [
     "Cut",
@@ -1065,7 +1070,19 @@
     "stacked_box",
     "te",
     "two_high",
-    "wr"
+    "wr",
+    "away_strength",
+    "home_strength",
+    "inputs",
+    "off",
+    "def",
+    "off_adj",
+    "def_adj",
+    "p_off",
+    "p_def",
+    "m1",
+    "net_adj",
+    "p_net"
   ],
   "derived_descriptive": [
     "estimated_per40",
@@ -1352,7 +1369,10 @@
     "off_under_center_rate",
     "off_under_center_run_rate",
     "off_yac",
-    "league_rank"
+    "league_rank",
+    "dsi",
+    "nsi",
+    "index"
   ],
   "contextual_environment": [
     "away_rest_days",

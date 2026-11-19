@@ -105,7 +105,7 @@
     'def-tendencies': 'target',
     projection: 'target', clash: 'football', players: 'users',
     efficiency: 'trend', quarterbacks: 'football', coverage: 'target', looks: 'target',
-    rushing: 'football', trenches: 'users', receivers: 'users', 'position-coverage': 'target', redzone: 'target',
+    rushing: 'football', trenches: 'users', receivers: 'users', strength: 'gauge', 'cfb-strength': 'gauge', 'position-coverage': 'target', redzone: 'target',
     tendencies: 'lineup', 'game-log': 'calendar', pace: 'trend',
     'cfb-efficiency': 'trend', 'cfb-passing': 'football', 'cfb-rushing': 'football',
     'cfb-rushers': 'users', 'cfb-quarterbacks': 'football', 'cfb-situational': 'target',
@@ -5703,7 +5703,7 @@ function seasonToggle(game) {
   }
 
   var NFL_TABS = [
-    ['units', 'Units', ['power', 'efficiency', 'predictability']],
+    ['units', 'Units', ['power', 'strength', 'efficiency', 'predictability']],
     ['dvoa', 'DVOA', ['dvoa']],
     ['games', 'Games', ['game-log']],
     ['passing', 'Passing', ['quarterbacks', 'coverage', 'looks']],
@@ -6216,6 +6216,9 @@ function seasonToggle(game) {
       section('power', 'Power Ranking', 'Opponent-Adjusted · Points And Play Efficiency · Per Game',
         nflPowerBody(sport, game, undefined)),
 
+      section('strength', 'Strength Index', 'OSI, DSI And NSI · Fitted To Predict Later Games',
+        strengthBody(sport, game)),
+
       section('efficiency', 'Unit Matchups', 'Each Offense Against The Defense It Meets',
         nflDuo(nflDrivePanel, sport, game)),
 
@@ -6302,7 +6305,7 @@ function seasonToggle(game) {
    * no explanations (owner rules, 2026-09-26).
    * ------------------------------------------------------------------ */
   var CFB_TABS = [
-    ['units', 'Units', ['cfb-power', 'cfb-efficiency', 'cfb-dvoa', 'cfb-predictability']],
+    ['units', 'Units', ['cfb-power', 'cfb-strength', 'cfb-efficiency', 'cfb-dvoa', 'cfb-predictability']],
     ['games', 'Games', ['cfb-game-log', 'cfb-schedule']],
     ['passing', 'Passing', ['cfb-quarterbacks', 'cfb-pass-map', 'cfb-passing', 'cfb-receivers']],
     ['rushing', 'Rushing', ['cfb-rushing', 'cfb-run-direction', 'cfb-rushers']],
@@ -9309,8 +9312,10 @@ function seasonToggle(game) {
     }
     if (!rows.length) return pending('Résumé figures are not published for this pairing yet.');
     var through = a.net_through || h.net_through;
-    var status = (a.net || h.net) ? pending('NET · NCAA · Through ' + injuryDate(through)) :
-      pending('NET not published for this season yet');
+    var tThrough = a.torvik_through || h.torvik_through;
+    var status = ((a.net || h.net) ? pending('NET · NCAA · Through ' + injuryDate(through)) :
+      pending('NET not published for this season yet')) +
+      ((a.torvik || h.torvik) && tThrough ? pending('T-Rank · barttorvik.com · Retrieved ' + injuryDate(tThrough)) : '');
     return status + nflSplitTable([cbbSchool(game, 'away'), cbbSchool(game, 'home')], rows, 'Stat');
   }
   function cbbRegression(sport, game) {
@@ -9390,6 +9395,78 @@ function seasonToggle(game) {
     return sport === 'cbb' ? CBB_TABS : (sport === 'cfb' ? CFB_TABS : (sport === 'nba' ? NBA_TABS : NFL_TABS));
   }
 
+  /* ---------------------------------------------------------------------
+   * Strength indices, NFL and CFB (2026-11-18; outputs/strength_index.py):
+   * OSI, DSI and NSI, the football members of the MLB index family. Each is
+   * fitted at game level to predict later games better than the raw figure
+   * beside it, from this season's raw and opponent-adjusted efficiency, last
+   * season's, and the margin so far. 100 is the league average and every 10
+   * points is one standard deviation, higher always better. The formula for
+   * the week shown is printed under the table.
+   * ------------------------------------------------------------------ */
+  function strengthEntry(e, label, format, better) {
+    return e ? { value: e.value, rank: e.rank, of: e.of, label: label, format: format, better: better } : null;
+  }
+
+  function strengthIndex(e, label, words) {
+    return e ? { value: e.index, rank: e.rank, of: e.of, label: label + ' · ' + words, format: 'num', better: 'high' } : null;
+  }
+
+  function strengthFormula(block, unit) {
+    var w = block.weights || {}, n = w.nsi || {}, o = w.osi || {};
+    function f(x, d) { return Number(x || 0).toFixed(d == null ? 2 : d); }
+    var prior = block.prior_season;
+    return 'Through week ' + block.week + ' · NSI = ' + f(n.net_adj) + ' × adjusted net ' + unit + ' + ' +
+      f(n.p_net) + ' × ' + prior + ' net ' + unit + ' + ' + f(n.net) + ' × net ' + unit + ' + ' + f(n.m1) +
+      ' × margin per game · home field ' + f(n.home_field, 1) + ' points · OSI = ' + f(o.off) + ' × ' + unit +
+      ' + ' + f(o.off_adj) + ' × adjusted + ' + f(o.p_off) + ' × ' + prior + ' · DSI on the same weights for ' +
+      unit + ' allowed (' + f(o.def) + ', ' + f(o.def_adj) + ', ' + f(o.p_def) + ')';
+  }
+
+  function strengthBody(sport, game) {
+    var away = game.away_strength, home = game.home_strength;
+    var awayName = sport === 'cfb' ? cfbName(sport, game, 'away') : fullName(sport, game, 'away');
+    var homeName = sport === 'cfb' ? cfbName(sport, game, 'home') : fullName(sport, game, 'home');
+    var head = '<section class="ca-form-panel ca-cfb-panel ca-cfb-ledger ca-cfb-h2h ca-strength-panel"><h3>' +
+      esc(awayName + ' vs ' + homeName + ' Strength Index') + '</h3>';
+    if (!away && !home) return head + pending('Strength indices are not published for this pairing yet.') + '</section>';
+    var feed = away || home;
+    var unit = sport === 'cfb' ? 'PPA' : 'EPA';
+    var cohort = sport === 'cfb' ? 'FBS teams' : 'NFL teams';
+    var prior = String(feed.prior_season || '');
+    function row(label, pick) {
+      var l = pick(away || {}), r = pick(home || {});
+      return cfbLedgerRow(label, l && cfbTeamMetric(l, cohort), r && cfbTeamMetric(r, cohort));
+    }
+    function input(b, key, label, format, better) {
+      return strengthEntry((b.inputs || {})[key], label, format, better);
+    }
+    var groups = [
+      { title: 'Index · 100 Is League Average', rows: [
+        row('NSI · Net', function (b) { return strengthIndex(b.nsi, 'Net Strength Index', 'points per game against an average team on a neutral field'); }),
+        row('OSI · Offense', function (b) { return strengthIndex(b.osi, 'Offensive Strength Index', unit + ' per play expected against an average defense'); }),
+        row('DSI · Defense', function (b) { return strengthIndex(b.dsi, 'Defensive Strength Index', unit + ' per play expected to allow an average offense'); })
+      ] },
+      { title: 'In Points And ' + unit, rows: [
+        row('Net Pts/G', function (b) { return strengthEntry(b.nsi, 'Points per game against an average team, neutral field', 'signed', 'high'); }),
+        row('Exp ' + unit + '/Play', function (b) { return strengthEntry(b.osi, 'Expected offense ' + unit + ' per play against an average defense', 'ppa', 'high'); }),
+        row('Exp ' + unit + ' Allowed', function (b) { return strengthEntry(b.dsi, 'Expected ' + unit + ' per play allowed to an average offense', 'ppa', 'low'); })
+      ] },
+      { title: 'Inputs', rows: [
+        row(unit + '/Play', function (b) { return input(b, 'off', 'Offense ' + unit + ' per play this season', 'ppa', 'high'); }),
+        row('Adj ' + unit + '/Play', function (b) { return input(b, 'off_adj', 'Offense ' + unit + ' per play, opponent-adjusted', 'ppa', 'high'); }),
+        row(prior + ' ' + unit + '/Play', function (b) { return input(b, 'p_off', 'Offense ' + unit + ' per play last season, opponent-adjusted', 'ppa', 'high'); }),
+        row(unit + ' Allowed', function (b) { return input(b, 'def', unit + ' per play allowed this season', 'ppa', 'low'); }),
+        row('Adj ' + unit + ' Allowed', function (b) { return input(b, 'def_adj', unit + ' per play allowed, opponent-adjusted', 'ppa', 'low'); }),
+        row(prior + ' ' + unit + ' Allowed', function (b) { return input(b, 'p_def', unit + ' per play allowed last season, opponent-adjusted', 'ppa', 'low'); }),
+        row('Margin/G', function (b) { return input(b, 'm1', 'Point margin per game this season', 'signed', 'high'); })
+      ] }
+    ];
+    var basis = sport === 'cfb' ? 'FBS Teams' : 'NFL Teams';
+    return head + '<p class="ca-lineup-context">' + esc(strengthFormula(feed, unit)) + '</p>' +
+      cfbLedgerTable([awayName, 'Away', basis], [homeName, 'Home', basis], groups) + '</section>';
+  }
+
   function cfbSections(sport, game) {
     function quarterbackName(side) {
       var qbs = game[side + '_qbs'] || [];
@@ -9404,6 +9481,8 @@ function seasonToggle(game) {
           { cohort: 'FBS', digits: 1, first: 'School', units: 'Points per game',
             caption: meta.through_week ? 'Through week ' + meta.through_week + ' · collegefootballdata.com play-by-play · home field ' +
               powerSigned(meta.home_court || 0, 1) + ' points' : '' })),
+      section('cfb-strength', 'Strength Index', 'OSI, DSI And NSI · Fitted To Predict Later Games',
+        strengthBody(sport, game)),
       section('cfb-efficiency', 'Efficiency', 'Scoring, Yardage And Per-Play Production',
         nflDuo(cfbLedgerPanel, sport, game, 'efficiency')),
       section('cfb-dvoa', 'SP+ Ratings', 'Opponent-Adjusted Efficiency By Unit',
