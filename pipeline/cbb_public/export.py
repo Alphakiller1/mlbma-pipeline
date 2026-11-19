@@ -436,12 +436,27 @@ def export_public(snapshot,conn,out,as_of,observed_tactics=None,archived_coordin
                 for tid,day in conn.execute('SELECT DISTINCT team_id,game_date FROM shots WHERE season=? AND zone IS NOT NULL'+d1,(year,)):
                     shot_days[str(tid)].add(day)
             finals=supplement({tid:all_context[(year,tid)] for tid in cohort},schedules[year],year,as_of,
-                              box_cache,season_through=live,refresh_rates=rates_through is not None,rate_days=shot_days)
+                              box_cache,season_through=live,refresh_rates=True,rate_days=shot_days)
             if rates_through is not None:
                 laid=sum(lay_box_rates(all_context[(year,tid)],rates_through) for tid in cohort)
                 mode['alignment']=round(sample_alignment([all_context[(year,tid)] for tid in cohort]),4)
                 print(f'Box-score rates laid over {laid} of {len(cohort)} teams; '
                       f'samples aligned {mode["alignment"]:.1%}.')
+            else:
+                # Basketball Quant is current, but a team whose row counts fewer
+                # D-I games than its verified box scores keeps the box rates (same
+                # definitions, the fuller count). On 2026-11-19 Basketball Quant
+                # caught up after the box-score stretch and a team's row counted a
+                # game fewer than its published box rates: the publish guard refuses
+                # a game count going backwards, and stopped the whole refresh.
+                def box_games(c):
+                    return ((c.get('official_box') or {}).get('rates') or {}).get('games_all') or 0
+                behind=[tid for tid in cohort
+                        if box_games(all_context[(year,tid)])>(all_context[(year,tid)]['rates'].get('games_all') or 0)]
+                laid=sum(lay_box_rates(all_context[(year,tid)],live) for tid in behind)
+                if behind:
+                    print(f'Basketball Quant counts fewer D-I games than the box scores for {len(behind)} teams; '
+                          f'box-score rates kept for {laid}.')
         # Published shortcut metadata maps the provider IDs to the validated institution IDs.
         reference={103765:96,103549:150,103903:127,103296:12,103757:2305,103257:2509}
         for file in (snapshot/'data').glob(f'cbb-shots-{year}-*-offense.ndjson.gz'):
