@@ -26,6 +26,37 @@ class StrengthIndexTests(unittest.TestCase):
             self.assertGreater(spec["fit"]["validation_mean_r2"]["later_game_margin"]["nsi"],
                                spec["fit"]["validation_mean_r2"]["later_game_margin"]["margin_so_far"])
 
+    def test_weight_vectors_match_their_named_features(self):
+        for path in (ROOT / "outputs" / "nfl_strength_weights.json", ROOT / "scripts" / "cfb_strength_weights.json"):
+            spec = json.loads(path.read_text(encoding="utf-8"))
+            fit = spec["fit"]
+            n_off = 1 + len(fit["offense_features"]) + len(fit["defense_features"])
+            for week in spec["weights"]["off"]:
+                self.assertEqual(len(spec["weights"]["off"][week]), n_off, (path.name, week))
+                self.assertEqual(len(spec["weights"]["net"][week]), 1 + len(fit["net_features"]), (path.name, week))
+            v = fit["validation_mean_r2"]["later_game_margin"]
+            self.assertGreater(v["nsi"], v["nsi_before_preseason_reads"], path.name)
+
+    def test_preseason_reads_move_the_index_the_way_they_read(self):
+        nfl = json.loads((ROOT / "outputs" / "nfl_strength_weights.json").read_text(encoding="utf-8"))
+        base = {t: dict(team(0.0, 0.0, 0.0), qb_league=0.0) for t in "AB"}
+        base["A"]["qb_epa"], base["B"]["qb_epa"] = 0.15, -0.15
+        out = si.indices(base, nfl, 3)
+        self.assertEqual(out["A"]["nsi"]["rank"], 1, "the better quarterback rates higher, all else equal")
+        self.assertEqual(out["A"]["inputs"]["qb_epa"]["rank"], 1)
+        cfb = json.loads((ROOT / "scripts" / "cfb_strength_weights.json").read_text(encoding="utf-8"))
+        rows = {t: dict(team(0.0, 0.0, 0.0), ret=0.6, talent=t_) for t, t_ in (("A", 950.0), ("B", 600.0), ("C", None))}
+        out = si.indices(rows, cfb, 1)
+        self.assertEqual(out["A"]["nsi"]["rank"], 1)
+        self.assertGreaterEqual(out["C"]["nsi"]["rank"], out["B"]["nsi"]["rank"],
+                                "a school with no talent row reads at the pool's lower quartile")
+        self.assertNotIn("talent", out["C"]["inputs"])
+        # Returning share scales last season: more coming back keeps more of a strong prior.
+        rows = {"A": dict(team(0.0, 0.0, 0.0, 0.2), ret=0.9), "B": dict(team(0.0, 0.0, 0.0, 0.2), ret=0.2),
+                "C": dict(team(0.0, 0.0, 0.0, -0.2), ret=0.5)}
+        out = si.indices(rows, cfb, 1)
+        self.assertLess(out["A"]["nsi"]["rank"], out["B"]["nsi"]["rank"])
+
     def test_indices_order_and_scale(self):
         spec = json.loads((ROOT / "outputs" / "nfl_strength_weights.json").read_text(encoding="utf-8"))
         inputs = {"A": team(0.15, -0.10, 9.0, 0.10), "B": team(0.0, 0.0, 0.0), "C": team(-0.15, 0.10, -9.0, -0.10)}

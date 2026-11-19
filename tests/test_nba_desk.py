@@ -286,9 +286,12 @@ class NbaRenderTests(unittest.TestCase):
         html = self.out["detail"]
         for sec in ("nba-edge-map", "nba-fingerprint", "nba-tape", "nba-aging", "nba-shot-maps", "nba-onfloor"):
             self.assertIn('id="' + sec + '"', html)
+        # Power Ranking opens the Matchup tab as it opens every sport's desk; the map follows it.
         first = html.index('class="ca-detail-section" id="')
-        self.assertTrue(html[first:].startswith('class="ca-detail-section" id="nba-edge-map"'))
-        matchup_map = html[first:html.index('class="ca-detail-section" id="', first + 1)]
+        self.assertTrue(html[first:].startswith('class="ca-detail-section" id="nba-power"'))
+        second = html.index('class="ca-detail-section" id="', first + 1)
+        self.assertTrue(html[second:].startswith('class="ca-detail-section" id="nba-edge-map"'))
+        matchup_map = html[second:html.index('class="ca-detail-section" id="', second + 1)]
         self.assertIn('id="nba-map-ranks-away"', matchup_map)
         self.assertRegex(matchup_map, r'ca-ledger-bar is-left[^"]*"><i style="width:[1-9]\d*%"')
         self.assertRegex(matchup_map, r'ca-ledger-bar is-right[^"]*"><i style="width:[1-9]\d*%"')

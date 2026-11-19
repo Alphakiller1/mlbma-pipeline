@@ -1,4 +1,5 @@
 """Supplement missing current-season facts from score-matched final box scores."""
+import re
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from statistics import mean
@@ -9,6 +10,7 @@ from .. import power, predictability
 from . import game_lines
 from . import possession_data as ncaa
 from . import pressure
+from . import shot_quality
 from .data import read, write
 from .espn_roster import fetch_roster
 
@@ -18,6 +20,16 @@ COUNT_SOURCE = "SportsDataverse NCAA possessions matched to ESPN finals"
 START_SOURCE = "ESPN starting lineups and rosters"
 SIDES = ("home", "away")
 BOX_CONTEXT = {"fast_break_points": "fastBreakPoints", "points_off_turnovers": "turnoverPoints"}
+# Drives, floaters and pull-ups are named only by some arenas' scorer feeds
+# ("driving layup", "floating jump shot", "pullup jump shot"); the others write
+# "layup" and "jumper" for every shot. Measured 2026-11-19: a naming feed names
+# 15-40 of them a game, a plain one 0-3. A game is read for these kinds only
+# when its feed names at least KIND_TAGS_MIN between the two sides, so a team
+# whose games split between feeds is measured on the games that name them
+# rather than diluted by the ones that cannot.
+SHOT_KINDS = (("driving", re.compile(r"\bdriving\b")), ("floater", re.compile(r"\bfloating\b")),
+              ("pullup", re.compile(r"\bpull ?-?up\b")))
+KIND_TAGS_MIN = 6
 
 
 def fixture_key(game):
@@ -53,6 +65,47 @@ def player_lines(units, minutes, team_points):
             rows[str(pid)] = {"athlete_id": str(pid), "Name": name, "minutes": mins,
                               "Pts": pts, "Reb": reb, "Ast": ast, "FGA": fga, "FTA": fta}
     return list(rows.values()) if sum(row["Pts"] for row in rows.values()) == team_points else []
+
+
+def shot_kinds(payload, teams):
+    """Each side's field-goal attempts in the play-by-play and, per kind,
+    [attempts, points]; None for both sides when the feed does not name the
+    kinds (see SHOT_KINDS)."""
+    counts = {t: {"fga": 0, **{kind: [0, 0] for kind, _ in SHOT_KINDS}} for t in teams}
+    named = 0
+    for play in payload.get("plays") or []:
+        team = str((play.get("team") or {}).get("id") or "")
+        text = (play.get("text") or "").lower()
+        if not play.get("shootingPlay") or team not in counts or "free throw" in text:
+            continue
+        row = counts[team]
+        row["fga"] += 1
+        points = int(play.get("scoreValue") or 0) if play.get("scoringPlay") else 0
+        hit = False
+        for kind, pattern in SHOT_KINDS:
+            if pattern.search(text):
+                row[kind][0] += 1
+                row[kind][1] += points
+                hit = True
+        named += hit
+    tagged = named >= KIND_TAGS_MIN and all(row["fga"] for row in counts.values())
+    return {t: (row if tagged else None) for t, row in counts.items()}
+
+
+def kind_rates(pairs):
+    """{kind}_freq/_ppa for offense (own shots) and defense (shots allowed)
+    over the games whose feed names the kinds, and how many games that is.
+    pairs: (own kinds, opponent kinds) per game, both named."""
+    out = {"shot_kinds_games_all": len(pairs)}
+    for side, pick in (("off", 0), ("def", 1)):
+        rows = [pair[pick] for pair in pairs]
+        fga = sum(r["fga"] for r in rows)
+        for kind, _ in SHOT_KINDS:
+            attempts = sum(r[kind][0] for r in rows)
+            points = sum(r[kind][1] for r in rows)
+            out[f"{kind}_freq_{side}_all"] = attempts / fga if fga else None
+            out[f"{kind}_ppa_{side}_all"] = points / attempts if attempts else None
+    return out
 
 
 def parse_box(payload, game):
@@ -105,6 +158,12 @@ def parse_box(payload, game):
     # is missing or too thin to show each side scoring is left out, never zeroed.
     counts = pressure.game_pressure(pressure.espn_plays(payload), tuple(str(game[s + "_id"]) for s in SIDES))
     result["pressure"] = counts if all(c["defense"]["after_score"] >= 10 for c in counts.values()) else None
+    for team, kinds in shot_kinds(payload, list(result["teams"])).items():
+        result["teams"][team]["kinds"] = kinds
+    # Rim, two and three attempts from the same text, for shot quality.
+    classes = shot_quality.game_classes(payload, list(result["teams"]))
+    for team, row in classes.items():
+        result["teams"][team]["classes"] = row if sum(a for a, _ in row.values()) else None
     return result
 
 
@@ -113,7 +172,8 @@ def load_box(game, cache):
     if file.exists():
         cached = read(file)
         if cached.get("fixture") == fixture_key(game) and "pressure" in cached and all(
-            "player_lines" in row and "box_context" in row and "stl" in row for row in cached["teams"].values()
+            "player_lines" in row and "box_context" in row and "stl" in row and "kinds" in row and "classes" in row
+            for row in cached["teams"].values()
         ):
             return cached
     response = requests.get(BOX_URL, params={"event": game["game_id"]}, timeout=15)
@@ -386,6 +446,7 @@ def supplement(contexts, schedule, year, as_of, cache, *, season_through=None, r
                                           matches[0] if len(matches) == 1 else None, opp in division))
     filled = Counter()
     lineups = {}
+    quality = {}  # team -> eFG and xeFG so far, both directions (shot_quality.py)
     logged = game_lines.ranked(lines)
     # Each final's noise-adjusted score (pipeline/power.py): half of each side's
     # three-point and free-throw luck against its own D-I season rate taken
@@ -426,12 +487,33 @@ def supplement(contexts, schedule, year, as_of, cache, *, season_through=None, r
         if refresh_rates and "rates" not in box:
             box["rates"] = rate_rows([(own, opp) for _, _, own, opp, _ in measured])
             filled["refreshed rates"] += 1
+        # Drives, floaters and pull-ups over the same games, where the feed names them.
+        named = [(own["kinds"], opp["kinds"]) for _, _, own, opp, _ in measured if own.get("kinds") and opp.get("kinds")]
+        context["rates"].update(kind_rates(named))
+        filled["shot kinds"] += bool(named)
+        classed = [(own, opp) for _, _, own, opp, _ in measured if own.get("classes") and opp.get("classes")]
+        if classed:
+            def efg(rows):
+                fga = sum(r["fga"] for r in rows)
+                return (sum(r["fgm"] for r in rows) + 0.5 * sum(r["tpm"] for r in rows)) / fga if fga else None
+            quality[team] = {"games": len(classed),
+                             "o_efg": efg([own for own, _ in classed]), "d_efg": efg([opp for _, opp in classed]),
+                             "o_xefg": shot_quality.xefg([own["classes"] for own, _ in classed]),
+                             "d_xefg": shot_quality.xefg([opp["classes"] for _, opp in classed])}
         context["official_box"] = box
         # Starter size follows whichever source recorded more opening lineups.
         starts = [(date, own["starters"]) for date, _, own, _, _ in measured if own["starters"]]
         recorded = (context["observed_tactics"]["size_summary"]["starters"].get("reported_starts") or 0) / 5
         if len(starts) > recorded:
             lineups[team] = (context, starts)
+    # Shot quality needs the pool's averages, so it is set once every team is read.
+    blended = shot_quality.predicted(quality)
+    for team, context in ((str(t), c) for t, c in contexts.items()):
+        q = quality.get(team)
+        context["rates"].update({"xefg_o_all": q and q["o_xefg"], "xefg_d_all": q and q["d_xefg"],
+                                 "pefg_o_all": (blended.get(team) or {}).get("pefg_o_all"),
+                                 "pefg_d_all": (blended.get(team) or {}).get("pefg_d_all")})
+        filled["shot quality"] += bool(blended.get(team))
     with ThreadPoolExecutor(max_workers=6) as pool:
         rosters = dict(zip(lineups, pool.map(lambda team: read_roster(team, year), lineups)))
     for team, (context, starts) in lineups.items():

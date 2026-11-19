@@ -2,14 +2,18 @@
 of the NFL indices. The index math is shared (outputs/strength_index.py).
 
 Inputs: CFBD game PPA per play, FBS against FBS, raw and opponent-adjusted,
-last season's opponent-adjusted figures, and the margin so far. Weights
-(scripts/cfb_strength_weights.json) were fitted at game level on 2021-2025:
-predicting each later game, NSI's mean leave-one-season-out R^2 was 0.305
-against 0.243 for the margin so far and 0.203 for raw net PPA; in week 1,
-0.254 against 0.092, because last season carries most of what is known.
+last season's opponent-adjusted figures, the margin so far, and two preseason
+reads (2026-11-19): the share of last season's offensive PPA that returned
+(CFBD /player/returning), which scales last season's figures, and the 247
+team talent composite (CFBD /talent). Weights (scripts/cfb_strength_weights.json)
+were fitted at game level on 2021-2025: predicting each later game, NSI's mean
+leave-one-season-out R^2 was 0.315 (0.305 without the preseason reads) against
+0.243 for the margin so far and 0.203 for raw net PPA; in week 1, 0.285
+(0.254) against 0.092, because last season and the roster carry most of what
+is known.
 
-Two CFBD calls per run (this season's game PPA and games); last season's are
-cached for good.
+Two CFBD calls per run (this season's game PPA and games); last season's, and
+this season's returning production and talent, are cached for good.
 """
 from __future__ import annotations
 
@@ -58,6 +62,30 @@ def _season(season: int, final: bool):
     return rows, margins
 
 
+def _preseason(season: int) -> tuple[dict[str, float], dict[str, float]]:
+    """({school: returning share of offensive PPA}, {school: talent composite}),
+    each fetched once a season and cached for good."""
+    out = []
+    for name, path in (("returning", "/player/returning"), ("talent", "/talent")):
+        file = f"{name}_{season}.json"
+        hit = cfb_depth._cached(file)
+        rows = hit.get("rows") if hit else None
+        if not rows:
+            rows = cfb_depth.cfbd(path, year=season)
+            if isinstance(rows, list) and rows:
+                cfb_depth._store(file, {"rows": rows})
+        out.append(rows if isinstance(rows, list) else [])
+    def number(value):
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+    ret = {r["team"]: number(r.get("percentPPA")) for r in out[0] if r.get("team")}
+    tal = {(r.get("team") or r.get("school")): number(r.get("talent")) for r in out[1] if r.get("team") or r.get("school")}
+    return ({t: v for t, v in ret.items() if v is not None and 0 <= v <= 1},
+            {t: v for t, v in tal.items() if v is not None and v > 0})
+
+
 def _mean(rows, key):
     sums: dict[str, list[float]] = {}
     for r in rows:
@@ -95,10 +123,12 @@ def build(season: int) -> dict[str, dict]:
     adj_off, adj_def = _adjusted(rows)
     p_off, p_def = _adjusted(prior_rows)
     m1 = _mean(margins, "m")
+    ret, tal = _preseason(season)
     # A school new to FBS has no prior: it takes the prior pool's lower quartile.
     new_off, new_def = _quantile(list(p_off.values()), 0.25), _quantile(list(p_def.values()), 0.75)
     inputs = {t: {"off": raw_off[t], "off_adj": adj_off[t], "p_off": p_off.get(t, new_off),
-                  "def": raw_def[t], "def_adj": adj_def[t], "p_def": p_def.get(t, new_def), "m1": m1.get(t, 0.0)}
+                  "def": raw_def[t], "def_adj": adj_def[t], "p_def": p_def.get(t, new_def), "m1": m1.get(t, 0.0),
+                  "ret": ret.get(t), "talent": tal.get(t)}
               for t in raw_off if t in raw_def and t in adj_off}
     if len(inputs) < 100:
         print(f"  strength: {len(inputs)} FBS schools; skipped")
@@ -108,5 +138,7 @@ def build(season: int) -> dict[str, dict]:
     for team, block in strength_index.indices(inputs, spec, week).items():
         block.update(week=week, season=season, prior_season=season - 1)
         out[cfb_depth._norm(team)] = block
-    print(f"  strength: {len(out)} FBS schools through week {week}")
+    print(f"  strength: {len(out)} FBS schools through week {week} "
+          f"({sum(r['ret'] is not None for r in inputs.values())} with returning production, "
+          f"{sum(r['talent'] is not None for r in inputs.values())} with talent)")
     return out
