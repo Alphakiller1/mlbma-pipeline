@@ -6335,6 +6335,7 @@ body[data-sport="nba"] .ca-detail-section__head p {
 
 .ca-injury-status {
   display: inline-block;
+  white-space: nowrap; /* "Questionable" never splits inside its pill */
   max-width: 100%;
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-xs);
@@ -6363,7 +6364,9 @@ body[data-sport="nba"] .ca-detail-section__head p {
 }
 
 .ca-injury-table__date { width: 1%; white-space: nowrap; }
-.ca-injury-table__injury { overflow-wrap: anywhere; }
+/* A word breaks only when it cannot fit ("Undisclosed" never splits). */
+.ca-injury-table__injury { overflow-wrap: break-word; word-break: normal; }
+@media (min-width: 721px) { .ca-injury-table__injury { min-width: 11ch; } }
 
 .ca-injury-table td.ca-injury-table__stat {
   color: var(--text-primary);
