@@ -58,10 +58,23 @@ same-season references from the actual games reviewed.
 
 ## NBA
 
-The existing 12 tabs retain the native desktop/phone layout. Team/player
-statistics now have explicit season selection; the current fixture, rest and
-availability keep their current identity. Prior-season players are listed with
-their last club in that season; per-game lines cover their whole season.
+The 12 tabs put the matchup overview, game log, injuries and rotation first.
+Player shot distribution sits with the individual shooting tables. Team
+shooting, play types and defense follow, with measured coverage ahead of
+inferred tendencies. Section and panel labels name the units, eligible peers
+and source windows where available.
+
+The season picker sets team rates, player profiles and measured coverage.
+Game logs, adjusted power, five-man units and situational splits show their
+published season on their panels. Fixture rest and availability refer to the
+actual game. Prior-season players are listed with their last club in that
+season and per-game lines cover the whole season.
+
+The Matchup Map groups shot accuracy, the four factors and play-type
+efficiency. Each row pairs one team's offense with the defense it meets.
+The figures and ordinal ranks sit beside mirrored bars with the same
+performance grades. The longest bar represents first in that unit's NBA
+comparison pool. A disclosure opens the remaining published categories.
 
 The Defense tab begins with **measured** NBA zone/non-zone usage, exact possession
 samples, points allowed per possession and the opposing offense's PPP against
@@ -76,12 +89,13 @@ defensive tendencies** and appear after measured data. Drop/switch/blitz/press,
 horns/5-out and other named coverages/formations have no verified tagged efficiency
 from these free feeds. These indicators must never masquerade as coverage usage.
 
-The Shot Profile tab keeps ESPN geometric courts and adds a separate Databallr
+The Shooting tab keeps ESPN geometric courts and a separate Databallr
 table with that provider's at-rim, short/long mid-range, corner and above-break
 definitions, makes/attempts, accuracy and share. Short mid-range is not silently
 mapped onto geometric paint. Same-source FG% grades require 20 attempts.
-Court accuracy/rank text is colored; shot share stays neutral. The rank map calls
-its difference **rank gap**, with the unit stated as rank places rather than points.
+Court accuracy and rank share the performance color. Shot share uses the
+volume color. The play-type fingerprint labels bar length as usage and
+reports efficiency in points per possession.
 
 Rotation is actually sorted by MPG and grades production against same-season
 players with 10+ MPG. Current injury status is not assigned to historical rosters;

@@ -5953,111 +5953,35 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-viz-swatch.is-away { background: var(--nba-away, var(--viz-away)); }
 .ca-viz-swatch.is-home { background: var(--nba-home, var(--viz-home)); }
 
-/* Matchup map: offense rank (filled) against the defense it meets (ring). */
-.ca-edge-rows { display: grid; gap: 0; }
-.ca-edge-row {
-  display: grid;
-  grid-template-columns: minmax(104px, 150px) 1fr 88px;
-  align-items: center;
-  gap: var(--space-3);
-  min-height: 36px;
-  padding: 0 var(--space-2);
-  border-top: 1px solid var(--border-subtle);
-  outline: none;
-}
-.ca-edge-row:hover, .ca-edge-row:focus-visible { background: var(--surface-raised); }
-.ca-edge-row:focus-visible { box-shadow: inset 0 0 0 2px var(--border-focus); }
-.ca-edge-row.is-extra { display: none; }
-.ca-edge-panel.is-open .ca-edge-row.is-extra { display: grid; }
-.ca-edge-row--axis { min-height: 24px; border-top: 0; }
-.ca-edge-row--axis:hover { background: none; }
-.ca-edge-axis { position: relative; height: 16px; }
-.ca-edge-axis b {
-  position: absolute;
-  top: 0;
-  transform: translateX(-50%);
-  color: var(--text-meta);
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-.ca-edge-axis b:first-child { transform: none; }
-.ca-edge-axis b:last-child { transform: translateX(-100%); }
-.ca-edge-axis__edge { justify-self: end; color: var(--text-meta); font-size: 12px; font-weight: 600; }
-.ca-edge-row__label {
-  color: var(--text-primary);
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-}
-.ca-edge-track { position: relative; height: 20px; }
-.ca-edge-track::before {
-  content: "";
-  position: absolute;
-  inset: 9px 0;
-  border-radius: 1px;
-  background: var(--border-subtle);
-}
-.ca-edge-track__q {
-  position: absolute;
-  top: 5px;
-  bottom: 5px;
-  width: 1px;
-  background: var(--border-default);
-}
-.ca-edge-link {
-  position: absolute;
-  top: 8px;
-  height: 4px;
-  border-radius: 2px;
-  opacity: 0.4;
-}
-.ca-edge-link.is-away, .ca-edge-dot.is-away { background: var(--nba-away, var(--viz-away)); }
-.ca-edge-link.is-home, .ca-edge-dot.is-home { background: var(--nba-home, var(--viz-home)); }
-.ca-edge-dot {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--surface-card);
-}
-.ca-edge-dot.is-def { background: var(--surface-card); }
-.ca-edge-dot.is-def.is-away { box-shadow: inset 0 0 0 3px var(--nba-away, var(--viz-away)), 0 0 0 2px var(--surface-card); }
-.ca-edge-dot.is-def.is-home { box-shadow: inset 0 0 0 3px var(--nba-home, var(--viz-home)), 0 0 0 2px var(--surface-card); }
-.ca-edge-track .ca-edge-dot { position: absolute; top: 4px; margin-left: -6px; }
-.ca-edge-chip {
-  justify-self: end;
-  padding: 3px var(--space-2);
-  border-radius: 6px;
-  color: var(--text-primary);
-  font-size: 12px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-.ca-edge-chip.is-away { background: color-mix(in srgb, var(--nba-away, var(--viz-away)) 22%, transparent); }
-.ca-edge-chip.is-home { background: color-mix(in srgb, var(--nba-home, var(--viz-home)) 22%, transparent); }
-.ca-edge-chip.is-even { color: var(--text-meta); }
-/* Evidence, not verdicts: the link between the two ranks is drawn in no club's
-   colour, and the chip states both ranks rather than who leads. */
-.ca-edge-link.is-neutral { background: var(--text-meta); opacity: 0.35; }
-.ca-edge-chip.is-ranks { color: var(--text-secondary); font-weight: 600; }
-.ca-edge-more {
+/* NBA rank comparisons use the same grade tokens as the matchup ledger. */
+.ca-nba-map .ca-ledger-col-stat { width: 29%; }
+.ca-nba-map .ca-ledger-col-val { width: 20%; }
+.ca-nba-map .ca-ledger-col-bars { width: 31%; }
+.ca-nba-map .ca-cfb-ledger-table td[role="rowheader"] { overflow-wrap: break-word; }
+#nba-edge-map .ca-basketball-legend { justify-content: center; margin-block: 0 var(--space-3); }
+.ca-nba-map__more {
   display: block;
   min-height: 44px;
-  margin: var(--space-2) auto 0;
+  margin: var(--space-3) auto 0;
   padding: 0 var(--space-4);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-pill);
   background: transparent;
   color: var(--text-secondary);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--type-meta);
   font-weight: 600;
   cursor: pointer;
 }
-.ca-edge-more:hover { color: var(--text-primary); border-color: var(--border-strong); }
+.ca-nba-map__more:hover { color: var(--text-primary); border-color: var(--border-strong); }
+.ca-nba-map__more:focus-visible { outline: 2px solid var(--border-focus); outline-offset: 2px; }
+
+@media (max-width: 560px) {
+  .ca-nba-map .ca-ledger-col-stat { width: 32%; }
+  .ca-nba-map .ca-ledger-col-val { width: 24%; }
+  .ca-nba-map .ca-ledger-col-bars { width: 20%; }
+  .ca-nba-map thead th { letter-spacing: normal; }
+}
 
 /* Mirrored bars: thin team-colour bars on a track, values outside them. */
 .ca-fly { margin: 0; }
@@ -6069,6 +5993,12 @@ body[data-sport="nfl"] .ca-detail-nav {
   min-height: 34px;
 }
 .ca-fly__row + .ca-fly__row { border-top: 1px solid var(--border-subtle); }
+.ca-fly__head {
+  min-height: 28px;
+  color: var(--text-secondary);
+  font-size: var(--type-meta);
+}
+.ca-fly__head b:first-child { text-align: right; }
 .ca-fly__label {
   color: var(--text-secondary);
   font-family: var(--font-display);
@@ -6137,7 +6067,7 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-dist-legend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); margin: 0 0 var(--space-3); }
 .ca-dist-legend span { display: inline-flex; align-items: center; gap: var(--space-1); }
 .ca-dist-legend .ca-dist-seg { width: 12px; height: 12px; border-radius: 3px; }
-.ca-dist { display: grid; gap: 0; }
+.ca-dist { display: grid; gap: 0; margin: 0; }
 .ca-dist-row {
   display: grid;
   grid-template-columns: minmax(120px, 190px) 1fr;
@@ -6195,10 +6125,6 @@ body[data-sport="nfl"] .ca-detail-nav {
 
 @media (max-width: 520px) {
   .ca-viz-card { padding: var(--space-4) var(--space-3) var(--space-3); }
-  .ca-edge-row { grid-template-columns: 1fr 76px; row-gap: 0; padding: var(--space-1) var(--space-2); }
-  .ca-edge-row__label { grid-column: 1 / -1; }
-  .ca-edge-track { grid-column: 1; }
-  .ca-edge-row--axis > span:first-child { display: none; }
   .ca-fly__row { grid-template-columns: 1fr 72px 1fr; gap: var(--space-2); }
   .ca-fly__label { font-size: 12px; }
   .ca-fly__cell { flex-direction: column-reverse; align-items: stretch; gap: 2px; height: auto; padding: var(--space-1) 0; }
@@ -6332,6 +6258,25 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-detail-eyebrow,
 .ca-public-page__eyebrow,
 .ca-analysis-scope__eyebrow { display: none !important; }
+
+/* Keep the NBA evidence window and metric labels alongside their figures. */
+body[data-sport="nba"] .ca-detail-stack .ca-lineup-context {
+  display: block !important;
+  margin: 0 0 var(--space-3);
+  color: var(--text-secondary);
+  font-size: var(--type-meta);
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.45;
+  text-transform: none;
+}
+body[data-sport="nba"] .ca-detail-section__head p {
+  max-inline-size: 60ch;
+  line-height: 1.45;
+}
+@media (min-width: 721px) {
+  body[data-sport="nba"] .ca-detail-section__head p { text-align: right; }
+}
 
 /* Injury lists give names and designations room even in side-by-side panels. */
 .ca-injury-table-wrap { container-type: inline-size; }
