@@ -249,6 +249,25 @@ class NflPublicContextTests(unittest.TestCase):
         self.assertEqual((aaa["place"], aaa["of"]), (2, 2))
         self.assertEqual((bbb["place"], bbb["of"]), (1, 2))
 
+    def test_back_ranks_read_among_club_starters(self):
+        # Owner 2026-11-19: a running back ranks among the clubs' RB1s, not every
+        # back with carries; a backup is placed against them, never pooled.
+        base = {"position": "RB", "play_family": "rushing", "season": 2026, "source_season": 2026}
+
+        def back(pid, team, carries, ypc):
+            return dict(base, player_id=pid, player_name=pid, team=team,
+                        splits={"all": {"carries": carries, "rushing_yards": int(carries * ypc),
+                                        "yards_per_carry": ypc, "epa_per_carry": 0.0, "success_rate": 0.4}})
+        board = copy.deepcopy(BOARD)
+        board["player_scheme_profiles"] = [back("rb1-a", "AAA", 120, 4.0), back("rb2-a", "AAA", 30, 6.0),
+                                           back("rb1-b", "BBB", 110, 5.0)]
+        profiles = ctx.player_scheme(board)
+        ranks = {p["player_id"]: next(s for s in p["splits"] if s["look"] == "all").get("league_ranks", {})
+                 for team in profiles.values() for p in team}
+        self.assertEqual(ranks["rb1-b"]["yards_per_carry"], {"place": 1, "of": 2})
+        self.assertEqual(ranks["rb1-a"]["yards_per_carry"], {"place": 2, "of": 2})
+        self.assertEqual(ranks["rb2-a"]["yards_per_carry"], {"place": 1, "of": 2}, "placed among RB1s, not pooled")
+
     def test_player_scheme_is_observed_allowlisted_and_ranked(self):
         board = copy.deepcopy(BOARD)
         second = copy.deepcopy(board["player_scheme_profiles"][0])

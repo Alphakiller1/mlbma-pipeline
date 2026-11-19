@@ -549,6 +549,31 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
                     published["tracking"] = tracking
             out.setdefault(team, []).append(published)
     rows = [profile for profiles in out.values() for profile in profiles]
+    # Owner 2026-11-19: a back's or a passer's rank reads among his own string,
+    # the clubs' starters - each club's QB1 (most dropbacks) and RB1 (most
+    # carries) in the season - not every QB or RB with a handful of snaps (a
+    # starter read "92nd" among 95 backs). Anyone else shown, a backup starting
+    # for an injured RB1, is placed against the RB1s and not added to the pool.
+    leads: set[tuple] = set()
+    for profiles in out.values():
+        best: dict[tuple, tuple] = {}
+        for profile in profiles:
+            if profile["position"] not in ("QB", "RB"):
+                continue
+            volume_key = "dropbacks" if profile["position"] == "QB" else "carries"
+            split = next((s for s in profile["splits"] if s["look"] == "all"), None)
+            # The season line's volume; a profile without one reads its largest look.
+            volume = float((split or {}).get(volume_key) or 0) or max(
+                (float(s.get(volume_key) or 0) for s in profile["splits"]), default=0.0)
+            slot = (profile["position"], profile["source_season"])
+            if volume > 0 and volume > best.get(slot, (None, 0.0))[1]:
+                best[slot] = (profile["player_id"] or profile["player_name"], volume)
+        for (position, season), (identity, _) in best.items():
+            leads.add((identity, season, position))
+
+    def is_lead(profile) -> bool:
+        return ((profile["player_id"] or profile["player_name"]), profile["source_season"], profile["position"]) in leads
+
     for position in ("QB", "RB"):
         volume = "dropbacks" if position == "QB" else "carries"
         metrics = (("completion_rate", "yards_per_attempt", "epa_per_dropback", "success_rate",
@@ -583,7 +608,8 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
                         if profile["position"] != position or profile["source_season"] != season:
                             continue
                         split = next((item for item in profile["splits"] if item["look"] == look), None)
-                        if split and split.get(volume, 0) >= minimum and split.get(metric) is not None:
+                        if (split and is_lead(profile) and split.get(volume, 0) >= minimum
+                                and split.get(metric) is not None):
                             pool.append((profile["player_id"] or profile["player_name"], float(split[metric])))
                     if len(pool) < 2:
                         continue
@@ -621,6 +647,7 @@ def player_scheme(board: dict) -> dict[str, list[dict]]:
                          float(profile["tracking"][metric]))
                         for profile in rows
                         if profile["position"] == position and profile["source_season"] == season
+                        and is_lead(profile)
                         and profile.get("tracking", {}).get(metric) is not None
                         and float(profile["tracking"].get("attempts")
                                   or profile["tracking"].get("pressure_dropbacks") or 0) >= minimum]
