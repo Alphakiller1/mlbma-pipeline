@@ -35,7 +35,7 @@ class StrengthIndexTests(unittest.TestCase):
                 self.assertEqual(len(spec["weights"]["off"][week]), n_off, (path.name, week))
                 self.assertEqual(len(spec["weights"]["net"][week]), 1 + len(fit["net_features"]), (path.name, week))
             v = fit["validation_mean_r2"]["later_game_margin"]
-            self.assertGreater(v["nsi"], v["nsi_before_preseason_reads"], path.name)
+            self.assertGreater(v["nsi"], v["nsi_before_this_version"], path.name)
 
     def test_preseason_reads_move_the_index_the_way_they_read(self):
         nfl = json.loads((ROOT / "outputs" / "nfl_strength_weights.json").read_text(encoding="utf-8"))

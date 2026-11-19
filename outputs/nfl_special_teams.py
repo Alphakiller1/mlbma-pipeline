@@ -19,8 +19,12 @@ From nflverse play-by-play, regular season, with fixed definitions:
   the go-for-it snaps; the defence is read on what opponents converted.
 * **Two-minute** EPA per play is every run and pass with two minutes or
   less left in a half.
-* **Penalties** are accepted fouls that cost yards: committed per game and
-  drawn per game.
+* **Penalties** (2026-11-19) are accepted fouls that cost yards, per game, for
+  the club and for each unit: the offense (fouls while it has the ball), the
+  defense (fouls while the opponent has it) and special teams (kicking plays).
+  Pre-snap fouls, holding, pass interference, coverage fouls and personal
+  fouls are split out, with the fouls each unit draws from the other side and
+  the first downs fouls hand over. Fewer committed and more drawn is better.
 
 Everything is observed and ranked among the 32 clubs; nothing is projected.
 """
@@ -36,7 +40,7 @@ ST_PBP_COLUMNS = (
     "extra_point_result", "punt_blocked", "punt_fair_catch", "return_yards", "return_team", "touchback",
     "kickoff_attempt", "punt_attempt", "field_goal_attempt", "extra_point_attempt",
     "fourth_down_converted", "half_seconds_remaining", "epa", "penalty", "penalty_team", "penalty_yards",
-    "qb_kneel", "qb_spike", "two_point_attempt",
+    "qb_kneel", "qb_spike", "two_point_attempt", "penalty_type", "first_down_penalty", "special_teams_play",
 )
 
 # key: (label, better, format). "ppa" prints EPA to three decimals, signed.
@@ -61,7 +65,37 @@ SPEC = {
     "penalties_pg": ("Penalties/G", "low", "num"),
     "penalty_yds_pg": ("Penalty Yds/G", "low", "num"),
     "drawn_pg": ("Penalties Drawn/G", "high", "num"),
+    "drawn_yds_pg": ("Penalty Yds Drawn/G", "high", "num"),
+    "net_pen_yds_pg": ("Net Penalty Yds/G", "high", "num"),
+    "pen_fd_given_pg": ("First Downs By Penalty Given/G", "low", "num2"),
+    "pen_fd_gained_pg": ("First Downs By Penalty Gained/G", "high", "num2"),
+    "off_pen_pg": ("Offense Penalties/G", "low", "num2"),
+    "off_pen_yds_pg": ("Offense Penalty Yds/G", "low", "num"),
+    "off_presnap_pg": ("Offense Pre-Snap Penalties/G", "low", "num2"),
+    "off_holding_pg": ("Offensive Holding/G", "low", "num2"),
+    "off_opi_pg": ("Offensive Pass Interference/G", "low", "num2"),
+    "off_drawn_pg": ("Defensive Penalties Drawn By The Offense/G", "high", "num2"),
+    "off_dpi_drawn_yds_pg": ("Pass Interference Yds Drawn/G", "high", "num"),
+    "def_pen_pg": ("Defense Penalties/G", "low", "num2"),
+    "def_pen_yds_pg": ("Defense Penalty Yds/G", "low", "num"),
+    "def_presnap_pg": ("Defense Pre-Snap Penalties/G", "low", "num2"),
+    "def_dpi_pg": ("Defensive Pass Interference/G", "low", "num2"),
+    "def_dpi_yds_pg": ("Defensive Pass Interference Yds/G", "low", "num"),
+    "def_coverage_pg": ("Defensive Holding, Illegal Contact, Hands/G", "low", "num2"),
+    "def_personal_pg": ("Personal Fouls By The Defense/G", "low", "num2"),
+    "def_pen_fd_pg": ("First Downs By Defensive Penalty/G", "low", "num2"),
+    "def_drawn_pg": ("Offensive Penalties Drawn By The Defense/G", "high", "num2"),
+    "st_pen_pg": ("Special Teams Penalties/G", "low", "num2"),
+    "st_pen_yds_pg": ("Special Teams Penalty Yds/G", "low", "num"),
 }
+OFF_PRESNAP = {"False Start", "Delay of Game", "Illegal Formation", "Illegal Shift", "Illegal Motion",
+               "Offensive Too Many Men on Field", "Offensive Offside"}
+DEF_PRESNAP = {"Defensive Offside", "Neutral Zone Infraction", "Encroachment", "Defensive Too Many Men on Field",
+               "Defensive Delay of Game"}
+DEF_COVERAGE = {"Defensive Holding", "Illegal Contact", "Illegal Use of Hands"}
+PERSONAL = {"Unnecessary Roughness", "Roughing the Passer", "Face Mask", "Horse Collar Tackle",
+            "Unsportsmanlike Conduct", "Taunting", "Hip Drop Tackle", "Disqualification"}
+ST_PLAYS = {"kickoff", "punt", "field_goal", "extra_point"}
 # Counts carried beside a rate, so the page can say how many tries it rests on.
 SAMPLES = {"fg_short": "fg_short_att", "fg_40s": "fg_40s_att", "fg_long": "fg_long_att", "xp_pct": "xp_att",
            "fourth_conv": "fourth_go", "fourth_conv_allowed": "fourth_go_faced"}
@@ -152,15 +186,59 @@ def club_figures(frame) -> dict[str, dict[str, Any]]:
     for club, rows in late.groupby("defteam"):
         out[club]["two_min_epa_allowed"] = _mean(rows["epa"])
 
-    flags = frame[_flag(frame["penalty"]) & frame["penalty_yards"].fillna(0).gt(0) & frame["penalty_team"].notna()]
-    flags = flags.assign(drawn_by=flags["home_team"].where(flags["penalty_team"].ne(flags["home_team"]),
-                                                           flags["away_team"]))
+    for club, figures in penalty_figures(frame, clubs, games).items():
+        out[club].update(figures)
+    return out
+
+
+def penalty_figures(frame, clubs, games) -> dict[str, dict[str, float]]:
+    """Accepted fouls that cost yards, per game, by club and unit."""
+    flags = frame[_flag(frame["penalty"]) & frame["penalty_yards"].fillna(0).gt(0)
+                  & frame["penalty_team"].notna()].copy()
+    flags["drawn_by"] = flags["home_team"].where(flags["penalty_team"].ne(flags["home_team"]), flags["away_team"])
+    special = flags["play_type"].isin(ST_PLAYS)
+    if "special_teams_play" in flags:
+        special = special | _flag(flags["special_teams_play"])
+    flags["unit"] = "st"
+    flags.loc[~special & flags["penalty_team"].eq(flags["posteam"]), "unit"] = "off"
+    flags.loc[~special & flags["penalty_team"].eq(flags["defteam"]), "unit"] = "def"
+    kind = flags["penalty_type"].fillna("") if "penalty_type" in flags else flags["unit"].map(lambda _: "")
+    first = (_flag(flags["first_down_penalty"]) if "first_down_penalty" in flags
+             else flags["penalty_yards"].lt(0))
+    out: dict[str, dict[str, float]] = {}
     for club in clubs:
         g = games[club] or 1
-        mine = flags[flags["penalty_team"].eq(club)]
-        out[club]["penalties_pg"] = round(len(mine) / g, 2)
-        out[club]["penalty_yds_pg"] = round(float(mine["penalty_yards"].sum()) / g, 1)
-        out[club]["drawn_pg"] = round(int(flags["drawn_by"].eq(club).sum()) / g, 2)
+        mine, drawn = flags[flags["penalty_team"].eq(club)], flags[flags["drawn_by"].eq(club)]
+        off, dfn, st = (mine[mine["unit"].eq(u)] for u in ("off", "def", "st"))
+        k_off, k_def = kind.loc[off.index], kind.loc[dfn.index]
+
+        def per(n, digits=2):
+            return round(float(n) / g, digits)
+        committed_yds, drawn_yds = float(mine["penalty_yards"].sum()), float(drawn["penalty_yards"].sum())
+        # What each unit draws: the other side's defense or offense fouls.
+        theirs_def = drawn[drawn["unit"].eq("def")]
+        out[club] = {
+            "penalties_pg": per(len(mine)), "penalty_yds_pg": per(committed_yds, 1),
+            "drawn_pg": per(len(drawn)), "drawn_yds_pg": per(drawn_yds, 1),
+            "net_pen_yds_pg": per(drawn_yds - committed_yds, 1),
+            "pen_fd_given_pg": per(first.loc[mine.index].sum()), "pen_fd_gained_pg": per(first.loc[drawn.index].sum()),
+            "off_pen_pg": per(len(off)), "off_pen_yds_pg": per(off["penalty_yards"].sum(), 1),
+            "off_presnap_pg": per(k_off.isin(OFF_PRESNAP).sum()),
+            "off_holding_pg": per(k_off.eq("Offensive Holding").sum()),
+            "off_opi_pg": per(k_off.eq("Offensive Pass Interference").sum()),
+            "off_drawn_pg": per(len(theirs_def)),
+            "off_dpi_drawn_yds_pg": per(theirs_def.loc[kind.loc[theirs_def.index].eq("Defensive Pass Interference"),
+                                                       "penalty_yards"].sum(), 1),
+            "def_pen_pg": per(len(dfn)), "def_pen_yds_pg": per(dfn["penalty_yards"].sum(), 1),
+            "def_presnap_pg": per(k_def.isin(DEF_PRESNAP).sum()),
+            "def_dpi_pg": per(k_def.eq("Defensive Pass Interference").sum()),
+            "def_dpi_yds_pg": per(dfn.loc[k_def.eq("Defensive Pass Interference"), "penalty_yards"].sum(), 1),
+            "def_coverage_pg": per(k_def.isin(DEF_COVERAGE).sum()),
+            "def_personal_pg": per(k_def.isin(PERSONAL).sum()),
+            "def_pen_fd_pg": per(first.loc[dfn.index].sum()),
+            "def_drawn_pg": per(int(drawn["unit"].eq("off").sum())),
+            "st_pen_pg": per(len(st)), "st_pen_yds_pg": per(st["penalty_yards"].sum(), 1),
+        }
     return out
 
 

@@ -389,8 +389,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.goto(base_url.rstrip("/") + detail_url, wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
         check("NFL detail uses team logos", page.locator(".ca-detail-team__logo").count() == 2)
-        check("NFL desk carries the ten evidence tabs",
-              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 10)
+        check("NFL desk carries the eleven evidence tabs (Penalties 2026-11-19)",
+              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 11)
         # The desk reads a tab at a time, and where the clubs stack, one club at a time.
         shown = "() => [...document.querySelectorAll('.ca-detail-section')].filter(s => s.offsetParent).map(s => s.id).join(',')"
         check("NFL desk opens on the Units tab alone", page.evaluate(shown) == "power,strength,efficiency,dvoa,predictability", page.evaluate(shown))
@@ -400,7 +400,19 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               ("nsi · net" in strength_text and "osi · offense" in strength_text and "dsi · defense" in strength_text
                and "home field" in strength_text and page.locator("#strength tbody .ca-rank").count() >= 26)
               or "not published" in strength_text, strength_text[:200])
-        qb_published = '"qb_epa"' in page.request.get(base_url.rstrip("/") + "/data/public/nfl/slate.json").text()
+        nfl_slate_text = page.request.get(base_url.rstrip("/") + "/data/public/nfl/slate.json").text()
+        qb_published = '"qb_epa"' in nfl_slate_text
+        # 2026-11-19: penalties by team and unit, their own tab; no longer in Situational.
+        page.locator('a[data-nfl-tab="penalties"]').click()
+        pen_text = page.locator("#penalties").text_content().lower()
+        check("NFL Penalties tab ranks team, offense, defense and special-teams fouls where published",
+              '"off_pen_pg"' not in nfl_slate_text or (
+                  "offense" in pen_text and "defense" in pen_text and "special teams" in pen_text
+                  and "pre-snap/g" in pen_text and page.locator("#penalties tbody .ca-rank").count() >= 40),
+              pen_text[:200])
+        check("NFL Situational no longer repeats the penalty rows",
+              "penalties/g" not in page.locator("#situational").text_content().lower())
+        page.locator('a[data-nfl-tab="units"]').click()
         check("NFL strength index shows the quarterback read where published",
               not qb_published or ("qb " in strength_text and "epa/db" in strength_text), strength_text[-200:])
         page.locator('a[data-nfl-tab="games"]').click()
@@ -751,8 +763,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # each unit above the unit it meets, a rank pill on every graded number,
         # no verdict lines, no gap ordering, no dash cells.
         page.wait_for_selector(".ca-nfl-tabs", timeout=timeout_ms)
-        check("CFB desk carries the nine evidence tabs (ledger 2026-10-03, Availability, Defense 2026-11-18)",
-              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 9)
+        check("CFB desk carries the ten evidence tabs (ledger 2026-10-03, Availability, Defense 2026-11-18, Penalties 2026-11-19)",
+              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 10)
         check("CFB opens on the Units evidence group alone",
               page.evaluate("[...document.querySelectorAll('.ca-detail-section')]"
                             ".filter(s => s.offsetParent).map(s => s.id).join(',')") ==
@@ -858,6 +870,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               any("EPA" in title and "Lower is better" in title for title in defense_grades) and
               any("Sack" in title and "Higher is better" in title for title in defense_grades))
         cfb_strength_text = page.locator("#cfb-strength").text_content().lower()
+        cfb_slate_text = page.request.get(base_url.rstrip("/") + "/data/public/cfb/slate.json").text()
+        cfb_pen_text = page.locator("#cfb-penalties").text_content().lower()
+        check("CFB Penalties ranks team and unit fouls where published",
+              '"away_penalties"' not in cfb_slate_text or (
+                  "offense" in cfb_pen_text and "defense" in cfb_pen_text and "pre-snap/g" in cfb_pen_text
+                  and page.locator("#cfb-penalties tbody .ca-rank").count() >= 30),
+              cfb_pen_text[:200])
         check("CFB strength index ranks OSI, DSI and NSI for both schools with its formula",
               ("nsi · net" in cfb_strength_text and "ppa" in cfb_strength_text and "home field" in cfb_strength_text)
               or "not published" in cfb_strength_text, cfb_strength_text[:200])
