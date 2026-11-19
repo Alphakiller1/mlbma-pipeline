@@ -42,6 +42,17 @@ class ShotKindTests(unittest.TestCase):
         self.assertIsNone(empty["driving_freq_off_all"])
 
 
+class RateContractTests(unittest.TestCase):
+    def test_every_rate_the_supplement_writes_is_a_published_rate_field(self):
+        # scripts/publish_public_cbb.py refuses a team whose box rates and rates
+        # carry different keys; box rates are built from RATE_FIELDS.
+        from pipeline.cbb_public import export
+        written = set(espn_boxes.kind_rates([])) | {"xefg_o_all", "xefg_d_all", "pefg_o_all", "pefg_d_all"}
+        self.assertLessEqual(written, set(export.RATE_FIELDS))
+        box = espn_boxes.rate_rows([])
+        self.assertTrue(written <= set(box), sorted(written - set(box)))
+
+
 class ShotQualityTests(unittest.TestCase):
     def test_classes_and_expected_efg(self):
         classes = shot_quality.game_classes(PLAIN, ["1", "2"])
