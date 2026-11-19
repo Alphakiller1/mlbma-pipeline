@@ -132,7 +132,13 @@
     "intercept",
     "home_field",
     "prior_season",
-    "torvik_through"
+    "torvik_through",
+    "p_off_r",
+    "p_net_r",
+    "tal_off",
+    "tal_def",
+    "tal_net",
+    "qbp"
   ],
   "identity": [
     "Cut",
@@ -240,7 +246,8 @@
     "venue_id",
     "zone",
     "side",
-    "kind"
+    "kind",
+    "qb"
   ],
   "factual_status": [
     "game_state",
@@ -972,6 +979,7 @@
     "layup_freq_def_all",
     "layup_ppa_off_all",
     "layup_ppa_def_all",
+    "shot_kinds_games_all",
     "driving_freq_off_all",
     "driving_freq_def_all",
     "driving_ppa_off_all",
@@ -1082,7 +1090,12 @@
     "p_def",
     "m1",
     "net_adj",
-    "p_net"
+    "p_net",
+    "ret",
+    "talent",
+    "qb_epa",
+    "qb_league",
+    "prior_dropbacks"
   ],
   "derived_descriptive": [
     "estimated_per40",
@@ -1372,7 +1385,11 @@
     "league_rank",
     "dsi",
     "nsi",
-    "index"
+    "index",
+    "xefg_o_all",
+    "xefg_d_all",
+    "pefg_o_all",
+    "pefg_d_all"
   ],
   "contextual_environment": [
     "away_rest_days",

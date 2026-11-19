@@ -1,0 +1,193 @@
+{
+ "fit": {
+  "method": "game level: each later game's offense eFG predicted from the offense's eFG and xeFG so far and the defense's eFG and xeFG allowed so far, after N games; ridge with non-negative weights; leave-one-season-out validated",
+  "seasons": "2023-2026 regular seasons, D-I against D-I (hoopR ESPN play-by-play)",
+  "classes": "rim = layup, dunk or tip in the scorer's text; three = three-point attempt; two = every other field-goal attempt",
+  "prices": "pooled 2023-2026 D-I make rates: rim .585, two .396, three .339 (x1.5 in eFG)",
+  "features": [
+   "c",
+   "o_efg",
+   "o_xefg",
+   "d_efg",
+   "d_xefg"
+  ],
+  "validation_r2_by_games": {
+   "2": {
+    "efg": 0.0333,
+    "xefg": 0.012,
+    "both": 0.0385,
+    "def_only_efg": 0.0074,
+    "def_both": 0.0087
+   },
+   "3": {
+    "efg": 0.0389,
+    "xefg": 0.0128,
+    "both": 0.0439,
+    "def_only_efg": 0.008,
+    "def_both": 0.0089
+   },
+   "4": {
+    "efg": 0.0462,
+    "xefg": 0.0141,
+    "both": 0.0507,
+    "def_only_efg": 0.0097,
+    "def_both": 0.0111
+   },
+   "5": {
+    "efg": 0.0524,
+    "xefg": 0.0145,
+    "both": 0.0558,
+    "def_only_efg": 0.0108,
+    "def_both": 0.0125
+   },
+   "6": {
+    "efg": 0.0565,
+    "xefg": 0.0155,
+    "both": 0.0605,
+    "def_only_efg": 0.0117,
+    "def_both": 0.0137
+   },
+   "7": {
+    "efg": 0.059,
+    "xefg": 0.0148,
+    "both": 0.0618,
+    "def_only_efg": 0.0121,
+    "def_both": 0.0135
+   },
+   "8": {
+    "efg": 0.0628,
+    "xefg": 0.0143,
+    "both": 0.0654,
+    "def_only_efg": 0.013,
+    "def_both": 0.0142
+   },
+   "10": {
+    "efg": 0.0633,
+    "xefg": 0.0123,
+    "both": 0.0644,
+    "def_only_efg": 0.0123,
+    "def_both": 0.0129
+   },
+   "12": {
+    "efg": 0.0665,
+    "xefg": 0.0121,
+    "both": 0.0665,
+    "def_only_efg": 0.0127,
+    "def_both": 0.0134
+   },
+   "14": {
+    "efg": 0.0701,
+    "xefg": 0.0125,
+    "both": 0.0698,
+    "def_only_efg": 0.0146,
+    "def_both": 0.0153
+   },
+   "16": {
+    "efg": 0.0772,
+    "xefg": 0.0125,
+    "both": 0.0766,
+    "def_only_efg": 0.0182,
+    "def_both": 0.0187
+   },
+   "20": {
+    "efg": 0.0888,
+    "xefg": 0.0144,
+    "both": 0.0879,
+    "def_only_efg": 0.0246,
+    "def_both": 0.0251
+   }
+  },
+  "reading": "xeFG alone predicts later shooting far worse than eFG; the blend beats eFG through about ten games, and for defenses the shot mix allowed keeps 30-40% of the weight all season"
+ },
+ "prices": {
+  "rim": 0.585,
+  "two": 0.396,
+  "three": 0.5085
+ },
+ "weights": {
+  "2": [
+   0.03584,
+   0.1759,
+   0.34987,
+   0.13497,
+   0.27764
+  ],
+  "3": [
+   -0.03366,
+   0.22666,
+   0.37819,
+   0.17039,
+   0.30111
+  ],
+  "4": [
+   -0.09271,
+   0.28397,
+   0.33934,
+   0.20195,
+   0.36881
+  ],
+  "5": [
+   -0.12536,
+   0.33559,
+   0.27813,
+   0.23267,
+   0.41276
+  ],
+  "6": [
+   -0.19328,
+   0.37227,
+   0.29078,
+   0.25705,
+   0.47329
+  ],
+  "7": [
+   -0.19228,
+   0.39664,
+   0.27532,
+   0.28235,
+   0.4369
+  ],
+  "8": [
+   -0.21374,
+   0.42946,
+   0.26998,
+   0.31598,
+   0.41764
+  ],
+  "10": [
+   -0.18531,
+   0.47246,
+   0.20474,
+   0.34758,
+   0.3526
+  ],
+  "12": [
+   -0.19167,
+   0.507,
+   0.14346,
+   0.3736,
+   0.3668
+  ],
+  "14": [
+   -0.20522,
+   0.5364,
+   0.13706,
+   0.3894,
+   0.35454
+  ],
+  "16": [
+   -0.21312,
+   0.58432,
+   0.07114,
+   0.42372,
+   0.35381
+  ],
+  "20": [
+   -0.28959,
+   0.65279,
+   0.06189,
+   0.46112,
+   0.40595
+  ]
+ }
+}

@@ -5703,8 +5703,7 @@ function seasonToggle(game) {
   }
 
   var NFL_TABS = [
-    ['units', 'Units', ['power', 'strength', 'efficiency', 'predictability']],
-    ['dvoa', 'DVOA', ['dvoa']],
+    ['units', 'Units', ['power', 'strength', 'efficiency', 'dvoa', 'predictability']],
     ['games', 'Games', ['game-log']],
     ['passing', 'Passing', ['quarterbacks', 'coverage', 'looks']],
     ['rushing', 'Rushing', ['run-game', 'trenches', 'rushing']],
@@ -6222,11 +6221,11 @@ function seasonToggle(game) {
       section('efficiency', 'Unit Matchups', 'Each Offense Against The Defense It Meets',
         nflDuo(nflDrivePanel, sport, game)),
 
-      section('predictability', 'Predictability', 'How Often Each Offense Lands Off The NFL Curve',
-        nflPredictabilityBody(sport, game, undefined)),
-
       section('dvoa', 'DVOA', 'Total And Unit Efficiency From FTN Team Total DVOA',
         nflDuo(nflDvoaPanel, sport, game)),
+
+      section('predictability', 'Predictability', 'How Often Each Offense Lands Off The NFL Curve',
+        nflPredictabilityBody(sport, game, undefined)),
 
       section('game-log', 'Game Log', 'Every Game, Final And Noise-Adjusted',
         nflGameLogBody(sport, game, undefined)),
@@ -7084,7 +7083,7 @@ function seasonToggle(game) {
    * (ChaseSportNBA.MIN_GAMES), and every panel says which.
    * ------------------------------------------------------------------ */
   var NBA_TABS = [
-    ['units', 'Matchup', ['nba-edge-map', 'nba-ratings', 'nba-efficiency', 'nba-power', 'nba-predictability']],
+    ['units', 'Matchup', ['nba-power', 'nba-edge-map', 'nba-ratings', 'nba-efficiency', 'nba-predictability']],
     ['games', 'Game Log', ['nba-game-log']],
     ['availability', 'Injuries', ['nba-availability']],
     ['rotation', 'Rotation', ['nba-rotation', 'nba-lineups']],
@@ -8280,9 +8279,9 @@ function seasonToggle(game) {
         nbaRatingsBody(sport, game)),
       section('nba-efficiency', 'Offense Against Defense', 'Scoring, effective FG%, turnovers, offensive rebounds and free throws',
         nflDuo(nbaLedgerPanel, sport, game, 'efficiency')),
-      section('nba-predictability', 'Offensive Consistency', 'Scoring spread and frequency outside the expected range',
+      section('nba-predictability', 'Predictability', 'How often each offense lands off the NBA curve',
         nbaPredictabilityBody(sport, game)),
-      section('nba-power', 'Adjusted Power Ranking', 'Opponent- and luck-adjusted ratings per 100 possessions · Actual and expected records',
+      section('nba-power', 'Power Ranking', 'Opponent- and luck-adjusted ratings per 100 possessions · Actual and expected records',
         nbaPowerBody(sport, game)),
       section('nba-shooting', 'Team Shooting Rates', 'Three-point attempt share, shooting accuracy and assisted field goals',
         nflDuo(nbaLedgerPanel, sport, game, 'shooting')),
@@ -8720,12 +8719,15 @@ function seasonToggle(game) {
         label: 'Same-season D-I teams', better: neutral ? 'neutral' : undefined
       };
     }
+    // A stat neither side publishes (a season the source never measured) is
+    // left off rather than shown as two empty cells.
     var groups = specs.map(function (group) {
       return {
         title: group[0],
         rows: group[1].map(function (stat) {
-          return cfbLedgerRow(stat[0], entry(off, stat[1], stat[2], stat[5]),
-            entry(def, stat[3], stat[4], stat[5]));
+          return [stat[0], entry(off, stat[1], stat[2], stat[5]), entry(def, stat[3], stat[4], stat[5])];
+        }).filter(function (r) { return r[1] || r[2]; }).map(function (r) {
+          return cfbLedgerRow(r[0], r[1], r[2]);
         })
       };
     });
@@ -8739,6 +8741,10 @@ function seasonToggle(game) {
       ['Scoring And Possession',[
         ['Points/100','ppp_off_all',true,'ppp_def_all',false,cbbPer100],
         ['eFG%','efg_o_all',true,'efg_d_all',false,cbbPct],
+        // Shot quality (pipeline/cbb_public/shot_quality.py): the shot mix priced
+        // at D-I make rates, and the eFG fitted to later games from both.
+        ['xeFG% (shot mix)','xefg_o_all',true,'xefg_d_all',false,cbbPct],
+        ['Predicted eFG%','pefg_o_all',true,'pefg_d_all',false,cbbPct],
         ['TOV%','tov_pct_o_all',false,'tov_pct_d_all',true,cbbPct],
         // Each unit's share of the offense's missed shots.
         ['ORB% / DRB%','orb_pct_all',true,'drb_pct_all',true,cbbPct]
@@ -8804,18 +8810,23 @@ function seasonToggle(game) {
     function pps(n){return cbbNumber(n,2);}
     function pair(read,shot,side,higher){
       var freq=read.rates[shot+'_freq_'+side+'_all'];
-      if(freq==null&&read.rates.games_all&&/^(driving|floater|pullup)$/.test(shot))
-        return [cbbMissing('Not tracked'),cbbMissing('Not tracked')];
       var wanted=cbbShotWanted(game,shot), key=shot+'_freq_'+side+'_all';
       var share=wanted==null?cbbStyleMetric(game,read,key,cbbPct):
         cbbRateMetric(game,read,key,side==='off'?wanted==='more':wanted==='less',cbbPct);
       return [share,
         freq===0?cbbMissing('No attempts'):cbbRateMetric(game,read,shot+'_ppa_'+side+'_all',higher,pps)];
     }
-    var rows=CBB_SHOT_TYPES.map(function(t){
+    /* Drives, floaters and pull-ups are measured only on games whose scorer's
+       feed names them (pipeline/cbb_public/espn_boxes.py SHOT_KINDS). Where
+       either side has no such game the row has nothing to compare and is
+       left off, never shown as an empty cell. */
+    var rows=CBB_SHOT_TYPES.filter(function(t){
+      return !/^(driving|floater|pullup)$/.test(t[0]) ||
+        (x.rates[t[0]+'_freq_off_all']!=null && y.rates[t[0]+'_freq_def_all']!=null);
+    }).map(function(t){
       return [esc(t[1])].concat(pair(x,t[0],'off',true),pair(y,t[0],'def',false));
     });
-    return cbbPanel(heading,cbbRateCaption(game,side,opp,x,y)+' · Basketball Quant shot types',
+    return cbbPanel(heading,cbbRateCaption(game,side,opp,x,y)+' · Basketball Quant shot types; drives, floaters and pull-ups from ESPN play-by-play where the feed names them',
       cbbTable(['Shot type','O share','O pts/shot','D share allowed','D pts/shot allowed'],rows,'ca-cbb-shot-type-table'));
   }
   /* Schedule strength: the average D-I opponent's points scored and allowed
@@ -9412,15 +9423,47 @@ function seasonToggle(game) {
     return e ? { value: e.index, rank: e.rank, of: e.of, label: label + ' · ' + words, format: 'num', better: 'high' } : null;
   }
 
+  /* The week's formula as published (outputs/strength_index.py): each weight
+     beside the feature it multiplies, in the order the weight table lists
+     them. Provenance in the DOM; owner rule keeps it off the screen. */
+  var STRENGTH_FEATURES = {
+    off: 'UNIT', off_adj: 'adjusted UNIT', p_off: 'PRIOR UNIT', p_off_r: 'PRIOR UNIT × returning share',
+    def: 'UNIT allowed', def_adj: 'adjusted UNIT allowed', p_def: 'PRIOR UNIT allowed',
+    net: 'net UNIT', net_adj: 'adjusted net UNIT', p_net: 'PRIOR net UNIT',
+    p_net_r: 'PRIOR net UNIT, offense × returning share', m1: 'margin per game',
+    tal_off: 'talent z × 0.05', tal_def: '−talent z × 0.05', tal_net: 'talent z',
+    qbp: 'quarterback PRIOR EPA per dropback against the league'
+  };
   function strengthFormula(block, unit) {
     var w = block.weights || {}, n = w.nsi || {}, o = w.osi || {};
+    var prior = String(block.prior_season || '');
     function f(x, d) { return Number(x || 0).toFixed(d == null ? 2 : d); }
-    var prior = block.prior_season;
-    return 'Through week ' + block.week + ' · NSI = ' + f(n.net_adj) + ' × adjusted net ' + unit + ' + ' +
-      f(n.p_net) + ' × ' + prior + ' net ' + unit + ' + ' + f(n.net) + ' × net ' + unit + ' + ' + f(n.m1) +
-      ' × margin per game · home field ' + f(n.home_field, 1) + ' points · OSI = ' + f(o.off) + ' × ' + unit +
-      ' + ' + f(o.off_adj) + ' × adjusted + ' + f(o.p_off) + ' × ' + prior + ' · DSI on the same weights for ' +
-      unit + ' allowed (' + f(o.def) + ', ' + f(o.def_adj) + ', ' + f(o.p_def) + ')';
+    function terms(weights, keys) {
+      return keys.map(function (k) {
+        return f(weights[k]) + ' × ' + (STRENGTH_FEATURES[k] || k).replace(/UNIT/g, unit).replace(/PRIOR/g, prior);
+      }).join(' + ');
+    }
+    var netKeys = Object.keys(n).filter(function (k) { return k !== 'home_field'; });
+    var offKeys = Object.keys(o).filter(function (k) { return k !== 'intercept' && !/^(def|def_adj|p_def|tal_def)$/.test(k); });
+    var defKeys = Object.keys(o).filter(function (k) { return /^(def|def_adj|p_def|tal_def)$/.test(k); });
+    return 'Through week ' + block.week + ' · NSI = ' + terms(n, netKeys) + ' · home field ' + f(n.home_field, 1) +
+      ' points · OSI = ' + terms(o, offKeys) + ' · DSI = ' + terms(o, defKeys);
+  }
+
+  /* The preseason reads a sport's fit adds (2026-11-19): CFB returning
+     production and roster talent, the NFL quarterback's own last season. */
+  function strengthReads(away, home, unit, prior, row, input) {
+    function has(key) { return [away, home].some(function (b) { return b && b.inputs && b.inputs[key]; }); }
+    var rows = [];
+    if (has('ret')) rows.push(row('Returning ' + unit, function (b) {
+      return input(b, 'ret', 'Share of ' + prior + ' offensive ' + unit + ' returning', 'pct', 'high'); }));
+    if (has('talent')) rows.push(row('Roster Talent', function (b) {
+      return input(b, 'talent', '247 team talent composite', 'int', 'high'); }));
+    if (has('qb_epa')) rows.push(row('QB ' + prior + ' EPA/DB', function (b) {
+      var qb = b.qb || {};
+      return input(b, 'qb_epa', (qb.name ? qb.name + ' · ' : '') + prior + ' EPA per dropback with any club, ' +
+        (qb.prior_dropbacks || 0) + ' dropbacks, shrunk toward replacement level by 150', 'ppa', 'high'); }));
+    return rows;
   }
 
   function strengthBody(sport, game) {
@@ -9460,7 +9503,7 @@ function seasonToggle(game) {
         row('Adj ' + unit + ' Allowed', function (b) { return input(b, 'def_adj', unit + ' per play allowed, opponent-adjusted', 'ppa', 'low'); }),
         row(prior + ' ' + unit + ' Allowed', function (b) { return input(b, 'p_def', unit + ' per play allowed last season, opponent-adjusted', 'ppa', 'low'); }),
         row('Margin/G', function (b) { return input(b, 'm1', 'Point margin per game this season', 'signed', 'high'); })
-      ] }
+      ].concat(strengthReads(away, home, unit, prior, row, input)) }
     ];
     var basis = sport === 'cfb' ? 'FBS Teams' : 'NFL Teams';
     return head + '<p class="ca-lineup-context">' + esc(strengthFormula(feed, unit)) + '</p>' +

@@ -22,6 +22,9 @@ EXTRA_RATE_FIELDS=['ft_pct_o_all','ft_pct_d_all','fb_pts_per100_all','fb_pts_per
 # takes a shot type and what defenses allow, with points per attempt for both.
 SHOT_TYPES=['rim','layup','driving','floater','pullup','midrange','three','corner3']
 EXTRA_RATE_FIELDS+=[f'{shot}_{stat}_{side}_all' for shot in SHOT_TYPES for stat in ('freq','ppa') for side in ('off','def')]
+# Shot quality (pipeline/cbb_public/shot_quality.py, ESPN play-by-play): eFG
+# expected from the shot mix, and the eFG predicted for later games.
+EXTRA_RATE_FIELDS+=['xefg_o_all','xefg_d_all','pefg_o_all','pefg_d_all']
 RATE_FIELDS=RATE_FIELDS+EXTRA_RATE_FIELDS
 PLAYER_FIELDS=['id','pid','athlete_id','Name','Team','G','Min_pct','Usg','Pts','Reb','Ast','eFG','TS',
                'FGM','FGA','3PM','3PA','FTM','FTA','3PP','FTR','Ht']

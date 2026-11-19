@@ -267,6 +267,17 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               cbb_pills["graded"] > 40 and cbb_pills["unpilled"] == 0, str(cbb_pills))
         cbb_dashes = page.evaluate(DASH_AUDIT)
         check("CBB desk has no dash cells", not cbb_dashes, str(cbb_dashes))
+        # 2026-11-19: drives, floaters and pull-ups only on games whose feed names
+        # them; a side with none leaves the row off instead of "Not tracked".
+        check("CBB shot types print no untracked cells",
+              "not tracked" not in page.locator("#cbb-shot-types").inner_text().lower())
+        # Shot quality (pipeline/cbb_public/shot_quality.py), once the export publishes it.
+        quality_published = '"pefg_o_all":0' in page.request.get(
+            base_url.rstrip('/') + '/data/public/cbb/2027/teams/150.json').text().replace(' ', '')
+        efficiency_text = page.locator("#cbb-efficiency").inner_text().lower()
+        check("CBB efficiency carries xeFG and predicted eFG where published",
+              not quality_published or ("xefg% (shot mix)" in efficiency_text and "predicted efg%" in efficiency_text),
+              efficiency_text[:200])
 
         rank_url = "**/data/public/cbb/matchup-ranks.json"
         page.route(rank_url, lambda route: route.abort())
@@ -316,6 +327,11 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             bad_nba_ranks = log_ranks.evaluate_all(TEAM_RANK_AUDIT, 30)
             check("NBA game-log ranks use the team scale", not bad_nba_ranks, str(bad_nba_ranks[:4]))
             page.locator("a[data-nfl-tab='units']").click()
+            nba_units = page.evaluate("() => [...document.querySelectorAll('.ca-detail-section')].filter(s => s.offsetParent).map(s => s.id)")
+            check("NBA Matchup tab opens on Power Ranking, as every desk does",
+                  nba_units[:2] == ["nba-power", "nba-edge-map"] and "nba-predictability" in nba_units, str(nba_units))
+            check("NBA consistency section is named Predictability",
+                  page.locator("#nba-predictability .ca-detail-section__head h2").first.inner_text().strip() == "Predictability")
             maps = page.locator("#nba-edge-map .ca-nba-map")
             badges = maps.locator("td.num > .ca-rank")
             mismatches = badges.evaluate_all("""badges => badges.filter(badge => {
@@ -373,17 +389,20 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.goto(base_url.rstrip("/") + detail_url, wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
         check("NFL detail uses team logos", page.locator(".ca-detail-team__logo").count() == 2)
-        check("NFL desk carries the eleven evidence tabs",
-              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 11)
+        check("NFL desk carries the ten evidence tabs",
+              page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 10)
         # The desk reads a tab at a time, and where the clubs stack, one club at a time.
         shown = "() => [...document.querySelectorAll('.ca-detail-section')].filter(s => s.offsetParent).map(s => s.id).join(',')"
-        check("NFL desk opens on the Units tab alone", page.evaluate(shown) == "power,strength,efficiency,predictability", page.evaluate(shown))
+        check("NFL desk opens on the Units tab alone", page.evaluate(shown) == "power,strength,efficiency,dvoa,predictability", page.evaluate(shown))
         # 2026-11-18: OSI, DSI and NSI (outputs/strength_index.py).
         strength_text = page.locator("#strength").text_content().lower()
         check("NFL strength index ranks OSI, DSI and NSI for both clubs with its formula",
               ("nsi · net" in strength_text and "osi · offense" in strength_text and "dsi · defense" in strength_text
                and "home field" in strength_text and page.locator("#strength tbody .ca-rank").count() >= 26)
               or "not published" in strength_text, strength_text[:200])
+        qb_published = '"qb_epa"' in page.request.get(base_url.rstrip("/") + "/data/public/nfl/slate.json").text()
+        check("NFL strength index shows the quarterback read where published",
+              not qb_published or ("qb " in strength_text and "epa/db" in strength_text), strength_text[-200:])
         page.locator('a[data-nfl-tab="games"]').click()
         try:
             page.wait_for_selector("#game-log .ca-log-panel table", timeout=timeout_ms)
@@ -414,9 +433,10 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
           '.ca-lineup-context, .ca-detail-eyebrow, .ca-public-page__eyebrow, .ca-analysis-scope__eyebrow'))
           .filter(el => el.offsetParent !== null).length""")
         check("NFL matchup shows no purple sub-text", purple == 0, f"visible={purple}")
-        page.locator('a[data-nfl-tab="dvoa"]').click()
-        check("NFL DVOA tab exposes both FTN panels",
-              page.evaluate(shown) == "dvoa"
+        page.locator('a[data-nfl-tab="units"]').click()
+        check("NFL Units tab carries DVOA with both FTN panels (no DVOA tab of its own)",
+              "dvoa" in page.evaluate(shown).split(",")
+              and page.locator('a[data-nfl-tab="dvoa"]').count() == 0
               and page.locator("#dvoa .ca-nfl-dvoa-panel").count() == 2)
         dvoa_text = page.locator("#dvoa").text_content().lower()
         check("NFL DVOA publishes all eight team-unit values",
@@ -841,6 +861,10 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CFB strength index ranks OSI, DSI and NSI for both schools with its formula",
               ("nsi · net" in cfb_strength_text and "ppa" in cfb_strength_text and "home field" in cfb_strength_text)
               or "not published" in cfb_strength_text, cfb_strength_text[:200])
+        cfb_reads = '"talent"' in page.request.get(base_url.rstrip("/") + "/data/public/cfb/slate.json").text()
+        check("CFB strength index shows returning production and roster talent where published",
+              not cfb_reads or ("returning ppa" in cfb_strength_text and "roster talent" in cfb_strength_text),
+              cfb_strength_text[-200:])
         # 2026-11-18: the official scorer's charting (scripts/cfb_charting.py).
         map_text = page.locator("#cfb-pass-map").inner_text().lower()
         check("CFB pass map carries depth, direction, air yards and the pocket",

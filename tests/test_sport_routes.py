@@ -591,7 +591,9 @@ class AdapterHoleTests(unittest.TestCase):
                            "trenches", "receivers", "redzone", "tendencies", "availability", "radar",
                            "team-context"):
             self.assertIn("section('" + section_id + "'", detail)
-        self.assertIn("['dvoa', 'DVOA', ['dvoa']]", detail)
+        # 2026-11-19: DVOA sits in Units beside the other team-strength reads (no tab of its own).
+        self.assertIn("['units', 'Units', ['power', 'strength', 'efficiency', 'dvoa', 'predictability']]", detail)
+        self.assertNotIn("['dvoa', 'DVOA', ['dvoa']]", detail)
         self.assertIn("function nflDvoaPanel", detail)
         self.assertIn("special_teams_dvoa", detail)
         self.assertIn("NFL_DVOA_DETAIL_ROWS.filter", detail)

@@ -8,6 +8,14 @@ predicting each later game, NSI's mean leave-one-season-out R^2 was 0.124
 against 0.115 for the margin so far and 0.098 for raw net EPA; OSI and DSI
 together 0.083 against 0.078 for the raw figures. Interceptions, fumbles and
 third-down rate were tested and do not carry forward.
+
+The quarterback read (2026-11-19): each club's current quarterback is its
+passer with the most dropbacks in its latest game, and he carries his own
+last-season EPA per dropback with any club, shrunk toward replacement level
+by 150 dropbacks (nflverse weekly player stats). It lifted NSI to 0.127 and
+OSI/DSI to 0.086, in every week. Discounting the club's prior when the
+quarterback changed was tested and lost accuracy: the rest of the offense
+carries over.
 """
 from __future__ import annotations
 
@@ -17,6 +25,9 @@ from pathlib import Path
 from outputs import strength_index
 
 PBP_URL = "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_{season}.parquet"
+WEEK_URL = "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_{season}.parquet"
+QB_SHRINK = 150.0        # dropbacks of replacement-level play mixed into a quarterback's figure
+BACKUP_DROPBACKS = 200   # a season under this many dropbacks defines replacement level
 WEIGHTS = Path(__file__).with_name("nfl_strength_weights.json")
 COLUMNS = ("game_id", "week", "season_type", "posteam", "defteam", "epa", "play_type", "qb_kneel", "qb_spike",
            "two_point_attempt", "wp", "home_team", "away_team", "result")
@@ -38,6 +49,45 @@ def _plays(season: int):
     for col in ("posteam", "defteam", "home_team", "away_team"):
         df[col] = df[col].map(_team)
     return df
+
+
+def _qb_weeks(season: int):
+    """Quarterbacks' regular-season weeks: club, dropbacks (attempts + sacks), passing EPA."""
+    import pandas as pd
+    try:
+        w = pd.read_parquet(WEEK_URL.format(season=season))
+    except Exception as exc:  # network or a season not published
+        print(f"  WARNING: strength index quarterback weeks {season} unavailable ({exc})")
+        return None
+    w = w[w["season_type"].eq("REG") & w["position"].eq("QB")].copy()
+    w["team"] = w["team"].map(_team)
+    w["db"] = w["attempts"].fillna(0) + w["sacks_suffered"].fillna(0)
+    w["passing_epa"] = w["passing_epa"].fillna(0.0)
+    return w[w["db"] > 0][["player_id", "player_display_name", "team", "week", "db", "passing_epa"]]
+
+
+def quarterbacks(season: int, through_week: int) -> dict[str, dict]:
+    """{club: {"name", "qb_epa", "qb_league", "prior_dropbacks"}}: the passer
+    with the most dropbacks in the club's latest game through the week, and
+    his last-season EPA per dropback with any club, shrunk toward replacement
+    level. {} when either season's weekly file is unavailable."""
+    now, before = _qb_weeks(season), _qb_weeks(season - 1)
+    if now is None or before is None or now.empty or before.empty:
+        return {}
+    now = now[now["week"] <= through_week]
+    rates = before.groupby("player_id")[["db", "passing_epa"]].sum()
+    league = rates["passing_epa"].sum() / rates["db"].sum()
+    backups = rates[rates["db"] < BACKUP_DROPBACKS]
+    replacement = backups["passing_epa"].sum() / backups["db"].sum() if backups["db"].sum() else league
+    latest = now[now["week"] == now.groupby("team")["week"].transform("max")]
+    out = {}
+    for team, rows in latest.groupby("team"):
+        top = rows.sort_values("db").iloc[-1]
+        n = float(rates.at[top["player_id"], "db"]) if top["player_id"] in rates.index else 0.0
+        e = float(rates.at[top["player_id"], "passing_epa"]) if n else 0.0
+        out[team] = {"name": str(top["player_display_name"]), "prior_dropbacks": int(n),
+                     "qb_epa": (e + QB_SHRINK * replacement) / (n + QB_SHRINK), "qb_league": float(league)}
+    return out
 
 
 def _team_games(df):
@@ -78,16 +128,20 @@ def build(season: int) -> dict[str, dict]:
         margins.setdefault(g.home, []).append(g.result)
         margins.setdefault(g.away, []).append(-g.result)
     raw_off, raw_def = tg.groupby("team")["off"].mean(), tg.groupby("team")["def"].mean()
+    qbs = quarterbacks(season, week)
     inputs = {t: {"off": float(raw_off[t]), "off_adj": float(adj_off[t]), "p_off": float(p_off.get(t, p_off.mean())),
                   "def": float(raw_def[t]), "def_adj": float(adj_def[t]), "p_def": float(p_def.get(t, p_def.mean())),
-                  "m1": sum(margins[t]) / len(margins[t])}
+                  "m1": sum(margins[t]) / len(margins[t]),
+                  "qb_epa": (qbs.get(t) or {}).get("qb_epa"), "qb_league": (qbs.get(t) or {}).get("qb_league")}
               for t in raw_off.index if t in raw_def.index and t in margins}
     if len(inputs) < 32:
         print(f"  WARNING: strength index covers {len(inputs)} clubs; skipped")
         return {}
     spec = json.loads(WEIGHTS.read_text(encoding="utf-8"))
     out = strength_index.indices(inputs, spec, week)
-    for block in out.values():
+    for team, block in out.items():
         block.update(week=week, season=season, prior_season=season - 1)
-    print(f"  strength index: {len(out)} clubs through week {week}")
+        if qbs.get(team):
+            block["qb"] = {"name": qbs[team]["name"], "prior_dropbacks": qbs[team]["prior_dropbacks"]}
+    print(f"  strength index: {len(out)} clubs through week {week} ({len(qbs)} with a quarterback read)")
     return out
