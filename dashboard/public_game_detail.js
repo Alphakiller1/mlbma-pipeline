@@ -4629,7 +4629,7 @@ function seasonToggle(game) {
           return '<td class="num' + (tone ? ' ' + tone : '') + '"' +
             (rank ? ' title="' + rank.place + ordinal(rank.place) + ' of ' + rank.of +
               ' at his position in this look"' : '') + '>' + esc(nflFormat(r[col[0]], col[3])) +
-            nflBadge(rank, 'qualified players at his position in this look') + '</td>';
+            nflBadge(rank, 'club starters at his position (QB1s, RB1s) in this look') + '</td>';
         }).join('') + (showCol ? '<td class="num ca-opp-shows">' +
           (shows == null ? '' : esc(pctText(shows)) + nflOppShowsMark(opp.scheme, r.look)) +
           '</td>' : '') + '</tr>';
@@ -4728,7 +4728,7 @@ function seasonToggle(game) {
         return '<div class="ca-stat"><span class="ca-stat__label">' + esc(labelText) +
           (thin ? lowTag : '') + '</span><strong class="ca-stat__value' + (tone ? ' ' + tone : '') + '"' +
           (rank ? ' title="' + rank.place + ordinal(rank.place) + ' of ' + rank.of + '"' : '') + '>' +
-          esc(nflFormat(raw, kind)) + nflBadge(rank, 'qualified ' + position + 's in this window') + '</strong></div>';
+          esc(nflFormat(raw, kind)) + nflBadge(rank, 'club ' + position + '1s in this window') + '</strong></div>';
       }
       // Next Gen tracking, graded like the tiles beside it. The pipeline
       // places these 1st = highest; where less is better for the player (a
@@ -4741,7 +4741,7 @@ function seasonToggle(game) {
         return '<div class="ca-stat"><span class="ca-stat__label">' + esc(labelText) +
           (r ? '' : lowTag) + '</span><strong class="ca-stat__value' + (tone ? ' ' + tone : '') + '"' +
           (r ? ' title="' + r.place + ordinal(r.place) + ' of ' + r.of + '"' : '') + '>' +
-          valueHtml + nflBadge(r, position + 's with qualifying tracking data') + '</strong></div>';
+          valueHtml + nflBadge(r, 'club ' + position + '1s with tracking data') + '</strong></div>';
       }
       var html = position === 'QB'
         ? tile('EPA / DB', all.epa_per_dropback, 'epa', ranks.epa_per_dropback) +
@@ -4760,7 +4760,7 @@ function seasonToggle(game) {
           (tracking.avg_intended_air_yards != null
             ? '<div class="ca-stat"><span class="ca-stat__label">Air Yds / Att</span><strong class="ca-stat__value">' +
               esc(Number(tracking.avg_intended_air_yards).toFixed(1)) +
-              nflFreqMark(nflAsFreq(rankPosition(trackRanks.avg_intended_air_yards), 'QBs with qualifying tracking data')) +
+              nflFreqMark(nflAsFreq(rankPosition(trackRanks.avg_intended_air_yards), 'club QB1s with tracking data')) +
               '</strong></div>' : '')
         : tile('YPC', all.yards_per_carry, 'num1', ranks.yards_per_carry) +
           tile('EPA / Carry', all.epa_per_carry, 'epa', ranks.epa_per_carry) +
@@ -4788,7 +4788,7 @@ function seasonToggle(game) {
         esc(games + (games === 1 ? ' game' : ' games') + ' · ' + bits.join(' · ')) +
         (position === 'RB' && tracking.eight_plus_box_rate != null
           ? esc(' · 8+ box ' + pctText(tracking.eight_plus_box_rate)) +
-            nflFreqMark(nflAsFreq(rankPosition(trackRanks.eight_plus_box_rate), 'RBs with qualifying tracking data')) :
+            nflFreqMark(nflAsFreq(rankPosition(trackRanks.eight_plus_box_rate), 'club RB1s with tracking data')) :
           '') + '</p>';
     }
 
