@@ -970,7 +970,7 @@ def build(board: dict | None = None, rooms: dict | None = None,
     if not board:
         return {"form": {}, "scheme": {}, "players": {}, "lineups": {},
                 "player_coverage": {}, "player_scheme": {}, "team_stats": {},
-                "player_stats": {}, "team_line": {}, "red_zone": {}, "special_teams": {}, "source": None}
+                "player_stats": {}, "team_line": {}, "red_zone": {}, "special_teams": {}, "strength": {}, "source": None}
     if rooms is None and lineups is None:
         lineups, rooms = fetch_depth_chart_context()
     elif lineups is None:
@@ -1027,6 +1027,7 @@ def build(board: dict | None = None, rooms: dict | None = None,
         # Special teams and situational figures, the same two windows.
         "special_teams": {window: _canon_keys(clubs) for window, clubs in
                           (advanced_context.get("special_teams") or {}).items()},
+        "strength": _canon_keys(advanced_context.get("strength")),
         "source": {
             "season": board.get("season"),
             "week": board.get("week"),

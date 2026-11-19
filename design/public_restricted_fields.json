@@ -205,7 +205,9 @@
     "away_lineup_units",
     "home_lineup_units",
     "away_splits",
-    "home_splits"
+    "home_splits",
+    "away_strength",
+    "home_strength"
   ],
   "notes": {
     "away_availability_list": "Official injury designations: name, position, status, body part. factual-status. No projection, snap share or confidence.",
