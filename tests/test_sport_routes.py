@@ -130,11 +130,11 @@ class SportRouteBuilderTests(unittest.TestCase):
         specs = re.findall(r"\['(form|scheme|run|model|chart)', '([a-z_A-Z]+)', '([^']+)'\]", ledger)
         self.assertGreater(len(specs), 40)
         self.assertEqual(len(specs), len({(f, k) for f, k, _ in specs}), "a stat repeats on the desk")
-        for label in ("Yds/Comp", "TD Rate", "INT Rate", "Sack%", "Pts/Play", "Line Yds", "Havoc"):
+        for label in ("Yds/Comp", "TD%", "INT%", "Sack%", "Pts/Play", "Line Yds", "Havoc%"):
             self.assertIn("'" + label + "'", ledger)
         # 2026-10-01: schedule strength under Games, the injury report tab.
         self.assertIn("['games', 'Games', ['cfb-game-log', 'cfb-schedule']]", js)
-        self.assertIn("['availability', 'Availability', ['cfb-availability']]", js)
+        self.assertIn("['availability', 'Injuries', ['cfb-availability']]", js)
         self.assertIn("function cfbScheduleBody", js)
         self.assertIn("function cfbInjuryPanel", js)
         self.assertIn("'SP+ Ratings', 'Opponent-Adjusted Efficiency By Unit'", js)

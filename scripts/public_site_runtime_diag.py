@@ -89,6 +89,46 @@ UNPILLED_AUDIT = r"""
 
 # Owner rule: no dash cells anywhere - a missing figure says why ("No PA",
 # "Not Applicable", "No Close Games"). Returns where each dash cell sits.
+# Label standard (2026-11-19, design/MATCHUP_LABEL_STANDARD.md): headings,
+# panel titles, column headers, group titles and ledger stat labels are in desk
+# casing (every word capitalised; "vs" and a unit in parentheses lower case),
+# slashes are never spaced, "vs" carries no period, and no caption line shows
+# under a panel title. Returns the first violations found on the shown desk.
+LABEL_AUDIT = r"""() => {
+  const units = new Set(['in', 'lb', 'lbs', 'mph', 'ft', 'sec']);
+  const lower = text => text.split(' ').some(word => word.split(/[-\/]/).some(part => {
+    const m = /^([("'\u2018\u201c]*)([a-z][a-z']*)([^A-Za-z]*)$/.exec(part);
+    return m && m[2] !== 'vs' && !(m[1] === '(' && units.has(m[2]));
+  }));
+  const raw = el => (el.textContent || '').replace(/\s+/g, ' ').trim();
+  const shown = el => el.offsetParent !== null;
+  const out = [];
+  const stack = document.querySelector('.ca-detail-stack');
+  if (!stack) return out;
+  const texts = [];
+  stack.querySelectorAll('.ca-detail-section__head h2, .ca-detail-section__head p, .ca-detail-section h3').forEach(el => {
+    if (shown(el)) texts.push(['heading', el]);
+  });
+  stack.querySelectorAll('.ca-detail-section thead th').forEach(el => { if (shown(el) && raw(el)) texts.push(['header', el]); });
+  stack.querySelectorAll('.ca-cfb-ledger-table tbody tr').forEach(tr => {
+    if (!shown(tr)) return;
+    const first = tr.children[0];
+    if (first) texts.push([tr.children.length === 1 ? 'group' : 'label', first]);
+  });
+  for (const [kind, el] of texts) {
+    const text = raw(el);
+    const sid = (el.closest('.ca-detail-section') || {}).id || '?';
+    if (lower(text)) out.push(sid + ' ' + kind + ' lowercase: ' + text.slice(0, 60));
+    else if (/\w \/ \w/.test(text) && text.indexOf('% / ') < 0) out.push(sid + ' ' + kind + ' spaced slash: ' + text.slice(0, 60));
+    else if (/\bvs\./.test(text)) out.push(sid + ' ' + kind + ' vs.: ' + text.slice(0, 60));
+  }
+  stack.querySelectorAll('.ca-lineup-context').forEach(el => {
+    if (shown(el)) out.push(((el.closest('.ca-detail-section') || {}).id || '?') + ' caption shows: ' + raw(el).slice(0, 60));
+  });
+  return out.slice(0, 8);
+}"""
+
+
 DASH_AUDIT = """() => [...document.querySelectorAll('.ca-detail-stack td')]
   .filter(td => td.offsetParent && /^[—–-]$/.test(td.innerText.trim()))
   .map(td => ((td.closest('.ca-detail-section') || {}).id || '?') + ': ' +
@@ -263,6 +303,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.evaluate("document.querySelector('.ca-detail-stack').setAttribute('data-nfl-tab', 'all')")
         page.wait_for_timeout(1500)
         cbb_pills = page.evaluate(UNPILLED_AUDIT)
+        cbb_labels = page.evaluate(LABEL_AUDIT)
+        check("CBB labels follow the desk label standard", not cbb_labels, str(cbb_labels))
         check("CBB every graded figure carries its rank pill",
               cbb_pills["graded"] > 40 and cbb_pills["unpilled"] == 0, str(cbb_pills))
         cbb_dashes = page.evaluate(DASH_AUDIT)
@@ -319,6 +361,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             page.evaluate("document.querySelector('.ca-detail-stack').setAttribute('data-nfl-tab', 'all')")
             page.wait_for_timeout(1500)
             nba_pills = page.evaluate(UNPILLED_AUDIT)
+            nba_labels = page.evaluate(LABEL_AUDIT)
+            check("NBA labels follow the desk label standard", not nba_labels, str(nba_labels))
             check('NBA every graded figure carries its rank pill',
                   nba_pills['graded'] > 100 and nba_pills['unpilled'] == 0, str(nba_pills))
             nba_dashes = page.evaluate(DASH_AUDIT)
@@ -567,6 +611,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
           .filter(el => el.offsetParent && /(^|\s)c-(elite|good|mid|weak|poor)(\s|$)/.test(el.className)
             && !el.querySelector('.ca-rank')).length""")
         check("NFL every graded number shows its rank pill", unpilled == 0, f"{unpilled} without a pill")
+        nfl_labels = page.evaluate(LABEL_AUDIT)
+        check("NFL labels follow the desk label standard", not nfl_labels, str(nfl_labels))
         # Empty cells and ungraded thin rows are regressions. A status line is
         # valid only when it explicitly tells the reader that a source has not
         # published that evidence yet.
@@ -616,7 +662,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("#quarterbacks tr.ca-split-group").count() >= 4 or
               section_unpublished("#quarterbacks"))
         trench_heads = page.locator("#trenches thead").all_inner_texts()
-        check("NFL reads sack rate once, in Unit Matchups",
+        check("NFL reads sack rate once, in Efficiency",
               (bool(trench_heads) and "sack" not in trench_heads[0].lower()) or
               section_unpublished("#trenches"),
               "missing trenches table header" if not trench_heads else trench_heads[0])
@@ -640,14 +686,14 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               and page.locator("#run-game tbody tr").count() >= 8
               and "run game figures are not published" not in run_game_text
               and all(label in run_game_text for label in
-                      ("yds/g", "epa/car", "stuffed", "ball carriers")))
+                      ("yds/g", "epa/car", "stuff%", "ball carriers")))
         check("NFL running-back panels carry box, direction and NGS context",
               all(label in rb_text for label in ("light box", "run left", "ryoe / carry")) or
               section_unpublished("#rushing"))
         trench_text = page.locator("#trenches").inner_text().lower()
         check("NFL trenches pair each line with the front it meets and map run direction",
               (page.locator("#trenches .ca-arsenal-table:visible").count() == 2 and
-               all(label in trench_text for label in ("line yds", "havoc", "ybc", "run direction",
+               all(label in trench_text for label in ("line yds", "havoc%", "yds before contact", "run direction",
                                                       "at the guards", "outside the ends"))) or
               section_unpublished("#trenches"))
         direction_ranks = page.locator("#trenches .ca-nfl-mix .ca-rank")
@@ -674,7 +720,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               rz.locator("[data-season-view='current'] .ca-form-panel").count() == 2)
         check("NFL red zone carries trips, conversion, position targets and player shares",
               all(label in combined_rz and label in current_rz for label in
-                  ("trips / g", "trip rate", "td%", "score%", "targets by position",
+                  ("trips/g", "trip rate", "td%", "score%", "targets by position",
                    "tgt share", "car share")))
         page.locator("[role='tab'][data-nfl-tab='receiving']").click()
         # 2026-11-18: targets to WR, TE and RB against each look, read from
@@ -720,7 +766,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             shown_text = shown.inner_text().lower() if shown.count() == 1 else ""
             check("NFL receiver matrix switches to success rate, with scheme looks",
                   rec_switch.locator("[data-rec-metric]").count() == 4 and shown.count() == 1 and
-                  "success %" in shown_text and "play action" in shown_text and "with motion" in shown_text,
+                  "success%" in shown_text and "play action" in shown_text and "with motion" in shown_text,
                   shown_text[:160])
             rec_switch.locator("[data-rec-metric='yards_per_target']").click()
         check("NFL pass catchers include the target distribution against the other defense",
@@ -798,14 +844,15 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                   info["panels"] == 2 and info["same"] and len(info["rows"]) >= 6,
                   f"{info['panels']} panels, {len(info['rows'])} rows")
         all_rows = [r for info in ledger["sections"].values() for r in info["rows"]]
-        repeated = sorted({r for r in all_rows if all_rows.count(r) > 1} - {"Success", "Explosive"})
+        # Team and run success rate / explosiveness share a label, one row each.
+        repeated = sorted({r for r in all_rows if all_rows.count(r) > 1} - {"Success%", "Explosiveness"})
         check("CFB ledger lists each stat once across the desk", not repeated, ", ".join(repeated))
         check("CFB ledger badges and bars use the same grade and percentile",
               ledger["ranked"] > 40 and ledger["bars"] == ledger["ranked"],
               f"{ledger['ranked']} ranked, {ledger['bars']} bars")
         efficiency_text = page.locator("#cfb-efficiency").inner_text().lower()
         check("CFB efficiency carries scoring, yardage and per-play evidence",
-              all(label in efficiency_text for label in ("points/g", "pts/play", "yds/play", "success")))
+              all(label in efficiency_text for label in ("pts/g", "pts/play", "yds/play", "success%")))
         dvoa_text = page.locator("#cfb-dvoa").text_content()
         check("CFB DVOA equivalent sets both SP+ profiles school against school",
               page.locator("#cfb-dvoa .ca-cfb-h2h").count() == 1
@@ -895,8 +942,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         passing_text = page.locator("#cfb-passing").inner_text().lower()
         check("CFB pass game carries coverage outcomes, scheme rates and protection",
               all(label in passing_text for label in (
-                  "comp%", "yds/att", "yds/comp", "rating", "epa/pass", "td rate",
-                  "int rate", "pass 1d%", "sack%", "dropbacks/g", "db havoc")),
+                  "comp%", "yds/att", "yds/comp", "rating", "epa/pass", "td%",
+                  "int%", "pass 1st down%", "sack%", "dropbacks/g", "db havoc%")),
               passing_text[:200])
         check("CFB quarterback rows lead with a headshot or initials",
               page.locator("#cfb-quarterbacks tbody td:first-child .ca-cfb-player__shot").count() > 0
@@ -905,14 +952,14 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.locator("a[data-nfl-tab='rushing']").click()
         direction_text = page.locator("#cfb-run-direction").inner_text().lower()
         check("CFB run direction sets each run lane against the defense",
-              all(label in direction_text for label in ("left yds/rush", "middle epa/rush", "right success"))
+              all(label in direction_text for label in ("left yds/rush", "middle epa/rush", "right success%"))
               or "not published" in direction_text,
               direction_text[:200])
         run_text = page.locator("#cfb-rushing").inner_text().lower()
         check("CFB rushing tab carries run game, line play and ball carriers",
               page.locator("#cfb-rushers.is-tab-on .ca-cfb-panel").count() == 2
               and all(label in run_text for label in (
-                  "epa/rush", "rush 1d%", "line yds", "2nd level", "power", "stuffed", "front-7 havoc")),
+                  "epa/rush", "rush 1st down%", "line yds", "2nd level", "power", "stuff%", "front-7 havoc%")),
               run_text[:200])
         page.locator("a[data-nfl-tab='situational']").click()
         formation_text = page.locator("#cfb-formation").inner_text().lower()
@@ -923,7 +970,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         situational_text = page.locator("#cfb-situational").inner_text().lower()
         check("CFB situational carries downs, tempo, play mix and havoc",
               all(label in situational_text for label in (
-                  "3rd down", "standard dn", "plays/g", "pass rate", "havoc")),
+                  "3rd-down conv%", "standard-down success%", "plays/g", "pass rate", "havoc%")),
               situational_text[:200])
         page.locator("a[data-nfl-tab='games']").click()
         sos_text = page.locator("#cfb-schedule").inner_text().lower()
@@ -949,6 +996,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.wait_for_timeout(800)
         cfb_dashes = page.evaluate(DASH_AUDIT)
         check("CFB desk has no dash cells", not cfb_dashes, str(cfb_dashes))
+        cfb_labels = page.evaluate(LABEL_AUDIT)
+        check("CFB labels follow the desk label standard", not cfb_labels, str(cfb_labels))
         page.locator("a[data-nfl-tab='availability']").click()
         check("CFB detail no horizontal overflow",
               page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
