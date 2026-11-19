@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-18",
- "generated_at_utc": "2026-11-18T18:35:47+00:00",
+ "generated_at_utc": "2026-11-18T21:43:49+00:00",
  "data_through_utc": "2026-11-18T04:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -121,8 +121,8 @@
    "id": "401910007",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/18 - 7:00 PM EST",
+   "game_state": "live",
+   "status_detail": "7:41 - 1st",
    "kickoff_utc": "2026-11-19T00:00Z",
    "away": "MEM",
    "home": "CLE",
@@ -136,8 +136,8 @@
    "home_record": "8-7",
    "away_split_record": "7-0",
    "home_split_record": "6-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 15,
+   "home_score": 13,
    "venue": "Rocket Arena",
    "venue_city": "Cleveland, OH",
    "broadcast": "DAZN CLE / DAZN MEM",
@@ -2164,7 +2164,7 @@
      "season_with_club": 3,
      "first_season_with_club": false,
      "seasons_as_head_coach": 3,
-     "career_record": "35-62",
+     "career_record": "39-66",
      "career": [
       {
        "season_label": "2024-25",
@@ -2398,17 +2398,17 @@
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
        "percentile": 65.5,
-       "value": 0.146
+       "value": 0.145
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 89.7,
-       "value": 0.169
+       "percentile": 69.0,
+       "value": 0.206
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 96.6,
-       "value": 0.625
+       "percentile": 65.5,
+       "value": 0.667
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -2417,13 +2417,13 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 65.5,
-       "value": 0.434
+       "percentile": 24.1,
+       "value": 0.414
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 34.5,
-       "value": 0.824
+       "percentile": 72.4,
+       "value": 0.872
       }
      },
      "reads": [
@@ -2438,42 +2438,6 @@
         }
        ],
        "note": "Centers rarely end up on guards: screens are not switched."
-      },
-      {
-       "scheme": "Elite Rim Protection",
-       "strength": "strong",
-       "score": 96.6,
-       "evidence": [
-        {
-         "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-         "percentile": 96.6
-        },
-        {
-         "label": "Opponents Kept Off The Rim",
-         "percentile": 89.7
-        }
-       ],
-       "note": "Opponents finish poorly at the rim against this defense."
-      },
-      {
-       "scheme": "Drop Coverage",
-       "strength": "clear",
-       "score": 81.6,
-       "evidence": [
-        {
-         "label": "Opponents Funnelled To The Mid-Range",
-         "percentile": 65.5
-        },
-        {
-         "label": "Opponents Kept Off The Rim",
-         "percentile": 89.7
-        },
-        {
-         "label": "Pick-And-Roll Pressure (Ball-Handler Turnovers Forced)",
-         "percentile": 10.3
-        }
-       ],
-       "note": "Ball handlers are kept in front and conceded the mid-range while the rim is protected."
       }
      ],
      "measured_under": "Tuomas Iisalo",
@@ -6290,7 +6254,7 @@
      "season_with_club": 3,
      "first_season_with_club": false,
      "seasons_as_head_coach": 7,
-     "career_record": "238-240",
+     "career_record": "242-245",
      "career": [
       {
        "season_label": "2018-19",
@@ -6512,18 +6476,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 3.4,
-       "value": 0.098
+       "percentile": 44.8,
+       "value": 0.139
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 13.8,
-       "value": 0.286
+       "percentile": 17.2,
+       "value": 0.268
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 48.3,
-       "value": 0.687
+       "percentile": 58.6,
+       "value": 0.679
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -6532,13 +6496,13 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 37.9,
-       "value": 0.426
+       "percentile": 55.2,
+       "value": 0.434
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 41.4,
-       "value": 0.829
+       "percentile": 55.2,
+       "value": 0.846
       }
      },
      "reads": [
@@ -8385,8 +8349,8 @@
    "id": "401910008",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/18 - 7:00 PM EST",
+   "game_state": "live",
+   "status_detail": "8:07 - 1st",
    "kickoff_utc": "2026-11-19T00:00Z",
    "away": "HOU",
    "home": "IND",
@@ -8400,8 +8364,8 @@
    "home_record": "5-9",
    "away_split_record": "4-3",
    "home_split_record": "2-4",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 15,
+   "home_score": 10,
    "venue": "Gainbridge Fieldhouse",
    "venue_city": "Indianapolis, IN",
    "broadcast": "DAZN IND",
@@ -10428,7 +10392,7 @@
      "season_with_club": 4,
      "first_season_with_club": false,
      "seasons_as_head_coach": 5,
-     "career_record": "202-133",
+     "career_record": "207-136",
      "career": [
       {
        "season_label": "2021-22",
@@ -10668,18 +10632,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 69.0,
+       "percentile": 79.3,
        "value": 0.15
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 65.5,
-       "value": 0.215
+       "percentile": 62.1,
+       "value": 0.208
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
        "percentile": 31.0,
-       "value": 0.714
+       "value": 0.708
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -10688,13 +10652,13 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 58.6,
-       "value": 0.433
+       "percentile": 75.9,
+       "value": 0.446
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 6.9,
-       "value": 0.79
+       "percentile": 3.4,
+       "value": 0.798
       }
      },
      "reads": [
@@ -14570,7 +14534,7 @@
      "season_with_club": 10,
      "first_season_with_club": false,
      "seasons_as_head_coach": 25,
-     "career_record": "1014-927",
+     "career_record": "1017-932",
      "career": [
       {
        "season_label": "2018-19",
@@ -14804,18 +14768,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 55.2,
-       "value": 0.143
+       "percentile": 89.7,
+       "value": 0.161
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 58.6,
-       "value": 0.23
+       "percentile": 72.4,
+       "value": 0.198
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 93.1,
-       "value": 0.629
+       "percentile": 72.4,
+       "value": 0.665
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -14824,33 +14788,16 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 27.6,
-       "value": 0.414
+       "percentile": 62.1,
+       "value": 0.439
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 100.0,
-       "value": 0.938
+       "percentile": 69.0,
+       "value": 0.869
       }
      },
-     "reads": [
-      {
-       "scheme": "Elite Rim Protection",
-       "strength": "strong",
-       "score": 93.1,
-       "evidence": [
-        {
-         "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-         "percentile": 93.1
-        },
-        {
-         "label": "Opponents Kept Off The Rim",
-         "percentile": 58.6
-        }
-       ],
-       "note": "Opponents finish poorly at the rim against this defense."
-      }
-     ],
+     "reads": [],
      "measured_under": "Rick Carlisle",
      "not_measured": "Named coverages and formations are inferred here, not possession-tagged. Measured zone/non-zone splits are published separately in matchup evidence."
     },
@@ -16540,13 +16487,13 @@
      "value": 1.12
     },
     {
-     "player_id": "4017837",
-     "player_name": "Ivica Zubac",
+     "player_id": "3133603",
+     "player_name": "Kelly Oubre Jr.",
      "value": 1.09
     },
     {
-     "player_id": "3133603",
-     "player_name": "Kelly Oubre Jr.",
+     "player_id": "4017837",
+     "player_name": "Ivica Zubac",
      "value": 1.09
     },
     {
@@ -18710,7 +18657,7 @@
      "season_with_club": 1,
      "first_season_with_club": true,
      "seasons_as_head_coach": 7,
-     "career_record": "251-219",
+     "career_record": "251-227",
      "career": [
       {
        "season_label": "2019-20",
@@ -18969,18 +18916,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 24.1,
-       "value": 0.121
+       "percentile": 17.2,
+       "value": 0.126
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 6.9,
-       "value": 0.29
+       "percentile": 10.3,
+       "value": 0.273
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 24.1,
-       "value": 0.718
+       "percentile": 82.8,
+       "value": 0.654
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -18990,15 +18937,32 @@
       "threes_conceded": {
        "label": "Threes Conceded",
        "percentile": 82.8,
-       "value": 0.443
+       "value": 0.454
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 44.8,
+       "percentile": 41.4,
        "value": 0.839
       }
      },
-     "reads": [],
+     "reads": [
+      {
+       "scheme": "Elite Rim Protection",
+       "strength": "clear",
+       "score": 82.8,
+       "evidence": [
+        {
+         "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
+         "percentile": 82.8
+        },
+        {
+         "label": "Opponents Kept Off The Rim",
+         "percentile": 10.3
+        }
+       ],
+       "note": "Opponents finish poorly at the rim against this defense."
+      }
+     ],
      "measured_under": "Taylor Jenkins",
      "not_measured": "Named coverages and formations are inferred here, not possession-tagged. Measured zone/non-zone splits are published separately in matchup evidence."
     },
@@ -20699,13 +20663,13 @@
      "value": 1.29
     },
     {
-     "player_id": "4697268",
-     "player_name": "Kam Jones",
+     "player_id": "5082206",
+     "player_name": "Brayden Burries",
      "value": 1.1
     },
     {
-     "player_id": "5082206",
-     "player_name": "Brayden Burries",
+     "player_id": "4697268",
+     "player_name": "Kam Jones",
      "value": 1.1
     },
     {
@@ -22872,7 +22836,7 @@
      "season_with_club": 19,
      "first_season_with_club": false,
      "seasons_as_head_coach": 19,
-     "career_record": "832-615",
+     "career_record": "838-617",
      "career": [
       {
        "season_label": "2018-19",
@@ -23176,18 +23140,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 82.8,
-       "value": 0.161
+       "percentile": 65.5,
+       "value": 0.145
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 96.6,
-       "value": 0.149
+       "percentile": 86.2,
+       "value": 0.186
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 69.0,
-       "value": 0.663
+       "percentile": 86.2,
+       "value": 0.644
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -23196,16 +23160,33 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 89.7,
-       "value": 0.453
+       "percentile": 79.3,
+       "value": 0.451
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 24.1,
-       "value": 0.814
+       "percentile": 37.9,
+       "value": 0.838
       }
      },
-     "reads": [],
+     "reads": [
+      {
+       "scheme": "Elite Rim Protection",
+       "strength": "strong",
+       "score": 86.2,
+       "evidence": [
+        {
+         "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
+         "percentile": 86.2
+        },
+        {
+         "label": "Opponents Kept Off The Rim",
+         "percentile": 86.2
+        }
+       ],
+       "note": "Opponents finish poorly at the rim against this defense."
+      }
+     ],
      "measured_under": "Erik Spoelstra",
      "not_measured": "Named coverages and formations are inferred here, not possession-tagged. Measured zone/non-zone splits are published separately in matchup evidence."
     },
@@ -24995,8 +24976,8 @@
    "id": "401910010",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/18 - 7:00 PM EST",
+   "game_state": "live",
+   "status_detail": "8:38 - 1st",
    "kickoff_utc": "2026-11-19T00:00Z",
    "away": "PHI",
    "home": "ORL",
@@ -25010,8 +24991,8 @@
    "home_record": "6-7",
    "away_split_record": "6-1",
    "home_split_record": "1-4",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 6,
+   "home_score": 9,
    "venue": "Kia Center",
    "venue_city": "Orlando, FL",
    "broadcast": "",
@@ -27038,7 +27019,7 @@
      "season_with_club": 4,
      "first_season_with_club": false,
      "seasons_as_head_coach": 9,
-     "career_record": "349-294",
+     "career_record": "355-296",
      "career": [
       {
        "season_label": "2018-19",
@@ -27341,18 +27322,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 34.5,
-       "value": 0.131
+       "percentile": 10.3,
+       "value": 0.119
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 27.6,
-       "value": 0.269
+       "percentile": 6.9,
+       "value": 0.295
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 34.5,
-       "value": 0.699
+       "percentile": 31.0,
+       "value": 0.708
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -27362,11 +27343,11 @@
       "threes_conceded": {
        "label": "Threes Conceded",
        "percentile": 20.7,
-       "value": 0.405
+       "value": 0.412
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 72.4,
+       "percentile": 75.9,
        "value": 0.873
       }
      },
@@ -31238,7 +31219,7 @@
      "season_with_club": 1,
      "first_season_with_club": true,
      "seasons_as_head_coach": 1,
-     "career_record": "2-3",
+     "career_record": "6-7",
      "career": [],
      "philosophy": {
       "seasons": 0,
@@ -31315,17 +31296,17 @@
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
        "percentile": 93.1,
-       "value": 0.172
+       "value": 0.163
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 31.0,
-       "value": 0.265
+       "percentile": 89.7,
+       "value": 0.175
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
        "percentile": 44.8,
-       "value": 0.689
+       "value": 0.697
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -31334,16 +31315,37 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 6.9,
-       "value": 0.376
+       "percentile": 58.6,
+       "value": 0.435
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 86.2,
-       "value": 0.905
+       "percentile": 31.0,
+       "value": 0.831
       }
      },
-     "reads": [],
+     "reads": [
+      {
+       "scheme": "Drop Coverage",
+       "strength": "clear",
+       "score": 81.6,
+       "evidence": [
+        {
+         "label": "Opponents Funnelled To The Mid-Range",
+         "percentile": 93.1
+        },
+        {
+         "label": "Opponents Kept Off The Rim",
+         "percentile": 89.7
+        },
+        {
+         "label": "Pick-And-Roll Pressure (Ball-Handler Turnovers Forced)",
+         "percentile": 37.9
+        }
+       ],
+       "note": "Ball handlers are kept in front and conceded the mid-range while the rim is protected."
+      }
+     ],
      "measured_under": "Sean Sweeney",
      "not_measured": "Named coverages and formations are inferred here, not possession-tagged. Measured zone/non-zone splits are published separately in matchup evidence."
     },
@@ -35134,7 +35136,7 @@
      "season_with_club": 1,
      "first_season_with_club": true,
      "seasons_as_head_coach": 2,
-     "career_record": "43-44",
+     "career_record": "45-49",
      "career": [
       {
        "season_label": "2025-26",
@@ -35422,18 +35424,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 55.2,
-       "value": 0.143
+       "percentile": 31.0,
+       "value": 0.135
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 3.4,
-       "value": 0.321
+       "percentile": 0.0,
+       "value": 0.339
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 89.7,
-       "value": 0.63
+       "percentile": 79.3,
+       "value": 0.658
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -35442,28 +35444,28 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 31.0,
-       "value": 0.415
+       "percentile": 3.4,
+       "value": 0.392
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 37.9,
-       "value": 0.826
+       "percentile": 41.4,
+       "value": 0.839
       }
      },
      "reads": [
       {
        "scheme": "Elite Rim Protection",
-       "strength": "strong",
-       "score": 89.7,
+       "strength": "clear",
+       "score": 79.3,
        "evidence": [
         {
          "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-         "percentile": 89.7
+         "percentile": 79.3
         },
         {
          "label": "Opponents Kept Off The Rim",
-         "percentile": 3.4
+         "percentile": 0.0
         }
        ],
        "note": "Opponents finish poorly at the rim against this defense."
@@ -37156,13 +37158,13 @@
      "value": 1.24
     },
     {
-     "player_id": "4395626",
-     "player_name": "Tre Jones",
+     "player_id": "4431687",
+     "player_name": "Patrick Williams",
      "value": 0.92
     },
     {
-     "player_id": "4431687",
-     "player_name": "Patrick Williams",
+     "player_id": "4395626",
+     "player_name": "Tre Jones",
      "value": 0.92
     },
     {
@@ -39305,7 +39307,7 @@
      "season_with_club": 3,
      "first_season_with_club": false,
      "seasons_as_head_coach": 3,
-     "career_record": "46-123",
+     "career_record": "49-128",
      "career": [
       {
        "season_label": "2024-25",
@@ -39558,18 +39560,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 6.9,
-       "value": 0.1
+       "percentile": 0.0,
+       "value": 0.109
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 62.1,
-       "value": 0.223
+       "percentile": 44.8,
+       "value": 0.231
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 3.4,
-       "value": 0.776
+       "percentile": 20.7,
+       "value": 0.718
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -39578,13 +39580,13 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 96.6,
-       "value": 0.48
+       "percentile": 89.7,
+       "value": 0.463
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 20.7,
-       "value": 0.813
+       "percentile": 58.6,
+       "value": 0.847
       }
      },
      "reads": [
@@ -43488,7 +43490,7 @@
      "season_with_club": 4,
      "first_season_with_club": false,
      "seasons_as_head_coach": 4,
-     "career_record": "46-163",
+     "career_record": "47-171",
      "career": [
       {
        "season_label": "2023-24",
@@ -43772,18 +43774,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 48.3,
-       "value": 0.141
+       "percentile": 34.5,
+       "value": 0.136
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 41.4,
-       "value": 0.256
+       "percentile": 24.1,
+       "value": 0.252
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 65.5,
-       "value": 0.667
+       "percentile": 51.7,
+       "value": 0.693
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -43792,13 +43794,13 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 69.0,
-       "value": 0.437
+       "percentile": 10.3,
+       "value": 0.405
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 55.2,
-       "value": 0.861
+       "percentile": 96.6,
+       "value": 0.894
       }
      },
      "reads": [],
@@ -45493,13 +45495,13 @@
      "value": 1.15
     },
     {
-     "player_id": "4432907",
-     "player_name": "Justin Champagnie",
+     "player_id": "5104155",
+     "player_name": "Bilal Coulibaly",
      "value": 0.92
     },
     {
-     "player_id": "5104155",
-     "player_name": "Bilal Coulibaly",
+     "player_id": "4432907",
+     "player_name": "Justin Champagnie",
      "value": 0.92
     },
     {
@@ -45513,13 +45515,13 @@
      "value": 0.58
     },
     {
-     "player_id": "6609",
-     "player_name": "Khris Middleton",
+     "player_id": "4278129",
+     "player_name": "Deandre Ayton",
      "value": 0.47
     },
     {
-     "player_id": "4278129",
-     "player_name": "Deandre Ayton",
+     "player_id": "6609",
+     "player_name": "Khris Middleton",
      "value": 0.47
     },
     {
@@ -47622,7 +47624,7 @@
      "season_with_club": 4,
      "first_season_with_club": false,
      "seasons_as_head_coach": 4,
-     "career_record": "104-147",
+     "career_record": "106-154",
      "career": [
       {
        "season_label": "2023-24",
@@ -47846,18 +47848,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 10.3,
-       "value": 0.106
+       "percentile": 55.2,
+       "value": 0.141
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 24.1,
-       "value": 0.273
+       "percentile": 20.7,
+       "value": 0.255
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 72.4,
-       "value": 0.657
+       "percentile": 17.2,
+       "value": 0.719
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -47866,13 +47868,13 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 72.4,
-       "value": 0.438
+       "percentile": 41.4,
+       "value": 0.427
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 24.1,
-       "value": 0.814
+       "percentile": 20.7,
+       "value": 0.825
       }
      },
      "reads": [
@@ -49640,34 +49642,6 @@
      "value": 1.59,
      "value_recent": 0.0,
      "missed": 12
-    },
-    {
-     "player_id": "4411057",
-     "player_name": "Kevin McCullar Jr.",
-     "status": "Out",
-     "source": "official",
-     "reason": "G League - Two-Way",
-     "detail": "Illness",
-     "comment": "McCullar signed a two-way contract with the Raptors on Thursday, Michael Scotto of HoopsHype.com reports.",
-     "date": "2026-11-13T15:37Z",
-     "return_date": "2026-11-20",
-     "value": 0.45,
-     "value_recent": 0.0,
-     "missed": null
-    },
-    {
-     "player_id": "4397784",
-     "player_name": "Malachi Smith",
-     "status": "Out",
-     "source": "official",
-     "reason": "G League - Two-Way",
-     "detail": null,
-     "comment": null,
-     "date": null,
-     "return_date": null,
-     "value": 0.05,
-     "value_recent": 0.0,
-     "missed": 2
     },
     {
      "player_id": "4432586",
@@ -51744,7 +51718,7 @@
      "season_with_club": 3,
      "first_season_with_club": false,
      "seasons_as_head_coach": 11,
-     "career_record": "364-351",
+     "career_record": "368-354",
      "career": [
       {
        "season_label": "2018-19",
@@ -51986,18 +51960,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 41.4,
-       "value": 0.135
+       "percentile": 37.9,
+       "value": 0.138
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 75.9,
-       "value": 0.188
+       "percentile": 55.2,
+       "value": 0.217
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 20.7,
-       "value": 0.722
+       "percentile": 10.3,
+       "value": 0.721
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -52006,13 +51980,13 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 75.9,
-       "value": 0.442
+       "percentile": 31.0,
+       "value": 0.42
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 82.8,
-       "value": 0.892
+       "percentile": 86.2,
+       "value": 0.884
       }
      },
      "reads": [],
@@ -52062,7 +52036,7 @@
       "player_name": "Cade Cunningham",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4432166.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 35.0,
       "ppg": 25.8,
       "height_in": 78.0,
@@ -53429,7 +53403,7 @@
       "player_name": "Ronald Holland II",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4683771.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 15.9,
       "ppg": 4.9,
       "height_in": 80.0,
@@ -53772,6 +53746,11 @@
      "player_id": "2990962",
      "player_name": "Taurean Prince",
      "value": 0.23
+    },
+    {
+     "player_id": "5258459",
+     "player_name": "Ebuka Okorie",
+     "value": 0.14
     }
    ],
    "away_injuries": [
@@ -53779,8 +53758,8 @@
      "player_id": "3157465",
      "player_name": "Duncan Robinson",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Left Quadriceps Strain",
      "detail": "Left Quadriceps Strain",
      "comment": "Robinson will be re-evaluated in one week due to a left quadriceps strain, Coty M. Davis of The Detroit News reports.",
      "date": "2026-11-17T16:25Z",
@@ -53793,8 +53772,8 @@
      "player_id": "4433621",
      "player_name": "Jalen Duren",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Right Hamstring Strain",
      "detail": "Right Hamstring Strain",
      "comment": "Duren (hamstring) has begun on-court activity and will be re-evaluated in two weeks, Hunter Patterson of The Athletic reports.",
      "date": "2026-11-08T16:05Z",
@@ -53804,29 +53783,15 @@
      "missed": 11
     },
     {
-     "player_id": "4395702",
-     "player_name": "Isaiah Joe",
-     "status": "Out",
-     "source": "espn",
-     "reason": null,
-     "detail": "Right Hip Bruise",
-     "comment": "Joe (hip) is out for Tuesday's game against the Spurs.",
-     "date": "2026-11-17T18:33Z",
-     "return_date": "2026-11-18",
-     "value": 0.5,
-     "value_recent": 0.0,
-     "missed": 10
-    },
-    {
      "player_id": "4683771",
      "player_name": "Ronald Holland II",
-     "status": "Day-To-Day",
-     "source": "espn",
-     "reason": null,
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Left Knee Contusion / Bone Bruise",
      "detail": "Left Knee Bruise",
-     "comment": "Holland is out for Tuesday's game against San Antonio due to a left knee contusion.",
-     "date": "2026-11-18T15:05Z",
-     "return_date": "2026-11-18",
+     "comment": "Holland (knee) is out for Wednesday's game against the Pelicans.",
+     "date": "2026-11-18T19:04Z",
+     "return_date": "2026-11-20",
      "value": 0.6,
      "value_recent": 0.58,
      "missed": 1
@@ -53834,16 +53799,70 @@
     {
      "player_id": "2990962",
      "player_name": "Taurean Prince",
-     "status": "Day-To-Day",
-     "source": "espn",
-     "reason": null,
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Right Knee Soreness",
      "detail": "Right Knee Soreness",
-     "comment": "Prince (knee) has been ruled out for Tuesday's game against the Spurs.",
-     "date": "2026-11-18T15:05Z",
-     "return_date": "2026-11-18",
+     "comment": "Prince (knee) is out for Wednesday's game against the Pelicans.",
+     "date": "2026-11-18T19:05Z",
+     "return_date": "2026-11-20",
      "value": 0.23,
      "value_recent": 0.23,
      "missed": 1
+    },
+    {
+     "player_id": "5258459",
+     "player_name": "Ebuka Okorie",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - On Assignment",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.14,
+     "value_recent": 0.15,
+     "missed": 3
+    },
+    {
+     "player_id": "5037878",
+     "player_name": "Ugonna Onyenso",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": null
+    },
+    {
+     "player_id": "4432166",
+     "player_name": "Cade Cunningham",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Right Knee Soreness",
+     "detail": "Right Knee Soreness",
+     "comment": "Cunningham is questionable for Wednesday's game against the Pelicans due to right knee soreness",
+     "date": "2026-11-18T19:09Z",
+     "return_date": "2026-11-18",
+     "value": 3.02,
+     "value_recent": 3.02,
+     "missed": 0
+    },
+    {
+     "player_id": "4395702",
+     "player_name": "Isaiah Joe",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Right Hip Contusion",
+     "detail": "Right Hip Bruise",
+     "comment": "Joe (hip) is listed as questionable for Wednesday's game against the Pelicans.",
+     "date": "2026-11-18T19:08Z",
+     "return_date": "2026-11-18",
+     "value": 0.5,
+     "value_recent": 0.0,
+     "missed": 10
     }
    ],
    "home_form": {
@@ -55868,7 +55887,7 @@
      "season_with_club": 1,
      "first_season_with_club": true,
      "seasons_as_head_coach": 6,
-     "career_record": "191-225",
+     "career_record": "194-231",
      "career": [
       {
        "season_label": "2021-22",
@@ -56120,18 +56139,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 31.0,
-       "value": 0.122
+       "percentile": 3.4,
+       "value": 0.113
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 55.2,
-       "value": 0.235
+       "percentile": 41.4,
+       "value": 0.232
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
        "percentile": 6.9,
-       "value": 0.744
+       "value": 0.731
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -56140,13 +56159,13 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 34.5,
-       "value": 0.425
+       "percentile": 72.4,
+       "value": 0.443
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 17.2,
-       "value": 0.812
+       "percentile": 48.3,
+       "value": 0.845
       }
      },
      "reads": [],
@@ -60075,7 +60094,7 @@
      "season_with_club": 5,
      "first_season_with_club": false,
      "seasons_as_head_coach": 13,
-     "career_record": "507-403",
+     "career_record": "512-405",
      "career": [
       {
        "season_label": "2018-19",
@@ -60373,18 +60392,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 17.2,
-       "value": 0.119
+       "percentile": 6.9,
+       "value": 0.114
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 0.0,
-       "value": 0.324
+       "percentile": 3.4,
+       "value": 0.296
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
        "percentile": 13.8,
-       "value": 0.733
+       "value": 0.72
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -60393,13 +60412,13 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 17.2,
-       "value": 0.401
+       "percentile": 34.5,
+       "value": 0.423
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 65.5,
-       "value": 0.87
+       "percentile": 79.3,
+       "value": 0.875
       }
      },
      "reads": [
@@ -64325,7 +64344,7 @@
      "season_with_club": 7,
      "first_season_with_club": false,
      "seasons_as_head_coach": 7,
-     "career_record": "279-209",
+     "career_record": "284-212",
      "career": [
       {
        "season_label": "2020-21",
@@ -64616,18 +64635,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 72.4,
-       "value": 0.157
+       "percentile": 58.6,
+       "value": 0.142
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 65.5,
-       "value": 0.215
+       "percentile": 62.1,
+       "value": 0.208
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 79.3,
-       "value": 0.652
+       "percentile": 100.0,
+       "value": 0.595
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -64636,28 +64655,28 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 86.2,
-       "value": 0.451
+       "percentile": 96.6,
+       "value": 0.49
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 79.3,
-       "value": 0.882
+       "percentile": 17.2,
+       "value": 0.821
       }
      },
      "reads": [
       {
        "scheme": "Elite Rim Protection",
-       "strength": "clear",
-       "score": 79.3,
+       "strength": "strong",
+       "score": 100.0,
        "evidence": [
         {
          "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-         "percentile": 79.3
+         "percentile": 100.0
         },
         {
          "label": "Opponents Kept Off The Rim",
-         "percentile": 65.5
+         "percentile": 62.1
         }
        ],
        "note": "Opponents finish poorly at the rim against this defense."
@@ -68420,7 +68439,7 @@
      "season_with_club": 13,
      "first_season_with_club": false,
      "seasons_as_head_coach": 13,
-     "career_record": "607-356",
+     "career_record": "612-359",
      "career": [
       {
        "season_label": "2018-19",
@@ -68708,18 +68727,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 75.9,
-       "value": 0.159
+       "percentile": 62.1,
+       "value": 0.145
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 82.8,
-       "value": 0.183
+       "percentile": 93.1,
+       "value": 0.174
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 17.2,
-       "value": 0.731
+       "percentile": 20.7,
+       "value": 0.718
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -68728,13 +68747,13 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 37.9,
-       "value": 0.426
+       "percentile": 41.4,
+       "value": 0.427
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 58.6,
-       "value": 0.868
+       "percentile": 93.1,
+       "value": 0.89
       }
      },
      "reads": [],
@@ -70499,7 +70518,7 @@
      "player_name": "Moses Moody",
      "status": "Out",
      "source": "official",
-     "reason": "Injury/Illness - Left Patellar Tendon Repair / Surgery",
+     "reason": "Injury/Illness - Left Patellar Tendon",
      "detail": "Left Knee Surgery",
      "comment": "Moody (knee) is progressing toward a potential return between December and January after rupturing his left patellar tendon in March, Anthony Slater of ESPN reports.",
      "date": "2026-10-16T16:14Z",
@@ -72587,7 +72606,7 @@
      "season_with_club": 1,
      "first_season_with_club": true,
      "seasons_as_head_coach": 1,
-     "career_record": "4-2",
+     "career_record": "7-7",
      "career": [],
      "philosophy": {
       "seasons": 0,
@@ -72631,18 +72650,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 89.7,
-       "value": 0.172
+       "percentile": 75.9,
+       "value": 0.147
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 48.3,
-       "value": 0.239
+       "percentile": 31.0,
+       "value": 0.245
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 62.1,
-       "value": 0.674
+       "percentile": 37.9,
+       "value": 0.706
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -72651,13 +72670,13 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 10.3,
-       "value": 0.384
+       "percentile": 37.9,
+       "value": 0.425
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 72.4,
-       "value": 0.873
+       "percentile": 48.3,
+       "value": 0.845
       }
      },
      "reads": [
@@ -76550,7 +76569,7 @@
      "season_with_club": 5,
      "first_season_with_club": false,
      "seasons_as_head_coach": 5,
-     "career_record": "242-91",
+     "career_record": "249-93",
      "career": [
       {
        "season_label": "2022-23",
@@ -76870,17 +76889,17 @@
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
        "percentile": 20.7,
-       "value": 0.12
+       "value": 0.128
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 86.2,
-       "value": 0.178
+       "percentile": 79.3,
+       "value": 0.188
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 75.9,
-       "value": 0.654
+       "percentile": 96.6,
+       "value": 0.623
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -76890,15 +76909,31 @@
       "threes_conceded": {
        "label": "Threes Conceded",
        "percentile": 100.0,
-       "value": 0.51
+       "value": 0.501
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 96.6,
-       "value": 0.933
+       "percentile": 100.0,
+       "value": 0.921
       }
      },
      "reads": [
+      {
+       "scheme": "Elite Rim Protection",
+       "strength": "strong",
+       "score": 96.6,
+       "evidence": [
+        {
+         "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
+         "percentile": 96.6
+        },
+        {
+         "label": "Opponents Kept Off The Rim",
+         "percentile": 79.3
+        }
+       ],
+       "note": "Opponents finish poorly at the rim against this defense."
+      },
       {
        "scheme": "Switch-Heavy",
        "strength": "clear",
@@ -76914,22 +76949,6 @@
         }
        ],
        "note": "Centers spend an unusual share of possessions on guards: screens are switched."
-      },
-      {
-       "scheme": "Elite Rim Protection",
-       "strength": "clear",
-       "score": 75.9,
-       "evidence": [
-        {
-         "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-         "percentile": 75.9
-        },
-        {
-         "label": "Opponents Kept Off The Rim",
-         "percentile": 86.2
-        }
-       ],
-       "note": "Opponents finish poorly at the rim against this defense."
       }
      ],
      "measured_under": "Joe Mazzulla",
@@ -80719,7 +80738,7 @@
      "season_with_club": 3,
      "first_season_with_club": false,
      "seasons_as_head_coach": 3,
-     "career_record": "60-30",
+     "career_record": "64-33",
      "career": [
       {
        "season_label": "2024-25",
@@ -80988,18 +81007,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 13.8,
-       "value": 0.112
+       "percentile": 65.5,
+       "value": 0.145
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 17.2,
-       "value": 0.281
+       "percentile": 37.9,
+       "value": 0.239
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 37.9,
-       "value": 0.695
+       "percentile": 27.6,
+       "value": 0.713
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -81008,13 +81027,13 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 58.6,
+       "percentile": 48.3,
        "value": 0.433
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 65.5,
-       "value": 0.87
+       "percentile": 89.7,
+       "value": 0.889
       }
      },
      "reads": [],
@@ -84819,7 +84838,7 @@
      "season_with_club": 5,
      "first_season_with_club": false,
      "seasons_as_head_coach": 5,
-     "career_record": "108-226",
+     "career_record": "109-234",
      "career": [
       {
        "season_label": "2022-23",
@@ -85107,18 +85126,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 75.9,
-       "value": 0.159
+       "percentile": 86.2,
+       "value": 0.156
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 100.0,
-       "value": 0.115
+       "percentile": 82.8,
+       "value": 0.187
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 27.6,
-       "value": 0.717
+       "percentile": 72.4,
+       "value": 0.665
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -85127,28 +85146,28 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 51.7,
-       "value": 0.431
+       "percentile": 13.8,
+       "value": 0.407
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 3.4,
-       "value": 0.776
+       "percentile": 27.6,
+       "value": 0.83
       }
      },
      "reads": [
       {
        "scheme": "Drop Coverage",
        "strength": "strong",
-       "score": 87.4,
+       "score": 85.1,
        "evidence": [
         {
          "label": "Opponents Funnelled To The Mid-Range",
-         "percentile": 75.9
+         "percentile": 86.2
         },
         {
          "label": "Opponents Kept Off The Rim",
-         "percentile": 100.0
+         "percentile": 82.8
         },
         {
          "label": "Pick-And-Roll Pressure (Ball-Handler Turnovers Forced)",
@@ -86884,6 +86903,16 @@
      "player_id": "3133602",
      "player_name": "Svi Mykhailiuk",
      "value": 0.57
+    },
+    {
+     "player_id": "4683736",
+     "player_name": "Kobe Bufkin",
+     "value": 0.33
+    },
+    {
+     "player_id": "4433618",
+     "player_name": "Harrison Ingram",
+     "value": 0.11
     }
    ],
    "away_injuries": [
@@ -86891,8 +86920,8 @@
      "player_id": "3102530",
      "player_name": "Jusuf Nurkic",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Right Foot; 2nd Plantar Plate Tear",
      "detail": "Right Foot Strain",
      "comment": "Nurkic (toe) has begun participating in on-court activities as he continues recovering from a right foot injury sustained during an Oct. 4 preseason game against Denver. He will be re-evaluated in two weeks, the Jazz announced Friday.",
      "date": "2026-11-06T18:20Z",
@@ -86905,8 +86934,8 @@
      "player_id": "4066336",
      "player_name": "Lauri Markkanen",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Right Hand Fracture",
      "detail": "Right Hand Fracture",
      "comment": "Markkanen has been diagnosed with a non-displaced fracture in his right hand and will be sidelined for at least one month, Shams Charania of ESPN reports.",
      "date": "2026-11-11T18:22Z",
@@ -86919,8 +86948,8 @@
      "player_id": "4277961",
      "player_name": "Jaren Jackson Jr.",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Right MCL Tear",
      "detail": "Right Knee Not Specified",
      "comment": "Jackson has been diagnosed with a torn MCL in his right knee and will be sidelined for 6-to-8 weeks, per Shams Charania of ESPN.",
      "date": "2026-10-27T19:25Z",
@@ -86930,14 +86959,42 @@
      "missed": 11
     },
     {
+     "player_id": "4683736",
+     "player_name": "Kobe Bufkin",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.33,
+     "value_recent": 0.0,
+     "missed": null
+    },
+    {
+     "player_id": "4433618",
+     "player_name": "Harrison Ingram",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.11,
+     "value_recent": 0.0,
+     "missed": null
+    },
+    {
      "player_id": "4397077",
      "player_name": "Jaxson Hayes",
-     "status": "Day-To-Day",
-     "source": "espn",
-     "reason": null,
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Left Knee Strain",
      "detail": "Left Knee Strain",
-     "comment": "Hayes (knee) has been ruled out for Tuesday's game against the Clippers.",
-     "date": "2026-11-18T14:59Z",
+     "comment": "Hayes (knee) is questionable for Wednesday's game against the Lakers.",
+     "date": "2026-11-18T21:05Z",
      "return_date": "2026-11-18",
      "value": 1.05,
      "value_recent": 1.01,
@@ -88966,7 +89023,7 @@
      "season_with_club": 3,
      "first_season_with_club": false,
      "seasons_as_head_coach": 3,
-     "career_record": "107-63",
+     "career_record": "116-63",
      "career": [
       {
        "season_label": "2024-25",
@@ -89194,18 +89251,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 24.1,
-       "value": 0.121
+       "percentile": 13.8,
+       "value": 0.12
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 79.3,
-       "value": 0.184
+       "percentile": 93.1,
+       "value": 0.174
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 86.2,
-       "value": 0.638
+       "percentile": 41.4,
+       "value": 0.702
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -89214,13 +89271,13 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 55.2,
-       "value": 0.432
+       "percentile": 93.1,
+       "value": 0.485
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 62.1,
-       "value": 0.869
+       "percentile": 65.5,
+       "value": 0.864
       }
      },
      "reads": [
@@ -89239,22 +89296,6 @@
         }
        ],
        "note": "Centers spend an unusual share of possessions on guards: screens are switched."
-      },
-      {
-       "scheme": "Elite Rim Protection",
-       "strength": "strong",
-       "score": 86.2,
-       "evidence": [
-        {
-         "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-         "percentile": 86.2
-        },
-        {
-         "label": "Opponents Kept Off The Rim",
-         "percentile": 79.3
-        }
-       ],
-       "note": "Opponents finish poorly at the rim against this defense."
       }
      ],
      "measured_under": "JJ Redick",
@@ -89487,7 +89528,7 @@
       "player_name": "Walker Kessler",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4433136.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 30.9,
       "ppg": 14.5,
       "height_in": 85.0,
@@ -89649,7 +89690,7 @@
       "player_name": "Austin Reaves",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4066457.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 35.2,
       "ppg": 24.7,
       "height_in": 77.0,
@@ -90999,30 +91040,16 @@
     {
      "player_id": "4066457",
      "player_name": "Austin Reaves",
-     "status": "Day-To-Day",
-     "source": "espn",
-     "reason": null,
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Left Heel Contusion / Bone Bruise",
      "detail": "Left Heel Bruise",
-     "comment": "Reaves (heel) is out for Tuesday's game against the Hornets, Dave McMenamin of ESPN.com reports.",
-     "date": "2026-11-18T15:02Z",
-     "return_date": "2026-11-18",
+     "comment": "Reaves (heel) is out for Wednesday's game against the Jazz.",
+     "date": "2026-11-18T21:03Z",
+     "return_date": "2026-11-20",
      "value": 2.24,
      "value_recent": 2.25,
      "missed": 2
-    },
-    {
-     "player_id": "4433136",
-     "player_name": "Walker Kessler",
-     "status": "Day-To-Day",
-     "source": "espn",
-     "reason": null,
-     "detail": "Right Lower Leg Soreness",
-     "comment": "Head coach JJ Redick said he expects Walker (leg) to be available for Wednesday's game against the Jazz, Thuc Nhi Nguyen of the Los Angeles Times reports.",
-     "date": "2026-11-18T15:02Z",
-     "return_date": "2026-11-18",
-     "value": 2.02,
-     "value_recent": 2.08,
-     "missed": 1
     }
    ]
   },
@@ -93073,7 +93100,7 @@
      "season_with_club": 2,
      "first_season_with_club": false,
      "seasons_as_head_coach": 2,
-     "career_record": "46-40",
+     "career_record": "51-44",
      "career": [
       {
        "season_label": "2025-26",
@@ -93313,18 +93340,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 44.8,
+       "percentile": 48.3,
        "value": 0.14
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 20.7,
-       "value": 0.274
+       "percentile": 27.6,
+       "value": 0.246
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-       "percentile": 100.0,
-       "value": 0.604
+       "percentile": 62.1,
+       "value": 0.678
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -93333,33 +93360,16 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 75.9,
-       "value": 0.442
+       "percentile": 62.1,
+       "value": 0.439
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 51.7,
-       "value": 0.853
+       "percentile": 31.0,
+       "value": 0.831
       }
      },
-     "reads": [
-      {
-       "scheme": "Elite Rim Protection",
-       "strength": "strong",
-       "score": 100.0,
-       "evidence": [
-        {
-         "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
-         "percentile": 100.0
-        },
-        {
-         "label": "Opponents Kept Off The Rim",
-         "percentile": 20.7
-        }
-       ],
-       "note": "Opponents finish poorly at the rim against this defense."
-      }
-     ],
+     "reads": [],
      "measured_under": "Jordan Ott",
      "not_measured": "Named coverages and formations are inferred here, not possession-tagged. Measured zone/non-zone splits are published separately in matchup evidence."
     },
@@ -97101,7 +97111,7 @@
      "season_with_club": 3,
      "first_season_with_club": false,
      "seasons_as_head_coach": 3,
-     "career_record": "49-90",
+     "career_record": "50-96",
      "career": [
       {
        "season_label": "2024-25",
@@ -97337,18 +97347,18 @@
       },
       "mid_funnel": {
        "label": "Opponents Funnelled To The Mid-Range",
-       "percentile": 0.0,
-       "value": 0.09
+       "percentile": 20.7,
+       "value": 0.128
       },
       "rim_deterrence": {
        "label": "Opponents Kept Off The Rim",
-       "percentile": 72.4,
-       "value": 0.21
+       "percentile": 100.0,
+       "value": 0.149
       },
       "rim_protection": {
        "label": "Rim Protection (Opponent FG% Within 3 Ft, Inverted)",
        "percentile": 0.0,
-       "value": 0.813
+       "value": 0.789
       },
       "iso_faced": {
        "label": "Isolations Faced",
@@ -97357,13 +97367,13 @@
       },
       "threes_conceded": {
        "label": "Threes Conceded",
-       "percentile": 37.9,
-       "value": 0.426
+       "percentile": 48.3,
+       "value": 0.433
       },
       "assisted_threes": {
        "label": "Opponent Threes Assisted",
-       "percentile": 89.7,
-       "value": 0.91
+       "percentile": 62.1,
+       "value": 0.854
       }
      },
      "reads": [
@@ -97953,7 +97963,7 @@
       "player_name": "De'Andre Hunter",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4065732.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 32.5,
       "ppg": 14.3,
       "height_in": 79.0,
@@ -98121,7 +98131,7 @@
       "player_name": "Precious Achiuwa",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4431679.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 26.4,
       "ppg": 10.4,
       "height_in": 80.0,
@@ -99097,39 +99107,11 @@
      "date": "2026-10-21T04:22Z",
      "return_date": "2027-10-01",
      "value": null
-    },
-    {
-     "player_id": "4065732",
-     "player_name": "De'Andre Hunter",
-     "status": "Questionable",
-     "source": "official",
-     "reason": "Injury/Illness - Left Hip Soreness / Tightness",
-     "detail": "Left Hip Soreness",
-     "comment": "Hunter (hip) is questionable for Wednesday's game against the Suns, James Ham of ESPN 1320 Sacramento reports.",
-     "date": "2026-11-18T00:33Z",
-     "return_date": "2026-11-18",
-     "value": 1.46,
-     "value_recent": 1.64,
-     "missed": 1
-    },
-    {
-     "player_id": "4431679",
-     "player_name": "Precious Achiuwa",
-     "status": "Questionable",
-     "source": "official",
-     "reason": "Injury/Illness - Left Lower Leg Contusion",
-     "detail": "Left Ankle Soreness",
-     "comment": "Achiuwa (ankle) is questionable for Wednesday's game against the Suns, James Ham of ESPN 1320 Sacramento reports.",
-     "date": "2026-11-18T00:29Z",
-     "return_date": "2026-11-18",
-     "value": 1.14,
-     "value_recent": 1.05,
-     "missed": 2
     }
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-18_01_30PM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-18_04_30PM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -99262,5 +99244,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-18T18:37:20+00:00"
+ "published_at_utc": "2026-11-19T00:15:46+00:00"
 }
