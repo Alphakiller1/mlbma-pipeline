@@ -10,6 +10,7 @@ from .. import power, predictability
 from . import game_lines
 from . import possession_data as ncaa
 from . import pressure
+from . import halves as half_split
 from . import shot_quality
 from .data import read, write
 from .espn_roster import fetch_roster
@@ -164,6 +165,9 @@ def parse_box(payload, game):
     classes = shot_quality.game_classes(payload, list(result["teams"]))
     for team, row in classes.items():
         result["teams"][team]["classes"] = row if sum(a for a, _ in row.values()) else None
+    # First- and second-half counts, reconciled to the line score (halves.py).
+    for team, row in half_split.game_halves(payload, list(result["teams"])).items():
+        result["teams"][team]["halves"] = row
     return result
 
 
@@ -173,6 +177,7 @@ def load_box(game, cache):
         cached = read(file)
         if cached.get("fixture") == fixture_key(game) and "pressure" in cached and all(
             "player_lines" in row and "box_context" in row and "stl" in row and "kinds" in row and "classes" in row
+            and "halves" in row
             for row in cached["teams"].values()
         ):
             return cached
@@ -491,6 +496,11 @@ def supplement(contexts, schedule, year, as_of, cache, *, season_through=None, r
         named = [(own["kinds"], opp["kinds"]) for _, _, own, opp, _ in measured if own.get("kinds") and opp.get("kinds")]
         context["rates"].update(kind_rates(named))
         filled["shot kinds"] += bool(named)
+        # Half by half over the same games, where the play-by-play reconciles.
+        halved = [(own["halves"], opp["halves"]) for _, _, own, opp, _ in measured
+                  if own.get("halves") and opp.get("halves")]
+        context["rates"].update(half_split.rates(halved) if halved else {k: None for k in half_split.KEYS})
+        filled["halves"] += bool(halved)
         classed = [(own, opp) for _, _, own, opp, _ in measured if own.get("classes") and opp.get("classes")]
         if classed:
             def efg(rows):
