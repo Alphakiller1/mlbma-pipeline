@@ -21,7 +21,7 @@ def aligned_sample_share(contexts):
         aligned += shots == games and pace in (games, games - 1)
     return aligned / rated if rated else 1.0
 
-def validate_context(value,old=None):
+def validate_context(value,old=None,division=None):
     if not isinstance(value.get('identity',{}).get('name'),str):raise ValueError('Missing team identity')
     for k,n in value['rates'].items():
         if n is not None and (not isinstance(n,(int,float)) or not math.isfinite(n) or n<0):raise ValueError('Invalid CBB rate: '+k)
@@ -98,7 +98,17 @@ def validate_context(value,old=None):
         for row in tactics['position_size']:
             if row['players']<1 or not 55<=row['mean_height_inches']<=100:raise ValueError('Invalid roster height')
     if old:
-        if (value['rates'].get('games_all') or 0)<(old['rates'].get('games_all') or 0):raise ValueError('Team game count regressed; existing publication retained')
+        new_n,old_n=value['rates'].get('games_all') or 0,old['rates'].get('games_all') or 0
+        if new_n<old_n:
+            # A team without a D-I rate row is measured over all its finals; when
+            # its D-I row arrives the count drops to its D-I finals - a correction
+            # (Missouri State 4 -> 1, 2026-11-19), not a regression. Any other
+            # drop still keeps the existing publication.
+            through=value.get('data_through')
+            d1=sum(1 for g in value.get('games') or [] if g.get('points') is not None
+                   and (not through or g['date']<=through) and division and g.get('opponent_id') in division)
+            if not (division and new_n>=d1 and old_n>d1):
+                raise ValueError('Team game count regressed; existing publication retained')
         if old.get('players') and not value.get('players'):raise ValueError('Player coverage regressed; existing publication retained')
         prior=old.get('observed_tactics') or {}
         if tactics and prior.get('data_through') and (tactics.get('data_through') or '')<prior['data_through']:
@@ -109,6 +119,7 @@ def publish(source):
     if manifest.get('sport')!='cbb' or set(manifest.get('seasons',[]))!={2026,2027}:raise ValueError('Wrong competition or seasons')
     spec=json.loads(guard.CLASSIFICATION.read_text(encoding='utf-8'));restricted=json.loads(guard.RESTRICTED.read_text(encoding='utf-8'))
     files=sorted(source.rglob('*.json'));staged=[]
+    divisions={year:{f.stem for f in (source/str(year)/'teams').glob('*.json')} for year in (2026,2027)}
     for file in files:
         value=json.loads(file.read_text(encoding='utf-8'));issues=guard.classify_artifact(spec,value,str(file.relative_to(source)))
         def check(v):
@@ -123,7 +134,7 @@ def publish(source):
         if file.parent.name=='teams':
             old=ROOT/'data/public/cbb'/file.relative_to(source)
             previous=json.loads(old.read_text(encoding='utf-8')) if old.is_file() else None
-            validate_context(value,previous)
+            validate_context(value,previous,divisions.get(value.get('season')))
             if previous and value['season']<manifest['season']:
                 before=previous.get('observed_tactics') or {}
                 after=value.get('observed_tactics') or {}
