@@ -21,9 +21,9 @@ class UnitConnotationTests(unittest.TestCase):
         self.assertIn("cell('offense', oScheme, 'plays_per_game' + sit[0], 'num1', false)", pace)
 
     def test_complementary_shot_mix_shares_carry_no_verdict(self):
-        rows = {m.group(1): m.group(0) for m in re.finditer(r"\['(\dPA rate \(\dPA/FGA\))'[^\n]*", JS)}
-        self.assertIn("'least','tpr_d_all','least'", rows["2PA rate (2PA/FGA)"])
-        self.assertIn("'most','tpr_d_all','most'", rows["3PA rate (3PA/FGA)"])
+        rows = {m.group(1): m.group(0) for m in re.finditer(r"\['(\dPA Share \(\dPA/FGA\))'[^\n]*", JS)}
+        self.assertIn("'least','tpr_d_all','least'", rows["2PA Share (2PA/FGA)"])
+        self.assertIn("'most','tpr_d_all','most'", rows["3PA Share (3PA/FGA)"])
         self.assertIn("better: neutral ? 'neutral' : undefined", JS)
 
     def test_shot_type_share_follows_the_shot_s_value(self):

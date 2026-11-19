@@ -142,9 +142,9 @@ FORM_SPEC = (
 # another proprietary/charted statistic.
 DERIVED_SPEC = (
     ("off_points_per_play", "own", "points_per_play",
-     "Points per offensive play", "high", "num"),
+     "Points per offensive play", "high", "num2"),
     ("def_points_per_play", "opp", "points_per_play",
-     "Points allowed per defensive play", "low", "num"),
+     "Points allowed per defensive play", "low", "num2"),
     ("off_yards_per_play", "own", "yards_per_play",
      "Yards per offensive play", "high", "num"),
     ("def_yards_per_play", "opp", "yards_per_play",
