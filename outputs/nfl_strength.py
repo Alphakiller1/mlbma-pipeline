@@ -22,7 +22,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from outputs import strength_index
+from outputs import nfl_elo, strength_index
 
 PBP_URL = "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_{season}.parquet"
 WEEK_URL = "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_{season}.parquet"
@@ -30,7 +30,7 @@ QB_SHRINK = 150.0        # dropbacks of replacement-level play mixed into a quar
 BACKUP_DROPBACKS = 200   # a season under this many dropbacks defines replacement level
 WEIGHTS = Path(__file__).with_name("nfl_strength_weights.json")
 COLUMNS = ("game_id", "week", "season_type", "posteam", "defteam", "epa", "play_type", "qb_kneel", "qb_spike",
-           "two_point_attempt", "wp", "home_team", "away_team", "result")
+           "two_point_attempt", "wp", "home_team", "away_team", "result", "success", "fumble_lost")
 ITERATIONS = 15
 
 
@@ -90,14 +90,30 @@ def quarterbacks(season: int, through_week: int) -> dict[str, dict]:
     return out
 
 
+def _scrimmage(df):
+    return df[df["epa"].notna() & df["play_type"].isin(["pass", "run"]) & df["qb_kneel"].fillna(0).eq(0)
+              & df["qb_spike"].fillna(0).eq(0) & df["two_point_attempt"].fillna(0).eq(0) & df["wp"].between(0.05, 0.95)]
+
+
 def _team_games(df):
     """One row per team-game: offense EPA per play and the EPA per play allowed."""
-    p = df[df["epa"].notna() & df["play_type"].isin(["pass", "run"]) & df["qb_kneel"].fillna(0).eq(0)
-           & df["qb_spike"].fillna(0).eq(0) & df["two_point_attempt"].fillna(0).eq(0) & df["wp"].between(0.05, 0.95)]
-    tg = p.groupby(["game_id", "posteam", "defteam"])["epa"].mean().reset_index()
+    tg = _scrimmage(df).groupby(["game_id", "posteam", "defteam"])["epa"].mean().reset_index()
     tg.columns = ["game_id", "team", "opp", "off"]
     allowed = tg.rename(columns={"team": "opp", "opp": "team", "off": "def"})[["game_id", "team", "def"]]
     return tg.merge(allowed, on=["game_id", "team"]).dropna()
+
+
+def _rates(df) -> dict[str, dict[str, float]]:
+    """Season success rate and EPA per play with lost fumbles left out, for
+    each offense and each defense (v3 inputs)."""
+    p = _scrimmage(df)
+    clean = p[p["fumble_lost"].fillna(0).eq(0)]
+    out: dict[str, dict[str, float]] = {}
+    for key, frame, col, side in (("off_sr", p, "success", "posteam"), ("def_sr", p, "success", "defteam"),
+                                  ("off_nf", clean, "epa", "posteam"), ("def_nf", clean, "epa", "defteam")):
+        for club, value in frame.groupby(side)[col].mean().items():
+            out.setdefault(club, {})[key] = float(value)
+    return out
 
 
 def _adjusted(tg):
@@ -129,10 +145,13 @@ def build(season: int) -> dict[str, dict]:
         margins.setdefault(g.away, []).append(-g.result)
     raw_off, raw_def = tg.groupby("team")["off"].mean(), tg.groupby("team")["def"].mean()
     qbs = quarterbacks(season, week)
+    rates = _rates(current)
+    elo = nfl_elo.ratings(season, week)
     inputs = {t: {"off": float(raw_off[t]), "off_adj": float(adj_off[t]), "p_off": float(p_off.get(t, p_off.mean())),
                   "def": float(raw_def[t]), "def_adj": float(adj_def[t]), "p_def": float(p_def.get(t, p_def.mean())),
                   "m1": sum(margins[t]) / len(margins[t]),
-                  "qb_epa": (qbs.get(t) or {}).get("qb_epa"), "qb_league": (qbs.get(t) or {}).get("qb_league")}
+                  "qb_epa": (qbs.get(t) or {}).get("qb_epa"), "qb_league": (qbs.get(t) or {}).get("qb_league"),
+                  "elo": elo.get(t), **(rates.get(t) or {})}
               for t in raw_off.index if t in raw_def.index and t in margins}
     if len(inputs) < 32:
         print(f"  WARNING: strength index covers {len(inputs)} clubs; skipped")
@@ -143,5 +162,6 @@ def build(season: int) -> dict[str, dict]:
         block.update(week=week, season=season, prior_season=season - 1)
         if qbs.get(team):
             block["qb"] = {"name": qbs[team]["name"], "prior_dropbacks": qbs[team]["prior_dropbacks"]}
-    print(f"  strength index: {len(out)} clubs through week {week} ({len(qbs)} with a quarterback read)")
+    print(f"  strength index: {len(out)} clubs through week {week} ({len(qbs)} with a quarterback read, "
+          f"{sum(t in elo for t in out)} with Elo)")
     return out

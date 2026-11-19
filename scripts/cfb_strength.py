@@ -33,20 +33,23 @@ ITERATIONS = 15
 
 
 def _season(season: int, final: bool):
-    """(team-game rows, team-game margins), FBS against FBS. A finished season
-    is cached for good."""
+    """(team-game rows, team-game margins, {school: latest postgame Elo}), FBS
+    against FBS. A finished season is cached for good (without Elo, which only
+    the current season reads)."""
     name = f"strength_{season}.json"
     hit = cfb_depth._cached(name) if final else None
     if hit:
-        return hit["rows"], hit["margins"]
+        return hit["rows"], hit["margins"], {}
     ppa = cfb_depth.cfbd("/ppa/games", year=season, seasonType="regular")
     games = cfb_depth.cfbd("/games", year=season, seasonType="regular")
     if not isinstance(ppa, list) or not isinstance(games, list):
-        return None, None
+        return None, None, {}
     fbs = {g["homeTeam"] for g in games if g.get("homeClassification") == "fbs"} | \
           {g["awayTeam"] for g in games if g.get("awayClassification") == "fbs"}
     rows = [{"week": p["week"], "team": p["team"], "opp": p["opponent"],
-             "off": p["offense"]["overall"], "def": p["defense"]["overall"]}
+             "off": p["offense"]["overall"], "def": p["defense"]["overall"],
+             "off_pass": p["offense"].get("passing"), "off_rush": p["offense"].get("rushing"),
+             "def_pass": p["defense"].get("passing"), "def_rush": p["defense"].get("rushing")}
             for p in ppa if p.get("team") in fbs and p.get("opponent") in fbs
             and (p.get("offense") or {}).get("overall") is not None
             and (p.get("defense") or {}).get("overall") is not None]
@@ -59,7 +62,17 @@ def _season(season: int, final: bool):
             margins += [{"team": g["homeTeam"], "m": d}, {"team": g["awayTeam"], "m": -d}]
     if final and rows:
         cfb_depth._store(name, {"rows": rows, "margins": margins})
-    return rows, margins
+    # CFBD's postgame Elo after each school's latest completed game.
+    elo: dict[str, tuple] = {}
+    for g in games:
+        for side in ("home", "away"):
+            value = g.get(side + "PostgameElo")
+            team = g.get(side + "Team")
+            if team in fbs and isinstance(value, (int, float)) and g.get("homePoints") is not None:
+                key = (g.get("week") or 0, str(g.get("startDate") or ""))
+                if team not in elo or key >= elo[team][0]:
+                    elo[team] = (key, float(value))
+    return rows, margins, {t: v for t, (_, v) in elo.items()}
 
 
 def _preseason(season: int) -> tuple[dict[str, float], dict[str, float]]:
@@ -114,8 +127,8 @@ def _quantile(values: list[float], q: float) -> float:
 
 def build(season: int) -> dict[str, dict]:
     """{normalized school: {"week", "osi", "dsi", "nsi", "inputs", "weights"}}."""
-    rows, margins = _season(season, final=False)
-    prior_rows, _ = _season(season - 1, final=True)
+    rows, margins, elo = _season(season, final=False)
+    prior_rows, _, _ = _season(season - 1, final=True)
     if not rows or not prior_rows:
         return {}
     week = max(r["week"] for r in rows)
@@ -124,11 +137,14 @@ def build(season: int) -> dict[str, dict]:
     p_off, p_def = _adjusted(prior_rows)
     m1 = _mean(margins, "m")
     ret, tal = _preseason(season)
+    split = {k: _mean([r for r in rows if r.get(k) is not None], k)
+             for k in ("off_pass", "off_rush", "def_pass", "def_rush")}
     # A school new to FBS has no prior: it takes the prior pool's lower quartile.
     new_off, new_def = _quantile(list(p_off.values()), 0.25), _quantile(list(p_def.values()), 0.75)
     inputs = {t: {"off": raw_off[t], "off_adj": adj_off[t], "p_off": p_off.get(t, new_off),
                   "def": raw_def[t], "def_adj": adj_def[t], "p_def": p_def.get(t, new_def), "m1": m1.get(t, 0.0),
-                  "ret": ret.get(t), "talent": tal.get(t)}
+                  "ret": ret.get(t), "talent": tal.get(t), "elo": elo.get(t),
+                  **{k: split[k].get(t) for k in split}}
               for t in raw_off if t in raw_def and t in adj_off}
     if len(inputs) < 100:
         print(f"  strength: {len(inputs)} FBS schools; skipped")
@@ -140,5 +156,6 @@ def build(season: int) -> dict[str, dict]:
         out[cfb_depth._norm(team)] = block
     print(f"  strength: {len(out)} FBS schools through week {week} "
           f"({sum(r['ret'] is not None for r in inputs.values())} with returning production, "
-          f"{sum(r['talent'] is not None for r in inputs.values())} with talent)")
+          f"{sum(r['talent'] is not None for r in inputs.values())} with talent, "
+          f"{sum(r['elo'] is not None for r in inputs.values())} with Elo)")
     return out

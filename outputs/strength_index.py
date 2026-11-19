@@ -16,6 +16,12 @@ and the preseason reads a sport's weight table may add (2026-11-19):
   talent           CFB: the 247 team talent composite
   qb_epa / qb_league NFL: the current quarterback's last-season EPA per
                    dropback (shrunk toward replacement) and the league's
+and (v3, 2026-11-19):
+  elo              an Elo rating after the team's latest game (NFL: built from
+                   nflverse results since 1999, outputs/nfl_elo.py; CFB: CFBD's)
+  off_sr / def_sr  NFL success rate, offense and allowed
+  off_nf / def_nf  NFL EPA per play with lost fumbles left out
+  off_pass / off_rush / def_pass / def_rush  CFB passing and rushing PPA per play
 
   OSI = c + a . offense features + b . league-average defense features
         (the EPA per play this offense is expected to gain on an average defense)
@@ -34,8 +40,9 @@ from __future__ import annotations
 OFF_INPUTS = ("off", "off_adj", "p_off")
 DEF_INPUTS = ("def", "def_adj", "p_def")
 NET_INPUTS = ("net", "net_adj", "p_net", "m1")
-EXTRA_INPUTS = ("ret", "talent", "qb_epa")
-HIGHER_BETTER = {"off", "off_adj", "p_off", "m1", "net", "net_adj", "p_net", "ret", "talent", "qb_epa"}
+EXTRA_INPUTS = ("ret", "talent", "qb_epa", "elo", "off_sr", "def_sr")
+HIGHER_BETTER = {"off", "off_adj", "p_off", "m1", "net", "net_adj", "p_net", "ret", "talent", "qb_epa", "elo",
+                 "off_sr", "off_nf", "off_pass", "off_rush"}
 TALENT_SCALE = 0.05  # talent z-score in per-play units for the OSI/DSI fit (scratch fit, 2026-11-19)
 
 
@@ -81,8 +88,14 @@ def features(inputs: dict[str, dict]) -> dict[str, dict]:
     pool = [r["talent"] if r.get("talent") is not None else t_low for r in rows.values()] if tal else []
     t_mean = sum(pool) / len(pool) if pool else 0.0
     t_sd = (sum((x - t_mean) ** 2 for x in pool) / (len(pool) - 1)) ** 0.5 if len(pool) > 1 else 1.0
+    elos = [r["elo"] for r in rows.values() if r.get("elo") is not None]
+    e_mean = sum(elos) / len(elos) if elos else 0.0
     for r in rows.values():
         r["net"], r["net_adj"], r["p_net"] = r["off"] - r["def"], r["off_adj"] - r["def_adj"], r["p_off"] - r["p_def"]
+        r["elo_c"] = ((r["elo"] if r.get("elo") is not None else e_mean) - e_mean) / 100.0
+        for a, b, k in (("off_sr", "def_sr", "net_sr"), ("off_nf", "def_nf", "net_nf")):
+            if r.get(a) is not None and r.get(b) is not None:
+                r[k] = r[a] - r[b]
         ret = r["ret"] if r.get("ret") is not None else ret_mid
         r["p_off_r"] = (r["p_off"] - mo) * ret + mo
         r["p_net_r"] = (r["p_off"] - mo) * ret - (r["p_def"] - md)
@@ -103,6 +116,13 @@ def indices(inputs: dict[str, dict], spec: dict, week: int) -> dict[str, dict]:
     n_feats = tuple(fit.get("net_features") or NET_INPUTS)
     rows = features(inputs)
     n = len(rows)
+    # A feature a team has no reading for takes the pool's average.
+    for k in set(o_feats + d_feats + n_feats):
+        have = [r[k] for r in rows.values() if r.get(k) is not None]
+        fill = sum(have) / len(have) if have else 0.0
+        for r in rows.values():
+            if r.get(k) is None:
+                r[k] = fill
     mean = {k: sum(r[k] for r in rows.values()) / n for k in o_feats + d_feats}
     wo = spec["weights"]["off"][cut]
     c, a, b = wo[0], wo[1:1 + len(o_feats)], wo[1 + len(o_feats):1 + len(o_feats) + len(d_feats)]
