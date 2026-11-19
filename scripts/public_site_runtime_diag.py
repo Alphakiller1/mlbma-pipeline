@@ -903,13 +903,24 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               (qb_panels == 2 and qb_tables >= 1 and qb_complete)
               or qb_partial or "not published" in qb_text,
               qb_text[:200])
-        player_sections = "#cfb-quarterbacks, #cfb-rushers, #cfb-receivers, #cfb-defenders"
+        player_sections = "#cfb-rushers, #cfb-receivers, #cfb-defenders"
         player_badges = page.locator(":is(" + player_sections + ") td .ca-rank")
         check("CFB player sections use positional percentiles and mute small samples", player_badges.evaluate_all(
             """badges => badges.length && badges.every(badge => badge.hasAttribute('data-percentile') &&
               (!badge.title.includes('below-threshold') || badge.classList.contains('c-na')))"""))
-        check("CFB QB splits identify both passer and FBS defensive percentile pools",
-              qb_tables == 0 or page.locator("#cfb-quarterbacks [data-percentile][title*='FBS defenses']").count() > 0)
+        # Owner 2026-11-19: the quarterback panel reads in the team-ranking
+        # format - ordinal ranks on the FBS team scale, every pill tier-coloured,
+        # values neutral (a look below its floor is coloured and tagged Low n).
+        qb_cells = page.locator("#cfb-quarterbacks td .ca-rank").evaluate_all(
+            """badges => badges.map(b => ({pct: b.hasAttribute('data-percentile'), rank: Number(b.dataset.rank),
+              of: Number(b.dataset.rankOf), tone: /c-(elite|good|mid|weak|poor)/.test(b.className),
+              valueTone: /c-(elite|good|mid|weak|poor)/.test(b.closest('td').className)}))""")
+        check("CFB quarterback panel ranks on the FBS team scale with coloured pills",
+              not qb_cells or (all(not c["pct"] and c["tone"] and 1 <= c["rank"] <= c["of"] <= 140
+                                   for c in qb_cells)),
+              str([c for c in qb_cells if c["pct"] or not c["tone"]][:3]))
+        check("CFB QB splits rank against FBS defenses",
+              qb_tables == 0 or page.locator("#cfb-quarterbacks .ca-rank[title*='FBS defenses']").count() > 0)
         defense_grades = page.locator("#cfb-passing tr").evaluate_all("""rows => rows
           .filter(row => ['EPA/Pass', 'Sack%'].includes(row.cells[0].textContent))
           .map(row => row.querySelector('.ca-ledger-right').title)""")
@@ -961,6 +972,12 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               and all(label in run_text for label in (
                   "epa/rush", "rush 1st down%", "line yds", "2nd level", "power", "stuff%", "front-7 havoc%")),
               run_text[:200])
+        # 2026-11-19: ball carriers by run lane beside what the defense allows that way.
+        lanes_published = '"away_run_lanes"' in page.request.get(base_url.rstrip("/") + "/data/public/cfb/slate.json").text()
+        rushers_text = page.locator("#cfb-rushers").inner_text().lower()
+        check("CFB ball carriers split by run lane beside the defense's lane figures where published",
+              not lanes_published or ("by lane vs" in rushers_text and "run right" in rushers_text and " allows " in rushers_text),
+              rushers_text[-200:])
         page.locator("a[data-nfl-tab='situational']").click()
         formation_text = page.locator("#cfb-formation").inner_text().lower()
         check("CFB formation and tempo carries shotgun, under center and no huddle",

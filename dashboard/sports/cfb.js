@@ -135,7 +135,7 @@
       if (scheme) mapped[side + '_scheme_profile'] = scheme;
       // CFBD depth (scripts/cfb_depth.py): run game and lines, scheme rates,
       // quarterbacks with the defense's splits, ball carriers, game logs.
-      ['_run_game', '_scheme_stats', '_charting', '_strength', '_penalties', '_qbs', '_defense_splits', '_rushers', '_receivers',
+      ['_run_game', '_scheme_stats', '_charting', '_strength', '_penalties', '_run_lanes', '_qbs', '_defense_splits', '_rushers', '_receivers',
         '_defenders', '_game_log', '_schedule_strength', '_injuries', '_power', '_predictability']
         .forEach(function (key) {
           if (pub[side + key]) mapped[side + key] = pub[side + key];
@@ -176,7 +176,7 @@
      reports and schedule strength are left out: a week-old copy of either is
      wrong, not merely older. */
   var TEAM_FACTS = ['_qbs', '_adjusted_efficiency', '_scheme_profile', '_run_game',
-    '_scheme_stats', '_charting', '_strength', '_penalties', '_defense_splits', '_rushers', '_receivers', '_defenders', '_game_log', '_power',
+    '_scheme_stats', '_charting', '_strength', '_penalties', '_run_lanes', '_defense_splits', '_rushers', '_receivers', '_defenders', '_game_log', '_power',
     '_predictability'];
 
   /* When the week's slate is published without a team's facts (the model's

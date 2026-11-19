@@ -21,12 +21,14 @@ try:  # run as a script (scripts/ on the path) or imported as scripts.*
     import cfb_charting
     import cfb_depth
     import cfb_penalties
+    import cfb_run_lanes
     import cfb_strength
     import cfb_injuries
     import cfb_injury_value
     import cfb_power
 except ImportError:  # pragma: no cover - package import in tests
-    from scripts import cfb_charting, cfb_depth, cfb_injuries, cfb_injury_value, cfb_penalties, cfb_power, cfb_strength
+    from scripts import (cfb_charting, cfb_depth, cfb_injuries, cfb_injury_value, cfb_penalties, cfb_power,
+                         cfb_run_lanes, cfb_strength)
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "public" / "cfb" / "slate.json"
@@ -931,6 +933,8 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict,
         row[side + "_strength"] = (depth.get("strength") or {}).get(key)
         # Fouls by team and unit (scripts/cfb_penalties.py), keyed like the game logs.
         row[side + "_penalties"] = (depth.get("penalties") or {}).get(abbr)
+        # Ball carriers by run lane (scripts/cfb_run_lanes.py), keyed like the game logs.
+        row[side + "_run_lanes"] = (depth.get("run_lanes") or {}).get(abbr)
         # Ordered and trimmed to the room by apply_availability.
         row[side + "_qbs"] = (depth.get("qbs") or {}).get(key)
         row[side + "_defense_splits"] = (depth.get("defense_splits") or {}).get(key)
@@ -1033,13 +1037,18 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
     except Exception as exc:  # noqa: BLE001 - the slate still publishes without it
         print(f"  penalties: unavailable ({exc})")
         depth["penalties"] = {}
+    try:
+        depth["run_lanes"] = cfb_run_lanes.build(season, week, wanted, fbs)
+    except Exception as exc:  # noqa: BLE001 - the slate still publishes without it
+        print(f"  run lanes: unavailable ({exc})")
+        depth["run_lanes"] = {}
     print(f"  charting: {matched} passers carry looks")
     print(f"  depth: {len(advanced)} CFBD team profiles, {len(depth['qbs'])} QB rooms, "
           f"{len(depth['logs'])} game logs")
     return depth
 
 
-DEPTH_KEYS = ("_run_game", "_scheme_stats", "_charting", "_strength", "_penalties", "_qbs", "_defense_splits", "_rushers", "_receivers",
+DEPTH_KEYS = ("_run_game", "_scheme_stats", "_charting", "_strength", "_penalties", "_run_lanes", "_qbs", "_defense_splits", "_rushers", "_receivers",
               "_defenders",
               "_schedule_strength", "_power", "_predictability")
 

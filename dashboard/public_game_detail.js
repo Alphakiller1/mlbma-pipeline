@@ -6646,7 +6646,8 @@ function seasonToggle(game) {
         rows: group[1].filter(function (spec) { return cfbLedgerShown(game, spec); }).map(function (spec) {
           var offense = cfbFeed(game, offSide, spec[0])['off_' + spec[1]];
           var defense = cfbFeed(game, defSide, spec[0])['def_' + spec[1]];
-          return cfbLedgerRow(spec[2], cfbTeamMetric(offense, 'FBS offenses'), cfbTeamMetric(defense, 'FBS defenses'));
+          return cfbLedgerRow(spec[2], cfbTeamMetric(offense, 'FBS offenses'),
+            cfbTeamMetric(defense, area === 'formation' ? 'FBS defenses, by what they faced' : 'FBS defenses, by what they allowed'));
         })
       };
     });
@@ -6657,7 +6658,10 @@ function seasonToggle(game) {
       (area === 'passing' ? cfbSchemeLine(sport, game, offSide, defSide) : '') +
       (CFB_LEDGER[area].some(function (g) { return g[1].some(function (spec) { return spec[0] === 'chart'; }); })
         ? cfbChartLine(game, offSide, defSide) : '') +
-      cfbLedgerTable([offName, 'Offense', 'FBS Rank'], [defName, 'Defense', 'FBS Rank'], groups) + '</section>';
+      // The defense column is the opponents' figure against this defense
+      // (owner 2026-11-19: say so). Formation shares are what it faced.
+      cfbLedgerTable([offName, 'Offense', 'FBS Rank'],
+        [defName, area === 'formation' ? 'Defense Faced' : 'Defense Allowed', 'FBS Rank'], groups) + '</section>';
   }
 
   function cfbTeamMetric(entry, cohort, rankDisplay = 'rank') {
@@ -6786,11 +6790,42 @@ function seasonToggle(game) {
 
   var CFB_QB_LOOK_MIN = 5;
 
+  /* The quarterback panel reads in the team-ranking format (owner
+     2026-11-19): ordinal ranks on the FBS team scale with tier-coloured pills
+     and bars, values neutral, like every CFB team table. A passer's place among qualified FBS
+     passers is printed on that scale (teamScaled, as the game logs do), with
+     the raw place in the tooltip. A look below its sample floor is still
+     placed and coloured; its dropbacks carry a Low n tag instead of greying the
+     row out. There is about one starter per school, so the team scale reads
+     true for quarterbacks; the other player tables keep player percentiles. */
+  function cfbTeamCount(game) {
+    var s = game.away_strength || game.home_strength || {};
+    return (s.nsi && s.nsi.of) || 134;
+  }
+  function cfbQbRank(entry, qualified, cohort, teams) {
+    if (!entry || entry.value == null) return null;
+    var raw = rankPosition(entry);
+    if (!raw && qualified === false && Number(entry.rank) === Number(entry.of) + 1) {
+      raw = rankPosition({ rank: entry.of, of: entry.of });
+    }
+    if (!raw) return Object.assign({}, entry, { rank: null, of: null, rankDisplay: 'rank' });
+    var place = teamScaled(raw.rank, raw.of, teams) || raw;
+    return Object.assign({}, entry, {
+      rank: place.rank, of: place.of, rankDisplay: 'rank', lowSample: false,
+      cohort: 'FBS teams · ' + raw.rank + ordinal(raw.rank) + ' of ' + raw.of + ' ' + cohort +
+        (qualified === false ? ' · below the sample floor' : '')
+    });
+  }
+  function cfbDefenseRank(entry, cohort) {
+    return entry ? Object.assign({}, entry, { cohort: cohort, rankDisplay: 'rank' }) : null;
+  }
+
   function cfbQbLooks(sport, game, offSide, q) {
     var defSide = offSide === 'away' ? 'home' : 'away';
     var looks = q.looks || {};
     var allowed = (game[defSide + '_charting'] || {}).allowed_looks || {};
     var defName = cfbName(sport, game, defSide);
+    var teams = cfbTeamCount(game);
     var rows = [];
     CFB_QB_LOOKS.forEach(function (group) {
       // A look with a handful of dropbacks is not a split: it gets no row.
@@ -6801,11 +6836,12 @@ function seasonToggle(game) {
         var mine = looks[l[0]], theirs = allowed[l[0]] || {};
         var cohort = 'FBS passers in this look';
         rows.push('<tr><td>' + esc(l[1]) + '</td><td class="num" title="' + esc(mine.attempts + ' attempts · ' +
-          mine.touchdowns + ' TD · ' + mine.interceptions + ' INT') + '">' + esc(String(mine.dropbacks)) + '</td>' +
-          cfbCell(cfbPlayerRank(mine.completion_pct, mine.qualified, cohort)) +
-          cfbCell(cfbPlayerRank(mine.yards_per_attempt, mine.qualified, cohort)) +
-          cfbCell(cfbPlayerRank(mine.epa_per_dropback, mine.qualified, cohort)) +
-          cfbCell(theirs.epa_per_dropback ? cfbTeamMetric(theirs.epa_per_dropback, 'FBS defenses in this look', 'percentile')
+          mine.touchdowns + ' TD · ' + mine.interceptions + ' INT') + '">' + esc(String(mine.dropbacks)) +
+          (mine.qualified === false ? '<small class="ca-thin-tag">Low n</small>' : '') + '</td>' +
+          cfbCell(cfbQbRank(mine.completion_pct, mine.qualified, cohort, teams)) +
+          cfbCell(cfbQbRank(mine.yards_per_attempt, mine.qualified, cohort, teams)) +
+          cfbCell(cfbQbRank(mine.epa_per_dropback, mine.qualified, cohort, teams)) +
+          cfbCell(theirs.epa_per_dropback ? cfbDefenseRank(theirs.epa_per_dropback, 'FBS defenses in this look')
             : { missing: 'Not Charted' }) + '</tr>');
       });
     });
@@ -6819,6 +6855,7 @@ function seasonToggle(game) {
     var qbs = availability.available(game, offSide, game[offSide + '_qbs']);
     var defense = game[defSide + '_defense_splits'] || {};
     var defName = cfbName(sport, game, defSide);
+    var teams = cfbTeamCount(game);
     var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' +
       esc(cfbName(sport, game, offSide) + ' Quarterbacks vs ' + defName + ' Defense') + '</h3>';
     if (!qbs.length) return head + pending('Quarterback lines are not published yet.') + '</section>';
@@ -6828,22 +6865,22 @@ function seasonToggle(game) {
       return '<tr>' + cfbPlayerCell(q, q.depth_rank === 1 ? 'QB · Starting' : 'QB', volume,
         availability.status(game, offSide, q)) +
         CFB_QB_LINE.map(function (c) {
-          return cfbCell(cfbPlayerRank(line[c[0]], q.ranked, 'qualified FBS passers'));
+          return cfbCell(cfbQbRank(line[c[0]], q.ranked, 'qualified FBS passers', teams));
         }).join('') + '</tr>';
     });
     var lead = qbs[0];
     var splitRows = CFB_QB_SPLITS.filter(function (sp) {
       return (lead.epa_splits || {})[sp[0]] && defense[sp[0]];
     }).map(function (sp) {
-      return cfbLedgerRow(sp[1], cfbPlayerRank(lead.epa_splits[sp[0]], lead.ranked, 'qualified FBS passers in this split'),
-        cfbTeamMetric(defense[sp[0]], 'FBS defenses in this split', 'percentile'));
+      return cfbLedgerRow(sp[1], cfbQbRank(lead.epa_splits[sp[0]], lead.ranked, 'qualified FBS passers in this split', teams),
+        cfbDefenseRank(defense[sp[0]], 'FBS defenses in this split'));
     });
-    return head + '<div class="ca-split-block"><h4>Season Line · FBS Passer Percentiles</h4>' +
+    return head + '<div class="ca-split-block"><h4>Season Line · FBS Rank</h4>' +
       nflSplitTable(CFB_QB_LINE.map(function (c) { return c[1]; }), lineRows, 'Passer') + '</div>' +
       (splitRows.length ? '<div class="ca-split-block"><h4>' + esc(lead.player_name +
         ' EPA Per Play vs ' + defName + ' Allowed') + '</h4>' +
-        cfbLedgerTable([lead.player_name, 'QB EPA/Play', 'Passer Percentile'],
-          [defName, 'EPA/Play Allowed', 'FBS Defense Percentile'],
+        cfbLedgerTable([lead.player_name, 'QB EPA/Play', 'FBS Rank'],
+          [defName, 'EPA/Play Allowed', 'FBS Rank'],
           [{ title: '', rows: splitRows }]) + '</div>' : '') +
       cfbQbLooks(sport, game, offSide, lead) +
       '</section>';
@@ -6864,7 +6901,67 @@ function seasonToggle(game) {
         }).join('') + '</tr>';
     });
     return head + nflSplitTable(CFB_RUSHER_COLS.map(function (c) { return c[1]; }), rows, 'Player') +
-      '</section>';
+      cfbRunLanes(sport, game, side, list) + '</section>';
+  }
+
+  /* Ball carriers by run lane (scripts/cfb_run_lanes.py, 2026-11-19): who
+     carries left, middle and right, and how each fares, under a lane header
+     that carries what the defense he meets allows that way. Rates rank among
+     FBS ball carriers with 12+ carries that way; a carrier under that floor
+     shows his figures with a Low n tag and no pill. Evidence only: lanes in
+     a fixed order, nothing sorted by the matchup. */
+  var CFB_LANES = [['left', 'Run Left'], ['middle', 'Run Middle'], ['right', 'Run Right']];
+  function cfbLaneKey(name) {
+    var parts = String(name || '').replace(/\./g, '. ').split(/\s+/).filter(function (w) {
+      return w && !/^(jr|sr|ii|iii|iv|v)\.?$/i.test(w);
+    });
+    if (parts.length < 2) return '';
+    var norm = function (w) { return w.toLowerCase().replace(/[^a-z0-9]/g, ''); };
+    return norm(parts[0]).charAt(0) + '|' + norm(parts[parts.length - 1]);
+  }
+  function cfbRunLanes(sport, game, side, roster) {
+    var lanes = game[side + '_run_lanes'];
+    if (!lanes || !(lanes.carriers || []).length) return '';
+    var other = side === 'away' ? 'home' : 'away';
+    var defName = cfbName(sport, game, other);
+    var defRates = ((game[other + '_charting'] || {}).rates) || {};
+    var full = {};
+    (roster || []).forEach(function (r) { full[cfbLaneKey(r.player_name)] = r; });
+    function allowed(lane) {
+      var bits = [['ypc', ' Yds/Rush'], ['success', ' Success']].map(function (b) {
+        var e = defRates['def_run_' + lane + '_' + b[0]];
+        if (!e || e.value == null) return '';
+        var text = e.format === 'pct' ? (100 * e.value).toFixed(1) + '%' : Number(e.value).toFixed(1);
+        return text + b[1] + (e.rank ? ' (' + e.rank + ordinal(e.rank) + ')' : '');
+      }).filter(Boolean);
+      return bits.length ? ' · ' + defName + ' Allows ' + bits.join(', ') : '';
+    }
+    var rows = [];
+    CFB_LANES.forEach(function (l) {
+      // The carriers who take this lane: five carries or more, the four busiest.
+      var carriers = lanes.carriers.filter(function (c) { return c.lanes[l[0]] && c.lanes[l[0]].carries >= 5; })
+        .sort(function (a, b) { return b.lanes[l[0]].carries - a.lanes[l[0]].carries; }).slice(0, 4);
+      if (!carriers.length) return;
+      rows.push('<tr class="ca-split-group"><th colspan="6" scope="colgroup">' + esc(l[1] + allowed(l[0])) + '</th></tr>');
+      carriers.forEach(function (c) {
+        var lane = c.lanes[l[0]], who = full[c.key];
+        var name = who ? who.player_name + (who.position ? ' ' + who.position : '') : c.name;
+        function rate(e) {
+          if (!e || e.value == null) return cfbCell(null);
+          return cfbCell(lane.qualified ? cfbPlayerRank(e, true, 'FBS ball carriers with 12+ carries this way')
+            : Object.assign({}, e, { rank: null, of: null }));
+        }
+        rows.push('<tr><td>' + esc(name) + '</td><td class="num">' + esc(String(lane.carries)) +
+          (lane.qualified ? '' : '<small class="ca-thin-tag">Low n</small>') + '</td>' +
+          '<td class="num" title="Share of ' + esc(cfbName(sport, game, side)) + ' runs this way">' +
+          (lane.share == null ? 'Not Rated' : (100 * lane.share).toFixed(1) + '%') + '</td>' +
+          rate(lane.ypc) + rate(lane.success) + rate(lane.explosive) + '</tr>');
+      });
+    });
+    if (!rows.length) return '';
+    return '<div class="ca-split-block"><h4>' + esc(cfbName(sport, game, side) + ' Ball Carriers By Lane vs ' +
+      defName + ' Run Defense') + '</h4>' +
+      nflSplitTable(['Car', 'Share', 'Yds/Rush', 'Success%', '10+ Yd%'], rows, 'Carrier') + '</div>';
   }
 
   /* Pass catchers and defensive playmakers (2026-11-18 audit; cfb_depth.
@@ -7008,9 +7105,12 @@ function seasonToggle(game) {
 
   function injuryTable(players, options) {
     var hasPositions = players.some(function (pl) { return pl.position; });
+    // A column shows when either club in the matchup has it (options.peers),
+    // so the two reports read with the same columns side by side.
+    var pool = players.concat(options.peers || []);
     var metrics = INJURY_METRICS.filter(function (column) {
       return (options.alwaysMetrics && column[0] !== 'missed') ||
-        players.some(function (pl) { return pl[column[0]] != null; });
+        pool.some(function (pl) { return pl[column[0]] != null; });
     });
     var cols = '<th scope="col" role="columnheader" class="ca-injury-table__identity">Player</th>' +
       '<th scope="col" role="columnheader" class="ca-injury-table__designation">Status</th>' +
@@ -7037,7 +7137,8 @@ function seasonToggle(game) {
     return '<div class="ca-injury-table-wrap"><table class="ca-injury-table" role="table" aria-label="' + esc(options.label) +
       '" data-metrics="' + metrics.length + '"' + (options.showDate ? ' data-dated' : '') + '>' +
       '<thead role="rowgroup"><tr role="row">' + cols + '</tr></thead><tbody role="rowgroup">' + rows +
-      '</tbody>' + injuryExpectedRow(players, 2 + Number(Boolean(options.showDate)) + metrics.length) + '</table></div>';
+      '</tbody>' + injuryExpectedRow(players, 2 + Number(Boolean(options.showDate)) + metrics.length,
+        metrics.some(function (col) { return col[0] === 'value'; })) + '</table></div>';
   }
 
   /* Owner 2026-11-13: every player on an injury report carries his value -
@@ -7087,9 +7188,14 @@ function seasonToggle(game) {
     });
     return { total: total, counted: counted, open: open, faded: faded };
   }
-  function injuryExpectedRow(players, span) {
+  function injuryExpectedRow(players, span, valued) {
     var e = injuryExpected(players);
-    if (!e.counted) return '';
+    if (!e.counted && !valued) return '';
+    if (!e.counted) {
+      return '<tfoot role="rowgroup"><tr class="ca-injury-total" role="row"><th scope="row" role="rowheader">Expected missing</th>' +
+        '<td role="cell" colspan="' + span + '" class="ca-vs-none" title="No listed player has a value and a play history yet">' +
+        'Not Rated</td></tr></tfoot>';
+    }
     return '<tfoot role="rowgroup"><tr class="ca-injury-total" role="row"><th scope="row" role="rowheader">Expected missing</th>' +
       '<td role="cell" colspan="' + span +
       '" title="' + esc('Each listed player\u2019s value times his chance of sitting, summed' +
@@ -7124,6 +7230,7 @@ function seasonToggle(game) {
         (sport === 'nba' ? 'club' : 'school') + ' yet.') + '</section>';
     }
     var players = report.players || [];
+    var peers = ((game[(side === 'away' ? 'home' : 'away') + '_injuries'] || {}).players) || [];
     var valueNote = report.value_note, playsNote = report.plays_note;
     if (sport === 'cfb') {
       valueNote = CFB_VALUE_NOTE;
@@ -7141,7 +7248,8 @@ function seasonToggle(game) {
       });
     }
     return head + '<p class="ca-lineup-context">' + esc(report.sources || '') + '</p>' +
-      (players.length ? injuryTable(players, { label: title, showDate: true, playsNote: playsNote, valueNote: valueNote }) :
+      (players.length ? injuryTable(players, { label: title, showDate: true, playsNote: playsNote, valueNote: valueNote,
+        peers: sport === 'cfb' ? peers.map(function (pl) { return { value: pl.value, missed: pl.missed, plays: 0 }; }) : peers }) :
         pending('No players are listed on the current report.')) + '</section>';
   }
 

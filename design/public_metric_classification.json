@@ -1129,7 +1129,13 @@
     "home_penalties",
     "elo",
     "off_sr",
-    "def_sr"
+    "def_sr",
+    "away_run_lanes",
+    "home_run_lanes",
+    "lanes",
+    "ypc",
+    "explosive",
+    "success"
   ],
   "derived_descriptive": [
     "estimated_per40",
