@@ -873,7 +873,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CFB opens on the Units evidence group alone",
               page.evaluate("[...document.querySelectorAll('.ca-detail-section')]"
                             ".filter(s => s.offsetParent).map(s => s.id).join(',')") ==
-              "cfb-power,cfb-strength,cfb-efficiency,cfb-dvoa,cfb-predictability")
+              "cfb-power,cfb-strength,cfb-dvoa,cfb-efficiency,cfb-predictability")
         # Owner 2026-10-03: one matchup ledger for every unit comparison - both
         # directions side by side, the same rows in the same order, each stat
         # once on the desk, a rank bar beside every ranked figure.
@@ -1006,14 +1006,14 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CFB pass map carries depth, direction, air yards and the pocket",
               all(label in map_text for label in (
                   "deep epa/att", "short comp%", "middle share", "air yds/tgt", "yac/comp",
-                  "hurry+sack%", "pressured epa/db"))
+                  "hurried or sacked%", "hurried or sacked epa/db"))
               or "not published" in map_text,
               map_text[:200])
         passing_text = page.locator("#cfb-passing").inner_text().lower()
         check("CFB pass game carries coverage outcomes, scheme rates and protection",
               all(label in passing_text for label in (
                   "comp%", "yds/att", "yds/comp", "rating", "epa/pass", "td%",
-                  "int%", "pass 1st down%", "sack%", "dropbacks/g", "db havoc%")),
+                  "int%", "pass 1st down%", "sack%", "dropbacks/g", "secondary havoc%")),
               passing_text[:200])
         check("CFB quarterback rows lead with a headshot or initials",
               page.locator("#cfb-quarterbacks tbody td:first-child .ca-cfb-player__shot").count() > 0
@@ -1029,7 +1029,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CFB rushing tab carries run game, line play and ball carriers",
               page.locator("#cfb-rushers.is-tab-on .ca-cfb-panel").count() == 2
               and all(label in run_text for label in (
-                  "epa/rush", "rush 1st down%", "line yds", "2nd level", "power", "stuff%", "front-7 havoc%")),
+                  "epa/rush", "rush 1st down%", "line yds/rush", "2nd-level yds/rush", "power success%", "stuff%", "front-7 havoc%")),
               run_text[:200])
         # 2026-11-19: ball carriers by run lane beside what the defense allows that way.
         lanes_published = '"away_run_lanes"' in page.request.get(base_url.rstrip("/") + "/data/public/cfb/slate.json").text()
