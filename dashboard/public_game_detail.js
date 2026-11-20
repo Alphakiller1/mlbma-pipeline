@@ -5774,7 +5774,7 @@ function seasonToggle(game) {
     var blocks = (logs || {}).regression || {};
     return regressionWatch(sport, game, { away: blocks[game.away], home: blocks[game.home] },
       { cohort: 'NFL clubs', football: true, closeLabel: 'One-Score Record',
-        pending: 'The Regression Watch needs completed games for these clubs.' });
+        pending: 'The Regression Watch is not published for these clubs yet.' });
   }
 
   var NFL_TABS = [
@@ -7906,7 +7906,7 @@ function seasonToggle(game) {
     if (data === undefined) return pending('The Regression Watch is loading.');
     var blocks = (data || {}).regression || {};
     return regressionWatch(sport, game, { away: blocks[game.away], home: blocks[game.home] },
-      { cohort: 'NBA clubs', closeLabel: 'Record Within 5', pending: 'The Regression Watch needs completed games for these clubs.' });
+      { cohort: 'NBA clubs', closeLabel: 'Record Within 5', pending: 'The Regression Watch is not published for these clubs yet.' });
   }
 
   function nbaShooterRegressionPanel(sport, game, side) {
@@ -9656,7 +9656,7 @@ function seasonToggle(game) {
       return r && r.margin ? r : null;  // a pre-2026-11-20 file carries the retired shape
     };
     return regressionWatch(sport, game, { away: block('away'), home: block('home') },
-      { cohort: 'D-I teams', closeLabel: 'Record Within 5', pending: 'The Regression Watch needs completed games for these teams.' });
+      { cohort: 'D-I teams', closeLabel: 'Record Within 5', pending: 'The Regression Watch is not published for these teams yet.' });
   }
   // Rest, density, travel and altitude into the game (pipeline/cbb_public/venues.py).
   function cbbSchedulePanel(sport, game, side) {
@@ -9873,7 +9873,7 @@ function seasonToggle(game) {
       section('cfb-regression', 'Regression Watch', 'Kicking, Fumble Luck And One-Score Games',
         regressionWatch(sport, game, { away: game.away_regression, home: game.home_regression },
           { cohort: 'FBS teams', football: true, closeLabel: 'One-Score Record',
-            pending: 'The Regression Watch needs completed FBS games for these teams.' })),
+            pending: 'The Regression Watch is not published for these schools yet.' })),
       section('cfb-schedule', 'Strength Of Schedule', 'FBS Opponents Played And Remaining',
         cfbScheduleBody(sport, game)),
       section('cfb-availability', 'Injury Report', 'Every Listed Player, Out First',

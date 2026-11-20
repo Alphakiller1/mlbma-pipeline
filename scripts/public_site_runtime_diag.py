@@ -104,7 +104,8 @@ REGRESSION_AUDIT = r"""(id) => {
     ledger: !!ledger, panels: panels.length, rows: rows.map(r => r.length), luck,
     sums: rows.map(r => Math.round(10 * r.reduce((t, tr) => t + first(tr.cells[tr.cells.length - 1]), 0)) / 10),
     unpilled: rows.flat().filter(tr => !tr.cells[tr.cells.length - 1].querySelector('.ca-rank')).length,
-    loading: /is loading/i.test(sec.textContent)
+    loading: /is loading/i.test(sec.textContent),
+    unpublished: /regression watch is not published/i.test(sec.textContent)
   };
 }"""
 
@@ -113,7 +114,7 @@ def regression_ok(audit: dict, published: bool, parts: int) -> bool:
     """A desk whose data carries the blocks shows them whole and reconciled;
     one whose data does not yet shows the pending note, not a broken panel."""
     if not published:
-        return not audit.get("missing") and not audit.get("loading")
+        return bool(audit.get("unpublished")) and not audit.get("loading")
     if not (audit.get("ledger") and audit.get("panels") == 2 and audit.get("rows") == [parts, parts]
             and audit.get("unpilled") == 0):
         return False
