@@ -22,7 +22,8 @@ placed as a percentile among all team-games this season.
 
 The log also carries the adjusted power ranking (pipeline/power.py): half a
 scoring-margin model, half an EPA-per-play model with fumbles at the league
-mean, both opponent-adjusted.
+mean, both opponent-adjusted; and the Regression Watch (pipeline/regression.py):
+each club's luck in its margin, by kick and fumble, and its one-score record.
 """
 from __future__ import annotations
 
@@ -43,6 +44,7 @@ COLUMNS = (
 # The slate's club codes (nflverse writes WAS and LA).
 TEAM_ALIAS = {"WAS": "WSH", "LA": "LAR"}
 MIN_GAMES = 16
+ONE_SCORE = 8  # a close football game: decided by one score
 
 # [key, higher is better]
 RATES = (
@@ -98,19 +100,25 @@ def _game_rows(game: pd.DataFrame, k: dict[str, Any]) -> list[dict]:
     luck = {home: 0.0, away: 0.0}
     plays = game[game["play_type"].isin(["pass", "run"])]
     fumble_net = {home: 0.0, away: 0.0}
+    # Each side's own kicks and fumbles, (actual, expected, tried), for the Regression Watch.
+    kicks: dict[str, dict] = {home: {}, away: {}}
     for team in (home, away):
         opp = away if team == home else home
         fg = game[game["posteam"].eq(team) & game["play_type"].eq("field_goal")].dropna(
             subset=["kick_distance"])
         expected = sum(_fg_expected(d, k["fg_make_rate_by_distance"]) for d in fg["kick_distance"])
-        luck[team] += 3 * (int(fg["field_goal_result"].eq("made").sum()) - expected)
+        made = int(fg["field_goal_result"].eq("made").sum())
+        luck[team] += 3 * (made - expected)
         xp = game[game["posteam"].eq(team) & game["play_type"].eq("extra_point")]
-        luck[team] += int(xp["extra_point_result"].eq("good").sum()) - k["xp_make_rate"] * len(xp)
+        xp_made = int(xp["extra_point_result"].eq("good").sum())
+        luck[team] += xp_made - k["xp_make_rate"] * len(xp)
         fumbles = plays[plays["posteam"].eq(team) & plays["fumble"].eq(1) & plays["epa"].notna()]
         net = float((fumbles["epa"] - k["fumble_mean_epa"]).sum())
         fumble_net[team] = net
         luck[team] += net / 2
         luck[opp] -= net / 2
+        kicks[team] = {"fg": (made, expected, len(fg)), "xp": (xp_made, k["xp_make_rate"] * len(xp), len(xp)),
+                       "fumbles": (float(fumbles["epa"].sum()), k["fumble_mean_epa"] * len(fumbles), len(fumbles))}
 
     rows = []
     for team in (home, away):
@@ -145,6 +153,9 @@ def _game_rows(game: pd.DataFrame, k: dict[str, Any]) -> list[dict]:
             if off["epa"].notna().any() else None,
             # Plays and EPA with every fumble at the league's mean fumble outcome: the power read.
             "_plays": (int(off["epa"].notna().sum()), float(off["epa"].sum()) - fumble_net[team]),
+            # Both sides' kicks and fumbles: the Regression Watch read.
+            "_kicks": {**kicks[team], **{"opp_" + key: v for key, v in kicks[opp].items()}},
+            "_luck": luck[team] - luck[opp],
         })
     return rows
 
@@ -192,7 +203,20 @@ def build(season: int | None = None) -> dict | None:
         "teams": teams,
         "predictability": predictability.score(events, predictability.NFL),
         "adjusted": power_ranking(rows),
+        "regression": regression_watch(rows),
     }
+
+
+def regression_watch(rows: list[dict]) -> dict:
+    """Each club's luck in its margin by source, and its one-score record
+    (pipeline/regression.py), over the same games and constants as the log."""
+    from pipeline import regression
+    tallies: dict[str, regression.Tally] = {}
+    for r in rows:
+        tally = tallies.setdefault(r["team"], regression.Tally())
+        margin = r["points"] - r["opp_points"]
+        regression.football_game(tally, margin, margin - r["_luck"], r["_kicks"], ONE_SCORE)
+    return regression.publish(tallies, set(tallies), ONE_SCORE, regression.FOOTBALL_PARTS)
 
 
 def power_ranking(rows: list[dict]) -> dict:

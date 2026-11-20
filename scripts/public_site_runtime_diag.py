@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import urllib.parse
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -86,6 +87,38 @@ UNPILLED_AUDIT = r"""
   return { graded: graded.length, unpilled: bad.length, sample: bad.slice(0, 6) };
 }
 """
+
+# Regression Watch (pipeline/regression.py, 2026-11-20), one shape on every
+# desk: the ledger, a Luck By Source panel per team, a pill on every source's
+# Pts/G, and each team's sources adding up to its Margin From Luck.
+REGRESSION_AUDIT = r"""(id) => {
+  const sec = document.getElementById(id);
+  if (!sec) return { missing: true };
+  const first = td => td ? parseFloat((td.childNodes[0] || {}).textContent) : NaN;
+  const ledger = sec.querySelector('.ca-cfb-h2h table');
+  const row = ledger ? [...ledger.tBodies[0].rows].find(r => /margin from luck/i.test(r.cells[0].textContent)) : null;
+  const luck = row ? [first(row.cells[1]), first(row.cells[3])] : [];
+  const panels = [...sec.querySelectorAll('.ca-regression-panel')];
+  const rows = panels.map(p => [...p.querySelectorAll('tbody tr')]);
+  return {
+    ledger: !!ledger, panels: panels.length, rows: rows.map(r => r.length), luck,
+    sums: rows.map(r => Math.round(10 * r.reduce((t, tr) => t + first(tr.cells[tr.cells.length - 1]), 0)) / 10),
+    unpilled: rows.flat().filter(tr => !tr.cells[tr.cells.length - 1].querySelector('.ca-rank')).length,
+    loading: /is loading/i.test(sec.textContent)
+  };
+}"""
+
+
+def regression_ok(audit: dict, published: bool, parts: int) -> bool:
+    """A desk whose data carries the blocks shows them whole and reconciled;
+    one whose data does not yet shows the pending note, not a broken panel."""
+    if not published:
+        return not audit.get("missing") and not audit.get("loading")
+    if not (audit.get("ledger") and audit.get("panels") == 2 and audit.get("rows") == [parts, parts]
+            and audit.get("unpilled") == 0):
+        return False
+    return all(abs(total - luck) <= 0.35 for total, luck in zip(audit["sums"], audit["luck"]) if luck == luck)
+
 
 # Owner rule: no dash cells anywhere - a missing figure says why ("No PA",
 # "Not Applicable", "No Close Games"). Returns where each dash cell sits.
@@ -281,6 +314,11 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             cbb_counts[year] = f"{total['made']}/{total['attempts']}"
         page.goto(base_url.rstrip("/") + "/cbb/matchup.html?game=401909564#shooting", wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector("#cbb-shot-chart .ca-cbb-court", timeout=timeout_ms)
+        cbb_watch = all((page.request.get(base_url.rstrip('/') + f'/data/public/cbb/2027/teams/{t}.json').json()
+                         .get('regression') or {}).get('margin') for t in (127, 150))
+        cbb_regression = page.evaluate(REGRESSION_AUDIT, "cbb-regression")
+        check("CBB Regression Watch reads margin, luck by source and close games, and reconciles",
+              regression_ok(cbb_regression, cbb_watch, 4), str(cbb_regression))
         check("CBB uses nine evidence tabs (Halves 2026-11-19)", page.locator(".ca-nfl-tabs a[data-nfl-tab]").count() == 9)
         page.locator('[data-cbb-view="defense"]').click()
         # The court, its badges and the table read one tone per zone; on the
@@ -375,6 +413,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                   nba_pills['graded'] > 100 and nba_pills['unpilled'] == 0, str(nba_pills))
             nba_dashes = page.evaluate(DASH_AUDIT)
             check('NBA desk has no dash cells', not nba_dashes, str(nba_dashes))
+            nba_power = page.request.get(base_url.rstrip('/') + '/data/public/nba/power.json').json()
+            nba_watch = all((nba_power.get('regression') or {}).get(fixture[s]) for s in ('away', 'home'))
+            page.wait_for_function("() => !/is loading/i.test((document.getElementById('nba-regression') || {}).textContent || '')",
+                                   timeout=timeout_ms)
+            nba_regression = page.evaluate(REGRESSION_AUDIT, "nba-regression")
+            check('NBA Regression Watch reads margin, luck by source and close games, and reconciles',
+                  regression_ok(nba_regression, nba_watch, 4), str(nba_regression))
             log_ranks = page.locator("#nba-game-log .ca-log-panel td.num .ca-rank")
             bad_nba_ranks = log_ranks.evaluate_all(TEAM_RANK_AUDIT, 30)
             check("NBA game-log ranks use the team scale", not bad_nba_ranks, str(bad_nba_ranks[:4]))
@@ -483,10 +528,15 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               && !td.querySelector('.ca-rank')).length
           }; }""")
         check("NFL Games tab logs both clubs with a margin strip",
-              page.evaluate(shown) == "game-log" and log_cells["panels"] == 2
+              page.evaluate(shown) == "game-log,regression" and log_cells["panels"] == 2
               and log_cells["strips"] == 2 and log_cells["rows"] >= 4, str(log_cells))
         check("NFL game log grades every rate with a pill and no dash cells",
               log_cells["unpilled"] == 0 and log_cells["dashes"] == 0, str(log_cells))
+        nfl_logs = page.request.get(base_url.rstrip("/") + "/data/public/nfl/game_logs.json").json()
+        nfl_watch = bool(nfl_logs.get("regression"))
+        nfl_regression = page.evaluate(REGRESSION_AUDIT, "regression")
+        check("NFL Regression Watch reads margin, luck by kick and fumble and one-score games, and reconciles",
+              regression_ok(nfl_regression, nfl_watch, 6), str(nfl_regression))
         page.locator('a[data-nfl-tab="passing"]').click()
         check("NFL Passing tab shows quarterbacks, coverage and looks",
               page.evaluate(shown) == "quarterbacks,coverage,looks" and page.url.endswith("#passing"),
@@ -1008,6 +1058,15 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.locator("#cfb-game-log.is-tab-on .ca-log-panel").count() == 2
               and page.locator("#cfb-game-log tbody tr.ca-log-season").count() == 2
               and page.locator("#cfb-game-log tbody .ca-rank").count() > 10)
+        cfb_id = urllib.parse.parse_qs(urllib.parse.urlsplit(cfb_detail_url).query).get("game", [""])[0]
+        cfb_slate = page.request.get(base_url.rstrip("/") + "/data/public/cfb/slate.json").json()
+        # The desk's game id is the board's ("Away School @ Home School"); the slate's is coded.
+        cfb_row = next((g for g in cfb_slate.get("games") or [] if cfb_id in
+                        (str(g.get("id")), f"{g.get('away_name')} @ {g.get('home_name')}")), {})
+        cfb_regression = page.evaluate(REGRESSION_AUDIT, "cfb-regression")
+        check("CFB Regression Watch reads margin, luck by kick and fumble and one-score games, and reconciles",
+              regression_ok(cfb_regression, bool(cfb_row.get("away_regression") and cfb_row.get("home_regression")), 6),
+              cfb_id + " " + str(cfb_regression))
         page.locator("a[data-nfl-tab='availability']").click()
         injury_text = page.locator("#cfb-availability").text_content().lower()
         check("CFB availability tab carries both schools' injury reports",

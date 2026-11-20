@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from outputs import nfl_game_log  # noqa: E402
+from pipeline import regression  # noqa: E402
 
 OUT = ROOT / "data" / "public" / "nfl" / "game_logs.json"
 CLUBS = 32
@@ -43,7 +44,7 @@ def validate(log: dict) -> str | None:
             return f"{team} power record does not reconcile with its game log"
         if not -30 <= row["net"]["value"] <= 30:
             return f"{team} power net {row['net']['value']} outside range"
-    return None
+    return regression.check(log.get("regression") or {}, {team: len(games) for team, games in teams.items()})
 
 
 def main() -> int:

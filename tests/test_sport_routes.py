@@ -133,7 +133,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         for label in ("Yds/Comp", "TD%", "INT%", "Sack%", "Pts/Play", "Line Yds", "Havoc%"):
             self.assertIn("'" + label + "'", ledger)
         # 2026-10-01: schedule strength under Games, the injury report tab.
-        self.assertIn("['games', 'Games', ['cfb-game-log', 'cfb-schedule']]", js)
+        self.assertIn("['games', 'Games', ['cfb-game-log', 'cfb-regression', 'cfb-schedule']]", js)
         self.assertIn("['availability', 'Injuries', ['cfb-availability']]", js)
         self.assertIn("function cfbScheduleBody", js)
         self.assertIn("function cfbInjuryPanel", js)

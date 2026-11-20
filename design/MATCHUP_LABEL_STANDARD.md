@@ -45,7 +45,7 @@ This standard covers the NFL, CFB, NBA and CBB matchup desks (`dashboard/public_
 | First tab | Units on every desk: Power Ranking first, then the sport's strength/efficiency reads, then Predictability |
 | Games tab | Called Games |
 | Injury tab and section | The tab is Injuries (CFB, NBA); the NFL keeps Lineups and CBB keeps Roster because they hold more than injuries. The section is Injury Report, subtitle "Every Listed Player, Out First" |
-| Same-concept sections | One name on every desk: Efficiency ("Each Offense Against The Defense It Meets"), Strength Of Schedule, Regression Watch ("Shooting Luck And Close Games"), Schedule Load, Rest, Travel And Venue |
+| Same-concept sections | One name on every desk: Efficiency ("Each Offense Against The Defense It Meets"), Strength Of Schedule, Regression Watch (on all four desks since 2026-11-20: "Shooting Luck And Close Games" on NBA and CBB, "Kicking, Fumble Luck And One-Score Games" on NFL and CFB; one ledger of Scoring Margin, Noise-Adjusted Margin, Margin From Luck and the close-game record, then each team's Luck By Source: Actual, Expected, Pts/G From Luck, pipeline/regression.py), Schedule Load, Rest, Travel And Venue |
 | Subtitles | A short descriptor of what the section holds, never an explanation of how to read it ("Longest bar is 1st", "Negative Is Better") |
 | Panel captions | None on any desk (owner rules 2026-11-11 and 2026-11-12). Provenance stays in the DOM, and the diag reads it with `text_content()`. Status and empty-state lines (`pending()`) remain |
 | Colour and rank | Follow `unit-connotation` (owner rule 2026-11-12): fewer committed and lower allowed read better; style shares are neutral |

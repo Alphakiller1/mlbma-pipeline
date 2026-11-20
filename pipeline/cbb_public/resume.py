@@ -1,9 +1,9 @@
-"""A CBB team's résumé and its luck (2026-11-18 audit): the selection lens.
+"""A CBB team's résumé (2026-11-18 audit): the selection lens.
 
-NET and quadrant records are what the bracket is built on from December;
-T-Rank (barttorvik.com) is the free, daily, opponent-adjusted rating; and
-the regression figures are the ones the NBA desk carries, which matter more
-in college, where a season is thirty games.
+NET and quadrant records are what the bracket is built on from December, and
+T-Rank (barttorvik.com) is the free, daily, opponent-adjusted rating. The
+luck figures beside them (the Regression Watch) are built with the ESPN box
+supplement, from the finals the game log reads (pipeline/regression.py).
 
     NET          The NCAA's own list, once it carries the current season
                  (ncaa.com; the first list comes each December). Until then
@@ -15,7 +15,6 @@ in college, where a season is thirty games.
     T-Rank       barttorvik.com team results, joined on the crosswalk's own
                  barttorvik_team_name. Its projected wins are left out: no
                  forecast reaches the public page.
-    Regression   The NBA desk's five, from the team's D-I rates and finals.
 
 Everything is evidence for the reader to weigh; nothing is ranked as a gap.
 A source that cannot be read leaves its figures out.
@@ -35,8 +34,6 @@ TORVIK = "https://barttorvik.com/{year}_team_results.json"
 NCAA_NET = "https://www.ncaa.com/rankings/basketball-men/d1/ncaa-mens-basketball-net-rankings"
 # The NCAA's quadrant bands: (home, neutral, away) upper NET bounds per quadrant.
 QUADRANTS = ((1, 30, 50, 75), (2, 75, 100, 135), (3, 160, 200, 240))
-PYTHAG = 11.5  # college points exponent
-CLOSE = 5
 # The NCAA's own short forms and initialisms, mapped to the normalized form
 # of a name the crosswalk carries.
 ALIASES = {"connecticut": "uconn", "ole miss": "mississippi", "pitt": "pittsburgh", "umass": "massachusetts",
@@ -228,44 +225,6 @@ def quadrant_records(context: dict, net: dict[int, int]) -> dict | None:
     return {f"q{q}": f"{won}-{lost}" for q, (won, lost) in tally.items()}
 
 
-def regression(contexts: dict[int, dict]) -> dict[int, dict]:
-    """The NBA desk's five luck figures for each D-I team, ranked."""
-    rates = {tid: c["rates"] for tid, c in contexts.items() if c["rates"].get("games_all")}
-
-    def league(key):
-        vals = [r[key] for r in rates.values() if r.get(key) is not None]
-        return sum(vals) / len(vals) if vals else None
-    l3, lft = league("fg3_pct_o_all"), league("ft_pct_o_all")
-    raw: dict[str, dict[int, float | None]] = defaultdict(dict)
-    records = {}
-    for tid, c in contexts.items():
-        r = rates.get(tid) or {}
-        raw["opp_three_luck"][tid] = r["fg3_pct_d_all"] - l3 if r.get("fg3_pct_d_all") is not None and l3 else None
-        raw["own_three_vs_league"][tid] = r["fg3_pct_o_all"] - l3 if r.get("fg3_pct_o_all") is not None and l3 else None
-        raw["opp_ft_luck"][tid] = r["ft_pct_d_all"] - lft if r.get("ft_pct_d_all") is not None and lft else None
-        games = list(finals(c))
-        pf, pa = sum(g["points"] for g in games), sum(g["opponent_points"] for g in games)
-        wins = sum(g["points"] > g["opponent_points"] for g in games)
-        close = [g for g in games if abs(g["points"] - g["opponent_points"]) <= CLOSE]
-        close_w = sum(g["points"] > g["opponent_points"] for g in close)
-        raw["close_win_pct"][tid] = close_w / len(close) if len(close) >= 3 else None
-        raw["wins_over_pythag"][tid] = (wins - len(games) * pf ** PYTHAG / (pf ** PYTHAG + pa ** PYTHAG)
-                                        if pf and pa else None)
-        records[tid] = f"{close_w}-{len(close) - close_w}"
-    spec = (("opp_three_luck", "Opponent 3P% Minus League", "low", "pct"),
-            ("own_three_vs_league", "Own 3P% Minus League", "high", "pct"),
-            ("opp_ft_luck", "Opponent FT% Minus League", "low", "pct"),
-            ("close_win_pct", "Win% In Games Decided By 5 Or Fewer", "high", "pct"),
-            ("wins_over_pythag", "Wins Above Point-Differential Wins", "high", "signed"))
-    out: dict[int, dict] = defaultdict(dict)
-    for key, label, better, fmt in spec:
-        for tid, entry in ranked(raw[key], label, better, fmt).items():
-            out[tid][key] = entry
-    for tid in contexts:
-        out[tid]["close_record"] = records.get(tid, "0-0")
-    return dict(out)
-
-
 PUBLISHED = Path(__file__).resolve().parents[2] / "data" / "public" / "cbb"
 
 
@@ -287,11 +246,8 @@ def previous_torvik(year: int, root: Path = PUBLISHED) -> tuple[dict[int, dict],
 
 
 def attach(contexts: dict[int, dict], crosswalk: list[dict], year: int, fetch=_get) -> dict:
-    """Set c["resume"] and c["regression"] on a season's D-I contexts; returns counts."""
-    counts = {"regression": 0, "net": 0, "torvik": 0}
-    for tid, entries in regression(contexts).items():
-        contexts[tid]["regression"] = entries
-        counts["regression"] += 1
+    """Set c["resume"] on a season's D-I contexts; returns counts."""
+    counts = {"net": 0, "torvik": 0}
     net, basis = net_ranks(year, crosswalk, fetch)
     trank_through = datetime.now(timezone.utc).date().isoformat()
     try:
@@ -320,6 +276,6 @@ def attach(contexts: dict[int, dict], crosswalk: list[dict], year: int, fetch=_g
             counts["torvik"] += 1
         if resume:
             c["resume"] = resume
-    print(f"  résumé: NET ({basis.get('source', 'none')}) {counts['net']}, T-Rank {counts['torvik']}, "
-          f"regression {counts['regression']} of {len(contexts)} teams")
+    print(f"  résumé: NET ({basis.get('source', 'none')}) {counts['net']}, "
+          f"T-Rank {counts['torvik']} of {len(contexts)} teams")
     return counts

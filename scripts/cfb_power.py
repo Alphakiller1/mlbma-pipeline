@@ -18,6 +18,8 @@ schedule-strength block already makes (cfb_depth.cfbd memoises it).
   for their distance, fumbles at the mean fumble outcome (the swing split
   across both scores). Return and defensive touchdowns count as scored: taking
   them out made later results harder to predict.
+* Regression Watch (pipeline/regression.py): over the same games, each FBS
+  school's luck in its margin by kick and fumble, and its one-score record.
 * Predictability (pipeline/predictability.py): each FBS offense's per-play PPA
   spread over its FBS games. 2024 and 2025: first-half spread against second-
   half game spread r = +0.23 and +0.20 over 134 and 136 offenses; off-curve
@@ -36,7 +38,7 @@ try:  # run beside the slate publisher (scripts/ on the path) or imported as scr
     import cfb_depth  # noqa: E402
 except ImportError:  # pragma: no cover - package import in tests
     from scripts import cfb_depth  # noqa: E402
-from pipeline import power, predictability  # noqa: E402
+from pipeline import power, predictability, regression  # noqa: E402
 
 SCRIMMAGE = {"Rush", "Pass Reception", "Pass Incompletion", "Sack", "Rushing Touchdown", "Passing Touchdown",
              "Pass Interception Return", "Interception", "Interception Return Touchdown", "Fumble Recovery (Own)",
@@ -49,6 +51,7 @@ TOUCHDOWN = {"Passing Touchdown", "Rushing Touchdown"} | RETURN_TD
 FIELD_GOAL = {"Field Goal Good", "Field Goal Missed", "Blocked Field Goal", "Blocked Field Goal Touchdown",
               "Missed Field Goal Return", "Missed Field Goal Return Touchdown"}
 DISTANCE = re.compile(r"(\d+)\s*(?:yd|yds|yard|yards)\s*(?:fg|field goal)|field goal attempt from (\d+)", re.I)
+ONE_SCORE = 8  # a close football game: decided by one score
 CFB = predictability.League(metric="EPA per play (CFBD PPA, FBS vs FBS)", event="play", scale=1.0, min_games=3)
 
 
@@ -149,7 +152,8 @@ def fg_expect(distance: int, rates: dict) -> float:
 def build(season: int) -> dict:
     """{"teams": {norm school: power row}, "predictability": {norm school: block},
     "games": {(norm school, utc date): {adj_points, adj_opponent_points}},
-    "constants": {...}} - empty when CFBD is unavailable."""
+    "regression": {norm school: Regression Watch block}, "constants": {...}}
+    - empty when CFBD is unavailable."""
     games = season_games(season)
     if not games:
         return {}
@@ -168,20 +172,26 @@ def build(season: int) -> dict:
            if g.get(s + "Classification") == "fbs"}
     points, plays, played, events = [], [], [], defaultdict(list)
     adjusted: dict = {}
+    luck_watch: dict = defaultdict(regression.Tally)
     for g in games:
         home, away = g["homeTeam"], g["awayTeam"]
         teams = aggregates.get(str(g["id"]), {})
         final = {home: float(g["homePoints"]), away: float(g["awayPoints"])}
         luck = {home: 0.0, away: 0.0}
+        kicks: dict = {home: {}, away: {}}
         for team, opp in ((home, away), (away, home)):
             row = teams.get(team)
             if not row:
                 continue
-            luck[team] += sum(3 * (made - fg_expect(d, k["fg"])) for d, made in row["fg"])
+            expected = sum(fg_expect(d, k["fg"]) for d, _ in row["fg"])
+            made = sum(m for _, m in row["fg"])
+            luck[team] += 3 * (made - expected)
             luck[team] += row["xp"][0] - k["xp"] * row["xp"][1]
             net = row["fum"] - k["fumble"] * row["fum_n"]
             luck[team] += net / 2
             luck[opp] -= net / 2
+            kicks[team] = {"fg": (made, expected, len(row["fg"])), "xp": (row["xp"][0], k["xp"] * row["xp"][1], row["xp"][1]),
+                           "fumbles": (row["fum"], k["fumble"] * row["fum_n"], row["fum_n"])}
         both = home in teams and away in teams
         day = str(g.get("startDate") or "")[:10]
         for team, opp, loc in ((home, away, 1), (away, home, -1)):
@@ -200,11 +210,20 @@ def build(season: int) -> dict:
                 adjusted[(t, day)] = {"adj_points": round(final[team] - luck[team], 1),
                                       "adj_opponent_points": round(final[opp] - luck[opp], 1),
                                       "week": int(g["week"])}
+                # The Regression Watch reads the games the log shows adjusted.
+                regression.football_game(luck_watch[t], margin, margin - (luck[team] - luck[opp]),
+                                         {**kicks[team], **{"opp_" + key: v for key, v in kicks[opp].items()}},
+                                         ONE_SCORE)
     if len(plays) < 100:
         return {}
     fit = power.football(points, plays, played)
     ranked = power.table(fit, played, fbs)
+    watch = regression.publish(luck_watch, fbs, ONE_SCORE, regression.FOOTBALL_PARTS)
+    problem = regression.check(watch, {t: luck_watch[t].games for t in watch})
+    if problem:
+        print(f"  regression watch withheld: {problem}")
+        watch = {}
     return {"teams": ranked["teams"], "home_court": ranked["home_court"], "league_mean": ranked["league_mean"],
-            "predictability": predictability.score(events, CFB), "games": adjusted,
+            "predictability": predictability.score(events, CFB), "games": adjusted, "regression": watch,
             "through_week": max(weeks), "constants": {"xp_make_rate": round(k["xp"], 4),
                                                       "fumble_mean_epa": round(k["fumble"], 4)}}

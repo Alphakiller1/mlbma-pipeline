@@ -71,22 +71,6 @@ class QuadrantTests(unittest.TestCase):
                          {"q1": "1-0", "q2": "0-0", "q3": "0-1", "q4": "1-0"})
 
 
-class RegressionTests(unittest.TestCase):
-    def test_luck_figures_rank_against_the_league(self):
-        def team(o3, d3, games):
-            return {"rates": {"games_all": len(games), "fg3_pct_o_all": o3, "fg3_pct_d_all": d3,
-                              "ft_pct_o_all": 0.7, "ft_pct_d_all": 0.7},
-                    "games": [{"points": p, "opponent_points": q} for p, q in games]}
-        contexts = {1: team(0.36, 0.30, [(70, 68), (71, 70), (60, 62), (80, 50)]),
-                    2: team(0.32, 0.36, [(60, 80), (55, 70)])}
-        out = resume.regression(contexts)
-        self.assertEqual(out[1]["close_record"], "2-1")
-        self.assertAlmostEqual(out[1]["close_win_pct"]["value"], 0.6667, places=4)
-        self.assertNotIn("close_win_pct", out[2])          # no close games: no rate
-        self.assertEqual(out[1]["opp_three_luck"]["rank"], 1)  # lowest opponent 3P% ranks first
-        self.assertEqual(out[2]["own_three_vs_league"]["rank"], 2)
-
-
 class ScheduleLoadTests(unittest.TestCase):
     PLACES = {"Rock Hill, SC": {"lat": 34.92, "lon": -81.03, "elevation_ft": 679, "timezone": "America/New_York"},
               "Laramie, WY": {"lat": 41.31, "lon": -105.59, "elevation_ft": 7165, "timezone": "America/Denver"}}

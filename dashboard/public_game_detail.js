@@ -106,10 +106,10 @@
     projection: 'target', clash: 'football', players: 'users',
     efficiency: 'trend', quarterbacks: 'football', coverage: 'target', looks: 'target',
     rushing: 'football', trenches: 'users', receivers: 'users', strength: 'gauge', 'cfb-strength': 'gauge', 'position-coverage': 'target', redzone: 'target',
-    tendencies: 'lineup', 'game-log': 'calendar', pace: 'trend',
+    tendencies: 'lineup', 'game-log': 'calendar', regression: 'trend', pace: 'trend',
     'cfb-efficiency': 'trend', 'cfb-passing': 'football', 'cfb-rushing': 'football',
     'cfb-rushers': 'users', 'cfb-quarterbacks': 'football', 'cfb-situational': 'target',
-    'cfb-game-log': 'calendar', 'cfb-schedule': 'calendar', 'cfb-availability': 'whistle',
+    'cfb-game-log': 'calendar', 'cfb-regression': 'trend', 'cfb-schedule': 'calendar', 'cfb-availability': 'whistle',
     'cfb-special': 'target',
     'nba-ratings': 'gauge', 'nba-efficiency': 'trend', 'nba-shooting': 'target',
     'nba-rotation': 'users', 'nba-availability': 'whistle', 'nba-game-log': 'calendar',
@@ -5769,9 +5769,17 @@ function seasonToggle(game) {
     return nflDuo(nflGameLogPanel, sport, game, logs);
   }
 
+  function nflRegressionBody(sport, game, logs) {
+    if (logs === undefined) return pending('The Regression Watch is loading.');
+    var blocks = (logs || {}).regression || {};
+    return regressionWatch(sport, game, { away: blocks[game.away], home: blocks[game.home] },
+      { cohort: 'NFL clubs', football: true, closeLabel: 'One-Score Record',
+        pending: 'The Regression Watch needs completed games for these clubs.' });
+  }
+
   var NFL_TABS = [
     ['units', 'Units', ['power', 'strength', 'efficiency', 'dvoa', 'predictability']],
-    ['games', 'Games', ['game-log']],
+    ['games', 'Games', ['game-log', 'regression']],
     ['passing', 'Passing', ['quarterbacks', 'coverage', 'looks']],
     ['rushing', 'Rushing', ['run-game', 'trenches', 'rushing']],
     ['receiving', 'Receiving', ['position-coverage', 'receivers']],
@@ -6298,6 +6306,9 @@ function seasonToggle(game) {
       section('game-log', 'Game Log', 'Every Game, Final And Noise-Adjusted',
         nflGameLogBody(sport, game, undefined)),
 
+      section('regression', 'Regression Watch', 'Kicking, Fumble Luck And One-Score Games',
+        nflRegressionBody(sport, game, undefined)),
+
       section('quarterbacks', 'Quarterbacks', 'Season Line And Splits By Defensive Look',
         nflDuo(nflBackPanel, sport, game, 'QB')),
 
@@ -6376,7 +6387,7 @@ function seasonToggle(game) {
    * ------------------------------------------------------------------ */
   var CFB_TABS = [
     ['units', 'Units', ['cfb-power', 'cfb-strength', 'cfb-efficiency', 'cfb-dvoa', 'cfb-predictability']],
-    ['games', 'Games', ['cfb-game-log', 'cfb-schedule']],
+    ['games', 'Games', ['cfb-game-log', 'cfb-regression', 'cfb-schedule']],
     ['passing', 'Passing', ['cfb-quarterbacks', 'cfb-pass-map', 'cfb-passing', 'cfb-receivers']],
     ['rushing', 'Rushing', ['cfb-rushing', 'cfb-run-direction', 'cfb-rushers']],
     ['defense', 'Defense', ['cfb-defenders']],
@@ -7416,12 +7427,18 @@ function seasonToggle(game) {
     return '<td class="num ca-stack-rank ' + tone + '" title="' + esc((detail ? detail + ' · ' : '') + label) + '">' + esc(text) +
       rankBadge(place, tone, label) + (extra || '') + '</td>';
   }
-  // Current 3P% minus the earlier-season track record, for every 10+ MPG
-  // shooter with both (the line joined to his profile by player id).
+  // Points per game a shooter's threes are running above his earlier-season
+  // track record: the 3P% gap over this season's attempts, threes worth 3.
+  function nbaGapPoints(threePct, threePm, track) {
+    if (threePct == null || track == null || !(threePct > 0) || threePm == null) return null;
+    return 3 * (threePm / threePct) * (threePct - track);
+  }
+  // That figure for every 10+ MPG shooter with both (the line joined to his
+  // profile by player id).
   function nbaGapPool(game) {
     var w = game.__nbaWindow;
     if (!w || !w.teams) return null;
-    var id = w.season + '|gap';
+    var id = w.season + '|gap-pts';
     if (nbaPools[id]) return nbaPools[id];
     var values = [];
     Object.keys(w.teams).forEach(function (code) {
@@ -7430,7 +7447,8 @@ function seasonToggle(game) {
         if ((p.three_track_record || {}).pct != null) track[p.player_id] = p.three_track_record.pct;
       });
       (team.players || []).forEach(function (p) {
-        if (p.mpg >= 10 && p.three_pct != null && track[p.player_id] != null) values.push((p.three_pct - track[p.player_id]) * 100);
+        var pts = p.mpg >= 10 ? nbaGapPoints(p.three_pct, p.three_pm, track[p.player_id]) : null;
+        if (pts != null) values.push(pts);
       });
     });
     return (nbaPools[id] = values);
@@ -7883,33 +7901,12 @@ function seasonToggle(game) {
       '</section>';
   }
 
-  var NBA_REGRESSION = [['opp_three_luck', 'Opp 3P% − League'], ['own_three_vs_league', 'Own 3P% − League'],
-    ['opp_ft_luck', 'Opp FT% − League'], ['close_win_pct', 'Close-Game Win%'],
-    ['wins_over_pythag', 'Wins vs Point Diff']];
-
-  // A regression row's entry, or a word for why it has none (no dashes).
-  function regressionEntry(prof, key) {
-    var e = prof[key];
-    if (e && e.value != null) return e;
-    if (!Object.keys(prof).length) return null;  // nothing published: the panel says so
-    if (key === 'close_win_pct') {
-      // Under three close games has no rate; the record itself still reads.
-      var record = prof.close_record;
-      return { value: null, missing: record && record !== '0-0' ? record + ' Close' : 'No Close Games' };
-    }
-    return { value: null, missing: 'Too Few Games' };
-  }
-
   function nbaRegressionBody(sport, game) {
-    var a = nbaProf(game, 'away').regression || {}, h = nbaProf(game, 'home').regression || {};
-    var basis = nbaProf(game, 'away').regression_basis || nbaProf(game, 'home').regression_basis || '';
-    var context = '<p class="ca-lineup-context">' + esc(basis + ' · Close Games: ' +
-      nflNick(sport, game, 'away') + ' ' + (a.close_record || 'None') + ', ' + nflNick(sport, game, 'home') + ' ' +
-      (h.close_record || 'None')) + '</p>';
-    return cfbHeadToHead(sport, game, deskName(sport, game, 'away') + ' vs ' + deskName(sport, game, 'home') +
-      ' Regression Watch', context, NBA_REGRESSION.map(function (r) {
-        return [r[1], regressionEntry(a, r[0]), regressionEntry(h, r[0])];
-      }));
+    var data = game.__nbaPower;
+    if (data === undefined) return pending('The Regression Watch is loading.');
+    var blocks = (data || {}).regression || {};
+    return regressionWatch(sport, game, { away: blocks[game.away], home: blocks[game.home] },
+      { cohort: 'NBA clubs', closeLabel: 'Record Within 5', pending: 'The Regression Watch needs completed games for these clubs.' });
   }
 
   function nbaShooterRegressionPanel(sport, game, side) {
@@ -7922,6 +7919,7 @@ function seasonToggle(game) {
     var rows = rot.map(function (p) {
       var pr = prof[p.player_id], rec = pr.three_track_record || {}, age = pr.age_change || {};
       var gap = p.three_pct != null && rec.pct != null ? (p.three_pct - rec.pct) * 100 : null;
+      var gapPts = nbaGapPoints(p.three_pct, p.three_pm, rec.pct);
       var ageO = age.offense, ageD = age.defense;
       var shooters = nbaPool(game, 'line', 'three_pct', function (x) { return x.three_pm >= 1 ? x.three_pct : null; });
       var ageTotal = ageO == null ? null : ageO + (ageD || 0);
@@ -7933,9 +7931,14 @@ function seasonToggle(game) {
           nbaRankedTd(nbaPct(rec.pct), nbaProfileRank(game, 'track', function (x) {
             return (x.three_track_record || {}).pct; }, rec.pct, true), true, 'profiled players · earlier seasons',
             rec.attempts + ' attempts in earlier seasons', '<small class="ca-qb-volume">' + esc(rec.attempts + ' att') + '</small>')) +
-        (gap == null ? '<td class="num ca-vs-none">No Track Record</td>' :
-          nbaRankedTd((gap > 0 ? '+' : '') + gap.toFixed(1), nbaPlayerPlace(gap, nbaGapPool(game), null),
-            null, 'shooting above track record')) +
+        (gapPts == null ? '<td class="num ca-vs-none">' + (rec.pct == null ? 'No Track Record' : 'No Attempts') + '</td>' :
+          // Graded like the Regression Watch: fewest points above the record
+          // first (room to rise), the furthest above it last.
+          nbaRankedTd(regressionSigned(gapPts), nbaPlayerPlace(gapPts, nbaGapPool(game), false), false,
+            '10+ MPG shooters · fewest points above track record first',
+            '3P% ' + (100 * p.three_pct).toFixed(1) + '% against ' + (100 * rec.pct).toFixed(1) + '% in earlier seasons, on ' +
+              (p.three_pm / p.three_pct).toFixed(1) + ' 3PA/G',
+            '<small class="ca-qb-volume">' + esc((gap > 0 ? '+' : '') + gap.toFixed(1) + '% 3P') + '</small>')) +
         '<td class="num">' + esc(pr.age != null ? String(Math.round(pr.age)) : 'Not Listed') + '</td>' +
         (ageTotal == null ? '<td class="num ca-vs-none">Not Published</td>' :
           nbaRankedTd((ageTotal > 0 ? '+' : '') + ageTotal.toFixed(1), nbaProfileRank(game, 'age_curve', function (x) {
@@ -7945,7 +7948,10 @@ function seasonToggle(game) {
     });
     return head + '<p class="ca-lineup-context">' + esc((game[side + '_rotation_basis'] || '') + ' 3P% · Track ' +
       'Record: Earlier Seasons · Age Curve: League Average Change In Box Plus-Minus From This Age To The Next') +
-      '</p>' + nflSplitTable(['3P%', 'Track Record', 'Gap', 'Age', 'Age Curve'], rows, 'Player') + '</section>';
+      '</p>' + nflSplitTable(['3P%', 'Track Record', 'Pts/G vs Record', 'Age', 'Age Curve'], rows, 'Player')
+        .replace('<th class="num">Pts/G vs Record</th>', '<th class="num" title="' + esc('Points per game his threes are ' +
+          'running above (or below) his earlier-season 3P%, over this season’s attempts. Fewest above first.') +
+          '">Pts/G vs Record</th>') + '</section>';
   }
 
   function nbaPlayerTypesPanel(sport, game, side) {
@@ -8765,6 +8771,119 @@ function seasonToggle(game) {
     return panel(title, opts.caption || '', table);
   }
 
+  /* Regression Watch (pipeline/regression.py), one shape on all four desks:
+     how much of each team's scoring margin came from the luck its
+     noise-adjusted score takes out, where that luck came from, and its record
+     in close games. Luck reads as points of margin per game: above zero the
+     results ran ahead of the play, below zero behind it. Luck ranks fewest
+     first, the way Wins Above does (owner 2026-11-11): a margin its play backs
+     is green, one that ran ahead of its play red. The method rides on the
+     column headers' tooltips (no page copy). */
+  var REGRESSION_PARTS = {
+    three: '3P%', free: 'FT%', opp_three: 'Opp 3P%', opp_free: 'Opp FT%',
+    fg: 'Field Goals', xp: 'Extra Points', opp_fg: 'Opp Field Goals', opp_xp: 'Opp Extra Points',
+    fumbles: 'Fumbles', opp_fumbles: 'Opp Fumbles'
+  };
+  var REGRESSION_NOTES = {
+    basketball: {
+      actual: 'Makes over attempts this season, and attempts per game.',
+      expected: 'Own: the team’s season rate pulled toward the league (750 threes and 100 free throws of ' +
+        'league-average shooting). Opponents: each opponent’s own rate on the same terms, over the shots it took.',
+      luck: 'Points of margin per game: half the gap between makes and expected makes (the half that has not ' +
+        'repeated), threes worth 3. Opponents’ makes count against the margin. Fewest first.'
+    },
+    football: {
+      actual: 'Kicks made of kicks tried. Fumbles: the expected points (EPA) the fumbles cost the side that fumbled.',
+      expected: 'Kicks made at the league make rate for each kick’s distance. Fumbles: the league’s ' +
+        'average fumble outcome times the fumbles.',
+      luck: 'Points of margin per game: field goals worth 3 and extra points 1 a make against expected; fumbles at ' +
+        'their EPA against the average outcome. Opponents’ kicks and fumbles count the other way. Fewest first.'
+    }
+  };
+  function regressionSigned(v) {
+    var n = Number(v);
+    return Math.abs(n) < 0.05 ? '0.0' : powerSigned(n, 1);
+  }
+  function regressionEntry(e, label, better, cohort, extra) {
+    if (!e || e.value == null) return null;
+    return Object.assign({ label: label, better: better, format: 'signed', cohort: cohort }, e, extra || {});
+  }
+  function regressionLedger(sport, game, a, h, opts) {
+    var cohort = opts.cohort;
+    function close(block) {
+      if (!block) return null;
+      var c = block.close || {};
+      var record = c.wins + '-' + c.losses;
+      if (c.value == null) return { value: null, missing: 'No Close Games' };
+      return regressionEntry(c, 'Record in games decided by ' + block.close_within + ' or fewer · ' +
+        regressionSigned(c.value) + ' wins above .500 · fewest above first', undefined, cohort, { text: record });
+    }
+    function luck(block) {
+      return block && regressionEntry(block.luck, 'Pts/G of margin from luck: scoring margin less noise-adjusted margin · ' +
+        'fewest first, the margin its play backs best', undefined, cohort, { text: regressionSigned(block.luck.value) });
+    }
+    var rows = [
+      ['Scoring Margin', regressionEntry(a && a.margin, 'Scoring margin per game', 'high', cohort),
+        regressionEntry(h && h.margin, 'Scoring margin per game', 'high', cohort)],
+      ['Noise-Adjusted Margin', regressionEntry(a && a.adjusted_margin, 'Margin per game on noise-adjusted scores', 'high', cohort),
+        regressionEntry(h && h.adjusted_margin, 'Margin per game on noise-adjusted scores', 'high', cohort)],
+      ['Margin From Luck', luck(a), luck(h)],
+      [opts.closeLabel, close(a), close(h)]
+    ];
+    return cfbHeadToHead(sport, game, deskName(sport, game, 'away') + ' vs ' + deskName(sport, game, 'home') +
+      ' Regression Watch', '', rows);
+  }
+  function regressionPartCells(part, games) {
+    var att = Number(part.attempts) || 0;
+    if (part.kind === 'rate') {
+      if (!att) return '<td class="num ca-vs-none">No Attempts</td><td class="num ca-vs-none">No Attempts</td>';
+      return '<td class="num">' + esc((100 * part.actual / att).toFixed(1) + '%') +
+        '<small class="ca-qb-volume">' + esc((att / games).toFixed(1) + ' Att/G') + '</small></td>' +
+        '<td class="num">' + esc((100 * part.expected / att).toFixed(1) + '%') + '</td>';
+    }
+    if (part.kind === 'kicks') {
+      if (!att) return '<td class="num ca-vs-none">No Kicks</td><td class="num ca-vs-none">No Kicks</td>';
+      return '<td class="num">' + esc(Math.round(part.actual) + '/' + Math.round(att)) + '</td>' +
+        '<td class="num">' + esc(Number(part.expected).toFixed(1) + '/' + Math.round(att)) + '</td>';
+    }
+    if (!att) return '<td class="num ca-vs-none">No Fumbles</td><td class="num ca-vs-none">No Fumbles</td>';
+    return '<td class="num">' + esc(powerSigned(part.actual, 1) + ' EPA') +
+      '<small class="ca-qb-volume">' + esc(Math.round(att) + (att === 1 ? ' Fumble' : ' Fumbles')) + '</small></td>' +
+      '<td class="num">' + esc(powerSigned(part.expected, 1) + ' EPA') + '</td>';
+  }
+  function regressionPartsPanel(sport, game, side, opts) {
+    var block = opts.blocks[side];
+    var head = '<section class="ca-form-panel ca-cfb-panel ca-regression-panel"><h3>' + esc(deskName(sport, game, side) +
+      ' Luck By Source') + '</h3>';
+    if (!block || !(block.parts || []).length) return head + pending(opts.pending) + '</section>';
+    var notes = REGRESSION_NOTES[opts.football ? 'football' : 'basketball'];
+    var label = opts.cohort + ' · fewest points from luck first';
+    var rows = block.parts.map(function (part) {
+      var e = part.luck || {};
+      var place = rankPosition(e);
+      var tone = place ? rankTone(place.rank, place.of) : '';
+      // CFB values stay neutral: the grade lives on the pill (owner, 2026-10-03).
+      var tint = sport === 'cfb' ? '' : tone;
+      return '<tr><td>' + esc(REGRESSION_PARTS[part.key] || part.key) + '</td>' +
+        regressionPartCells(part, block.games) +
+        '<td class="num ca-stack-rank ' + tint + '" title="' + esc('Pts/G of margin from ' +
+          (REGRESSION_PARTS[part.key] || part.key) + (place ? ' · ' + rankLabel(place, label) : '')) + '">' +
+        esc(regressionSigned(e.value)) + rankBadge(place, tone, place ? rankLabel(place, label) : '') + '</td></tr>';
+    });
+    var table = nflSplitTable(['Actual', 'Expected', 'Pts/G From Luck'], rows, 'Source');
+    [['Actual', notes.actual], ['Expected', notes.expected], ['Pts/G From Luck', notes.luck]].forEach(function (h) {
+      table = table.replace('<th class="num">' + h[0] + '</th>', '<th class="num" title="' + esc(h[1]) + '">' + h[0] + '</th>');
+    });
+    return head + table + '</section>';
+  }
+  /* blocks: {away, home} Regression Watch blocks. opts: cohort (the places'
+     pool, e.g. "NBA clubs"), football, closeLabel, pending. */
+  function regressionWatch(sport, game, blocks, opts) {
+    if (!blocks.away && !blocks.home) return pending(opts.pending);
+    return regressionLedger(sport, game, blocks.away, blocks.home, opts) +
+      nflDuo(regressionPartsPanel, sport, game, Object.assign({ blocks: blocks }, opts));
+  }
+
   /* Final and noise-adjusted margin by game, for the basketball and CFB logs:
      the most recent games, oldest at the left. */
   function logMarginStrip(games, label, limit) {
@@ -9532,11 +9651,12 @@ function seasonToggle(game) {
     return status + nflSplitTable([cbbSchool(game, 'away'), cbbSchool(game, 'home')], rows, 'Stat');
   }
   function cbbRegression(sport, game) {
-    var a = (cbbTeam(game, 'away') || {}).regression || {}, h = (cbbTeam(game, 'home') || {}).regression || {};
-    var context = '<p class="ca-lineup-context">' + esc('Close Games: ' + cbbSchool(game, 'away') + ' ' +
-      (a.close_record || 'None') + ', ' + cbbSchool(game, 'home') + ' ' + (h.close_record || 'None')) + '</p>';
-    return cfbHeadToHead(sport, game, cbbSchool(game, 'away') + ' vs ' + cbbSchool(game, 'home') + ' Regression Watch',
-      context, NBA_REGRESSION.map(function (r) { return [r[1], regressionEntry(a, r[0]), regressionEntry(h, r[0])]; }));
+    var block = function (side) {
+      var r = (cbbTeam(game, side) || {}).regression;
+      return r && r.margin ? r : null;  // a pre-2026-11-20 file carries the retired shape
+    };
+    return regressionWatch(sport, game, { away: block('away'), home: block('home') },
+      { cohort: 'D-I teams', closeLabel: 'Record Within 5', pending: 'The Regression Watch needs completed games for these teams.' });
   }
   // Rest, density, travel and altitude into the game (pipeline/cbb_public/venues.py).
   function cbbSchedulePanel(sport, game, side) {
@@ -9750,6 +9870,10 @@ function seasonToggle(game) {
           game.home_predictability, meta.through_week ? 'Through week ' + meta.through_week + ' · FBS games' : '')),
       section('cfb-game-log', 'Game Log', 'Every Game, Ranked Against That Week',
         nflDuo(cfbGameLogPanel, sport, game)),
+      section('cfb-regression', 'Regression Watch', 'Kicking, Fumble Luck And One-Score Games',
+        regressionWatch(sport, game, { away: game.away_regression, home: game.home_regression },
+          { cohort: 'FBS teams', football: true, closeLabel: 'One-Score Record',
+            pending: 'The Regression Watch needs completed FBS games for these teams.' })),
       section('cfb-schedule', 'Strength Of Schedule', 'FBS Opponents Played And Remaining',
         cfbScheduleBody(sport, game)),
       section('cfb-availability', 'Injury Report', 'Every Listed Player, Out First',
@@ -10177,6 +10301,7 @@ function seasonToggle(game) {
           game.__nbaPower = data;
           paintSection(host, 'nba-power', nbaPowerBody(sport, game));
           paintSection(host, 'nba-game-log', nbaGameLogs(sport, game));
+          paintSection(host, 'nba-regression', nbaRegressionBody(sport, game));
         });
       }
       if (sport === 'nfl') {
@@ -10191,6 +10316,7 @@ function seasonToggle(game) {
         });
         loadNflGameLogs().then(function (logs) {
           paintSection(host, 'game-log', nflGameLogBody(sport, game, logs));
+          paintSection(host, 'regression', nflRegressionBody(sport, game, logs));
           paintSection(host, 'predictability', nflPredictabilityBody(sport, game, logs));
           paintSection(host, 'power', nflPowerBody(sport, game, logs));
         });

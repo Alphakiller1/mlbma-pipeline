@@ -5769,6 +5769,14 @@ body[data-sport="nfl"] .ca-detail-nav {
   text-overflow: ellipsis;
 }
 .ca-cfb-panel .ca-lineup-table.ca-split-table thead th:first-child { width: 16.5rem; }
+/* Regression Watch sources (2026-11-20): short labels, so the four columns fit a phone. */
+.ca-cfb-panel.ca-regression-panel .ca-lineup-table.ca-split-table thead th:first-child { width: 8.5rem; }
+.ca-cfb-panel.ca-regression-panel .ca-lineup-table.ca-split-table thead th { word-break: keep-all; overflow-wrap: normal; }
+@media (max-width: 560px) {
+  .ca-cfb-panel.ca-regression-panel .ca-lineup-table.ca-split-table thead th:first-child { width: 4.5rem; }
+  .ca-cfb-panel.ca-regression-panel .ca-lineup-table.ca-split-table thead th:nth-child(3) { width: 4.5rem; }
+  .ca-cfb-panel.ca-regression-panel .ca-lineup-table.ca-split-table td.num { white-space: normal; }
+}
 @media (max-width: 720px) {
   .ca-cfb-player__shot { width: 32px; height: 32px; }
 }
