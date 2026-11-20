@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-20",
- "generated_at_utc": "2026-11-20T10:32:54+00:00",
+ "generated_at_utc": "2026-11-20T12:55:01+00:00",
  "data_through_utc": "2026-11-20T01:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -16746,13 +16746,13 @@
      "value": 0.97
     },
     {
-     "player_id": "3150844",
-     "player_name": "Moritz Wagner",
+     "player_id": "5107173",
+     "player_name": "Danny Wolf",
      "value": 0.92
     },
     {
-     "player_id": "5107173",
-     "player_name": "Danny Wolf",
+     "player_id": "3150844",
+     "player_name": "Moritz Wagner",
      "value": 0.92
     },
     {
@@ -20900,13 +20900,13 @@
      "value": 1.11
     },
     {
-     "player_id": "4017837",
-     "player_name": "Ivica Zubac",
+     "player_id": "5157066",
+     "player_name": "Johnny Furphy",
      "value": 1.06
     },
     {
-     "player_id": "5157066",
-     "player_name": "Johnny Furphy",
+     "player_id": "4017837",
+     "player_name": "Ivica Zubac",
      "value": 1.06
     },
     {
@@ -20930,13 +20930,13 @@
      "value": 0.67
     },
     {
-     "player_id": "4398207",
-     "player_name": "Jalen Slawson",
+     "player_id": "5105854",
+     "player_name": "Braden Smith",
      "value": 0.59
     },
     {
-     "player_id": "5105854",
-     "player_name": "Braden Smith",
+     "player_id": "4398207",
+     "player_name": "Jalen Slawson",
      "value": 0.59
     },
     {
@@ -42048,13 +42048,13 @@
      "value": 1.59
     },
     {
-     "player_id": "4397189",
-     "player_name": "Jalen Smith",
+     "player_id": "4871145",
+     "player_name": "Josh Giddey",
      "value": 1.45
     },
     {
-     "player_id": "4871145",
-     "player_name": "Josh Giddey",
+     "player_id": "4397189",
+     "player_name": "Jalen Smith",
      "value": 1.45
     },
     {
@@ -75699,7 +75699,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-20_05_30AM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-20_07_45AM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -75832,5 +75832,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-20T12:45:13+00:00"
+ "published_at_utc": "2026-11-20T17:56:42+00:00"
 }
