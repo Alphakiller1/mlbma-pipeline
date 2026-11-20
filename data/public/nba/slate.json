@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-19",
- "generated_at_utc": "2026-11-19T20:39:09+00:00",
+ "generated_at_utc": "2026-11-20T02:39:20+00:00",
  "data_through_utc": "2026-11-19T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -122,7 +122,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "2:20 - 2nd",
+   "status_detail": "9:09 - 4th",
    "kickoff_utc": "2026-11-20T01:00Z",
    "away": "GS",
    "home": "MEM",
@@ -136,8 +136,8 @@
    "home_record": "11-4",
    "away_split_record": "2-6",
    "home_split_record": "3-4",
-   "away_score": 41,
-   "home_score": 52,
+   "away_score": 79,
+   "home_score": 99,
    "venue": "FedExForum",
    "venue_city": "Memphis, TN",
    "broadcast": "DAZN MEM",
@@ -4391,20 +4391,6 @@
      "value": 0.73,
      "value_recent": 0.73,
      "missed": 4
-    },
-    {
-     "player_id": "4433149",
-     "player_name": "LJ Cryer",
-     "status": "Questionable",
-     "source": "official",
-     "reason": "Injury/Illness - Left Low Back Soreness",
-     "detail": "Back",
-     "comment": "Cryer (back) is questionable for Thursday's game against Memphis.",
-     "date": "2026-11-19T18:46Z",
-     "return_date": "2026-11-19",
-     "value": 0.46,
-     "value_recent": 0.51,
-     "missed": 0
     }
    ],
    "home_form": {
@@ -7631,7 +7617,7 @@
       "player_name": "Jerami Grant",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/2991070.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 23.4,
       "ppg": 11.1,
       "height_in": 79.0,
@@ -7976,7 +7962,7 @@
       "player_name": "Isaiah Stewart",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4432810.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 18.1,
       "ppg": 10.9,
       "height_in": 80.0,
@@ -8560,18 +8546,18 @@
      "value": null
     },
     {
-     "player_id": "4432810",
-     "player_name": "Isaiah Stewart",
-     "status": "Questionable",
-     "source": "official",
-     "reason": "Injury/Illness - Illness",
-     "detail": "Illness",
-     "comment": "Stewart is questionable for Thursday's game against the Warriors due to an illness.",
-     "date": "2026-11-19T19:11Z",
-     "return_date": "2026-11-19",
-     "value": 0.87,
-     "value_recent": 0.94,
-     "missed": 2
+     "player_id": "2991070",
+     "player_name": "Jerami Grant",
+     "status": "Day-To-Day",
+     "source": "espn",
+     "reason": null,
+     "detail": "Left Calf Not Specified",
+     "comment": "Grant won't return to Thursday's game against the Warriors due to a left calf injury. He'll finish with three points (1-2 FG, 1-1 3Pt) across five minutes.",
+     "date": "2026-11-20T02:08Z",
+     "return_date": "2026-11-21",
+     "value": 1.01,
+     "value_recent": 1.07,
+     "missed": 0
     }
    ]
   },
@@ -8580,7 +8566,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "4:13 - 2nd",
+   "status_detail": "11:57 - 4th",
    "kickoff_utc": "2026-11-20T01:00Z",
    "away": "POR",
    "home": "MIL",
@@ -8594,8 +8580,8 @@
    "home_record": "1-14",
    "away_split_record": "6-3",
    "home_split_record": "1-7",
-   "away_score": 47,
-   "home_score": 50,
+   "away_score": 96,
+   "home_score": 92,
    "venue": "Fiserv Forum",
    "venue_city": "Milwaukee, WI",
    "broadcast": "KUNP 16 / BlazerVision / MyMi / Bucks App",
@@ -10803,7 +10789,7 @@
       "player_name": "Deni Avdija",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4683021.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 32.5,
       "ppg": 24.2,
       "height_in": 80.0,
@@ -11171,7 +11157,7 @@
       "player_name": "Toumani Camara",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4431736.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 29.1,
       "ppg": 12.2,
       "height_in": 79.0,
@@ -12550,6 +12536,20 @@
    ],
    "away_injuries": [
     {
+     "player_id": "4683021",
+     "player_name": "Deni Avdija",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Left Foot Inflammation / Soreness",
+     "detail": "Foot",
+     "comment": "Avdija (foot) is listed as out for Thursday's game against the Bucks.",
+     "date": "2026-11-20T00:21Z",
+     "return_date": "2026-11-21",
+     "value": 2.46,
+     "value_recent": 2.41,
+     "missed": 1
+    },
+    {
      "player_id": "4914336",
      "player_name": "Shaedon Sharpe",
      "status": "Out",
@@ -12618,34 +12618,6 @@
      "value": 0.34,
      "value_recent": 0.45,
      "missed": 7
-    },
-    {
-     "player_id": "4683021",
-     "player_name": "Deni Avdija",
-     "status": "Questionable",
-     "source": "official",
-     "reason": "Injury/Illness - Left Foot Inflammation / Soreness",
-     "detail": "Foot",
-     "comment": "Avdija (foot) is listed as questionable ahead of Thursday's game against Milwaukee.",
-     "date": "2026-11-18T22:54Z",
-     "return_date": "2026-11-19",
-     "value": 2.46,
-     "value_recent": 2.41,
-     "missed": 1
-    },
-    {
-     "player_id": "4431736",
-     "player_name": "Toumani Camara",
-     "status": "Questionable",
-     "source": "official",
-     "reason": "Injury/Illness - Abdominal Soreness",
-     "detail": "Rest",
-     "comment": "Camara is questionable to play Thursday against the Bucks due to general soreness.",
-     "date": "2026-11-18T22:53Z",
-     "return_date": "2026-11-19",
-     "value": 1.17,
-     "value_recent": 1.17,
-     "missed": 0
     }
    ],
    "home_form": {
@@ -16832,7 +16804,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "0.0 - 2nd",
+   "status_detail": "6:28 - 4th",
    "kickoff_utc": "2026-11-20T01:00Z",
    "away": "NY",
    "home": "MIN",
@@ -16846,8 +16818,8 @@
    "home_record": "11-4",
    "away_split_record": "4-3",
    "home_split_record": "7-2",
-   "away_score": 65,
-   "home_score": 50,
+   "away_score": 97,
+   "home_score": 88,
    "venue": "Target Center",
    "venue_city": "Minneapolis, MN",
    "broadcast": "NBA TV / DAZN MIN",
@@ -23720,7 +23692,7 @@
       "player_name": "Jonathan Kuminga",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4433247.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 30.4,
       "ppg": 12.4,
       "height_in": 79.0,
@@ -25181,20 +25153,6 @@
      "value": 0.58,
      "value_recent": 0.68,
      "missed": 2
-    },
-    {
-     "player_id": "4433247",
-     "player_name": "Jonathan Kuminga",
-     "status": "Questionable",
-     "source": "official",
-     "reason": "Injury/Illness - Right Shoulder Contusion",
-     "detail": "Right Shoulder",
-     "comment": "Kuminga (shoulder) is questionable for Thursday's game against the Knicks, Charlie Walton of ZoneCoverage.com reports.",
-     "date": "2026-11-18T23:04Z",
-     "return_date": "2026-11-19",
-     "value": 1.34,
-     "value_recent": 1.27,
-     "missed": 1
     }
    ]
   },
@@ -25203,7 +25161,7 @@
    "sport": "nba",
    "season": 2027,
    "game_state": "live",
-   "status_detail": "2:13 - 2nd",
+   "status_detail": "9:29 - 4th",
    "kickoff_utc": "2026-11-20T01:00Z",
    "away": "LAC",
    "home": "SA",
@@ -25217,8 +25175,8 @@
    "home_record": "12-3",
    "away_split_record": "0-5",
    "home_split_record": "5-3",
-   "away_score": 49,
-   "home_score": 53,
+   "away_score": 95,
+   "home_score": 98,
    "venue": "Frost Bank Center",
    "venue_city": "San Antonio, TX",
    "broadcast": "DAZN SAS / KTLA / ClipperVision",
@@ -33641,7 +33599,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-19_03_30PM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-19_09_30PM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -33774,5 +33732,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-20T02:03:54+00:00"
+ "published_at_utc": "2026-11-20T03:02:15+00:00"
 }
