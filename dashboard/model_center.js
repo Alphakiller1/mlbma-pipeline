@@ -409,8 +409,7 @@
      Each probable starter's simulated distribution per prop: the projection,
      its 10th-90th percentile band drawn on a scale, the median, and the book's
      line where one is posted, with the model's over probability against the
-     market's no-vig one. Without a posted line the nearest half-run line to the
-     projection is priced from the same simulated distribution. */
+     market's no-vig one. A missing posted line stays unavailable. */
   var MLB_PROPS = [
     ['K', 'Strikeouts', 12], ['Outs', 'Outs Recorded', 27], ['H', 'Hits Allowed', 12],
     ['BB', 'Walks', 6], ['ER', 'Earned Runs', 8]
@@ -444,46 +443,111 @@
 
   function pctText(v) { return v == null ? '' : Math.round(v * 100) + '%'; }
 
-  function propRow(stat, dist, lines) {
+  function propMetric(key) {
+    return ({ rush_attempts: 'carries', rush_car: 'carries', pass_yds: 'passing_yards',
+      pass_att: 'pass_attempts', pass_cmp: 'completions', pass_td: 'passing_tds',
+      pass_int: 'interceptions', rush_yds: 'rushing_yards', rec: 'receptions',
+      rec_yds: 'receiving_yards' })[key] || key;
+  }
+
+  function quoteTime(value) {
+    var date = new Date(value || '');
+    return Number.isFinite(date.getTime()) ? date.toLocaleString('en-US', {
+      month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+      timeZone: 'America/New_York'
+    }) + ' ET' : '';
+  }
+
+  function playerKey(value) {
+    return String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase().replace(/[^a-z0-9]/g, '').replace(/(?:jr|sr|iii|ii|iv)$/, '');
+  }
+
+  function applyPropLines(players, quotes, state, replace) {
+    players.forEach(function (player) {
+      var matches = (quotes || []).filter(function (quote) {
+        if (quote.team_id && player.team_id && String(quote.team_id) !== String(player.team_id)) return false;
+        if (quote.espn_id && /^\d+$/.test(String(player.player_id || ''))) {
+          return String(quote.espn_id) === String(player.player_id);
+        }
+        if (quote.team && quote.team !== player.team) return false;
+        if (quote.opponent && quote.opponent !== player.opponent) return false;
+        if (quote.player_id && player.player_id) return quote.player_id === player.player_id;
+        var aliases = quote.player_aliases || [quote.player || quote.player_name];
+        return aliases.some(function (name) {
+          var key = playerKey(name);
+          return key && key === playerKey(player.player_name) && players.filter(function (p) {
+            return p.team === player.team && playerKey(p.player_name) === key;
+          }).length === 1;
+        });
+      }).map(function (quote) {
+        return Object.assign({}, quote, { prop: quote.metric || quote.prop, side: quote.side || 'over',
+          best_book: quote.book_name || quote.book || quote.best_book,
+          quote_status: state || 'snapshot' });
+      });
+      player.lines = replace ? matches : (player.lines || []).concat(matches);
+      if (state) player.prop_quote_state = state;
+    });
+  }
+
+  function propRow(stat, dist, lines, quoteState) {
     var scale = stat[2];
     var at = function (v) { return Math.max(0, Math.min(100, (Number(v) / scale) * 100)); };
     var posted = (lines || []).filter(function (l) {
-      return l.prop === stat[0] && String(l.side || '').toLowerCase() === 'over' && l.line != null;
+      return propMetric(l.prop) === propMetric(stat[0]) && num(l.line) != null &&
+        String(l.best_book || l.book || '').toLowerCase() !== 'model';
+    }).sort(function (a, b) {
+      return String(b.checked_at || b.quote_updated_at || b.last_update || '')
+        .localeCompare(String(a.checked_at || a.quote_updated_at || a.last_update || ''));
     })[0];
-    var line = posted ? Number(posted.line) : Math.floor(Number(dist.mean)) + 0.5;
-    var modelOver = posted && posted.model_probability != null
-      ? Number(posted.model_probability) : overProbability(dist, line);
+    var line = posted ? Number(posted.line) : null;
+    var modelOver = posted ? overProbability(dist, line) : null;
+    var modelUnder = modelOver == null ? null : 1 - modelOver;
+    var push = 0;
+    if (posted && dist.pmf && Number.isInteger(line)) {
+      push = Number(dist.pmf[String(line)] || 0);
+      modelUnder = Math.max(0, modelUnder - push);
+    }
     var label = stat[1] + ': projected ' + fixed(dist.mean, 1) + ', middle 80% ' + dist.p10 +
-      ' to ' + dist.p90 + ', line ' + line;
+      ' to ' + dist.p90 + (posted ? ', sportsbook line ' + line : ', no posted line');
     var bar = '<div class="mc-prop__bar" role="img" aria-label="' + esc(label) + '">' +
       '<span class="mc-prop__band" style="left:' + at(dist.p10).toFixed(1) + '%;width:' +
       Math.max(1, at(dist.p90) - at(dist.p10)).toFixed(1) + '%"></span>' +
       '<span class="mc-prop__median" style="left:' + at(dist.p50).toFixed(1) + '%"></span>' +
-      '<span class="mc-prop__line' + (posted ? '' : ' is-model') + '" style="left:' +
-      at(line).toFixed(1) + '%"></span></div>';
-    var tone = modelOver == null || (!posted && stat[3]) ? '' : (modelOver >= 0.55 ? ' is-over' : (modelOver <= 0.45 ? ' is-under' : ''));
+      (posted ? '<span class="mc-prop__line" style="left:' + at(line).toFixed(1) + '%"></span>' : '') + '</div>';
     var BOOKS = { draftkings: 'DraftKings', fanduel: 'FanDuel', betmgm: 'BetMGM',
       bovada: 'Bovada', caesars: 'Caesars', prizepicks: 'PrizePicks', underdog: 'Underdog',
       sleeper: 'Sleeper', espnbet: 'ESPN BET', betrivers: 'BetRivers' };
-    var bookKey = String((posted && posted.best_book) || '').toLowerCase();
-    var source = posted ? (BOOKS[bookKey] || posted.best_book || 'Book') : 'Model';
+    var bookKey = String((posted && (posted.best_book || posted.book)) || '').toLowerCase();
+    var source = posted ? (BOOKS[bookKey] || posted.best_book || posted.book || 'Book') : '';
+    var checked = posted && quoteTime(posted.checked_at || posted.quote_updated_at || posted.last_update);
+    var snapshot = posted && posted.quote_status !== 'current';
+    var gap = posted ? Math.round((Number(dist.mean) - line) * 10) / 10 : null;
+    var unavailable = quoteState === 'checking' ? 'Checking…'
+      : quoteState === 'closed' ? 'Market closed' : quoteState === 'error' ? 'Unavailable' : 'Not posted';
+    function american(price) { return (Number(price) > 0 ? '+' : '') + String(Number(price)); }
+    var odds = posted && posted.priced === true && posted.over_price != null && posted.under_price != null
+      ? '<small>O ' + american(posted.over_price) + ' / U ' + american(posted.under_price) + '</small>' : '';
     return '<tr><th scope="row">' + esc(stat[1]) + '</th>' +
       '<td class="mc-prop__proj"><strong>' + esc(fixed(dist.mean, 1)) + '</strong>' +
-      '<small>' + esc(dist.p10 + '–' + dist.p90) + '</small></td>' +
-      '<td class="mc-prop__viz">' + bar + '</td>' +
-      '<td class="mc-prop__price' + tone + '"><span>' + esc(source) + '</span>' +
-      '<span>' + esc('O ' + line) + '</span>' +
-      '<strong>' + esc(pctText(modelOver)) + '</strong>' +
-      (posted && posted.market_probability != null
-        ? '<small>Mkt ' + esc(pctText(Number(posted.market_probability))) + '</small>' : '') +
-      '</td></tr>';
+      '<small>' + esc(dist.p10 + '–' + dist.p90) + '</small>' + bar + '</td>' +
+      '<td class="mc-prop__price mc-prop__posted">' + (posted
+        ? '<strong>' + esc(line) + '</strong><span>' + esc(source) + '</span>' + odds +
+          '<small>' + esc((snapshot ? 'Snapshot' : 'Checked') + (checked ? ' ' + checked : '')) + '</small>'
+        : '<span>' + esc(unavailable) + '</span>') + '</td>' +
+      '<td class="mc-prop__price mc-prop__compare">' + (posted
+        ? '<strong>' + esc((gap > 0 ? '+' : '') + fixed(gap, 1)) + '</strong>' +
+          '<span>' + (gap > 0 ? 'Above line' : gap < 0 ? 'Below line' : 'At line') + '</span>' +
+          (modelOver == null ? '' : '<small>Model O ' + esc(pctText(modelOver)) +
+            ' / U ' + esc(pctText(modelUnder)) + '</small>' +
+            (push > 0.005 ? '<small>Push ' + esc(pctText(push)) + '</small>' : ''))
+        : '<span>—</span>') + '</td></tr>';
   }
 
   /* ---- Player prop projections (CFB, NFL, NBA) --------------------------
      cfb-model's and nfl-model's player layers (every QB, back and receiver
      on the week's board) and nba-model's (every rotation player tonight),
-     one game at a time. No book line is posted for most
-     of them, so the over % is against the model's own line and uncoloured. */
+     one game at a time. Comparisons require a real posted threshold. */
   var WEEKLY_PROPS = {
     cfb: [
       ['pass_yds', 'Pass Yds', 450, 'untoned'], ['pass_att', 'Pass Att', 55, 'untoned'],
@@ -583,7 +647,7 @@
   }
 
   function propPlayerAvailable(player) {
-    return player && !global.ChasePlayerAvailability.isOut(player.injury_status || player.status);
+    return player && !global.ChasePlayerAvailability.isOut(player.injury_status || player.availability || player.status);
   }
 
   function modelGameKey(sport, g) {
@@ -619,7 +683,7 @@
   function weeklyPropCard(sport, p, g) {
     var side = p.home ? 'home' : 'away';
     var body = WEEKLY_PROPS[sport].filter(function (stat) { return propShown(p, stat); })
-      .map(function (stat) { return propRow(stat, p.stats[stat[0]], p.lines); }).join('');
+      .map(function (stat) { return propRow(stat, p.stats[stat[0]], p.lines, p.prop_quote_state); }).join('');
     var games = Number(sport === 'cfb' || sport === 'nba' ? p.games : p.history_games) || 0;
     var td = anytimeTd(p);
     var meta = [p.team, p.position,
@@ -627,15 +691,15 @@
       sport === 'nba' && !games && p.history_games
         ? p.history_games + ' games last season'
         : games + (games === 1 ? ' game' : ' games') + (sport === 'nba' ? ' this season' : ''),
-      p.injury_status ? String(p.injury_status) : '',
+      p.injury_status || p.availability || '',
       td != null ? 'Anytime TD ' + pctText(td) : ''
     ].filter(Boolean).join(' \u00b7 ');
     return '<article class="mc-prop">' +
       '<header class="mc-prop__head">' +
       chip(sport, g ? g[side] : p.team, p.team, g && g[side + '_logo'], g && g[side + '_color']) +
       '<div><h3>' + esc(p.player_name) + '</h3><p>' + esc(meta) + '</p></div></header>' +
-      '<table class="mc-prop__table"><thead><tr><th>Prop</th><th>Proj</th>' +
-      '<th>Range</th><th>Over</th></tr></thead><tbody>' + body + '</tbody></table>' +
+      '<table class="mc-prop__table mc-prop__table--compare"><thead><tr><th>Prop</th><th>Proj</th>' +
+      '<th>Line</th><th>vs Line</th></tr></thead><tbody>' + body + '</tbody></table>' +
       '</article>';
   }
 
@@ -682,27 +746,83 @@
       'aria-label="Close prop projections" autofocus>×</button></form></header>' +
       '<div class="mc-props-dialog__toolbar"><label class="mc-props__pick"><span>Matchup</span>' +
       '<select id="mcPropsGame">' + options + '</select></label>' +
-      '<p class="mc-board__status" id="mcPropsCount" role="status"></p></div>' +
+      '<p class="mc-board__status" id="mcPropsCount" role="status"></p>' +
+      '<p class="mc-props__quotes" id="mcPropsQuotes" role="status"></p></div>' +
       '<div class="mc-props-dialog__body" tabindex="0" role="region" aria-label="Projected players">' +
       '<div class="mc-grid mc-props__grid" id="mcPropsGrid"></div></div></dialog>';
   }
 
-  function wirePropsDialog(host, sport, groups, covered) {
+  function quoteStatus(payload) {
+    if (payload.state === 'closed') return 'Pregame prop markets closed';
+    return 'DraftKings via ESPN · Checked ' + quoteTime(payload.checked_at) +
+      ' · Lines are thresholds; prices may be unavailable';
+  }
+
+  function fetchCurrentProps(game, board, sport, players) {
+    var params = new URLSearchParams({ sport: sport, home: game.home, away: game.away,
+      season: String(board.season), week: String(board.week), event_id: String((players || [])[0]?.event_id || '') });
+    return fetch('/api/model-center/prop-lines?' + params, {
+      headers: { Accept: 'application/json' }, cache: 'no-store', signal: AbortSignal.timeout(20000)
+    }).then(function (response) {
+      if (!response.ok) throw new Error('Current quotes unavailable');
+      return response.json();
+    }).then(function (payload) {
+      if (!['ok', 'closed'].includes(payload.state) || !Array.isArray(payload.lines)) {
+        throw new Error('Invalid quote response');
+      }
+      return payload;
+    });
+  }
+
+  function wirePropsDialog(host, sport, groups, covered, board) {
     var dialog = $('mcPropsDialog');
     var pick = $('mcPropsGame');
     var count = $('mcPropsCount');
     var grid = $('mcPropsGrid');
+    var quoteNote = $('mcPropsQuotes');
     var selected;
+    var pending = false;
+    var lastChecked = 0;
+
+    function refreshQuotes(force) {
+      if (!['nfl', 'cfb'].includes(sport) || !selected || pending || (!force && Date.now() - lastChecked < 60000)) return;
+      var game = selected;
+      var key = modelGameKey(sport, game);
+      var players = groups.get(key);
+      pending = true;
+      lastChecked = Date.now();
+      players.forEach(function (p) { p.prop_quote_state = 'checking'; });
+      quoteNote.textContent = 'Checking current DraftKings prop lines…';
+      grid.innerHTML = weeklyGameCards(sport, players, game);
+      fetchCurrentProps(game, board, sport, players).then(function (payload) {
+        applyPropLines(players, payload.lines, payload.state === 'closed' ? 'closed' : 'current', true);
+        if (selected !== game) return;
+        quoteNote.textContent = quoteStatus(payload);
+        grid.innerHTML = weeklyGameCards(sport, players, game);
+      }).catch(function () {
+        players.forEach(function (p) { p.prop_quote_state = 'error';
+          (p.lines || []).forEach(function (line) { line.quote_status = 'snapshot'; }); });
+        if (selected !== game) return;
+        quoteNote.textContent = 'Current quotes unavailable. Any retained lines are labeled as snapshots.';
+        grid.innerHTML = weeklyGameCards(sport, players, game);
+      }).finally(function () {
+        pending = false;
+        if (selected !== game) refreshQuotes(true);
+      });
+    }
 
     function selectGame(key) {
       var game = covered.find(function (g) { return modelGameKey(sport, g) === key; });
-      if (!game || game === selected) return;
+      if (!game) return;
+      if (game === selected) { refreshQuotes(false); return; }
       selected = game;
+      lastChecked = 0;
       var players = groups.get(key);
       pick.value = key;
       grid.innerHTML = weeklyGameCards(sport, players, game);
       grid.parentElement.scrollTop = 0;
       count.textContent = players.length + (players.length === 1 ? ' player projected' : ' players projected');
+      refreshQuotes(true);
     }
 
     pick.addEventListener('change', function () { selectGame(pick.value); });
@@ -712,6 +832,13 @@
         dialog.showModal();
       });
     });
+    var timer = setInterval(function () {
+      if (!dialog.isConnected) { clearInterval(timer); return; }
+      if (dialog.open && !document.hidden) refreshQuotes(false);
+    }, 60000);
+    function resumeQuotes() { if (dialog.isConnected && dialog.open && !document.hidden) refreshQuotes(false); }
+    global.addEventListener('focus', resumeQuotes);
+    document.addEventListener('visibilitychange', resumeQuotes);
   }
 
   function starterPropsSection(rows) {
@@ -726,8 +853,8 @@
       return '<article class="mc-prop">' +
         '<header class="mc-prop__head">' + chip('mlb', p.team) +
         '<div><h3>' + esc(p.player_name) + '</h3><p>' + esc(meta) + '</p></div></header>' +
-        '<table class="mc-prop__table"><thead><tr><th>Prop</th><th>Proj</th>' +
-        '<th>Range</th><th>Over</th></tr></thead><tbody>' + body + '</tbody></table>' +
+        '<table class="mc-prop__table mc-prop__table--compare"><thead><tr><th>Prop</th><th>Proj</th>' +
+        '<th>Line</th><th>vs Line</th></tr></thead><tbody>' + body + '</tbody></table>' +
         '</article>';
     }).join('');
     return '<section class="mc-props" aria-labelledby="mcPropsTitle">' +
@@ -764,6 +891,7 @@
       : board;
     var games = mapped.games || [];
     var rows = mapped.player_projections || [];
+    applyPropLines(rows, board.player_prop_comparisons || [], null, false);
     var groups = propsByGame(sport, rows);
     var covered = games.filter(function (g) { return groups.has(modelGameKey(sport, g)); });
     var want = qs().get('game');
@@ -789,6 +917,37 @@
       host.innerHTML = boardToolbar(sport, jump) + snapshot +
         '<div class="mc-board">' + detailView(sport, one) + gameProps + '</div>';
       if (players && location.hash === '#mcPropsTitle') $('mcPropsTitle').scrollIntoView();
+      if (['nfl', 'cfb'].includes(sport) && players) {
+        var panel = host.querySelector('.mc-props__grid');
+        var note = document.createElement('p');
+        note.className = 'mc-props__quotes';
+        note.setAttribute('role', 'status');
+        panel.parentElement.insertBefore(note, panel);
+        var detailPending = false;
+        function updateDetailQuotes() {
+          if (detailPending || !panel.isConnected || document.hidden) return;
+          detailPending = true;
+          note.textContent = 'Checking current DraftKings prop lines…';
+          fetchCurrentProps(one, board, sport, players).then(function (payload) {
+            applyPropLines(players, payload.lines, payload.state === 'closed' ? 'closed' : 'current', true);
+            note.textContent = quoteStatus(payload);
+          }).catch(function () {
+            players.forEach(function (p) { p.prop_quote_state = 'error';
+              (p.lines || []).forEach(function (line) { line.quote_status = 'snapshot'; }); });
+            note.textContent = 'Current quotes unavailable. Any retained lines are labeled as snapshots.';
+          }).finally(function () {
+            if (panel.isConnected) panel.innerHTML = weeklyGameCards(sport, players, one);
+            detailPending = false;
+          });
+        }
+        updateDetailQuotes();
+        var detailTimer = setInterval(function () {
+          if (!panel.isConnected) { clearInterval(detailTimer); return; }
+          updateDetailQuotes();
+        }, 60000);
+        global.addEventListener('focus', updateDetailQuotes);
+        document.addEventListener('visibilitychange', updateDetailQuotes);
+      }
       return;
     }
 
@@ -816,7 +975,7 @@
       '<span>scores published</span></div></header>' +
       body + (sport === 'mlb' ? starterPropsSection(rows) : '') + '</div>' +
       (covered.length ? propsDialog(sport, covered) : '');
-    if (covered.length) wirePropsDialog(host, sport, groups, covered);
+    if (covered.length) wirePropsDialog(host, sport, groups, covered, board);
   }
 
   function loadBoard(sport) {
