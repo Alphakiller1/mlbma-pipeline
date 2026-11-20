@@ -7,7 +7,9 @@
   offense, defense and net per 100 possessions on noise-adjusted points,
   schedule strength, record against the record the club's play supports) and
   every club's game log: final and noise-adjusted score, and the game's
-  offense, defense and pace, each placed among every team-game that week.
+  offense, defense and pace, each placed among every team-game that week;
+  and the Regression Watch (pipeline/regression.py): how much of each club's
+  margin was shooting luck, by source, and its record in close games.
 
 Every regular-season final this season is read from ESPN's box score. Boxes
 are cached by event id, so a run fetches only new finals. A file is kept when
@@ -26,7 +28,7 @@ from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from pipeline import power, predictability  # noqa: E402
+from pipeline import power, predictability, regression  # noqa: E402
 
 OUT = ROOT / "data" / "public" / "nba" / "predictability.json"
 POWER_OUT = ROOT / "data" / "public" / "nba" / "power.json"
@@ -40,6 +42,7 @@ FIELDS = ("pts", "poss", "fgm", "fga", "tpm", "tpa", "ftm", "fta", "orb", "drb",
 # 2023-2026 validated).
 PENALTY = 8.0
 CARRY = 0.8
+CLOSE = 5  # a close NBA game: decided by five points or fewer
 EVIDENCE = ROOT / "data" / "public" / "nba" / "evidence.json"
 # [key, higher is better (None: neutral)] for each game-log figure.
 LOG_RATES = (("off_rtg", True), ("def_rtg", False), ("pace", None))
@@ -168,12 +171,14 @@ def build_power(season: int, games: list[dict]) -> dict | None:
                 totals[club][k] += s[k]
     rates = power.shooting_rates(totals)
     rows, played, logs = [], [], defaultdict(list)
+    luck: dict[str, regression.Tally] = defaultdict(regression.Tally)
     for g in games:
         poss = (g["teams"][g["home"]]["poss"] + g["teams"][g["away"]]["poss"]) / 2
         adj = {c: power.basketball_points(s["pts"], s["tpm"], s["tpa"], s["ftm"], s["fta"], rates[c])
                for c, s in g["teams"].items()}
         for me, opp, loc in ((g["home"], g["away"], 0 if g["neutral"] else 1), (g["away"], g["home"], 0 if g["neutral"] else -1)):
             mine, theirs = g["teams"][me], g["teams"][opp]
+            regression.basketball_game(luck[me], mine, theirs, rates[me], rates[opp], CLOSE)
             rows.append(power.Row(me, opp, loc, 100 * adj[me] / poss, poss))
             margin = mine["pts"] - theirs["pts"]
             played.append(power.Played(me, opp, loc, margin > 0 if margin else None, poss / 100, margin))
@@ -204,7 +209,9 @@ def build_power(season: int, games: list[dict]) -> dict | None:
     return {"schema": "chase-public-nba-power/1", "sport": "nba", "season": season, "games": len(games),
             "through": games[-1]["date"], "units": "points per 100 possessions",
             "home_court": ranked["home_court"], "league_mean": ranked["league_mean"],
-            "teams": ranked["teams"], "logs": dict(logs)}
+            "teams": ranked["teams"], "logs": dict(logs),
+            # Regression Watch (pipeline/regression.py): the luck in each club's margin, by source.
+            "regression": regression.publish(luck, set(logs), CLOSE, regression.BASKETBALL_PARTS)}
 
 
 def write(path: Path, value: dict, size_key: str, now: datetime) -> None:

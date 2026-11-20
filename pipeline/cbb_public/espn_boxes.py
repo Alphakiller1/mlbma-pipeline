@@ -6,7 +6,7 @@ from statistics import mean
 
 import requests
 
-from .. import power, predictability
+from .. import power, predictability, regression
 from . import game_lines
 from . import possession_data as ncaa
 from . import pressure
@@ -20,6 +20,7 @@ BOX_SOURCE = "ESPN final box scores"
 COUNT_SOURCE = "SportsDataverse NCAA possessions matched to ESPN finals"
 START_SOURCE = "ESPN starting lineups and rosters"
 SIDES = ("home", "away")
+CLOSE = 5  # a close game for the Regression Watch: decided by five points or fewer
 BOX_CONTEXT = {"fast_break_points": "fastBreakPoints", "points_off_turnovers": "turnoverPoints"}
 # Drives, floaters and pull-ups are named only by some arenas' scorer feeds
 # ("driving layup", "floating jump shot", "pullup jump shot"); the others write
@@ -457,6 +458,7 @@ def supplement(contexts, schedule, year, as_of, cache, *, season_through=None, r
     # three-point and free-throw luck against its own D-I season rate taken
     # out; a non-D-I opponent shoots against the league rate.
     rates = power.shooting_rates(shooting_totals(finals))
+    luck = defaultdict(regression.Tally)
     for gid, home, away, teams in scored:
         adj = {tid: power.basketball_points(t["pts"], t["tpm"], t["tpa"], t["ftm"], t["fta"],
                                             rates.get(tid) or rates[""]) for tid, t in teams.items()}
@@ -464,6 +466,13 @@ def supplement(contexts, schedule, year, as_of, cache, *, season_through=None, r
             if own in logged and gid in logged[own]:
                 logged[own][gid]["adj_points"] = round(adj[own], 1)
                 logged[own][gid]["adj_opponent_points"] = round(adj[opp], 1)
+                # The Regression Watch reads the same finals as the log.
+                regression.basketball_game(luck[own], teams[own], teams[opp], rates.get(own) or rates[""],
+                                           rates.get(opp) or rates[""], CLOSE)
+    by_id = {str(t): c for t, c in contexts.items()}
+    for team, block in regression.publish(luck, division, CLOSE, regression.BASKETBALL_PARTS).items():
+        by_id[team]["regression"] = block
+        filled["regression"] += 1
     for team, context in ((str(t), c) for t, c in contexts.items()):
         for g in context.get("games") or []:
             found = logged.get(team, {}).get(str(g["id"]))

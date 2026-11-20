@@ -54,6 +54,22 @@ class NoiseAdjustedScoreTests(unittest.TestCase):
         rows = self.rows([play(touchdown=1, td_team="BBB", posteam="AAA", play_type="pass")])
         self.assertEqual(rows["BBB"]["adj_points"], 10)
 
+    def test_regression_watch_splits_the_removed_luck_by_source(self):
+        rows = self.rows([play(play_type="field_goal", field_goal_result="made", kick_distance=52),
+                          play(fumble=1, epa=0.0)])
+        watch = log.regression_watch(list(rows.values()))
+        away = watch["AAA"]
+        parts = {p["key"]: p for p in away["parts"]}
+        # The 52-yard make is +1.5 of luck; the kept fumble +2 (EPA 0 against -2).
+        self.assertEqual((parts["fg"]["actual"], parts["fg"]["expected"], parts["fg"]["attempts"]), (1, 0.5, 1))
+        self.assertEqual(parts["fg"]["luck"]["value"], 1.5)
+        self.assertEqual(parts["fumbles"]["luck"]["value"], 2.0)
+        self.assertEqual({p["key"]: p["luck"]["value"] for p in watch["BBB"]["parts"]}["opp_fumbles"], -2.0)
+        # Final 3-10 (-7), adjusted 0.5-11 (-10.5): the 3.5 between them is the parts.
+        self.assertAlmostEqual(away["margin"]["value"] - away["adjusted_margin"]["value"], away["luck"]["value"])
+        self.assertAlmostEqual(sum(p["luck"]["value"] for p in away["parts"]), away["luck"]["value"])
+        self.assertEqual(away["close"]["wins"] + away["close"]["losses"], 1)  # a 7-point game is one score
+
     def test_power_ranking_reads_points_and_fumble_neutral_plays(self):
         rows = self.rows([play(fumble=1, epa=-5.0)])
         # The lost fumble's EPA is replaced by the league mean (-2) for the power read.

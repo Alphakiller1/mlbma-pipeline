@@ -944,6 +944,7 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict,
         power = depth.get("power") or {}
         row[side + "_power"] = (power.get("teams") or {}).get(key)
         row[side + "_predictability"] = (power.get("predictability") or {}).get(key)
+        row[side + "_regression"] = (power.get("regression") or {}).get(key)
         for entry in (log or {}).get("games") or []:
             hit = (power.get("games") or {}).get((key, str(entry.get("date") or "")[:10]))
             if hit and hit["week"] == entry.get("week"):
@@ -1050,7 +1051,7 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
 
 DEPTH_KEYS = ("_run_game", "_scheme_stats", "_charting", "_strength", "_penalties", "_run_lanes", "_qbs", "_defense_splits", "_rushers", "_receivers",
               "_defenders",
-              "_schedule_strength", "_power", "_predictability")
+              "_schedule_strength", "_power", "_predictability", "_regression")
 
 
 def carry_forward_depth(games: list[dict], season: int) -> int:
