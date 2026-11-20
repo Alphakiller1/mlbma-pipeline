@@ -42,11 +42,26 @@ export function rosterPlayers(payload, team, teamId) {
 }
 
 async function readJson(url, fetcher, ttl = 60) {
-  const response = await fetcher(url, {
-    cf: { cacheTtl: ttl }, signal: AbortSignal.timeout(10000)
-  });
-  if (!response.ok) throw new Error('The prop-line source is unavailable');
-  return response.json();
+  let failure;
+  for (const agent of [null, 'curl/8.5.0', 'Mozilla/5.0']) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10000);
+    try {
+      const response = await fetcher(url, {
+        headers: agent ? { 'User-Agent': agent } : {},
+        cf: { cacheTtl: agent ? 0 : ttl }, signal: controller.signal
+      });
+      if (response.ok) return await response.json();
+      failure = new Error('ESPN returned HTTP ' + response.status);
+      failure.source_status = response.status;
+      if (response.status === 404) break;
+    } catch (error) {
+      failure = error;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  throw failure || new Error('The prop-line source is unavailable');
 }
 
 async function eventPropLines(root, eventId, homeRoster, awayRoster, checkedAt, fetcher) {

@@ -14,7 +14,9 @@ export async function onRequestGet({ request }) {
     }));
   } catch (error) {
     return json({ error: error instanceof RangeError ? 'invalid_matchup' : 'quotes_unavailable',
-      message: error instanceof RangeError ? error.message : 'Current prop lines could not be checked.' },
+      message: error instanceof RangeError ? error.message : 'Current prop lines could not be checked.',
+      source_status: error.source_status || null,
+      source_issue: String(error.message || 'Provider request failed').slice(0, 160) },
     error instanceof RangeError ? 400 : 503);
   }
 }

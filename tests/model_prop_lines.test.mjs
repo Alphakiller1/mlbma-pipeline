@@ -66,6 +66,19 @@ test('invalid matchups cannot trigger arbitrary provider requests', async () => 
   await assert.rejects(loadNflPropLines({ home: 'https://bad.test', away: 'IND', season: 2026, week: 11 }), RangeError);
 });
 
+test('retry an ESPN edge rejection with a supported agent and uncached request', async () => {
+  let calls = 0;
+  const result = await loadNflPropLines({ home: 'HOU', away: 'IND', season: 2026, week: 11 }, async (url, options) => {
+    calls++;
+    if (calls === 1) return { ok: false, status: 403 };
+    assert.equal(options.headers['User-Agent'], 'curl/8.5.0');
+    assert.equal(options.cf.cacheTtl, 0);
+    return { ok: true, json: async () => ({ events: [event('post')] }) };
+  });
+  assert.equal(result.state, 'closed');
+  assert.equal(calls, 2);
+});
+
 test('college quotes retain ESPN athlete and club identities', async () => {
   const result = await loadCollegePropLines({ event_id: '401856869', season: 2026 }, async url => {
     let data;
