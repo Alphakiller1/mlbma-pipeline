@@ -803,6 +803,15 @@ body:has(.mc-props-dialog[open]) { overflow: hidden; }
 .mc-prop__price strong { font-family: var(--font-display); font-size: var(--type-16); color: var(--text-primary); }
 .mc-prop__price.is-over strong { color: var(--metric-good); }
 .mc-prop__price.is-under strong { color: var(--metric-poor); }
+.mc-prop__table--compare thead th:first-child { width: 20%; }
+.mc-prop__table--compare thead th:nth-child(2) { width: 22%; }
+.mc-prop__table--compare thead th:nth-child(3),
+.mc-prop__table--compare thead th:last-child { width: 29%; text-align: left; }
+.mc-prop__table--compare td:last-child { text-align: left; }
+.mc-prop__table--compare .mc-prop__bar { margin-top: var(--space-2); }
+.mc-prop__table--compare small { font-size: var(--type-meta); line-height: 1.4; overflow-wrap: anywhere; }
+.mc-prop__table--compare .mc-prop__price span { font-size: var(--type-meta); }
+.mc-props__quotes { flex-basis: 100%; margin: 0; color: var(--text-secondary); font-size: var(--type-meta); }
 
 .mc-props__pick {
   display: flex;
