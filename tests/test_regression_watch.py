@@ -79,5 +79,24 @@ class PublishTests(unittest.TestCase):
         self.assertIn("luck parts", regression.check(out, {"A": 2, "B": 2, "C": 2}))
 
 
+class CfbSlateKeyTests(unittest.TestCase):
+    def test_every_cfb_side_block_is_classified(self):
+        # 2026-11-20: the first CFB publish with away_regression was refused by
+        # the public-field gate. Every per-side block the slate can carry must
+        # resolve to a class before it is published.
+        import ast
+        import json
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[1]
+        tree = ast.parse((root / "scripts" / "publish_public_cfb_slate.py").read_text(encoding="utf-8"))
+        keys = next(ast.literal_eval(n.value) for n in ast.walk(tree) if isinstance(n, ast.Assign)
+                    and any(getattr(t, "id", "") == "DEPTH_KEYS" for t in n.targets))
+        spec = json.loads((root / "design" / "public_metric_classification.json").read_text(encoding="utf-8"))
+        classified = {k for v in spec.values() if isinstance(v, list) for k in v}
+        self.assertIn("_regression", keys)
+        missing = [side + key for key in keys for side in ("away", "home") if side + key not in classified]
+        self.assertEqual(missing, [])
+
+
 if __name__ == "__main__":
     unittest.main()

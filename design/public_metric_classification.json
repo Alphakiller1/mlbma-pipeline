@@ -1465,7 +1465,9 @@
     "pefg_d_all",
     "adjusted_margin",
     "expected",
-    "close_within"
+    "close_within",
+    "away_regression",
+    "home_regression"
   ],
   "contextual_environment": [
     "away_rest_days",
