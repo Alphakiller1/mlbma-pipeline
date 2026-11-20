@@ -5634,6 +5634,11 @@ body[data-sport="nfl"] .ca-detail-nav {
 }
 .ca-cfb-ledger-table tbody tr.ca-ledger-group:first-child th { padding-top: var(--space-2); }
 .ca-cfb-ledger-table .ca-ledger-bars { padding-left: var(--space-2); padding-right: var(--space-2); }
+/* The bar column is labelled (2026-11-20): each side's percentile place. */
+.ca-cfb-ledger-table thead th.ca-ledger-bars { text-align: center; }
+/* Ball carriers by lane (2026-11-20): what the defense allows that way, graded with pills. */
+.ca-split-table tr.ca-split-group th .ca-lane-allows { margin-left: var(--space-2); font-weight: 600; }
+.ca-lane-allows__fig { display: inline-flex; align-items: center; gap: 4px; margin-left: var(--space-1); white-space: nowrap; }
 .ca-ledger-pair {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -5725,6 +5730,8 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-log-key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--text-secondary); }
 .ca-log-key--adj { background: transparent; border: 1.5px solid var(--text-secondary); margin-left: var(--space-2); }
 .ca-log-panel .ca-lineup-table.ca-split-table thead th:first-child { width: 8rem; }
+/* CFB logs name the opponent in full, the date beneath (2026-11-20). */
+.ca-cfb-log .ca-lineup-table.ca-split-table thead th:first-child { width: 10.5rem; }
 .ca-log-panel td.num { white-space: nowrap; }
 .ca-log-result b { font-weight: 800; margin-right: 2px; }
 .ca-log-result[data-result="W"] b { color: var(--metric-good); }
