@@ -38,7 +38,9 @@ jobs:
       - name: Install pipeline dependencies
         run: python -m pip install -r requirements.txt
       - name: Run validate-before-push unit tests
-        run: python -m unittest discover -s tests -p "test_*.py"
+        run: |
+          npm ci
+          python -m unittest discover -s tests -p "test_*.py"
       - name: Compile changed pipeline modules
         run: |
           python -m py_compile \
@@ -62,9 +64,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt playwright
           python -m playwright install --with-deps chromium
+          npm ci
       - name: Run dashboard deep-link runtime smoke
         run: |
-          npx --yes wrangler@4.40.0 pages dev . --port 8765 >/tmp/chase-worker.log 2>&1 &
+          npx --yes wrangler@4.40.0 pages dev . --port 8765 --persist-to /tmp/wrangler-state >/tmp/chase-worker.log 2>&1 &
           for attempt in $(seq 1 45); do curl -fsS http://127.0.0.1:8765/ >/dev/null && break || sleep 1; done
           curl -fsS http://127.0.0.1:8765/ >/dev/null || { cat /tmp/chase-worker.log; exit 1; }
           python scripts/dashboard_runtime_diag.py --base-url "http://127.0.0.1:8765/dashboard/render/team_rankings.html?hubdebug=1&family=scoring&hand=r&window=L30&loc=home" --timeout-ms 45000
@@ -74,7 +77,7 @@ jobs:
           python scripts/platform_ui_diag.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000
       - name: Enforce 360px, 375px, and 390px mobile contract
         run: |
-          npx --yes wrangler@4.40.0 pages dev . --port 8766 >/tmp/chase-worker-mobile.log 2>&1 &
+          npx --yes wrangler@4.40.0 pages dev . --port 8766 --persist-to /tmp/wrangler-state-mobile >/tmp/chase-worker-mobile.log 2>&1 &
           for attempt in $(seq 1 45); do curl -fsS http://127.0.0.1:8766/ >/dev/null && break || sleep 1; done
           curl -fsS http://127.0.0.1:8766/ >/dev/null || { cat /tmp/chase-worker-mobile.log; exit 1; }
           python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8766" --timeout-ms 45000 --width 360 --height 800 --strict

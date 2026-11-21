@@ -38,6 +38,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt playwright
           python -m playwright install --with-deps chromium
+          npm ci
       - name: Enforce design and public-data contracts
         run: |
           python scripts/check_tokens.py
@@ -52,13 +53,16 @@ jobs:
         run: python -m unittest discover -s tests -p "test_*.py"
       - name: Run public browser and responsive contracts
         run: |
-          npx --yes wrangler@4.40.0 pages dev . --port 8765 >/tmp/chase-worker.log 2>&1 &
+          npx --yes wrangler@4.40.0 pages dev . --port 8765 --persist-to /tmp/wrangler-state >/tmp/chase-worker.log 2>&1 &
           for attempt in $(seq 1 45); do curl -fsS http://127.0.0.1:8765/ >/dev/null && break || sleep 1; done
           curl -fsS http://127.0.0.1:8765/ >/dev/null || { cat /tmp/chase-worker.log; exit 1; }
           python scripts/public_site_runtime_diag.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000
           python scripts/public_boundary_crawl.py "http://127.0.0.1:8765"
           python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000 --width 360 --height 800 --strict
           python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000 --width 390 --height 844 --strict
+      - name: Show the local server's log when a gate fails
+        if: failure()
+        run: tail -n 200 /tmp/chase-worker.log || true
 
   deploy:
     needs: quality-gate
@@ -80,6 +84,7 @@ jobs:
             --exclude='core' --exclude='outputs' --exclude='pipeline' \
             --exclude='scripts' --exclude='tests' --exclude='__pycache__' \
             --exclude='*.py' --exclude='*.pyc' --exclude='requirements.txt' \
+            --exclude='/package.json' --exclude='/package-lock.json' \
             --exclude='*.md' --exclude='.env*' --exclude='wrangler.jsonc' \
             --exclude='wrangler.toml' \
             --exclude='.assetsignore' --exclude='_site' \
@@ -114,6 +119,7 @@ jobs:
 
       - name: Upload clean build to master branch alias
         run: |
+          npm ci
           cd _site
           npx --yes wrangler@4.40.0 pages deploy . \
             --project-name="$PAGES_PROJECT" \

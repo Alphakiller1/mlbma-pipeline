@@ -117,7 +117,7 @@ class SportRouteBuilderTests(unittest.TestCase):
         self.assertIn("['defense', 'Defense', ['cfb-defenders']]", js)
         self.assertIn("['rushing', 'Rushing', ['cfb-rushing', 'cfb-run-direction', 'cfb-rushers']]", js)
         # 2026-11-18: the official scorer's charting (scripts/cfb_charting.py).
-        self.assertIn("['situational', 'Situational', ['cfb-situational', 'cfb-formation']]", js)
+        self.assertIn("['situational', 'Situational', ['cfb-situational', 'cfb-pace', 'cfb-formation']]", js)
         self.assertIn("function cfbQbLooks", js)
         for fn in ("cfbQbPanel", "cfbRushersPanel", "cfbGameLogPanel"):
             self.assertIn("function " + fn, js)

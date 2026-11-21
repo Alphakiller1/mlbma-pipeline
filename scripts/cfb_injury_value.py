@@ -66,3 +66,24 @@ def attach(entries: list[dict], usage: dict[str, dict], coef: dict[str, float] |
             entry["value_recent"] = points(row.get("recent"), coef)
             found += 1
     return found
+
+
+def table(usage: dict[str, dict], coef: dict[str, float] | None = None) -> list[list]:
+    """Every player in his school's box scores as [name, value, value_recent,
+    missed, plays, played] (value None for a player with no attempts, carries
+    or catches; plays his box-score plays this season, played his games with a
+    line - the desk ranks plays within the roster, owner 2026-11-21).
+    The desk joins a live official report's players to it (2026-11-21): a
+    conference report names more players than Covers or RotoWire list, and
+    each still has his value and his games missed."""
+    coef = coef or coefficients()
+    rows = []
+    for row in usage.values():
+        name = str(row.get("name") or "").strip()
+        if not name:
+            continue
+        rated = value(row.get("shares"), coef)
+        rows.append([name, rated, points(row.get("recent"), coef) if rated is not None else None,
+                     int(row.get("missed") or 0), int(row.get("plays") or 0), int(row.get("played") or 0)])
+    return sorted(rows, key=lambda r: r[0])
+

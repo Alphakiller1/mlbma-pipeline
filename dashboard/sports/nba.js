@@ -20,8 +20,8 @@
   var MIN_GAMES = 5;
   var MIN_ROTATION_GAMES = 3;
 
-  function loadJson(url) {
-    return fetch(url, { cache: 'no-store' }).then(function (r) {
+  function loadJson(url, signal) {
+    return fetch(url, { cache: 'no-store', signal: signal }).then(function (r) {
       if (!r.ok) throw new Error('Request failed: ' + r.status);
       return r.json();
     });
@@ -174,7 +174,8 @@
       nba_fixture_only: slate.fixture_only === true,
       availability_summary: slate.fixture_only ? 'Injury Report Pending' : availabilitySummary(g),
       // League history, shared by every game: drawn as the age-curve chart.
-      aging_curve: ((slate.profile_sources || {}).aging_curve) || null
+      aging_curve: ((slate.profile_sources || {}).aging_curve) || null,
+      __nbaInjuryRates: slate.designation_play_rates
     };
     ['away', 'home'].forEach(function (side) {
       var pick = chooseForm(g[side + '_form'], g[side + '_form_prior']);
@@ -188,6 +189,11 @@
       mapped[side + '_rotation_basis'] = rot.basis;
       mapped[side + '_injuries'] = slate.fixture_only ? null : injuryReport(g[side + '_injuries'], slate.designation_play_rates);
       mapped[side + '_availability_list'] = slate.fixture_only ? null : availabilityList(g[side + '_injuries'], positionsOf(g, side));
+      mapped[side + '_injury_values'] = g[side + '_player_values'] || [];
+      var report = mapped[side + '_injuries'];
+      if (report && /^https:\/\/ak-static\.cms\.nba\.com\/referee\/injury\//.test(slate.official_injury_report || '')) {
+        report.source_url = slate.official_injury_report;
+      }
       mapped[side + '_game_log'] = g[side + '_game_log'] || [];
       // How the club plays and who it plays (nba-model profiles.py), and the
       // schedule's toll into tonight.
@@ -296,10 +302,62 @@
      published slate's: the slate is written when GitHub's scheduler gets to
      it, which can be hours before tip-off. Requested beside the slate, so it
      adds no wait; when it fails the published lists stand. */
-  function liveInjuries() {
-    return loadJson('/api/injuries?sport=nba').then(function (feed) {
+  function liveInjuries(signal) {
+    return loadJson('/api/injuries?sport=nba', signal).then(function (feed) {
       return feed && feed.teams && typeof feed.teams === 'object' ? feed : null;
     }).catch(function () { return null; });
+  }
+
+  function injuryEvidence(game, side, data, snapshot) {
+    var lists = global.ChasePlayerAvailability;
+    var previous = { away_injuries: snapshot };
+    var rotation = { away_injuries: { players: game[side + '_rotation'] || [] } };
+    var values = game[side + '_injury_values'] || [];
+    var rows = data.players.map(function (row) {
+      var prior = lists.designation(previous, 'away', row) || {};
+      var player = lists.designation(rotation, 'away', row) || {};
+      var id = row.player_id || prior.player_id || player.player_id;
+      var value = values.find(function (entry) { return String(entry.player_id) === String(id); }) || {};
+      return Object.assign({}, row, {
+        player_id: id, value: prior.value != null ? prior.value : value.value, value_recent: prior.value_recent,
+        missed: prior.missed
+      });
+    });
+    var report = injuryReport(rows.filter(function (row) { return row.status !== 'Available'; }), game.__nbaInjuryRates);
+    Object.assign(report, {
+      coverage: data.coverage, sources: data.sources, source_url: data.source_url,
+      published_at_utc: data.published_at_utc, checked_at_utc: data.checked_at_utc
+    });
+    return report;
+  }
+
+  function injuryUpdates(game, signal) {
+    var query = new URLSearchParams({
+      away: game.away, home: game.home, away_name: game.away_name, home_name: game.home_name, kickoff: game.kickoff_utc
+    });
+    return loadJson('/api/nba-availability?' + query, signal).catch(function () {
+      return { status: 'unavailable', reports: {} };
+    }).then(function (result) {
+      if (result.status === 'ok' || game.slate_date !== easternToday() || game.game_state === 'final') return result;
+      return liveInjuries(signal).then(function (feed) {
+        if (!feed) return result;
+        result.reports = result.reports || {};
+        ['away', 'home'].forEach(function (side) {
+          var entries = feed.teams[game[side]];
+          if (!result.reports[side] && Array.isArray(entries) && entries.length) {
+            var cutoff = Date.parse(game.kickoff_utc) - 36 * 3600000;
+            var rows = entries.filter(function (row) {
+              return Date.parse(row.date) >= cutoff || (/^(out|injured reserve|suspended)$/i.test(row.status) &&
+                Boolean(row.return_date) && row.return_date >= game.slate_date);
+            });
+            if (rows.length) result.reports[side] = { players: rows, coverage: 'secondary',
+              sources: 'ESPN injury listings', source_url: 'https://www.espn.com/nba/injuries',
+              checked_at_utc: feed.retrieved_at_utc };
+          }
+        });
+        return result;
+      });
+    });
   }
 
   /* ESPN's live list, keeping what the published slate knows that ESPN does
@@ -339,7 +397,7 @@
     var today = easternToday();
     var day = date || today;
     var gameId = new URLSearchParams(global.location.search).get('game');
-    var live = day === today ? liveInjuries() : Promise.resolve(null);
+    var live = day === today && !gameId ? liveInjuries() : Promise.resolve(null);
     return Promise.all([loadJson(SLATE_URL).catch(function () { return null; }), live]).then(function (parts) {
       var slate = parts[0];
       if (slate && slate.sport === 'nba' && Array.isArray(slate.games) &&
@@ -357,6 +415,8 @@
     load: load,
     mapGame: mapGame,
     detail: detail,
+    injuryUpdates: injuryUpdates,
+    injuryEvidence: injuryEvidence,
     selectSeason: selectSeason,
     chooseForm: chooseForm
   };

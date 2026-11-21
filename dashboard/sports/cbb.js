@@ -121,8 +121,11 @@
           game.cbb_availability_as_of = report.retrieved_at_utc;
           game.cbb_availability_sources = report.sources || [];
           game.cbb_fixture_check = byGame.get(String(game.id)) || null;
-          game.away_cbb_availability = byTeam.get(String(game.away)) || [];
-          game.home_cbb_availability = byTeam.get(String(game.home)) || [];
+          ['away', 'home'].forEach(function (side) {
+            if (!game.__activeInjury || !game.__activeInjury.reports[side]) {
+              game[side + '_cbb_availability'] = byTeam.get(String(game[side])) || [];
+            }
+          });
         });
         return result;
       }

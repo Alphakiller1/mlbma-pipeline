@@ -24,7 +24,43 @@ describes when the site last read the source.
 The HD Intelligence conference archives also supply dated game-day designations
 for recent games that have left the current report feed.
 
+Every player on a live official report carries his columns (2026-11-21):
+- value and games missed from his school's value table, which the slate
+  publishes for every player in its box scores (`away_value_table`/
+  `home_value_table`: name, value, value on the last three games, games
+  missed). Defenders and linemen have no priced measure and read
+  "Not rated"; a player with no box-score line reads "No record";
+- the play rate of his designation (the NFL official report's record, as
+  on saved reports);
+- the injury from the saved Covers or RotoWire list when it names him
+  (conference reports do not give one).
+
+When a conference lists a fixture's report as pending (the American posts
+game-day reports only), the API returns `due_at_utc` and the tab reads
+"Official report due ...". A feed that cannot be read is named, with the
+reason, in the response's `issues`.
+
 When no official report matches, the tab can show partial RotoWire coverage for
 the matching school and kickoff. An older slate report remains labeled as saved
 coverage. An absent source or report never confirms a healthy roster. Report
 coverage follows the conference's publication schedule and scope.
+
+## NFL, NBA, and men's college basketball
+
+The active matchup pages check their injury endpoints on open, each minute
+while visible, and when the page regains focus. Repeated reads share short
+server-side caches. A failed check keeps the last report and shows that the
+refresh is temporarily unavailable.
+
+- NFL uses the official weekly report for the fixture, with dated ESPN
+  matchup updates for game-day inactives and roster designations. A practice
+  designation is kept distinct from a game status.
+- NBA uses the league's latest [official injury report](https://official.nba.com/nba-injury-report-2026-27-season/)
+  with the exact date and opponent. ESPN is a partial fallback for the
+  current day. The edge parser reads the PDF table's columns with the pinned
+  `unpdf` dependency. Run `npm ci` at the repository root before running the
+  local Pages preview.
+- CBB checks Covers matchup pages, Action Network, and RotoWire. Player names
+  must match a unique player on the current ESPN roster. The tab distinguishes
+  a verified empty Covers listing from missing or partial coverage. Completed
+  prior days keep their archived reports.
