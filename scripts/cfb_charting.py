@@ -35,7 +35,6 @@ except ImportError:  # pragma: no cover - package import in tests
 _entry, _norm, cfbd = cfb_depth._entry, cfb_depth._norm, cfb_depth.cfbd
 
 CACHE_VERSION = 2
-FRESH_HOURS = 20
 
 SCRIMMAGE = {
     "Rush", "Rushing Touchdown", "Pass Reception", "Pass Incompletion", "Passing Touchdown",
@@ -254,10 +253,12 @@ def _week(season: int, week: int, refresh: bool) -> dict | None:
     # The fetch time rides inside the file: a restored Actions cache does not
     # promise file times, and a week that looked fresh forever would never
     # pick up its late games or stat corrections.
-    fresh = bool(hit) and time.time() - float(hit.get("fetched_at") or 0) < FRESH_HOURS * 3600
+    # Current while no game in the week has finished since the fetch (CFBD
+    # allowance, cfb_depth); MAX_AGE_HOURS when the schedule is unknown.
+    fresh = bool(hit) and cfb_depth._fresh(hit.get("fetched_at"), cfb_depth.changed_at(season, week))
     if hit and hit.get("version") == CACHE_VERSION and (not refresh or fresh):
         return hit
-    plays = cfbd("/plays", year=season, week=week, classification="fbs")
+    plays = cfbd("/plays", store=False, year=season, week=week, classification="fbs")
     if not isinstance(plays, list) or not plays:
         return hit if hit and hit.get("version") == CACHE_VERSION else None
     parsed = parse_week(plays)

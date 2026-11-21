@@ -41,8 +41,8 @@ def _season(season: int, final: bool):
     if hit:
         return hit["rows"], hit["margins"], {}
     ppa = cfb_depth.cfbd("/ppa/games", year=season, seasonType="regular")
-    games = cfb_depth.cfbd("/games", year=season, seasonType="regular")
-    if not isinstance(ppa, list) or not isinstance(games, list):
+    games = cfb_depth.season_games(season)  # ESPN: the same games, free
+    if not isinstance(ppa, list) or not games:
         return None, None, {}
     fbs = {g["homeTeam"] for g in games if g.get("homeClassification") == "fbs"} | \
           {g["awayTeam"] for g in games if g.get("awayClassification") == "fbs"}

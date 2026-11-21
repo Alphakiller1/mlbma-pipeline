@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import re
 import sys
+import time
 from collections import defaultdict
 from pathlib import Path
 
@@ -107,23 +108,28 @@ def aggregate(plays: list[dict]) -> dict:
 
 
 def week_plays(season: int, week: int, season_type: str, complete: bool) -> dict | None:
-    """A week's aggregates: from the cache when the whole week was final when
-    stored, else fetched (one CFBD call) and cached."""
+    """A week's aggregates: kept for good once the whole week was final (and
+    CFBD had time to take its last game in) when stored; otherwise kept until
+    a game in that week finishes, then fetched again (one CFBD call)."""
     name = f"plays_{season}_{season_type}_{week}.json"
     hit = cfb_depth._cached(name)
     if hit and hit.get("complete"):
         return hit["games"]
-    plays = cfb_depth.cfbd("/plays", year=season, week=week, seasonType=season_type)
+    changed = cfb_depth.changed_at(season, week)
+    if hit and cfb_depth._fresh(hit.get("fetched_at"), changed):
+        return hit["games"]
+    plays = cfb_depth.cfbd("/plays", store=False, year=season, week=week, seasonType=season_type)
     if not isinstance(plays, list):
         return hit["games"] if hit else None
     games = aggregate(plays)
-    cfb_depth._store(name, {"complete": complete, "games": games})
+    settled = complete and (changed is None or time.time() >= changed + cfb_depth.LAG_HOURS * 3600)
+    cfb_depth._store(name, {"complete": settled, "fetched_at": time.time(), "games": games})
     return games
 
 
 def season_games(season: int) -> list[dict]:
-    games = cfb_depth.cfbd("/games", year=season, seasonType="regular")
-    return [g for g in (games if isinstance(games, list) else [])
+    """The season's finals with both scores (ESPN, cfb_depth.season_games)."""
+    return [g for g in cfb_depth.season_games(season)
             if g.get("completed") is True and isinstance(g.get("homePoints"), (int, float))
             and isinstance(g.get("awayPoints"), (int, float))]
 
@@ -160,7 +166,7 @@ def build(season: int) -> dict:
     weeks: dict[int, list[dict]] = defaultdict(list)
     for g in games:
         weeks[int(g["week"])].append(g)
-    everything = cfb_depth.cfbd("/games", year=season, seasonType="regular") or []
+    everything = cfb_depth.season_games(season)
     pending = {int(g["week"]) for g in everything if isinstance(g, dict) and g.get("completed") is not True}
     aggregates: dict = {}
     for week in sorted(weeks):

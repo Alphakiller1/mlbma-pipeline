@@ -27,11 +27,14 @@ opposing defense's numbers on the same splits.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
+import time
 import urllib.parse
 import urllib.request
+from datetime import datetime, timezone
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -51,7 +54,8 @@ def _norm(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "", str(value or "").lower())
 
 
-def _get(url: str, headers: dict | None = None) -> object:
+def _get(url: str, headers: dict | None = None, seen: dict | None = None) -> object:
+    """JSON from ``url``; the response headers land in ``seen`` when given."""
     last: Exception | None = None
     for agent in AGENTS if "espn" in url else (None,):
         h = dict(headers or {})
@@ -59,32 +63,219 @@ def _get(url: str, headers: dict | None = None) -> object:
             h["User-Agent"] = agent
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers=h), timeout=45) as r:
+                if seen is not None:
+                    seen.update({k.lower(): v for k, v in r.headers.items()})
                 return json.loads(r.read().decode("utf-8"))
         except Exception as exc:  # an edge 403 or a timeout: try the next agent
             last = exc
     raise last if last else RuntimeError(url)
 
 
-# One run asks for the season's games from two places (schedule strength and
-# the power ranking); a request is made once per process. CFBD's allowance is
-# counted per call.
-_CFBD_SEEN: dict[str, object] = {}
+# --- the CFBD allowance -----------------------------------------------------
+# The free CFBD key carries 1,000 calls a month, one pool shared by this desk
+# and the CFB model. It ran dry on 2026-11-20 with ten days left: 1,294
+# requests in 31 days, most refetching numbers no game had changed (/games
+# alone 332, now read from ESPN). So a CFBD response is kept on disk (the
+# Actions cache keeps the folder between runs) and is fetched again only when
+# a game has finished since it was fetched and CFBD has had LAG_HOURS to take
+# the game in; with no schedule to judge by, after MAX_AGE_HOURS. A refused or
+# failed call serves the last copy kept. The remaining allowance is read off
+# every response, and calls stop at RESERVE so the model keeps some.
+LAG_HOURS = 3
+MAX_AGE_HOURS = 20
+RESERVE = 40
+GAME_HOURS = 4  # a final's end, counted from kickoff
+ALLOWANCE = {"calls": 0, "kept": 0, "stale": 0, "remaining": None, "refused": False}
+_CHANGED: dict[int, float | None] = {}   # season -> the latest final's end (epoch)
+_CFBD_SEEN: dict[str, object] = {}       # one request per URL per process
+_SKIPPED: set[str] = set()
 
 
-def cfbd(path: str, **params) -> list | dict | None:
-    key = os.environ.get("CFBD_API_KEY")
-    if not key:
-        return None
+def _fresh(fetched_at, changed_at, now: float | None = None) -> bool:
+    """Is a copy fetched at ``fetched_at`` still current, given the latest
+    final ended at ``changed_at`` (None: the schedule is unknown)?"""
+    if not fetched_at:
+        return False
+    now = time.time() if now is None else now
+    if changed_at is None:
+        return now - fetched_at < MAX_AGE_HOURS * 3600
+    ready = changed_at + LAG_HOURS * 3600   # when CFBD has taken the latest final in
+    return fetched_at >= ready or now < ready
+
+
+def changed_at(season: int, week: int | None = None) -> float | None:
+    """When the season's (or a week's) latest final ended, from ESPN."""
+    games = season_games(season)
+    ends = [g["_ended"] for g in games if g.get("_ended") and (week is None or g.get("week") == week)]
+    return max(ends) if ends else None
+
+
+def cfbd(path: str, *, changed: float | None = None, store: bool = True, **params) -> list | dict | None:
+    """A CFBD response: the copy kept on disk while no game has changed it,
+    else one call (see the allowance note above). ``changed`` overrides when
+    the data last changed (a week's latest final); ``store=False`` leaves
+    keeping the response to the caller (a week of plays is kept parsed)."""
     url = f"{CFBD}{path}?{urllib.parse.urlencode(params)}"
     if url in _CFBD_SEEN:
         return _CFBD_SEEN[url]
+    name = "cfbd_" + hashlib.sha1(url.encode("utf-8")).hexdigest()[:20] + ".json"
+    hit = _cached(name) if store else None
+    if changed is None and isinstance(params.get("year"), int) and path != "/games":
+        changed = changed_at(params["year"])
+    if hit and _fresh(hit.get("fetched_at"), changed):
+        ALLOWANCE["kept"] += 1
+        _CFBD_SEEN[url] = hit.get("value")
+        return hit.get("value")
+
+    def stale(reason: str):
+        if hit:
+            ALLOWANCE["stale"] += 1
+            day = datetime.fromtimestamp(float(hit.get("fetched_at") or 0), timezone.utc).strftime("%Y-%m-%d %H:%M")
+            print(f"  CFBD {path}: {reason}; serving the copy fetched {day} UTC")
+        elif not store:
+            # The caller keeps this response itself (a week's parsed plays): say so once a run.
+            if path not in _SKIPPED:
+                _SKIPPED.add(path)
+                print(f"  CFBD {path}: {reason}; the kept {path} aggregates stand")
+        else:
+            print(f"  CFBD {path}: {reason}; no copy kept")
+        _CFBD_SEEN[url] = hit.get("value") if hit else None
+        return _CFBD_SEEN[url]
+
+    key = os.environ.get("CFBD_API_KEY")
+    if not key:
+        return stale("no API key")
+    remaining = ALLOWANCE["remaining"]
+    if ALLOWANCE["refused"]:
+        return stale("the month's allowance is spent")
+    if remaining is not None and remaining <= RESERVE:
+        return stale(f"held back, {remaining} calls left for the CFB model")
+    seen: dict = {}
     try:
-        value = _get(url, {"Authorization": f"Bearer {key}", "Accept": "application/json"})
+        value = _get(url, {"Authorization": f"Bearer {key}", "Accept": "application/json"}, seen)
     except Exception as exc:
-        print(f"  CFBD {path} unavailable: {exc}")
-        return None
+        if "429" in str(exc):
+            ALLOWANCE["refused"] = True  # spent: no further calls this run
+        return stale(f"unavailable ({exc})")
+    ALLOWANCE["calls"] += 1
+    try:
+        ALLOWANCE["remaining"] = int(seen.get("x-calllimit-remaining"))
+    except (TypeError, ValueError):
+        pass
+    if store and value is not None:
+        _store(name, {"fetched_at": time.time(), "path": path, "value": value})
     _CFBD_SEEN[url] = value
     return value
+
+
+def allowance_line() -> str:
+    a = ALLOWANCE
+    left = ("0 (refused: the month's allowance is spent)" if a["refused"]
+            else "unknown" if a["remaining"] is None else str(a["remaining"]))
+    return (f"CFBD: {a['calls']} calls, {a['kept']} served from the kept copy, {a['stale']} older copies "
+            f"served; calls left this month: {left}")
+
+
+# --- ESPN in place of CFBD where ESPN carries the same numbers ---------------
+def _espn(path: str) -> dict:
+    return _get(f"{ESPN}{path}")
+
+
+def _powerindex(season: int) -> dict[str, float]:
+    """{ESPN team id: FPI}, ESPN's Football Power Index (CFBD's /ratings/fpi
+    copies it). Its 138 schools are FBS exactly as CFBD classes them (checked
+    2026-11-21; ESPN's FBS group lists ten placeholder teams besides)."""
+    name = f"espn_fpi_{season}.json"
+    hit = _cached(name)
+    if hit and hit.get("fpi") and time.time() - float(hit.get("fetched_at") or 0) < MAX_AGE_HOURS * 3600:
+        return hit["fpi"]
+    try:
+        items = _get("https://sports.core.api.espn.com/v2/sports/football/leagues/college-football/seasons/"
+                     f"{season}/powerindex?limit=300").get("items") or []
+    except Exception as exc:  # noqa: BLE001
+        print(f"  ESPN FPI unavailable: {exc}")
+        return hit.get("fpi", {}) if hit else {}
+    out = {}
+    for item in items:
+        team = re.search(r"/teams/(\d+)", str((item.get("team") or {}).get("$ref") or ""))
+        fpi = next((p.get("value") for p in item.get("predictives") or [] if p.get("name") == "fpi"), None)
+        if team and isinstance(fpi, (int, float)):
+            out[team.group(1)] = fpi
+    if len(out) >= 120:
+        _store(name, {"fetched_at": time.time(), "fpi": out})
+        return out
+    return hit.get("fpi", {}) if hit else out
+
+
+def fbs_ids(season: int) -> set[str]:
+    """ESPN ids of the FBS schools: the FPI list."""
+    return set(_powerindex(season))
+
+
+_ESPN_NAMES: dict[str, str] = {}  # ESPN team id -> school, from the scoreboard
+
+
+_SEASON_GAMES: dict[int, list[dict]] = {}
+
+
+def season_games(season: int) -> list[dict]:
+    """The regular season's games with an FBS side, in CFBD's /games shape
+    (id, week, homeTeam/awayTeam, points, completed, neutralSite, startDate,
+    home/awayClassification) from ESPN's scoreboard: free, and the same
+    event ids. ESPN's location is CFBD's school name (checked 2026-11-21 on
+    every team in weeks 10-12). A week whose games are all final is kept on
+    disk. Each row also carries ``_ended``, when a final ended (kickoff +
+    GAME_HOURS)."""
+    if season in _SEASON_GAMES:
+        return _SEASON_GAMES[season]
+    fbs = fbs_ids(season)
+    games: list[dict] = []
+    for week in range(1, 17):
+        name = f"espn_week_{season}_{week}.json"
+        hit = _cached(name)
+        events = hit.get("events") if hit and hit.get("final") else None
+        if events is None:
+            try:
+                events = _espn(f"/scoreboard?dates={season}&seasontype=2&week={week}&groups=80&limit=400").get("events") or []
+            except Exception as exc:  # noqa: BLE001
+                print(f"  ESPN week {week} unavailable: {exc}")
+                events = (hit or {}).get("events") or []
+            done = bool(events) and all(((e.get("status") or {}).get("type") or {}).get("completed") for e in events)
+            if events:
+                _store(name, {"final": done, "events": events})
+        for e in events:
+            comp = (e.get("competitions") or [{}])[0]
+            sides = {c.get("homeAway"): c for c in comp.get("competitors") or []}
+            if set(sides) != {"home", "away"}:
+                continue
+            row = {"id": int(e["id"]) if str(e["id"]).isdigit() else e["id"], "season": season,
+                   "week": int((e.get("week") or {}).get("number") or week),
+                   "startDate": e.get("date"), "neutralSite": bool(comp.get("neutralSite")),
+                   "completed": bool(((comp.get("status") or e.get("status") or {}).get("type") or {}).get("completed"))}
+            for side, c in sides.items():
+                team = c.get("team") or {}
+                row[side + "Team"] = team.get("location") or team.get("displayName")
+                row[side + "Classification"] = "fbs" if str(team.get("id")) in fbs else "fcs"
+                _ESPN_NAMES[str(team.get("id"))] = row[side + "Team"]
+                try:
+                    row[side + "Points"] = float(c.get("score")) if row["completed"] else None
+                except (TypeError, ValueError):
+                    row[side + "Points"] = None
+            try:
+                kickoff = datetime.fromisoformat(str(e.get("date")).replace("Z", "+00:00")).timestamp()
+            except ValueError:
+                kickoff = None
+            row["_ended"] = kickoff + GAME_HOURS * 3600 if row["completed"] and kickoff else None
+            games.append(row)
+    _SEASON_GAMES[season] = games
+    return games
+
+
+def espn_fpi(season: int) -> dict[str, float]:
+    """{normalized school: FPI} from ESPN. A school's name is its scoreboard
+    location, which is CFBD's school name (checked on every team, weeks 10-12)."""
+    season_games(season)
+    return {_norm(_ESPN_NAMES[tid]): fpi for tid, fpi in _powerindex(season).items() if tid in _ESPN_NAMES}
 
 
 def rank(pool: list[float], value: float, better: str) -> int:
@@ -776,11 +967,8 @@ def schedule_strength(season: int, sp_ratings: dict[str, float]) -> dict[str, di
 
     ``sp_ratings`` maps normalized school -> SP+ overall rating.
     """
-    fpi_rows = cfbd("/ratings/fpi", year=season)
-    fpi = {_norm(r.get("team")): r.get("fpi") for r in (fpi_rows if isinstance(fpi_rows, list) else [])
-           if isinstance(r.get("fpi"), (int, float))}
-    games = cfbd("/games", year=season, seasonType="regular")
-    games = games if isinstance(games, list) else []
+    fpi = espn_fpi(season)
+    games = season_games(season)
     fbs = set(sp_ratings) | set(fpi)
     wins: dict[str, list[int]] = {}
     for g in games:
