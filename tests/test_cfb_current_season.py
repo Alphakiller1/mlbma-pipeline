@@ -179,3 +179,15 @@ def test_publisher_refuses_a_short_pull(tmp_path, monkeypatch):
     monkeypatch.setattr(cfb, "public_game", lambda raw, *a: {"id": raw["id"]})
     assert cfb.main() == 1
     assert out.read_text(encoding="utf-8") == '{"games": ["previous"]}'
+
+
+def test_a_cfbd_outage_keeps_the_power_league_line(tmp_path):
+    # 2026-11-20: CFBD answered 429 and the slate kept every school's power
+    # block but dropped the league line beside them.
+    out = tmp_path / "slate.json"
+    out.write_text(json.dumps({"season": 2026, "power": {"home_court": 3.063, "league_mean": 26.59,
+                                                          "through_week": 12}}), encoding="utf-8")
+    assert cfb.previous_power(2026, out) == {"home_court": 3.063, "league_mean": 26.59, "through_week": 12}
+    assert cfb.previous_power(2027, out) is None
+    out.write_text(json.dumps({"season": 2026}), encoding="utf-8")
+    assert cfb.previous_power(2026, out) is None
