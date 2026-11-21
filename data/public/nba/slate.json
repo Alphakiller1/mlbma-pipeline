@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-20",
- "generated_at_utc": "2026-11-20T12:55:01+00:00",
+ "generated_at_utc": "2026-11-20T21:50:23+00:00",
  "data_through_utc": "2026-11-20T01:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -121,8 +121,8 @@
    "id": "401909305",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/20 - 7:00 PM EST",
+   "game_state": "live",
+   "status_detail": "6:52 - 4th",
    "kickoff_utc": "2026-11-21T00:00Z",
    "away": "CHA",
    "home": "ATL",
@@ -136,8 +136,8 @@
    "home_record": "9-6",
    "away_split_record": "1-6",
    "home_split_record": "3-3",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 82,
+   "home_score": 99,
    "venue": "State Farm Arena",
    "venue_city": "Atlanta, GA",
    "broadcast": "",
@@ -8635,8 +8635,8 @@
    "id": "401909306",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/20 - 7:30 PM EST",
+   "game_state": "live",
+   "status_detail": "Halftime",
    "kickoff_utc": "2026-11-21T00:30Z",
    "away": "ORL",
    "home": "BKN",
@@ -8650,8 +8650,8 @@
    "home_record": "3-11",
    "away_split_record": "5-3",
    "home_split_record": "1-5",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 62,
+   "home_score": 61,
    "venue": "Barclays Center",
    "venue_city": "Brooklyn, NY",
    "broadcast": "DAZN (YES)",
@@ -16746,13 +16746,13 @@
      "value": 0.97
     },
     {
-     "player_id": "5107173",
-     "player_name": "Danny Wolf",
+     "player_id": "3150844",
+     "player_name": "Moritz Wagner",
      "value": 0.92
     },
     {
-     "player_id": "3150844",
-     "player_name": "Moritz Wagner",
+     "player_id": "5107173",
+     "player_name": "Danny Wolf",
      "value": 0.92
     },
     {
@@ -16812,8 +16812,8 @@
    "id": "401909307",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/20 - 7:30 PM EST",
+   "game_state": "live",
+   "status_detail": "10:23 - 3rd",
    "kickoff_utc": "2026-11-21T00:30Z",
    "away": "IND",
    "home": "CLE",
@@ -16827,8 +16827,8 @@
    "home_record": "8-8",
    "away_split_record": "3-4",
    "home_split_record": "6-3",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 63,
+   "home_score": 70,
    "venue": "Rocket Arena",
    "venue_city": "Cleveland, OH",
    "broadcast": "DAZN CLE",
@@ -20920,23 +20920,23 @@
      "value": 0.74
     },
     {
-     "player_id": "4065731",
-     "player_name": "Jay Huff",
-     "value": 0.67
-    },
-    {
      "player_id": "2530530",
      "player_name": "T.J. McConnell",
      "value": 0.67
     },
     {
-     "player_id": "5105854",
-     "player_name": "Braden Smith",
-     "value": 0.59
+     "player_id": "4065731",
+     "player_name": "Jay Huff",
+     "value": 0.67
     },
     {
      "player_id": "4398207",
      "player_name": "Jalen Slawson",
+     "value": 0.59
+    },
+    {
+     "player_id": "5105854",
+     "player_name": "Braden Smith",
      "value": 0.59
     },
     {
@@ -20953,9 +20953,9 @@
      "source": "official",
      "reason": "Injury/Illness - Left Hamstring Strain",
      "detail": "Left Hamstring Strain",
-     "comment": "Head coach Rick Carlisle said Tuesday that Haliburton (hamstring) is \"getting there,\" but there's still no definitive timetable for his return to game action, Dustin Dopirak of The Indianapolis Star reports.",
-     "date": "2026-11-17T18:46Z",
-     "return_date": "2026-11-28",
+     "comment": "Haliburton (hamstring) is expected to miss at least two more weeks, Shams Charania of ESPN reports.",
+     "date": "2026-11-20T20:41Z",
+     "return_date": "2026-12-13",
      "value": 2.66,
      "value_recent": 0.0,
      "missed": 11
@@ -25145,13 +25145,13 @@
      "value": 0.94
     },
     {
-     "player_id": "2995706",
-     "player_name": "Mario Hezonja",
+     "player_id": "4066757",
+     "player_name": "Sam Merrill",
      "value": 0.93
     },
     {
-     "player_id": "4066757",
-     "player_name": "Sam Merrill",
+     "player_id": "2995706",
+     "player_name": "Mario Hezonja",
      "value": 0.93
     },
     {
@@ -25252,8 +25252,8 @@
    "id": "401909308",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/20 - 7:30 PM EST",
+   "game_state": "live",
+   "status_detail": "8:58 - 3rd",
    "kickoff_utc": "2026-11-21T00:30Z",
    "away": "TOR",
    "home": "DET",
@@ -25267,8 +25267,8 @@
    "home_record": "10-4",
    "away_split_record": "3-4",
    "home_split_record": "3-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 61,
+   "home_score": 50,
    "venue": "Little Caesars Arena",
    "venue_city": "Detroit, MI",
    "broadcast": "Prime Video",
@@ -29405,9 +29405,9 @@
      "source": "official",
      "reason": "Injury/Illness - Left Knee Injury Management",
      "detail": "Left Knee Inflammation",
-     "comment": "Leonard (knee) has progressed in his strength and conditioning program but will miss at least one more week, Michael Scotto of HoopsHype.com reports.",
-     "date": "2026-11-17T22:25Z",
-     "return_date": "2026-11-27",
+     "comment": "Leonard (knee) could return in the next few weeks, per Shams Charania of ESPN.",
+     "date": "2026-11-20T20:42Z",
+     "return_date": "2026-12-03",
      "value": 1.59,
      "value_recent": 0.0,
      "missed": 13
@@ -33264,7 +33264,7 @@
       "player_name": "Ronald Holland II",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4683771.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 15.9,
       "ppg": 4.9,
       "height_in": 80.0,
@@ -33549,13 +33549,13 @@
      "value": 3.02
     },
     {
-     "player_id": "3157465",
-     "player_name": "Duncan Robinson",
+     "player_id": "4684742",
+     "player_name": "Ausar Thompson",
      "value": 1.61
     },
     {
-     "player_id": "4684742",
-     "player_name": "Ausar Thompson",
+     "player_id": "3157465",
+     "player_name": "Duncan Robinson",
      "value": 1.61
     },
     {
@@ -33644,20 +33644,6 @@
      "missed": 12
     },
     {
-     "player_id": "4683771",
-     "player_name": "Ronald Holland II",
-     "status": "Out",
-     "source": "official",
-     "reason": "Injury/Illness - Left Knee Contusion / Bone Bruise",
-     "detail": "Left Knee Bruise",
-     "comment": "Holland (knee) won't play in Friday's game against the Raptors, Blake Murphy of Sportsnet.ca reports.",
-     "date": "2026-11-19T21:41Z",
-     "return_date": "2026-11-22",
-     "value": 0.6,
-     "value_recent": 0.59,
-     "missed": 2
-    },
-    {
      "player_id": "2990962",
      "player_name": "Taurean Prince",
      "status": "Out",
@@ -33698,6 +33684,20 @@
      "value": null
     },
     {
+     "player_id": "4683771",
+     "player_name": "Ronald Holland II",
+     "status": "Doubtful",
+     "source": "official",
+     "reason": "Injury/Illness - Left Knee Contusion / Bone Bruise",
+     "detail": "Left Knee Bruise",
+     "comment": "Holland (knee) has been upgraded to doubtful for Friday's game against Toronto, Hunter Patterson of The Athletic reports.",
+     "date": "2026-11-20T17:46Z",
+     "return_date": "2026-11-20",
+     "value": 0.6,
+     "value_recent": 0.59,
+     "missed": 2
+    },
+    {
      "player_id": "4432166",
      "player_name": "Cade Cunningham",
      "status": "Probable",
@@ -33717,8 +33717,8 @@
    "id": "401909309",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/20 - 8:00 PM EST",
+   "game_state": "live",
+   "status_detail": "2:16 - 2nd",
    "kickoff_utc": "2026-11-21T01:00Z",
    "away": "WSH",
    "home": "CHI",
@@ -33732,8 +33732,8 @@
    "home_record": "4-10",
    "away_split_record": "3-6",
    "home_split_record": "1-4",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 46,
+   "home_score": 56,
    "venue": "United Center",
    "venue_city": "Chicago, IL",
    "broadcast": "MNMT",
@@ -41063,7 +41063,7 @@
       "player_name": "Jalen Smith",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4397189.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 24.6,
       "ppg": 13.4,
       "height_in": 81.0,
@@ -42063,13 +42063,13 @@
      "value": 1.38
     },
     {
-     "player_id": "4432822",
-     "player_name": "Isaac Okoro",
+     "player_id": "4395626",
+     "player_name": "Tre Jones",
      "value": 0.97
     },
     {
-     "player_id": "4395626",
-     "player_name": "Tre Jones",
+     "player_id": "4432822",
+     "player_name": "Isaac Okoro",
      "value": 0.97
     },
     {
@@ -42195,6 +42195,20 @@
      "missed": null
     },
     {
+     "player_id": "4397189",
+     "player_name": "Jalen Smith",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Gastrointestinal Illness",
+     "detail": "Illness",
+     "comment": "Smith (illness) has been downgraded to questionable for Friday's game against the Wizards.",
+     "date": "2026-11-20T17:41Z",
+     "return_date": "2026-11-20",
+     "value": 1.45,
+     "value_recent": 1.58,
+     "missed": 0
+    },
+    {
      "player_id": "5242496",
      "player_name": "Noa Essengue",
      "status": "Probable",
@@ -42214,8 +42228,8 @@
    "id": "401909310",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/20 - 8:00 PM EST",
+   "game_state": "live",
+   "status_detail": "2:38 - 2nd",
    "kickoff_utc": "2026-11-21T01:00Z",
    "away": "NO",
    "home": "OKC",
@@ -42229,8 +42243,8 @@
    "home_record": "9-6",
    "away_split_record": "1-4",
    "home_split_record": "5-1",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 59,
+   "home_score": 49,
    "venue": "Paycom Center",
    "venue_city": "Oklahoma City, OK",
    "broadcast": "KSBI / Thunder App / GCSEN / Pelicans.com",
@@ -46506,20 +46520,6 @@
      "value": 1.66,
      "value_recent": 2.06,
      "missed": 6
-    },
-    {
-     "player_id": "4703115",
-     "player_name": "Jaron Pierre Jr.",
-     "status": "Probable",
-     "source": "official",
-     "reason": "G League - Two-Way",
-     "detail": null,
-     "comment": null,
-     "date": null,
-     "return_date": null,
-     "value": 0.48,
-     "value_recent": 0.48,
-     "missed": 0
     }
    ],
    "home_form": {
@@ -50656,10 +50656,10 @@
      "status": "Out",
      "source": "official",
      "reason": "Injury/Illness - Left Hip Strain",
-     "detail": null,
-     "comment": null,
-     "date": null,
-     "return_date": null,
+     "detail": "Left Hip Soreness",
+     "comment": "Topic (hip) is out for Friday's game against New Orleans.",
+     "date": "2026-11-20T17:02Z",
+     "return_date": "2026-11-22",
      "value": 0.36,
      "value_recent": 0.36,
      "missed": 0
@@ -67343,13 +67343,13 @@
      "value": 0.36
     },
     {
-     "player_id": "5105592",
-     "player_name": "Cam Whitmore",
+     "player_id": "4065813",
+     "player_name": "Alpha Diallo",
      "value": 0.26
     },
     {
-     "player_id": "4065813",
-     "player_name": "Alpha Diallo",
+     "player_id": "5105592",
+     "player_name": "Cam Whitmore",
      "value": 0.26
     },
     {
@@ -70496,7 +70496,7 @@
       "player_name": "Precious Achiuwa",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4431679.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 24.8,
       "ppg": 9.5,
       "height_in": 80.0,
@@ -71515,6 +71515,20 @@
      "missed": null
     },
     {
+     "player_id": "4431679",
+     "player_name": "Precious Achiuwa",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Left Lower Leg Contusion",
+     "detail": "Left Lower Leg Bruise",
+     "comment": "Achiuwa (lower leg) has been ruled out for Friday's game against the Lakers.",
+     "date": "2026-11-20T21:21Z",
+     "return_date": "2026-11-21",
+     "value": 0.99,
+     "value_recent": 1.0,
+     "missed": 0
+    },
+    {
      "player_id": "5107897",
      "player_name": "Jonathan Mogbo",
      "status": "Out",
@@ -71553,20 +71567,6 @@
      "date": "2026-10-21T04:22Z",
      "return_date": "2027-10-01",
      "value": null
-    },
-    {
-     "player_id": "4431679",
-     "player_name": "Precious Achiuwa",
-     "status": "Doubtful",
-     "source": "official",
-     "reason": "Injury/Illness - Left Lower Leg Contusion",
-     "detail": "Left Lower Leg Bruise",
-     "comment": "Achiuwa is doubtful for Friday's game against the Lakers due to a left lower leg bruise.",
-     "date": "2026-11-20T01:22Z",
-     "return_date": "2026-11-20",
-     "value": 0.99,
-     "value_recent": 1.0,
-     "missed": 0
     },
     {
      "player_id": "4065732",
@@ -75699,7 +75699,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-20_07_45AM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-20_04_45PM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -75832,5 +75832,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-20T17:56:42+00:00"
+ "published_at_utc": "2026-11-21T02:00:01+00:00"
 }
