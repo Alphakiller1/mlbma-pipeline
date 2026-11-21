@@ -1092,7 +1092,10 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         injury_text = page.locator("#cfb-availability").text_content().lower()
         check("CFB availability tab carries both schools' injury reports",
               page.locator("#cfb-availability.is-tab-on .ca-cfb-injury-panel").count() == 2
-              and "injury report" in injury_text and ("covers" in injury_text or "not published" in injury_text),
+              and "injury report" in injury_text and any(note in injury_text for note in (
+                  "checked", "saved report", "checking for a current report", "current report unavailable",
+                  "not published", "refresh temporarily unavailable",
+              )),
               injury_text[:160])
         cfb_text = page.locator("main").inner_text()
         match = PROHIBITED.search(cfb_text)

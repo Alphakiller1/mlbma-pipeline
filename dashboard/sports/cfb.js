@@ -120,9 +120,11 @@
   // form are different measures; each lands in its own field.
   function isModelForm(form) { return !!form && form.source !== 'espn'; }
 
-  function mergePublic(mapped, pub) {
+  function mergePublic(mapped, pub, publishedAt) {
     if (!pub) return mapped;
     mapped.public_game_id = pub.id || mapped.public_game_id;
+    var sameGame = !mapped.kickoff_utc || !pub.kickoff_utc ||
+      Math.abs(Date.parse(mapped.kickoff_utc) - Date.parse(pub.kickoff_utc)) < 12 * 3600000;
     ['away', 'home'].forEach(function (side) {
       var form = pub[side + '_form'];
       if (form) {
@@ -136,10 +138,13 @@
       // CFBD depth (scripts/cfb_depth.py): run game and lines, scheme rates,
       // quarterbacks with the defense's splits, ball carriers, game logs.
       ['_run_game', '_scheme_stats', '_charting', '_strength', '_penalties', '_run_lanes', '_qbs', '_defense_splits', '_rushers', '_receivers',
-        '_defenders', '_game_log', '_schedule_strength', '_injuries', '_power', '_predictability', '_regression']
+        '_defenders', '_game_log', '_schedule_strength', '_power', '_predictability', '_regression']
         .forEach(function (key) {
           if (pub[side + key]) mapped[side + key] = pub[side + key];
         });
+      if (sameGame && pub[side + '_injuries']) {
+        mapped[side + '_injuries'] = Object.assign({}, pub[side + '_injuries'], { snapshot_at_utc: publishedAt });
+      }
     });
     mapped.away_record = keep(pub.away_record, mapped.away_record);
     mapped.home_record = keep(pub.home_record, mapped.home_record);
@@ -287,7 +292,8 @@
         // The power ranking's league context (scripts/cfb_power.py): through week, home field.
         mapped.__cfbPower = ((parts[2] && Number(parts[2].season) === statsSeason && parts[2].power) ||
           (parts[3] && Number(parts[3].season) === statsSeason && parts[3].power)) || null;
-        mapped = mergePublic(mergePublic(mapped, remote[key]), local[key]);
+        mapped = mergePublic(mergePublic(mapped, remote[key], (parts[3] || {}).generated_at_utc),
+          local[key], (parts[2] || {}).generated_at_utc);
         ['away', 'home'].forEach(function (side) {
           var name = String((g[side] && (g[side].school || g[side].name)) || g[side] || '').toLowerCase();
           var known = facts[name] || {};
@@ -324,11 +330,30 @@
     });
   }
 
+  var REPORT_CONFERENCES = {
+    'SEC': 'SEC', 'ACC': 'ACC', 'Big 12': 'B12', 'Big Ten': 'B10', 'Sun Belt': 'SBC', 'Pac-12': 'P12'
+  };
+
+  function injuryReport(game, signal) {
+    var conferences = ['away', 'home'].map(function (side) {
+      return REPORT_CONFERENCES[game[side + '_conference'] || game[side + '_conf']];
+    }).filter(Boolean);
+    var query = new URLSearchParams({
+      away: game.away_name, home: game.home_name, kickoff: game.kickoff_utc,
+      conferences: conferences.join(',')
+    });
+    return fetch('/api/cfb-availability?' + query, { cache: 'no-store', signal: signal }).then(function (response) {
+      if (!response.ok) throw new Error('Availability request failed');
+      return response.json();
+    });
+  }
+
   global.ChaseSportCFB = {
     BOARD_URL: BOARD_URL,
     BUILD_URL: BUILD_URL,
     SLATE_URL: SLATE_URL,
     load: load,
+    injuryReport: injuryReport,
     mapGame: mapGame
   };
 })(typeof window !== 'undefined' ? window : this);

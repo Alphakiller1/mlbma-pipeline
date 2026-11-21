@@ -226,9 +226,10 @@ MATCHUPS_JS = r"""
 
 def matchup_page(sport: str) -> str:
     spec = SPORTS[sport]
-    detail_revision = "nba-matchup-labels" if sport == "nba" else "active-desk-audit"
+    detail_revision = {"nba": "nba-matchup-labels", "cfb": "cfb-live-availability"}.get(sport, "active-desk-audit")
     detail_assets = f"{STAMP}&amp;rev={detail_revision}"
-    adapter_assets = detail_assets if sport == "cbb" else STAMP
+    adapter_assets = detail_assets if sport in {"cbb", "cfb"} else STAMP
+    availability_assets = detail_assets if sport == "cfb" else STAMP
     cbb_runtime = f'  <script src="/dashboard/cbb_charts.js?v={STAMP}"></script>' if sport == "cbb" else ""
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -259,7 +260,7 @@ def matchup_page(sport: str) -> str:
   <script src="/dashboard/sports/public_sport_registry.js?v={STAMP}"></script>
   <script src="/dashboard/sports/chase_public_slate.js?v={STAMP}"></script>
   <script src="/dashboard/sports/{spec['adapter']}.js?v={adapter_assets}"></script>
-  <script src="/dashboard/player_availability_shared.js?v={STAMP}"></script>
+  <script src="/dashboard/player_availability_shared.js?v={availability_assets}"></script>
   <script src="/dashboard/chase_icons.js?v={STAMP}"></script>
   <script src="/dashboard/matchup_card.js?v={STAMP}"></script>
   <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
