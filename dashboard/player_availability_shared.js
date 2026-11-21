@@ -21,6 +21,7 @@
 
   function isOut(status) {
     var key = String(status || '').trim().toLowerCase().replace(/[-_]+/g, ' ');
+    if (/^out\b.*\b(?:1st|first)\s+half\b/.test(key)) return false;
     return /^(out|inactive|ruled out|suspended|suspension)\b/.test(key) ||
       /^(ir|il|ofs|pup|nfi|dnp|injured reserve|injured list|did not play|physically unable to perform|non football (injury|illness))(?:\s|\b|$)/.test(key);
   }
@@ -51,8 +52,10 @@
   }
 
   function status(game, side, player) {
-    return (designation(game, side, player) || {}).status ||
-      (player && (player.injury_status || player.status)) || '';
+    var entry = designation(game, side, player);
+    if (entry && entry.status) return entry.status;
+    if (game.sport === 'cfb' && (game[side + '_injuries'] || {}).coverage === 'official') return '';
+    return (player && (player.injury_status || player.status)) || '';
   }
 
   function available(game, side, players) {
@@ -77,7 +80,52 @@
     return published.name ? eligible([published]) || null : null;
   }
 
+  function watch(check, update, shouldContinue) {
+    var timer, controller, stopped = false, paused = false, started = false;
+    function run() {
+      global.clearTimeout(timer);
+      if (stopped || paused || global.document.hidden || controller) return;
+      started = true;
+      controller = new AbortController();
+      Promise.resolve().then(function () { return check(controller.signal); }).then(function (data) {
+        if (!stopped) update(data);
+      }, function () {
+        if (!stopped && !paused) update({ status: 'unavailable' });
+      }).finally(function () {
+        controller = null;
+        if (!stopped && !paused && !global.document.hidden && shouldContinue()) {
+          timer = global.setTimeout(run, 60000);
+        }
+      });
+    }
+    function visible() {
+      if (!global.document.hidden && (!started || shouldContinue())) run();
+    }
+    function suspend() {
+      paused = true;
+      global.clearTimeout(timer);
+    }
+    function resume(event) {
+      paused = false;
+      if (event.persisted) run();
+    }
+    global.document.addEventListener('visibilitychange', visible);
+    global.addEventListener('focus', visible);
+    global.addEventListener('pagehide', suspend);
+    global.addEventListener('pageshow', resume);
+    run();
+    return function () {
+      stopped = true;
+      suspend();
+      if (controller) controller.abort();
+      global.document.removeEventListener('visibilitychange', visible);
+      global.removeEventListener('focus', visible);
+      global.removeEventListener('pagehide', suspend);
+      global.removeEventListener('pageshow', resume);
+    };
+  }
+
   global.ChasePlayerAvailability = {
-    available: available, designation: designation, status: status, isOut: isOut, nflStarter: nflStarter
+    available: available, designation: designation, status: status, isOut: isOut, nflStarter: nflStarter, watch: watch
   };
 })(window);
