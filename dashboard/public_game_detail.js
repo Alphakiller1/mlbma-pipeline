@@ -7292,7 +7292,7 @@ function seasonToggle(game) {
     if (state === 'unavailable') parts.push('Refresh temporarily unavailable');
     if (state === 'checking' && !(report && report.coverage)) parts.push('Checking for a current report');
     if (state === 'not_published') parts.push('Current report unavailable');
-    return parts.length ? '<p class="ca-detail-source-note">' + parts.join(' · ') + '</p>' : '';
+    return parts.length ? '<p class="ca-injury-report-meta">' + parts.join(' · ') + '</p>' : '';
   }
 
   function cfbInjuryPanel(sport, game, side) {
@@ -7352,7 +7352,8 @@ function seasonToggle(game) {
         if (states[side] !== state) stateChanged = true;
         states[side] = state;
         if (!next || (current && current.coverage === 'official' &&
-            (next.coverage !== 'official' || next.published_at_utc < current.published_at_utc))) return;
+            (next.coverage !== 'official' || (current.published_at_utc &&
+              (!next.published_at_utc || next.published_at_utc < current.published_at_utc))))) return;
         var snapshot = { away_injuries: snapshots[side] };
         var designation = function (pl) { return availability.designation(snapshot, 'away', pl); };
         next.players = next.players.map(function (pl) {

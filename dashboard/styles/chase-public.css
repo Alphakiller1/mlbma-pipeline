@@ -783,10 +783,15 @@ body[data-ca-product="research"] {
   overflow-wrap: anywhere;
 }
 
-.ca-detail-source-note {
+.ca-detail-source-note,
+.ca-injury-report-meta {
   color: var(--text-secondary);
   line-height: var(--leading-note);
   max-width: var(--measure-note);
+}
+
+.ca-injury-report-meta {
+  margin-block: var(--space-2);
 }
 
 /* What the bullpen table deliberately leaves out - tonight's starter and rotation
