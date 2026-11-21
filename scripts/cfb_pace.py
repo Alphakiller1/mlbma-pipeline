@@ -22,7 +22,10 @@ Ranked among FBS schools. Tempo is a style, not a verdict: an offense's
 seconds per snap rank fastest first and its snaps and possession most first,
 all neutral. What a defense faces is volume it allows, so its snaps and
 possession faced rank fewest first (owner 2026-11-12: colour follows what
-the unit wants); the tempo it faces is neutral, fastest first.
+the unit wants); the tempo it faces is neutral, fastest first. Its snaps
+faced while the offense leads, trails or sits in a neutral game are game
+state, not defending - a good team's defense faces the most trailing snaps
+because its opponents are behind - so those splits are neutral, most first.
 
 ESPN, not CFBD: no allowance is spent. Each final is read once and cached.
 """
@@ -162,7 +165,8 @@ def _spec(key: str) -> tuple[str, str, str, str]:
         return label, "neutral", "num", "low"          # tempo: neutral, fastest first
     if measure == "ppg":
         label = ("Snaps per game" if prefix == "off" else "Snaps faced per game") + ", " + situation
-        return (label, "neutral", "num", "high") if prefix == "off" else (label, "low", "num", "low")
+        game_state = key[7:] in ("_leading", "_trailing", "_neutral")
+        return (label, "neutral", "num", "high") if prefix == "off" or game_state else (label, "low", "num", "low")
     label = ("Time of possession per game (minutes)" if prefix == "off"
              else "Opponents' time of possession per game (minutes)") + ", " + situation
     return (label, "neutral", "clock", "high") if prefix == "off" else (label, "low", "clock", "low")
