@@ -1085,10 +1085,18 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               or "not published" in formation_text,
               formation_text[:200])
         situational_text = page.locator("#cfb-situational").inner_text().lower()
-        check("CFB situational carries downs, tempo, play mix and havoc",
+        check("CFB situational carries downs, play mix and havoc",
               all(label in situational_text for label in (
-                  "3rd-down conv%", "standard-down success%", "plays/g", "pass rate", "havoc%")),
+                  "3rd-down conv%", "standard-down success%", "pass rate", "havoc%")),
               situational_text[:200])
+        # 2026-11-21: pace and possession (scripts/cfb_pace.py) where published.
+        pace_text = page.locator("#cfb-pace").inner_text().lower()
+        pace_published = '"away_pace"' in cfb_slate_text
+        check("CFB pace reads seconds per snap, snaps and possession by situation where published",
+              not pace_published or (all(label in pace_text for label in (
+                  "full game sec/snap", "neutral sec/snap", "leading snaps/g", "2nd half possession",
+                  "defense faced")) and page.locator("#cfb-pace .ca-rank").count() >= 20),
+              pace_text[:200])
         page.locator("a[data-nfl-tab='games']").click()
         sos_text = page.locator("#cfb-schedule").inner_text().lower()
         check("CFB schedule strength ranks played and remaining opponents for both schools",

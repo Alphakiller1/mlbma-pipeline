@@ -20,6 +20,7 @@ from pathlib import Path
 try:  # run as a script (scripts/ on the path) or imported as scripts.*
     import cfb_charting
     import cfb_depth
+    import cfb_pace
     import cfb_penalties
     import cfb_run_lanes
     import cfb_strength
@@ -27,8 +28,8 @@ try:  # run as a script (scripts/ on the path) or imported as scripts.*
     import cfb_injury_value
     import cfb_power
 except ImportError:  # pragma: no cover - package import in tests
-    from scripts import (cfb_charting, cfb_depth, cfb_injuries, cfb_injury_value, cfb_penalties, cfb_power,
-                         cfb_run_lanes, cfb_strength)
+    from scripts import (cfb_charting, cfb_depth, cfb_injuries, cfb_injury_value, cfb_pace, cfb_penalties,
+                         cfb_power, cfb_run_lanes, cfb_strength)
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "public" / "cfb" / "slate.json"
@@ -933,6 +934,8 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict,
         row[side + "_strength"] = (depth.get("strength") or {}).get(key)
         # Fouls by team and unit (scripts/cfb_penalties.py), keyed like the game logs.
         row[side + "_penalties"] = (depth.get("penalties") or {}).get(abbr)
+        # Tempo by situation and time of possession (scripts/cfb_pace.py), keyed like the game logs.
+        row[side + "_pace"] = (depth.get("pace") or {}).get(abbr)
         # Ball carriers by run lane (scripts/cfb_run_lanes.py), keyed like the game logs.
         row[side + "_run_lanes"] = (depth.get("run_lanes") or {}).get(abbr)
         # Ordered and trimmed to the room by apply_availability.
@@ -999,6 +1002,11 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
     rows = cfb_depth.advanced_rows(season)
     advanced = cfb_depth.team_advanced(rows)
     fbs = set(advanced)
+    if not fbs:
+        # CFBD's season rows are the usual FBS list; without them (its allowance
+        # spent, 2026-11-20) every rank pool had taken in FCS schools (of 236).
+        fbs = cfb_depth.fbs_names(season)
+        print(f"  FBS pool from ESPN: {len(fbs)} schools")
     wanted: dict[str, str] = {}
     for raw in games_in:
         for side in ("away", "home"):
@@ -1041,6 +1049,11 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
         print(f"  penalties: unavailable ({exc})")
         depth["penalties"] = {}
     try:
+        depth["pace"] = cfb_pace.build(season, week, wanted, fbs)
+    except Exception as exc:  # noqa: BLE001 - the slate still publishes without it
+        print(f"  pace: unavailable ({exc})")
+        depth["pace"] = {}
+    try:
         depth["run_lanes"] = cfb_run_lanes.build(season, week, wanted, fbs)
     except Exception as exc:  # noqa: BLE001 - the slate still publishes without it
         print(f"  run lanes: unavailable ({exc})")
@@ -1053,7 +1066,7 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
 
 DEPTH_KEYS = ("_run_game", "_scheme_stats", "_charting", "_strength", "_penalties", "_run_lanes", "_qbs", "_defense_splits", "_rushers", "_receivers",
               "_defenders",
-              "_schedule_strength", "_power", "_predictability", "_regression", "_value_table")
+              "_schedule_strength", "_power", "_predictability", "_regression", "_value_table", "_pace")
 
 
 def previous_power(season: int, path: Path | None = None) -> dict | None:

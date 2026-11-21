@@ -109,7 +109,7 @@
     tendencies: 'lineup', 'game-log': 'calendar', regression: 'trend', pace: 'trend',
     'cfb-efficiency': 'trend', 'cfb-passing': 'football', 'cfb-rushing': 'football',
     'cfb-rushers': 'users', 'cfb-quarterbacks': 'football', 'cfb-situational': 'target',
-    'cfb-game-log': 'calendar', 'cfb-regression': 'trend', 'cfb-schedule': 'calendar', 'cfb-availability': 'whistle',
+    'cfb-game-log': 'calendar', 'cfb-pace': 'trend', 'cfb-regression': 'trend', 'cfb-schedule': 'calendar', 'cfb-availability': 'whistle',
     'cfb-special': 'target',
     'nba-ratings': 'gauge', 'nba-efficiency': 'trend', 'nba-shooting': 'target',
     'nba-rotation': 'users', 'nba-availability': 'whistle', 'nba-game-log': 'calendar',
@@ -6397,7 +6397,7 @@ function seasonToggle(game) {
     ['passing', 'Passing', ['cfb-passing', 'cfb-pass-map', 'cfb-quarterbacks', 'cfb-receivers']],
     ['rushing', 'Rushing', ['cfb-rushing', 'cfb-run-direction', 'cfb-rushers']],
     ['defense', 'Defense', ['cfb-defenders']],
-    ['situational', 'Situational', ['cfb-situational', 'cfb-formation']],
+    ['situational', 'Situational', ['cfb-situational', 'cfb-pace', 'cfb-formation']],
     ['special', 'Special Teams', ['cfb-special']],
     ['penalties', 'Penalties', ['cfb-penalties']],
     ['availability', 'Injuries', ['cfb-availability']],
@@ -6446,7 +6446,7 @@ function seasonToggle(game) {
       ['Downs', [['form', 'third_down', '3rd-Down Conv%'], ['form', 'fourth', '4th-Down Conv%'],
         ['scheme', 'standard_down_success', 'Standard-Down Success%'],
         ['scheme', 'passing_down_success', 'Passing-Down Success%']]],
-      ['Pace And Play Mix', [['form', 'plays_pg', 'Plays/G'], ['form', 'pass_rate', 'Pass Rate'],
+      ['Play Mix', [['form', 'pass_rate', 'Pass Rate'],
         ['scheme', 'passing_down_rate', 'Passing-Down Share'], ['scheme', 'field_position', 'Drive Start (Own Yard Line)']]],
       ['Havoc', [['scheme', 'havoc_total', 'Havoc%']]]
     ],
@@ -6473,6 +6473,19 @@ function seasonToggle(game) {
       ['Run Right', [['chart', 'run_right_rate', 'Right Share'], ['chart', 'run_right_ypc', 'Right Yds/Rush'],
         ['chart', 'run_right_epa', 'Right EPA/Rush'], ['chart', 'run_right_success', 'Right Success%']]]
     ],
+    /* Pace and possession (scripts/cfb_pace.py, 2026-11-21): the NFL desk's
+       pace table on ESPN's play-by-play - game-clock seconds between snaps
+       of a drive, snaps per game and time of possession, by situation. */
+    pace: [
+      ['Seconds Per Snap', [['pace', 'spp', 'Full Game Sec/Snap'], ['pace', 'spp_h1', '1st Half Sec/Snap'],
+        ['pace', 'spp_h2', '2nd Half Sec/Snap'], ['pace', 'spp_leading', 'Leading Sec/Snap'],
+        ['pace', 'spp_trailing', 'Trailing Sec/Snap'], ['pace', 'spp_neutral', 'Neutral Sec/Snap']]],
+      ['Snaps Per Game', [['pace', 'ppg', 'Full Game Snaps/G'], ['pace', 'ppg_h1', '1st Half Snaps/G'],
+        ['pace', 'ppg_h2', '2nd Half Snaps/G'], ['pace', 'ppg_leading', 'Leading Snaps/G'],
+        ['pace', 'ppg_trailing', 'Trailing Snaps/G'], ['pace', 'ppg_neutral', 'Neutral Snaps/G']]],
+      ['Time Of Possession Per Game', [['pace', 'top', 'Full Game Possession'],
+        ['pace', 'top_h1', '1st Half Possession'], ['pace', 'top_h2', '2nd Half Possession']]]
+    ],
     formation: [
       ['Formation', [['chart', 'shotgun_rate', 'Shotgun Share'], ['chart', 'under_center_rate', 'Under Center Share'],
         ['chart', 'no_huddle_rate', 'No-Huddle Share']]],
@@ -6489,6 +6502,7 @@ function seasonToggle(game) {
     situational: ['Offense', 'Defense'],
     coverage: ['Passing Offense', 'Pass Defense'],
     run_direction: ['Rushing Offense', 'Run Defense'],
+    pace: ['Offense', 'Defense'],
     formation: ['Offense', 'Defense']
   };
   var CFB_SPECIAL = [['off_fg', 'FG%'], ['off_punt', 'Net Punt Avg'], ['off_kr', 'Kick Return Avg'],
@@ -6504,7 +6518,8 @@ function seasonToggle(game) {
     return form.rates || {};
   }
 
-  var CFB_FEED_KEY = { scheme: '_scheme_stats', run: '_run_game', model: '_model_form', chart: '_charting' };
+  var CFB_FEED_KEY = { scheme: '_scheme_stats', run: '_run_game', model: '_model_form', chart: '_charting',
+    pace: '_pace' };
 
   function cfbFeed(game, side, feed) {
     if (feed === 'form') return cfbRates(game, side);
@@ -6523,6 +6538,10 @@ function seasonToggle(game) {
     if (entry.format === 'ppa') return (v > 0 ? '+' : '') + v.toFixed(3);
     if (entry.format === 'signed') return (v > 0 ? '+' : '') + v.toFixed(1);
     if (entry.format === 'pct') return (v * 100).toFixed(1) + '%';
+    if (entry.format === 'clock') {
+      var secs = Math.round(v * 60);
+      return Math.floor(secs / 60) + ':' + ('0' + (secs % 60)).slice(-2);
+    }
     if (entry.format === 'num2') return v.toFixed(2);
     if (entry.format === 'int') return String(Math.round(v));
     return entry.format === 'num' && Math.abs(v) < 10 && entry.label && /explosive/i.test(entry.label)
@@ -6537,7 +6556,7 @@ function seasonToggle(game) {
     var tone = entry.rankDisplay ? percentileClass(percentile) : rankTone(place.rank, place.of);
     if (entry.better === 'neutral') {
       tone = 'c-volume';
-      label = label.replace(' of ', ' most of ');
+      label = label.replace(' of ', ' ' + (entry.rank_word || 'most') + ' of ');
     }
     if (entry.lowSample) tone = 'c-na';
     if (entry.rankDisplay === 'percentile') label = percentile + ordinal(percentile) + ' percentile · ' + label;
@@ -6664,8 +6683,9 @@ function seasonToggle(game) {
         rows: group[1].filter(function (spec) { return cfbLedgerShown(game, spec); }).map(function (spec) {
           var offense = cfbFeed(game, offSide, spec[0])['off_' + spec[1]];
           var defense = cfbFeed(game, defSide, spec[0])['def_' + spec[1]];
+          var faced = area === 'formation' || area === 'pace';
           return cfbLedgerRow(spec[2], cfbTeamMetric(offense, 'FBS offenses'),
-            cfbTeamMetric(defense, area === 'formation' ? 'FBS defenses, by what they faced' : 'FBS defenses, by what they allowed'));
+            cfbTeamMetric(defense, faced ? 'FBS defenses, by what they faced' : 'FBS defenses, by what they allowed'));
         })
       };
     });
@@ -6679,7 +6699,7 @@ function seasonToggle(game) {
       // The defense column is the opponents' figure against this defense
       // (owner 2026-11-19: say so). Formation shares are what it faced.
       cfbLedgerTable([offName, 'Offense', 'FBS Rank'],
-        [defName, area === 'formation' ? 'Defense Faced' : 'Defense Allowed', 'FBS Rank'], groups) + '</section>';
+        [defName, area === 'formation' || area === 'pace' ? 'Defense Faced' : 'Defense Allowed', 'FBS Rank'], groups) + '</section>';
   }
 
   function cfbTeamMetric(entry, cohort, rankDisplay = 'rank') {
@@ -10280,8 +10300,10 @@ function seasonToggle(game) {
         nflDuo(cfbRushersPanel, sport, game)),
       section('cfb-defenders', 'Defensive Playmakers', 'Season Defensive Lines And FBS Defender Percentiles',
         nflDuo(cfbDefendersPanel, sport, game)),
-      section('cfb-situational', 'Situational', 'Downs, Pace, Play Mix And Havoc',
+      section('cfb-situational', 'Situational', 'Downs, Play Mix And Havoc',
         nflDuo(cfbLedgerPanel, sport, game, 'situational')),
+      section('cfb-pace', 'Pace And Possession', 'Tempo By Situation And Time Of Possession',
+        nflDuo(cfbLedgerPanel, sport, game, 'pace')),
       section('cfb-formation', 'Formation', 'Shotgun, Under Center And No Huddle',
         nflDuo(cfbLedgerPanel, sport, game, 'formation')),
       section('cfb-special', 'Special Teams', 'Kicking And Returns',
