@@ -81,6 +81,14 @@ class MergeTests(unittest.TestCase):
         merged = slate.merge_nfl_injuries({}, self.report, {("WSH", "NYG")})
         self.assertEqual(slate.availability_summary(merged["WSH"]), "2 out · 1 DNP · 1 limited")
 
+    def test_official_full_participation_clears_a_lingering_reserve_status(self):
+        report = slate.parse_nfl_official_report(PAGE, include_cleared=True)
+        merged = slate.merge_nfl_injuries(
+            {"NYG": [espn("Cam Skattebo", "Injured Reserve")]}, report, {("WSH", "NYG")}
+        )
+        self.assertNotIn("Cam Skattebo", {entry["name"] for entry in merged["NYG"]})
+        self.assertNotIn("Active", {entry["status"] for entry in merged["NYG"]})
+
 
 if __name__ == "__main__":
     unittest.main()

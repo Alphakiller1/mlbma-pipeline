@@ -794,7 +794,7 @@ def unescape_html(text: str) -> str:
     return _html.unescape(text)
 
 
-def parse_nfl_official_report(page: str) -> dict[tuple[str, str], dict[str, list[dict]]]:
+def parse_nfl_official_report(page: str, *, include_cleared: bool = False) -> dict[tuple[str, str], dict[str, list[dict]]]:
     """The league's official injury report (nfl.com/injuries), game by game.
 
     {(away, home): {team: [entry, ...]}} in ESPN club codes, for each game
@@ -807,6 +807,8 @@ def parse_nfl_official_report(page: str) -> dict[tuple[str, str], dict[str, list
     (a club can rule a player out early in the week), else his practice
     participation when he did not practise or was limited; a full participant
     without a game status has no designation and is left off.
+    Production keeps cleared names until merging, so a stale reserve status
+    cannot survive that official clearance; Active rows are never published.
     """
     games: dict[tuple[str, str], dict[str, list[dict]]] = {}
     for chunk in page.split('<section class="nfl-o-injury-report__unit">')[1:]:
@@ -834,12 +836,14 @@ def parse_nfl_official_report(page: str) -> dict[tuple[str, str], dict[str, list
             continue
         report: dict[str, list[dict]] = {}
         for club in codes:
+            if not rows.get(club):
+                continue
             entries = []
             for r in rows.get(club, []):
                 status = NFL_GAME_STATUS.get(r["game"]) or NFL_PRACTICE_STATUS.get(r["practice"])
-                if status:
+                if status or include_cleared:
                     entries.append({"name": r["name"], "position": r["position"],
-                                    "status": status, "detail": r["injury"].lower() if r["injury"] else "",
+                                    "status": status or "Active", "detail": r["injury"].lower() if r["injury"] else "",
                                     "practice": NFL_PRACTICE_SHORT.get(r["practice"])})
             report[club] = entries
         games[(codes[0], codes[1])] = report
@@ -850,7 +854,7 @@ def fetch_nfl_official_report() -> dict[tuple[str, str], dict[str, list[dict]]]:
     try:
         request = urllib.request.Request(NFL_OFFICIAL_REPORT, headers=CLIENT_HEADERS)
         with urllib.request.urlopen(request, timeout=30) as response:
-            return parse_nfl_official_report(response.read().decode("utf-8", "replace"))
+            return parse_nfl_official_report(response.read().decode("utf-8", "replace"), include_cleared=True)
     except Exception as exc:  # noqa: BLE001 - the ESPN feed still stands
         print(f"  WARNING nfl official injury report unavailable: {exc}")
         return {}
@@ -917,7 +921,7 @@ def merge_nfl_injuries(espn: dict[str, list[dict]],
             listed = {_player_key(e["name"]) for e in entries}
             kept = [e for e in espn.get(team, [])
                     if e["status"].lower() not in NFL_GAME_DESIGNATIONS and _player_key(e["name"]) not in listed]
-            by_team[team] = entries + kept
+            by_team[team] = [e for e in entries if e["status"] != "Active"] + kept
     for team, rows in by_team.items():
         rows.sort(key=lambda e: NFL_STATUS_ORDER.get(e["status"], 5))
     return by_team
@@ -951,8 +955,8 @@ def fetch_nfl_injuries(games: set[tuple[str, str]] | None = None) -> dict:
     where it has been issued, ESPN's feed for roster statuses and for clubs
     whose report is not out yet.
 
-    nfl-model/board.json reports injury_status as null on every player row, so
-    the designations come from these feeds instead.
+    Fixture designations come from the report itself, rather than being
+    inferred from which players appear in a model projection.
     """
     try:
         with urllib.request.urlopen(ESPN_NFL_INJURIES, timeout=30) as response:

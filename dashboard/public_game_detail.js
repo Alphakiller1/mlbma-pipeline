@@ -7505,33 +7505,6 @@ function seasonToggle(game) {
     });
   }
 
-  function applyNflInjuries(game, side, report, snapshot) {
-    var key = side + '_availability_list';
-    var saved = { away_availability_list: snapshot };
-    var players = report.players.map(function (player) {
-      var prior = availability.designation(saved, 'away', player) || {};
-      return Object.assign({}, player, {
-        status: game.game_state === 'final' && /^(?:Out|Doubtful|Questionable)$/.test(prior.status || '') &&
-          /Practice/.test(player.status) ? prior.status : player.status,
-        value: prior.value, value_recent: prior.value_recent, missed: prior.missed
-      });
-    });
-    (snapshot || []).forEach(function (player) {
-      var durable = /^(ir|injured reserve|pup|suspended|suspension|non.football)\b/i.test(player.status);
-      if ((report.coverage !== 'official' || (durable && !report.has_roster_updates)) &&
-          !availability.designation({ away_availability_list: players }, 'away', player)) players.push(player);
-    });
-    game[key] = players;
-    game[side + '_injury_coverage'] = report.coverage;
-    var statuses = [['Out', 'out'], ['Inactive', 'inactive'], ['Doubtful', 'doubtful'],
-      ['Questionable', 'questionable'], ['Did Not Practice', 'DNP'], ['Limited Practice', 'limited']];
-    var summary = statuses.map(function (status) {
-      var count = players.filter(function (player) { return player.status === status[0]; }).length;
-      return count ? count + ' ' + status[1] : '';
-    }).filter(Boolean);
-    game[side + '_availability'] = summary.join(' · ') || (players.length ? players.length + ' listed' : 'No designations listed');
-  }
-
   function paintNflInjuries(host, game) {
     var section = host.querySelector('[data-body="availability"]');
     if (!section) return;
@@ -7607,6 +7580,7 @@ function seasonToggle(game) {
     paint(false);
     host.__stopInjuryWatch = availability.watch(function (signal) {
       if (sport === 'nba') return adapter.injuryUpdates(game, signal);
+      if (sport === 'nfl') return availability.nflReport(game, signal);
       return fetch('/api/' + sport + '-availability?' + query, { cache: 'no-store', signal: signal }).then(function (response) {
         if (!response.ok) throw new Error('Availability request failed');
         return response.json();
@@ -7627,7 +7601,7 @@ function seasonToggle(game) {
         state.reports[side] = next;
         if (!different) return;
         changed = true;
-        if (sport === 'nfl') applyNflInjuries(game, side, next, snapshots[side]);
+        if (sport === 'nfl') availability.applyNflReport(game, side, next, snapshots[side]);
         else if (sport === 'cbb') applyCbbInjuries(game, side, next);
         else {
           var report = adapter.injuryEvidence(game, side, next, snapshots[side]);

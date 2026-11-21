@@ -349,12 +349,25 @@
 
   /* Matchup previews show undecided designations and a count of ruled-out
      players. Names and reasons remain in the full injury report. */
+  function nflReportNote(game, side) {
+    var report = (game.__nflCardReports || {})[side];
+    var note = report ? report.sources || 'Injury report' : '';
+    if (report && Number.isFinite(Date.parse(report.checked_at_utc))) note += ' · Checked ' +
+      new Date(report.checked_at_utc).toLocaleTimeString('en-US',
+        { hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York', timeZoneName: 'short' });
+    if (game.__nflCardStatus === 'unavailable') note = 'Live check unavailable. ' +
+      (note || 'Showing the published report.');
+    return note;
+  }
+
   function availabilityPanel(game, side, teamLabel) {
     var list = game[side + '_availability_list'];
     if (!list) return '';
+    var note = nflReportNote(game, side);
+    var source = note ? '<p class="ca-avail-more" data-nfl-card-source="' + side + '">' + esc(note) + '</p>' : '';
     if (!list.length) {
       return '<section class="ca-avail"><h4 class="ca-ctx-head">' + esc(teamLabel) +
-        '</h4><p class="ca-avail-empty">No designations reported</p></section>';
+        '</h4><p class="ca-avail-empty">No designations reported</p>' + source + '</section>';
     }
     var remaining = list.filter(function (p) { return !availability.isOut(p.status); });
     var shown = remaining.slice(0, 5);
@@ -374,7 +387,7 @@
     return '<section class="ca-avail"><h4 class="ca-ctx-head">' + esc(teamLabel) +
       '</h4>' + (rows ? '<ul class="ca-avail-list">' + rows + '</ul>' : '') +
       (summary ? '<p class="ca-avail-more">' + esc(summary) + '</p>' : '') +
-      '</section>';
+      source + '</section>';
   }
 
   function expandedHtml(sport, game, panelId) {
@@ -769,6 +782,8 @@
       var homeLineup = lineupLabel(game.home_lineup_state);
       statusLine = awayLineup.label === homeLineup.label ? awayLineup.label :
         awayLineup.label + ' / ' + homeLineup.label;
+    } else if (sport === 'nfl' && Array.isArray(game.away_availability_list) && Array.isArray(game.home_availability_list)) {
+      statusLine = availability.nflSummary(game.away_availability_list.concat(game.home_availability_list));
     } else {
       statusLine = game.availability_summary || 'Availability Report Pending';
     }
@@ -1408,10 +1423,79 @@
     host.setAttribute('data-state', shown.length ? 'ready' : 'empty');
   }
 
+  function renderPreservingState(host) {
+    var open = Array.from(host.querySelectorAll('[data-expand-matchup][aria-expanded="true"]')).map(function (button) {
+      return button.getAttribute('aria-controls');
+    });
+    var input = document.activeElement;
+    var search = input && input.matches && input.matches('[data-desk-search]')
+      ? { start: input.selectionStart, end: input.selectionEnd } : null;
+    render(host);
+    open.forEach(function (id) {
+      var panel = document.getElementById(id), button = host.querySelector('[aria-controls="' + id + '"]');
+      if (panel && button) {
+        panel.hidden = false;
+        button.setAttribute('aria-expanded', 'true');
+        button.closest('.ca-matchup-card').classList.add('is-expanded');
+      }
+    });
+    if (search) {
+      var next = host.querySelector('[data-desk-search]');
+      if (next) { next.focus(); next.setSelectionRange(search.start, search.end); }
+    }
+  }
+
+  function watchNflCards(host) {
+    var games = (host.__desk.games || []).filter(function (game) {
+      var kickoff = Date.parse(game.kickoff_utc);
+      return game.game_state !== 'final' && Number.isFinite(kickoff) &&
+        Math.abs(kickoff - Date.now()) <= 7 * 86400000;
+    });
+    if (!games.length) return;
+    var snapshots = games.map(function (game) {
+      return { away: game.away_availability_list, home: game.home_availability_list };
+    });
+    host.__stopNflInjuryWatch = availability.watch(function (signal) {
+      return Promise.all(games.map(function (game) {
+        return availability.nflReport(game, signal).catch(function () { return { status: 'unavailable' }; });
+      }));
+    }, function (updates) {
+      var changed = false;
+      games.forEach(function (game, index) {
+        var data = (Array.isArray(updates) ? updates[index] : null) || { status: 'unavailable' };
+        if (game.__nflCardStatus !== data.status) changed = true;
+        game.__nflCardStatus = data.status;
+        var reports = game.__nflCardReports = game.__nflCardReports || {};
+        ['away', 'home'].forEach(function (side) {
+          var next = (data.reports || {})[side], previous = reports[side];
+          if (!next || (previous && previous.coverage === 'official' && next.coverage !== 'official')) return;
+          var evidence = function (report) { return JSON.stringify(report &&
+            { players: report.players, coverage: report.coverage, has_roster_updates: report.has_roster_updates }); };
+          reports[side] = next;
+          if (previous && evidence(previous) === evidence(next)) return;
+          availability.applyNflReport(game, side, next, snapshots[index][side]);
+          changed = true;
+        });
+      });
+      if (changed) renderPreservingState(host);
+      else games.forEach(function (game) {
+        ['away', 'home'].forEach(function (side) {
+          var node = host.querySelector('#matchup-' + game.id + ' [data-nfl-card-source="' + side + '"]');
+          if (node) node.textContent = nflReportNote(game, side);
+        });
+      });
+    }, function () {
+      return host.isConnected && games.some(function (game) {
+        return game.game_state !== 'final' && Date.now() < Date.parse(game.kickoff_utc) + 4 * 3600000;
+      });
+    });
+  }
+
   function mount(opts) {
     opts = opts || {};
     var host = opts.host;
     if (!host) return Promise.reject(new Error('Slate host missing.'));
+    if (host.__stopNflInjuryWatch) host.__stopNflInjuryWatch();
     host.__desk = host.__desk || {};
     host.__desk.sport = opts.sport;
     host.__desk.adapter = opts.adapter;
@@ -1435,11 +1519,10 @@
       host.__desk.dateIso = result.dateIso || host.__desk.dateIso;
       if (!host.__desk.embedded) updateStatus(opts.sport, result);
       render(host);
+      if (opts.sport === 'nfl') watchNflCards(host);
       if (result.statusReady) result.statusReady.then(function(updated){
         if(!(updated.statusObservedAt || updated.availabilityChecked || updated.linesObservedAt) || (updated.dateIso && host.__desk.dateIso!==updated.dateIso))return;
-        var open=host.querySelector('[data-expand-matchup][aria-expanded="true"]'),keep=open&&open.getAttribute('aria-controls');
-        host.__desk.games=updated.games;render(host);
-        if(keep){var panel=document.getElementById(keep),button=host.querySelector('[aria-controls="'+keep+'"]');if(panel&&button){panel.hidden=false;button.setAttribute('aria-expanded','true');button.closest('.ca-matchup-card').classList.add('is-expanded');}}
+        host.__desk.games=updated.games;renderPreservingState(host);
       });
       return result;
     }).catch(function (error) {
