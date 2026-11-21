@@ -1467,7 +1467,9 @@
     "expected",
     "close_within",
     "away_regression",
-    "home_regression"
+    "home_regression",
+    "away_value_table",
+    "home_value_table"
   ],
   "contextual_environment": [
     "away_rest_days",

@@ -7319,7 +7319,11 @@ function seasonToggle(game) {
     }
     if (state === 'unavailable') parts.push('Refresh temporarily unavailable');
     if (state === 'checking' && !(report && report.coverage)) parts.push('Checking for a current report');
-    if (state === 'not_published') parts.push('Current report unavailable');
+    if (state === 'not_published') {
+      // The conference has scheduled the report: say when (its game-day post).
+      parts.push(game.__cfbInjuryDue && !(report && report.coverage)
+        ? esc('Official report due ' + publishedTime(game.__cfbInjuryDue)) : 'Current report unavailable');
+    }
     return parts.length ? '<p class="ca-injury-report-meta">' + parts.join(' · ') + '</p>' : '';
   }
 
@@ -7340,7 +7344,7 @@ function seasonToggle(game) {
       valueNote = CFB_VALUE_NOTE;
       playsNote = 'no college history yet';
       players = players.map(function (pl) {
-        var row = {}, rate = !report.coverage && CFB_PLAY_RATES[pl.status];
+        var row = {}, rate = CFB_PLAY_RATES[pl.status];
         Object.keys(pl).forEach(function (k) { row[k] = pl[k]; });
         if (rate) { row.plays = rate[0]; row.plays_n = rate[1]; row.plays_basis = pl.status + ' (NFL official report record)'; }
         // A roster status, not a game designation: he does not play.
@@ -7359,6 +7363,28 @@ function seasonToggle(game) {
         pending(empty)) + '</section>';
   }
 
+  /* "Jalen Dawson", "J. Dawson" and "Jalen Dawson, Jr." share a key, as
+     scripts/cfb_injuries.py _key reads them. */
+  function cfbPlayerKey(name) {
+    var parts = String(name || '').replace(/[^A-Za-z .'-]/g, '').replace(/\./g, ' ').split(/\s+/)
+      .filter(function (w) { return w && !/^(jr|sr|ii|iii|iv)$/i.test(w); });
+    if (!parts.length) return '';
+    return (parts[0].charAt(0) + parts[parts.length - 1]).toLowerCase().replace(/['-]/g, '');
+  }
+  /* {key: [value, value_recent, missed]} from the school's published value
+     table; a key two players share is left out rather than guessed. */
+  function cfbPlayerValues(game, side) {
+    var out = {}, seen = {};
+    (game[side + '_value_table'] || []).forEach(function (row) {
+      var k = cfbPlayerKey(row[0]);
+      if (!k) return;
+      if (seen[k]) { delete out[k]; return; }
+      seen[k] = true;
+      out[k] = row.slice(1);
+    });
+    return out;
+  }
+
   function watchCfbInjuries(host, sport, game, adapter) {
     var kickoff = Date.parse(game.kickoff_utc);
     var age = kickoff - Date.now();
@@ -7373,6 +7399,10 @@ function seasonToggle(game) {
       return adapter.injuryReport(game, signal);
     }, function (data) {
       var updated = false, stateChanged = false;
+      if ((data.due_at_utc || null) !== (game.__cfbInjuryDue || null)) {
+        game.__cfbInjuryDue = data.due_at_utc || null;
+        stateChanged = true;
+      }
       ['away', 'home'].forEach(function (side) {
         var key = side + '_injuries';
         var next = (data.reports || {})[side];
@@ -7385,9 +7415,18 @@ function seasonToggle(game) {
               (!next.published_at_utc || next.published_at_utc < current.published_at_utc))))) return;
         var snapshot = { away_injuries: snapshots[side] };
         var designation = function (pl) { return availability.designation(snapshot, 'away', pl); };
+        // A conference report names more players than the saved Covers and
+        // RotoWire list: each takes his value and games missed from the
+        // school's value table, and the saved list's injury where it has one.
+        var values = cfbPlayerValues(game, side);
         next.players = next.players.map(function (pl) {
           var facts = designation(pl) || {};
-          return Object.assign({}, pl, { value: facts.value, value_recent: facts.value_recent, missed: facts.missed });
+          var hit = values[cfbPlayerKey(pl.player)];
+          var row = Object.assign({}, pl, hit
+            ? { value: hit[0], value_recent: hit[1], missed: hit[2] }
+            : { value: facts.value, value_recent: facts.value_recent, missed: facts.missed });
+          if (!row.injury && facts.injury) row.injury = facts.injury;
+          return row;
         });
         var checked = next.checked_at_utc;
         var evidence = JSON.stringify(Object.assign({}, next, { checked_at_utc: null }));

@@ -1,6 +1,6 @@
 import { json } from '../_shared/http.js';
 import { availabilityFeed, availabilityResponse } from '../_shared/availability_cache.js';
-import { availabilityStatus, collegeConferences, collegeTeam, liveConferenceReport, wallClock } from '../_shared/college_availability.js';
+import { availabilityStatus, collegeConferences, collegeTeam, conferenceReportDue, liveConferenceReport, wallClock } from '../_shared/college_availability.js';
 
 const ROTO_REPORT = 'https://www.rotowire.com/cfootball/injury-report.php';
 const ROTO_FEED = 'https://www.rotowire.com/cfootball/tables/injury-report.php?team=ALL&pos=ALL';
@@ -34,17 +34,27 @@ export async function onRequestGet(context) {
     return json({ status: 'invalid_fixture' }, 400);
   }
   if (delta > 7 * DAY || delta < -14 * DAY) return json({ status: 'not_published' });
-  const official = await Promise.allSettled(collegeConferences(query.get('conferences')).map(
-    id => liveConferenceReport(context, id, kickoff, schools)
-  ));
+  const conferences = collegeConferences(query.get('conferences'));
+  const official = await Promise.allSettled(conferences.map(id => liveConferenceReport(context, id, kickoff, schools)));
   const reports = {};
+  // Which source could not be read, and why: the reader sees "refresh
+  // unavailable"; this names the conference feed that failed.
+  const issues = {};
+  official.forEach((result, index) => {
+    if (result.status === 'rejected') issues[conferences[index]] = String(result.reason?.message || result.reason).slice(0, 120);
+  });
+  const extra = Object.keys(issues).length ? { issues } : {};
   for (const result of official) {
     if (result.status !== 'fulfilled' || !result.value) continue;
     for (const [side, report] of Object.entries(result.value)) {
       if (!reports[side] || reports[side].published_at_utc < report.published_at_utc) reports[side] = report;
     }
   }
-  if (reports.away && reports.home) return json({ status: 'ok', reports });
+  if (reports.away && reports.home) return json({ status: 'ok', reports, ...extra });
+  // A report the conference has scheduled: when it is due.
+  const due = (await Promise.allSettled(conferences.map(id => conferenceReportDue(context, id, kickoff, schools))))
+    .map(result => result.status === 'fulfilled' ? result.value : null).filter(Boolean).sort()[0];
+  if (due) extra.due_at_utc = due;
 
   // The secondary table describes an upcoming matchup window. Its date is
   // kickoff, so never present it as the time the injury status was published.
@@ -63,8 +73,8 @@ export async function onRequestGet(context) {
           checked_at_utc: feed.checked_at_utc
         };
       }
-    } catch (_) { return json({ status: 'unavailable', reports }); }
+    } catch (_) { return json({ status: 'unavailable', reports, ...extra }); }
   }
   const status = official.some(result => result.status === 'rejected') ? 'unavailable' : 'not_published';
-  return json({ status, reports });
+  return json({ status, reports, ...extra });
 }
