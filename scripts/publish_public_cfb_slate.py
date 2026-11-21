@@ -977,20 +977,6 @@ def load_power(season: int) -> dict:
     return built
 
 
-def power_metadata(power: dict, season: int) -> dict:
-    """Keep provenance with carried school ratings during a source outage."""
-    if power:
-        return {key: power[key] for key in ("home_court", "league_mean", "through_week")}
-    try:
-        previous = json.loads(OUT.read_text(encoding="utf-8"))
-        if previous.get("season") == season and previous.get("power"):
-            return {**previous["power"], "source_state": "carried_forward",
-                    "data_through_utc": previous["power"].get("data_through_utc") or previous.get("generated_at_utc")}
-    except (OSError, ValueError):
-        pass
-    return {}
-
-
 def previous_injuries(path: Path = OUT) -> dict[str, list[dict]]:
     """The last published injury report by school, for cfb_injuries.carry_forward."""
     try:
@@ -1066,6 +1052,18 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
 DEPTH_KEYS = ("_run_game", "_scheme_stats", "_charting", "_strength", "_penalties", "_run_lanes", "_qbs", "_defense_splits", "_rushers", "_receivers",
               "_defenders",
               "_schedule_strength", "_power", "_predictability", "_regression")
+
+
+def previous_power(season: int, path: Path | None = None) -> dict | None:
+    """The power ranking's league line (home field, league mean, week)
+    last published this season, or None."""
+    try:
+        previous = json.loads((path or OUT).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if int(previous.get("season") or 0) != season:
+        return None
+    return previous.get("power") or None
 
 
 def carry_forward_depth(games: list[dict], season: int) -> int:
@@ -1149,9 +1147,14 @@ def main() -> int:
         "data_through_utc": board.get("generated_at"),
         "games": games,
     }
-    metadata = power_metadata(depth.get("power") or {}, season)
-    if metadata:
-        payload["power"] = metadata
+    power = depth.get("power") or {}
+    if power:
+        payload["power"] = {"home_court": power["home_court"], "league_mean": power["league_mean"],
+                            "through_week": power["through_week"]}
+    elif previous_power(season):
+        # A CFBD outage carries each school's power blocks forward
+        # (carry_forward_depth); the league line they were built on comes with them.
+        payload["power"] = previous_power(season)
     with_form = sum(1 for game in games if game.get("away_form") and game.get("home_form"))
     with_adjusted = sum(1 for game in games if game.get("away_adjusted_efficiency")
                         and game.get("home_adjusted_efficiency"))

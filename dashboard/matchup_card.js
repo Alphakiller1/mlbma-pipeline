@@ -1259,12 +1259,34 @@
     if (global.ChaseNav && ChaseNav.applyDataStatus && result.generatedAt) ChaseNav.applyDataStatus(fields);
   }
 
+  /* A game that has ended leaves the matchup cards (owner, 2026-11-21): the
+     board lists what is still to be played or under way. Ended means a feed
+     says final (or canceled), or - when no feed says it is live or delayed -
+     it started longer ago than a game of that sport runs, so a slate that
+     has not been republished since still clears. A past day picked with the
+     date controls keeps its finals: that is a look back, not the board. */
+  var GAME_HOURS = { nfl: 4.5, cfb: 5, nba: 3.5, cbb: 3, mlb: 5.5 };
+  // Desks a reader moves through day by day.
+  var DATE_DESKS = { mlb: 1, cbb: 1 };
+  function gameEnded(sport, game, now) {
+    var state = String(game.game_state || '').toLowerCase();
+    if (state === 'final' || state === 'canceled' || state === 'cancelled') return true;
+    if (state === 'live' || state === 'delayed') return false;
+    var start = Date.parse(game.kickoff_utc || '');
+    return isFinite(start) && now - start > (GAME_HOURS[sport] || 4) * 3600000;
+  }
+  function showsEnded(desk) {
+    return !!desk.results || (!!desk.chosenDate && !!desk.dateIso && desk.dateIso < easternDateIso());
+  }
+
   function filterGames(host, games) {
     var desk = host.__desk || {};
     var term = String(desk.query || '').trim().toLowerCase();
     var filter = desk.filter || 'all';
+    var now = Date.now(), keepEnded = showsEnded(desk);
     return games.filter(function (game) {
       if (desk.results && String(game.game_state || '').toLowerCase() !== 'final') return false;
+      if (!keepEnded && gameEnded(desk.sport, game, now)) return false;
       if (filter === 'confirmed' && sportLineupState(game).indexOf('Confirmed') < 0) return false;
       if (!term) return true;
       function starter(side) {
@@ -1368,9 +1390,15 @@
     // their own - a page that carries the mount point gets them there, and the
     // slate holds only the games.
     var controlHost = document.querySelector('[data-desk-toolbar-host]');
+    var allEnded = !shown.length && !desk.results && !showsEnded(desk) && (desk.games || []).length > 0 &&
+      (desk.games || []).every(function (game) { return gameEnded(desk.sport, game, Date.now()); });
+    var empty = desk.results ? ['No completed games', 'Final scores will appear here when games finish.']
+      : allEnded ? ['Every game on this slate has finished', DATE_DESKS[desk.sport]
+        ? 'Use the next-day arrow for the games ahead.' : 'The next slate appears here when it is published.']
+      : ['No matching games', 'Adjust the date, filters, or search.'];
     var body = renderGroups(desk.sport, shown) +
-      (!shown.length ? '<div class="ca-empty-state"><h2>' + (desk.results ? 'No completed games' : 'No matching games') +
-        '</h2><p>' + (desk.results ? 'Final scores will appear here when games finish.' : 'Adjust the date, filters, or search.') + '</p></div>' : '');
+      (!shown.length ? '<div class="ca-empty-state"' + (allEnded ? ' data-empty="ended"' : '') + '><h2>' + empty[0] +
+        '</h2><p>' + empty[1] + '</p></div>' : '');
     if (controlHost) {
       controlHost.innerHTML = toolbar;
       host.innerHTML = body;
@@ -1389,6 +1417,7 @@
     host.__desk.adapter = opts.adapter;
     host.__desk.embedded = !!opts.embedded;
     host.__desk.results = !!opts.results;
+    host.__desk.chosenDate = !!(opts.dateIso || query().get('date'));
     host.__desk.dateIso = opts.dateIso || query().get('date') || easternDateIso();
     host.setAttribute('data-state', 'loading');
     host.innerHTML = '<div class="ca-loading-state" role="status">Loading ' + esc(opts.sport.toUpperCase()) + ' matchups…</div>';
@@ -1397,6 +1426,11 @@
     return loadGames(opts.sport, opts.adapter,
       opts.dateIso || query().get('date') || null).then(function (result) {
       result = withLines(result, opts.sport);
+      // Today's games are all over on a date desk: open on tomorrow's (once).
+      if (DATE_DESKS[opts.sport] && !host.__desk.chosenDate && !opts.advanced && result.games.length &&
+          result.games.every(function (game) { return gameEnded(opts.sport, game, Date.now()); })) {
+        return mount(Object.assign({}, opts, { dateIso: shiftIso(result.dateIso || easternDateIso(), 1), advanced: true }));
+      }
       host.__desk.games = result.games;
       host.__desk.dateIso = result.dateIso || host.__desk.dateIso;
       if (!host.__desk.embedded) updateStatus(opts.sport, result);
@@ -1504,7 +1538,7 @@
       opts.adapter = opts.adapter || global.ChaseSportMLB;
       return mount(opts);
     },
-    loadGames: loadGames, canonTeam: canonTeam,
+    loadGames: loadGames, canonTeam: canonTeam, gameEnded: gameEnded,
     fullMatchupUrl: fullMatchupUrl,
     teamName: teamName,
     logoHtml: logoHtml,

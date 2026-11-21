@@ -110,6 +110,20 @@ REGRESSION_AUDIT = r"""(id) => {
 }"""
 
 
+ENDED_STATE = '.ca-empty-state[data-empty="ended"]'
+
+
+def first_detail_url(page, base_url: str, sport: str) -> str:
+    """The first card's full-detail link; when every game on the board has
+    ended (cards leave the board, 2026-11-21), the first game on the
+    published slate, whose desk still opens."""
+    link = page.locator(".ca-matchup-card__detail-link").first
+    if page.locator(".ca-matchup-card__detail-link").count():
+        return link.get_attribute("href") or ""
+    games = page.request.get(f"{base_url.rstrip('/')}/data/public/{sport}/slate.json").json().get("games") or []
+    return f"/{sport}/matchup.html?game={urllib.parse.quote(str(games[0]['id']))}" if games else ""
+
+
 def regression_ok(audit: dict, published: bool, parts: int) -> bool:
     """A desk whose data carries the blocks shows them whole and reconciled;
     one whose data does not yet shows the pending note, not a broken panel."""
@@ -195,8 +209,16 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             page.on("pageerror", lambda error: page_errors.append(str(error)))
             page.on("console", lambda message: console_errors.append(message.text) if message.type == "error" else None)
             page.goto(base_url.rstrip("/") + "/", wait_until="domcontentloaded", timeout=timeout_ms)
-            page.wait_for_selector("#openingCbbSlate .ca-matchup-card", timeout=timeout_ms)
-            page.wait_for_selector("#openingNflSlate .ca-matchup-card", timeout=timeout_ms)
+            # A game leaves the cards once it ends (2026-11-21); a board whose games
+            # have all finished shows its ended state instead (CBB opens on the next
+            # day, so that is the NFL between its last game and the week's rollover).
+            page.wait_for_selector(f"#openingCbbSlate .ca-matchup-card, #openingCbbSlate {ENDED_STATE}", timeout=timeout_ms)
+            page.wait_for_selector(f"#openingNflSlate .ca-matchup-card, #openingNflSlate {ENDED_STATE}", timeout=timeout_ms)
+            if not page.locator("#openingCbbSlate .ca-matchup-card").count():
+                check(f"{width}px CBB board says every game has finished",
+                      page.locator(f"#openingCbbSlate {ENDED_STATE}").count() == 1)
+                context.close()
+                continue
             # The crest checks read naturalWidth, which is 0 until the image has
             # decoded. A fixed 300ms pause was winning that race most of the
             # time and losing it perhaps one run in five - reporting a crest
@@ -476,13 +498,12 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         context = browser.new_context(viewport={"width": 1280, "height": 900})
         page = context.new_page()
         page.goto(base_url.rstrip("/") + "/nfl/", wait_until="domcontentloaded", timeout=timeout_ms)
-        page.wait_for_selector(".ca-matchup-card", timeout=timeout_ms)
+        page.wait_for_selector(f".ca-matchup-card, {ENDED_STATE}", timeout=timeout_ms)
         nfl_text = page.locator("main").inner_text()
         for term in ("lineup", "bullpen", "probable starter", "era"):
             check(f"NFL omits MLB-only {term}", term not in nfl_text.lower())
 
-        detail_link = page.locator(".ca-matchup-card__detail-link").first
-        detail_url = detail_link.get_attribute("href") or ""
+        detail_url = first_detail_url(page, base_url, "nfl")
         check("NFL full-detail link exists", detail_url.startswith("/nfl/matchup.html?game="), detail_url)
         page.goto(base_url.rstrip("/") + detail_url, wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector(".ca-detail-hero", timeout=timeout_ms)
@@ -857,9 +878,8 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.set_viewport_size({"width": 1280, "height": 900})
 
         page.goto(base_url.rstrip("/") + "/cfb/", wait_until="domcontentloaded", timeout=timeout_ms)
-        page.wait_for_selector(".ca-matchup-card", timeout=timeout_ms)
-        cfb_detail_link = page.locator(".ca-matchup-card__detail-link").first
-        cfb_detail_url = cfb_detail_link.get_attribute("href") or ""
+        page.wait_for_selector(f".ca-matchup-card, {ENDED_STATE}", timeout=timeout_ms)
+        cfb_detail_url = first_detail_url(page, base_url, "cfb")
         check("CFB full-detail link exists",
               cfb_detail_url.startswith("/cfb/matchup.html?game="), cfb_detail_url)
         page.goto(base_url.rstrip("/") + cfb_detail_url,

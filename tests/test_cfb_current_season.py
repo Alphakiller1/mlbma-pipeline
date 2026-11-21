@@ -9,20 +9,6 @@ from scripts import validate_public_fields as public_fields
 
 
 class CfbCurrentSeasonTests(unittest.TestCase):
-    def test_carried_power_keeps_its_original_observation_time(self):
-        import tempfile
-        from pathlib import Path
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "slate.json"
-            previous = {"season": 2026, "generated_at_utc": "2026-11-20T18:10:41Z",
-                        "power": {"through_week": 12, "home_court": 3.063, "league_mean": 26.59}}
-            path.write_text(json.dumps(previous))
-            with patch.object(cfb, "OUT", path):
-                receipt = cfb.power_metadata({}, 2026)
-                self.assertEqual(receipt["data_through_utc"], previous["generated_at_utc"])
-                self.assertEqual(receipt["source_state"], "carried_forward")
-                self.assertEqual(cfb.power_metadata({}, 2027), {})
-
     def test_scheme_parser_keeps_coverage_front_pressure_and_matchup_plan(self):
         page = '''
         <div class="dm-side"><div><div class="name">Away U</div>
@@ -193,3 +179,15 @@ def test_publisher_refuses_a_short_pull(tmp_path, monkeypatch):
     monkeypatch.setattr(cfb, "public_game", lambda raw, *a: {"id": raw["id"]})
     assert cfb.main() == 1
     assert out.read_text(encoding="utf-8") == '{"games": ["previous"]}'
+
+
+def test_a_cfbd_outage_keeps_the_power_league_line(tmp_path):
+    # 2026-11-20: CFBD answered 429 and the slate kept every school's power
+    # block but dropped the league line beside them.
+    out = tmp_path / "slate.json"
+    out.write_text(json.dumps({"season": 2026, "power": {"home_court": 3.063, "league_mean": 26.59,
+                                                          "through_week": 12}}), encoding="utf-8")
+    assert cfb.previous_power(2026, out) == {"home_court": 3.063, "league_mean": 26.59, "through_week": 12}
+    assert cfb.previous_power(2027, out) is None
+    out.write_text(json.dumps({"season": 2026}), encoding="utf-8")
+    assert cfb.previous_power(2026, out) is None

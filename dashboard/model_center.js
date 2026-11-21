@@ -765,7 +765,7 @@
       season: String(board.season), week: String(board.week), event_id: String((players || [])[0]?.event_id || '') });
     // Public ESPN endpoints allow CORS. Browser access avoids provider blocks
     // on shared Cloudflare egress; the same source parser serves both paths.
-    return import('/dashboard/model_prop_sources_shared.js?v=20261120cfblabels1&rev=1')
+    return import('/dashboard/model_prop_sources_shared.js?v=20261121endedcards1&rev=1')
       .then(function (source) {
         return sport === 'cfb' ? source.loadCollegePropLines(spec) : source.loadNflPropLines(spec);
       }).catch(function () { return fetch('/api/model-center/prop-lines?' + params, {

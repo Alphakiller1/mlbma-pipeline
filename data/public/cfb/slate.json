@@ -646916,8 +646916,6 @@
   "power": {
     "home_court": 3.063,
     "league_mean": 26.59,
-    "through_week": 12,
-    "source_state": "carried_forward",
-    "data_through_utc": "2026-11-20T18:10:41Z"
+    "through_week": 12
   }
 }
