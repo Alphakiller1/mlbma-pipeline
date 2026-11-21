@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 12,
-  "generated_at_utc": "2026-11-21T17:26:11Z",
+  "generated_at_utc": "2026-11-21T19:34:34Z",
   "data_through_utc": "2026-11-21T06:50:22Z",
   "games": [
     {
@@ -3612,7 +3612,7 @@
           "of": 138
         },
         "defense": {
-          "value": 26.72,
+          "value": 26.71,
           "rank": 120,
           "of": 138
         },
@@ -3627,12 +3627,12 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 23.67,
+          "value": 23.66,
           "rank": 88,
           "of": 138
         },
         "luck": {
-          "value": -0.0497,
+          "value": -0.0496,
           "rank": 43,
           "of": 138
         },
@@ -7318,7 +7318,7 @@
           "of": 138
         },
         "offense": {
-          "value": 29.66,
+          "value": 29.65,
           "rank": 81,
           "of": 138
         },
@@ -15307,7 +15307,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 23.54,
+          "value": 23.53,
           "rank": 78,
           "of": 138
         },
@@ -18938,12 +18938,12 @@
           "of": 138
         },
         "offense": {
-          "value": 30.32,
+          "value": 30.31,
           "rank": 77,
           "of": 138
         },
         "defense": {
-          "value": 24.11,
+          "value": 24.1,
           "rank": 97,
           "of": 138
         },
@@ -26793,7 +26793,7 @@
           "of": 138
         },
         "offense": {
-          "value": 29.55,
+          "value": 29.54,
           "rank": 83,
           "of": 138
         },
@@ -26804,16 +26804,16 @@
         },
         "schedule": {
           "value": 2.8,
-          "rank": 131,
+          "rank": 132,
           "of": 138
         },
         "schedule_offense": {
-          "value": 27.68,
+          "value": 27.67,
           "rank": 123,
           "of": 138
         },
         "schedule_defense": {
-          "value": 24.88,
+          "value": 24.87,
           "rank": 133,
           "of": 138
         },
@@ -38706,7 +38706,7 @@
           "of": 138
         },
         "offense": {
-          "value": 26.67,
+          "value": 26.66,
           "rank": 115,
           "of": 138
         },
@@ -38721,7 +38721,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 28.19,
+          "value": 28.18,
           "rank": 114,
           "of": 138
         },
@@ -50381,12 +50381,12 @@
         },
         "schedule_offense": {
           "value": 28.43,
-          "rank": 112,
+          "rank": 113,
           "of": 138
         },
         "schedule_defense": {
-          "value": 23.81,
-          "rank": 92,
+          "value": 23.8,
+          "rank": 93,
           "of": 138
         },
         "luck": {
@@ -54015,12 +54015,12 @@
           "of": 138
         },
         "offense": {
-          "value": 27.83,
+          "value": 27.82,
           "rank": 102,
           "of": 138
         },
         "defense": {
-          "value": 24.3,
+          "value": 24.29,
           "rank": 100,
           "of": 138
         },
@@ -54030,12 +54030,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 27.38,
+          "value": 27.37,
           "rank": 130,
           "of": 138
         },
         "schedule_defense": {
-          "value": 23.98,
+          "value": 23.97,
           "rank": 96,
           "of": 138
         },
@@ -61422,7 +61422,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 22.7,
+          "value": 22.69,
           "rank": 62,
           "of": 138
         },
@@ -65063,12 +65063,12 @@
           "of": 138
         },
         "offense": {
-          "value": 29.08,
+          "value": 29.07,
           "rank": 91,
           "of": 138
         },
         "defense": {
-          "value": 26.91,
+          "value": 26.9,
           "rank": 121,
           "of": 138
         },
@@ -65083,7 +65083,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 23.43,
+          "value": 23.42,
           "rank": 76,
           "of": 138
         },
@@ -72900,7 +72900,7 @@
           "of": 138
         },
         "defense": {
-          "value": 22.96,
+          "value": 22.95,
           "rank": 81,
           "of": 138
         },
@@ -72910,12 +72910,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 32.3,
+          "value": 32.29,
           "rank": 19,
           "of": 138
         },
         "schedule_defense": {
-          "value": 21.3,
+          "value": 21.29,
           "rank": 33,
           "of": 138
         },
@@ -76646,7 +76646,7 @@
           "of": 138
         },
         "offense": {
-          "value": 32.04,
+          "value": 32.03,
           "rank": 58,
           "of": 138
         },
@@ -76666,7 +76666,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 21.18,
+          "value": 21.17,
           "rank": 29,
           "of": 138
         },
@@ -84617,7 +84617,7 @@
         },
         "schedule_defense": {
           "value": 23.99,
-          "rank": 99,
+          "rank": 100,
           "of": 138
         },
         "luck": {
@@ -88139,7 +88139,7 @@
           "of": 138
         },
         "offense": {
-          "value": 30.99,
+          "value": 30.98,
           "rank": 68,
           "of": 138
         },
@@ -88154,17 +88154,17 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 27.1,
+          "value": 27.09,
           "rank": 133,
           "of": 138
         },
         "schedule_defense": {
-          "value": 25.44,
+          "value": 25.43,
           "rank": 136,
           "of": 138
         },
         "luck": {
-          "value": 0.1498,
+          "value": 0.1497,
           "rank": 116,
           "of": 138
         },
@@ -95775,7 +95775,7 @@
           "of": 138
         },
         "defense": {
-          "value": 19.11,
+          "value": 19.1,
           "rank": 27,
           "of": 138
         },
@@ -99388,12 +99388,12 @@
           "of": 138
         },
         "offense": {
-          "value": 32.39,
+          "value": 32.38,
           "rank": 54,
           "of": 138
         },
         "defense": {
-          "value": 18.39,
+          "value": 18.38,
           "rank": 24,
           "of": 138
         },
@@ -99413,7 +99413,7 @@
           "of": 138
         },
         "luck": {
-          "value": 0.0019,
+          "value": 0.0018,
           "rank": 65,
           "of": 138
         },
@@ -107330,12 +107330,12 @@
           "of": 138
         },
         "offense": {
-          "value": 34.56,
+          "value": 34.55,
           "rank": 25,
           "of": 138
         },
         "defense": {
-          "value": 16.2,
+          "value": 16.19,
           "rank": 7,
           "of": 138
         },
@@ -111067,7 +111067,7 @@
           "of": 138
         },
         "offense": {
-          "value": 27.82,
+          "value": 27.81,
           "rank": 103,
           "of": 138
         },
@@ -119098,7 +119098,7 @@
           "of": 138
         },
         "offense": {
-          "value": 24.36,
+          "value": 24.35,
           "rank": 131,
           "of": 138
         },
@@ -119108,7 +119108,7 @@
           "of": 138
         },
         "schedule": {
-          "value": 6.56,
+          "value": 6.57,
           "rank": 80,
           "of": 138
         },
@@ -119118,7 +119118,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 21.91,
+          "value": 21.9,
           "rank": 43,
           "of": 138
         },
@@ -122819,12 +122819,12 @@
           "of": 138
         },
         "offense": {
-          "value": 31.83,
+          "value": 31.82,
           "rank": 59,
           "of": 138
         },
         "defense": {
-          "value": 22.07,
+          "value": 22.06,
           "rank": 63,
           "of": 138
         },
@@ -122834,7 +122834,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 28.07,
+          "value": 28.06,
           "rank": 116,
           "of": 138
         },
@@ -131220,33 +131220,33 @@
       ],
       "away_power": {
         "net": {
-          "value": 12.77,
-          "rank": 37,
+          "value": 12.79,
+          "rank": 36,
           "of": 138
         },
         "offense": {
-          "value": 30.34,
+          "value": 30.35,
           "rank": 75,
           "of": 138
         },
         "defense": {
-          "value": 17.57,
+          "value": 17.56,
           "rank": 19,
           "of": 138
         },
         "schedule": {
-          "value": 2.5,
+          "value": 2.53,
           "rank": 134,
           "of": 138
         },
         "schedule_offense": {
-          "value": 26.31,
+          "value": 26.32,
           "rank": 138,
           "of": 138
         },
         "schedule_defense": {
-          "value": 23.81,
-          "rank": 94,
+          "value": 23.78,
+          "rank": 92,
           "of": 138
         },
         "luck": {
@@ -134955,12 +134955,12 @@
           "of": 138
         },
         "schedule": {
-          "value": 2.9,
+          "value": 2.91,
           "rank": 130,
           "of": 138
         },
         "schedule_offense": {
-          "value": 27.72,
+          "value": 27.71,
           "rank": 122,
           "of": 138
         },
@@ -139223,13 +139223,13 @@
       "home_color": "#0051ba",
       "away_record": "8-2",
       "home_record": "4-6",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "16",
+      "home_score": "6",
       "venue": "David Booth Kansas Memorial Stadium",
       "venue_city": "Lawrence, KS",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 64,
+      "weather_temp": 67,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -142877,7 +142877,7 @@
       ],
       "away_power": {
         "net": {
-          "value": 16.02,
+          "value": 16.01,
           "rank": 17,
           "of": 138
         },
@@ -146602,12 +146602,12 @@
       ],
       "home_power": {
         "net": {
-          "value": 12.4,
+          "value": 12.39,
           "rank": 45,
           "of": 138
         },
         "offense": {
-          "value": 32.77,
+          "value": 32.76,
           "rank": 47,
           "of": 138
         },
@@ -150592,13 +150592,13 @@
       "home_color": "#000000",
       "away_record": "4-6",
       "home_record": "5-5",
-      "away_score": "0",
-      "home_score": "14",
+      "away_score": "28",
+      "home_score": "35",
       "venue": "Nippert Stadium",
       "venue_city": "Cincinnati, OH",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 63,
+      "weather_temp": 68,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -154280,7 +154280,7 @@
           "of": 138
         },
         "defense": {
-          "value": 20.92,
+          "value": 20.91,
           "rank": 48,
           "of": 138
         },
@@ -154290,12 +154290,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 33.33,
+          "value": 33.32,
           "rank": 4,
           "of": 138
         },
         "schedule_defense": {
-          "value": 21.47,
+          "value": 21.46,
           "rank": 36,
           "of": 138
         },
@@ -157887,7 +157887,7 @@
       ],
       "home_power": {
         "net": {
-          "value": 9.23,
+          "value": 9.22,
           "rank": 65,
           "of": 138
         },
@@ -157902,7 +157902,7 @@
           "of": 138
         },
         "schedule": {
-          "value": 9.94,
+          "value": 9.93,
           "rank": 35,
           "of": 138
         },
@@ -161818,8 +161818,8 @@
       "home_color": "#000000",
       "away_record": "6-4",
       "home_record": "5-4",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "3",
+      "home_score": "6",
       "venue": "Michie Stadium",
       "venue_city": "West Point, NY",
       "roof": "Outdoor",
@@ -165394,7 +165394,7 @@
           "of": 138
         },
         "offense": {
-          "value": 26.34,
+          "value": 26.33,
           "rank": 122,
           "of": 138
         },
@@ -165414,7 +165414,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 23.51,
+          "value": 23.5,
           "rank": 77,
           "of": 138
         },
@@ -169129,12 +169129,12 @@
           "of": 138
         },
         "offense": {
-          "value": 33.98,
+          "value": 33.97,
           "rank": 29,
           "of": 138
         },
         "defense": {
-          "value": 25.28,
+          "value": 25.27,
           "rank": 110,
           "of": 138
         },
@@ -169144,7 +169144,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 30.64,
+          "value": 30.63,
           "rank": 66,
           "of": 138
         },
@@ -173095,14 +173095,14 @@
       "home_color": "#00225b",
       "away_record": "8-2",
       "home_record": "3-6",
-      "away_score": "0",
-      "home_score": "7",
+      "away_score": "27",
+      "home_score": "17",
       "venue": "Navy-Marine Corps Memorial Stadium",
       "venue_city": "Annapolis, MD",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 57,
-      "weather_cond": "Sunny",
+      "weather_temp": 63,
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -176601,7 +176601,7 @@
           "of": 138
         },
         "offense": {
-          "value": 35.62,
+          "value": 35.61,
           "rank": 16,
           "of": 138
         },
@@ -180135,12 +180135,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 31.7,
+          "value": 31.69,
           "rank": 34,
           "of": 138
         },
         "schedule_defense": {
-          "value": 23.24,
+          "value": 23.23,
           "rank": 71,
           "of": 138
         },
@@ -184188,13 +184188,13 @@
       "home_color": "#7a0019",
       "away_record": "6-4",
       "home_record": "5-5",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "10",
+      "home_score": "17",
       "venue": "Huntington Bank Stadium",
       "venue_city": "Minneapolis, MN",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 54,
+      "weather_temp": 49,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -187797,7 +187797,7 @@
           "of": 138
         },
         "offense": {
-          "value": 34.81,
+          "value": 34.8,
           "rank": 20,
           "of": 138
         },
@@ -187812,7 +187812,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 31.67,
+          "value": 31.66,
           "rank": 35,
           "of": 138
         },
@@ -191440,7 +191440,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 30.62,
+          "value": 30.61,
           "rank": 68,
           "of": 138
         },
@@ -195396,13 +195396,13 @@
       "home_color": "#d00000",
       "away_record": "7-3",
       "home_record": "6-4",
-      "away_score": "7",
-      "home_score": "0",
+      "away_score": "21",
+      "home_score": "21",
       "venue": "Memorial Stadium (Lincoln, NE)",
       "venue_city": "Lincoln, NE",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 61,
+      "weather_temp": 44,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -198935,7 +198935,7 @@
           "of": 138
         },
         "offense": {
-          "value": 36.4,
+          "value": 36.39,
           "rank": 12,
           "of": 138
         },
@@ -202724,12 +202724,12 @@
           "of": 138
         },
         "offense": {
-          "value": 33.06,
+          "value": 33.05,
           "rank": 40,
           "of": 138
         },
         "defense": {
-          "value": 16.61,
+          "value": 16.6,
           "rank": 10,
           "of": 138
         },
@@ -206722,13 +206722,13 @@
       "home_color": "#8c2232",
       "away_record": "5-5",
       "home_record": "4-6",
-      "away_score": "0",
-      "home_score": "7",
+      "away_score": "9",
+      "home_score": "13",
       "venue": "Alumni Stadium (Chestnut Hill, MA)",
       "venue_city": "Chestnut Hill, MA",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 59,
+      "weather_temp": 66,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -210341,12 +210341,12 @@
           "of": 138
         },
         "offense": {
-          "value": 30.95,
+          "value": 30.94,
           "rank": 70,
           "of": 138
         },
         "defense": {
-          "value": 22.54,
+          "value": 22.53,
           "rank": 71,
           "of": 138
         },
@@ -217787,14 +217787,14 @@
       "home_color": "#006747",
       "away_record": "7-3",
       "home_record": "5-5",
-      "away_score": "7",
-      "home_score": "0",
+      "away_score": "17",
+      "home_score": "14",
       "venue": "Yulman Stadium",
       "venue_city": "New Orleans, LA",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 71,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 72,
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -225146,12 +225146,12 @@
           "of": 138
         },
         "offense": {
-          "value": 27.11,
+          "value": 27.1,
           "rank": 110,
           "of": 138
         },
         "defense": {
-          "value": 24.03,
+          "value": 24.02,
           "rank": 96,
           "of": 138
         },
@@ -225166,8 +225166,8 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 24.01,
-          "rank": 102,
+          "value": 24.0,
+          "rank": 104,
           "of": 138
         },
         "luck": {
@@ -229450,14 +229450,14 @@
       "home_color": "#0021a5",
       "away_record": "4-6",
       "home_record": "6-4",
-      "away_score": "3",
-      "home_score": "3",
+      "away_score": "24",
+      "home_score": "24",
       "venue": "Ben Hill Griffin Stadium",
       "venue_city": "Gainesville, FL",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
       "weather_temp": 70,
-      "weather_cond": "A shower",
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -233001,12 +233001,12 @@
       ],
       "away_power": {
         "net": {
-          "value": 7.05,
+          "value": 7.04,
           "rank": 81,
           "of": 138
         },
         "offense": {
-          "value": 28.78,
+          "value": 28.77,
           "rank": 95,
           "of": 138
         },
@@ -233016,7 +233016,7 @@
           "of": 138
         },
         "schedule": {
-          "value": 11.94,
+          "value": 11.93,
           "rank": 14,
           "of": 138
         },
@@ -236666,12 +236666,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 33.48,
+          "value": 33.47,
           "rank": 2,
           "of": 138
         },
         "schedule_defense": {
-          "value": 20.98,
+          "value": 20.97,
           "rank": 25,
           "of": 138
         },
@@ -240879,14 +240879,14 @@
       "home_color": "#b3a369",
       "away_record": "9-1",
       "home_record": "3-7",
-      "away_score": "7",
-      "home_score": "0",
+      "away_score": "43",
+      "home_score": "15",
       "venue": "Bobby Dodd Stadium",
       "venue_city": "Atlanta, GA",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 60,
-      "weather_cond": "Rain",
+      "weather_temp": 59,
+      "weather_cond": "Light rain",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -244627,12 +244627,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 31.05,
+          "value": 31.04,
           "rank": 51,
           "of": 138
         },
         "schedule_defense": {
-          "value": 24.59,
+          "value": 24.58,
           "rank": 120,
           "of": 138
         },
@@ -252524,13 +252524,13 @@
       "home_color": "#ceb888",
       "away_record": "6-4",
       "home_record": "3-7",
-      "away_score": "7",
-      "home_score": "0",
+      "away_score": "28",
+      "home_score": "10",
       "venue": "Ross-Ade Stadium",
       "venue_city": "West Lafayette, IN",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 65,
+      "weather_temp": 70,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -259527,7 +259527,7 @@
           "of": 138
         },
         "offense": {
-          "value": 32.92,
+          "value": 32.91,
           "rank": 43,
           "of": 138
         },
@@ -259547,7 +259547,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 20.0,
+          "value": 19.99,
           "rank": 9,
           "of": 138
         },
@@ -263715,7 +263715,7 @@
       "id": "UNC@UVA",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-21T17:30Z",
       "away": "UNC",
       "home": "UVA",
@@ -263729,14 +263729,14 @@
       "home_color": "#232d4b",
       "away_record": "5-5",
       "home_record": "5-5",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "10",
+      "home_score": "20",
       "venue": "Scott Stadium",
       "venue_city": "Charlottesville, VA",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 61,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 65,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -267225,12 +267225,12 @@
       ],
       "away_power": {
         "net": {
-          "value": 13.29,
+          "value": 13.28,
           "rank": 32,
           "of": 138
         },
         "offense": {
-          "value": 33.1,
+          "value": 33.09,
           "rank": 39,
           "of": 138
         },
@@ -267245,7 +267245,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 32.4,
+          "value": 32.39,
           "rank": 16,
           "of": 138
         },
@@ -270953,12 +270953,12 @@
       ],
       "home_power": {
         "net": {
-          "value": 9.3,
+          "value": 9.29,
           "rank": 64,
           "of": 138
         },
         "offense": {
-          "value": 29.62,
+          "value": 29.61,
           "rank": 82,
           "of": 138
         },
@@ -270978,7 +270978,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 23.57,
+          "value": 23.56,
           "rank": 82,
           "of": 138
         },
@@ -275266,7 +275266,7 @@
       "id": "HOU@WVU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-21T18:00Z",
       "away": "HOU",
       "home": "WVU",
@@ -275280,14 +275280,14 @@
       "home_color": "#eaaa00",
       "away_record": "7-3",
       "home_record": "5-5",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "21",
+      "home_score": "24",
       "venue": "Milan Puskar Stadium",
       "venue_city": "Morgantown, WV",
       "roof": "Outdoor",
       "broadcast": "TNT",
-      "weather_temp": 62,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 70,
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -278848,7 +278848,7 @@
           "of": 138
         },
         "offense": {
-          "value": 37.09,
+          "value": 37.08,
           "rank": 6,
           "of": 138
         },
@@ -278858,7 +278858,7 @@
           "of": 138
         },
         "schedule": {
-          "value": 10.61,
+          "value": 10.6,
           "rank": 26,
           "of": 138
         },
@@ -282304,7 +282304,7 @@
           "of": 138
         },
         "offense": {
-          "value": 34.24,
+          "value": 34.23,
           "rank": 27,
           "of": 138
         },
@@ -286037,7 +286037,7 @@
       "id": "WKU@LIB",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-21T18:00Z",
       "away": "WKU",
       "home": "LIB",
@@ -286052,13 +286052,13 @@
       "away_record": "4-6",
       "home_record": "9-1",
       "away_score": "0",
-      "home_score": "0",
+      "home_score": "28",
       "venue": "Williams Stadium (VA)",
       "venue_city": "Lynchburg, VA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 61,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 62,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -289550,37 +289550,37 @@
       ],
       "away_power": {
         "net": {
-          "value": 1.45,
-          "rank": 118,
+          "value": 1.47,
+          "rank": 117,
           "of": 138
         },
         "offense": {
-          "value": 27.52,
+          "value": 27.53,
           "rank": 105,
           "of": 138
         },
         "defense": {
-          "value": 26.07,
+          "value": 26.06,
           "rank": 118,
           "of": 138
         },
         "schedule": {
-          "value": 4.84,
+          "value": 4.88,
           "rank": 100,
           "of": 138
         },
         "schedule_offense": {
-          "value": 28.87,
+          "value": 28.88,
           "rank": 100,
           "of": 138
         },
         "schedule_defense": {
-          "value": 24.03,
-          "rank": 104,
+          "value": 24.0,
+          "rank": 102,
           "of": 138
         },
         "luck": {
-          "value": -0.0352,
+          "value": -0.0349,
           "rank": 48,
           "of": 138
         },
@@ -289590,8 +289590,8 @@
           "games": 10
         },
         "expected_record": {
-          "wins": 4.4,
-          "losses": 5.6
+          "wins": 4.3,
+          "losses": 5.7
         }
       },
       "away_predictability": {
@@ -293273,18 +293273,18 @@
           "of": 138
         },
         "offense": {
-          "value": 32.73,
+          "value": 32.72,
           "rank": 48,
           "of": 138
         },
         "defense": {
-          "value": 19.77,
+          "value": 19.76,
           "rank": 34,
           "of": 138
         },
         "schedule": {
           "value": 2.8,
-          "rank": 132,
+          "rank": 131,
           "of": 138
         },
         "schedule_offense": {
@@ -297501,7 +297501,7 @@
       "id": "CLT@TLSA",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-21T19:00Z",
       "away": "CLT",
       "home": "TLSA",
@@ -297521,8 +297521,8 @@
       "venue_city": "Tulsa, OK",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 70,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 72,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -301038,7 +301038,7 @@
           "of": 138
         },
         "defense": {
-          "value": 27.23,
+          "value": 27.22,
           "rank": 125,
           "of": 138
         },
@@ -301048,13 +301048,13 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 30.25,
+          "value": 30.24,
           "rank": 80,
           "of": 138
         },
         "schedule_defense": {
           "value": 23.81,
-          "rank": 93,
+          "rank": 94,
           "of": 138
         },
         "luck": {
@@ -304747,7 +304747,7 @@
       ],
       "home_power": {
         "net": {
-          "value": 12.69,
+          "value": 12.68,
           "rank": 38,
           "of": 138
         },
@@ -308940,7 +308940,7 @@
       "id": "MOST@JXST",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-21T19:00Z",
       "away": "MOST",
       "home": "JXST",
@@ -308954,14 +308954,14 @@
       "home_color": "#cc0000",
       "away_record": "4-6",
       "home_record": "7-3",
-      "away_score": "0",
+      "away_score": "3",
       "home_score": "0",
       "venue": "AmFirst Stadium",
       "venue_city": "Jacksonville, AL",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 68,
-      "weather_cond": "Partly sunny",
+      "weather_temp": 62,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -312571,12 +312571,12 @@
       ],
       "away_power": {
         "net": {
-          "value": 0.03,
+          "value": 0.04,
           "rank": 124,
           "of": 138
         },
         "offense": {
-          "value": 26.98,
+          "value": 26.97,
           "rank": 112,
           "of": 138
         },
@@ -312596,7 +312596,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 24.3,
+          "value": 24.29,
           "rank": 112,
           "of": 138
         },
@@ -316192,7 +316192,7 @@
           "of": 138
         },
         "schedule": {
-          "value": 3.22,
+          "value": 3.23,
           "rank": 126,
           "of": 138
         },
@@ -316202,12 +316202,12 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 23.99,
+          "value": 23.98,
           "rank": 98,
           "of": 138
         },
         "luck": {
-          "value": 0.1203,
+          "value": 0.1204,
           "rank": 106,
           "of": 138
         },
@@ -320033,7 +320033,7 @@
       "id": "MTSU@SHSU",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-21T19:00Z",
       "away": "MTSU",
       "home": "SHSU",
@@ -320047,8 +320047,8 @@
       "home_color": "#f56423",
       "away_record": "5-5",
       "home_record": "1-9",
-      "away_score": "0",
-      "home_score": "0",
+      "away_score": "7",
+      "home_score": "7",
       "venue": "Elliott T. Bowers Stadium",
       "venue_city": "Huntsville, TX",
       "roof": "Outdoor",
@@ -323405,7 +323405,7 @@
           "of": 138
         },
         "defense": {
-          "value": 27.78,
+          "value": 27.77,
           "rank": 131,
           "of": 138
         },
@@ -323415,12 +323415,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 28.5,
+          "value": 28.49,
           "rank": 109,
           "of": 138
         },
         "schedule_defense": {
-          "value": 24.17,
+          "value": 24.16,
           "rank": 108,
           "of": 138
         },
@@ -327153,7 +327153,7 @@
         },
         "schedule_offense": {
           "value": 28.43,
-          "rank": 113,
+          "rank": 112,
           "of": 138
         },
         "schedule_defense": {
@@ -327162,7 +327162,7 @@
           "of": 138
         },
         "luck": {
-          "value": -0.3089,
+          "value": -0.3088,
           "rank": 2,
           "of": 138
         },
@@ -331295,8 +331295,8 @@
       "venue_city": "Champaign, IL",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 68,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 70,
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -335027,7 +335027,7 @@
           "of": 138
         },
         "offense": {
-          "value": 31.42,
+          "value": 31.41,
           "rank": 65,
           "of": 138
         },
@@ -335042,17 +335042,17 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 30.68,
+          "value": 30.67,
           "rank": 63,
           "of": 138
         },
         "schedule_defense": {
-          "value": 21.7,
+          "value": 21.69,
           "rank": 41,
           "of": 138
         },
         "luck": {
-          "value": 0.1842,
+          "value": 0.1841,
           "rank": 125,
           "of": 138
         },
@@ -342823,7 +342823,7 @@
       "id": "ULM@APP",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-21T19:30Z",
       "away": "ULM",
       "home": "APP",
@@ -342843,7 +342843,7 @@
       "venue_city": "Boone, NC",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 53,
+      "weather_temp": 51,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -346420,7 +346420,7 @@
           "of": 138
         },
         "defense": {
-          "value": 28.62,
+          "value": 28.61,
           "rank": 133,
           "of": 138
         },
@@ -346430,7 +346430,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 29.42,
+          "value": 29.41,
           "rank": 89,
           "of": 138
         },
@@ -350153,7 +350153,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 24.31,
+          "value": 24.3,
           "rank": 113,
           "of": 138
         },
@@ -354435,7 +354435,7 @@
       "venue_city": "Boca Raton, FL",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 83,
+      "weather_temp": 79,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -357962,7 +357962,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 24.13,
+          "value": 24.12,
           "rank": 107,
           "of": 138
         },
@@ -361624,7 +361624,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 30.59,
+          "value": 30.58,
           "rank": 69,
           "of": 138
         },
@@ -365748,7 +365748,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN+",
       "weather_temp": 78,
-      "weather_cond": "Intermittent clouds",
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -369373,7 +369373,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 24.78,
+          "value": 24.77,
           "rank": 131,
           "of": 138
         },
@@ -372987,7 +372987,7 @@
           "of": 138
         },
         "offense": {
-          "value": 31.18,
+          "value": 31.17,
           "rank": 66,
           "of": 138
         },
@@ -373002,7 +373002,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 29.07,
+          "value": 29.06,
           "rank": 94,
           "of": 138
         },
@@ -380691,12 +380691,12 @@
           "of": 138
         },
         "offense": {
-          "value": 30.9,
+          "value": 30.89,
           "rank": 71,
           "of": 138
         },
         "defense": {
-          "value": 25.94,
+          "value": 25.93,
           "rank": 117,
           "of": 138
         },
@@ -380712,7 +380712,7 @@
         },
         "schedule_defense": {
           "value": 24.0,
-          "rank": 101,
+          "rank": 103,
           "of": 138
         },
         "luck": {
@@ -384243,37 +384243,37 @@
       ],
       "home_power": {
         "net": {
-          "value": 1.09,
+          "value": 1.11,
           "rank": 120,
           "of": 138
         },
         "offense": {
-          "value": 25.31,
+          "value": 25.32,
           "rank": 129,
           "of": 138
         },
         "defense": {
-          "value": 24.22,
+          "value": 24.21,
           "rank": 99,
           "of": 138
         },
         "schedule": {
-          "value": 3.71,
+          "value": 3.75,
           "rank": 117,
           "of": 138
         },
         "schedule_offense": {
-          "value": 27.74,
+          "value": 27.75,
           "rank": 120,
           "of": 138
         },
         "schedule_defense": {
-          "value": 24.03,
-          "rank": 103,
+          "value": 24.0,
+          "rank": 101,
           "of": 138
         },
         "luck": {
-          "value": -0.1499,
+          "value": -0.1497,
           "rank": 14,
           "of": 138
         },
@@ -388487,8 +388487,8 @@
       "venue_city": "Kennesaw, GA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 62,
-      "weather_cond": "Cloudy",
+      "weather_temp": 58,
+      "weather_cond": "Rain",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -392055,7 +392055,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 28.58,
+          "value": 28.57,
           "rank": 107,
           "of": 138
         },
@@ -399942,7 +399942,7 @@
       "venue_city": "Austin, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN, Disney+",
-      "weather_temp": 72,
+      "weather_temp": 71,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -403473,7 +403473,7 @@
           "of": 138
         },
         "offense": {
-          "value": 30.37,
+          "value": 30.36,
           "rank": 74,
           "of": 138
         },
@@ -403488,12 +403488,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 32.48,
+          "value": 32.47,
           "rank": 14,
           "of": 138
         },
         "schedule_defense": {
-          "value": 19.55,
+          "value": 19.54,
           "rank": 3,
           "of": 138
         },
@@ -410957,7 +410957,7 @@
       "venue_city": "Seattle, WA",
       "roof": "Outdoor",
       "broadcast": "Peacock",
-      "weather_temp": 46,
+      "weather_temp": 45,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -414601,7 +414601,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 31.23,
+          "value": 31.22,
           "rank": 45,
           "of": 138
         },
@@ -418179,12 +418179,12 @@
           "of": 138
         },
         "offense": {
-          "value": 31.17,
+          "value": 31.16,
           "rank": 67,
           "of": 138
         },
         "defense": {
-          "value": 19.77,
+          "value": 19.76,
           "rank": 33,
           "of": 138
         },
@@ -422385,7 +422385,7 @@
       "venue_city": "Knoxville, TN",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 66,
+      "weather_temp": 68,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -426037,7 +426037,7 @@
           "of": 138
         },
         "offense": {
-          "value": 37.06,
+          "value": 37.05,
           "rank": 7,
           "of": 138
         },
@@ -426052,7 +426052,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 31.29,
+          "value": 31.28,
           "rank": 44,
           "of": 138
         },
@@ -429754,12 +429754,12 @@
       ],
       "home_power": {
         "net": {
-          "value": 18.17,
+          "value": 18.16,
           "rank": 12,
           "of": 138
         },
         "offense": {
-          "value": 34.57,
+          "value": 34.56,
           "rank": 24,
           "of": 138
         },
@@ -429774,7 +429774,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 30.58,
+          "value": 30.57,
           "rank": 70,
           "of": 138
         },
@@ -433693,7 +433693,7 @@
       "roof": "Outdoor",
       "broadcast": "ACC Network",
       "weather_temp": 63,
-      "weather_cond": "Cloudy",
+      "weather_cond": "Showers",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -437210,12 +437210,12 @@
           "of": 138
         },
         "schedule": {
-          "value": 7.65,
+          "value": 7.64,
           "rank": 69,
           "of": 138
         },
         "schedule_offense": {
-          "value": 30.26,
+          "value": 30.25,
           "rank": 79,
           "of": 138
         },
@@ -440897,12 +440897,12 @@
           "of": 138
         },
         "offense": {
-          "value": 33.35,
+          "value": 33.34,
           "rank": 37,
           "of": 138
         },
         "defense": {
-          "value": 22.74,
+          "value": 22.73,
           "rank": 74,
           "of": 138
         },
@@ -444933,8 +444933,8 @@
       "venue_city": "East Hartford, CT",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 60,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 63,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -448474,7 +448474,7 @@
           "of": 138
         },
         "offense": {
-          "value": 21.99,
+          "value": 21.98,
           "rank": 138,
           "of": 138
         },
@@ -448485,7 +448485,7 @@
         },
         "schedule": {
           "value": 6.01,
-          "rank": 86,
+          "rank": 87,
           "of": 138
         },
         "schedule_offense": {
@@ -452009,7 +452009,7 @@
           "of": 138
         },
         "offense": {
-          "value": 32.83,
+          "value": 32.82,
           "rank": 44,
           "of": 138
         },
@@ -452029,7 +452029,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 24.23,
+          "value": 24.22,
           "rank": 111,
           "of": 138
         },
@@ -459672,7 +459672,7 @@
       "away_power": {
         "net": {
           "value": 1.47,
-          "rank": 117,
+          "rank": 118,
           "of": 138
         },
         "offense": {
@@ -459681,7 +459681,7 @@
           "of": 138
         },
         "defense": {
-          "value": 27.77,
+          "value": 27.76,
           "rank": 130,
           "of": 138
         },
@@ -459696,7 +459696,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 20.78,
+          "value": 20.77,
           "rank": 21,
           "of": 138
         },
@@ -460900,18 +460900,6 @@
             "source": "Covers",
             "value": null,
             "missed": 5
-          },
-          {
-            "player": "D. Lonergan",
-            "position": "QB",
-            "status": "Questionable",
-            "injury": "Head",
-            "updated": "Sun, Oct 4",
-            "source": "RotoWire + Covers",
-            "return": "2026-11-21",
-            "value": 1.71,
-            "missed": 3,
-            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -463204,7 +463192,7 @@
           "of": 138
         },
         "offense": {
-          "value": 32.52,
+          "value": 32.51,
           "rank": 52,
           "of": 138
         },
@@ -463219,12 +463207,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 30.5,
+          "value": 30.49,
           "rank": 73,
           "of": 138
         },
         "schedule_defense": {
-          "value": 22.23,
+          "value": 22.22,
           "rank": 52,
           "of": 138
         },
@@ -465739,8 +465727,6 @@
               }
             }
           },
-          "status": "Questionable",
-          "injury": "Head",
           "depth_rank": 2
         }
       ],
@@ -465941,9 +465927,7 @@
             "format": "int",
             "rank": 565,
             "of": 580
-          },
-          "status": "Questionable",
-          "injury": "Head"
+          }
         }
       ],
       "home_run_game": {
@@ -470929,12 +470913,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 32.43,
+          "value": 32.42,
           "rank": 15,
           "of": 138
         },
         "schedule_defense": {
-          "value": 22.99,
+          "value": 22.98,
           "rank": 66,
           "of": 138
         },
@@ -474516,12 +474500,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 30.88,
+          "value": 30.87,
           "rank": 56,
           "of": 138
         },
         "schedule_defense": {
-          "value": 20.53,
+          "value": 20.52,
           "rank": 18,
           "of": 138
         },
@@ -482280,7 +482264,7 @@
           "of": 138
         },
         "defense": {
-          "value": 14.71,
+          "value": 14.7,
           "rank": 1,
           "of": 138
         },
@@ -482295,7 +482279,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 21.95,
+          "value": 21.94,
           "rank": 45,
           "of": 138
         },
@@ -485912,7 +485896,7 @@
           "of": 138
         },
         "offense": {
-          "value": 27.99,
+          "value": 27.98,
           "rank": 100,
           "of": 138
         },
@@ -485932,7 +485916,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 20.5,
+          "value": 20.49,
           "rank": 17,
           "of": 138
         },
@@ -490058,8 +490042,8 @@
       "venue_city": "Norman, OK",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 70,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 69,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -493687,7 +493671,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 21.1,
+          "value": 21.09,
           "rank": 27,
           "of": 138
         },
@@ -497393,7 +497377,7 @@
           "of": 138
         },
         "offense": {
-          "value": 30.33,
+          "value": 30.32,
           "rank": 76,
           "of": 138
         },
@@ -501228,7 +501212,7 @@
       "venue_city": "Troy, AL",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 63,
+      "weather_temp": 62,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -504871,7 +504855,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 23.27,
+          "value": 23.26,
           "rank": 72,
           "of": 138
         },
@@ -508500,7 +508484,7 @@
           "of": 138
         },
         "defense": {
-          "value": 23.41,
+          "value": 23.4,
           "rank": 87,
           "of": 138
         },
@@ -520221,12 +520205,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 28.72,
+          "value": 28.71,
           "rank": 103,
           "of": 138
         },
         "schedule_defense": {
-          "value": 23.77,
+          "value": 23.76,
           "rank": 91,
           "of": 138
         },
@@ -524421,7 +524405,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "CW",
-      "weather_temp": 44,
+      "weather_temp": 42,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -527761,7 +527745,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 29.22,
+          "value": 29.21,
           "rank": 90,
           "of": 138
         },
@@ -531491,7 +531475,7 @@
           "of": 138
         },
         "offense": {
-          "value": 28.21,
+          "value": 28.2,
           "rank": 98,
           "of": 138
         },
@@ -535663,7 +535647,7 @@
       "venue_city": "Hattiesburg, MS",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 75,
+      "weather_temp": 76,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -539230,7 +539214,7 @@
           "of": 138
         },
         "offense": {
-          "value": 31.81,
+          "value": 31.8,
           "rank": 60,
           "of": 138
         },
@@ -539251,7 +539235,7 @@
         },
         "schedule_defense": {
           "value": 23.99,
-          "rank": 100,
+          "rank": 99,
           "of": 138
         },
         "luck": {
@@ -550530,7 +550514,7 @@
         },
         "defense": {
           "value": 22.19,
-          "rank": 66,
+          "rank": 65,
           "of": 138
         },
         "schedule": {
@@ -554041,12 +554025,12 @@
           "of": 138
         },
         "offense": {
-          "value": 36.05,
+          "value": 36.04,
           "rank": 15,
           "of": 138
         },
         "defense": {
-          "value": 23.57,
+          "value": 23.56,
           "rank": 89,
           "of": 138
         },
@@ -554061,7 +554045,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 23.22,
+          "value": 23.21,
           "rank": 70,
           "of": 138
         },
@@ -561598,7 +561582,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 31.22,
+          "value": 31.21,
           "rank": 46,
           "of": 138
         },
@@ -565154,7 +565138,7 @@
       "home_power": {
         "net": {
           "value": 12.78,
-          "rank": 36,
+          "rank": 37,
           "of": 138
         },
         "offense": {
@@ -565163,7 +565147,7 @@
           "of": 138
         },
         "defense": {
-          "value": 22.53,
+          "value": 22.52,
           "rank": 70,
           "of": 138
         },
@@ -565173,7 +565157,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 31.55,
+          "value": 31.54,
           "rank": 38,
           "of": 138
         },
@@ -572873,7 +572857,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 22.21,
+          "value": 22.2,
           "rank": 51,
           "of": 138
         },
@@ -576634,7 +576618,7 @@
           "of": 138
         },
         "offense": {
-          "value": 31.8,
+          "value": 31.79,
           "rank": 61,
           "of": 138
         },
@@ -576649,12 +576633,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 30.34,
+          "value": 30.33,
           "rank": 77,
           "of": 138
         },
         "schedule_defense": {
-          "value": 22.37,
+          "value": 22.36,
           "rank": 56,
           "of": 138
         },
@@ -584402,7 +584386,7 @@
           "of": 138
         },
         "offense": {
-          "value": 29.3,
+          "value": 29.29,
           "rank": 87,
           "of": 138
         },
@@ -584417,7 +584401,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 28.69,
+          "value": 28.68,
           "rank": 106,
           "of": 138
         },
@@ -588158,12 +588142,12 @@
           "of": 138
         },
         "offense": {
-          "value": 32.96,
+          "value": 32.95,
           "rank": 42,
           "of": 138
         },
         "defense": {
-          "value": 19.21,
+          "value": 19.2,
           "rank": 28,
           "of": 138
         },
@@ -595695,7 +595679,7 @@
           "of": 138
         },
         "offense": {
-          "value": 28.72,
+          "value": 28.71,
           "rank": 96,
           "of": 138
         },
@@ -595710,7 +595694,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 29.47,
+          "value": 29.46,
           "rank": 87,
           "of": 138
         },
@@ -599204,7 +599188,7 @@
           "of": 138
         },
         "defense": {
-          "value": 22.6,
+          "value": 22.59,
           "rank": 72,
           "of": 138
         },
@@ -599219,7 +599203,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 24.68,
+          "value": 24.67,
           "rank": 127,
           "of": 138
         },
@@ -606961,22 +606945,22 @@
           "of": 138
         },
         "offense": {
-          "value": 32.65,
+          "value": 32.64,
           "rank": 50,
           "of": 138
         },
         "defense": {
-          "value": 25.11,
+          "value": 25.1,
           "rank": 109,
           "of": 138
         },
         "schedule": {
-          "value": 2.92,
+          "value": 2.91,
           "rank": 129,
           "of": 138
         },
         "schedule_offense": {
-          "value": 26.98,
+          "value": 26.97,
           "rank": 135,
           "of": 138
         },
@@ -610759,12 +610743,12 @@
           "of": 138
         },
         "offense": {
-          "value": 40.92,
+          "value": 40.91,
           "rank": 1,
           "of": 138
         },
         "defense": {
-          "value": 20.45,
+          "value": 20.44,
           "rank": 43,
           "of": 138
         },
@@ -617915,7 +617899,7 @@
           "of": 138
         },
         "offense": {
-          "value": 33.89,
+          "value": 33.88,
           "rank": 31,
           "of": 138
         },
@@ -617930,7 +617914,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 30.87,
+          "value": 30.86,
           "rank": 57,
           "of": 138
         },
@@ -621479,12 +621463,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 29.99,
+          "value": 29.98,
           "rank": 83,
           "of": 138
         },
         "schedule_defense": {
-          "value": 23.34,
+          "value": 23.33,
           "rank": 73,
           "of": 138
         },
@@ -629308,12 +629292,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 30.68,
+          "value": 30.67,
           "rank": 64,
           "of": 138
         },
         "schedule_defense": {
-          "value": 23.55,
+          "value": 23.54,
           "rank": 80,
           "of": 138
         },
@@ -644700,7 +644684,7 @@
           "of": 138
         },
         "offense": {
-          "value": 38.02,
+          "value": 38.01,
           "rank": 5,
           "of": 138
         },
@@ -644710,7 +644694,7 @@
           "of": 138
         },
         "schedule": {
-          "value": 9.34,
+          "value": 9.33,
           "rank": 45,
           "of": 138
         },
@@ -651925,12 +651909,12 @@
           "of": 138
         },
         "schedule": {
-          "value": 11.06,
+          "value": 11.05,
           "rank": 22,
           "of": 138
         },
         "schedule_offense": {
-          "value": 32.67,
+          "value": 32.66,
           "rank": 11,
           "of": 138
         },
@@ -655434,7 +655418,7 @@
           "of": 138
         },
         "defense": {
-          "value": 25.76,
+          "value": 25.75,
           "rank": 113,
           "of": 138
         },
@@ -663041,12 +663025,12 @@
           "of": 138
         },
         "offense": {
-          "value": 39.58,
+          "value": 39.57,
           "rank": 2,
           "of": 138
         },
         "defense": {
-          "value": 17.4,
+          "value": 17.39,
           "rank": 17,
           "of": 138
         },
@@ -663056,7 +663040,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 31.02,
+          "value": 31.01,
           "rank": 52,
           "of": 138
         },
@@ -666879,11 +666863,11 @@
         },
         "defense": {
           "value": 22.19,
-          "rank": 65,
+          "rank": 66,
           "of": 138
         },
         "schedule": {
-          "value": 10.22,
+          "value": 10.21,
           "rank": 31,
           "of": 138
         },
@@ -674767,7 +674751,7 @@
           "of": 138
         },
         "offense": {
-          "value": 33.59,
+          "value": 33.58,
           "rank": 34,
           "of": 138
         },
@@ -674782,12 +674766,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 33.19,
+          "value": 33.18,
           "rank": 6,
           "of": 138
         },
         "schedule_defense": {
-          "value": 20.23,
+          "value": 20.22,
           "rank": 12,
           "of": 138
         },
@@ -678349,7 +678333,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 32.09,
+          "value": 32.08,
           "rank": 27,
           "of": 138
         },
@@ -685748,7 +685732,7 @@
           "of": 138
         },
         "defense": {
-          "value": 22.42,
+          "value": 22.41,
           "rank": 69,
           "of": 138
         },
@@ -685758,7 +685742,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 31.5,
+          "value": 31.49,
           "rank": 42,
           "of": 138
         },
@@ -685768,7 +685752,7 @@
           "of": 138
         },
         "luck": {
-          "value": 0.2429,
+          "value": 0.2428,
           "rank": 134,
           "of": 138
         },
@@ -689414,7 +689398,7 @@
           "of": 138
         },
         "offense": {
-          "value": 26.5,
+          "value": 26.49,
           "rank": 120,
           "of": 138
         },
@@ -689429,7 +689413,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 29.13,
+          "value": 29.12,
           "rank": 92,
           "of": 138
         },
@@ -696819,7 +696803,7 @@
           "of": 138
         },
         "defense": {
-          "value": 17.58,
+          "value": 17.57,
           "rank": 20,
           "of": 138
         },
@@ -696834,7 +696818,7 @@
           "of": 138
         },
         "schedule_defense": {
-          "value": 21.9,
+          "value": 21.89,
           "rank": 42,
           "of": 138
         },
@@ -711581,22 +711565,22 @@
           "of": 138
         },
         "offense": {
-          "value": 38.13,
+          "value": 38.12,
           "rank": 4,
           "of": 138
         },
         "defense": {
-          "value": 22.8,
+          "value": 22.79,
           "rank": 77,
           "of": 138
         },
         "schedule": {
-          "value": 8.83,
+          "value": 8.82,
           "rank": 54,
           "of": 138
         },
         "schedule_offense": {
-          "value": 31.93,
+          "value": 31.92,
           "rank": 29,
           "of": 138
         },
@@ -719366,17 +719350,17 @@
           "of": 138
         },
         "defense": {
-          "value": 21.75,
+          "value": 21.74,
           "rank": 62,
           "of": 138
         },
         "schedule": {
-          "value": 9.96,
+          "value": 9.95,
           "rank": 34,
           "of": 138
         },
         "schedule_offense": {
-          "value": 32.32,
+          "value": 32.31,
           "rank": 17,
           "of": 138
         },
@@ -723074,7 +723058,7 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 30.64,
+          "value": 30.63,
           "rank": 67,
           "of": 138
         },
@@ -730373,7 +730357,7 @@
           "of": 138
         },
         "schedule": {
-          "value": 3.98,
+          "value": 3.99,
           "rank": 114,
           "of": 138
         },
@@ -734020,7 +734004,7 @@
         },
         "schedule": {
           "value": 6.01,
-          "rank": 87,
+          "rank": 86,
           "of": 138
         },
         "schedule_offense": {
@@ -734034,7 +734018,7 @@
           "of": 138
         },
         "luck": {
-          "value": -0.0638,
+          "value": -0.0637,
           "rank": 37,
           "of": 138
         },
@@ -741661,12 +741645,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 31.42,
+          "value": 31.41,
           "rank": 43,
           "of": 138
         },
         "schedule_defense": {
-          "value": 23.4,
+          "value": 23.39,
           "rank": 74,
           "of": 138
         },
@@ -745291,12 +745275,12 @@
           "of": 138
         },
         "offense": {
-          "value": 35.27,
+          "value": 35.26,
           "rank": 18,
           "of": 138
         },
         "defense": {
-          "value": 22.79,
+          "value": 22.78,
           "rank": 75,
           "of": 138
         },
@@ -745306,12 +745290,12 @@
           "of": 138
         },
         "schedule_offense": {
-          "value": 32.27,
+          "value": 32.26,
           "rank": 21,
           "of": 138
         },
         "schedule_defense": {
-          "value": 24.64,
+          "value": 24.63,
           "rank": 125,
           "of": 138
         },
@@ -749555,8 +749539,8 @@
     }
   ],
   "power": {
-    "home_court": 3.003,
-    "league_mean": 26.591,
+    "home_court": 3.004,
+    "league_mean": 26.587,
     "through_week": 12
   }
 }
