@@ -4811,7 +4811,7 @@ function seasonToggle(game) {
     var currentView = tiles(currentOnly) +
       seasonLine([stats], (currentSeasonNo || '') + ' Season') +
       (currentOnly ? nflBackSplits(currentOnly, spec, oppCurrent)
-        : pending('No ' + (currentSeasonNo || 'current') + ' splits are published for this player yet.'));
+        : pending((currentSeasonNo ? currentSeasonNo + ' splits' : 'Current-season splits') + ' are not published for this player yet.'));
     return head + nflSeasonViews(combinedView, currentView) + '</section>';
   }
 

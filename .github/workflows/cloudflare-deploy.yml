@@ -60,6 +60,9 @@ jobs:
           python scripts/public_boundary_crawl.py "http://127.0.0.1:8765"
           python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000 --width 360 --height 800 --strict
           python scripts/mobile_overflow_audit.py --base-url "http://127.0.0.1:8765" --timeout-ms 45000 --width 390 --height 844 --strict
+      - name: Show the local server's log when a gate fails
+        if: failure()
+        run: tail -n 200 /tmp/chase-worker.log || true
 
   deploy:
     needs: quality-gate

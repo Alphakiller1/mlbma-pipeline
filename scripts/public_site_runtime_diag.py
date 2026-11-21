@@ -113,6 +113,22 @@ REGRESSION_AUDIT = r"""(id) => {
 ENDED_STATE = '.ca-empty-state[data-empty="ended"]'
 
 
+def slate_text(page, base_url: str, sport: str, attempts: int = 3) -> str:
+    """A published slate's text, read whole. The CFB slate runs to ~10 MB and
+    the local server cut one read short (2026-11-21, a deploy failed on a
+    JSON decode error at 9.8 MB of an intact file): read it again."""
+    url = f"{base_url.rstrip('/')}/data/public/{sport}/slate.json"
+    for attempt in range(attempts):
+        text = page.request.get(url).text()
+        try:
+            json.loads(text)
+            return text
+        except ValueError:
+            if attempt == attempts - 1:
+                raise
+    return text
+
+
 def first_detail_url(page, base_url: str, sport: str) -> str:
     """The first card's full-detail link; when every game on the board has
     ended (cards leave the board, 2026-11-21), the first game on the
@@ -729,8 +745,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               (now_looks >= 4 and now_tend >= 6) or
               ("not published" in now_looks_text and "not published" in now_tend_text),
               f"looks={now_looks} tendencies={now_tend}")
+        # A passer with one season (a rookie, a first start) reads the same in
+        # both windows: his combined line says "2026 Seasons", no " + ".
+        one_season = page.evaluate(
+            "() => [...document.querySelectorAll('#quarterbacks .ca-last-start span')].filter(e => e.offsetParent)"
+            ".every(e => !e.innerText.includes(' + '))")
         check("NFL evidence window changes the numbers, not just what is hidden",
-              (combined_tiles and current_tiles and combined_tiles != current_tiles) or
+              (combined_tiles and current_tiles and combined_tiles != current_tiles) or one_season or
               section_unpublished("#quarterbacks"),
               f"{combined_tiles[:40]} vs {current_tiles[:40]}")
         check("NFL usage is never graded",
@@ -1007,7 +1028,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               any("EPA" in title and "Lower is better" in title for title in defense_grades) and
               any("Sack" in title and "Higher is better" in title for title in defense_grades))
         cfb_strength_text = page.locator("#cfb-strength").text_content().lower()
-        cfb_slate_text = page.request.get(base_url.rstrip("/") + "/data/public/cfb/slate.json").text()
+        cfb_slate_text = slate_text(page, base_url, "cfb")
         cfb_pen_text = page.locator("#cfb-penalties").text_content().lower()
         check("CFB Penalties ranks team and unit fouls where published",
               '"away_penalties"' not in cfb_slate_text or (
@@ -1017,7 +1038,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CFB strength index ranks OSI, DSI and NSI for both schools with its formula",
               ("nsi · net" in cfb_strength_text and "ppa" in cfb_strength_text and "home field" in cfb_strength_text)
               or "not published" in cfb_strength_text, cfb_strength_text[:200])
-        cfb_reads = '"talent"' in page.request.get(base_url.rstrip("/") + "/data/public/cfb/slate.json").text()
+        cfb_reads = '"talent"' in cfb_slate_text
         check("CFB strength index shows returning production and roster talent where published",
               not cfb_reads or ("returning ppa" in cfb_strength_text and "roster talent" in cfb_strength_text),
               cfb_strength_text[-200:])
@@ -1052,7 +1073,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                   "epa/rush", "rush 1st down%", "line yds/rush", "2nd-level yds/rush", "power success%", "stuff%", "front-7 havoc%")),
               run_text[:200])
         # 2026-11-19: ball carriers by run lane beside what the defense allows that way.
-        lanes_published = '"away_run_lanes"' in page.request.get(base_url.rstrip("/") + "/data/public/cfb/slate.json").text()
+        lanes_published = '"away_run_lanes"' in cfb_slate_text
         rushers_text = page.locator("#cfb-rushers").inner_text().lower()
         check("CFB ball carriers split by run lane beside the defense's lane figures where published",
               not lanes_published or ("by lane vs" in rushers_text and "run right" in rushers_text and " allows " in rushers_text),
@@ -1080,7 +1101,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               and page.locator("#cfb-game-log tbody tr.ca-log-season").count() == 2
               and page.locator("#cfb-game-log tbody .ca-rank").count() > 10)
         cfb_id = urllib.parse.parse_qs(urllib.parse.urlsplit(cfb_detail_url).query).get("game", [""])[0]
-        cfb_slate = page.request.get(base_url.rstrip("/") + "/data/public/cfb/slate.json").json()
+        cfb_slate = json.loads(cfb_slate_text)
         # The desk's game id is the board's ("Away School @ Home School"); the slate's is coded.
         cfb_row = next((g for g in cfb_slate.get("games") or [] if cfb_id in
                         (str(g.get("id")), f"{g.get('away_name')} @ {g.get('home_name')}")), {})
