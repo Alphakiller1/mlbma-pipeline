@@ -292,7 +292,7 @@ def shot_charts_page() -> str:
 
 
 def models_page() -> str:
-    model_assets = f"{STAMP}&amp;rev=3"
+    model_assets = f"{STAMP}&amp;rev=4"
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>

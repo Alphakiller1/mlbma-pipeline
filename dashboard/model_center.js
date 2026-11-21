@@ -759,14 +759,21 @@
   }
 
   function fetchCurrentProps(game, board, sport, players) {
+    var spec = { sport: sport, home: game.home, away: game.away,
+      season: board.season, week: board.week, event_id: String((players || [])[0]?.event_id || '') };
     var params = new URLSearchParams({ sport: sport, home: game.home, away: game.away,
       season: String(board.season), week: String(board.week), event_id: String((players || [])[0]?.event_id || '') });
-    return fetch('/api/model-center/prop-lines?' + params, {
+    // Public ESPN endpoints allow CORS. Browser access avoids provider blocks
+    // on shared Cloudflare egress; the same source parser serves both paths.
+    return import('/dashboard/model_prop_sources_shared.js?v=20261121endedcards1&rev=1')
+      .then(function (source) {
+        return sport === 'cfb' ? source.loadCollegePropLines(spec) : source.loadNflPropLines(spec);
+      }).catch(function () { return fetch('/api/model-center/prop-lines?' + params, {
       headers: { Accept: 'application/json' }, cache: 'no-store', signal: AbortSignal.timeout(20000)
     }).then(function (response) {
       if (!response.ok) throw new Error('Current quotes unavailable');
       return response.json();
-    }).then(function (payload) {
+    }); }).then(function (payload) {
       if (!['ok', 'closed'].includes(payload.state) || !Array.isArray(payload.lines)) {
         throw new Error('Invalid quote response');
       }

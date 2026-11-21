@@ -40,3 +40,9 @@ arithmetic, missing-price handling and integer pushes. The unittest wrapper
 includes these checks in the existing CI suite. Local browser checks cover
 the real NFL prop modal, its direct game view and phone widths; existing CI
 retains the full public boundary, runtime and responsive gates.
+# Provider access
+
+The selected matchup checks ESPN's public CORS-enabled endpoints from the browser.
+The server route remains a fallback. Both paths import the same parser, identity
+validation and pagination logic. This avoids a production-only ESPN 403 on shared
+Cloudflare egress without replacing a posted threshold with a model-derived line.
