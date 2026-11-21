@@ -38,6 +38,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt playwright
           python -m playwright install --with-deps chromium
+          npm ci
       - name: Enforce design and public-data contracts
         run: |
           python scripts/check_tokens.py
@@ -80,6 +81,7 @@ jobs:
             --exclude='core' --exclude='outputs' --exclude='pipeline' \
             --exclude='scripts' --exclude='tests' --exclude='__pycache__' \
             --exclude='*.py' --exclude='*.pyc' --exclude='requirements.txt' \
+            --exclude='/package.json' --exclude='/package-lock.json' \
             --exclude='*.md' --exclude='.env*' --exclude='wrangler.jsonc' \
             --exclude='wrangler.toml' \
             --exclude='.assetsignore' --exclude='_site' \
@@ -114,6 +116,7 @@ jobs:
 
       - name: Upload clean build to master branch alias
         run: |
+          npm ci
           cd _site
           npx --yes wrangler@4.40.0 pages deploy . \
             --project-name="$PAGES_PROJECT" \

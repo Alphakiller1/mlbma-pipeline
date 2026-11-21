@@ -1,0 +1,7 @@
+{
+  "name": "chase-pages-functions",
+  "private": true,
+  "dependencies": {
+    "unpdf": "1.9.1"
+  }
+}

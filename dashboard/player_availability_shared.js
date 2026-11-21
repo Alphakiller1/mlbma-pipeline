@@ -54,7 +54,8 @@
   function status(game, side, player) {
     var entry = designation(game, side, player);
     if (entry && entry.status) return entry.status;
-    if (game.sport === 'cfb' && (game[side + '_injuries'] || {}).coverage === 'official') return '';
+    if ((game[side + '_injuries'] || {}).coverage === 'official' ||
+        game[side + '_injury_coverage'] === 'official') return '';
     return (player && (player.injury_status || player.status)) || '';
   }
 
