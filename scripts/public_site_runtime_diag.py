@@ -745,8 +745,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               (now_looks >= 4 and now_tend >= 6) or
               ("not published" in now_looks_text and "not published" in now_tend_text),
               f"looks={now_looks} tendencies={now_tend}")
+        # A passer with one season (a rookie, a first start) reads the same in
+        # both windows: his combined line says "2026 Seasons", no " + ".
+        one_season = page.evaluate(
+            "() => [...document.querySelectorAll('#quarterbacks .ca-last-start span')].filter(e => e.offsetParent)"
+            ".every(e => !e.innerText.includes(' + '))")
         check("NFL evidence window changes the numbers, not just what is hidden",
-              (combined_tiles and current_tiles and combined_tiles != current_tiles) or
+              (combined_tiles and current_tiles and combined_tiles != current_tiles) or one_season or
               section_unpublished("#quarterbacks"),
               f"{combined_tiles[:40]} vs {current_tiles[:40]}")
         check("NFL usage is never graded",
