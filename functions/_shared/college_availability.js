@@ -36,6 +36,11 @@ const CONFERENCE_JSON = {
   P12: 'https://sbcautostorage.blob.core.windows.net/availability-reports/pac12-football/prod/report.json'
 };
 const FAKTOR_CONFERENCES = new Set(['MW', 'CUSA']);
+// Each conference's public viewer as its hub page embeds it (read 2026-11-21).
+const FAKTOR_VIEWERS = {
+  CUSA: 'https://faktorsports.com/k/embed/player-availability/graphics/CUSA/11/MFB/2026/current?signature=69752fe6e6c350cf8505e426c51a7388a47f98e28f55881010955ed1ed647531',
+  MW: 'https://faktorsports.com/k/embed/player-availability/full/MountainWest/11/MFB/2026?signature=e098b656dbb0b78335ef78c8d9c68e2cceb940d4519d54f4c05aaaa48c62eef7'
+};
 
 const text = (value, limit = 100) => typeof value === 'string' ? value.trim().slice(0, limit) : '';
 const key = (value) => text(value).normalize('NFKD').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -188,8 +193,17 @@ async function currentConferenceReports(id) {
   if (FAKTOR_CONFERENCES.has(id)) {
     const hub = SOURCE[id][1];
     const headers = { 'user-agent': 'ChaseAnalytics/1.0 (+https://chase-analytics.com)', accept: 'text/html' };
-    const source = await availabilityResponse(hub, { headers });
-    const link = /<iframe\b[^>]*\bsrc="(https:\/\/faktorsports\.com\/k\/embed\/player-availability\/[^"]+)"/i.exec(await source.text())?.[1];
+    // The hub page names the conference's current viewer. Conference USA's
+    // hub redirects in a loop when Cloudflare's edge asks for it (2026-11-21,
+    // "Too many redirects"), so its viewer as last published stands in.
+    let link = null;
+    try {
+      const source = await availabilityResponse(hub, { headers });
+      link = /<iframe\b[^>]*\bsrc="(https:\/\/faktorsports\.com\/k\/embed\/player-availability\/[^"]+)"/i.exec(await source.text())?.[1];
+    } catch (error) {
+      if (!FAKTOR_VIEWERS[id]) throw error;
+    }
+    link = link || FAKTOR_VIEWERS[id];
     if (!link) throw new Error('Missing public availability viewer');
     const response = await availabilityResponse(htmlText(link), {
       headers: { ...headers, referer: new URL(hub).origin + '/' }, redirect: 'manual'
