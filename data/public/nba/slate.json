@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-21",
- "generated_at_utc": "2026-11-21T11:50:07+00:00",
+ "generated_at_utc": "2026-11-21T12:40:51+00:00",
  "data_through_utc": "2026-11-21T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -121,8 +121,8 @@
    "id": "401910023",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/21 - 1:00 PM EST",
+   "game_state": "live",
+   "status_detail": "12.1 - 4th",
    "kickoff_utc": "2026-11-21T18:00Z",
    "away": "MIL",
    "home": "PHI",
@@ -136,8 +136,8 @@
    "home_record": "13-3",
    "away_split_record": "0-7",
    "home_split_record": "6-2",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 126,
+   "home_score": 130,
    "venue": "Xfinity Mobile Arena",
    "venue_city": "Philadelphia, PA",
    "broadcast": "MyMi / Bucks App",
@@ -46083,13 +46083,13 @@
      "value": 1.17
     },
     {
-     "player_id": "4065804",
-     "player_name": "Sam Hauser",
+     "player_id": "4593841",
+     "player_name": "Baylor Scheierman",
      "value": 0.84
     },
     {
-     "player_id": "4593841",
-     "player_name": "Baylor Scheierman",
+     "player_id": "4065804",
+     "player_name": "Sam Hauser",
      "value": 0.84
     },
     {
@@ -50291,7 +50291,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-21_06_45AM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-21_07_30AM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -50424,5 +50424,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-21T12:30:20+00:00"
+ "published_at_utc": "2026-11-21T20:28:32+00:00"
 }
