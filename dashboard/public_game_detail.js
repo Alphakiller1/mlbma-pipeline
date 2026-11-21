@@ -7133,6 +7133,7 @@ function seasonToggle(game) {
 
   /* The same report table becomes stacked player rows at narrow widths. */
   var INJURY_METRICS = [
+    ['logged', 'Plays Logged', injuryLoggedCell],
     ['plays', 'Play Rate', injuryPlaysCell],
     ['value', 'Value', injuryValueCell],
     ['missed', 'Games Missed', injuryMissedCell]
@@ -7198,6 +7199,28 @@ function seasonToggle(game) {
      player listed the same way has played. The club's expected missing value
      is each value times the chance he sits (a player ruled Out sits). The
      sport's adapter supplies the figures and the words for the tooltips. */
+  /* CFB (owner 2026-11-21): how much he has played. No snap counts are
+     published for college football, so this is his plays in the box score
+     this season - pass attempts, carries, catches and tackles - with his
+     place among his roster's players by the same count (the pill carries the
+     colour; CFB values stay neutral) and his games with a line. Linemen are
+     not credited in a box score: no line reads "No line". */
+  function injuryLoggedCell(pl, label) {
+    var l = pl.logged;
+    if (!l) {
+      return injuryMetricCell(label, 'No line',
+        'No box-score line this season under this name; linemen are not credited in a box score', true);
+    }
+    var place = l.place;
+    var words = place ? place.rank + ordinal(place.rank) + ' of ' + place.of + ' on his roster by plays logged' : '';
+    var tone = place ? rankTone(place.rank, place.of) : '';
+    var title = 'Plays in the box score this season: pass attempts, carries, catches and tackles' +
+      (words ? ' · ' + words : '') + ' · ' + l.games + (l.games === 1 ? ' game' : ' games') + ' with a line';
+    return injuryCell(label, 'ca-injury-table__stat', esc(String(l.count)) +
+      (place ? rankBadge(place, tone, words) : '') +
+      '<small class="ca-qb-volume">' + esc(l.games + (l.games === 1 ? ' game' : ' games')) + '</small>', title);
+  }
+
   function injuryPlaysCell(pl, label, options) {
     if (pl.plays == null) return injuryMetricCell(label, 'No history', '', true);
     var pct = Math.round(pl.plays * 100);
@@ -7343,9 +7366,12 @@ function seasonToggle(game) {
     if (sport === 'cfb') {
       valueNote = CFB_VALUE_NOTE;
       playsNote = 'no college history yet';
+      var values = cfbPlayerValues(game, side);
+      var hasTable = (game[side + '_value_table'] || []).length > 0;
       players = players.map(function (pl) {
         var row = {}, rate = CFB_PLAY_RATES[pl.status];
         Object.keys(pl).forEach(function (k) { row[k] = pl[k]; });
+        if (hasTable) row.logged = cfbLogged(game, side, values, pl.player);
         if (rate) { row.plays = rate[0]; row.plays_n = rate[1]; row.plays_basis = pl.status + ' (NFL official report record)'; }
         // A roster status, not a game designation: he does not play.
         if (/^(Out For Season|IR|Suspended)$/.test(pl.status)) {
@@ -7371,8 +7397,9 @@ function seasonToggle(game) {
     if (!parts.length) return '';
     return (parts[0].charAt(0) + parts[parts.length - 1]).toLowerCase().replace(/['-]/g, '');
   }
-  /* {key: [value, value_recent, missed]} from the school's published value
-     table; a key two players share is left out rather than guessed. */
+  /* {key: [value, value_recent, missed, plays, played]} from the school's
+     published value table; a key two players share is left out rather than
+     guessed. */
   function cfbPlayerValues(game, side) {
     var out = {}, seen = {};
     (game[side + '_value_table'] || []).forEach(function (row) {
@@ -7383,6 +7410,20 @@ function seasonToggle(game) {
       out[k] = row.slice(1);
     });
     return out;
+  }
+
+  // A count's place among the roster's players with any plays logged (ties share).
+  function cfbRosterPlace(game, side, count) {
+    var pool = (game[side + '_value_table'] || []).map(function (row) { return Number(row[4]) || 0; })
+      .filter(function (v) { return v > 0; });
+    if (!(count > 0) || !pool.length) return null;
+    return { rank: 1 + pool.filter(function (v) { return v > count; }).length, of: pool.length };
+  }
+  // His plays logged, games and roster place, or null when the table does not name him.
+  function cfbLogged(game, side, values, name) {
+    var hit = values[cfbPlayerKey(name)];
+    if (!hit || hit[3] == null) return null;
+    return { count: hit[3], games: hit[4] || 0, place: cfbRosterPlace(game, side, hit[3]) };
   }
 
   function watchCfbInjuries(host, sport, game, adapter) {

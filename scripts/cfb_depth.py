@@ -753,6 +753,10 @@ def recent_usage(season: int, through_week: int, wanted: dict[str, str], games: 
             long absence fades from it the way it faded from the closing lines.
     missed  the school's games in a row, newest first, without a line from him.
     ypa     his yards per attempt over those appearances (20+ attempts).
+    plays   his plays in the box score this season: pass attempts, carries,
+            catches and tackles (no snap counts are published for college
+            football; linemen are not credited in a box score).
+    played  his games this season with a line.
 
     Box files are cached, so a week costs only its own games."""
     pending: dict[str, list[tuple[str, str]]] = {}
@@ -789,7 +793,10 @@ def recent_usage(season: int, through_week: int, wanted: dict[str, str], games: 
                 acc = seen.setdefault(pid, {"name": p.get("name", ""), "games": 0, "missed": n,
                                             "own": dict.fromkeys(USAGE_STATS, 0.0),
                                             "team": dict.fromkeys(USAGE_STATS, 0.0),
-                                            "recent": dict.fromkeys(USAGE_STATS, 0.0)})
+                                            "recent": dict.fromkeys(USAGE_STATS, 0.0),
+                                            "plays": 0.0, "played": 0})
+                acc["plays"] += sum(p.get(s, 0.0) for s in ("att", "car", "rec", "tkl"))
+                acc["played"] += 1
                 if n < games:
                     for s in USAGE_STATS:
                         acc["recent"][s] += p.get(s, 0.0)
@@ -804,7 +811,8 @@ def recent_usage(season: int, through_week: int, wanted: dict[str, str], games: 
                                 "shares": share(acc["own"], acc["team"]),
                                 "recent": share(acc["recent"], window),
                                 "ypa": round(acc["own"]["pyds"] / acc["own"]["att"], 3)
-                                if acc["own"]["att"] >= 20 else None}
+                                if acc["own"]["att"] >= 20 else None,
+                                "plays": int(round(acc["plays"])), "played": acc["played"]}
                           for pid, acc in seen.items()}
     return out
 
