@@ -58,6 +58,24 @@ class CfbLiveAvailabilityTests(unittest.TestCase):
             assert.equal(pendingFixture(games, new Date('2026-11-28T17:00Z'), ['memphis', 'navy']), null);
         """)
 
+    def test_a_hub_that_will_not_load_falls_back_to_the_conference_viewer(self):
+        # 2026-11-21: Conference USA's hub page redirects in a loop for the edge;
+        # its viewer still answers, and "NO REPORTS" there is no report, not a failure.
+        self.run_js("""
+            import assert from 'node:assert/strict';
+            import { liveConferenceReport } from './functions/_shared/college_availability.js';
+            const asked = [];
+            globalThis.fetch = async (url) => {
+              asked.push(String(url));
+              if (String(url).includes('conferenceusa.com')) throw new TypeError('Too many redirects.');
+              return new Response('<main><section data-availability-graphic-card="true"><h1>NO REPORTS</h1></section></main>', { status: 200 });
+            };
+            const context = { request: new Request('https://chase-analytics.com/api/cfb-availability'), waitUntil() {} };
+            const result = await liveConferenceReport(context, 'CUSA', new Date('2026-11-21T18:00Z'), ['westernkentucky', 'liberty']);
+            assert.equal(result, null);
+            assert.ok(asked[1].startsWith('https://faktorsports.com/k/embed/player-availability/graphics/CUSA/'));
+        """)
+
     def test_secondary_coverage_requires_same_fixture_time_and_preserves_report_status(self):
         self.run_js("""
             import assert from 'node:assert/strict';
