@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 12,
-  "generated_at_utc": "2026-11-21T17:09:27Z",
+  "generated_at_utc": "2026-11-21T17:26:11Z",
   "data_through_utc": "2026-11-21T06:50:22Z",
   "games": [
     {
@@ -2385,10 +2385,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 31.182,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 114,
-            "of": 138
+            "rank": 24,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -2402,10 +2403,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 25.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 33,
-            "of": 138
+            "rank": 106,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -2419,10 +2421,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 18.818,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 48,
-            "of": 138
+            "rank": 90,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -6045,10 +6048,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 16.909,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 45,
-            "of": 138
+            "rank": 94,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -6062,10 +6066,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 38.273,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 100,
-            "of": 138
+            "rank": 39,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -6079,10 +6084,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 10.909,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 11,
-            "of": 138
+            "rank": 128,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -14012,10 +14018,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 29.455,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 110,
-            "of": 138
+            "rank": 29,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -14029,10 +14036,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 21.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 20,
-            "of": 138
+            "rank": 119,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -14046,10 +14054,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 16.727,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 29,
-            "of": 138
+            "rank": 110,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -17706,10 +17715,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 17.545,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 50,
-            "of": 138
+            "rank": 89,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -17723,10 +17733,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 36.273,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 88,
-            "of": 138
+            "rank": 51,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -17740,10 +17751,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 22.091,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 70,
-            "of": 138
+            "rank": 69,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -25532,10 +25544,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 16.818,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 44,
-            "of": 138
+            "rank": 95,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -25549,10 +25562,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 34.545,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 79,
-            "of": 138
+            "rank": 59,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -25566,10 +25580,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 26.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 103,
-            "of": 138
+            "rank": 36,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -29217,10 +29232,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 35.636,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 124,
-            "of": 138
+            "rank": 15,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -29234,10 +29250,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 14.818,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 6,
-            "of": 138
+            "rank": 133,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -29251,10 +29268,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 18.818,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 48,
-            "of": 138
+            "rank": 90,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -37531,10 +37549,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 35.182,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 123,
-            "of": 138
+            "rank": 16,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -37548,10 +37567,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 17.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 10,
-            "of": 138
+            "rank": 129,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -37565,10 +37585,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 17.909,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 42,
-            "of": 138
+            "rank": 97,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -41137,10 +41158,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 20.091,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 61,
-            "of": 138
+            "rank": 78,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -41154,10 +41176,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 35.909,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 86,
-            "of": 138
+            "rank": 53,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -41171,10 +41194,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 19.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 50,
-            "of": 138
+            "rank": 89,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -49084,10 +49108,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 25.909,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 97,
-            "of": 138
+            "rank": 42,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -49101,10 +49126,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 26.818,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 38,
-            "of": 138
+            "rank": 101,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -49118,10 +49144,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 16.909,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 32,
-            "of": 138
+            "rank": 107,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -52787,10 +52814,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 23.182,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 83,
-            "of": 138
+            "rank": 56,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -52804,10 +52832,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 27.818,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 44,
-            "of": 138
+            "rank": 95,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -52821,10 +52850,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 25.364,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 101,
-            "of": 138
+            "rank": 38,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -60118,10 +60148,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 34.727,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 122,
-            "of": 138
+            "rank": 17,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -60135,10 +60166,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 22.909,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 29,
-            "of": 138
+            "rank": 110,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -60152,10 +60184,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 24.091,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 90,
-            "of": 138
+            "rank": 49,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -63784,10 +63817,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 23.545,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 85,
-            "of": 138
+            "rank": 54,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -63801,10 +63835,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 24.818,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 32,
-            "of": 138
+            "rank": 107,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -63818,10 +63853,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 30.273,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 121,
-            "of": 138
+            "rank": 18,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -71630,10 +71666,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 24.091,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 88,
-            "of": 138
+            "rank": 50,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -71647,10 +71684,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 32.545,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 69,
-            "of": 138
+            "rank": 70,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -71664,10 +71702,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 16.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 26,
-            "of": 138
+            "rank": 112,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -75404,10 +75443,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 19.364,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 59,
-            "of": 138
+            "rank": 80,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -75421,10 +75461,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 34.545,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 79,
-            "of": 138
+            "rank": 59,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -75438,10 +75479,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 32.909,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 130,
-            "of": 138
+            "rank": 9,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -83324,10 +83366,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 28.455,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 105,
-            "of": 138
+            "rank": 34,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -83341,10 +83384,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 18.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 14,
-            "of": 138
+            "rank": 125,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -83358,10 +83402,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 19.091,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 51,
-            "of": 138
+            "rank": 88,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -86934,10 +86979,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 19.182,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 57,
-            "of": 138
+            "rank": 82,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -86951,10 +86997,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 38.727,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 104,
-            "of": 138
+            "rank": 35,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -86968,10 +87015,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 14.273,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 20,
-            "of": 138
+            "rank": 119,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -94364,10 +94412,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 23.091,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 80,
-            "of": 138
+            "rank": 59,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -94381,10 +94430,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 31.909,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 63,
-            "of": 138
+            "rank": 75,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -94398,10 +94448,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 27.273,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 108,
-            "of": 138
+            "rank": 31,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -98218,10 +98269,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 18.909,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 56,
-            "of": 138
+            "rank": 83,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -98235,10 +98287,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 28.818,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 51,
-            "of": 138
+            "rank": 88,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -98252,10 +98305,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 28.455,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 114,
-            "of": 138
+            "rank": 25,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -106004,10 +106058,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 20.636,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 63,
-            "of": 138
+            "rank": 76,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -106021,10 +106076,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 34.818,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 83,
-            "of": 138
+            "rank": 56,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -106038,10 +106094,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 25.455,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 102,
-            "of": 138
+            "rank": 37,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -109697,10 +109754,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 31.182,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 114,
-            "of": 138
+            "rank": 24,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -109714,10 +109772,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 17.273,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 12,
-            "of": 138
+            "rank": 127,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -109731,10 +109790,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 18.091,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 43,
-            "of": 138
+            "rank": 96,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -117695,10 +117755,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 45.545,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 137,
-            "of": 138
+            "rank": 2,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -117712,10 +117773,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 9.273,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 3,
-            "of": 138
+            "rank": 136,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -117729,10 +117791,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 2.727,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 1,
-            "of": 138
+            "rank": 138,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -121487,10 +121550,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 8.727,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 15,
-            "of": 138
+            "rank": 124,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -121504,10 +121568,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 32.909,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 71,
-            "of": 138
+            "rank": 68,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -121521,10 +121586,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 23.818,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 88,
-            "of": 138
+            "rank": 51,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -129787,10 +129853,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 8.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 13,
-            "of": 138
+            "rank": 125,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -129804,10 +129871,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 42.636,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 116,
-            "of": 138
+            "rank": 23,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -129821,10 +129889,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 3.182,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 2,
-            "of": 138
+            "rank": 137,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -133645,10 +133714,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 27.636,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 103,
-            "of": 138
+            "rank": 36,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -133662,10 +133732,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 32.273,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 67,
-            "of": 138
+            "rank": 72,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -133679,10 +133750,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 23.273,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 78,
-            "of": 138
+            "rank": 61,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -139157,8 +139229,8 @@
       "venue_city": "Lawrence, KS",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 67,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 64,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -141514,10 +141586,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 3.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 4,
-            "of": 138
+            "rank": 135,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -141531,10 +141604,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 51.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 135,
-            "of": 138
+            "rank": 4,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -141548,10 +141622,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 23.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 82,
-            "of": 138
+            "rank": 56,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -145299,10 +145374,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 22.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 74,
-            "of": 138
+            "rank": 64,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -145316,10 +145392,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 30.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 57,
-            "of": 138
+            "rank": 82,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -145333,10 +145410,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 27.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 110,
-            "of": 138
+            "rank": 27,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -150515,7 +150593,7 @@
       "away_record": "4-6",
       "home_record": "5-5",
       "away_score": "0",
-      "home_score": "0",
+      "home_score": "14",
       "venue": "Nippert Stadium",
       "venue_city": "Cincinnati, OH",
       "roof": "Outdoor",
@@ -152877,10 +152955,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 31.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 116,
-            "of": 138
+            "rank": 23,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -152894,10 +152973,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 25.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 35,
-            "of": 138
+            "rank": 104,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -152911,10 +152991,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 24.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 91,
-            "of": 138
+            "rank": 47,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -156606,10 +156687,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 30.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 112,
-            "of": 138
+            "rank": 27,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -156623,10 +156705,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 28.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 47,
-            "of": 138
+            "rank": 92,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -156640,10 +156723,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 23.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 84,
-            "of": 138
+            "rank": 55,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -164097,10 +164181,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 21.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 67,
-            "of": 138
+            "rank": 70,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -164114,10 +164199,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 33.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 75,
-            "of": 138
+            "rank": 64,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -164131,10 +164217,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 27.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 113,
-            "of": 138
+            "rank": 26,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -167775,10 +167862,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 16.111,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 39,
-            "of": 138
+            "rank": 100,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -167792,10 +167880,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 28.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 46,
-            "of": 138
+            "rank": 93,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -167809,10 +167898,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 30.444,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 122,
-            "of": 138
+            "rank": 17,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -173006,7 +173096,7 @@
       "away_record": "8-2",
       "home_record": "3-6",
       "away_score": "0",
-      "home_score": "0",
+      "home_score": "7",
       "venue": "Navy-Marine Corps Memorial Stadium",
       "venue_city": "Annapolis, MD",
       "roof": "Outdoor",
@@ -175368,10 +175458,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 12.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 24,
-            "of": 138
+            "rank": 114,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -175385,10 +175476,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 38.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 101,
-            "of": 138
+            "rank": 37,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -175402,10 +175494,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 29.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 117,
-            "of": 138
+            "rank": 22,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -178936,10 +179029,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 31.889,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 117,
-            "of": 138
+            "rank": 22,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -178953,10 +179047,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 18.778,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 16,
-            "of": 138
+            "rank": 123,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -178970,10 +179065,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 24.333,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 93,
-            "of": 138
+            "rank": 46,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -186455,10 +186551,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 17.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 51,
-            "of": 138
+            "rank": 88,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -186472,10 +186569,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 43.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 118,
-            "of": 138
+            "rank": 21,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -186489,10 +186587,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 16.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 30,
-            "of": 138
+            "rank": 108,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -190158,10 +190257,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 24.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 91,
-            "of": 138
+            "rank": 48,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -190175,10 +190275,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 28.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 48,
-            "of": 138
+            "rank": 90,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -190192,10 +190293,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 20.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 57,
-            "of": 138
+            "rank": 81,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -195280,7 +195382,7 @@
       "id": "OSU@NEB",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-21T17:00Z",
       "away": "OSU",
       "home": "NEB",
@@ -195294,7 +195396,7 @@
       "home_color": "#d00000",
       "away_record": "7-3",
       "home_record": "6-4",
-      "away_score": "0",
+      "away_score": "7",
       "home_score": "0",
       "venue": "Memorial Stadium (Lincoln, NE)",
       "venue_city": "Lincoln, NE",
@@ -197657,10 +197759,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 8.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 16,
-            "of": 138
+            "rank": 123,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -197674,10 +197777,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 50.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 132,
-            "of": 138
+            "rank": 7,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -197691,10 +197795,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 11.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 12,
-            "of": 138
+            "rank": 127,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -201348,10 +201453,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 6.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 7,
-            "of": 138
+            "rank": 132,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -201365,10 +201471,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 41.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 113,
-            "of": 138
+            "rank": 26,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -201382,10 +201489,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 16.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 30,
-            "of": 138
+            "rank": 108,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -206615,7 +206723,7 @@
       "away_record": "5-5",
       "home_record": "4-6",
       "away_score": "0",
-      "home_score": "6",
+      "home_score": "7",
       "venue": "Alumni Stadium (Chestnut Hill, MA)",
       "venue_city": "Chestnut Hill, MA",
       "roof": "Outdoor",
@@ -208977,10 +209085,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 23.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 81,
-            "of": 138
+            "rank": 57,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -208994,10 +209103,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 31.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 61,
-            "of": 138
+            "rank": 78,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -209011,10 +209121,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 24.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 97,
-            "of": 138
+            "rank": 41,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -212715,10 +212826,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 27.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 101,
-            "of": 138
+            "rank": 38,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -212732,10 +212844,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 29.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 52,
-            "of": 138
+            "rank": 86,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -212749,10 +212862,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 17.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 39,
-            "of": 138
+            "rank": 99,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -217673,7 +217787,7 @@
       "home_color": "#006747",
       "away_record": "7-3",
       "home_record": "5-5",
-      "away_score": "0",
+      "away_score": "7",
       "home_score": "0",
       "venue": "Yulman Stadium",
       "venue_city": "New Orleans, LA",
@@ -220036,10 +220150,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 15.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 36,
-            "of": 138
+            "rank": 103,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -220053,10 +220168,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 44.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 120,
-            "of": 138
+            "rank": 18,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -220070,10 +220186,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 17.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 36,
-            "of": 138
+            "rank": 101,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -223726,10 +223843,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 36.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 127,
-            "of": 138
+            "rank": 12,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -223743,10 +223861,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 21.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 23,
-            "of": 138
+            "rank": 116,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -223760,10 +223879,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 35.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 136,
-            "of": 138
+            "rank": 3,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -229331,7 +229451,7 @@
       "away_record": "4-6",
       "home_record": "6-4",
       "away_score": "3",
-      "home_score": "0",
+      "home_score": "3",
       "venue": "Ben Hill Griffin Stadium",
       "venue_city": "Gainesville, FL",
       "roof": "Outdoor",
@@ -231693,10 +231813,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 32.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 118,
-            "of": 138
+            "rank": 21,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -231710,10 +231831,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 20.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 19,
-            "of": 138
+            "rank": 120,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -231727,10 +231849,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 17.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 33,
-            "of": 138
+            "rank": 105,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -235247,10 +235370,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 22.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 77,
-            "of": 138
+            "rank": 62,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -235264,10 +235388,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 33.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 73,
-            "of": 138
+            "rank": 65,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -235281,10 +235406,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 22.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 76,
-            "of": 138
+            "rank": 63,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -240739,7 +240865,7 @@
       "id": "WAKE@GT",
       "sport": "cfb",
       "season": 2026,
-      "game_state": "scheduled",
+      "game_state": "live",
       "kickoff_utc": "2026-11-21T17:00Z",
       "away": "WAKE",
       "home": "GT",
@@ -240753,7 +240879,7 @@
       "home_color": "#b3a369",
       "away_record": "9-1",
       "home_record": "3-7",
-      "away_score": "0",
+      "away_score": "7",
       "home_score": "0",
       "venue": "Bobby Dodd Stadium",
       "venue_city": "Atlanta, GA",
@@ -243116,10 +243242,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 5.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 6,
-            "of": 138
+            "rank": 133,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -243133,10 +243260,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 54.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 136,
-            "of": 138
+            "rank": 3,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -243150,10 +243278,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 14.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 17,
-            "of": 138
+            "rank": 122,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -247007,10 +247136,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 28.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 107,
-            "of": 138
+            "rank": 32,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -247024,10 +247154,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 32.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 65,
-            "of": 138
+            "rank": 73,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -247041,10 +247172,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 23.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 79,
-            "of": 138
+            "rank": 60,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -252392,7 +252524,7 @@
       "home_color": "#ceb888",
       "away_record": "6-4",
       "home_record": "3-7",
-      "away_score": "0",
+      "away_score": "7",
       "home_score": "0",
       "venue": "Ross-Ade Stadium",
       "venue_city": "West Lafayette, IN",
@@ -254755,10 +254887,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 20.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 62,
-            "of": 138
+            "rank": 77,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -254772,10 +254905,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 38.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 98,
-            "of": 138
+            "rank": 40,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -254789,10 +254923,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 13.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 15,
-            "of": 138
+            "rank": 124,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -258348,10 +258483,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 29.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 109,
-            "of": 138
+            "rank": 30,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -258365,10 +258501,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 21.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 24,
-            "of": 138
+            "rank": 115,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -258382,10 +258519,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 17.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 39,
-            "of": 138
+            "rank": 99,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -265954,10 +266092,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 17.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 47,
-            "of": 138
+            "rank": 91,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -265971,10 +266110,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 42.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 114,
-            "of": 138
+            "rank": 25,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -265988,10 +266128,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 27.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 109,
-            "of": 138
+            "rank": 30,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -269493,10 +269634,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 21.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 67,
-            "of": 138
+            "rank": 70,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -269510,10 +269652,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 32.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 68,
-            "of": 138
+            "rank": 71,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -269527,10 +269670,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 21.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 66,
-            "of": 138
+            "rank": 72,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -275142,7 +275286,7 @@
       "venue_city": "Morgantown, WV",
       "roof": "Outdoor",
       "broadcast": "TNT",
-      "weather_temp": 64,
+      "weather_temp": 62,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -277499,10 +277643,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 12.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 22,
-            "of": 138
+            "rank": 117,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -277516,10 +277661,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 44.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 120,
-            "of": 138
+            "rank": 18,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -277533,10 +277679,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 17.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 36,
-            "of": 138
+            "rank": 101,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -281110,10 +281257,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 18.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 53,
-            "of": 138
+            "rank": 86,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -281127,10 +281275,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 33.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 77,
-            "of": 138
+            "rank": 62,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -281144,10 +281293,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 32.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 129,
-            "of": 138
+            "rank": 10,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -288264,10 +288414,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 32.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 119,
-            "of": 138
+            "rank": 20,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -288281,10 +288432,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 22.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 25,
-            "of": 138
+            "rank": 114,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -288298,10 +288450,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 23.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 77,
-            "of": 138
+            "rank": 62,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -291868,10 +292021,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 7.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 12,
-            "of": 138
+            "rank": 127,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -291885,10 +292039,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 45.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 124,
-            "of": 138
+            "rank": 15,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -291902,10 +292057,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 10.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 10,
-            "of": 138
+            "rank": 129,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -297365,7 +297521,7 @@
       "venue_city": "Tulsa, OK",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 69,
+      "weather_temp": 70,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -299722,10 +299878,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 37.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 129,
-            "of": 138
+            "rank": 10,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -299739,10 +299896,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 18.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 15,
-            "of": 138
+            "rank": 124,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -299756,10 +299914,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 16.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 28,
-            "of": 138
+            "rank": 111,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -303310,10 +303469,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 15.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 35,
-            "of": 138
+            "rank": 104,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -303327,10 +303487,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 46.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 125,
-            "of": 138
+            "rank": 14,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -303344,10 +303505,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 33.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 131,
-            "of": 138
+            "rank": 8,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -311155,10 +311317,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 29.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 111,
-            "of": 138
+            "rank": 28,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -311172,10 +311335,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 21.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 22,
-            "of": 138
+            "rank": 117,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -311189,10 +311353,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 31.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 125,
-            "of": 138
+            "rank": 14,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -314831,10 +314996,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 11.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 20,
-            "of": 138
+            "rank": 119,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -314848,10 +315014,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 38.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 103,
-            "of": 138
+            "rank": 36,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -314865,10 +315032,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 36.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 138,
-            "of": 138
+            "rank": 1,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -322242,10 +322410,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 23.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 84,
-            "of": 138
+            "rank": 55,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -322259,10 +322428,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 27.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 40,
-            "of": 138
+            "rank": 99,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -322276,10 +322446,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 29.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 116,
-            "of": 138
+            "rank": 23,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -325641,10 +325812,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 36.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 128,
-            "of": 138
+            "rank": 11,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -325658,10 +325830,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 15.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 7,
-            "of": 138
+            "rank": 132,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -325675,10 +325848,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 21.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 69,
-            "of": 138
+            "rank": 70,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -333478,10 +333652,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 16.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 41,
-            "of": 138
+            "rank": 97,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -333495,10 +333670,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 36.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 89,
-            "of": 138
+            "rank": 50,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -333512,10 +333688,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 18.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 46,
-            "of": 138
+            "rank": 92,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -337294,10 +337471,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 24.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 90,
-            "of": 138
+            "rank": 49,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -337311,10 +337489,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 29.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 54,
-            "of": 138
+            "rank": 85,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -337328,10 +337507,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 21.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 62,
-            "of": 138
+            "rank": 74,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -345020,10 +345200,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 38.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 130,
-            "of": 138
+            "rank": 9,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -345037,10 +345218,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 10.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 4,
-            "of": 138
+            "rank": 135,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -345054,10 +345236,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 15.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 24,
-            "of": 138
+            "rank": 114,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -348684,10 +348867,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 24.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 87,
-            "of": 138
+            "rank": 52,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -348701,10 +348885,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 27.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 39,
-            "of": 138
+            "rank": 100,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -348718,10 +348903,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 29.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 118,
-            "of": 138
+            "rank": 21,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -356606,10 +356792,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 14.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 33,
-            "of": 138
+            "rank": 106,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -356623,10 +356810,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 35.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 85,
-            "of": 138
+            "rank": 54,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -356640,10 +356828,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 26.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 104,
-            "of": 138
+            "rank": 35,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -360173,10 +360362,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 21.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 70,
-            "of": 138
+            "rank": 68,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -360190,10 +360380,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 37.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 95,
-            "of": 138
+            "rank": 44,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -360207,10 +360398,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 20.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 55,
-            "of": 138
+            "rank": 84,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -367912,10 +368104,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 25.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 93,
-            "of": 138
+            "rank": 46,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -367929,10 +368122,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 28.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 48,
-            "of": 138
+            "rank": 90,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -367946,10 +368140,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 32.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 126,
-            "of": 138
+            "rank": 13,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -371586,10 +371781,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 8.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 13,
-            "of": 138
+            "rank": 125,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -371603,10 +371799,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 42.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 117,
-            "of": 138
+            "rank": 22,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -371620,10 +371817,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 19.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 53,
-            "of": 138
+            "rank": 86,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -379257,10 +379455,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 25.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 95,
-            "of": 138
+            "rank": 44,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -379274,10 +379473,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 30.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 58,
-            "of": 138
+            "rank": 79,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -379291,10 +379491,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 30.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 123,
-            "of": 138
+            "rank": 16,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -382955,10 +383156,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 34.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 121,
-            "of": 138
+            "rank": 18,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -382972,10 +383174,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 18.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 17,
-            "of": 138
+            "rank": 122,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -382989,10 +383192,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 19.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 54,
-            "of": 138
+            "rank": 85,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -390640,10 +390844,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 21.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 67,
-            "of": 138
+            "rank": 70,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -390657,10 +390862,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 22.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 27,
-            "of": 138
+            "rank": 111,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -390674,10 +390880,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 23.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 85,
-            "of": 138
+            "rank": 52,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -394229,10 +394436,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 20.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 65,
-            "of": 138
+            "rank": 73,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -394246,10 +394454,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 33.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 76,
-            "of": 138
+            "rank": 63,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -394263,10 +394472,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 32.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 127,
-            "of": 138
+            "rank": 12,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -402089,10 +402299,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 24.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 92,
-            "of": 138
+            "rank": 47,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -402106,10 +402317,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 24.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 31,
-            "of": 138
+            "rank": 108,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -402123,10 +402335,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 16.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 26,
-            "of": 138
+            "rank": 112,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -405667,10 +405880,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 12.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 26,
-            "of": 138
+            "rank": 113,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -405684,10 +405898,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 43.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 119,
-            "of": 138
+            "rank": 20,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -405701,10 +405916,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 22.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 73,
-            "of": 138
+            "rank": 65,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -413098,10 +413314,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 10.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 18,
-            "of": 138
+            "rank": 121,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -413115,10 +413332,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 44.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 122,
-            "of": 138
+            "rank": 17,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -413132,10 +413350,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 17.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 33,
-            "of": 138
+            "rank": 105,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -416739,10 +416958,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 23.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 79,
-            "of": 138
+            "rank": 60,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -416756,10 +416976,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 30.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 56,
-            "of": 138
+            "rank": 83,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -416773,10 +416994,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 21.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 59,
-            "of": 138
+            "rank": 78,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -424520,10 +424742,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 9.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 17,
-            "of": 138
+            "rank": 122,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -424537,10 +424760,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 41.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 111,
-            "of": 138
+            "rank": 27,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -424554,10 +424778,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 24.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 91,
-            "of": 138
+            "rank": 47,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -428264,10 +428489,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 7.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 11,
-            "of": 138
+            "rank": 128,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -428281,10 +428507,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 42.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 115,
-            "of": 138
+            "rank": 24,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -428298,10 +428525,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 24.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 95,
-            "of": 138
+            "rank": 44,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -435821,10 +436049,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 21.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 70,
-            "of": 138
+            "rank": 68,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -435838,10 +436067,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 36.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 87,
-            "of": 138
+            "rank": 52,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -435855,10 +436085,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 21.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 62,
-            "of": 138
+            "rank": 74,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -439466,10 +439697,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 15.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 37,
-            "of": 138
+            "rank": 101,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -439483,10 +439715,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 32.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 70,
-            "of": 138
+            "rank": 69,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -439500,10 +439733,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 33.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 133,
-            "of": 138
+            "rank": 6,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -447056,10 +447290,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 43.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 135,
-            "of": 138
+            "rank": 4,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -447073,10 +447308,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 16.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 9,
-            "of": 138
+            "rank": 130,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -447090,10 +447326,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 19.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 52,
-            "of": 138
+            "rank": 87,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -450649,10 +450886,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 22.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 73,
-            "of": 138
+            "rank": 66,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -450666,10 +450904,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 36.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 91,
-            "of": 138
+            "rank": 48,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -450683,10 +450922,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 25.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 100,
-            "of": 138
+            "rank": 39,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -458261,10 +458501,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 42.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 134,
-            "of": 138
+            "rank": 5,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -458278,10 +458519,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 7.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 2,
-            "of": 138
+            "rank": 137,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -458295,10 +458537,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 7.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 4,
-            "of": 138
+            "rank": 135,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -461885,10 +462128,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 10.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 19,
-            "of": 138
+            "rank": 120,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -461902,10 +462146,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 37.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 96,
-            "of": 138
+            "rank": 43,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -461919,10 +462164,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 14.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 18,
-            "of": 138
+            "rank": 120,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -469446,10 +469692,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 13.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 29,
-            "of": 138
+            "rank": 110,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -469463,10 +469710,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 50.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 131,
-            "of": 138
+            "rank": 8,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -469480,10 +469728,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 21.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 66,
-            "of": 138
+            "rank": 72,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -473058,10 +473307,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 19.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 60,
-            "of": 138
+            "rank": 79,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -473075,10 +473325,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 38.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 101,
-            "of": 138
+            "rank": 37,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -473092,10 +473343,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 24.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 97,
-            "of": 138
+            "rank": 41,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -480793,10 +481045,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 1.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 1,
-            "of": 138
+            "rank": 138,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -480810,10 +481063,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 49.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 130,
-            "of": 138
+            "rank": 9,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -480827,10 +481081,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 20.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 57,
-            "of": 138
+            "rank": 81,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -484457,10 +484712,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 19.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 58,
-            "of": 138
+            "rank": 81,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -484474,10 +484730,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 27.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 43,
-            "of": 138
+            "rank": 96,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -484491,10 +484748,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 23.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 80,
-            "of": 138
+            "rank": 59,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -492157,10 +492415,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 18.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 54,
-            "of": 138
+            "rank": 85,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -492174,10 +492433,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 30.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 55,
-            "of": 138
+            "rank": 84,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -492191,10 +492451,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 21.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 59,
-            "of": 138
+            "rank": 78,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -495898,10 +496159,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 17.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 49,
-            "of": 138
+            "rank": 90,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -495915,10 +496177,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 29.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 52,
-            "of": 138
+            "rank": 86,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -495932,10 +496195,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 23.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 85,
-            "of": 138
+            "rank": 52,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -503321,10 +503585,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 15.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 34,
-            "of": 138
+            "rank": 105,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -503338,10 +503603,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 38.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 97,
-            "of": 138
+            "rank": 42,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -503355,10 +503621,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 17.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 36,
-            "of": 138
+            "rank": 101,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -507081,10 +507348,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 26.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 99,
-            "of": 138
+            "rank": 40,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -507098,10 +507366,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 26.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 37,
-            "of": 138
+            "rank": 102,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -507115,10 +507384,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 14.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 23,
-            "of": 138
+            "rank": 116,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -514763,10 +515033,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 20.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 65,
-            "of": 138
+            "rank": 73,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -514780,10 +515051,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 31.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 62,
-            "of": 138
+            "rank": 77,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -514797,10 +515069,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 18.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 46,
-            "of": 138
+            "rank": 92,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -518613,10 +518886,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 26.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 98,
-            "of": 138
+            "rank": 41,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -518630,10 +518904,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 30.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 58,
-            "of": 138
+            "rank": 79,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -518647,10 +518922,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 29.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 119,
-            "of": 138
+            "rank": 20,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -526450,10 +526726,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 48.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 138,
-            "of": 138
+            "rank": 1,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -526467,10 +526744,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 4.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 1,
-            "of": 138
+            "rank": 138,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -526484,10 +526762,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 12.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 13,
-            "of": 138
+            "rank": 126,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -529847,10 +530126,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 12.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 24,
-            "of": 138
+            "rank": 114,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -529864,10 +530144,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 39.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 105,
-            "of": 138
+            "rank": 34,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -529881,10 +530162,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 14.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 18,
-            "of": 138
+            "rank": 120,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -537738,10 +538020,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 12.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 23,
-            "of": 138
+            "rank": 116,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -537755,10 +538038,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 37.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 92,
-            "of": 138
+            "rank": 45,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -537772,10 +538056,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 22.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 72,
-            "of": 138
+            "rank": 67,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -541388,10 +541673,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 43.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 136,
-            "of": 138
+            "rank": 3,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -541405,10 +541691,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 15.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 8,
-            "of": 138
+            "rank": 131,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -541422,10 +541709,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 18.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 44,
-            "of": 138
+            "rank": 95,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -549067,10 +549355,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 30.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 113,
-            "of": 138
+            "rank": 26,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -549084,10 +549373,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 17.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 11,
-            "of": 138
+            "rank": 128,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -549101,10 +549391,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 18.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 45,
-            "of": 138
+            "rank": 94,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -552640,10 +552931,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 16.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 40,
-            "of": 138
+            "rank": 99,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -552657,10 +552949,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 51.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 133,
-            "of": 138
+            "rank": 6,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -552674,10 +552967,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 26.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 106,
-            "of": 138
+            "rank": 32,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -560054,10 +560348,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 28.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 106,
-            "of": 138
+            "rank": 33,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -560071,10 +560366,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 25.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 34,
-            "of": 138
+            "rank": 105,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -560088,10 +560384,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 23.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 82,
-            "of": 138
+            "rank": 56,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -563741,10 +564038,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 11.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 21,
-            "of": 138
+            "rank": 118,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -563758,10 +564056,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 40.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 109,
-            "of": 138
+            "rank": 30,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -563775,10 +564074,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 21.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 68,
-            "of": 138
+            "rank": 71,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -571329,10 +571629,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 13.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 28,
-            "of": 138
+            "rank": 111,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -571346,10 +571647,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 47.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 127,
-            "of": 138
+            "rank": 12,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -571363,10 +571665,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 26.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 106,
-            "of": 138
+            "rank": 32,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -575050,10 +575353,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 28.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 104,
-            "of": 138
+            "rank": 35,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -575067,10 +575371,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 22.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 26,
-            "of": 138
+            "rank": 113,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -575084,10 +575389,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 23.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 85,
-            "of": 138
+            "rank": 52,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -582827,10 +583133,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 17.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 46,
-            "of": 138
+            "rank": 93,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -582844,10 +583151,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 27.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 45,
-            "of": 138
+            "rank": 94,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -582861,10 +583169,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 27.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 110,
-            "of": 138
+            "rank": 27,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -586508,10 +586817,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 12.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 27,
-            "of": 138
+            "rank": 112,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -586525,10 +586835,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 41.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 110,
-            "of": 138
+            "rank": 29,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -586542,10 +586853,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 13.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 16,
-            "of": 138
+            "rank": 123,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -594149,10 +594461,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 21.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 72,
-            "of": 138
+            "rank": 67,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -594166,10 +594479,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 32.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 65,
-            "of": 138
+            "rank": 73,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -594183,10 +594497,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 34.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 134,
-            "of": 138
+            "rank": 5,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -597792,10 +598107,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 24.091,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 88,
-            "of": 138
+            "rank": 50,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -597809,10 +598125,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 31.909,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 63,
-            "of": 138
+            "rank": 75,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -597826,10 +598143,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 23.455,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 81,
-            "of": 138
+            "rank": 58,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -605508,10 +605826,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 16.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 43,
-            "of": 138
+            "rank": 96,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -605525,10 +605844,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 37.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 92,
-            "of": 138
+            "rank": 45,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -605542,10 +605862,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 21.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 62,
-            "of": 138
+            "rank": 74,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -609132,10 +609453,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 7.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 8,
-            "of": 138
+            "rank": 131,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -609149,10 +609471,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 47.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 129,
-            "of": 138
+            "rank": 10,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -609166,10 +609489,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 5.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 3,
-            "of": 138
+            "rank": 136,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -616372,10 +616696,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 41.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 133,
-            "of": 138
+            "rank": 6,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -616389,10 +616714,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 19.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 18,
-            "of": 138
+            "rank": 121,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -616406,10 +616732,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 14.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 22,
-            "of": 138
+            "rank": 117,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -620064,10 +620391,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 25.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 96,
-            "of": 138
+            "rank": 43,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -620081,10 +620409,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 27.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 42,
-            "of": 138
+            "rank": 97,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -620098,10 +620427,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 25.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 99,
-            "of": 138
+            "rank": 40,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -627664,10 +627994,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 17.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 47,
-            "of": 138
+            "rank": 91,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -627681,10 +628012,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 40.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 108,
-            "of": 138
+            "rank": 31,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -627698,10 +628030,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 17.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 35,
-            "of": 138
+            "rank": 104,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -631417,10 +631750,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 14.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 31,
-            "of": 138
+            "rank": 108,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -631434,10 +631768,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 45.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 123,
-            "of": 138
+            "rank": 16,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -631451,10 +631786,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 33.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 132,
-            "of": 138
+            "rank": 7,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -639487,10 +639823,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 14.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 30,
-            "of": 138
+            "rank": 109,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -639504,10 +639841,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 41.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 111,
-            "of": 138
+            "rank": 27,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -639521,10 +639859,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 22.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 71,
-            "of": 138
+            "rank": 68,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -643190,10 +643529,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 3.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 3,
-            "of": 138
+            "rank": 136,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -643207,10 +643547,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 47.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 126,
-            "of": 138
+            "rank": 13,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -643224,10 +643565,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 9.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 8,
-            "of": 138
+            "rank": 131,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -650511,10 +650853,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 29.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 108,
-            "of": 138
+            "rank": 31,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -650528,10 +650871,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 28.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 50,
-            "of": 138
+            "rank": 89,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -650545,10 +650889,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 13.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 14,
-            "of": 138
+            "rank": 125,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -654014,10 +654359,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 36.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 126,
-            "of": 138
+            "rank": 13,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -654031,10 +654377,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 17.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 13,
-            "of": 138
+            "rank": 126,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -654048,10 +654395,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 20.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 56,
-            "of": 138
+            "rank": 83,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -661371,10 +661719,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 2.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 2,
-            "of": 138
+            "rank": 137,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -661388,10 +661737,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 54.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 137,
-            "of": 138
+            "rank": 2,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -661405,10 +661755,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 8.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 6,
-            "of": 138
+            "rank": 133,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -665262,10 +665613,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 18.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 52,
-            "of": 138
+            "rank": 87,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -665279,10 +665631,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 40.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 107,
-            "of": 138
+            "rank": 32,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -665296,10 +665649,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 26.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 105,
-            "of": 138
+            "rank": 34,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -673184,10 +673538,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 16.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 41,
-            "of": 138
+            "rank": 97,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -673201,10 +673556,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 37.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 92,
-            "of": 138
+            "rank": 45,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -673218,10 +673574,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 28.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 115,
-            "of": 138
+            "rank": 24,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -676833,10 +677190,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 18.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 55,
-            "of": 138
+            "rank": 84,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -676850,10 +677208,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 35.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 84,
-            "of": 138
+            "rank": 55,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -676867,10 +677226,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 24.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 96,
-            "of": 138
+            "rank": 43,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -684170,10 +684530,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 20.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 64,
-            "of": 138
+            "rank": 75,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -684187,10 +684548,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 39.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 106,
-            "of": 138
+            "rank": 33,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -684204,10 +684566,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 27.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 110,
-            "of": 138
+            "rank": 27,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -687779,10 +688142,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 27.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 102,
-            "of": 138
+            "rank": 37,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -687796,10 +688160,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 23.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 30,
-            "of": 138
+            "rank": 109,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -687813,10 +688178,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 22.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 75,
-            "of": 138
+            "rank": 64,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -695126,10 +695492,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 7.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 9,
-            "of": 138
+            "rank": 130,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -695143,10 +695510,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 51.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 134,
-            "of": 138
+            "rank": 5,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -695160,10 +695528,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 17.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 41,
-            "of": 138
+            "rank": 98,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -698833,10 +699202,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 15.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 37,
-            "of": 138
+            "rank": 101,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -698850,10 +699220,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 33.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 72,
-            "of": 138
+            "rank": 67,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -698867,10 +699238,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 32.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 128,
-            "of": 138
+            "rank": 11,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -706371,10 +706743,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 35.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 125,
-            "of": 138
+            "rank": 14,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -706388,10 +706761,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 27.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 41,
-            "of": 138
+            "rank": 98,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -706405,10 +706779,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 36.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 137,
-            "of": 138
+            "rank": 2,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -710002,10 +710377,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 4.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 5,
-            "of": 138
+            "rank": 134,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -710019,10 +710395,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 47.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 128,
-            "of": 138
+            "rank": 11,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -710036,10 +710413,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 8.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 7,
-            "of": 138
+            "rank": 132,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -717774,10 +718152,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 23.1,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 81,
-            "of": 138
+            "rank": 57,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -717791,10 +718170,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 30.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 58,
-            "of": 138
+            "rank": 79,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -717808,10 +718188,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 29.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 120,
-            "of": 138
+            "rank": 19,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -721424,10 +721805,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 22.9,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 78,
-            "of": 138
+            "rank": 61,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -721441,10 +721823,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 33.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 78,
-            "of": 138
+            "rank": 61,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -721458,10 +721841,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 15.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 24,
-            "of": 138
+            "rank": 114,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -728901,10 +729285,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 23.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 86,
-            "of": 138
+            "rank": 53,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -728918,10 +729303,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 22.7,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 27,
-            "of": 138
+            "rank": 111,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -728935,10 +729321,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 31.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 124,
-            "of": 138
+            "rank": 15,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -732420,10 +732807,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 22.2,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 74,
-            "of": 138
+            "rank": 64,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -732437,10 +732825,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 33.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 73,
-            "of": 138
+            "rank": 65,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -732454,10 +732843,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 21.0,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 59,
-            "of": 138
+            "rank": 78,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -740131,10 +740521,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 33.3,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 120,
-            "of": 138
+            "rank": 19,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -740148,10 +740539,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 26.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 36,
-            "of": 138
+            "rank": 103,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -740165,10 +740557,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 24.4,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 94,
-            "of": 138
+            "rank": 45,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
@@ -743665,10 +744058,11 @@
           "def_ppg_leading": {
             "label": "Snaps faced per game, leading",
             "value": 25.5,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 94,
-            "of": 138
+            "rank": 45,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_leading": {
             "label": "Seconds per snap faced, leading",
@@ -743682,10 +744076,11 @@
           "def_ppg_trailing": {
             "label": "Snaps faced per game, trailing",
             "value": 34.6,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 81,
-            "of": 138
+            "rank": 58,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_trailing": {
             "label": "Seconds per snap faced, trailing",
@@ -743699,10 +744094,11 @@
           "def_ppg_neutral": {
             "label": "Snaps faced per game, neutral situations",
             "value": 10.8,
-            "better": "low",
+            "better": "neutral",
             "format": "num",
-            "rank": 9,
-            "of": 138
+            "rank": 130,
+            "of": 138,
+            "rank_word": "most"
           },
           "def_spp_neutral": {
             "label": "Seconds per snap faced, neutral situations",
