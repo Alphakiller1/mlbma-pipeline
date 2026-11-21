@@ -178,7 +178,7 @@ async function currentConferenceReports(id) {
     const link = /<iframe\b[^>]*\bsrc="(https:\/\/faktorsports\.com\/k\/embed\/player-availability\/[^"]+)"/i.exec(await source.text())?.[1];
     if (!link) throw new Error('Missing public availability viewer');
     const response = await availabilityResponse(htmlText(link), {
-      headers: { referer: new URL(hub).origin + '/' }, redirect: 'error'
+      headers: { referer: new URL(hub).origin + '/' }, redirect: 'manual'
     });
     return faktorReports(await response.text());
   }
