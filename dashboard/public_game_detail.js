@@ -3661,7 +3661,9 @@
         value: entry.value != null ? Number(entry.value) : null,
         value_recent: entry.value_recent != null ? Number(entry.value_recent) : null,
         missed: entry.missed != null ? Number(entry.missed) : null,
-        plays: rate ? rate.played : null, plays_n: rate ? rate.n : null, plays_basis: rate ? rate.basis : null };
+        plays: entry.status === 'Inactive' ? 0 : (rate ? rate.played : null),
+        plays_title: entry.status === 'Inactive' ? 'Confirmed inactive for this game' : null,
+        plays_n: rate ? rate.n : null, plays_basis: rate ? rate.basis : null };
     });
     var valueNote = 'Points of the spread his club gives up without him: his position\u2019s price on ' +
       'closing lines (2019\u201325) times his snap share when he plays';
@@ -3694,7 +3696,13 @@
       '" aria-selected="false" tabindex="-1" class="ca-lineup-tab" data-lineup-unit="defense">Defense</button>' +
       '</div>' + lineupUnit(game, side, 'offense', entries, offenseTab, offensePanel) +
       lineupUnit(game, side, 'defense', entries, defenseTab, defensePanel) +
+      activeInjuryNote(game, side, entries && entries.length) +
       injuryReport(game, entries, label) + '</article>';
+  }
+
+  function nflLineupsBody(sport, game) {
+    return '<div class="ca-detail-duo ca-lineup-duo">' +
+      lineupBoard(sport, game, 'away') + lineupBoard(sport, game, 'home') + '</div>';
   }
 
   function safeTotal() {
@@ -6357,9 +6365,7 @@ function seasonToggle(game) {
 
       section('availability', 'Starting Lineups And Availability',
         'Offense, Defense And Official Designations',
-        '<div class="ca-detail-duo ca-lineup-duo">' +
-        lineupBoard(sport, game, 'away') +
-        lineupBoard(sport, game, 'home') + '</div>'),
+        nflLineupsBody(sport, game)),
 
       section('radar', 'Team Profile Radar', 'Both Clubs On One Shape, By Percentile',
         radarBody(sport, game)),
@@ -7219,7 +7225,7 @@ function seasonToggle(game) {
   }
   function injurySits(pl) {
     if (pl.plays != null) return 1 - pl.plays;
-    return availability.isOut(pl.status) && /^(out|ir|injured reserve|suspended|suspension)\b/i.test(pl.status || '') ? 1 : null;
+    return availability.isOut(pl.status) && /^(out|inactive|ir|injured reserve|suspended|suspension)\b/i.test(pl.status || '') ? 1 : null;
   }
   // Σ value × chance he sits, over the listed players both are known for.
   function injuryExpected(players) {
@@ -7273,6 +7279,28 @@ function seasonToggle(game) {
       ? '<a href="' + esc(report.source_url) + '" target="_blank" rel="noopener noreferrer">' + label + '</a>' : label;
   }
 
+  function activeInjuryNote(game, side, hasSnapshot) {
+    var state = game.__activeInjury;
+    if (!state) return '';
+    var report = state.reports[side], parts = [];
+    if (report) {
+      parts.push(game.sport === 'cbb' && report.source_url && report.sources.indexOf(',') >= 0
+        ? esc(report.sources) : availabilitySource(report));
+      if (report.coverage === 'secondary') parts.push('Partial coverage');
+      if (report.published_at_utc) parts.push(esc('Published ' + publishedTime(report.published_at_utc)));
+    } else if (hasSnapshot) {
+      parts.push('Saved report');
+      if (state.snapshot) parts.push(esc((game.sport === 'cbb' ? 'Snapshot ' : 'Slate ') + publishedTime(state.snapshot)));
+    }
+    if (!report && state.sources && state.sources.length) parts.push(esc(state.sources.join(', ')));
+    if (state.status === 'checking') parts.push('Checking for a current report');
+    if (state.status === 'unavailable') parts.push('Refresh temporarily unavailable');
+    if (state.status === 'not_published' && !report) parts.push('Current report pending');
+    var check = report && report.checked_at_utc || state.checked;
+    if (check) parts.push('<span data-active-injury-check="' + side + '">' + esc('Checked ' + publishedTime(check)) + '</span>');
+    return parts.length ? '<p class="ca-injury-report-meta">' + parts.join(' · ') + '</p>' : '';
+  }
+
   function cfbReportNote(game, side, report) {
     var state = (game.__cfbInjuryState || {})[side];
     var parts = [];
@@ -7299,7 +7327,8 @@ function seasonToggle(game) {
     var report = game[side + '_injuries'];
     var title = cfbName(sport, game, side) + ' Injury Report';
     var head = '<section class="ca-form-panel ca-cfb-panel ca-cfb-injury-panel"><h3>' + esc(title) + '</h3>';
-    var note = sport === 'cfb' && cfbReportNote(game, side, report);
+    var note = sport === 'cfb' ? cfbReportNote(game, side, report) : activeInjuryNote(game, side,
+      report && (report.players || []).length);
     if (!report) {
       return head + (note || pending('The injury report is not published for this ' +
         (sport === 'nba' ? 'club' : 'school') + ' yet.')) + '</section>';
@@ -7322,9 +7351,9 @@ function seasonToggle(game) {
         return row;
       });
     }
-    var empty = sport !== 'cfb' ? 'No players are listed on the current report.' :
-      report.coverage === 'official' ? 'The official report lists no availability concerns.' : 'No player designations verified for this matchup.';
-    return head + (sport === 'cfb' ? note : '<p class="ca-lineup-context">' + esc(report.sources || '') + '</p>') +
+    var empty = report.coverage === 'official' ? 'The official report lists no availability concerns.' :
+      'No player designations verified for this matchup.';
+    return head + note +
       (players.length ? injuryTable(players, { label: title, showDate: !report.coverage, playsNote: playsNote, valueNote: valueNote,
         peers: sport === 'cfb' ? peers.map(function (pl) { return { value: pl.value, missed: pl.missed, plays: 0 }; }) : peers }) :
         pending(empty)) + '</section>';
@@ -7373,6 +7402,158 @@ function seasonToggle(game) {
       paintSection(host, 'team-context', cfbTeamContext(sport, game));
     }, function () {
       return game.game_state !== 'final' && Date.now() < kickoff + 6 * 3600000;
+    });
+  }
+
+  function applyNflInjuries(game, side, report, snapshot) {
+    var key = side + '_availability_list';
+    var saved = { away_availability_list: snapshot };
+    var players = report.players.map(function (player) {
+      var prior = availability.designation(saved, 'away', player) || {};
+      return Object.assign({}, player, {
+        status: game.game_state === 'final' && /^(?:Out|Doubtful|Questionable)$/.test(prior.status || '') &&
+          /Practice/.test(player.status) ? prior.status : player.status,
+        value: prior.value, value_recent: prior.value_recent, missed: prior.missed
+      });
+    });
+    (snapshot || []).forEach(function (player) {
+      var durable = /^(ir|injured reserve|pup|suspended|suspension|non.football)\b/i.test(player.status);
+      if ((report.coverage !== 'official' || (durable && !report.has_roster_updates)) &&
+          !availability.designation({ away_availability_list: players }, 'away', player)) players.push(player);
+    });
+    game[key] = players;
+    game[side + '_injury_coverage'] = report.coverage;
+    var statuses = [['Out', 'out'], ['Inactive', 'inactive'], ['Doubtful', 'doubtful'],
+      ['Questionable', 'questionable'], ['Did Not Practice', 'DNP'], ['Limited Practice', 'limited']];
+    var summary = statuses.map(function (status) {
+      var count = players.filter(function (player) { return player.status === status[0]; }).length;
+      return count ? count + ' ' + status[1] : '';
+    }).filter(Boolean);
+    game[side + '_availability'] = summary.join(' · ') || (players.length ? players.length + ' listed' : 'No designations listed');
+  }
+
+  function paintNflInjuries(host, game) {
+    var section = host.querySelector('[data-body="availability"]');
+    if (!section) return;
+    var choices = Array.from(section.querySelectorAll('.ca-lineup-board')).map(function (board) {
+      return { unit: (board.querySelector('.ca-lineup-tab.is-on') || {}).id,
+        open: Boolean(board.querySelector('details[open]')) };
+    });
+    section.innerHTML = nflLineupsBody('nfl', game);
+    section.querySelectorAll('.ca-lineup-board').forEach(function (board, index) {
+      var choice = choices[index] || {};
+      var tab = Array.from(board.querySelectorAll('.ca-lineup-tab')).find(function (button) { return button.id === choice.unit; });
+      var report = board.querySelector('details');
+      if (tab) activateLineupTab(tab);
+      if (report && choice.open) report.open = true;
+    });
+  }
+
+  function applyCbbInjuries(game, side, report) {
+    var key = side + '_cbb_availability';
+    var existing = game[key] || [];
+    var players = report.players.slice();
+    existing.forEach(function (player) {
+      var next = players.find(function (entry) { return String(entry.player_id) === String(player.player_id); });
+      if (!next) {
+        if (report.fixture_listings !== 0 || player.source !== 'Covers') players.push(Object.assign({}, player, { saved: true }));
+      } else if (player.updated && (!next.updated || player.updated > next.updated)) {
+        players[players.indexOf(next)] = player;
+      }
+    });
+    game[key] = players;
+  }
+
+  function watchActiveInjuries(host, sport, game, adapter, result) {
+    var kickoff = Date.parse(game.kickoff_utc);
+    var age = kickoff - Date.now();
+    var today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+    if (!Number.isFinite(kickoff) || Math.abs(age) > 7 * 86400000 ||
+        (sport === 'cbb' && game.slate_date !== today)) return;
+    var fields = { away: game.away, home: game.home, kickoff: game.kickoff_utc };
+    if (sport === 'nfl') Object.assign(fields, { game: game.id, season: currentSeason(game),
+      week: global.ChasePublicSlate.nflWeek(game) });
+    if (sport === 'cbb') fields.season = game.season;
+    var query = new URLSearchParams(fields);
+    var snapshots = {};
+    var state = game.__activeInjury = {
+      reports: {}, status: 'checking',
+      snapshot: sport === 'cbb' ? game.cbb_availability_as_of : result.generatedAt
+    };
+    var nbaPanels = {
+      'nba-rotation': nbaRotationPanel, 'nba-player-types': nbaPlayerTypesPanel, 'nba-player-zones': nbaPlayerZonesPanel,
+      'nba-player-bio': nbaPlayerBioPanel, 'nba-shot-maps': nbaShotMapsPanel,
+      'nba-defenders': nbaDefendersPanel, 'nba-onfloor': nbaOnFloorPanel, 'nba-shooter-regression': nbaShooterRegressionPanel
+    };
+    ['away', 'home'].forEach(function (side) {
+      snapshots[side] = game[side + (sport === 'nfl' ? '_availability_list' : '_injuries')];
+    });
+    function paint(changed) {
+      if (sport === 'cbb') {
+        paintSection(host, 'cbb-availability', nflDuo(cbbAvailability, sport, game));
+        if (changed && game.cbbDetailReady) paintSection(host, 'cbb-rotation', nflDuo(cbbRotation, sport, game));
+      } else if (sport === 'nba') {
+        paintSection(host, 'nba-availability', nflDuo(cfbInjuryPanel, sport, game));
+        if (changed) Object.keys(nbaPanels).forEach(function (id) { paintSection(host, id, nflDuo(nbaPanels[id], sport, game)); });
+      } else {
+        paintNflInjuries(host, game);
+        if (changed) {
+          paintSection(host, 'quarterbacks', nflDuo(nflBackPanel, sport, game, 'QB'));
+          paintSection(host, 'rushing', nflDuo(nflBackPanel, sport, game, 'RB'));
+          paintSection(host, 'receivers', nflDuo(nflCatchersPanel, sport, game));
+        }
+      }
+    }
+    paint(false);
+    host.__stopInjuryWatch = availability.watch(function (signal) {
+      if (sport === 'nba') return adapter.injuryUpdates(game, signal);
+      return fetch('/api/' + sport + '-availability?' + query, { cache: 'no-store', signal: signal }).then(function (response) {
+        if (!response.ok) throw new Error('Availability request failed');
+        return response.json();
+      });
+    }, function (data) {
+      var stateChanged = state.status !== data.status || Boolean(state.checked) !== Boolean(data.checked_at_utc || state.checked) ||
+        JSON.stringify(state.sources) !== JSON.stringify(data.sources);
+      state.status = data.status;
+      state.checked = data.checked_at_utc || state.checked;
+      state.sources = data.sources;
+      var changed = false;
+      ['away', 'home'].forEach(function (side) {
+        var next = (data.reports || {})[side], previous = state.reports[side];
+        if (!next || (previous && previous.coverage === 'official' && (next.coverage !== 'official' ||
+            (previous.published_at_utc && next.published_at_utc < previous.published_at_utc)))) return;
+        var different = !previous || JSON.stringify(Object.assign({}, previous, { checked_at_utc: null })) !==
+          JSON.stringify(Object.assign({}, next, { checked_at_utc: null }));
+        state.reports[side] = next;
+        if (!different) return;
+        changed = true;
+        if (sport === 'nfl') applyNflInjuries(game, side, next, snapshots[side]);
+        else if (sport === 'cbb') applyCbbInjuries(game, side, next);
+        else {
+          var report = adapter.injuryEvidence(game, side, next, snapshots[side]);
+          if (next.coverage === 'secondary' && snapshots[side]) {
+            (snapshots[side].players || []).forEach(function (player) {
+              var update = availability.designation({ away_injuries: report }, 'away', player);
+              if (!update) report.players.push(player);
+              else if (player.official) {
+                var latest = availability.designation({ away_injuries: { players: next.players } }, 'away', player);
+                if (!latest || latest.status !== 'Out' || !(Date.parse(latest.date) > Date.parse(state.snapshot))) {
+                  report.players[report.players.indexOf(update)] = player;
+                }
+              }
+            });
+          }
+          game[side + '_injuries'] = report;
+        }
+      });
+      if (changed || stateChanged) paint(changed);
+      host.querySelectorAll('[data-active-injury-check]').forEach(function (node) {
+        var side = node.getAttribute('data-active-injury-check');
+        var check = (state.reports[side] || {}).checked_at_utc || state.checked;
+        if (check) node.textContent = 'Checked ' + publishedTime(check);
+      });
+    }, function () {
+      return game.game_state !== 'final' && Date.now() < kickoff + 4 * 3600000;
     });
   }
 
@@ -9697,11 +9878,14 @@ function seasonToggle(game) {
     var title = cbbSchool(game,side) + ' Availability';
     var asOf = game.cbb_availability_as_of;
     var players = game[side + '_cbb_availability'] || [];
-    if (game.cbb_availability_pending) return cbbPanel(title,'Current public injury listings',pending('Checking the latest public report…'));
-    if (!asOf) return cbbPanel(title,'Public injury listings',pending(game.cbb_availability_archived ?
+    var live = game.__activeInjury;
+    var report = live && live.reports[side];
+    if (!live && game.cbb_availability_pending) return cbbPanel(title,'Current public injury listings',pending('Checking the latest public report…'));
+    if (!asOf && !live) return cbbPanel(title,'Public injury listings',pending(game.cbb_availability_archived ?
       'A game-day report snapshot is unavailable for this fixture.' : 'A current public report is unavailable for this fixture.'));
-    var caption = (game.cbb_availability_archived ? 'Archived injury reports' : 'Public injury reports') +
-      ' · ' + (game.cbb_availability_sources||[]).join(', ') + ' · checked ' + nbaEvidenceStamp(asOf);
+    var meta = live ? activeInjuryNote(game, side, players.length) :
+      '<p class="ca-injury-report-meta">' + esc((game.cbb_availability_archived ? 'Archived report' : 'Saved report') +
+        ' · ' + (game.cbb_availability_sources || []).join(', ') + ' · Checked ' + publishedTime(asOf)) + '</p>';
     var fixture = game.cbb_fixture_check || {};
     function sourceLink(name, url) {
       return /^https:\/\/www\.(covers\.com|actionnetwork\.com|rotowire\.com)\//.test(url || '')
@@ -9716,19 +9900,21 @@ function seasonToggle(game) {
       'priced his minutes and box-score production';
     function injuryContext(player) {
       var source = sourceLink(player.source, player.source_url) +
-        (player.updated ? ' · ' + esc(player.updated.slice(0, 10)) : '');
+        (player.updated ? ' · ' + esc(player.updated.slice(0, 10)) : '') + (player.saved ? ' · Saved listing' : '');
       return (
         (player.detail ? '<small class="ca-cbb-count">'+esc(player.detail)+'</small>' : '') +
         (source ? '<small class="ca-cbb-count">' + source + '</small>' : ''));
     }
-    var count = fixture[side + '_listings'];
+    var count = report ? report.fixture_listings : fixture[side + '_listings'];
     var empty = count === 0 ? 'Covers lists no injuries for this school.' :
-      count > 0 ? 'The matchup report lists entries awaiting a verified roster match.' :
-        'No checked public source lists an injury for this school.';
-    return cbbPanel(title,caption,(listed.length ? injuryTable(listed, { label: title, alwaysMetrics: true,
+      count > 0 ? 'No current designation verified from the matchup listing.' :
+        'No current injury listing is verified for this school.';
+    return cbbPanel(title,'',meta + (listed.length ? injuryTable(listed, { label: title, alwaysMetrics: true,
       playsNote: 'no college history yet', valueNote: valueNote, injuryContext: injuryContext }) :
-      pending(empty)) +
-      (fixture.source_url ? '<p class="ca-cbb-note ca-cbb-cite">'+sourceLink('Covers matchup injury report',fixture.source_url)+
+      (live && live.status === 'checking' ? '' : pending(empty))) +
+      (report && report.source_url && report.sources.indexOf(',') >= 0 ?
+        '<p class="ca-cbb-note ca-cbb-cite">' + sourceLink('Covers matchup injury report', report.source_url) + '</p>' : '') +
+      (fixture.source_url && !(report && report.source_url) ? '<p class="ca-cbb-note ca-cbb-cite">'+sourceLink('Covers matchup injury report',fixture.source_url)+
         (fixture.retrieved_at_utc ? ' · checked '+esc(nbaEvidenceStamp(fixture.retrieved_at_utc)) : '')+'</p>' : ''));
   }
   /* CBB résumé and luck (2026-11-18 audit; pipeline/cbb_public/resume.py):
@@ -10169,7 +10355,9 @@ function seasonToggle(game) {
       var extra = {};
       render(host, sport, game, extra, result);
       if (sport === 'cfb') watchCfbInjuries(host, sport, game, adapter);
+      if (sport === 'nfl' || sport === 'nba') watchActiveInjuries(host, sport, game, adapter, result);
       if (result.availabilityReady) result.availabilityReady.then(function() {
+        if (sport === 'cbb' && !game.__activeInjury) watchActiveInjuries(host, sport, game, adapter, result);
         paintSection(host, 'cbb-availability', nflDuo(cbbAvailability, sport, game));
         if (game.cbbDetailReady) paintSection(host, 'cbb-rotation', nflDuo(cbbRotation, sport, game));
       });

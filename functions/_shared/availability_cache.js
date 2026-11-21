@@ -20,7 +20,7 @@ export async function availabilityFeed(context, key, seconds, load) {
 }
 
 export async function availabilityResponse(url, init = {}) {
-  const response = await fetch(url, { ...init, signal: AbortSignal.timeout(8000) });
+  const response = await fetch(url, { cache: 'no-store', ...init, signal: AbortSignal.timeout(8000) });
   if (!response.ok) throw new Error('Availability source returned ' + response.status);
   return response;
 }
