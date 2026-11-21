@@ -219,7 +219,7 @@ _SEASON_GAMES: dict[int, list[dict]] = {}
 
 
 def season_games(season: int) -> list[dict]:
-    """The regular season's games with an FBS side, in CFBD's /games shape
+    """The regular season's games in every division, in CFBD's /games shape
     (id, week, homeTeam/awayTeam, points, completed, neutralSite, startDate,
     home/awayClassification) from ESPN's scoreboard: free, and the same
     event ids. ESPN's location is CFBD's school name (checked 2026-11-21 on
@@ -231,16 +231,26 @@ def season_games(season: int) -> list[dict]:
     fbs = fbs_ids(season)
     games: list[dict] = []
     for week in range(1, 17):
-        name = f"espn_week_{season}_{week}.json"
+        name = f"espn_games_{season}_{week}.json"
         hit = _cached(name)
         events = hit.get("events") if hit and hit.get("final") else None
         if events is None:
-            try:
-                events = _espn(f"/scoreboard?dates={season}&seasontype=2&week={week}&groups=80&limit=400").get("events") or []
-            except Exception as exc:  # noqa: BLE001
-                print(f"  ESPN week {week} unavailable: {exc}")
-                events = (hit or {}).get("events") or []
-            done = bool(events) and all(((e.get("status") or {}).get("type") or {}).get("completed") for e in events)
+            # Every division, as CFBD's /games returns it and as the power
+            # ranking was validated on: FBS (80), FCS (81), Division II (57)
+            # and III (58). On FBS and FCS alone the ridge reads each lower
+            # division's few games at FBS and FCS hosts as home field: 2025's
+            # edge 5.7 points against 4.0 on every division (2026-11-21).
+            events, failed = {}, False
+            for group in (80, 81, 57, 58):
+                try:
+                    for e in _espn(f"/scoreboard?dates={season}&seasontype=2&week={week}&groups={group}&limit=500").get("events") or []:
+                        events[str(e.get("id"))] = e
+                except Exception as exc:  # noqa: BLE001
+                    print(f"  ESPN week {week} (group {group}) unavailable: {exc}")
+                    failed = True
+            events = list(events.values()) if events and not failed else (hit or {}).get("events") or list(events.values())
+            done = bool(events) and not failed and all(
+                ((e.get("status") or {}).get("type") or {}).get("completed") for e in events)
             if events:
                 _store(name, {"final": done, "events": events})
         for e in events:
