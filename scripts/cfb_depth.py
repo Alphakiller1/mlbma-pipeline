@@ -215,6 +215,13 @@ def fbs_ids(season: int) -> set[str]:
 _ESPN_NAMES: dict[str, str] = {}  # ESPN team id -> school, from the scoreboard
 
 
+def fbs_names(season: int) -> set[str]:
+    """Normalized FBS school names from ESPN (the FPI list, named from the
+    scoreboard): the FBS pool when CFBD's season rows are unavailable."""
+    season_games(season)
+    return {_norm(_ESPN_NAMES[tid]) for tid in fbs_ids(season) if tid in _ESPN_NAMES}
+
+
 _SEASON_GAMES: dict[int, list[dict]] = {}
 
 
