@@ -646912,5 +646912,10 @@
       "away_starter": "McCae Hillstead",
       "home_starter": "Maalik Murphy"
     }
-  ]
+  ],
+  "power": {
+    "home_court": 3.063,
+    "league_mean": 26.59,
+    "through_week": 12
+  }
 }

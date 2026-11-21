@@ -1054,6 +1054,18 @@ DEPTH_KEYS = ("_run_game", "_scheme_stats", "_charting", "_strength", "_penaltie
               "_schedule_strength", "_power", "_predictability", "_regression")
 
 
+def previous_power(season: int, path: Path | None = None) -> dict | None:
+    """The power ranking's league line (home field, league mean, week)
+    last published this season, or None."""
+    try:
+        previous = json.loads((path or OUT).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if int(previous.get("season") or 0) != season:
+        return None
+    return previous.get("power") or None
+
+
 def carry_forward_depth(games: list[dict], season: int) -> int:
     """A CFBD outage (no key, a spent allowance) must not blank the desk:
     a school whose CFBD blocks are missing this run keeps the ones last
@@ -1139,6 +1151,10 @@ def main() -> int:
     if power:
         payload["power"] = {"home_court": power["home_court"], "league_mean": power["league_mean"],
                             "through_week": power["through_week"]}
+    elif previous_power(season):
+        # A CFBD outage carries each school's power blocks forward
+        # (carry_forward_depth); the league line they were built on comes with them.
+        payload["power"] = previous_power(season)
     with_form = sum(1 for game in games if game.get("away_form") and game.get("home_form"))
     with_adjusted = sum(1 for game in games if game.get("away_adjusted_efficiency")
                         and game.get("home_adjusted_efficiency"))
