@@ -174,11 +174,12 @@ async function currentConferenceReports(id) {
   }
   if (FAKTOR_CONFERENCES.has(id)) {
     const hub = SOURCE[id][1];
-    const source = await availabilityResponse(hub);
+    const headers = { 'user-agent': 'ChaseAnalytics/1.0 (+https://chase-analytics.com)', accept: 'text/html' };
+    const source = await availabilityResponse(hub, { headers });
     const link = /<iframe\b[^>]*\bsrc="(https:\/\/faktorsports\.com\/k\/embed\/player-availability\/[^"]+)"/i.exec(await source.text())?.[1];
     if (!link) throw new Error('Missing public availability viewer');
     const response = await availabilityResponse(htmlText(link), {
-      headers: { referer: new URL(hub).origin + '/' }, redirect: 'manual'
+      headers: { ...headers, referer: new URL(hub).origin + '/' }, redirect: 'manual'
     });
     return faktorReports(await response.text());
   }
