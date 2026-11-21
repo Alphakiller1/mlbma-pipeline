@@ -62,7 +62,11 @@ class FigureTests(unittest.TestCase):
         self.assertIsNone(f["off_spp_neutral"])
         # Tempo is neutral and fastest first; what a defense faces is fewest first.
         self.assertEqual(cfb_pace._spec("off_spp")[1:], ("neutral", "num", "low"))
-        self.assertEqual(cfb_pace._spec("def_ppg_leading")[1:], ("low", "num", "low"))
+        self.assertEqual(cfb_pace._spec("def_ppg")[1:], ("low", "num", "low"))
+        self.assertEqual(cfb_pace._spec("def_ppg_h2")[1:], ("low", "num", "low"))
+        # Snaps faced by score state are game state, not defending: neutral.
+        for split in ("_leading", "_trailing", "_neutral"):
+            self.assertEqual(cfb_pace._spec("def_ppg" + split)[1:], ("neutral", "num", "high"))
         self.assertEqual(cfb_pace._spec("off_top_h2")[1:], ("neutral", "clock", "high"))
         e = cfb_pace._ranked("Seconds per snap", 22.0, "neutral", "num", "low", [22.0, 25.0, 30.0])
         self.assertEqual((e["rank"], e["of"], e["rank_word"]), (1, 3, "fastest"))
