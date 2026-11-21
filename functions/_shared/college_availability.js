@@ -55,6 +55,8 @@ export function wallClock(date, timeZone = EASTERN) {
 // The viewer uses a calendar date and a clock in the conference's time zone.
 // Convert with the zone's date-specific offset so November's DST change is safe.
 export function reportTimestamp(day, time, zone) {
+  // A morning post can read "9:00:00" (the American's game-day schedule).
+  time = typeof time === 'string' ? time.replace(/^(\d):/, '0$1:') : time;
   if (!ZONES[zone] || !/^\d{4}-\d{2}-\d{2}$/.test(day) || !/^\d{2}:\d{2}(:\d{2})?$/.test(time)) return null;
   const wall = day + 'T' + time + (time.length === 5 ? ':00' : '');
   const asUtc = new Date(wall + 'Z');
@@ -90,6 +92,17 @@ export function conferenceReports(payload) {
   const games = [];
   for (const report of Object.values(payload)) {
     if (!Array.isArray(report?.games) || report.games.length !== 2) continue;
+    // A report the conference has scheduled but not posted: when it is due,
+    // never a report (no players, never matched as one).
+    if (report.ReportType === 'Report Pending') {
+      const due = reportTimestamp(report.publishDate, report.postedTime, report.conferenceTimeZone);
+      const schools = report.games.map(team => schoolKey(team?.teamDisplayName, team?.teamName));
+      if (due && /^\d{4}-\d{2}-\d{2}$/.test(report.footer?.date || '') && schools.every(Boolean)) {
+        games.push({ date: report.footer.date, zone: ZONES[report.conferenceTimeZone], due, pending: true,
+          teams: schools.map(school => ({ school, players: null })) });
+      }
+      continue;
+    }
     const published = reportTimestamp(report.publishDate, report.postedTime, report.conferenceTimeZone);
     const date = report.footer?.date;
     const teams = report.games.map(conferenceTeam);
@@ -97,7 +110,7 @@ export function conferenceReports(payload) {
     games.push({ date, zone: ZONES[report.conferenceTimeZone], published, teams,
       stage: ({ Initial: 'Initial report', 'Update 1': 'Update 1', 'Update 2': 'Update 2', 'Game Day': 'Game-day report' })[report.ReportType] || 'Availability report' });
   }
-  if (!games.length && Object.values(payload).some(report => report?.ReportType !== 'Report Pending')) {
+  if (!games.some(game => !game.pending) && Object.values(payload).some(report => report?.ReportType !== 'Report Pending')) {
     throw new Error('No valid conference reports');
   }
   return games;
@@ -209,8 +222,20 @@ export function archiveFixture(payload, kickoff, schools) {
   });
 }
 
+function sameFixture(game, kickoff, schools) {
+  const sameDate = game.kickoff != null ? Math.abs(kickoff.valueOf() - game.kickoff) <= 3600000 :
+    [wallClock(kickoff, game.zone), wallClock(kickoff)].some(date => game.date === date.slice(0, 10));
+  return sameDate && schools.every(school => game.teams.some(team => team.school === school));
+}
+
+// When the conference has said this fixture's report is due, or null.
+export function pendingFixture(games, kickoff, schools) {
+  return games.find(game => game.pending && sameFixture(game, kickoff, schools))?.due || null;
+}
+
 export function conferenceFixture(games, kickoff, schools, now = Date.now()) {
   return games.filter(game => {
+    if (game.pending) return false;
     const sameDate = game.kickoff != null ? Math.abs(kickoff.valueOf() - game.kickoff) <= 3600000 :
       [wallClock(kickoff, game.zone), wallClock(kickoff)].some(date => game.date === date.slice(0, 10));
     return sameDate && Date.parse(game.published) <= now + 60000 &&
@@ -222,8 +247,17 @@ export function collegeConferences(value) {
   return [...new Set(String(value || '').split(','))].filter(id => Object.hasOwn(SOURCE, id)).slice(0, 2);
 }
 
+function conferenceFeed(context, id) {
+  return availabilityFeed(context, 'cfb-conference-v3-' + id, 45, () => currentConferenceReports(id));
+}
+
+// When a conference's pending report for the fixture is due (its cached feed), or null.
+export async function conferenceReportDue(context, id, kickoff, schools) {
+  return pendingFixture((await conferenceFeed(context, id)).data, kickoff, schools);
+}
+
 export async function liveConferenceReport(context, id, kickoff, schools) {
-  const feed = await availabilityFeed(context, 'cfb-conference-v2-' + id, 45, () => currentConferenceReports(id));
+  const feed = await conferenceFeed(context, id);
   let game = conferenceFixture(feed.data, kickoff, schools);
   let checkedAt = feed.checked_at_utc;
   if (!game && kickoff <= Date.now() && !CONFERENCE_JSON[id] && !FAKTOR_CONFERENCES.has(id)) {

@@ -952,6 +952,8 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict,
         row[side + "_game_log"] = log
         row[side + "_schedule_strength"] = (depth.get("schedule") or {}).get(key)
         # An empty list is a published report with nobody listed; None is no report.
+        # Every player's value and games missed, for the live official report (cfb_injury_value.table).
+        row[side + "_value_table"] = cfb_injury_value.table((depth.get("usage") or {}).get(abbr) or {}) or None
         injuries = depth.get("injuries") or {}
         if injuries:
             # Each listed player's value to the spread (cfb_injury_value.py).
@@ -1051,7 +1053,7 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
 
 DEPTH_KEYS = ("_run_game", "_scheme_stats", "_charting", "_strength", "_penalties", "_run_lanes", "_qbs", "_defense_splits", "_rushers", "_receivers",
               "_defenders",
-              "_schedule_strength", "_power", "_predictability", "_regression")
+              "_schedule_strength", "_power", "_predictability", "_regression", "_value_table")
 
 
 def previous_power(season: int, path: Path | None = None) -> dict | None:

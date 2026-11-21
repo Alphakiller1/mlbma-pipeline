@@ -41,6 +41,23 @@ class CfbLiveAvailabilityTests(unittest.TestCase):
               Date.parse('2026-11-21T13:00Z')).teams[0].players[0].status, 'Out');
         """)
 
+    def test_a_pending_report_says_when_it_is_due_and_is_never_a_report(self):
+        # 2026-11-21: the American lists each game-day report as "Report Pending"
+        # with its post time; the desk says when, rather than "unavailable".
+        self.run_js("""
+            import assert from 'node:assert/strict';
+            import { conferenceReports, conferenceFixture, pendingFixture } from './functions/_shared/college_availability.js';
+            const games = conferenceReports({ a: {
+              publishDate: '2026-11-21', postedTime: '9:00:00', conferenceTimeZone: 'CT', footer: { date: '2026-11-21' },
+              ReportType: 'Report Pending', games: [{ teamDisplayName: 'Memphis' }, { teamDisplayName: 'Navy' }]
+            } });
+            const kickoff = new Date('2026-11-21T17:00Z');
+            assert.equal(conferenceFixture(games, kickoff, ['memphis', 'navy']), undefined);
+            assert.equal(pendingFixture(games, kickoff, ['memphis', 'navy']), '2026-11-21T15:00:00.000Z');
+            assert.equal(pendingFixture(games, kickoff, ['memphis', 'tulane']), null);
+            assert.equal(pendingFixture(games, new Date('2026-11-28T17:00Z'), ['memphis', 'navy']), null);
+        """)
+
     def test_secondary_coverage_requires_same_fixture_time_and_preserves_report_status(self):
         self.run_js("""
             import assert from 'node:assert/strict';
