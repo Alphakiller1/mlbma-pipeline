@@ -236,24 +236,22 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                 context.close()
                 continue
             # The crest checks read naturalWidth, which is 0 until the image has
-            # decoded. A fixed 300ms pause was winning that race most of the
-            # time and losing it perhaps one run in five - reporting a crest
-            # density of 0 and failing a deploy over a slow CDN response rather
-            # than over anything in the build. Wait for the images themselves.
+            # decoded. Cards below the fold are lazy-loaded, so first bring a
+            # crest into view, then wait for an actual decoded image. Waiting
+            # for every image can time out on images that never enter view.
             try:
-                page.wait_for_function(
-                    """() => [...document.querySelectorAll(
-                         '#openingCbbSlate .ca-matchup-card__club img')]
-                       .every(i => i.complete)""",
-                    timeout=timeout_ms)
+                page.locator('#openingCbbSlate .ca-matchup-card__club img').first.scroll_into_view_if_needed(timeout=timeout_ms)
             except Exception:
                 pass
             page.wait_for_timeout(300)
 
-            metrics = page.evaluate("""() => {
+            metrics_js = """(waitForCrest) => {
               const cards = [...document.querySelectorAll('#openingCbbSlate .ca-matchup-card')];
               const grid = document.querySelector('#openingCbbSlate .ca-slate-grid');
               const columns = grid ? getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length : 0;
+              const loaded = [...document.querySelectorAll('#openingCbbSlate .ca-matchup-card__club img')]
+                .find(i => i.complete && i.naturalWidth > 0);
+              if (waitForCrest && !loaded) return null;
               return {
                 overflow: document.documentElement.scrollWidth - innerWidth,
                 columns,
@@ -267,8 +265,6 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                   // Crests below the fold are lazy-loaded, so measure the first
                   // one that has actually decoded rather than the first in DOM
                   // order - at 390px the top card can still be pending.
-                  const loaded = [...document.querySelectorAll('#openingCbbSlate .ca-matchup-card__club img')]
-                    .find(i => i.naturalWidth > 0);
                   if (!loaded) return 0;
                   return loaded.naturalWidth / Math.max(1, Math.round(loaded.getBoundingClientRect().width));
                 })(),
@@ -276,7 +272,13 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                 bareAbbr: [...document.querySelectorAll('#openingCbbSlate .ca-matchup-card__club')]
                   .filter(c => !c.querySelector('.ca-matchup-card__name')).length,
               };
-            }""")
+            }"""
+            # A live fixture update can replace the cards after an image check.
+            # Read decoding and layout together from one DOM generation.
+            try:
+                metrics = page.wait_for_function(metrics_js, arg=True, timeout=timeout_ms).json_value()
+            except Exception:
+                metrics = page.evaluate(metrics_js, False)
             check(f"{width}px no horizontal overflow", metrics["overflow"] <= 1, str(metrics))
             # chase-public.css narrows the grid to the card count on a short slate (one or two
             # games never sit in a half-empty row), so a 2-game day is 2 columns at 1440px.

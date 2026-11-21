@@ -82,10 +82,11 @@ export function espnNflFixture(payload) {
 
 export function mergeNflReports(official, updates) {
   const rows = new Map((official || []).map(row => [playerKey(row.name), row]));
-  const hasGameStatus = (official || []).some(row => GAME_STATUS[row.status.toLowerCase()]);
+  // A report clearing every player is still authoritative for this fixture.
+  const hasOfficial = Array.isArray(official);
   for (const next of updates || []) {
     const key = playerKey(next.name), prior = rows.get(key);
-    if (next.inactive || (next.roster && !prior) || (!hasGameStatus && !next.roster && GAME_STATUS[next.status.toLowerCase()])) {
+    if (next.inactive || (next.roster && !prior) || (!hasOfficial && !next.roster && GAME_STATUS[next.status.toLowerCase()])) {
       rows.set(key, { ...next, practice: prior?.practice || null });
     }
   }

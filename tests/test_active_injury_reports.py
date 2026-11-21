@@ -34,6 +34,47 @@ class LiveMatchupReportsTests(unittest.TestCase):
             assert.equal(merged[1].practice,'Limited');
         """)
 
+    def test_nfl_official_clearance_wins_even_when_no_teammate_has_a_game_designation(self):
+        self.run_js("""
+            import assert from 'node:assert/strict';
+            import { mergeNflReports } from './functions/api/nfl-availability.js';
+            const cleared = [{name:'Cleared Quarterback',status:'',practice:'Full'}];
+            const old = [{name:'Cleared Quarterback',status:'Out'}];
+            assert.deepEqual(mergeNflReports(cleared, old), []);
+            assert.deepEqual(mergeNflReports([], old), []);
+            assert.equal(mergeNflReports(undefined, old)[0].status, 'Out');
+            assert.equal(mergeNflReports(cleared, [{...old[0],status:'Inactive',inactive:true}])[0].status, 'Inactive');
+        """)
+
+    def test_nfl_cards_and_analysis_share_clearance_and_backup_selection(self):
+        self.run_js("""
+            import assert from 'node:assert/strict';
+            globalThis.window = globalThis;
+            await import('./dashboard/player_availability_shared.js');
+            const policy = ChasePlayerAvailability;
+            const first = {name:'Starting Quarterback',position:'QB',depth_rank:1,injury_status:'Out'};
+            const backup = {name:'Backup Quarterback',position:'QB',depth_rank:2};
+            const game = {away_players:[first,backup],away_availability_list:[
+              {name:first.name,position:'QB',status:'Out',value:2.1}
+            ]};
+            const saved = game.away_availability_list;
+            assert.equal(policy.nflStarter(game,'away','QB'),backup);
+            policy.applyNflReport(game,'away',{players:[],coverage:'official',has_roster_updates:true},saved);
+            assert.equal(policy.nflStarter(game,'away','QB'),first);
+            assert.equal(game.away_availability,'No designations listed');
+            policy.applyNflReport(game,'away',{players:[{name:first.name,position:'QB',status:'Inactive'}],
+              coverage:'official',has_roster_updates:true},saved);
+            assert.equal(policy.nflStarter(game,'away','QB'),backup);
+            assert.equal(game.away_availability_list[0].value,2.1);
+            assert.equal(game.away_availability,'1 inactive');
+            globalThis.document = {addEventListener(){}};
+            await import('./dashboard/matchup_card.js');
+            const html = ChaseMatchupCard.cardHtml('nfl', {...game,id:'1',away:'AWY',home:'HME',
+              home_availability_list:[]});
+            assert.ok(html.includes('1 inactive'));
+            assert.ok(!html.includes('Availability Report Pending'));
+        """)
+
     def test_nba_pdf_keeps_date_and_club_and_preserves_reported_status(self):
         self.run_js("""
             import assert from 'node:assert/strict';

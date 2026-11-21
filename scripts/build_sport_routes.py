@@ -340,6 +340,13 @@ def models_page() -> str:
 
 
 def main() -> int:
+    def nfl_assets(markup: str, sport: str) -> str:
+        if sport == "nfl":
+            for asset in ("player_availability_shared.js", "matchup_card.js", "public_game_detail.js"):
+                markup = markup.replace(f"{asset}?v={STAMP}&amp;rev=nfl-live-availability", f"{asset}?v={STAMP}")
+                markup = markup.replace(f"{asset}?v={STAMP}", f"{asset}?v={STAMP}&amp;rev=nfl-data-20261121")
+        return markup
+
     for sport in SPORTS:
         dest = ROOT / sport
         dest.mkdir(parents=True, exist_ok=True)
@@ -350,9 +357,9 @@ def main() -> int:
             if sport == "mlb": (dest / "matchup.html").write_text(parked, encoding="utf-8")
             print("wrote", sport, "parked (not on public desk)")
             continue
-        (dest / "index.html").write_text(page(sport, kind="index"), encoding="utf-8")
-        (dest / "matchups.html").write_text(page(sport, kind="matchups"), encoding="utf-8")
-        (dest / "matchup.html").write_text(matchup_page(sport), encoding="utf-8")
+        (dest / "index.html").write_text(nfl_assets(page(sport, kind="index"), sport), encoding="utf-8")
+        (dest / "matchups.html").write_text(nfl_assets(page(sport, kind="matchups"), sport), encoding="utf-8")
+        (dest / "matchup.html").write_text(nfl_assets(matchup_page(sport), sport), encoding="utf-8")
         print("wrote", sport, "index/matchups/matchup")
     (ROOT / "cbb" / "shot-charts.html").write_text(shot_charts_page(), encoding="utf-8")
     (ROOT / "models").mkdir(parents=True, exist_ok=True)

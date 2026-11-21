@@ -133,13 +133,17 @@ for club, data in clubs.items():
     check("scheme_current", "offense.pass_epa", club, resp.get("pass_epa"), o[o["pass"] == 1]["epa"].mean(), 0.02)
     check("scheme_current", "offense.rush_epa", club, resp.get("rush_epa"), o[o["rush"] == 1]["epa"].mean(), 0.02)
 
-# ---- 5. QB season line (current window, look = all) vs the OFFICIAL line ----
+# ---- 5. QB club-stint line (current window, look = all) vs OFFICIAL stats ----
 # nflverse's weekly player stats are the official counting stats: attempts
 # exclude sacks and two-point tries and include spikes. (The 2026-09-29 audit
 # derived attempts from pass_attempt, which counts sacks, and so agreed with a
 # pipeline that understated every completion rate.)
 official = pd.read_parquet(PLAYER)
-official = official[official["season_type"] == "REG"].groupby("player_id")[
+official = official[official["season_type"] == "REG"].copy()
+official["team"] = official["team"].replace(ALIAS)
+# Look profiles are grouped by offense and player. A midseason transfer's
+# earlier club must not be added to the current club's look sample.
+official = official.groupby(["team", "player_id"])[
     ["attempts", "completions", "passing_yards", "passing_tds", "passing_interceptions"]].sum()
 plays = pbp[(pbp["two_point_attempt"].fillna(0) != 1)]
 for club, data in clubs.items():
@@ -147,9 +151,10 @@ for club, data in clubs.items():
         if prof.get("position") != "QB" or prof.get("source_season") != SEASON:
             continue
         allsplit = next((s for s in prof["splits"] if s["look"] == "all"), None)
-        if not allsplit or prof["player_id"] not in official.index:
+        identity = (club, prof["player_id"])
+        if not allsplit or identity not in official.index:
             continue
-        o = official.loc[prof["player_id"]]
+        o = official.loc[identity]
         who = f"{club} {prof['player_name']}"
         check("qb_line", "attempts", who, allsplit.get("attempts"), o["attempts"], 0)
         check("qb_line", "completions", who, allsplit.get("completions"), o["completions"], 0)
@@ -158,7 +163,7 @@ for club, data in clubs.items():
               o["completions"] / o["attempts"] if o["attempts"] else None, 0.002)
         check("qb_line", "yards_per_attempt", who, allsplit.get("yards_per_attempt"),
               o["passing_yards"] / o["attempts"] if o["attempts"] else None, 0.01)
-        q = plays[(plays["passer_player_id"] == prof["player_id"]) & (plays["qb_dropback"] == 1)]
+        q = plays[(plays["posteam"] == club) & (plays["passer_player_id"] == prof["player_id"]) & (plays["qb_dropback"] == 1)]
         check("qb_line", "dropbacks", who, allsplit.get("dropbacks"), len(q), 0)
 
 # ---- 6. Red zone trips (a snap at the 20 or closer, per drive) ----

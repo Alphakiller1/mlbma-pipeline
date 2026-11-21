@@ -81,6 +81,51 @@
     return published.name ? eligible([published]) || null : null;
   }
 
+  function nflSummary(players) {
+    var statuses = [['Out', 'out'], ['Inactive', 'inactive'], ['Doubtful', 'doubtful'],
+      ['Questionable', 'questionable'], ['Did Not Practice', 'DNP'], ['Limited Practice', 'limited']];
+    var summary = statuses.map(function (status) {
+      var count = players.filter(function (player) { return player.status === status[0]; }).length;
+      return count ? count + ' ' + status[1] : '';
+    }).filter(Boolean);
+    var reserve = players.filter(function (player) {
+      return isOut(player.status) && !/^(Out|Inactive)$/.test(player.status);
+    }).length;
+    if (reserve) summary.push(reserve + ' reserve/suspended');
+    return summary.join(' · ') || (players.length ? players.length + ' listed' : 'No designations listed');
+  }
+
+  function applyNflReport(game, side, report, snapshot) {
+    var saved = { away_availability_list: snapshot };
+    var players = report.players.map(function (player) {
+      var prior = designation(saved, 'away', player) || {};
+      return Object.assign({}, player, {
+        status: game.game_state === 'final' && /^(?:Out|Doubtful|Questionable)$/.test(prior.status || '') &&
+          /Practice/.test(player.status) ? prior.status : player.status,
+        value: prior.value, value_recent: prior.value_recent, missed: prior.missed
+      });
+    });
+    (snapshot || []).forEach(function (player) {
+      var durable = /^(ir|injured reserve|pup|suspended|suspension|non.football)\b/i.test(player.status);
+      if ((report.coverage !== 'official' || (durable && !report.has_roster_updates)) &&
+          !designation({ away_availability_list: players }, 'away', player)) players.push(player);
+    });
+    game[side + '_availability_list'] = players;
+    game[side + '_injury_coverage'] = report.coverage;
+    game[side + '_availability'] = nflSummary(players);
+  }
+
+  function nflReport(game, signal) {
+    var source = game.scheme_source || {};
+    var query = new URLSearchParams({ game: game.id, away: game.away, home: game.home,
+      kickoff: game.kickoff_utc, season: source.season || '',
+      week: game.week || source.week || '' });
+    return fetch('/api/nfl-availability?' + query, { cache: 'no-store', signal: signal }).then(function (response) {
+      if (!response.ok) throw new Error('Availability request failed');
+      return response.json();
+    });
+  }
+
   function watch(check, update, shouldContinue) {
     var timer, controller, stopped = false, paused = false, started = false;
     function run() {
@@ -127,6 +172,7 @@
   }
 
   global.ChasePlayerAvailability = {
-    available: available, designation: designation, status: status, isOut: isOut, nflStarter: nflStarter, watch: watch
+    available: available, designation: designation, status: status, isOut: isOut,
+    nflStarter: nflStarter, nflSummary: nflSummary, applyNflReport: applyNflReport, nflReport: nflReport, watch: watch
   };
 })(window);
