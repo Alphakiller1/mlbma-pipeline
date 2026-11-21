@@ -331,7 +331,9 @@
   }
 
   var REPORT_CONFERENCES = {
-    'SEC': 'SEC', 'ACC': 'ACC', 'Big 12': 'B12', 'Big Ten': 'B10', 'Sun Belt': 'SBC', 'Pac-12': 'P12'
+    'SEC': 'SEC', 'ACC': 'ACC', 'Big 12': 'B12', 'Big Ten': 'B10', 'Sun Belt': 'SBC', 'Pac-12': 'P12',
+    'American Athletic': 'American', 'American': 'American', 'Mid-American': 'MAC',
+    'Mountain West': 'MW', 'Conference USA': 'CUSA'
   };
 
   function injuryReport(game, signal) {

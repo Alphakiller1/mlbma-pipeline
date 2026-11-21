@@ -69,6 +69,18 @@ class CfbLiveAvailabilityTests(unittest.TestCase):
             assert.equal(game.teams[1].players[0].status, 'Out For Season');
         """)
 
+    def test_archive_matches_opponent_and_day(self):
+        self.run_js("""
+            import assert from 'node:assert/strict';
+            import { archiveFixture } from './functions/_shared/college_availability.js';
+            const row = { Team: 'Miami (OH)', TeamDisplay: 'Miami', OpponentDisplay: 'at Kent State',
+              Week: 'Tue, 17 Nov 2026 00:00:00 GMT', 'Game Day': 'Out', Player: 'First Player' };
+            const teams = archiveFixture({data:[row, {...row, OpponentDisplay:'at Toledo', Player:'Unrelated Player'}]},
+              new Date('2026-11-18T00:00:00Z'), ['miamioh', 'kentstate']);
+            assert.deepEqual(teams[0].players, [{player:'First Player', status:'Out'}]);
+            assert.equal(teams[1].players, null);
+        """)
+
     def test_official_reports_override_stale_flags_without_scratching_first_half_players(self):
         self.run_js("""
             import assert from 'node:assert/strict';

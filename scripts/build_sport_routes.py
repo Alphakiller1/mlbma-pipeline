@@ -226,7 +226,7 @@ MATCHUPS_JS = r"""
 
 def matchup_page(sport: str) -> str:
     spec = SPORTS[sport]
-    detail_revision = {"nba": "nba-matchup-labels", "cfb": "cfb-live-availability"}.get(sport, "active-desk-audit")
+    detail_revision = {"nba": "nba-matchup-labels", "cfb": "cfb-live-availability-2"}.get(sport, "active-desk-audit")
     detail_assets = f"{STAMP}&amp;rev={detail_revision}"
     adapter_assets = detail_assets if sport in {"cbb", "cfb"} else STAMP
     availability_assets = detail_assets if sport == "cfb" else STAMP

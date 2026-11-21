@@ -9,14 +9,15 @@ const ALIASES = {
   sanjosest: 'sanjosestate', southflorida: 'usf', southerncalifornia: 'usc',
   southernmethodist: 'smu', texaschristian: 'tcu',
   texaselpaso: 'utep', texassanantonio: 'utsa', louisianamonroe: 'ulm', ulmonroe: 'ulm', latech: 'louisianatech',
-  appalachianstate: 'appstate', massachusetts: 'umass'
+  appalachianstate: 'appstate', massachusetts: 'umass', armywestpoint: 'army',
+  niu: 'northernillinois'
 };
 const STATUSES = {
   available: 'Available', probable: 'Probable', questionable: 'Questionable', doubtful: 'Doubtful',
   gametimedecision: 'Game Time Decision', gtd: 'Game Time Decision', out: 'Out',
   out1sthalf: 'Out (1st Half)', outfirsthalf: 'Out (1st Half)', outforseason: 'Out For Season',
   ofs: 'Out For Season', outindefinitely: 'Out Indefinitely', suspended: 'Suspended', susp: 'Suspended',
-  injuredreserve: 'IR', ir: 'IR', exempt: 'Exempt'
+  injuredreserve: 'IR', ir: 'IR', exempt: 'Exempt', outseason: 'Out For Season', outgame: 'Out'
 };
 const SOURCE = {
   SEC: ['SEC', 'https://www.secsports.com/fbreports'],
@@ -24,12 +25,17 @@ const SOURCE = {
   B12: ['Big 12', 'https://big12sports.com/FBReporting'],
   B10: ['Big Ten', 'https://bigten.org/fb/availability-reports/'],
   SBC: ['Sun Belt', 'https://sunbeltsports.org/news/2025/8/11/football-availability-report-new.aspx'],
-  P12: ['Pac-12', 'https://pac-12.com/news/2026/9/11/2026-football-reports.aspx']
+  P12: ['Pac-12', 'https://pac-12.com/news/2026/9/11/2026-football-reports.aspx'],
+  American: ['American Conference', 'https://theamerican.org/sports/2026/8/6/football_player_availability.aspx'],
+  MAC: ['Mid-American Conference', 'https://getsomemaction.com/sports/2026/7/28/FB_0728265050.aspx.aspx'],
+  MW: ['Mountain West', 'https://themw.com/sports/2026/8/21/football_reports.aspx'],
+  CUSA: ['Conference USA', 'https://conferenceusa.com/sports/2025/8/23/FB_0823254134.aspx']
 };
 const CONFERENCE_JSON = {
   SBC: 'https://sbcautostorage.blob.core.windows.net/availability-reports/sunbelt-football/prod/report.json',
   P12: 'https://sbcautostorage.blob.core.windows.net/availability-reports/pac12-football/prod/report.json'
 };
+const FAKTOR_CONFERENCES = new Set(['MW', 'CUSA']);
 
 const text = (value, limit = 100) => typeof value === 'string' ? value.trim().slice(0, limit) : '';
 const key = (value) => text(value).normalize('NFKD').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -61,7 +67,7 @@ export function reportTimestamp(day, time, zone) {
 
 function conferenceTeam(team) {
   if (!team || !Array.isArray(team.rows) || !team.rows.length) return null;
-  const school = collegeTeam(team.teamDisplayName || team.teamName);
+  const school = schoolKey(team.teamDisplayName, team.teamName);
   const players = [];
   for (const row of team.rows) {
     const status = availabilityStatus(row?.status);
@@ -73,6 +79,10 @@ function conferenceTeam(team) {
     players.push({ player: text(match[2], 75), position: text(match[1], 8), status });
   }
   return school && players.length ? { school, players } : null;
+}
+
+function schoolKey(display, name) {
+  return collegeTeam(collegeTeam(name) === 'miamioh' ? name : display || name);
 }
 
 export function conferenceReports(payload) {
@@ -87,7 +97,9 @@ export function conferenceReports(payload) {
     games.push({ date, zone: ZONES[report.conferenceTimeZone], published, teams,
       stage: ({ Initial: 'Initial report', 'Update 1': 'Update 1', 'Update 2': 'Update 2', 'Game Day': 'Game-day report' })[report.ReportType] || 'Availability report' });
   }
-  if (!games.length && Object.keys(payload).length) throw new Error('No valid conference reports');
+  if (!games.length && Object.values(payload).some(report => report?.ReportType !== 'Report Pending')) {
+    throw new Error('No valid conference reports');
+  }
   return games;
 }
 
@@ -110,6 +122,93 @@ export function jsonConferenceReports(payload) {
   });
 }
 
+function htmlText(raw) {
+  const entities = { amp: '&', apos: "'", lt: '<', gt: '>', quot: '"', nbsp: ' ' };
+  return String(raw || '').replace(/<[^>]+>/g, '').replace(/&(#x[0-9a-f]+|#\d+|\w+);/ig, (entity, code) => {
+    if (code[0] !== '#') return Object.hasOwn(entities, code) ? entities[code] : entity;
+    const cp = code[1].toLowerCase() === 'x' ? parseInt(code.slice(2), 16) : Number(code.slice(1));
+    return cp > 0 && cp <= 0x10ffff ? String.fromCodePoint(cp) : entity;
+  }).trim();
+}
+
+export function faktorReports(html) {
+  const games = [];
+  for (const [, card] of html.matchAll(/<article\b[^>]*data-availability-graphic-card[^>]*>([\s\S]*?)<\/article>/gi)) {
+    const kickoff = Date.parse((/data-kickoff-at="([^"]+)"/.exec(card)?.[1] || '').replace(' ', 'T') + 'Z');
+    const published = new Date((/data-updated-at="([^"]+)"/.exec(card)?.[1] || '').replace(' ', 'T') + 'Z');
+    const stage = htmlText(/<h1>([\s\S]*?)<\/h1>/i.exec(card)?.[1]);
+    const teams = [...card.matchAll(/<div class="availability-team-table" aria-label="([^"]+) availability">([\s\S]*?)<\/div>/gi)]
+      .map(([, name, body]) => {
+        const players = [];
+        for (const [, group] of body.matchAll(/<tbody class="availability-status-section">([\s\S]*?)<\/tbody>/gi)) {
+          const status = availabilityStatus(htmlText(/<th\b[^>]*>([\s\S]*?)<\/th>/i.exec(group)?.[1]));
+          if (!status) return null;
+          for (const [, row] of group.matchAll(/<tr class="availability-player-row">([\s\S]*?)<\/tr>/gi)) {
+            const player = htmlText(/<td class="player-cell"[^>]*>([\s\S]*?)<\/td>/i.exec(row)?.[1]);
+            const position = htmlText(/<td class="position-cell"[^>]*>([\s\S]*?)<\/td>/i.exec(row)?.[1]);
+            if (!player) return null;
+            players.push({ player: text(player, 75), position: text(position, 8), status });
+          }
+        }
+        return { school: collegeTeam(htmlText(name)), players: players.length ? players : null };
+      });
+    if (teams.length === 2 && teams.every(team => team?.school) && Number.isFinite(kickoff) &&
+        Number.isFinite(published.valueOf())) games.push({ kickoff, published: published.toISOString(), stage, teams });
+  }
+  if (!games.length && !/\bNO REPORTS\b/i.test(html)) throw new Error('Unexpected public availability report');
+  return games;
+}
+
+async function hdReport(id, endpoint) {
+  const response = await availabilityResponse(VIEWER + endpoint, {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ sport: 'Football', organization: id, conference: id })
+  });
+  return response.json();
+}
+
+async function currentConferenceReports(id) {
+  if (CONFERENCE_JSON[id]) {
+    const response = await availabilityResponse(CONFERENCE_JSON[id], { cache: 'no-store' });
+    return jsonConferenceReports(await response.json());
+  }
+  if (FAKTOR_CONFERENCES.has(id)) {
+    const hub = SOURCE[id][1];
+    const headers = { 'user-agent': 'ChaseAnalytics/1.0 (+https://chase-analytics.com)', accept: 'text/html' };
+    const source = await availabilityResponse(hub, { headers });
+    const link = /<iframe\b[^>]*\bsrc="(https:\/\/faktorsports\.com\/k\/embed\/player-availability\/[^"]+)"/i.exec(await source.text())?.[1];
+    if (!link) throw new Error('Missing public availability viewer');
+    const response = await availabilityResponse(htmlText(link), {
+      headers: { ...headers, referer: new URL(hub).origin + '/' }, redirect: 'manual'
+    });
+    return faktorReports(await response.text());
+  }
+  return conferenceReports(await hdReport(id, 'get-publish-public'));
+}
+
+export function archiveFixture(payload, kickoff, schools) {
+  if (!Array.isArray(payload?.data)) throw new Error('Unexpected availability archive');
+  const days = [wallClock(kickoff), wallClock(kickoff, ZONES.CT), wallClock(kickoff, ZONES.PT)].map(day => day.slice(0, 10));
+  return schools.map((school, index) => {
+    const players = [];
+    const opponent = schools[1 - index];
+    for (const row of payload.data) {
+      const day = new Date(row.Week);
+      const team = schoolKey(row.TeamDisplay, row.Team);
+      const opponentName = schoolKey(
+        text(row.OpponentDisplay).replace(/^(?:at|vs\.?)\s+/i, ''),
+        text(row.Opponent).replace(/^(?:at|vs\.?)\s+/i, '')
+      );
+      const status = availabilityStatus(row['Game Day']);
+      if (team !== school || opponentName !== opponent || !Number.isFinite(day.valueOf()) ||
+          !days.includes(day.toISOString().slice(0, 10)) || !status || status === 'Exempt') continue;
+      const player = text(row.Player, 75);
+      if (player) players.push({ player, status });
+    }
+    return { school, players: players.length ? players : null };
+  });
+}
+
 export function conferenceFixture(games, kickoff, schools, now = Date.now()) {
   return games.filter(game => {
     const sameDate = game.kickoff != null ? Math.abs(kickoff.valueOf() - game.kickoff) <= 3600000 :
@@ -124,18 +223,15 @@ export function collegeConferences(value) {
 }
 
 export async function liveConferenceReport(context, id, kickoff, schools) {
-  const feed = await availabilityFeed(context, 'cfb-conference-v1-' + id, 45, async () => {
-    if (CONFERENCE_JSON[id]) {
-      const response = await availabilityResponse(CONFERENCE_JSON[id], { cache: 'no-store' });
-      return jsonConferenceReports(await response.json());
-    }
-    const response = await availabilityResponse(VIEWER + 'get-publish-public', {
-      method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ sport: 'Football', organization: id, conference: id })
-    });
-    return conferenceReports(await response.json());
-  });
-  const game = conferenceFixture(feed.data, kickoff, schools);
+  const feed = await availabilityFeed(context, 'cfb-conference-v2-' + id, 45, () => currentConferenceReports(id));
+  let game = conferenceFixture(feed.data, kickoff, schools);
+  let checkedAt = feed.checked_at_utc;
+  if (!game && kickoff <= Date.now() && !CONFERENCE_JSON[id] && !FAKTOR_CONFERENCES.has(id)) {
+    const archive = await availabilityFeed(context, 'cfb-archive-v1-' + id, 300,
+      () => hdReport(id, 'get-archive-public'));
+    game = { teams: archiveFixture(archive.data, kickoff, schools), stage: 'Archived game-day report' };
+    checkedAt = archive.checked_at_utc;
+  }
   if (!game) return null;
   const [sources, source_url] = SOURCE[id];
   const reports = Object.fromEntries(schools.flatMap((school, index) => {
@@ -144,7 +240,7 @@ export async function liveConferenceReport(context, id, kickoff, schools) {
     return [[index === 0 ? 'away' : 'home', {
       players: team.players.filter(entry => entry.status !== 'Available'),
       sources, source_url, stage: game.stage, published_at_utc: game.published,
-      checked_at_utc: feed.checked_at_utc, coverage: 'official'
+      checked_at_utc: checkedAt, coverage: 'official'
     }]];
   }));
   return Object.keys(reports).length ? reports : null;
