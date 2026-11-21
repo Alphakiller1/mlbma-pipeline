@@ -23,6 +23,10 @@ inactives and durable roster updates are still incorporated.
 Completed fixtures retain their game-specific participation evidence; current
 roster changes do not erase a player's verified historical appearance. Coverage
 and statistical panels continue to show their own observed season windows.
+Player rate tiles and look splits explicitly identify the current-club sample;
+season counting lines include all clubs. The independent stat auditor compares
+club-stint profiles with the same club's official weekly counts, including
+quarterbacks transferred during the season.
 
 The sources update on their own schedules. A report check is a retrieval time,
 not confirmation of a final inactive list before it is published.
