@@ -9,6 +9,20 @@ from scripts import validate_public_fields as public_fields
 
 
 class CfbCurrentSeasonTests(unittest.TestCase):
+    def test_carried_power_keeps_its_original_observation_time(self):
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "slate.json"
+            previous = {"season": 2026, "generated_at_utc": "2026-11-20T18:10:41Z",
+                        "power": {"through_week": 12, "home_court": 3.063, "league_mean": 26.59}}
+            path.write_text(json.dumps(previous))
+            with patch.object(cfb, "OUT", path):
+                receipt = cfb.power_metadata({}, 2026)
+                self.assertEqual(receipt["data_through_utc"], previous["generated_at_utc"])
+                self.assertEqual(receipt["source_state"], "carried_forward")
+                self.assertEqual(cfb.power_metadata({}, 2027), {})
+
     def test_scheme_parser_keeps_coverage_front_pressure_and_matchup_plan(self):
         page = '''
         <div class="dm-side"><div><div class="name">Away U</div>
