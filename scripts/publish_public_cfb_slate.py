@@ -1178,6 +1178,7 @@ def main() -> int:
         print(f"refusing to write {OUT}: only {with_scheme} of {len(games)} games carry "
               "both CFB scheme profiles; keeping the published slate")
         return 1
+    print(f"  {cfb_depth.allowance_line()}")
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     print(f"wrote {OUT} ({len(games)} games, {with_form} with both unit profiles, "

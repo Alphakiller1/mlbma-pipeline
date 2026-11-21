@@ -54,10 +54,11 @@ jobs:
 
       - name: Build the CFB slate
         env:
-          # Run game, line play, scheme rates, QBs and ball carriers (four
-          # calls a run), and the official scorer's charting (one /plays call
-          # per week not yet cached; the last two weeks refresh daily).
-          # Without it those blocks are absent, never estimated.
+          # Run game, line play, scheme rates, QBs, ball carriers, charting and
+          # the power ranking's plays. Each CFBD response is kept in the cache
+          # below and fetched again only after a game has finished since
+          # (scripts/cfb_depth.py, the allowance note); the games and FPI come
+          # from ESPN. The log's "CFBD:" line counts this run's calls.
           CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
         run: python scripts/publish_public_cfb_slate.py
 
