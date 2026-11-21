@@ -4812,7 +4812,7 @@ function seasonToggle(game) {
       seasonLine([stats], (currentSeasonNo || '') + ' Season') +
       (currentOnly ? nflBackSplits(currentOnly, spec, oppCurrent)
         : pending((currentSeasonNo ? currentSeasonNo + ' splits' : 'Current-season splits') + ' are not published for this player yet.'));
-    return head + pending('Rate tiles and look splits use this club\'s snaps. Season counting lines include all clubs.') +
+    return head + '<p>Rate tiles and look splits use this club\'s snaps. Season counting lines include all clubs.</p>' +
       nflSeasonViews(combinedView, currentView) + '</section>';
   }
 
