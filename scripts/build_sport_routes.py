@@ -342,10 +342,9 @@ def models_page() -> str:
 def main() -> int:
     def nfl_assets(markup: str, sport: str) -> str:
         if sport == "nfl":
-            for asset in ("player_availability_shared.js", "matchup_card.js", "public_game_detail.js"):
-                markup = markup.replace(f"{asset}?v={STAMP}&amp;rev=nfl-live-availability", f"{asset}?v={STAMP}")
-                revision = "nfl-ties-20261121" if asset == "public_game_detail.js" else "nfl-data-20261121"
-                markup = markup.replace(f"{asset}?v={STAMP}", f"{asset}?v={STAMP}&amp;rev={revision}")
+            for asset in ("player_availability_shared.js", "matchup_card.js", "public_game_detail.js", "chase-public.css"):
+                markup = re.sub(rf'({re.escape(asset)}\?v={STAMP})(?:&amp;rev=[^"\']+)?',
+                                rf'\1&amp;rev=nfl-player-20261122', markup)
         return markup
 
     for sport in SPORTS:

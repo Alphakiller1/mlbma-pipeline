@@ -67,7 +67,7 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/validate_public_fields.py
-          git add -- data/public/nfl/slate.json data/public/nfl/team_context.json data/public/nfl/game_logs.json             data/public/nfl/position_coverage.json
+          git add -- data/public/nfl/slate.json data/public/nfl/team_context.json data/public/nfl/game_logs.json             data/public/nfl/position_coverage.json data/public/nfl/practice
           if git diff --cached --quiet; then
             echo "NFL slate is already current; no commit needed."
             exit 0

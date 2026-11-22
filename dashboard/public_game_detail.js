@@ -3546,10 +3546,15 @@
   function lineupPlayer(player, designation) {
     var status = designation.status || 'Active';
     var statusKey = String(status).toLowerCase().replace(/\s+/g, '-');
+    var observed = [];
+    if (player.production && player.production.score != null) observed.push(player.production.position + ' production ' + player.production.score + '/100');
+    if (player.snap_counts) observed.push(player.snap_counts.total + ' season snaps');
     return '<article class="ca-lineup-player" data-position="' + esc(player.position) + '">' +
       playerPortrait(player) + '<div class="ca-lineup-player__identity">' +
       '<span class="ca-lineup-player__position">' + esc(player.position) + '</span>' +
-      '<strong>' + esc(player.name) + '</strong></div>' +
+      '<strong>' + esc(player.name) + '</strong>' +
+      (observed.length ? '<small class="ca-player-production" title="' + esc(nflProductionTitle(player.production)) +
+        '">' + esc(observed.join(' · ')) + '</small>' : '') + '</div>' +
       '<div class="ca-lineup-player__availability"><span class="ca-status-pill" data-status="' +
       esc(statusKey) + '">' + esc(status) + '</span>' +
       (designation.detail ? '<small>' + esc(designation.detail) + '</small>' : '') +
@@ -3637,6 +3642,9 @@
      suspension) sit. */
   var NFL_PRACTICE_WORD = { DNP: 'did not practice', Limited: 'limited practice', Full: 'full practice' };
   function nflPlays(game, entry) {
+    if (/^(?:Out|Inactive|Injured Reserve|IR|PUP|Physically Unable to Perform|Suspended|Suspension|Non.Football)/i.test(entry.status || '')) {
+      return { played: 0, basis: 'Unavailable under the current game or reserve designation', confirmed: true };
+    }
     var rates = game.designation_play_rates;
     if (!rates) return null;
     var st = /^(Out|Doubtful|Questionable)$/.test(entry.status) ? entry.status
@@ -3661,8 +3669,11 @@
         value: entry.value != null ? Number(entry.value) : null,
         value_recent: entry.value_recent != null ? Number(entry.value_recent) : null,
         missed: entry.missed != null ? Number(entry.missed) : null,
+        snaps: entry.snap_counts || null, production: entry.production || null,
+        practice_report: entry.practice_report || null,
         plays: entry.status === 'Inactive' ? 0 : (rate ? rate.played : null),
-        plays_title: entry.status === 'Inactive' ? 'Confirmed inactive for this game' : null,
+        plays_title: rate && rate.confirmed ? rate.basis : null,
+        plays_approximate: Boolean(rate && !rate.confirmed),
         plays_n: rate ? rate.n : null, plays_basis: rate ? rate.basis : null };
     });
     var valueNote = 'Points of the spread his club gives up without him: his position\u2019s price on ' +
@@ -3673,7 +3684,47 @@
       players.length + (players.length === 1 ? ' player' : ' players') +
       '</span><span class="ca-injury-report__chevron" aria-hidden="true"></span></span></summary>' +
       injuryTable(players, { label: club + ' injury report', playsNote: playsNote, valueNote: valueNote,
-        alwaysMetrics: true }) + '</details>';
+        nfl: true, labels: { logged: 'Season Snaps', plays: 'Chance To Play', value: 'Spread Value' },
+        injuryContext: nflPracticeContext, alwaysMetrics: true }) + nflInjuryEvidenceNote(players) + '</details>';
+  }
+
+  function nflPracticeContext(player) {
+    var report = player.practice_report;
+    if (!report || !Array.isArray(report.history)) return '<small class="ca-injury-practice">Practice history unavailable</small>';
+    if (report.listed === false) return '<small class="ca-injury-practice">Not listed in this week\u2019s practice report</small>';
+    var short = { Full: 'FP', Limited: 'LP', DNP: 'DNP', 'Not listed': '—', Pending: 'Pending' };
+    var days = report.history.map(function (day) { return day.day + ' ' + (short[day.status] || day.status); }).join(' · ');
+    var counts = [report.participated + '/' + report.reported + ' practiced'];
+    if (report.full) counts.push(report.full + ' full');
+    if (report.limited) counts.push(report.limited + ' limited');
+    if (report.dnp) counts.push(report.dnp + ' DNP');
+    var count = report.reported ? counts.join(' · ') : 'Participation not yet reported';
+    return '<small class="ca-injury-practice" title="' + esc(report.history.map(function (day) {
+      return day.date + ': ' + day.status;
+    }).join(' · ')) + '">' + esc(days) + '<span>' + esc(count) + '</span></small>';
+  }
+
+  function nflProductionTitle(rating) {
+    if (!rating || rating.score == null) return (rating || {}).reason || 'Position production not published';
+    return rating.score + '/100 production percentile among ' + rating.cohort_size + ' ' + rating.position +
+      ' peers · ' + rating.season + ' season · ' + rating.sample_snaps + ' unit snaps. ' +
+      (rating.components || []).map(function (component) {
+        return component.label + ': ' + Number(component.value).toFixed(2);
+      }).join(' · ') + '. Equal-weight position percentiles; descriptive production, not a film grade.';
+  }
+
+  function nflInjuryEvidenceNote(players) {
+    var reports = players.map(function (player) { return player.practice_report; }).filter(Boolean);
+    var source = reports[0];
+    var link = source && /^https:\/\//.test(source.source_url) ? '<a class="ca-injury-practice-source" href="' +
+      esc(source.source_url) + '" target="_blank" rel="noopener noreferrer">Official weekly practice report</a>' : '';
+    var checked = source && Number.isFinite(Date.parse(source.checked_at_utc)) ? 'Week ' + source.week + ' · Checked ' +
+      new Date(source.checked_at_utc).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric',
+        minute: '2-digit', timeZone: 'America/New_York', timeZoneName: 'short' }) : '';
+    return '<div class="ca-injury-evidence-note">' + link +
+      (checked ? '<span>' + esc(checked) + '</span>' : '') +
+      '<p>FP full · LP limited · DNP did not practice. Chance to play is approximate, based on comparable game-status and latest-practice reports.</p>' +
+      '<p>Position rating compares current-season production with same-position peers. Blocking grades and small samples are not rated.</p></div>';
   }
 
   function lineupBoard(sport, game, side) {
@@ -7155,6 +7206,7 @@ function seasonToggle(game) {
   /* The same report table becomes stacked player rows at narrow widths. */
   var INJURY_METRICS = [
     ['logged', 'Plays Logged', injuryLoggedCell],
+    ['production', 'Position Rating', injuryProductionCell],
     ['plays', 'Play Rate', injuryPlaysCell],
     ['value', 'Value', injuryValueCell],
     ['missed', 'Games Missed', injuryMissedCell]
@@ -7183,7 +7235,8 @@ function seasonToggle(game) {
     // so the two reports read with the same columns side by side.
     var pool = players.concat(options.peers || []);
     var metrics = INJURY_METRICS.filter(function (column) {
-      return (options.alwaysMetrics && column[0] !== 'missed') ||
+      if (column[0] === 'production' && !options.nfl) return false;
+      return (options.alwaysMetrics && (column[0] !== 'missed' || options.nfl)) ||
         pool.some(function (pl) { return pl[column[0]] != null; });
     });
     var cols = '<th scope="col" role="columnheader" class="ca-injury-table__identity">Player</th>' +
@@ -7191,7 +7244,8 @@ function seasonToggle(game) {
       '<th scope="col" role="columnheader">Injury</th>' +
       (options.showDate ? '<th scope="col" role="columnheader" class="ca-injury-table__date">Updated</th>' : '') +
       metrics.map(function (col) {
-        return '<th scope="col" role="columnheader" class="ca-injury-table__stat">' + esc(col[1]) + '</th>';
+        return '<th scope="col" role="columnheader" class="ca-injury-table__stat">' +
+          esc((options.labels || {})[col[0]] || col[1]) + '</th>';
       }).join('');
     var rows = players.slice().sort(function (a, b) {
       return Number(availability.isOut(b.status)) - Number(availability.isOut(a.status));
@@ -7206,10 +7260,10 @@ function seasonToggle(game) {
         injuryCell('', 'ca-injury-table__designation', injuryStatus(pl)) +
         injuryCell('Injury', 'ca-injury-table__injury', injury, options.injuryContext ? '' : pl.detail) +
         (options.showDate ? injuryCell('Updated', 'ca-injury-table__date', esc(date)) : '') +
-        metrics.map(function (col) { return col[2](pl, col[1], options); }).join('') + '</tr>';
+        metrics.map(function (col) { return col[2](pl, (options.labels || {})[col[0]] || col[1], options); }).join('') + '</tr>';
     }).join('');
     return '<div class="ca-injury-table-wrap"><table class="ca-injury-table" role="table" aria-label="' + esc(options.label) +
-      '" data-metrics="' + metrics.length + '"' + (options.showDate ? ' data-dated' : '') + '>' +
+      '" data-metrics="' + metrics.length + '"' + (options.nfl ? ' data-sport="nfl"' : '') + (options.showDate ? ' data-dated' : '') + '>' +
       '<thead role="rowgroup"><tr role="row">' + cols + '</tr></thead><tbody role="rowgroup">' + rows +
       '</tbody>' + injuryExpectedRow(players, 2 + Number(Boolean(options.showDate)) + metrics.length,
         metrics.some(function (col) { return col[0] === 'value'; })) + '</table></div>';
@@ -7226,7 +7280,15 @@ function seasonToggle(game) {
      place among his roster's players by the same count (the pill carries the
      colour; CFB values stay neutral) and his games with a line. Linemen are
      not credited in a box score: no line reads "No line". */
-  function injuryLoggedCell(pl, label) {
+  function injuryLoggedCell(pl, label, options) {
+    if (options && options.nfl) {
+      var snaps = pl.snaps;
+      if (!snaps) return injuryMetricCell(label, 'Not published', 'Current-season snap counts have not been matched to this player', true);
+      var title = snaps.season + ' regular-season snaps across all clubs: ' + snaps.offense + ' offense, ' +
+        snaps.defense + ' defense, ' + snaps.special_teams + ' special teams · nflverse / Pro Football Reference';
+      return injuryMetricCell(label, esc(String(snaps.total)) + '<small class="ca-injury-snap-games">' +
+        esc(snaps.games + (snaps.games === 1 ? ' game' : ' games')) + '</small>', title);
+    }
     var l = pl.logged;
     if (!l) {
       return injuryMetricCell(label, 'No line',
@@ -7242,12 +7304,20 @@ function seasonToggle(game) {
       '<small class="ca-qb-volume">' + esc(l.games + (l.games === 1 ? ' game' : ' games')) + '</small>', title);
   }
 
+  function injuryProductionCell(pl, label) {
+    var rating = pl.production;
+    if (!rating || rating.score == null) return injuryMetricCell(label, 'Not rated', nflProductionTitle(rating), true);
+    var tone = rankTone(101 - Number(rating.score), 100);
+    return injuryMetricCell(label, '<span class="' + tone + '">' + esc(rating.score + '/100') +
+      '</span><small class="ca-injury-snap-games">' + esc(rating.position + ' percentile') + '</small>', nflProductionTitle(rating));
+  }
+
   function injuryPlaysCell(pl, label, options) {
     if (pl.plays == null) return injuryMetricCell(label, 'No history', '', true);
     var pct = Math.round(pl.plays * 100);
     var title = pl.plays_title || ('Listed ' + (pl.plays_basis || pl.status) + ': played ' + pct + '%' +
       (pl.plays_n ? ' of ' + pl.plays_n + ' listings' : '') + (options.playsNote ? ' · ' + options.playsNote : ''));
-    return injuryMetricCell(label, pct + '%', title);
+    return injuryMetricCell(label, (pl.plays_approximate ? '~' : '') + pct + '%', title);
   }
   function injuryPoints(v) {
     return (v < 0 ? '-' : '') + Math.abs(v).toFixed(1);
@@ -7265,7 +7335,8 @@ function seasonToggle(game) {
      such a player on the club's last three games (value_recent). */
   function injuryMissedCell(pl, label) {
     if (pl.missed == null) return injuryMetricCell(label, 'No record', '', true);
-    return injuryMetricCell(label, esc(pl.missed), 'Games in a row his club has played without a line from him');
+    return injuryMetricCell(label, esc(pl.missed), pl.snaps ? 'Consecutive club games without an offensive, defensive or special-teams snap' :
+      'Games in a row his club has played without a line from him');
   }
   function injurySits(pl) {
     if (pl.plays != null) return 1 - pl.plays;

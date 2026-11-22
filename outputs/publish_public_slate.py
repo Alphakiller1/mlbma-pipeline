@@ -16,7 +16,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from outputs import nfl_injury_value, nfl_public_context, nfl_venues
+from outputs import nfl_injury_value, nfl_player_evidence, nfl_practice_report, nfl_public_context, nfl_venues
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -887,6 +887,9 @@ def parse_espn_nfl_injuries(payload: dict) -> dict[str, list[dict]]:
                 "position": ((athlete.get("position") or {}).get("abbreviation")) or "",
                 "status": status,
                 "detail": detail,
+                **({"updated_at_utc": item["date"]} if item.get("date") else {}),
+                **({"announced_out": True} if re.search(r"downgraded to out|ruled out|will not play|won.t play|\bplaced\b.{0,120}\binjured reserve\b",
+                     str(item.get("shortComment") or ""), re.I) else {}),
             })
         if team:
             by_team[team] = notable
@@ -927,7 +930,7 @@ def merge_nfl_injuries(espn: dict[str, list[dict]],
     return by_team
 
 
-def attach_nfl_values(injuries: dict[str, list[dict]], season: int) -> int:
+def attach_nfl_values(injuries: dict[str, list[dict]], season: int, evidence: dict | None = None) -> int:
     """Each listed player's value to the spread (outputs/nfl_injury_value.py):
     his position group's price on closing lines times his snap share when he
     plays, the part of it on the club's last three games (value_recent), and
@@ -937,20 +940,27 @@ def attach_nfl_values(injuries: dict[str, list[dict]], season: int) -> int:
         table = nfl_injury_value.team_values(season)
     except Exception as exc:  # noqa: BLE001
         print(f"  WARNING nfl injury values unavailable: {exc}")
-        return 0
+        table = {}
+    evidence = evidence or {}
     found = 0
     for team, entries in injuries.items():
         people = table.get(team, {})
         for entry in entries:
-            row = people.get(nfl_injury_value.name_key(entry.get("name", "")))
+            key = nfl_injury_value.name_key(entry.get("name", ""))
+            observed = evidence.get(team, {}).get(key)
+            row = people.get(key) or (people.get(nfl_injury_value.name_key(observed["source_name"])) if observed else None)
             entry["value"] = row["value"] if row else None
             if row:
                 entry["value_recent"], entry["missed"] = row.get("value_recent"), row.get("missed")
+            if observed:
+                entry["snap_counts"], entry["production"] = observed["snap_counts"], observed["production"]
+                entry["missed"] = observed["missed"]
             found += row is not None
     return found
 
 
-def fetch_nfl_injuries(games: set[tuple[str, str]] | None = None) -> dict:
+def fetch_nfl_injuries(games: set[tuple[str, str]] | None = None, *, practice: dict | None = None,
+                       fixtures: list[dict] | None = None) -> dict:
     """Designations keyed by team abbreviation: the league's official report
     where it has been issued, ESPN's feed for roster statuses and for clubs
     whose report is not out yet.
@@ -967,6 +977,8 @@ def fetch_nfl_injuries(games: set[tuple[str, str]] | None = None) -> dict:
     if not espn and not official:
         return {}
     merged = merge_nfl_injuries(espn, official, games)
+    if practice is not None and fixtures is not None:
+        nfl_practice_report.enrich(merged, espn, practice, fixtures)
     used = [pair for pair in official if games is None or pair in games]
     print(f"  nfl injuries: official report for {len(used)} games, ESPN feed for {len(espn)} clubs")
     return merged
@@ -1640,6 +1652,10 @@ def write_if_better(sport: str, producer: dict, dest: Path) -> bool:
         print(f"  skip {sport}: empty producer; keeping {dest}")
         return False
     out = project_slate(sport, producer)
+    if sport == "nfl":
+        # ESPN can reorder unchanged fixtures between fetches. Keep generated
+        # evidence diffs reviewable; the desk orders cards by kickoff itself.
+        out["games"].sort(key=lambda game: str(game.get("id", "")))
     assert_clean(out)
     if sport == "nfl":
         for note in patch_club_gaps(out, dest):
@@ -1675,11 +1691,46 @@ def publish_nfl() -> bool:
                          for c in comp.get("competitors") or []}
                 if sides.get("away") and sides.get("home"):
                     pairs.add((sides["away"], sides["home"]))
-        injuries = fetch_nfl_injuries(pairs)
         season = int(((espn.get("season") or {}).get("year")) or datetime.now(ET).year)
-        valued = attach_nfl_values(injuries, season)
+        week = int((espn.get("week") or {}).get("number") or (context.get("source") or {}).get("week") or 0)
+        fixtures = []
+        for event in espn.get("events") or []:
+            comp = (event.get("competitions") or [{}])[0]
+            sides = {c.get("homeAway"): (c.get("team") or {}).get("abbreviation") for c in comp.get("competitors") or []}
+            if sides.get("away") and sides.get("home") and event.get("date"):
+                fixtures.append({"away": sides["away"], "home": sides["home"], "kickoff_utc": event["date"]})
+        archive = PUBLIC_DIR / "nfl" / "practice" / f"{season}-week-{week}.json"
+        previous = json.loads(archive.read_text()) if archive.exists() else None
+        practice = nfl_practice_report.collect(fixtures, season, week, previous) if week else {"teams": {}}
+        if practice["teams"]:
+            archive.parent.mkdir(parents=True, exist_ok=True)
+            archive.write_text(json.dumps(practice, indent=2) + "\n", encoding="utf-8")
+        print(f"  nfl practice: {len(practice['teams'])} clubs with daily participation")
+        for warning in practice.get("warnings", []):
+            print(f"  WARNING {warning}")
+        injuries = fetch_nfl_injuries(pairs, practice=practice, fixtures=fixtures)
+        try:
+            evidence = nfl_player_evidence.load(season)
+        except Exception as exc:  # noqa: BLE001
+            print(f"  WARNING nfl player snap/production evidence unavailable: {exc}")
+            evidence = {}
+        valued = attach_nfl_values(injuries, season, evidence)
         print(f"  nfl injury values: {valued} of {sum(len(v) for v in injuries.values())} listed players")
         nfl = nfl_producer_from_espn(espn, injuries, context, rest)
+        # The same observed profile accompanies listed starters and reserves.
+        try:
+            for game in nfl["games"]:
+                for side in ("away", "home"):
+                    people = list(game.get(side + "_players") or [])
+                    for unit in (game.get(side + "_lineups") or {}).values():
+                        if isinstance(unit, dict):
+                            people.extend(unit.get("players") or [])
+                    for player in people:
+                        row = evidence.get(game[side], {}).get(nfl_injury_value.name_key(player.get("name", "")))
+                        if row:
+                            player["snap_counts"], player["production"] = row["snap_counts"], row["production"]
+        except Exception as exc:  # noqa: BLE001
+            print(f"  WARNING nfl lineup player evidence unavailable: {exc}")
         nfl["designation_play_rates"] = nfl_injury_value.play_rates()
         dvoa = fetch_ftn_dvoa(datetime.now(ET).year)
         attached = attach_nfl_dvoa(nfl, dvoa)

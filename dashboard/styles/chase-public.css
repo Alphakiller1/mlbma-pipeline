@@ -2929,6 +2929,7 @@ body[data-ca-product="research"] {
     grid-template-rows: subgrid;
     align-items: start;
   }
+  body[data-sport="nfl"] .ca-lineup-duo:has(.ca-injury-report-meta) > .ca-lineup-board { grid-row: span 5; }
 }
 
 @media (max-width: 720px) {
@@ -6384,6 +6385,33 @@ body[data-sport="nba"] .ca-detail-section__head p {
 }
 
 .ca-injury-table__date { width: 1%; white-space: nowrap; }
+.ca-injury-table[data-sport="nfl"] .ca-injury-table__identity { width: 22%; }
+.ca-injury-table[data-sport="nfl"] .ca-injury-table__designation { width: 15%; }
+.ca-injury-table[data-sport="nfl"] .ca-injury-table__stat { width: 4.5rem; }
+.ca-injury-table[data-sport="nfl"] .ca-injury-table__injury { min-width: 24ch; }
+.ca-injury-table[data-sport="nfl"] th.ca-injury-table__stat { white-space: normal; }
+.ca-injury-practice {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--text-secondary);
+  font-size: var(--type-meta);
+  line-height: 1.5;
+  white-space: normal;
+}
+.ca-injury-practice span,
+.ca-injury-snap-games,
+.ca-player-production { display: block; }
+.ca-player-production {
+  grid-column: 1 / -1;
+  min-width: 0;
+  color: var(--text-secondary);
+  font-size: var(--type-meta);
+  line-height: 1.3;
+  white-space: normal;
+}
+.ca-injury-evidence-note { padding: var(--space-2); color: var(--text-secondary); font-size: var(--type-meta); }
+.ca-injury-evidence-note p { margin: var(--space-1) 0; }
+.ca-injury-practice-source { display: inline-flex; align-items: center; min-height: 44px; }
 /* A word breaks only when it cannot fit ("Undisclosed" never splits). */
 .ca-injury-table__injury { overflow-wrap: break-word; word-break: normal; }
 @media (min-width: 721px) { .ca-injury-table__injury { min-width: 11ch; } }
@@ -6454,6 +6482,8 @@ body[data-sport="nba"] .ca-detail-section__head p {
   .ca-injury-table[data-metrics="2"] .ca-injury-table__stat { grid-column: span 3; }
   .ca-injury-table[data-metrics="3"] .ca-injury-table__stat { grid-column: span 2; }
   .ca-injury-table[data-metrics="4"] .ca-injury-table__stat { grid-column: span 3; }
+  .ca-injury-table[data-metrics="5"] .ca-injury-table__stat { grid-column: span 3; }
+  .ca-injury-table[data-metrics="5"] tbody tr > :last-child { grid-column: span 6; }
 
   .ca-injury-table__field {
     display: block;
@@ -6480,11 +6510,11 @@ body[data-sport="nba"] .ca-detail-section__head p {
 /* Four figures (CFB adds Plays Logged, 2026-11-21) need the stacked card at a
    wider width: in a 40rem panel the seven columns left the name two letters. */
 @container (max-width: 48rem) {
-  .ca-injury-table[data-metrics="4"],
-  .ca-injury-table[data-metrics="4"] tbody,
-  .ca-injury-table[data-metrics="4"] tfoot { display: block; }
-  .ca-injury-table[data-metrics="4"] thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  .ca-injury-table[data-metrics="4"] tbody tr {
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]),
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]) tbody,
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]) tfoot { display: block; }
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]) thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]) tbody tr {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
     align-items: start;
@@ -6492,16 +6522,16 @@ body[data-sport="nba"] .ca-detail-section__head p {
     padding: var(--space-3) var(--space-2);
     border-bottom: 1px solid var(--border-subtle);
   }
-  .ca-injury-table[data-metrics="4"] tbody tr > :is(th, td),
-  .ca-injury-table[data-metrics="4"] tbody .ca-injury-table__stat { min-width: 0; width: auto; padding: 0; border: 0; text-align: left; }
-  .ca-injury-table[data-metrics="4"] .ca-injury-table__identity { grid-column: span 4; align-self: center; }
-  .ca-injury-table[data-metrics="4"] .ca-injury-table__designation { grid-column: span 2; justify-self: end; align-self: center; }
-  .ca-injury-table[data-metrics="4"] .ca-injury-table__designation .ca-injury-status { padding-inline: var(--space-1); font-size: var(--type-floor); }
-  .ca-injury-table[data-metrics="4"] .ca-injury-table__injury { grid-column: 1 / -1; }
-  .ca-injury-table[data-metrics="4"][data-dated] .ca-injury-table__injury { grid-column: span 4; }
-  .ca-injury-table[data-metrics="4"] .ca-injury-table__date { grid-column: span 2; white-space: normal; }
-  .ca-injury-table[data-metrics="4"] .ca-injury-table__stat { grid-column: span 3; }
-  .ca-injury-table[data-metrics="4"] .ca-injury-table__field {
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]) tbody tr > :is(th, td),
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]) tbody .ca-injury-table__stat { min-width: 0; width: auto; padding: 0; border: 0; text-align: left; }
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]) .ca-injury-table__identity { grid-column: span 4; align-self: center; }
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]) .ca-injury-table__designation { grid-column: span 2; justify-self: end; align-self: center; }
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]) .ca-injury-table__designation .ca-injury-status { padding-inline: var(--space-1); font-size: var(--type-floor); }
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]) .ca-injury-table__injury { grid-column: 1 / -1; }
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"])[data-dated] .ca-injury-table__injury { grid-column: span 4; }
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]) .ca-injury-table__date { grid-column: span 2; white-space: normal; }
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]) .ca-injury-table__stat { grid-column: span 3; }
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]) .ca-injury-table__field {
     display: block;
     margin-bottom: 2px;
     font-family: var(--font-ui);
@@ -6511,10 +6541,10 @@ body[data-sport="nba"] .ca-detail-section__head p {
     text-transform: none;
     white-space: normal;
   }
-  .ca-injury-table[data-metrics="4"] td.ca-injury-table__stat.is-missing { white-space: normal; }
-  .ca-injury-table[data-metrics="4"]:not([data-dated]) .ca-injury-table__injury .ca-injury-table__field { display: inline; margin-inline-end: var(--space-2); }
-  .ca-injury-table[data-metrics="4"] .ca-injury-total { display: flex; justify-content: space-between; }
-  .ca-injury-table[data-metrics="4"] .ca-injury-total > * { padding-inline: var(--space-2); }
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]) td.ca-injury-table__stat.is-missing { white-space: normal; }
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]):not([data-dated]) .ca-injury-table__injury .ca-injury-table__field { display: inline; margin-inline-end: var(--space-2); }
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]) .ca-injury-total { display: flex; justify-content: space-between; }
+  .ca-injury-table:is([data-metrics="4"], [data-metrics="5"]) .ca-injury-total > * { padding-inline: var(--space-2); }
 }
 
 /* Five-man units: five surnames wrap inside the unit column rather than
