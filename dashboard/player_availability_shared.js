@@ -98,16 +98,26 @@
   function applyNflReport(game, side, report, snapshot) {
     var saved = { away_availability_list: snapshot };
     var players = report.players.map(function (player) {
-      var prior = designation(saved, 'away', player) || {};
+      var prior = Object.assign({}, designation(saved, 'away', player) || {}, designation(game, side, player) || {});
+      var sameWeek = prior.practice_report && player.practice_report &&
+        prior.practice_report.season === player.practice_report.season && prior.practice_report.week === player.practice_report.week;
+      var keepLaterOut = report.has_dated_updates === false && sameWeek && prior.announced_out && Number.isFinite(Date.parse(prior.updated_at_utc)) &&
+        !(Date.parse(player.updated_at_utc) >= Date.parse(prior.updated_at_utc));
       return Object.assign({}, player, {
-        status: game.game_state === 'final' && /^(?:Out|Doubtful|Questionable)$/.test(prior.status || '') &&
-          /Practice/.test(player.status) ? prior.status : player.status,
-        value: prior.value, value_recent: prior.value_recent, missed: prior.missed
+        status: keepLaterOut || (game.game_state === 'final' && /^(?:Out|Doubtful|Questionable)$/.test(prior.status || '') &&
+          /Practice/.test(player.status)) ? prior.status : player.status,
+        announced_out: keepLaterOut ? true : player.announced_out,
+        updated_at_utc: keepLaterOut ? prior.updated_at_utc : player.updated_at_utc,
+        value: prior.value, value_recent: prior.value_recent, missed: prior.missed,
+        snap_counts: player.snap_counts || prior.snap_counts, production: player.production || prior.production,
+        practice_report: player.practice_report || prior.practice_report
       });
     });
-    (snapshot || []).forEach(function (player) {
+    (game[side + '_availability_list'] || []).concat(snapshot || []).forEach(function (player) {
       var durable = /^(ir|injured reserve|pup|suspended|suspension|non.football)\b/i.test(player.status);
-      if ((report.coverage !== 'official' || (durable && !report.has_roster_updates)) &&
+      var laterOut = report.has_dated_updates === false && player.announced_out && player.practice_report &&
+        report.season === player.practice_report.season && report.week === player.practice_report.week;
+      if ((laterOut || report.coverage !== 'official' || (durable && !report.has_roster_updates)) &&
           !designation({ away_availability_list: players }, 'away', player)) players.push(player);
     });
     game[side + '_availability_list'] = players;

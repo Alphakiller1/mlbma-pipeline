@@ -338,6 +338,11 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                 expanders.nth(0).press("Enter")
                 check(f"{width}px first expansion opens", expanders.nth(0).get_attribute("aria-expanded") == "true")
                 expanders.nth(1).click()
+                # A live source update may repaint between input and the
+                # class count. Require the second control to finish opening.
+                page.wait_for_function("""() => document.querySelectorAll(
+                    '#openingCbbSlate .ca-matchup-card__expand-btn')[1]?.getAttribute('aria-expanded') === 'true'
+                    """, timeout=timeout_ms)
                 open_count = page.locator("#openingCbbSlate .ca-matchup-card.is-expanded").count()
                 check(f"{width}px one expansion at a time", open_count == 1, f"open={open_count}")
             context.close()

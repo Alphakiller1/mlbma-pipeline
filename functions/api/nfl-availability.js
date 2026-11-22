@@ -1,7 +1,9 @@
 import { json } from '../_shared/http.js';
 import { availabilityFeed, availabilityResponse } from '../_shared/availability_cache.js';
+import { nflPracticeUrl, parseNflPractice, nflPostPracticeUpdate } from '../_shared/nfl_practice.js';
 
 const ESPN = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=';
+const ESPN_INJURIES = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/injuries';
 const NFL = 'https://www.nfl.com/injuries/league/';
 const TEAM_ALIASES = { WAS: 'WSH', AZ: 'ARI', JAC: 'JAX' };
 const PRACTICE = {
@@ -80,17 +82,41 @@ export function espnNflFixture(payload) {
     week: Number(header.week), listed, kickoff, injuries };
 }
 
-export function mergeNflReports(official, updates) {
+export function espnNflLeagueUpdates(payload) {
+  const reports = {};
+  for (const club of payload.injuries || []) {
+    for (const row of club.injuries || []) {
+      const code = teamCode(row.athlete?.team?.abbreviation || club.team?.abbreviation);
+      const name = row.athlete?.displayName, status = String(row.status || ''), stamp = Date.parse(row.date);
+      if (!/^[A-Z]{2,3}$/.test(code || '') || !name || !Number.isFinite(stamp) || stamp > Date.now() + 60000 ||
+          (!ROSTER.test(status) && !GAME_STATUS[status.toLowerCase()])) continue;
+      const announced = /downgraded to out|ruled out|will not play|won.t play|\bplaced\b.{0,120}\binjured reserve\b/i.test(row.shortComment || '');
+      (reports[code] ||= []).push({ name, status, position: row.athlete?.position?.abbreviation || '',
+        updated_at_utc: new Date(stamp).toISOString(), roster: ROSTER.test(status),
+        ...(announced ? { announced_out: true } : {}) });
+    }
+  }
+  return reports;
+}
+
+export function mergeNflReports(official, updates, practices = {}, kickoff) {
   const rows = new Map((official || []).map(row => [playerKey(row.name), row]));
   // A report clearing every player is still authoritative for this fixture.
   const hasOfficial = Array.isArray(official);
   for (const next of updates || []) {
     const key = playerKey(next.name), prior = rows.get(key);
-    if (next.inactive || (next.roster && !prior) || (!hasOfficial && !next.roster && GAME_STATUS[next.status.toLowerCase()])) {
-      rows.set(key, { ...next, practice: prior?.practice || null });
+    const newer = nflPostPracticeUpdate(next, practices[key] || Object.values(practices)[0], kickoff);
+    if (next.inactive || (next.roster && (!prior || newer)) ||
+        ((!hasOfficial || newer) && !next.roster && GAME_STATUS[next.status.toLowerCase()])) {
+      rows.set(key, { ...prior, ...next, practice: prior?.practice || null,
+        announced_out: Boolean(next.announced_out || next.inactive || /^Out$/i.test(next.status)) });
     }
   }
-  return [...rows.values()].filter(row => row.status);
+  const fallback = Object.values(practices)[0];
+  return [...rows.values()].filter(row => row.status).map(row => ({ ...row,
+    ...(practices[playerKey(row.name)] ? { practice_report: practices[playerKey(row.name)] } :
+      fallback ? { practice_report: { listed: false, season: fallback.season, week: fallback.week,
+        source_url: fallback.source_url, checked_at_utc: fallback.checked_at_utc, history: [] } } : {}) }));
 }
 
 export async function onRequestGet(context) {
@@ -103,7 +129,7 @@ export async function onRequestGet(context) {
       teams[0] === teams[1] || !Number.isFinite(kickoff)) return json({ status: 'invalid_fixture' }, 400);
   if (Math.abs(delta) > 7 * 24 * HOUR) return json({ status: 'not_published' });
   let failure = false;
-  let espn, nfl, sourceUrl;
+  let espn, nfl, club, league, sourceUrl;
   try {
     espn = await availabilityFeed(context, 'nfl-fixture-v1-' + id, 45,
       async () => espnNflFixture(await (await availabilityResponse(ESPN + id)).json()));
@@ -125,16 +151,45 @@ export async function onRequestGet(context) {
     } catch (_) { failure = true; }
   }
   const fixture = nfl?.data?.[teams.join('@')];
+  try {
+    league = await availabilityFeed(context, 'nfl-league-dated-updates-v1', 45, async () =>
+      espnNflLeagueUpdates(await (await availabilityResponse(ESPN_INJURIES)).json()));
+  } catch (_) { /* Keep the fixture and official reports when the news feed is unavailable. */ }
+  if (Number.isInteger(year) && year >= 2020 && year <= new Date().getUTCFullYear() &&
+      Number.isInteger(week) && week >= 1 && week <= 22) {
+    for (const team of [teams[1], teams[0]]) {
+      try {
+        club = await availabilityFeed(context, 'nfl-practice-v1-' + year + '-' + kind + week + '-' + team, 300, async () => {
+          const url = nflPracticeUrl(team, week, kind);
+          const page = await availabilityResponse(url, { headers: { 'user-agent': 'ChaseAnalytics/1.0 (+https://chase-analytics.com)' } });
+          const parsed = parseNflPractice(await page.text(), { season: year, week, kind, kickoff, sourceUrl: url });
+          if (!teams.every(code => parsed[code])) throw new Error('Club report does not match fixture');
+          return parsed;
+        });
+        break;
+      } catch (_) { /* The league report remains usable when a club site is down. */ }
+    }
+  }
   const reports = {};
   teams.forEach((code, i) => {
-    const official = fixture?.[code], updates = espn?.data?.injuries?.[code];
-    const players = mergeNflReports(official, updates);
+    const official = fixture?.[code];
+    const dated = new Map();
+    for (const update of [...(espn?.data?.injuries?.[code] || []), ...(league?.data?.[code] || [])]) {
+      const stamp = Date.parse(update.updated_at_utc);
+      if (!(stamp <= Math.min(Date.now() + 60000, kickoff + 20 * 60000))) continue;
+      const key = playerKey(update.name), prior = dated.get(key);
+      if (!prior || stamp >= Date.parse(prior.updated_at_utc)) dated.set(key, update);
+    }
+    const updates = [...dated.values()];
+    const players = mergeNflReports(official, updates, club?.data?.[code], kickoff);
     if (!official && !players.length) return;
     reports[i === 0 ? 'away' : 'home'] = {
       players,
-      has_roster_updates: Array.isArray(updates),
+      season: year, week, has_dated_updates: Boolean(league?.data),
+      has_roster_updates: Array.isArray(espn?.data?.injuries?.[code]) || Array.isArray(league?.data?.[code]),
       coverage: official ? 'official' : 'secondary',
-      sources: official ? 'NFL official report' + (players.some(row => row.updated_at_utc) ? ' + ESPN matchup updates' : '') : 'ESPN matchup updates',
+      sources: official ? 'NFL official report' + (club?.data?.[code] ? ' + club practice reports' : '') +
+        (players.some(row => row.updated_at_utc) ? ' + ESPN matchup updates' : '') : 'ESPN matchup updates',
       source_url: official ? sourceUrl : 'https://www.espn.com/nfl/game/_/gameId/' + id,
       checked_at_utc: nfl?.checked_at_utc || espn?.checked_at_utc
     };
