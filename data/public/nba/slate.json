@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-21",
- "generated_at_utc": "2026-11-22T01:36:44+00:00",
+ "generated_at_utc": "2026-11-22T02:15:50+00:00",
  "data_through_utc": "2026-11-21T18:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -4244,13 +4244,13 @@
      "value": 1.17
     },
     {
-     "player_id": "4697268",
-     "player_name": "Kam Jones",
+     "player_id": "3133628",
+     "player_name": "Myles Turner",
      "value": 1.1
     },
     {
-     "player_id": "3133628",
-     "player_name": "Myles Turner",
+     "player_id": "4697268",
+     "player_name": "Kam Jones",
      "value": 1.1
     },
     {
@@ -8563,8 +8563,8 @@
    "id": "401910024",
    "sport": "nba",
    "season": 2027,
-   "game_state": "live",
-   "status_detail": "5:51 - 3rd",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-11-22T00:30Z",
    "away": "POR",
    "home": "NY",
@@ -8574,12 +8574,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/ny.png",
    "away_color": "#e03a3e",
    "home_color": "#1d428a",
-   "away_record": "10-5",
-   "home_record": "9-6",
+   "away_record": "10-6",
+   "home_record": "10-6",
    "away_split_record": "7-3",
    "home_split_record": "4-3",
-   "away_score": 59,
-   "home_score": 72,
+   "away_score": 96,
+   "home_score": 97,
    "venue": "Madison Square Garden",
    "venue_city": "New York, NY",
    "broadcast": "NBA TV / KUNP 16 / BlazerVision",
@@ -16721,8 +16721,8 @@
    "id": "401910025",
    "sport": "nba",
    "season": 2027,
-   "game_state": "live",
-   "status_detail": "24.8 - 2nd",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-11-22T01:00Z",
    "away": "LAC",
    "home": "DAL",
@@ -16732,12 +16732,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/dal.png",
    "away_color": "#c8102e",
    "home_color": "#0064b1",
-   "away_record": "4-10",
-   "home_record": "8-7",
+   "away_record": "4-11",
+   "home_record": "9-7",
    "away_split_record": "0-6",
    "home_split_record": "6-2",
-   "away_score": 44,
-   "home_score": 49,
+   "away_score": 100,
+   "home_score": 110,
    "venue": "American Airlines Center",
    "venue_city": "Dallas, TX",
    "broadcast": "KFAA-TV / MavsTV / ClipperVision",
@@ -20890,13 +20890,13 @@
      "value": 0.61
     },
     {
-     "player_id": "5105832",
-     "player_name": "Nick Martinelli",
+     "player_id": "4398390",
+     "player_name": "Jalen Pickett",
      "value": 0.15
     },
     {
-     "player_id": "4398390",
-     "player_name": "Jalen Pickett",
+     "player_id": "5105832",
+     "player_name": "Nick Martinelli",
      "value": 0.15
     }
    ],
@@ -24961,8 +24961,8 @@
    "id": "401910026",
    "sport": "nba",
    "season": 2027,
-   "game_state": "live",
-   "status_detail": "Halftime",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-11-22T01:00Z",
    "away": "MEM",
    "home": "MIN",
@@ -24972,12 +24972,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/min.png",
    "away_color": "#5d76a9",
    "home_color": "#266092",
-   "away_record": "12-4",
-   "home_record": "11-5",
+   "away_record": "12-5",
+   "home_record": "12-5",
    "away_split_record": "8-0",
    "home_split_record": "7-3",
-   "away_score": 46,
-   "home_score": 56,
+   "away_score": 95,
+   "home_score": 104,
    "venue": "Target Center",
    "venue_city": "Minneapolis, MN",
    "broadcast": "DAZN MIN / DAZN MEM",
@@ -33438,8 +33438,8 @@
    "id": "401910027",
    "sport": "nba",
    "season": 2027,
-   "game_state": "live",
-   "status_detail": "2:31 - 2nd",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-11-22T01:00Z",
    "away": "NO",
    "home": "SA",
@@ -33449,12 +33449,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/sa.png",
    "away_color": "#0a2240",
    "home_color": "#c4ced4",
-   "away_record": "5-12",
-   "home_record": "13-3",
+   "away_record": "5-13",
+   "home_record": "14-3",
    "away_split_record": "1-5",
    "home_split_record": "6-3",
-   "away_score": 45,
-   "home_score": 57,
+   "away_score": 91,
+   "home_score": 114,
    "venue": "Frost Bank Center",
    "venue_city": "San Antonio, TX",
    "broadcast": "DAZN SAS / GCSEN / Pelicans.com",
@@ -41960,8 +41960,8 @@
    "id": "401910028",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/21 - 10:00 PM EST",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-11-22T03:00Z",
    "away": "BOS",
    "home": "SAC",
@@ -41971,12 +41971,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/sac.png",
    "away_color": "#008348",
    "home_color": "#5a2d81",
-   "away_record": "11-4",
-   "home_record": "1-14",
+   "away_record": "11-5",
+   "home_record": "2-14",
    "away_split_record": "5-3",
    "home_split_record": "0-9",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 96,
+   "home_score": 97,
    "venue": "Golden 1 Center",
    "venue_city": "Sacramento, CA",
    "broadcast": "NBA TV",
@@ -46115,13 +46115,13 @@
      "value": 1.17
     },
     {
-     "player_id": "4593841",
-     "player_name": "Baylor Scheierman",
+     "player_id": "4065804",
+     "player_name": "Sam Hauser",
      "value": 0.84
     },
     {
-     "player_id": "4065804",
-     "player_name": "Sam Hauser",
+     "player_id": "4593841",
+     "player_name": "Baylor Scheierman",
      "value": 0.84
     },
     {
@@ -49286,7 +49286,7 @@
       "player_name": "Precious Achiuwa",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4431679.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 24.8,
       "ppg": 9.5,
       "height_in": 80.0,
@@ -50356,7 +50356,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-21_08_30PM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-21_09_15PM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -50489,5 +50489,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-22T02:06:47+00:00"
+ "published_at_utc": "2026-11-22T07:50:46+00:00"
 }
