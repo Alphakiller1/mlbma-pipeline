@@ -344,7 +344,8 @@ def main() -> int:
         if sport == "nfl":
             for asset in ("player_availability_shared.js", "matchup_card.js", "public_game_detail.js"):
                 markup = markup.replace(f"{asset}?v={STAMP}&amp;rev=nfl-live-availability", f"{asset}?v={STAMP}")
-                markup = markup.replace(f"{asset}?v={STAMP}", f"{asset}?v={STAMP}&amp;rev=nfl-data-20261121")
+                revision = "nfl-ties-20261121" if asset == "public_game_detail.js" else "nfl-data-20261121"
+                markup = markup.replace(f"{asset}?v={STAMP}", f"{asset}?v={STAMP}&amp;rev={revision}")
         return markup
 
     for sport in SPORTS:

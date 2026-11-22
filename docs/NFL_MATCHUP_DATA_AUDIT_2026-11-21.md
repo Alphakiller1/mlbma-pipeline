@@ -28,5 +28,10 @@ season counting lines include all clubs. The independent stat auditor compares
 club-stint profiles with the same club's official weekly counts, including
 quarterbacks transferred during the season.
 
+Power-ranking records preserve ties in the W–L–T line. The wins-above-expected
+comparison credits each tie as half a win, including in sustainability ranks.
+The detail page can also read older cached tables that retained total games
+but omitted the explicit tie count.
+
 The sources update on their own schedules. A report check is a retrieval time,
 not confirmation of a final inactive list before it is published.

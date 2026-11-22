@@ -12,6 +12,14 @@ SLATE = ROOT / "data" / "public" / "nfl" / "slate.json"
 HARNESS = r"""
 const fs = require('fs'), vm = require('vm'), assert = require('node:assert/strict');
 const [root, slatePath] = process.argv.slice(1);
+// This fixture advances the current desk from November 20 to November 21.
+// Freeze both Date.now() and new Date() so a later calendar day does not
+// turn that desk into an intentionally historical view of completed games.
+const RealDate = Date, clock = RealDate.parse('2026-11-20T18:00:00Z');
+global.Date = class extends RealDate {
+  constructor(...args) { super(...(args.length ? args : [clock])); }
+  static now() { return clock; }
+};
 const noop = () => {};
 const el = () => ({ innerHTML: '', attrs: {}, setAttribute(k, v) { this.attrs[k] = v; },
   getAttribute(k) { return this.attrs[k] || null; }, addEventListener: noop, querySelector: () => null,

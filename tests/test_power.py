@@ -61,6 +61,21 @@ class PriorTests(unittest.TestCase):
 
 
 class TableTests(unittest.TestCase):
+    def test_ties_preserve_the_record_and_receive_half_win_credit(self):
+        rows = [power.Row("A", "B", 0, 20), power.Row("B", "A", 0, 20)]
+        fit = power.ridge(rows, 2.0)
+        played = []
+        for margin in (7, -7, 0):
+            played.extend([
+                power.Played("A", "B", 0, margin > 0 if margin else None, 1.0, margin),
+                power.Played("B", "A", 0, margin < 0 if margin else None, 1.0, -margin),
+            ])
+        teams = power.table(fit, played, {"A", "B"})["teams"]
+        for team in teams.values():
+            self.assertEqual(team["record"], {"wins": 1, "losses": 1, "ties": 1, "games": 3})
+            self.assertEqual(team["expected_record"], {"wins": 1.5, "losses": 1.5})
+            self.assertEqual(team["luck"]["value"], 0)
+
     def test_places_record_and_expected_wins(self):
         rows, played, _, _ = league()
         fit = power.ridge(rows, 2.0)

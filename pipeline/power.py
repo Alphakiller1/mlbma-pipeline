@@ -231,6 +231,7 @@ def table(fit: Fit, played: list[Played], ranked: set[str], digits: int = 1) -> 
             continue
         wins = sum(1 for p in mine if p.won is True)
         losses = sum(1 for p in mine if p.won is False)
+        ties = sum(1 for p in mine if p.won is None)
         expected = sum(phi(fit.margin(p.team, p.opponent, p.location) * p.points_scale / sigma) if sigma else 0.5
                        for p in mine)
         rows[team] = {
@@ -238,8 +239,8 @@ def table(fit: Fit, played: list[Played], ranked: set[str], digits: int = 1) -> 
             "net": net[team], "schedule": sum(net.get(p.opponent, 0.0) for p in mine) / len(mine),
             "schedule_offense": sum(fit.mean + fit.offense.get(p.opponent, 0.0) for p in mine) / len(mine),
             "schedule_defense": sum(fit.mean + fit.defense.get(p.opponent, 0.0) for p in mine) / len(mine),
-            "wins": wins, "losses": losses, "expected_wins": expected,
-            "luck": (wins - expected) / len(mine), "games": len(mine),
+            "wins": wins, "losses": losses, "ties": ties, "expected_wins": expected,
+            "luck": (wins + 0.5 * ties - expected) / len(mine), "games": len(mine),
         }
     out = {}
     for team, r in rows.items():
@@ -257,7 +258,7 @@ def table(fit: Fit, played: list[Played], ranked: set[str], digits: int = 1) -> 
             # sustainability (owner, 2026-11-11): first is the fewest above it,
             # a record its play backs; last runs furthest ahead of its play.
             "luck": place("luck", higher=False),
-            "record": {"wins": r["wins"], "losses": r["losses"], "games": r["games"]},
+            "record": {"wins": r["wins"], "losses": r["losses"], "ties": r["ties"], "games": r["games"]},
             "expected_record": {"wins": round(r["expected_wins"], 1),
                                 "losses": round(r["games"] - r["expected_wins"], 1)},
         }

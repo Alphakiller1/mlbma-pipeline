@@ -42,6 +42,12 @@ def validate(log: dict) -> str | None:
         rec, exp = row["record"], row["expected_record"]
         if rec["games"] != len(teams[team]) or abs(exp["wins"] + exp["losses"] - rec["games"]) > 0.2:
             return f"{team} power record does not reconcile with its game log"
+        actual = {"wins": 0, "losses": 0, "ties": 0}
+        for game in teams[team]:
+            outcome = "wins" if game["points"] > game["opp_points"] else "losses" if game["points"] < game["opp_points"] else "ties"
+            actual[outcome] += 1
+        if any(rec.get(key) != value for key, value in actual.items()):
+            return f"{team} power W-L-T record differs from its final scores"
         if not -30 <= row["net"]["value"] <= 30:
             return f"{team} power net {row['net']['value']} outside range"
     return regression.check(log.get("regression") or {}, {team: len(games) for team, games in teams.items()})
