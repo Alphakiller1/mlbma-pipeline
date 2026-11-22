@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-22",
- "generated_at_utc": "2026-11-22T09:51:27+00:00",
+ "generated_at_utc": "2026-11-22T17:51:34+00:00",
  "data_through_utc": "2026-11-22T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -121,8 +121,8 @@
    "id": "401910029",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/22 - 3:30 PM EST",
+   "game_state": "live",
+   "status_detail": "11:39 - 1st",
    "kickoff_utc": "2026-11-22T20:30Z",
    "away": "DET",
    "home": "ATL",
@@ -136,8 +136,8 @@
    "home_record": "10-6",
    "away_split_record": "7-2",
    "home_split_record": "4-3",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 0,
+   "home_score": 0,
    "venue": "State Farm Arena",
    "venue_city": "Atlanta, GA",
    "broadcast": "",
@@ -4392,10 +4392,10 @@
      "status": "Out",
      "source": "official",
      "reason": "G League - Two-Way",
-     "detail": "Left Foot",
-     "comment": "Onyenso agreed to a two-way contract with the Pistons on Thursday.",
-     "date": "2026-11-19T16:15Z",
-     "return_date": "2026-11-21",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
      "value": null
     },
     {
@@ -21243,13 +21243,13 @@
      "value": 1.31
     },
     {
-     "player_id": "4432165",
-     "player_name": "Jalen Suggs",
+     "player_id": "5214637",
+     "player_name": "Noah Penda",
      "value": 1.15
     },
     {
-     "player_id": "5214637",
-     "player_name": "Noah Penda",
+     "player_id": "4432165",
+     "player_name": "Jalen Suggs",
      "value": 1.15
     },
     {
@@ -21326,7 +21326,7 @@
      "player_name": "Izaiyah Nelson",
      "status": "Out",
      "source": "official",
-     "reason": "Injury/Illness - Left Ankle injury recovery",
+     "reason": "Injury/Illness - Left Ankle injury",
      "detail": "Left Ankle Surgery",
      "comment": "Head coach Sean Sweeney said Wednesday that Nelson (ankle) has been doing \"some on-court stuff,\" though Sweeney added that the work has been \"minimal,\" Jason Beede of the Orlando Sentinel reports.",
      "date": "2026-11-18T17:25Z",
@@ -25152,7 +25152,7 @@
       "player_name": "Deandre Ayton",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4278129.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 12.9,
       "ppg": 3.8,
       "height_in": 84.0,
@@ -25552,6 +25552,20 @@
      "value": 0.03,
      "value_recent": 0.0,
      "missed": 15
+    },
+    {
+     "player_id": "4278129",
+     "player_name": "Deandre Ayton",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Illness",
+     "detail": "Illness",
+     "comment": "Ayton (illness) is questionable to play in Sunday's game against Orlando.",
+     "date": "2026-11-22T17:28Z",
+     "return_date": "2026-11-22",
+     "value": 0.39,
+     "value_recent": 0.39,
+     "missed": 0
     },
     {
      "player_id": "5105841",
@@ -29682,13 +29696,13 @@
      "value": 0.37
     },
     {
-     "player_id": "5105592",
-     "player_name": "Cam Whitmore",
+     "player_id": "4065813",
+     "player_name": "Alpha Diallo",
      "value": 0.26
     },
     {
-     "player_id": "4065813",
-     "player_name": "Alpha Diallo",
+     "player_id": "5105592",
+     "player_name": "Cam Whitmore",
      "value": 0.26
     },
     {
@@ -32526,7 +32540,7 @@
       "player_name": "Norman Powell",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/2595516.png",
-      "status": "Day-To-Day",
+      "status": "Out",
       "mpg": 29.5,
       "ppg": 20.8,
       "height_in": 76.0,
@@ -33940,10 +33954,10 @@
      "status": "Out",
      "source": "official",
      "reason": "G League - Two-Way",
-     "detail": "Back",
-     "comment": "Awaka (back) has been ruled out for Wednesday's game against the Nets.",
-     "date": "2026-11-17T20:53Z",
-     "return_date": "2026-11-25",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
      "value": 0.38,
      "value_recent": 0.0,
      "missed": 8
@@ -33963,42 +33977,42 @@
      "missed": 5
     },
     {
-     "player_id": "4593049",
-     "player_name": "Orlando Robinson",
-     "status": "Out",
-     "source": "official",
-     "reason": "G League - On Assignment",
-     "detail": null,
-     "comment": null,
-     "date": null,
-     "return_date": null,
-     "value": 0.2,
-     "value_recent": 0.0,
-     "missed": null
-    },
-    {
      "player_id": "2595516",
      "player_name": "Norman Powell",
      "status": "Questionable",
      "source": "official",
      "reason": "Injury/Illness - Right Hamstring Strain",
-     "detail": "Right Hamstring",
-     "comment": "Powell is questionable for Sunday's game against the Nuggets due to a right hamstring strain.",
-     "date": "2026-11-22T00:11Z",
-     "return_date": "2026-11-22",
+     "detail": "Right Hamstring Strain",
+     "comment": "Powell has been diagnosed with a mild right hamstring strain and will be re-evaluated later this week.",
+     "date": "2026-11-22T15:25Z",
+     "return_date": "2026-11-28",
      "value": 1.7,
      "value_recent": 1.58,
      "missed": 0
     },
     {
+     "player_id": "4278067",
+     "player_name": "Nic Claxton",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Illness",
+     "detail": "Illness",
+     "comment": "Claxton (illness) is questionable to play in Sunday's game against the Nuggets.",
+     "date": "2026-11-22T17:24Z",
+     "return_date": "2026-11-22",
+     "value": 0.98,
+     "value_recent": 0.98,
+     "missed": 0
+    },
+    {
      "player_id": "4397189",
      "player_name": "Jalen Smith",
-     "status": "Questionable",
+     "status": "Probable",
      "source": "official",
      "reason": "Injury/Illness - Gastrointestinal Illness",
      "detail": "Illness",
-     "comment": "Smith (illness) is out for Friday's game against the Wizards, Joel Lorenzi of The Athletic reports.",
-     "date": "2026-11-21T14:54Z",
+     "comment": "Smith (illness) has been upgraded to probable for Sunday's game against the Nuggets.",
+     "date": "2026-11-22T17:22Z",
      "return_date": "2026-11-22",
      "value": 1.45,
      "value_recent": 1.48,
@@ -36387,7 +36401,7 @@
       "player_name": "P.J. Washington",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4278078.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 30.9,
       "ppg": 14.0,
       "height_in": 78.0,
@@ -37948,13 +37962,13 @@
      "value": 0.44
     },
     {
-     "player_id": "4432107",
-     "player_name": "Marcus Sasser",
+     "player_id": "5279129",
+     "player_name": "Sergio de Larrea",
      "value": 0.42
     },
     {
-     "player_id": "5279129",
-     "player_name": "Sergio de Larrea",
+     "player_id": "4432107",
+     "player_name": "Marcus Sasser",
      "value": 0.42
     },
     {
@@ -37964,20 +37978,6 @@
     }
    ],
    "away_injuries": [
-    {
-     "player_id": "4278078",
-     "player_name": "P.J. Washington",
-     "status": "Out",
-     "source": "espn",
-     "reason": null,
-     "detail": "Illness",
-     "comment": "Washington (illness/shoulder) is listed as out for Saturday's game against the Clippers.",
-     "date": "2026-11-21T23:14Z",
-     "return_date": "2026-11-22",
-     "value": 1.32,
-     "value_recent": 1.38,
-     "missed": 1
-    },
     {
      "player_id": "4683688",
      "player_name": "Dereck Lively II",
@@ -38007,20 +38007,6 @@
      "missed": 12
     },
     {
-     "player_id": "5106040",
-     "player_name": "Tobi Lawal",
-     "status": "Out",
-     "source": "espn",
-     "reason": null,
-     "detail": "Right Groin",
-     "comment": "Lawal (groin) is out for Saturday's game against the Clippers.",
-     "date": "2026-11-21T15:08Z",
-     "return_date": "2026-11-22",
-     "value": 0.15,
-     "value_recent": 0.19,
-     "missed": 2
-    },
-    {
      "player_id": "5148538",
      "player_name": "Tarik Biberovic",
      "status": "Out",
@@ -38031,6 +38017,34 @@
      "date": "2026-11-17T22:42Z",
      "return_date": "2026-11-27",
      "value": null
+    },
+    {
+     "player_id": "4278078",
+     "player_name": "P.J. Washington",
+     "status": "Day-To-Day",
+     "source": "espn",
+     "reason": null,
+     "detail": "Illness",
+     "comment": "Washington (illness/shoulder) is listed as out for Saturday's game against the Clippers.",
+     "date": "2026-11-22T15:02Z",
+     "return_date": "2026-11-22",
+     "value": 1.32,
+     "value_recent": 1.38,
+     "missed": 1
+    },
+    {
+     "player_id": "5106040",
+     "player_name": "Tobi Lawal",
+     "status": "Day-To-Day",
+     "source": "espn",
+     "reason": null,
+     "detail": "Right Groin",
+     "comment": "Lawal (groin) is out for Saturday's game against the Clippers.",
+     "date": "2026-11-22T15:02Z",
+     "return_date": "2026-11-22",
+     "value": 0.15,
+     "value_recent": 0.19,
+     "missed": 2
     }
    ],
    "home_form": {
@@ -53115,7 +53129,7 @@
       "player_name": "Jayson Tatum",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4065648.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 34.1,
       "ppg": 26.4,
       "height_in": 80.0,
@@ -53299,7 +53313,7 @@
       "player_name": "Derrick White",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3078576.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 29.9,
       "ppg": 12.7,
       "height_in": 76.0,
@@ -54364,7 +54378,7 @@
       "player_name": "Mitchell Robinson",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4351852.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 17.5,
       "ppg": 5.1,
       "height_in": 84.0,
@@ -54860,12 +54874,12 @@
     {
      "player_id": "4065648",
      "player_name": "Jayson Tatum",
-     "status": "Out",
+     "status": "Day-To-Day",
      "source": "espn",
      "reason": null,
      "detail": "Rest",
      "comment": "Tatum (rest) has been ruled out for Saturday's game against the Kings.",
-     "date": "2026-11-21T20:51Z",
+     "date": "2026-11-22T15:02Z",
      "return_date": "2026-11-22",
      "value": 2.41,
      "value_recent": 2.34,
@@ -54874,12 +54888,12 @@
     {
      "player_id": "3078576",
      "player_name": "Derrick White",
-     "status": "Out",
+     "status": "Day-To-Day",
      "source": "espn",
      "reason": null,
      "detail": "Left Shoulder",
      "comment": "White (shoulder) has been ruled out for Saturday's game against Sacramento.",
-     "date": "2026-11-21T20:53Z",
+     "date": "2026-11-22T15:03Z",
      "return_date": "2026-11-22",
      "value": 1.39,
      "value_recent": 1.38,
@@ -54888,12 +54902,12 @@
     {
      "player_id": "4351852",
      "player_name": "Mitchell Robinson",
-     "status": "Out",
+     "status": "Day-To-Day",
      "source": "espn",
      "reason": null,
      "detail": "Illness",
      "comment": "Robinson (illness) has been ruled out for Saturday's game against the Kings, Keith Smith of Spotrac.com reports.",
-     "date": "2026-11-21T20:55Z",
+     "date": "2026-11-22T15:03Z",
      "return_date": "2026-11-22",
      "value": 0.66,
      "value_recent": 0.63,
@@ -59072,7 +59086,7 @@
      "player_name": "Jimmy Butler III",
      "status": "Out",
      "source": "official",
-     "reason": "Injury/Illness - Right ACL Repair / Surgery",
+     "reason": "Injury/Illness - Right ACL Repair /",
      "detail": "Right Knee Surgery",
      "comment": "Butler (knee) could return sometime between January and February as he continues recovering from a torn right ACL, Anthony Slater of ESPN reports.",
      "date": "2026-10-16T16:11Z",
@@ -59126,7 +59140,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-22_04_45AM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-22_12_45PM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -59259,5 +59273,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-22T12:29:31+00:00"
+ "published_at_utc": "2026-11-22T20:41:03+00:00"
 }
