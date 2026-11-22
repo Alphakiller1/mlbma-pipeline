@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-21",
- "generated_at_utc": "2026-11-21T12:40:51+00:00",
+ "generated_at_utc": "2026-11-21T20:33:14+00:00",
  "data_through_utc": "2026-11-21T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -121,8 +121,8 @@
    "id": "401910023",
    "sport": "nba",
    "season": 2027,
-   "game_state": "live",
-   "status_detail": "12.1 - 4th",
+   "game_state": "final",
+   "status_detail": "Final",
    "kickoff_utc": "2026-11-21T18:00Z",
    "away": "MIL",
    "home": "PHI",
@@ -132,12 +132,12 @@
    "home_logo": "https://a.espncdn.com/i/teamlogos/nba/500/phi.png",
    "away_color": "#00471b",
    "home_color": "#1d428a",
-   "away_record": "1-15",
-   "home_record": "13-3",
+   "away_record": "1-16",
+   "home_record": "14-3",
    "away_split_record": "0-7",
    "home_split_record": "6-2",
-   "away_score": 126,
-   "home_score": 130,
+   "away_score": 129,
+   "home_score": 132,
    "venue": "Xfinity Mobile Arena",
    "venue_city": "Philadelphia, PA",
    "broadcast": "MyMi / Bucks App",
@@ -6731,7 +6731,7 @@
       "player_name": "Tyrese Maxey",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4431678.png",
-      "status": "Day-To-Day",
+      "status": null,
       "mpg": 36.1,
       "ppg": 26.5,
       "height_in": 74.0,
@@ -8539,34 +8539,6 @@
      "value": 0.48,
      "value_recent": 0.59,
      "missed": 7
-    },
-    {
-     "player_id": "4431678",
-     "player_name": "Tyrese Maxey",
-     "status": "Questionable",
-     "source": "official",
-     "reason": "Injury/Illness - Right Foot Sprain",
-     "detail": "Right Foot Soreness",
-     "comment": "Maxey (foot) is questionable for Saturday's game against the Bucks.",
-     "date": "2026-11-20T22:07Z",
-     "return_date": "2026-11-21",
-     "value": 2.82,
-     "value_recent": 2.84,
-     "missed": 1
-    },
-    {
-     "player_id": "4870562",
-     "player_name": "Dominick Barlow",
-     "status": "Probable",
-     "source": "official",
-     "reason": "Injury/Illness - Low Back Stress Reaction",
-     "detail": "Back Fracture",
-     "comment": "Barlow (back) is probable for Saturday's game versus the Bucks.",
-     "date": "2026-11-20T22:13Z",
-     "return_date": "2026-11-21",
-     "value": 1.61,
-     "value_recent": 0.0,
-     "missed": null
     }
    ]
   },
@@ -8574,8 +8546,8 @@
    "id": "401910024",
    "sport": "nba",
    "season": 2027,
-   "game_state": "scheduled",
-   "status_detail": "11/21 - 7:30 PM EST",
+   "game_state": "live",
+   "status_detail": "48.6 - 1st",
    "kickoff_utc": "2026-11-22T00:30Z",
    "away": "POR",
    "home": "NY",
@@ -8589,8 +8561,8 @@
    "home_record": "9-6",
    "away_split_record": "7-3",
    "home_split_record": "4-3",
-   "away_score": null,
-   "home_score": null,
+   "away_score": 21,
+   "home_score": 37,
    "venue": "Madison Square Garden",
    "venue_city": "New York, NY",
    "broadcast": "NBA TV / KUNP 16 / BlazerVision",
@@ -15327,7 +15299,7 @@
       "player_name": "Karl-Anthony Towns",
       "position": "C",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3136195.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 32.7,
       "ppg": 21.3,
       "height_in": 84.0,
@@ -16715,15 +16687,29 @@
     {
      "player_id": "3934719",
      "player_name": "OG Anunoby",
-     "status": "Questionable",
+     "status": "Doubtful",
      "source": "official",
      "reason": "Injury/Illness - Left Calf Tightness",
      "detail": "Calf",
-     "comment": "Anunoby (calf) is questionable for Saturday's game against Portland.",
-     "date": "2026-11-20T22:10Z",
+     "comment": "Anunoby (calf) has been downgraded to doubtful for Saturday's game against the Trail Bllazers.",
+     "date": "2026-11-21T16:09Z",
      "return_date": "2026-11-21",
      "value": 1.61,
      "value_recent": 1.61,
+     "missed": 0
+    },
+    {
+     "player_id": "3136195",
+     "player_name": "Karl-Anthony Towns",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Illness",
+     "detail": "Illness",
+     "comment": "Towns is questionable for Saturday's game against the Trail Blazers due to an illness.",
+     "date": "2026-11-21T16:05Z",
+     "return_date": "2026-11-21",
+     "value": 2.63,
+     "value_recent": 2.63,
      "missed": 0
     }
    ]
@@ -20901,13 +20887,13 @@
      "value": 0.61
     },
     {
-     "player_id": "5105832",
-     "player_name": "Nick Martinelli",
+     "player_id": "4398390",
+     "player_name": "Jalen Pickett",
      "value": 0.15
     },
     {
-     "player_id": "4398390",
-     "player_name": "Jalen Pickett",
+     "player_id": "5105832",
+     "player_name": "Nick Martinelli",
      "value": 0.15
     }
    ],
@@ -24863,13 +24849,13 @@
      "value": 0.48
     },
     {
-     "player_id": "4432107",
-     "player_name": "Marcus Sasser",
+     "player_id": "5279129",
+     "player_name": "Sergio de Larrea",
      "value": 0.42
     },
     {
-     "player_id": "5279129",
-     "player_name": "Sergio de Larrea",
+     "player_id": "4432107",
+     "player_name": "Marcus Sasser",
      "value": 0.42
     },
     {
@@ -24919,9 +24905,9 @@
      "source": "official",
      "reason": "Injury/Illness - Right Groin Strain",
      "detail": "Right Groin",
-     "comment": "Lawal is out for Wednesday's game against the Warriors due to tightness in his right groin.",
-     "date": "2026-11-19T14:51Z",
-     "return_date": "2026-11-21",
+     "comment": "Lawal (groin) is out for Saturday's game against the Clippers.",
+     "date": "2026-11-21T15:08Z",
+     "return_date": "2026-11-22",
      "value": 0.15,
      "value_recent": 0.19,
      "missed": 1
@@ -24941,12 +24927,12 @@
     {
      "player_id": "4278078",
      "player_name": "P.J. Washington",
-     "status": "Questionable",
+     "status": "Doubtful",
      "source": "official",
-     "reason": "Injury/Illness - Left Shoulder Impingement",
-     "detail": "Shoulder",
-     "comment": "Washington (shoulder) is listed as questionable for Saturday's game versus the Clippers.",
-     "date": "2026-11-20T22:40Z",
+     "reason": "Injury/Illness - Illness",
+     "detail": "Illness",
+     "comment": "Washington (illness/shoulder) has been downgraded from questionable to doubtful ahead of Saturday's game against the Clippers.",
+     "date": "2026-11-21T19:22Z",
      "return_date": "2026-11-21",
      "value": 1.32,
      "value_recent": 1.32,
@@ -28063,7 +28049,7 @@
       "player_name": "Ty Jerome",
       "position": "G",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4065733.png",
-      "status": "Out",
+      "status": null,
       "mpg": 30.6,
       "ppg": 25.4,
       "height_in": 77.0,
@@ -29188,20 +29174,6 @@
      "date": "2026-11-07T17:24Z",
      "return_date": "2026-12-01",
      "value": null
-    },
-    {
-     "player_id": "4065733",
-     "player_name": "Ty Jerome",
-     "status": "Probable",
-     "source": "official",
-     "reason": "Injury/Illness - Right Hip Impingement",
-     "detail": "Right Hip",
-     "comment": "Jerome (hip) is probable for Saturday's game in Minnesota.",
-     "date": "2026-11-20T23:11Z",
-     "return_date": "2026-11-21",
-     "value": 1.96,
-     "value_recent": 2.1,
-     "missed": 4
     }
    ],
    "home_form": {
@@ -33404,6 +33376,11 @@
      "value": 0.16
     },
     {
+     "player_id": "5061585",
+     "player_name": "Isaiah Evans",
+     "value": 0.11
+    },
+    {
      "player_id": "5157587",
      "player_name": "Rocco Zikarsky",
      "value": 0.06
@@ -33465,6 +33442,20 @@
      "value": 0.06,
      "value_recent": 0.0,
      "missed": 5
+    },
+    {
+     "player_id": "5061585",
+     "player_name": "Isaiah Evans",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Illness",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.11,
+     "value_recent": 0.15,
+     "missed": 2
     }
    ]
   },
@@ -36780,7 +36771,7 @@
       "player_name": "Trey Murphy III",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4397688.png",
-      "status": null,
+      "status": "Out",
       "mpg": 32.4,
       "ppg": 15.7,
       "height_in": 81.0,
@@ -37649,15 +37640,39 @@
      "player_id": "4576086",
      "player_name": "Bryce McGowens",
      "value": 0.38
+    },
+    {
+     "player_id": "4683742",
+     "player_name": "Julian Reese",
+     "value": 0.17
+    },
+    {
+     "player_id": "4712862",
+     "player_name": "Malik Dia",
+     "value": 0.15
     }
    ],
    "away_injuries": [
     {
+     "player_id": "4397688",
+     "player_name": "Trey Murphy III",
+     "status": "Out",
+     "source": "official",
+     "reason": "Injury/Illness - Bilateral Patellar Tendinopathy Injury Maintenance",
+     "detail": "Knee",
+     "comment": "Murphy (knee) has been ruled out for Saturday's game against the Spurs.",
+     "date": "2026-11-21T18:22Z",
+     "return_date": "2026-11-23",
+     "value": 1.67,
+     "value_recent": 1.9,
+     "missed": 0
+    },
+    {
      "player_id": "3907497",
      "player_name": "Dejounte Murray",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Left Ankle Sprain",
      "detail": "Ankle",
      "comment": "Murray (ankle) is out for Friday's game against Memphis.",
      "date": "2026-11-13T20:19Z",
@@ -37670,11 +37685,11 @@
      "player_id": "4431675",
      "player_name": "Trendon Watford",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Right Ankle Sprain",
      "detail": "Right Ankle Sprain",
-     "comment": "Watford (ankle) has been ruled out for Friday's game against Oklahoma City.",
-     "date": "2026-11-19T21:09Z",
+     "comment": "Watford (ankle) is out for Saturday's game against the Spurs.",
+     "date": "2026-11-21T18:21Z",
      "return_date": "2026-11-27",
      "value": 0.75,
      "value_recent": 0.81,
@@ -37684,8 +37699,8 @@
      "player_id": "4683634",
      "player_name": "Bennedict Mathurin",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Left Plantar Fasciitis",
      "detail": "Left Foot Plantar Fasciitis",
      "comment": "Mathurin (foot) has been ruled out for Friday's game against the Thunder.",
      "date": "2026-11-19T21:07Z",
@@ -37698,8 +37713,8 @@
      "player_id": "4576086",
      "player_name": "Bryce McGowens",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Left Elbow Infection",
      "detail": "Left Elbow Infection",
      "comment": "McGowens (elbow) has been ruled out for Friday's game against the Thunder.",
      "date": "2026-11-19T21:15Z",
@@ -37707,6 +37722,34 @@
      "value": 0.38,
      "value_recent": 0.56,
      "missed": 5
+    },
+    {
+     "player_id": "4683742",
+     "player_name": "Julian Reese",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.17,
+     "value_recent": 0.18,
+     "missed": 2
+    },
+    {
+     "player_id": "4712862",
+     "player_name": "Malik Dia",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.15,
+     "value_recent": 0.0,
+     "missed": 2
     }
    ],
    "home_form": {
@@ -46073,13 +46116,13 @@
      "value": 1.39
     },
     {
-     "player_id": "4397424",
-     "player_name": "Neemias Queta",
+     "player_id": "4066354",
+     "player_name": "Payton Pritchard",
      "value": 1.17
     },
     {
-     "player_id": "4066354",
-     "player_name": "Payton Pritchard",
+     "player_id": "4397424",
+     "player_name": "Neemias Queta",
      "value": 1.17
     },
     {
@@ -49240,7 +49283,7 @@
       "player_name": "Precious Achiuwa",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/4431679.png",
-      "status": "Out",
+      "status": "Day-To-Day",
       "mpg": 24.8,
       "ppg": 9.5,
       "height_in": 80.0,
@@ -50263,20 +50306,6 @@
      "missed": null
     },
     {
-     "player_id": "4431679",
-     "player_name": "Precious Achiuwa",
-     "status": "Out",
-     "source": "espn",
-     "reason": null,
-     "detail": "Left Lower Leg Bruise",
-     "comment": "Achiuwa (lower leg) has been ruled out for Friday's game against the Lakers.",
-     "date": "2026-11-20T21:21Z",
-     "return_date": "2026-11-21",
-     "value": 0.99,
-     "value_recent": 0.81,
-     "missed": 1
-    },
-    {
      "player_id": "3907387",
      "player_name": "Ben Simmons",
      "status": "Out",
@@ -50287,11 +50316,25 @@
      "date": "2026-10-21T04:22Z",
      "return_date": "2027-10-01",
      "value": null
+    },
+    {
+     "player_id": "4431679",
+     "player_name": "Precious Achiuwa",
+     "status": "Day-To-Day",
+     "source": "espn",
+     "reason": null,
+     "detail": "Left Lower Leg Bruise",
+     "comment": "Achiuwa (lower leg) has been ruled out for Friday's game against the Lakers.",
+     "date": "2026-11-21T14:55Z",
+     "return_date": "2026-11-21",
+     "value": 0.99,
+     "value_recent": 0.81,
+     "missed": 1
     }
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-21_07_30AM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-21_03_30PM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -50424,5 +50467,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-21T20:28:32+00:00"
+ "published_at_utc": "2026-11-22T01:00:44+00:00"
 }
