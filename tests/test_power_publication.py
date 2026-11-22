@@ -65,6 +65,14 @@ class PublishedPowerTests(unittest.TestCase):
         log = load("data/public/nfl/game_logs.json")
         self.check_table(log["adjusted"]["teams"], 32)
         self.assertNotIn("non_offensive_td_per_team_game", log["luck_rates"])
+        for club, games in log["teams"].items():
+            row = log["adjusted"]["teams"][club]
+            rec = row["record"]
+            ties = sum(game["points"] == game["opp_points"] for game in games)
+            self.assertEqual(rec["ties"], ties)
+            self.assertEqual(rec["wins"] + rec["losses"] + ties, len(games))
+            above = rec["wins"] + 0.5 * ties - row["expected_record"]["wins"]
+            self.assertAlmostEqual(row["luck"]["value"] * rec["games"], above, delta=0.051)
 
     def test_cbb_both_seasons(self):
         for year, floor in ((2026, 360), (2027, 300)):

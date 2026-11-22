@@ -9091,7 +9091,7 @@ function seasonToggle(game) {
     defense: 'Scoring allowed to an average offense, opponent-adjusted, luck-adjusted. Lower ranks first.',
     schedule: 'Average net of the opponents played. First is the hardest schedule.',
     supports: 'The record the team\u2019s play supports: each game played, the chance a team this good wins it against that opponent there.',
-    luck: 'Wins above the record its play supports. First is the fewest above it: the record its play best backs. Last runs furthest ahead of its play.'
+    luck: 'Wins above the record its play supports. A tie counts as half a win. First is the fewest above it: the record its play best backs. Last runs furthest ahead of its play.'
   };
   function powerCell(entry, tone, text, label, teamCount) {
     if (!entry || entry.value == null) return '<td class="num ca-vs-none">Not Rated</td>';
@@ -9115,7 +9115,9 @@ function seasonToggle(game) {
       var t = r[1];
       if (!t) return '<tr><td>' + esc(r[0]) + '</td><td class="num ca-vs-none" colspan="7">Not Rated Yet</td></tr>';
       var rec = t.record, exp = t.expected_record;
-      var above = rec.wins - exp.wins;
+      // Older cached publications omitted ties but retained the total games.
+      var ties = rec.ties == null ? Math.max(0, Number(rec.games) - rec.wins - rec.losses) : Number(rec.ties) || 0;
+      var above = rec.wins + 0.5 * ties - exp.wins;
       // Wins above the supported record grade as sustainability: the fewest
       // above it (a record its play backs) is first, the furthest ahead last.
       var luck = t.luck;
@@ -9125,7 +9127,7 @@ function seasonToggle(game) {
         powerCell(t.defense, '', Number(t.defense.value).toFixed(opts.digits), cohort + ' · fewest allowed first') +
         // Graded like the SOS panel: the hardest schedule ranks first, tier-coloured.
         powerCell(t.schedule, '', powerSigned(t.schedule.value, opts.digits), cohort + ' · hardest first') +
-        '<td class="num">' + esc(rec.wins + '–' + rec.losses) + '</td>' +
+        '<td class="num">' + esc(rec.wins + '–' + rec.losses + (ties ? '–' + ties : '')) + '</td>' +
         '<td class="num">' + esc(Number(exp.wins).toFixed(1) + '–' + Number(exp.losses).toFixed(1)) + '</td>' +
         powerCell(luck, '', powerSigned(above, 1), cohort + ' · fewest above first, the most sustainable record') + '</tr>';
     });
