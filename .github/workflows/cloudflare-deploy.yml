@@ -41,6 +41,7 @@ jobs:
           npm ci
       - name: Enforce design and public-data contracts
         run: |
+          python scripts/build_cfb_game_payloads.py
           python scripts/check_tokens.py
           python scripts/validate_public_fields.py
           node --check dashboard/matchup_card.js
@@ -89,6 +90,7 @@ jobs:
             --exclude='wrangler.toml' \
             --exclude='.assetsignore' --exclude='_site' \
             ./ _site/
+          python scripts/build_cfb_game_payloads.py --site-root _site
           git rev-parse HEAD > _site/_release-revision.txt
           echo "files to publish: $(find _site -type f | wc -l)"
           test -f _site/dashboard/matchup_card.js

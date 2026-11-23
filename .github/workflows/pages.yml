@@ -67,6 +67,7 @@ jobs:
           npm ci
       - name: Run dashboard deep-link runtime smoke
         run: |
+          python scripts/build_cfb_game_payloads.py
           npx --yes wrangler@4.40.0 pages dev . --port 8765 --persist-to /tmp/wrangler-state >/tmp/chase-worker.log 2>&1 &
           for attempt in $(seq 1 45); do curl -fsS http://127.0.0.1:8765/ >/dev/null && break || sleep 1; done
           curl -fsS http://127.0.0.1:8765/ >/dev/null || { cat /tmp/chase-worker.log; exit 1; }

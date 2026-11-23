@@ -75,7 +75,8 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/validate_public_fields.py
-          git add -- data/public/cfb/slate.json
+          python scripts/build_cfb_game_payloads.py --record-previous "$(git rev-parse HEAD)"
+          git add -- data/public/cfb/slate.json scripts/cfb_archive_revision.txt
           if git diff --cached --quiet; then
             echo "CFB slate is already current; no commit needed."
             exit 0

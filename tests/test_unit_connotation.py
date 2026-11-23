@@ -24,7 +24,7 @@ class UnitConnotationTests(unittest.TestCase):
         rows = {m.group(1): m.group(0) for m in re.finditer(r"\['(\dPA Share \(\dPA/FGA\))'[^\n]*", JS)}
         self.assertIn("'least','tpr_d_all','least'", rows["2PA Share (2PA/FGA)"])
         self.assertIn("'most','tpr_d_all','most'", rows["3PA Share (3PA/FGA)"])
-        self.assertIn("better: neutral ? 'neutral' : undefined", JS)
+        self.assertIn("better: neutral ? 'neutral' : higher ? 'high' : 'low'", JS)
 
     def test_shot_type_share_follows_the_shot_s_value(self):
         body = JS.split("function cbbShotWanted", 1)[1].split("function cbbShotTypes", 1)[0]

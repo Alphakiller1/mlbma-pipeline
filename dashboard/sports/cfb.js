@@ -14,6 +14,7 @@
   var BOARD_URL = 'https://alphakiller1.github.io/cfb-model/board.json';
   var BUILD_URL = 'https://alphakiller1.github.io/cfb-model/build.json';
   var SLATE_URL = 'https://alphakiller1.github.io/cfb-model/slate.json';
+  var MATCHUP_ROOT = '/data/public/cfb/game-payloads/';
 
   function num(v) {
     if (v == null || v === '') return null;
@@ -21,8 +22,8 @@
     return isFinite(n) ? n : null;
   }
 
-  function loadJson(url) {
-    return fetch(url, { cache: 'no-store' }).then(function (r) {
+  function loadJson(url, signal) {
+    return fetch(url, { cache: 'no-store', signal: signal }).then(function (r) {
       if (!r.ok) throw new Error('Request failed: ' + r.status);
       return r.json();
     });
@@ -265,6 +266,65 @@
     };
   }
 
+  function mapPublishedGame(payload, row, remote) {
+    var board = boardFromPublic(Object.assign({}, payload, { games: [row] }));
+    var mapped = mapGame(board.games[0], board);
+    mapped.season = Number(payload.season || row.season);
+    mapped.slate_date = row.slate_date;
+    mapped.__cfbPower = payload.power || null;
+    if (remote && Number(remote.season) === mapped.season && Number(remote.week) === Number(payload.week)) {
+      var counterpart = seasonGames(remote, mapped.season).find(function (game) {
+        return game.id === row.id || publicKey(game) === publicKey(row);
+      });
+      if (counterpart) mergePublic(mapped, counterpart, remote.generated_at_utc);
+    }
+    return mergePublic(mapped, row, payload.generated_at_utc);
+  }
+
+  function loadMatchup(gameId, date, preview) {
+    if (!/^[a-z0-9&._-]+@[a-z0-9&._-]+$/i.test(gameId)) return Promise.resolve(null);
+    var explicitDate = /^\d{4}-\d{2}-\d{2}$/.test(date || '');
+    var gameDate = explicitDate ? Promise.resolve(date) : loadJson(MATCHUP_ROOT + 'index.json').then(function (index) {
+      var hits = (index.games || []).filter(function (game) { return game.id === gameId; });
+      return hits.length && hits[hits.length - 1].slate_date;
+    });
+    return gameDate.then(function (day) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(day || '')) return null;
+      var stem = MATCHUP_ROOT + day + '/' + encodeURIComponent(gameId);
+      function fetchEvidence() {
+        var timeout = global.AbortSignal && global.AbortSignal.timeout && global.AbortSignal.timeout(2400);
+        return Promise.all([
+          loadJson(stem + '-evidence.json'),
+          loadJson(SLATE_URL, timeout || undefined).catch(function () { return null; })
+        ]).then(function (parts) {
+          var game = parts[0].games[0];
+          if (!game || game.id !== gameId) throw new Error('The published evidence did not match the game.');
+          return { payload: parts[0], game: mapPublishedGame(parts[0], Object.assign({}, game, { slate_date: day }), parts[1]) };
+        });
+      }
+      var gameRequest = preview ? loadJson(stem + '.json').then(function (payload) {
+        var row = payload.games[0];
+        if (!row || row.id !== gameId || row.slate_date !== day) throw new Error('The published fixture did not match the game.');
+        return { payload: payload, game: mapPublishedGame(payload, row) };
+      }) : fetchEvidence();
+      return gameRequest.then(function (found) {
+        return {
+          games: [found.game], generatedAt: found.payload.generated_at_utc,
+          dataThrough: found.payload.data_through_utc, source: 'Public slate',
+          loadEvidence: preview ? function () { return fetchEvidence().then(function (result) { return result.game; }); } : null
+        };
+      });
+    }).catch(function () { return null; });
+  }
+
+  function loadCompleted() {
+    return loadJson(MATCHUP_ROOT + 'index.json').then(function (index) {
+      return (index.games || []).filter(function (row) { return row.game_state === 'final'; }).map(function (row) {
+        return mapPublishedGame({ week: row.week }, row);
+      });
+    }).catch(function () { return []; });
+  }
+
   // ChaseMatchupCard.mount() calls load(dateIso). Returns the desk result shape.
   function load() {
     return Promise.all([
@@ -362,6 +422,8 @@
     BUILD_URL: BUILD_URL,
     SLATE_URL: SLATE_URL,
     load: load,
+    loadMatchup: loadMatchup,
+    loadCompleted: loadCompleted,
     injuryReport: injuryReport,
     mapGame: mapGame
   };
