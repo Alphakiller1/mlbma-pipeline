@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-23",
- "generated_at_utc": "2026-11-23T07:40:37+00:00",
+ "generated_at_utc": "2026-11-23T11:19:00+00:00",
  "data_through_utc": "2026-11-23T01:30Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -4223,13 +4223,13 @@
      "value": 0.95
     },
     {
-     "player_id": "4432810",
-     "player_name": "Isaiah Stewart",
+     "player_id": "4684806",
+     "player_name": "Taylor Hendricks",
      "value": 0.86
     },
     {
-     "player_id": "4684806",
-     "player_name": "Taylor Hendricks",
+     "player_id": "4432810",
+     "player_name": "Isaiah Stewart",
      "value": 0.86
     },
     {
@@ -8339,13 +8339,13 @@
      "value": 1.52
     },
     {
-     "player_id": "4396971",
-     "player_name": "Naz Reid",
+     "player_id": "4433249",
+     "player_name": "Moussa Diabate",
      "value": 1.5
     },
     {
-     "player_id": "4433249",
-     "player_name": "Moussa Diabate",
+     "player_id": "4396971",
+     "player_name": "Naz Reid",
      "value": 1.5
     },
     {
@@ -63300,13 +63300,13 @@
      "value": 0.63
     },
     {
-     "player_id": "5105832",
-     "player_name": "Nick Martinelli",
+     "player_id": "4845363",
+     "player_name": "Cam Christie",
      "value": 0.15
     },
     {
-     "player_id": "4845363",
-     "player_name": "Cam Christie",
+     "player_id": "5105832",
+     "player_name": "Nick Martinelli",
      "value": 0.15
     }
    ],
@@ -84340,7 +84340,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-23_02_30AM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-23_06_15AM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -84473,5 +84473,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-23T09:33:18+00:00"
+ "published_at_utc": "2026-11-23T14:27:26+00:00"
 }
