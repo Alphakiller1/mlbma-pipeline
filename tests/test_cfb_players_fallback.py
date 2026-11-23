@@ -1,5 +1,7 @@
 """CFB pass catchers and defenders, and the desk without the model board
 (2026-11-18 audit)."""
+import shutil
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -49,6 +51,49 @@ class BoardFallbackTests(unittest.TestCase):
         self.assertIn("boardFromPublic(parts[2])", js)
         status = (ROOT / "dashboard" / "chase_datastatus.js").read_text(encoding="utf-8")
         self.assertIn("cfb: '/data/public/cfb/slate.json'", status)
+
+    @unittest.skipUnless(shutil.which("node"), "requires Node")
+    def test_new_week_cards_precede_the_model_and_pick_up_current_projections(self):
+        program = r"""
+const assert = require('node:assert/strict');
+global.window = global;
+require('./dashboard/sports/cfb.js');
+const season = new Date().getUTCFullYear();
+const staleKick = season + '-11-21T20:30:00Z';
+const nextKick = season + '-11-28T20:30:00Z';
+const old = { season, week: 12, games: [
+  { id: 'A@B', away_name: 'Away', home_name: 'Home', kickoff_utc: staleKick,
+    game_state: 'final', away_score: 17, home_score: 14 }
+] };
+const publicWeek = { season, week: 13, games: [
+  { id: 'A@B', away: 'A', home: 'B', away_name: 'Away', home_name: 'Home', kickoff_utc: nextKick,
+    game_state: 'scheduled', away_form: { source: 'espn', season } }
+] };
+let model = { season, week: 12, games: [
+  { key: 'A@B', away: { school: 'Away' }, home: { school: 'Home' }, kickoff: staleKick, projected_total: 36 }
+] };
+global.fetch = async url => ({ ok: true, json: async () =>
+  url === ChaseSportCFB.BOARD_URL ? model :
+  url === ChaseSportCFB.SLATE_URL ? old :
+  url === '/data/public/cfb/slate.json' ? publicWeek : {}
+});
+(async () => {
+  let result = await ChaseSportCFB.load();
+  assert.equal(result.meta.week, 13);
+  assert.equal(result.games[0].kickoff_utc, nextKick);
+  assert.equal(result.games[0].game_state, 'scheduled');
+  assert.equal(result.games[0].away_score, undefined);
+  assert.equal(result.games[0].proj_total, null);
+  assert.equal(result.games[0].away_form.source, 'espn');
+  model = { ...model, week: 13, games: [
+    { ...model.games[0], kickoff: nextKick, projected_total: 53 }
+  ] };
+  result = await ChaseSportCFB.load();
+  assert.equal(result.games[0].proj_total, 53);
+  assert.equal(result.games[0].game_state, 'scheduled');
+})().catch(error => { console.error(error); process.exitCode = 1; });
+"""
+        subprocess.run(["node", "-e", program], cwd=ROOT, check=True, timeout=20)
 
 
 if __name__ == "__main__":

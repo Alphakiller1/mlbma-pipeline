@@ -49,6 +49,13 @@ least 10 attempts and a comparable shot source. Shot-share bands use the same
 cutoffs and colors for both courts and their FGA labels. The bands measure how
 often a zone is used.
 
+Size by Position uses listed center heights. When a roster lacks center
+heights, the publisher checks ESPN’s roster for the same school and season.
+It uses that roster when it supplies a center height and at least as many
+measured players. Frontcourt combines reported forward and center heights,
+weighted by players for the roster and by recorded starts for starters.
+Center ranks still use only same-season teams with a measured center sample.
+
 When NCAA possession tags are pending, score-matched ESPN finals can supply
 fast-break points, points off turnovers, and recorded starting groups. They also
 supply reconciled player lines where Basketball Quant has no rotation. Each

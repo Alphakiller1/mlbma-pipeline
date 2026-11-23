@@ -1,8 +1,35 @@
 from pathlib import Path
 import json,unittest
+from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
 
 class CbbDeskTests(unittest.TestCase):
+    def test_verified_center_labels_fill_the_roster_without_shrinking_it(self):
+        from pipeline.cbb_public.espn_roster import fill_missing_heights
+        from copy import deepcopy
+
+        facts = {
+            "position_size": [{"position": "F", "players": 5, "mean_height_inches": 80}],
+            "starter_position_size": [{"position": "F", "players": 2, "mean_height_inches": 80, "recorded_starts": 6}],
+            "size_summary": {"whole_team": {"players": 5, "mean_height_inches": 80}},
+        }
+        roster = [{"id": str(number), "height": 80, "position": {"abbreviation": "F"}} for number in range(1, 5)]
+        roster.append({"id": "5", "height": 84, "position": {"abbreviation": "C"}})
+        with patch("pipeline.cbb_public.espn_roster.fetch_roster", return_value=roster) as fetch:
+            team = deepcopy(facts)
+            self.assertEqual(fill_missing_heights({"123": team}, 2027), ["123"])
+            self.assertEqual(team["position_size"], [
+                {"position": "F", "players": 4, "mean_height_inches": 80},
+                {"position": "C", "players": 1, "mean_height_inches": 84},
+            ])
+            self.assertEqual(team["starter_position_size"], facts["starter_position_size"])
+            self.assertEqual(team["size_summary"]["whole_team"]["players"], 5)
+            fetch.assert_called_once_with("123", 2027)
+        with patch("pipeline.cbb_public.espn_roster.fetch_roster", return_value=roster[1:]):
+            team = deepcopy(facts)
+            self.assertEqual(fill_missing_heights({"123": team}, 2027), [])
+            self.assertEqual(team, facts)
+
     def test_two_season_cohort_and_reference_charts(self):
         for year in [2026,2027]:
             directory=ROOT/f'data/public/cbb/{year}/teams'

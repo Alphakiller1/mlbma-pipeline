@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 STAMP = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
+CFB_REVISION = "cfb-week-rollover"
 NAV = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8").strip()
 PUBLIC_SPORTS = ("nfl", "cfb", "nba", "cbb")
 PARKED_SPORTS = ("wnba",)
@@ -50,7 +51,7 @@ SPORTS = {
         "global": "ChaseSportCFB",
         "picks_label": "Public slate",
         "gems_label": None,
-        "lede": "Every Game On This Week’s Board, With The Projected Score, Win Probability And Totals Behind It — Model Projections Only, Ranked Against The Field.",
+        "lede": "Every Game On This Week’s Board, With Team Analysis And Model Projections Where Available.",
         "matchups_href": "/cfb/matchups.html",
     },
     "nba": {
@@ -148,6 +149,7 @@ def page(sport: str, *, kind: str = "index") -> str:
     more_html = ""
     lede = spec["lede"]
     h1 = sport.upper() + " Matchups"
+    adapter_assets = f"{STAMP}&amp;rev={CFB_REVISION}" if sport == "cfb" else STAMP
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -188,7 +190,7 @@ def page(sport: str, *, kind: str = "index") -> str:
   <script src="/dashboard/player_availability_shared.js?v={STAMP}"></script>
   <script src="/dashboard/chase_icons.js?v={STAMP}"></script>
   <script src="/dashboard/matchup_card.js?v={STAMP}"></script>
-  <script src="/dashboard/sports/{spec["adapter"]}.js?v={STAMP}"></script>
+  <script src="/dashboard/sports/{spec["adapter"]}.js?v={adapter_assets}"></script>
   <script src="/dashboard/chase_asyncstate.js?v={STAMP}"></script>
   <script src="/dashboard/chase_nav.js?v={STAMP}"></script>{extra_scripts}
   <script>
@@ -226,8 +228,8 @@ MATCHUPS_JS = r"""
 
 def matchup_page(sport: str) -> str:
     spec = SPORTS[sport]
-    detail_revision = {"nba": "nba-live-availability", "cfb": "cfb-live-availability-2",
-                       "nfl": "nfl-live-availability", "cbb": "cbb-live-availability"}.get(sport, "active-desk-audit")
+    detail_revision = {"nba": "nba-live-availability", "cfb": CFB_REVISION,
+                       "nfl": "nfl-live-availability", "cbb": "cbb-roster-size"}.get(sport, "active-desk-audit")
     detail_assets = f"{STAMP}&amp;rev={detail_revision}"
     adapter_assets = detail_assets if sport in {"nba", "cbb", "cfb"} else STAMP
     availability_assets = detail_assets if sport in {"nfl", "nba", "cbb", "cfb"} else STAMP

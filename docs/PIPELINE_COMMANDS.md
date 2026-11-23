@@ -479,6 +479,15 @@ C:\Users\chase\crawl_env\Scripts\python.exe scripts\integrate_chase_nav.py
 
 ---
 
+## College football slate rollover
+
+The Publish CFB Slate workflow checks ESPN’s FBS scoreboard for the current
+regular-season week. When the scoreboard is ahead of the model board, the
+publisher uses the verified fixtures and attaches the usual team evidence.
+The matchup desk uses the newer schedule until the model publishes that week’s
+projections. The publisher retains the latest slate if a source returns an
+older week for the same season.
+
 ## College basketball evidence
 
 The Publish CBB Slate workflow refreshes the current team and shot evidence daily during the season. It checks the public Action Network, Covers and RotoWire injury reports at additional scheduled times and verifies each listed player against the current ESPN roster.

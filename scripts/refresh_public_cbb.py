@@ -24,8 +24,9 @@ def export_snapshot(snapshot, temp, day):
     possession_data.DATA=ROOT/'.cache/cbb-tactics/sdv'
     for year in (2026,2027):possession_data.refresh(year)
     facts=factual_tactics.build(snapshot,day)
-    filled=espn_roster.fill_missing_heights(facts[2027],2027)
-    print(f'ESPN roster heights filled for {len(filled)} current-season teams.')
+    for year, teams in facts.items():
+        filled=espn_roster.fill_missing_heights(teams,year)
+        print(f'ESPN roster heights filled for {len(filled)} teams in {year-1}–{year}.')
     target=temp/'public'
     # The export fills the tactics it is given; a second pass must start clean.
     result=export.export_public(snapshot,conn,target,day,copy.deepcopy(facts),retained,ROOT/'.cache/cbb-tactics/espn-box')
