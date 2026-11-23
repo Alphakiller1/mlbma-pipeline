@@ -1153,6 +1153,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CFB detail no horizontal overflow",
               page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
         page.set_viewport_size({"width": 390, "height": 844})
+        page.locator(".ca-phone-nav").wait_for(timeout=timeout_ms)
         check("CFB phone layout has no horizontal overflow",
               page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
         check("CFB phone reads one school at a time",
