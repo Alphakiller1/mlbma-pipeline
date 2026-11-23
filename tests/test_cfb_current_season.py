@@ -71,6 +71,35 @@ class CfbCurrentSeasonTests(unittest.TestCase):
         team = {"season": 2025, "own": {}, "opp": {}}
         self.assertIsNone(cfb.form_for(team, {}, 2026))
 
+    def test_current_fbs_week_can_advance_past_the_model_board(self):
+        season = {"year": 2026, "type": 2}
+        week = {"number": 13}
+        event = {
+            "season": season, "week": week, "date": "2026-11-27T22:00Z",
+            "competitions": [{
+                "competitors": [
+                    {"homeAway": "away", "team": {"id": "2084", "abbreviation": "BUFF", "location": "Buffalo"}},
+                    {"homeAway": "home", "team": {"id": "195", "abbreviation": "OHIO", "location": "Ohio",
+                                                  "conferenceId": "15"}},
+                ],
+            }],
+        }
+        scoreboard = {"season": season, "week": week, "events": [event]}
+        model_games = [{"away": {"abbreviation": "BUF", "school": "Buffalo", "logo": "https://example.com/2084.png"}}]
+        with patch.object(cfb, "fetch_json", return_value=scoreboard):
+            found_week, games, events, source = cfb.load_current_schedule(2026, model_games, {"week": 12})
+        self.assertEqual((found_week, source), (13, "ESPN FBS scoreboard"))
+        self.assertEqual(games[0]["away"]["abbreviation"], "BUF")
+        self.assertEqual(games[0]["home"]["conference"], "Mid-American")
+        self.assertEqual(events[("buffalo", "ohio")]["kickoff_utc"], event["date"])
+
+    def test_a_wrong_season_scoreboard_keeps_the_model_week(self):
+        games = [{"id": "current"}]
+        with patch.object(cfb, "fetch_json", return_value={"season": {"year": 2025, "type": 2}, "week": {"number": 13}}), \
+             patch.object(cfb, "load_espn_events", return_value=[]) as read_events:
+            self.assertEqual(cfb.load_current_schedule(2026, games, {"week": 12}), (12, games, {}, "CFB model board"))
+        read_events.assert_called_once_with(12)
+
     def test_efficiency_and_trench_rates_are_derived_from_observed_counts(self):
         team = {
             "season": 2026,
@@ -172,10 +201,11 @@ def test_publisher_refuses_a_short_pull(tmp_path, monkeypatch):
     monkeypatch.setattr(cfb, "load_board_games",
                         lambda: ([{"id": 1}, {"id": 2}], {"season": cfb.datetime.now(cfb.timezone.utc).year}))
     monkeypatch.setattr(cfb, "load_espn_stats", lambda season: {})
-    monkeypatch.setattr(cfb, "load_espn_events", lambda week: [])
+    monkeypatch.setattr(cfb, "load_current_schedule", lambda season, games, board: (8, games, {}, "CFB model board"))
     monkeypatch.setattr(cfb, "load_sp_plus", lambda season: {})
     monkeypatch.setattr(cfb, "load_scheme_profiles", lambda season, week: {})
     monkeypatch.setattr(cfb, "event_index", lambda events: {})
+    monkeypatch.setattr(cfb, "load_depth", lambda *args: {})
     monkeypatch.setattr(cfb, "public_game", lambda raw, *a: {"id": raw["id"]})
     assert cfb.main() == 1
     assert out.read_text(encoding="utf-8") == '{"games": ["previous"]}'

@@ -122,7 +122,6 @@
 
   function mergePublic(mapped, pub, publishedAt) {
     if (!pub) return mapped;
-    mapped.public_game_id = pub.id || mapped.public_game_id;
     var sameGame = !mapped.kickoff_utc || !pub.kickoff_utc ||
       Math.abs(Date.parse(mapped.kickoff_utc) - Date.parse(pub.kickoff_utc)) < 12 * 3600000;
     ['away', 'home'].forEach(function (side) {
@@ -150,6 +149,8 @@
     mapped.home_record = keep(pub.home_record, mapped.home_record);
     mapped.away_conference = keep(pub.away_conference, mapped.away_conf);
     mapped.home_conference = keep(pub.home_conference, mapped.home_conf);
+    if (!sameGame) return mapped;
+    mapped.public_game_id = pub.id || mapped.public_game_id;
     mapped.away_travel = keep(pub.away_travel, mapped.away_travel);
     mapped.home_travel = keep(pub.home_travel, mapped.home_travel);
     // ESPN's facts about the fixture itself: where it airs, the forecast, and
@@ -272,10 +273,15 @@
       loadJson('/data/public/cfb/slate.json').catch(function () { return { games: [] }; }),
       loadJson(SLATE_URL).catch(function () { return { games: [] }; })
     ]).then(function (parts) {
-      var fromModel = parts[0] && Array.isArray(parts[0].games) && parts[0].games.length;
-      var board = fromModel ? parts[0] : (boardFromPublic(parts[2]) || {});
-      var build = parts[1] || {};
       var currentYear = new Date().getUTCFullYear();
+      var model = parts[0] || {};
+      var publicBoard = boardFromPublic(parts[2]);
+      var modelHasGames = Array.isArray(model.games) && model.games.length > 0;
+      var publicIsAhead = publicBoard && Number(publicBoard.season) === currentYear &&
+        (Number(model.season) !== currentYear || Number(publicBoard.week) > Number(model.week || 0));
+      var fromModel = modelHasGames && !publicIsAhead;
+      var board = fromModel ? model : (publicBoard || {});
+      var build = parts[1] || {};
       var boardSeason = Number(board.season);
       var statsSeason = boardSeason === currentYear ? currentYear : null;
       var local = indexPublic(seasonGames(parts[2], statsSeason));
@@ -311,8 +317,9 @@
       return {
         games: games,
         generatedAt: board.generated_at || board.generated_at_utc || null,
-        dataThrough: build.generated_at || build.generated_at_utc || null,
-        state: build.state || null,
+        dataThrough: fromModel ? (build.generated_at || build.generated_at_utc || null)
+          : ((parts[2] || {}).data_through_utc || board.generated_at_utc || null),
+        state: fromModel ? (build.state || null) : null,
         source: fromModel ? 'CFB model board' : 'Public slate',
         authority: {
           level: auth.level || 'unknown',

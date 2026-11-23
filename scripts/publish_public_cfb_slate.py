@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the public CFB research slate with observed team rates.
 
-Identity comes from the CFB model board (names, logos, kickoff). Season-to-date
+Fixtures can advance with ESPN when the model board is behind. Season-to-date
 rates come from ESPN's published team statistics and are ranked against that
 same FBS pool. Nothing here is a projection or a priced edge.
 """
@@ -44,8 +44,14 @@ STATS_URL = (
 # groups=80 is FBS. Without it ESPN serves only its featured (Top 25) games:
 # 17 of the 56 on 2026-10-20, so the rest of the slate published no venue,
 # broadcast, weather, score or state - finals stayed "scheduled".
-SCOREBOARD_URL = ("https://site.api.espn.com/apis/site/v2/sports/football/college-football/"
-                  "scoreboard?groups=80&limit=400&seasontype=2&week={week}")
+FBS_SCOREBOARD_URL = ("https://site.api.espn.com/apis/site/v2/sports/football/college-football/"
+                      "scoreboard?groups=80&limit=400")
+SCOREBOARD_URL = FBS_SCOREBOARD_URL + "&seasontype=2&week={week}"
+FBS_CONFERENCES = {
+    "1": "ACC", "4": "Big 12", "5": "Big Ten", "8": "SEC", "9": "Pac-12",
+    "12": "Conference USA", "15": "Mid-American", "17": "Mountain West",
+    "18": "FBS Independents", "37": "Sun Belt", "151": "American Athletic",
+}
 SP_PLUS_URL = "https://cfbupdate.com/sp-ratings"
 SCHEME_WEEK_URL = (
     "https://deepmetricanalytics.com/college-football/{season}/scheme-matchups/week-{week}"
@@ -631,8 +637,12 @@ def event_index(events: list[dict]) -> dict[tuple[str, str], dict]:
         for competitor in comp.get("competitors") or []:
             team = competitor.get("team") or {}
             sides[competitor.get("homeAway")] = {
+                "id": str(team.get("id") or ""),
                 "abbr": str(team.get("abbreviation") or "").upper(),
-                "school": team.get("nickname") or team.get("shortDisplayName") or team.get("displayName"),
+                "school": team.get("nickname") or team.get("location") or team.get("shortDisplayName"),
+                "conference": FBS_CONFERENCES.get(str(team.get("conferenceId"))),
+                "color": ("#" + team["color"]) if team.get("color") else None,
+                "logo": team.get("logo"),
                 "record": ((competitor.get("records") or [{}])[0] or {}).get("summary"),
                 "score": competitor.get("score"),
             }
@@ -738,6 +748,50 @@ def form_for(team: dict | None, pools: dict[str, list[float]], season: int) -> d
 def load_board_games() -> tuple[list[dict], dict]:
     board = fetch_json(BOARD_URL)
     return board.get("games") or [], board
+
+
+def load_current_schedule(season: int, board_games: list[dict], board: dict) -> tuple[int, list[dict], dict, str]:
+    board_week = int(board.get("week") or 0)
+    try:
+        scoreboard = fetch_json(FBS_SCOREBOARD_URL)
+    except (RuntimeError, OSError, ValueError):
+        scoreboard = {}
+    period = scoreboard.get("season") or {}
+    week = int((scoreboard.get("week") or {}).get("number") or 0)
+    if (period.get("year") != season or period.get("type") != 2 or week < board_week
+            or (week == board_week and board_games)):
+        return board_week, board_games, event_index(load_espn_events(board_week)), "CFB model board"
+
+    events = scoreboard.get("events") or []
+    if not events or any((event.get("season") or {}).get("year") != season
+                         or (event.get("week") or {}).get("number") != week for event in events):
+        raise RuntimeError("ESPN FBS schedule did not contain a matching season and week")
+
+    # Keep established desk names and IDs when an ESPN ID matches a model logo.
+    known = {}
+    for game in board_games:
+        for side in ("away", "home"):
+            team = game.get(side) or {}
+            logo_id = re.search(r"/(\d+)\.png$", team.get("logo") or "")
+            if logo_id:
+                known[logo_id[1]] = team
+    indexed = event_index(events)
+    games = []
+    for key, event in indexed.items():
+        if key != (event["away"]["abbr"], event["home"]["abbr"]):
+            continue
+        row = {"kickoff": event["kickoff_utc"], "neutral": event["neutral"]}
+        for side in ("away", "home"):
+            team = event[side]
+            row[side] = known.get(team["id"]) or {
+                "abbreviation": team["abbr"], "school": team["school"], "conference": team["conference"],
+                "color": team["color"], "logo": team["logo"],
+            }
+        games.append(row)
+    if len(games) != len(events) or any(not game["kickoff"] or not all(game[s]["school"] for s in ("away", "home"))
+                                        for game in games):
+        raise RuntimeError("ESPN FBS schedule has missing or duplicate matchups")
+    return week, games, indexed, "ESPN FBS scoreboard"
 
 
 def _record(log: list[dict] | None) -> str | None:
@@ -1108,14 +1162,21 @@ def carry_forward_depth(games: list[dict], season: int) -> int:
 
 
 def main() -> int:
-    games_in, board = load_board_games()
-    season = int(board.get("season") or 0)
-    current_year = datetime.now(timezone.utc).year
-    if season != current_year:
-        raise RuntimeError(
-            f"CFB board season {season or 'missing'} is not the current year {current_year}; "
-            "refusing to publish a mixed-season matchup slate"
-        )
+    season = datetime.now(timezone.utc).year
+    try:
+        board_games, board = load_board_games()
+    except (RuntimeError, OSError, ValueError):
+        board_games, board = [], {}
+    if board.get("season") != season:
+        board_games, board = [], {}
+    week, games_in, events, schedule_source = load_current_schedule(season, board_games, board)
+    if not games_in:
+        raise RuntimeError(f"No verified FBS schedule for {season}")
+    if OUT.exists():
+        previous = json.loads(OUT.read_text(encoding="utf-8"))
+        if previous.get("season") == season and week < int(previous.get("week") or 0):
+            raise RuntimeError(f"CFB schedule moved back to week {week}; retaining the published slate")
+    print(f"  schedule: {len(games_in)} games for week {week} from {schedule_source}")
     stats = load_espn_stats(season)
     unique = []
     seen = set()
@@ -1137,8 +1198,6 @@ def main() -> int:
             value = derived_rate(team, split, metric)
             if value is not None:
                 pools[key].append(value)
-    week = int(board.get("week") or 0)
-    events = event_index(load_espn_events(week))
     adjusted = load_sp_plus(season)
     schemes = load_scheme_profiles(season, week)
     depth = load_depth(season, week, games_in, adjusted)
@@ -1157,9 +1216,10 @@ def main() -> int:
         "schema": "chase-public-slate/1",
         "sport": "cfb",
         "season": season,
-        "week": board.get("week"),
+        "week": week,
         "generated_at_utc": stamp.isoformat().replace("+00:00", "Z"),
-        "data_through_utc": board.get("generated_at"),
+        "data_through_utc": (board.get("generated_at") if schedule_source == "CFB model board"
+                             else stamp.isoformat().replace("+00:00", "Z")),
         "games": games,
     }
     power = depth.get("power") or {}
