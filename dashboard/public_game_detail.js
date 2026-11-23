@@ -9970,28 +9970,49 @@ function seasonToggle(game) {
     var a=cbbTactics(game,side), title=cbbSchool(game,side)+' Size';
     if(!a)return cbbPanel(title,cbbSeason(game),pending('Position-size evidence is unavailable.'));
     var labels={G:'Guards',F:'Forwards',C:'Centers'};
+    var rosterRows=a.position_size||[];
     var starterRows=a.starter_position_size||[];
     var summary=a.size_summary||{}, starters=summary.starters||{};
     var startsComplete=starters.reported_starts>0&&starterRows.reduce(function(total,row){return total+row.recorded_starts;},0)===starters.reported_starts;
-    function height(r, basis, position) {
-      if (!r || r.mean_height_inches == null) return cbbMissing();
+    function height(r, basis, position, missing) {
+      if (!r || !Number.isFinite(r.mean_height_inches)) return cbbMissing(missing);
       var tenths = Math.round(r.mean_height_inches * 10), feet = Math.floor(tenths / 120);
       var text = feet+'′ '+((tenths-feet*120)/10).toFixed(1)+'″';
       var starter = basis === 'starters';
-      var place = cbbComparison(game, 'height', {side:basis, kind:position}, r.mean_height_inches, true);
+      var place = position && cbbComparison(game, 'height', {side:basis, kind:position}, r.mean_height_inches, true);
       var value = global.ChaseCbbCharts.value(text, place && rankTone(place.rank, place.of));
+      var count = r.players == null ? cbbPlural(r.recorded_starts, 'start') : cbbPlural(r.players, 'player') +
+        (starter ? '<span class="ca-cbb-count__games">'+cbbPlural(r.recorded_starts, 'start')+'</span>' : '');
       return cbbRanked(value, place, 'same-season D-I '+(starter?'starter groups':'rosters')+' · '+
         (labels[position] || 'all positions')+' · tallest first')+
-        '<small class="ca-cbb-count">'+cbbPlural(r.players,'player')+
-        (starter?'<span class="ca-cbb-count__games">'+cbbPlural(r.recorded_starts,'start')+'</span>':'')+'</small>';
+        '<small class="ca-cbb-count">'+count+'</small>';
+    }
+    function frontcourt(rows, countKey) {
+      var group = rows.filter(function (row) {
+        return (row.position === 'F' || row.position === 'C') && Number.isFinite(row.mean_height_inches) && row[countKey] > 0;
+      });
+      if (!group.length) return null;
+      var count = group.reduce(function (total, row) { return total + row[countKey]; }, 0);
+      return {
+        mean_height_inches: group.reduce(function (total, row) { return total + row.mean_height_inches * row[countKey]; }, 0) / count,
+        players: countKey === 'players' ? count : null,
+        recorded_starts: countKey === 'recorded_starts' ? count : null
+      };
     }
     var rows=[];
     if(summary.whole_team||summary.starters)rows.push(['All positions',height(summary.starters,'starters','all'),height(summary.whole_team,'whole_team','all')]);
-    ['G','F','C'].forEach(function(position){var r=(a.position_size||[]).find(function(p){return p.position===position;}),starter=starterRows.find(function(p){return p.position===position;});
-      rows.push([esc(labels[position]),!starter&&startsComplete?cbbMissing('No starts'):height(starter,'starters',position),height(r,'whole_team',position)]);});
+    Object.keys(labels).forEach(function (position) {
+      var roster = rosterRows.find(function (row) { return row.position === position; });
+      var starter = starterRows.find(function (row) { return row.position === position; });
+      var noStarts = startsComplete ? (position === 'C' ? 'No center starts' : 'No starts') : null;
+      var noHeight = position === 'C' && summary.whole_team && summary.whole_team.players > 0 ? 'No center heights' : null;
+      rows.push([labels[position], height(starter, 'starters', position, noStarts), height(roster, 'whole_team', position, noHeight)]);
+    });
+    rows.push(['Frontcourt (F/C)', height(frontcourt(starterRows, 'recorded_starts'), 'starters'),
+      height(frontcourt(rosterRows, 'players'), 'whole_team')]);
     var startSource=starters.source?' · starters '+starters.games+' games through '+starters.data_through:'';
     return cbbPanel(title,cbbSeason(game)+' · listed heights'+startSource,
-      rows.length?cbbTable(['Position','Starters (by starts)','Whole roster'],rows,'ca-cbb-factor-table'):pending('Reported heights are not available.'));
+      cbbTable(['Position','Starters (by starts)','Whole roster'],rows,'ca-cbb-factor-table'));
   }
   /* What a listed player is worth to the spread (scripts/fit_cbb_injury_value.py,
      outputs/cbb_injury_value.json): closing lines over 2024-25 and 2025-26
