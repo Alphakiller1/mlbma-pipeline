@@ -812,6 +812,7 @@
       '<span class="ca-status-chip ' + state.tone + '">' + state.label + '</span></div>' +
       '<header class="ca-matchup-card__head"><span class="ca-matchup-card__kick">' +
       ico('clock', 'ca-matchup-card__ico') + kickoff(game) + '</span>' +
+      (!/^(live|final)$/.test(String(game.game_state || '')) ? '<span class="ca-phone-only ca-status-chip ' + state.tone + '">' + state.label + '</span>' : '') +
       (hasWx ? '<span class="ca-matchup-card__wx">' + wxIco(wxText) + esc(wxText) + '</span>' : '') +
       '</header>' +
       '<div class="ca-matchup-card__teams">' + teamBlock(sport, game, 'away') +
@@ -824,7 +825,8 @@
       '<footer class="ca-matchup-card__actions">' +
       '<button type="button" class="ca-matchup-card__expand-btn" data-expand-matchup aria-expanded="false" aria-controls="' +
       esc(panelId) + '"><span>Expand Matchup</span><span aria-hidden="true">+</span></button>' +
-      '<a class="ca-matchup-card__detail-link" href="' + esc(fullMatchupUrl(sport, game)) + '">Full Matchup Analysis <span aria-hidden="true">→</span></a>' +
+      '<a class="ca-matchup-card__detail-link" href="' + esc(fullMatchupUrl(sport, game)) + '"><span class="ca-matchup-card__detail-full">Full Matchup Analysis</span>' +
+      '<span class="ca-phone-only ca-matchup-card__detail-short">Analyze Matchup</span> <span aria-hidden="true">→</span></a>' +
       '</footer></article>';
   }
 
@@ -1283,6 +1285,7 @@
   var GAME_HOURS = { nfl: 4.5, cfb: 5, nba: 3.5, cbb: 3, mlb: 5.5 };
   // Desks a reader moves through day by day.
   var DATE_DESKS = { mlb: 1, cbb: 1 };
+  var COMPLETED_DESKS = { nfl: 1, cfb: 1, nba: 1, cbb: 1 };
   function gameEnded(sport, game, now) {
     var state = String(game.game_state || '').toLowerCase();
     if (state === 'final' || state === 'canceled' || state === 'cancelled') return true;
@@ -1291,7 +1294,16 @@
     return isFinite(start) && now - start > (GAME_HOURS[sport] || 4) * 3600000;
   }
   function showsEnded(desk) {
-    return !!desk.results || (!!desk.chosenDate && !!desk.dateIso && desk.dateIso < easternDateIso());
+    return !!desk.results || (desk.viewChosen !== 'upcoming' && !!desk.chosenDate && !!desk.dateIso && desk.dateIso < easternDateIso());
+  }
+
+  function displayedGames(desk) {
+    var games = desk.games || [];
+    if (!desk.results || !desk.completedGames) return games;
+    var used = new Set(games.map(function (game) { return game.id + '|' + String(game.kickoff_utc || '').slice(0, 10); }));
+    return games.concat(desk.completedGames.filter(function (game) {
+      return !used.has(game.id + '|' + String(game.kickoff_utc || '').slice(0, 10));
+    }));
   }
 
   function filterGames(host, games) {
@@ -1339,9 +1351,19 @@
     }
     // Search moved to the header (#chaseNavSearch drives the same filter), so
     // the toolbar no longer carries a duplicate field.
-    html += '</div>' +
-      '<div class="ca-desk-toolbar__secondary"><button type="button" class="ca-desk-chip' +
-      ((desk.filter || 'all') === 'all' ? ' is-on' : '') + '" data-filter="all">All games</button>';
+    html += '</div><div class="ca-desk-toolbar__secondary">';
+    if (COMPLETED_DESKS[sport]) {
+      html += '<div class="ca-desk-views" role="group" aria-label="Game status">' +
+        ['upcoming', 'completed'].map(function (view) {
+          var selected = view === (desk.results || showsEnded(desk) ? 'completed' : 'upcoming');
+          return '<button type="button" class="ca-desk-chip' + (selected ? ' is-on' : '') +
+            '" data-slate-view="' + view + '" aria-pressed="' + selected + '">' +
+            (view === 'upcoming' ? 'Upcoming' : 'Completed') + '</button>';
+        }).join('') + '</div>';
+    } else {
+      html += '<button type="button" class="ca-desk-chip' +
+        ((desk.filter || 'all') === 'all' ? ' is-on' : '') + '" data-filter="all">All games</button>';
+    }
     if (sport === 'mlb' && !desk.results) {
       html += '<button type="button" class="ca-desk-chip' + (desk.filter === 'confirmed' ? ' is-on' : '') +
         '" data-filter="confirmed">Confirmed lineups</button>';
@@ -1396,7 +1418,8 @@
 
   function render(host) {
     var desk = host.__desk || {};
-    var shown = filterGames(host, desk.games || []);
+    var shown = filterGames(host, displayedGames(desk));
+    if (desk.results) shown.sort(function (a, b) { return String(b.kickoff_utc || '').localeCompare(String(a.kickoff_utc || '')); });
     var totalShown = shown.length;
     if (desk.embedded && desk.sport === 'cbb') shown = shown.slice(0,6);
     host.setAttribute('data-state', shown.length ? 'ready' : 'empty');
@@ -1407,13 +1430,16 @@
     var controlHost = document.querySelector('[data-desk-toolbar-host]');
     var allEnded = !shown.length && !desk.results && !showsEnded(desk) && (desk.games || []).length > 0 &&
       (desk.games || []).every(function (game) { return gameEnded(desk.sport, game, Date.now()); });
-    var empty = desk.results ? ['No completed games', 'Final scores will appear here when games finish.']
+    var empty = desk.results ? (desk.completedLoading ? ['Loading completed games', ''] :
+      ['No completed games', 'Final scores will appear here when games finish.'])
       : allEnded ? ['Every game on this slate has finished', DATE_DESKS[desk.sport]
         ? 'Use the next-day arrow for the games ahead.' : 'The next slate appears here when it is published.']
       : ['No matching games', 'Adjust the date, filters, or search.'];
     var body = renderGroups(desk.sport, shown) +
       (!shown.length ? '<div class="ca-empty-state"' + (allEnded ? ' data-empty="ended"' : '') + '><h2>' + empty[0] +
-        '</h2><p>' + empty[1] + '</p></div>' : '');
+        '</h2>' + (empty[1] ? '<p>' + empty[1] + '</p>' : '') +
+        (allEnded && COMPLETED_DESKS[desk.sport] && !desk.embedded
+          ? '<button type="button" class="ca-desk-chip" data-slate-view="completed">View completed games</button>' : '') + '</div>' : '');
     if (controlHost) {
       controlHost.innerHTML = toolbar;
       host.innerHTML = body;
@@ -1501,6 +1527,7 @@
     host.__desk.adapter = opts.adapter;
     host.__desk.embedded = !!opts.embedded;
     host.__desk.results = !!opts.results;
+    host.__desk.viewChosen = opts.viewChosen || null;
     host.__desk.chosenDate = !!(opts.dateIso || query().get('date'));
     host.__desk.dateIso = opts.dateIso || query().get('date') || easternDateIso();
     host.setAttribute('data-state', 'loading');
@@ -1567,6 +1594,28 @@
         }
         return;
       }
+      var slateView = event.target.closest('[data-slate-view]');
+      if (slateView) {
+        var viewHost = deskHostFor(slateView);
+        if (!viewHost) return;
+        var desk = viewHost.__desk;
+        desk.viewChosen = slateView.dataset.slateView;
+        desk.results = desk.viewChosen === 'completed';
+        if (desk.results && desk.adapter.loadCompleted && !desk.completedGames && !desk.completedLoading) {
+          desk.completedLoading = true;
+          desk.adapter.loadCompleted().then(function (games) {
+            desk.completedGames = games;
+          }).finally(function () {
+            desk.completedLoading = false;
+            if (desk.results) renderPreservingState(viewHost);
+          });
+        }
+        render(viewHost);
+        var control = document.querySelector('[data-desk-toolbar-host]') || viewHost;
+        var next = control.querySelector('[data-slate-view="' + desk.viewChosen + '"]');
+        if (next) next.focus({ preventScroll: true });
+        return;
+      }
       var shift = event.target.closest('[data-date-shift]');
       var today = event.target.closest('[data-date-today]');
       if (shift || today) {
@@ -1574,14 +1623,14 @@
         if (!dateHost || !dateHost.__desk) return;
         var nextDate = today ? easternDateIso() : shiftIso(dateHost.__desk.dateIso, Number(shift.getAttribute('data-date-shift')));
         mount({ sport: dateHost.__desk.sport, adapter: dateHost.__desk.adapter, host: dateHost,
-          dateIso: nextDate, results: dateHost.__desk.results });
+          dateIso: nextDate, results: dateHost.__desk.results, viewChosen: dateHost.__desk.viewChosen });
         return;
       }
       var retry = event.target.closest('[data-retry-slate]');
       if (retry) {
         var retryHost = deskHostFor(retry);
         if (retryHost && retryHost.__desk) mount({ sport: retryHost.__desk.sport, adapter: retryHost.__desk.adapter,
-          host: retryHost, dateIso: retryHost.__desk.dateIso, results: retryHost.__desk.results });
+          host: retryHost, dateIso: retryHost.__desk.dateIso, results: retryHost.__desk.results, viewChosen: retryHost.__desk.viewChosen });
       }
     });
     // The header search drives the same slate filter as the toolbar field, so

@@ -746,6 +746,7 @@
       'aria-label="Close prop projections" autofocus>×</button></form></header>' +
       '<div class="mc-props-dialog__toolbar"><label class="mc-props__pick"><span>Matchup</span>' +
       '<select id="mcPropsGame">' + options + '</select></label>' +
+      '<label class="mc-props__pick"><span>Player</span><select id="mcPropsPlayer"><option value="">All players</option></select></label>' +
       '<p class="mc-board__status" id="mcPropsCount" role="status"></p>' +
       '<p class="mc-props__quotes" id="mcPropsQuotes" role="status"></p></div>' +
       '<div class="mc-props-dialog__body" tabindex="0" role="region" aria-label="Projected players">' +
@@ -784,12 +785,22 @@
   function wirePropsDialog(host, sport, groups, covered, board) {
     var dialog = $('mcPropsDialog');
     var pick = $('mcPropsGame');
+    var playerPick = $('mcPropsPlayer');
     var count = $('mcPropsCount');
     var grid = $('mcPropsGrid');
     var quoteNote = $('mcPropsQuotes');
     var selected;
     var pending = false;
     var lastChecked = 0;
+
+    function renderPlayers(players, game, resetScroll) {
+      var index = playerPick.value;
+      var showing = index === '' ? players : players.filter(function (_, i) { return String(i) === index; });
+      grid.innerHTML = weeklyGameCards(sport, showing, game);
+      if (resetScroll) grid.parentElement.scrollTop = 0;
+      count.textContent = index === '' ? players.length + (players.length === 1 ? ' player projected' : ' players projected') :
+        'Showing 1 of ' + players.length + ' projected players';
+    }
 
     function refreshQuotes(force) {
       if (!['nfl', 'cfb'].includes(sport) || !selected || pending || (!force && Date.now() - lastChecked < 60000)) return;
@@ -800,18 +811,18 @@
       lastChecked = Date.now();
       players.forEach(function (p) { p.prop_quote_state = 'checking'; });
       quoteNote.textContent = 'Checking current DraftKings prop lines…';
-      grid.innerHTML = weeklyGameCards(sport, players, game);
+      renderPlayers(players, game);
       fetchCurrentProps(game, board, sport, players).then(function (payload) {
         applyPropLines(players, payload.lines, payload.state === 'closed' ? 'closed' : 'current', true);
         if (selected !== game) return;
         quoteNote.textContent = quoteStatus(payload);
-        grid.innerHTML = weeklyGameCards(sport, players, game);
+        renderPlayers(players, game);
       }).catch(function () {
         players.forEach(function (p) { p.prop_quote_state = 'error';
           (p.lines || []).forEach(function (line) { line.quote_status = 'snapshot'; }); });
         if (selected !== game) return;
         quoteNote.textContent = 'Current quotes unavailable. Any retained lines are labeled as snapshots.';
-        grid.innerHTML = weeklyGameCards(sport, players, game);
+        renderPlayers(players, game);
       }).finally(function () {
         pending = false;
         if (selected !== game) refreshQuotes(true);
@@ -826,13 +837,20 @@
       lastChecked = 0;
       var players = groups.get(key);
       pick.value = key;
-      grid.innerHTML = weeklyGameCards(sport, players, game);
-      grid.parentElement.scrollTop = 0;
-      count.textContent = players.length + (players.length === 1 ? ' player projected' : ' players projected');
+      var names = players.map(function (player, index) {
+        return { key: index, label: player.player_name + (player.team ? ' · ' + player.team : '') };
+      }).sort(function (a, b) { return a.label.localeCompare(b.label); });
+      playerPick.innerHTML = '<option value="">All players</option>' + names.map(function (player) {
+        return '<option value="' + player.key + '">' + esc(player.label) + '</option>';
+      }).join('');
+      renderPlayers(players, game, true);
       refreshQuotes(true);
     }
 
     pick.addEventListener('change', function () { selectGame(pick.value); });
+    playerPick.addEventListener('change', function () {
+      if (selected) renderPlayers(groups.get(modelGameKey(sport, selected)), selected, true);
+    });
     host.querySelectorAll('[data-mc-props]').forEach(function (button) {
       button.addEventListener('click', function () {
         selectGame(button.dataset.mcProps || pick.value);

@@ -6615,3 +6615,254 @@ body[data-sport="nfl"] #game-log .ca-lineup-scroll[data-table-scroll] .ca-split-
     position: sticky; left: 0; z-index: 1; background: var(--surface-board-raised);
   }
 }
+
+.ca-phone-only,
+.ca-matchup-details > summary { display: none; }
+.ca-desk-views { display: inline-flex; gap: var(--space-1); }
+.ca-cbb-chart-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+@media (max-width: 719px) {
+  .ca-opening-desk__head, .ca-public-page__head { padding-block: var(--space-3); }
+  .ca-opening-desk__title { font-size: var(--type-24); line-height: 1.14; }
+  .ca-opening-desk__lede, .ca-public-page__lede { font-size: var(--type-13); line-height: 1.4; }
+  .ca-opening-desk__slates { gap: var(--space-4); }
+  .ca-opening-sport__head { padding-block: var(--space-2); }
+  .ca-desk-views .ca-desk-chip { min-height: var(--touch-min); }
+  .ca-matchup-card:is([data-sport="nfl"], [data-sport="cfb"], [data-sport="nba"], [data-sport="cbb"]) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+  }
+  .ca-matchup-card:is([data-sport="nfl"], [data-sport="cfb"], [data-sport="nba"], [data-sport="cbb"])
+    :is(.ca-matchup-card__venue, .ca-matchup-card__wx, .ca-matchup-card__arms, .ca-matchup-card__summary, .ca-matchup-card__detail-full) {
+    display: none;
+  }
+  .ca-matchup-card__head > .ca-phone-only, .ca-matchup-card__detail-short { display: inline-flex; }
+  .ca-matchup-card__head { justify-content: space-between; padding: 0; min-height: 0; }
+  .ca-matchup-card__head .ca-matchup-card__kick { gap: var(--space-1); font-size: var(--type-14); }
+  .ca-matchup-card__actions { order: 2; gap: var(--space-2); margin-top: 0; padding-top: 0; }
+  .ca-matchup-card__expand { order: 3; }
+  .ca-matchup-card__actions > .ca-matchup-card__detail-link {
+    order: -1;
+    justify-content: center;
+    flex: 1 1 auto;
+    min-height: var(--touch-min);
+    padding-inline: var(--space-2);
+    border: 1px solid var(--accent-strong);
+    border-radius: var(--radius-sm);
+    background: var(--accent-soft);
+    color: var(--accent-text);
+  }
+  .ca-matchup-card__actions > .ca-matchup-card__expand-btn {
+    flex: 0 1 auto;
+    min-height: var(--touch-min);
+    padding-inline: var(--space-2);
+  }
+
+  #matchupDetail[data-phone-view] .ca-nfl-bar > :is(.ca-detail-nav, .ca-nfl-club) { display: none; }
+  #matchupDetail[data-phone-view] .ca-nfl-bar {
+    margin: var(--space-2) 0;
+    padding: 0;
+    background: var(--surface-canvas);
+  }
+  #matchupDetail[data-phone-view] .ca-phone-nav {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    border-bottom: 1px solid var(--border-default);
+    gap: 0;
+  }
+  .ca-phone-nav a {
+    display: grid;
+    place-items: center;
+    min-height: var(--touch-min);
+    color: var(--text-secondary);
+    font-size: var(--type-12);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .ca-phone-nav a[aria-current] {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+    box-shadow: inset 0 -2px 0 var(--accent-strong);
+  }
+  #matchupDetail[data-phone-view] :is(.ca-detail-stack, .ca-detail-section, .ca-analysis-scope, .ca-detail-hero) {
+    scroll-margin-top: calc(var(--shell-header-h-phone) + var(--touch-min) + var(--space-2));
+  }
+  #matchupDetail[data-phone-view] .ca-detail-back {
+    min-height: var(--touch-min);
+    margin-bottom: 0;
+  }
+  #matchupDetail[data-phone-view] .ca-detail-hero { padding: var(--space-2) var(--space-3); }
+  #matchupDetail[data-phone-view] .ca-detail-hero__meta { display: none; }
+  #matchupDetail[data-phone-view] .ca-detail-hero__teams {
+    grid-template-columns: minmax(0, 1fr) minmax(74px, auto) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) 0;
+  }
+  #matchupDetail[data-phone-view] .ca-detail-team {
+    grid-column: auto;
+    grid-row: auto;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    text-align: center;
+  }
+  #matchupDetail[data-phone-view] .ca-detail-team__logo { width: 42px; height: 42px; }
+  #matchupDetail[data-phone-view] .ca-detail-team h1 {
+    font-size: var(--type-16);
+    line-height: 1.14;
+    overflow-wrap: anywhere;
+  }
+  #matchupDetail[data-phone-view] .ca-detail-team p { font-size: var(--type-12); }
+  #matchupDetail[data-phone-view] .ca-detail-center { grid-row: auto; grid-column: auto; }
+  #matchupDetail[data-phone-view] .ca-detail-center strong {
+    font-size: var(--type-20);
+    line-height: 1.08;
+    white-space: normal;
+  }
+  #matchupDetail[data-phone-view] .ca-detail-center :is(p, .ca-cbb-meridiem) { font-size: var(--type-12); }
+  #matchupDetail[data-phone-view] .ca-phone-game-state { display: block; color: var(--text-muted); font-size: var(--type-12); }
+  #matchupDetail[data-phone-view] .ca-matchup-details > summary {
+    display: list-item;
+    min-height: var(--touch-min);
+    padding-block: var(--space-3);
+    border-top: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    font-size: var(--type-13);
+    cursor: pointer;
+  }
+  #matchupDetail[data-phone-view] .ca-detail-facts { padding-bottom: var(--space-2); }
+  #matchupDetail:is([data-phone-view="overview"], [data-phone-view="injuries"], [data-phone-view="more"]) > .ca-analysis-scope {
+    display: none;
+  }
+  #matchupDetail[data-phone-view] > .ca-analysis-scope {
+    margin: 0 0 var(--space-2);
+    padding: var(--space-2);
+  }
+  #matchupDetail[data-phone-view] .ca-cbb-controls > div:first-child { width: auto; }
+  #matchupDetail[data-phone-view] .ca-cbb-controls .ca-basketball-legend { display: none; }
+  #matchupDetail[data-phone-view="overview"] .ca-phone-snapshot,
+  #matchupDetail[data-phone-view="more"] .ca-phone-directory,
+  #matchupDetail:is([data-phone-view="compare"], [data-phone-view="topic"], [data-phone-view="injuries"], [data-phone-view="games"]) .ca-phone-clubs,
+  #matchupDetail:is([data-phone-view="compare"], [data-phone-view="topic"]) .ca-phone-related:not(:empty) { display: block; }
+
+  .ca-phone-snapshot, .ca-phone-directory, .ca-phone-related {
+    background: var(--surface-panel);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+  }
+  .ca-phone-snapshot > header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+  .ca-phone-snapshot h2, .ca-phone-directory h2 {
+    margin: 0;
+    font: 700 var(--type-20)/1.15 var(--font-display);
+  }
+  .ca-phone-snapshot > header > span, .ca-phone-clubs > span {
+    color: var(--text-secondary);
+    font-size: var(--type-12);
+  }
+  .ca-phone-snapshot__table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: var(--type-14);
+    font-variant-numeric: tabular-nums;
+  }
+  .ca-phone-snapshot__table :is(th, td) {
+    text-align: start;
+    padding: var(--space-2);
+    border-bottom: 1px solid var(--border-subtle);
+    overflow-wrap: anywhere;
+  }
+  .ca-phone-snapshot__table :is(th, td):first-child { width: 42%; padding-inline-start: 0; }
+  .ca-phone-snapshot__table :is(th, td):last-child { padding-inline-end: 0; }
+  .ca-phone-snapshot__table thead th { color: var(--text-secondary); font-weight: 600; }
+  .ca-phone-snapshot__table tbody th { color: var(--text-primary); font-weight: 700; }
+  .ca-phone-snapshot__table tbody tr:last-child > * { border-bottom: 0; }
+  .ca-phone-snapshot__table .ca-rank { display: block; width: max-content; }
+  .ca-phone-snapshot__table small {
+    display: block;
+    color: var(--text-secondary);
+    font-size: var(--type-12);
+    font-weight: 400;
+    line-height: 1.25;
+  }
+  .ca-phone-directory > section + section { margin-top: var(--space-3); }
+  :is(.ca-phone-directory, .ca-phone-related) h3 { margin: var(--space-2) 0; }
+  .ca-phone-links { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .ca-phone-links a, .ca-phone-stats {
+    min-height: var(--touch-min);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2) var(--space-3);
+    background: var(--surface-inset);
+    color: var(--text-primary);
+    font: inherit;
+    font-size: var(--type-13);
+    text-decoration: none;
+  }
+  .ca-phone-links a { display: inline-flex; align-items: center; }
+  .ca-phone-links a[aria-current] { color: var(--accent-text); border-color: var(--accent-strong); }
+  .ca-phone-clubs > .ca-nfl-club { display: flex; margin-top: var(--space-1); }
+  .ca-phone-clubs .ca-nfl-club__btn { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
+  .ca-phone-comparison-legend, #matchupDetail[data-phone-view="compare"] [data-phone-rank-rule]::after {
+    color: var(--text-secondary);
+    font-size: var(--type-12);
+  }
+  .ca-phone-comparison-legend { margin: var(--space-2) 0 0; }
+  .ca-phone-comparison-legend:empty { display: none; }
+  #matchupDetail[data-phone-view="compare"] [data-phone-rank-rule]::after {
+    content: attr(data-phone-rank-rule);
+    display: block;
+    font-weight: 400;
+  }
+  #matchupDetail[data-phone-view] .ca-detail-section,
+  #matchupDetail[data-phone-view] .ca-detail-section :is(.ca-cfb-panel, .ca-form-panel, .ca-lineup-board) {
+    min-width: 0;
+    padding: var(--space-2);
+  }
+  #matchupDetail[data-phone-view] .ca-detail-section__head { margin-bottom: var(--space-2); }
+  #matchupDetail[data-phone-view] .ca-cfb-ledger-table { min-width: 0; }
+  #matchupDetail[data-phone-view] .ca-cfb-ledger-table :is(td, th) { white-space: normal; overflow-wrap: anywhere; }
+  #matchupDetail[data-phone-view] .ca-ledger-col-stat { width: 34%; }
+  #matchupDetail[data-phone-view] .ca-ledger-col-val { width: 26%; }
+  #matchupDetail[data-phone-view] .ca-ledger-col-bars { width: 14%; }
+  #matchupDetail[data-phone-view="injuries"] .ca-lineup-board { display: flex; flex-direction: column; }
+  #matchupDetail[data-phone-view="injuries"] .ca-lineup-board__head { order: -3; }
+  #matchupDetail[data-phone-view="injuries"] .ca-lineup-board > .ca-injury-report-meta { order: -2; }
+  #matchupDetail[data-phone-view="injuries"] .ca-lineup-board > .ca-injury-report { order: -1; margin-block: 0 var(--space-3); }
+  #matchupDetail[data-phone-view] .ca-lineup-scroll { container-type: inline-size; }
+  #matchupDetail[data-phone-view] .ca-lineup-scroll[data-table-scroll] tr > :first-child:not([colspan]) {
+    width: clamp(6.5rem, 37cqi, 8.5rem);
+    min-width: clamp(6.5rem, 37cqi, 8.5rem);
+    max-width: clamp(6.5rem, 37cqi, 8.5rem);
+    position: sticky;
+    inset-inline-start: 0;
+    background: var(--surface-board-raised);
+    box-shadow: 1px 0 0 var(--border-card);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    z-index: 1;
+  }
+  #matchupDetail[data-phone-view] .ca-lineup-scroll[data-table-scroll] tr > :first-child :is(.ca-lineup-name, strong, span) {
+    min-width: 0;
+    white-space: normal;
+  }
+  #matchupDetail[data-phone-view] table:not(.is-phone-expanded) .ca-phone-stat-extra { display: none; }
+  #matchupDetail[data-phone-view] .ca-phone-stats { display: block; margin: var(--space-2) 0 0 auto; cursor: pointer; }
+}

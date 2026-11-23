@@ -198,6 +198,7 @@
   function paintSection(host, id, body) {
     var node = host.querySelector('[data-body="' + id + '"]');
     if (node) node.innerHTML = body;
+    if (id === 'cfb-availability') refreshPhoneOverview(host);
     if (id === 'radar') fitRadar(host);
     if (id === 'pitch-matchup') applyPitchMetric(host);
     if (id === 'bvp') applyBvpView(host);
@@ -234,6 +235,12 @@
         '<p>' + esc(kickoffTime(game.kickoff_utc)) + '</p>';
     }
     return '<strong>' + esc(kickoffTime(game.kickoff_utc)) + '</strong>';
+  }
+
+  function phoneGameStatus(game) {
+    var when = game.sport !== 'cbb' && game.kickoff_utc && new Date(game.kickoff_utc).toLocaleDateString('en-US',
+      { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/New_York' });
+    return '<span class="ca-phone-only ca-phone-game-state">' + esc([gameStatus(game), when].filter(Boolean).join(' · ')) + '</span>';
   }
 
   /* ---------------------------------------------------------------------
@@ -3777,10 +3784,13 @@ function wireSeasonToggle(host) {
         b.setAttribute('aria-pressed', String(on));
       });
       var scope = btn.getAttribute('data-season-scope');
+      var context = host.__caRadar;
+      if (context && context.sport === 'nfl') context.game.__phoneNflScope = scope;
       // Each season-bound block carries both windows; show the chosen one.
       Array.prototype.forEach.call(host.querySelectorAll('[data-season-view]'), function (node) {
         node.hidden = node.getAttribute('data-season-view') !== scope;
       });
+      refreshPhoneOverview(host);
       host.setAttribute('data-season-scope', scope);
     });
   }
@@ -5034,8 +5044,8 @@ function seasonToggle(game) {
       '</h3>';
     function formEntry(rates, prefix, stat) {
       var entry = rates[prefix + stat[0]];
-      return entry && nflLedgerEntry(entry.value, stat[2],
-        { rank: entry.rank, of: entry.of || 32 }, entry.label);
+      return entry && Object.assign(nflLedgerEntry(entry.value, stat[2],
+        { rank: entry.rank, of: entry.of || 32 }, entry.label) || {}, { better: entry.better });
     }
     function schemeEntry(scheme, phase, stat) {
       var raw = nflResponse(scheme, phase)[stat[0]];
@@ -5864,7 +5874,7 @@ function seasonToggle(game) {
 
   /* Where the two clubs' panels stack (narrower than 1380px), one club is read
      at a time; the switch is sticky with the tabs. */
-  function nflClubSwitch(sport, game) {
+  function nflClubSwitch(sport, game, phone) {
     return '<div class="ca-nfl-club" role="group" aria-label="Club in view">' +
       ['away', 'home'].map(function (side) {
         var full = sport === 'cbb' ? cbbSchool(game,side) : sport === 'cfb' ? cfbName(sport, game, side) : nflNick(sport, game, side);
@@ -5873,7 +5883,7 @@ function seasonToggle(game) {
           '<span class="ca-club-label-full">' + esc(full) + '</span>' +
           '<span class="ca-club-label-short">' + esc(short) + '</span></button>';
       }).join('') +
-      '<button type="button" class="ca-nfl-club__btn" data-club="both" aria-pressed="false">Both</button></div>';
+      (phone ? '' : '<button type="button" class="ca-nfl-club__btn" data-club="both" aria-pressed="false">Both</button>') + '</div>';
   }
 
   function nflSetTab(host, key, scrollTo) {
@@ -5881,9 +5891,9 @@ function seasonToggle(game) {
     var tab = deskTabs(host).filter(function (t) { return t[0] === key; })[0];
     if (!stack || !tab) return;
     stack.setAttribute('data-nfl-tab', key);
-    if (host.querySelector('.ca-cbb-controls')) host.querySelectorAll('[data-cbb-chart-control]').forEach(function(g){g.hidden=key!=='shooting';});
+    var chosen = setPhoneView(host, stack, tab);
     Array.prototype.forEach.call(stack.querySelectorAll(':scope > .ca-detail-section'), function (sec) {
-      sec.classList.toggle('is-tab-on', tab[2].indexOf(sec.id) >= 0);
+      sec.classList.toggle('is-tab-on', chosen ? sec.id === chosen.section : tab[2].indexOf(sec.id) >= 0);
     });
     Array.prototype.forEach.call(host.querySelectorAll('[data-nfl-tab]'), function (a) {
       if (a === stack) return;
@@ -5893,6 +5903,13 @@ function seasonToggle(game) {
     });
     fitRadar(host);
     var target = scrollTo && document.getElementById(scrollTo);
+    if (chosen && scrollTo) target = chosen.view === 'overview' ? host.querySelector('#overview') : stack;
+    if (target === stack && chosen) {
+      var scope = (chosen.view === 'compare' || chosen.view === 'games' || chosen.view === 'topic') &&
+        host.querySelector('.ca-analysis-scope');
+      (scope || stack).scrollIntoView({ block: 'start' });
+      return;
+    }
     if (target && target !== stack) {
       target.scrollIntoView({ block: 'start' });
     } else if (scrollTo) {
@@ -6095,7 +6112,11 @@ function seasonToggle(game) {
     var pending = 0;
     function even() {
       if (pending) global.cancelAnimationFrame(pending);
-      pending = global.requestAnimationFrame(function () { pending = 0; deskEvenTables(host); });
+      pending = global.requestAnimationFrame(function () {
+        pending = 0;
+        preparePhoneTables(host);
+        deskEvenTables(host);
+      });
     }
     // Any tab, club or season switch can reveal tables; so can a resize, and
     // a headshot or logo arriving late can change a row's height.
@@ -6106,11 +6127,35 @@ function seasonToggle(game) {
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(even);
     even();
     host.addEventListener('click', function (event) {
+      var phoneLink = event.target.closest && event.target.closest('[data-phone-route]');
+      if (phoneLink && host.contains(phoneLink) && event.button === 0 &&
+          !(event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) {
+        event.preventDefault();
+        var route = phoneLink.getAttribute('data-phone-route');
+        if (global.location.hash !== '#' + route) global.history.pushState(null, '', '#' + route);
+        navigateDesk(host, route, true);
+        return;
+      }
+      var moreStats = event.target.closest && event.target.closest('[data-phone-stats]');
+      if (moreStats && host.contains(moreStats)) {
+        var table = document.getElementById(moreStats.getAttribute('aria-controls'));
+        if (!table) return;
+        var expanded = moreStats.getAttribute('aria-expanded') !== 'true';
+        table.classList.toggle('is-phone-expanded', expanded);
+        moreStats.setAttribute('aria-expanded', String(expanded));
+        moreStats.textContent = expanded ? 'Show fewer stats' : 'View all stats (' + table.dataset.phoneRows + ')';
+        if (!expanded) table.scrollIntoView({ block: 'nearest' });
+        return;
+      }
+      if (event.target.closest('[data-retry-game-evidence]') && host.__requestGameEvidence) {
+        host.__requestGameEvidence(true);
+        return;
+      }
       var tab = event.target.closest && event.target.closest('a[data-nfl-tab]');
       if (tab && host.contains(tab)) {
         event.preventDefault();
         var key = tab.getAttribute('data-nfl-tab');
-        nflSetTab(host, key, 'stack');
+        navigateDesk(host, key, true);
         if (global.history && global.history.replaceState) {
           global.history.replaceState(null, '', '#' + key);
         }
@@ -6136,23 +6181,27 @@ function seasonToggle(game) {
       }
     });
     global.addEventListener('hashchange', function () {
-      var key = String(global.location.hash || '').slice(1);
-      var tab = nflTabOf(key, deskTabs(host));
-      if (tab) nflSetTab(host, tab, key === tab ? 'stack' : key);
+      navigateDesk(host, String(global.location.hash || '').slice(1), true);
       even();
     });
+    if (host.__phoneMedia && host.__phoneMedia.addEventListener) {
+      host.__phoneMedia.addEventListener('change', function () {
+        if (host.__phoneMedia.matches && host.querySelector('.ca-detail-stack').dataset.club === 'both') nflSetClub(host, 'away');
+        navigateDesk(host, host.__deskRoute, false);
+        even();
+      });
+    }
   }
 
   function nflInitDesk(host) {
-    var tabs = deskTabs(host);
     var key = String(global.location.hash || '').slice(1);
-    var tab = nflTabOf(key, tabs) || tabs[0][0];
-    var section = key && key !== tab && nflTabOf(key, tabs) ? key : null;
-    nflSetTab(host, tab, section);
+    var section = key && deskTabs(host).some(function (tab) { return tab[2].indexOf(key) >= 0; }) ? key : null;
+    navigateDesk(host, key, Boolean(key));
     // Logos and fonts landing after the first scroll move the section; anchor
     // it again once the page has settled.
-    if (section) {
+    if (section && !host.__phoneActive) {
       var again = function () {
+        if (global.location.hash !== '#' + section) return;
         var el = document.getElementById(section);
         if (el) el.scrollIntoView({ block: 'start' });
       };
@@ -6664,7 +6713,13 @@ function seasonToggle(game) {
   function cfbLedgerRow(label, left, right, marks, hidden) {
     label = deskCase(label);
     var leftGrade = cfbGrade(left), rightGrade = cfbGrade(right);
-    return '<tr' + (hidden ? ' hidden' : '') + '><td role="rowheader">' + esc(label) + '</td>' +
+    function direction(entry) {
+      return entry && (entry.better === 'high' ? '↑' : entry.better === 'low' ? '↓' : '');
+    }
+    var rules = [direction(left), direction(right)];
+    var rule = rules[0] && rules[1] ? 'Left ' + rules[0] + ' · Right ' + rules[1] : '';
+    return '<tr' + (hidden ? ' hidden' : '') + '><td role="rowheader"' +
+      (rule ? ' data-phone-rank-rule="' + esc(rule) + '"' : '') + '>' + esc(label) + '</td>' +
       cfbCell(left, '', marks && marks[0], leftGrade) +
       '<td class="ca-ledger-bars" aria-hidden="true"><span class="ca-ledger-pair">' +
       cfbBar(leftGrade, 'is-left') + cfbBar(rightGrade, 'is-right') + '</span></td>' +
@@ -7590,8 +7645,9 @@ function seasonToggle(game) {
       var tab = Array.from(board.querySelectorAll('.ca-lineup-tab')).find(function (button) { return button.id === choice.unit; });
       var report = board.querySelector('details');
       if (tab) activateLineupTab(tab);
-      if (report && choice.open) report.open = true;
+      if (report && (choice.open || host.getAttribute('data-phone-view') === 'injuries' && !choices.length)) report.open = true;
     });
+    refreshPhoneOverview(host);
   }
 
   function applyCbbInjuries(game, side, report) {
@@ -8977,9 +9033,10 @@ function seasonToggle(game) {
     if(!stack)return;
     var tab=stack.getAttribute('data-nfl-tab'),club=stack.getAttribute('data-club');
     var y=global.scrollY;
-    stack.innerHTML=nbaOrdered(nbaSections('nba',game));
+    replaceDeskSections(stack,nbaOrdered(nbaSections('nba',game)));
     host.querySelector('.ca-nba-controls').outerHTML=nbaControls(game);
     nflSetTab(host,tab);nflSetClub(host,club);
+    refreshPhoneOverview(host);
     global.scrollTo({top:y,behavior:'instant'});
   }
   function wireNbaControls(host,game) {
@@ -9406,8 +9463,12 @@ function seasonToggle(game) {
   }
   function cbbControls(game) {
     return '<div class="ca-analysis-scope ca-cbb-controls" aria-label="CBB evidence controls"><div><span class="ca-lineup-context">Evidence window</span><strong class="ca-cbb-control-title">Choose the season in view</strong></div>'+cbbOptions('season',[['2027','2026–27'],['2026','2025–26']],String(cbbYear(game)))+
-      '<div data-cbb-chart-control>'+cbbOptions('metric',[['fg','FG%'],['share','Shot share']],game.__cbbMetric||'fg')+'</div><div data-cbb-chart-control>'+cbbOptions('view',[['offense','Offense'],['defense','Opponent allowed']],game.__cbbView||'offense')+'</div>'+
       global.ChaseCbbCharts.metricLegend()+cbbThroughLine(game)+'</div>';
+  }
+  function cbbChartControls(game) {
+    return '<div class="ca-cbb-chart-controls" aria-label="Shot chart controls">' +
+      cbbOptions('metric',[['fg','FG%'],['share','Shot share']],game.__cbbMetric||'fg') +
+      cbbOptions('view',[['offense','Offense'],['defense','Opponent allowed']],game.__cbbView||'offense') + '</div>';
   }
   /* A status line: the last game each school's evidence counts. 2026-11-18
      audit: the desk sat at Nov 12 for five days and said nothing. When
@@ -9460,7 +9521,7 @@ function seasonToggle(game) {
         neutral ? higher === 'most' : higher);
       return {
         value: n, text: format(n), rank: place && place.rank, of: place && place.of,
-        label: 'Same-season D-I teams', better: neutral ? 'neutral' : undefined
+        label: 'Same-season D-I teams', better: neutral ? 'neutral' : higher ? 'high' : 'low'
       };
     }
     // A stat neither side publishes (a season the source never measured) is
@@ -10164,7 +10225,7 @@ function seasonToggle(game) {
           cbbTeam(game,'home')&&cbbTeam(game,'home').predictability,cbbSeason(game),true))+
       part('cbb-halves','First And Second Half','Each Offense Against The Defense It Meets, Half By Half · Pace',
         nflDuo(cbbHalves,sport,game))+
-      part('cbb-shot-chart','Shot Chart','Zone Shooting Against The Defense It Meets',nflDuo(cbbShotPanel,sport,game))+
+      part('cbb-shot-chart','Shot Chart','Zone Shooting Against The Defense It Meets',cbbChartControls(game)+nflDuo(cbbShotPanel,sport,game))+
       part('cbb-transition','Transition And Turnovers','Every D-I Game · Each Offense Against The Defense It Meets',nflDuo(cbbTransition,sport,game))+
       part('cbb-situations','Transition And Half Court','Possession-Tagged Efficiency',nflDuo(cbbSituations,sport,game))+
       part('cbb-restarts','Possession Starts','Efficiency By How The Possession Began',nflDuo(cbbRestarts,sport,game))+
@@ -10187,14 +10248,293 @@ function seasonToggle(game) {
       if(b.dataset.cbbSeason)game.__cbbYear=Number(b.dataset.cbbSeason);
       if(b.dataset.cbbMetric)game.__cbbMetric=b.dataset.cbbMetric;
       if(b.dataset.cbbView)game.__cbbView=b.dataset.cbbView;
-      stack.innerHTML=cbbSections('cbb',game);
+      replaceDeskSections(stack,cbbSections('cbb',game));
       host.querySelector('.ca-cbb-controls').outerHTML=cbbControls(game);
       nflSetTab(host,tab);nflSetClub(host,club);
+      refreshPhoneOverview(host);
+      host.querySelector('[data-' + (b.dataset.cbbSeason ? 'cbb-season' : b.dataset.cbbMetric ? 'cbb-metric' : 'cbb-view') +
+        '="' + (b.dataset.cbbSeason || b.dataset.cbbMetric || b.dataset.cbbView) + '"]').focus({ preventScroll: true });
     });
   }
 
   function deskTabsFor(sport) {
     return sport === 'cbb' ? CBB_TABS : (sport === 'cfb' ? CFB_TABS : (sport === 'nba' ? NBA_TABS : NFL_TABS));
+  }
+
+  var PHONE_DESKS = {
+    nfl: {
+      compare: 'efficiency', injuries: 'availability', games: 'game-log',
+      topics: [
+        ['Passing', ['quarterbacks', 'coverage', 'looks', 'position-coverage', 'receivers']],
+        ['Running Game', ['trenches', 'run-game', 'rushing']]
+      ]
+    },
+    cfb: {
+      compare: 'cfb-efficiency', injuries: 'cfb-availability', games: 'cfb-game-log',
+      topics: [
+        ['Passing', ['cfb-quarterbacks', 'cfb-passing', 'cfb-pass-map', 'cfb-receivers']],
+        ['Running Game', ['cfb-rushing', 'cfb-run-direction', 'cfb-rushers']]
+      ]
+    },
+    nba: {
+      compare: 'nba-edge-map', injuries: 'nba-availability', games: 'nba-game-log',
+      topics: [
+        ['Shooting', ['nba-shot-chart', 'nba-shooting', 'nba-shot-kinds', 'nba-databallr']],
+        ['Players And Lineups', ['nba-rotation', 'nba-lineups', 'nba-player-types', 'nba-player-zones', 'nba-shot-maps', 'nba-player-bio']]
+      ]
+    },
+    cbb: {
+      compare: 'cbb-efficiency', injuries: 'cbb-availability', games: 'cbb-game-log',
+      topics: [
+        ['Shooting And Possessions', ['cbb-shot-chart', 'cbb-transition', 'cbb-situations', 'cbb-restarts', 'cbb-shot-types']],
+        ['Defense', ['cbb-personnel', 'cbb-tagged-schemes']]
+      ]
+    }
+  };
+
+  var PHONE_NAV = [['overview', 'Overview'], ['compare', 'Compare'], ['injuries', 'Injuries'],
+    ['games', 'Games'], ['more', 'More']];
+
+  function phoneNav() {
+    return '<nav class="ca-phone-only ca-phone-nav" aria-label="Matchup navigation">' +
+      PHONE_NAV.map(function (item) {
+        return '<a href="#' + item[0] + '" data-phone-route="' + item[0] + '">' + item[1] + '</a>';
+      }).join('') + '</nav>';
+  }
+
+  function replaceDeskSections(stack, html) {
+    stack.querySelectorAll(':scope > .ca-detail-section').forEach(function (node) { node.remove(); });
+    var after = stack.querySelector('.ca-phone-related');
+    if (after) after.insertAdjacentHTML('beforebegin', html);
+    else stack.insertAdjacentHTML('beforeend', html);
+  }
+
+  function navigateDesk(host, route, jump) {
+    var tabs = deskTabs(host), config = host.__phoneDesk;
+    var target = config && config[route] || route;
+    var tab = nflTabOf(target, tabs) || tabs[0][0];
+    host.__deskRoute = route;
+    nflSetTab(host, tab, jump ? (tabs.some(function (item) { return item[2].indexOf(route) >= 0; }) ? route : 'stack') : null);
+    if (host.__requestGameEvidence) {
+      var openEvidence = !host.__phoneActive || Boolean(route && route !== 'overview');
+      host.querySelector('.ca-desk-evidence-status').hidden = !openEvidence;
+      if (openEvidence) host.__requestGameEvidence();
+    }
+  }
+
+  function phoneTopics(host, stack) {
+    var config = host.__phoneDesk;
+    var named = new Set([config.injuries, config.games]);
+    var extras = config.topics.map(function (topic) {
+      topic[1].forEach(function (id) { named.add(id); });
+      return topic;
+    });
+    return extras.concat(deskTabs(host).map(function (tab) {
+      return [tab[1], tab[2].filter(function (id) { return !named.has(id); })];
+    })).map(function (topic) {
+      return [topic[0], topic[1].map(function (id) {
+        var part = stack.querySelector('#' + id + ' > header h2');
+        return part && [id, part.textContent.trim()];
+      }).filter(Boolean)];
+    }).filter(function (topic) { return topic[1].length; });
+  }
+
+  function phoneTopicLink(item, active) {
+    return '<a href="#' + esc(item[0]) + '" data-phone-route="' + esc(item[0]) + '"' +
+      (item[0] === active ? ' aria-current="location"' : '') + '>' + esc(item[1]) + '</a>';
+  }
+
+  function setPhoneView(host, stack, tab) {
+    var config = host.__phoneDesk;
+    if (!config) return null;
+    var onPhone = !!(host.__phoneMedia && host.__phoneMedia.matches);
+    var details = host.querySelector('.ca-matchup-details');
+    if (details && host.__phoneActive !== onPhone) details.open = !onPhone;
+    host.__phoneActive = onPhone;
+    if (!onPhone) {
+      host.removeAttribute('data-phone-view');
+      return null;
+    }
+    var route = host.__deskRoute || 'overview';
+    var target = config[route] || route;
+    var view = route;
+    if (view !== 'overview' && view !== 'more') {
+      var section = Array.from(stack.children).find(function (node) { return node.id === target; });
+      if (!section) {
+        var orderedTopic = config.topics.find(function (topic) {
+          return topic[1].indexOf(tab[2][0]) >= 0;
+        });
+        var first = orderedTopic && orderedTopic[1].find(function (id) { return tab[2].includes(id); });
+        target = config[route] || first || tab[2][0];
+      }
+      view = target === config.injuries ? 'injuries' : target === config.games ? 'games' :
+        (target === config.compare || config.topics.some(function (topic) { return topic[1].includes(target); })) ? 'compare' : 'topic';
+    }
+    host.setAttribute('data-phone-view', view);
+    host.querySelectorAll('.ca-phone-nav [data-phone-route]').forEach(function (link) {
+      if (link.dataset.phoneRoute === (view === 'topic' ? 'more' : view)) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+    var topics = phoneTopics(host, stack);
+    var directory = host.querySelector('.ca-phone-directory');
+    if (view === 'more') {
+      directory.innerHTML = '<h2>Matchup Topics</h2>' + topics.map(function (topic) {
+        return '<section><h3>' + esc(topic[0]) + '</h3><div class="ca-phone-links">' +
+          topic[1].map(function (item) { return phoneTopicLink(item); }).join('') + '</div></section>';
+      }).join('');
+    }
+    var related = host.querySelector('.ca-phone-related');
+    var relatedTopics = target === config.compare ? topics.filter(function (topic) {
+      return config.topics.some(function (group) { return group[0] === topic[0]; });
+    }).map(function (topic) { return [topic[1][0][0], topic[0]]; }) :
+      (topics.find(function (topic) { return topic[1].some(function (row) { return row[0] === target; }); }) || ['', []])[1];
+    related.innerHTML = (view === 'compare' || view === 'topic') && relatedTopics.length > 1
+      ? '<nav aria-label="Related matchup stats"><h3>Related Stats</h3><div class="ca-phone-links">' +
+        relatedTopics.map(function (item) { return phoneTopicLink(item, target); }).join('') + '</div></nav>' : '';
+    var club = host.querySelector('.ca-phone-clubs .ca-nfl-club');
+    club.setAttribute('aria-label', target === config.compare ? 'Offense in view' : 'Team in view');
+    var label = host.querySelector('.ca-phone-clubs > span');
+    label.textContent = club.getAttribute('aria-label');
+    var legend = host.querySelector('.ca-phone-comparison-legend');
+    var pool = { nfl: 'NFL units', cfb: 'FBS units', nba: 'NBA units', cbb: 'Same-season D-I units' }[host.__caRadar.sport];
+    legend.textContent = target === config.compare ? pool + ' · ↑ higher is better · ↓ lower is better' : '';
+    if (view === 'overview') refreshPhoneOverview(host);
+    if (view === 'injuries') {
+      stack.querySelectorAll('.ca-injury-report:not([data-phone-opened])').forEach(function (report) {
+        report.open = true;
+        report.dataset.phoneOpened = '1';
+      });
+    }
+    return { view: view, section: target };
+  }
+
+  function preparePhoneTables(host) {
+    if (!host.__phoneActive) return;
+    host.querySelectorAll('.ca-detail-section.is-tab-on .ca-lineup-scroll > table:not([data-phone-rows])').forEach(function (table) {
+      if (table.closest('.ca-nba-map')) return;
+      var rows = Array.from(table.tBodies).flatMap(function (body) { return Array.from(body.rows); });
+      var count = rows.filter(function (row) { return row.cells.length > 1; }).length;
+      table.dataset.phoneRows = count;
+      if (count <= 7) return;
+      var shown = 0;
+      rows.forEach(function (row) {
+        if (row.cells.length > 1) shown++;
+        if (shown > 7 || (shown === 7 && row.cells.length === 1)) row.classList.add('ca-phone-stat-extra');
+      });
+      if (!table.id) table.id = 'phone-stats-' + (host.__phoneTableId = (host.__phoneTableId || 0) + 1);
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'ca-phone-only ca-phone-stats';
+      button.setAttribute('data-phone-stats', '');
+      button.setAttribute('aria-expanded', 'false');
+      button.setAttribute('aria-controls', table.id);
+      button.textContent = 'View all stats (' + count + ')';
+      table.parentElement.after(button);
+    });
+  }
+
+  function phoneOverview(sport, game) {
+    var sides = ['away', 'home'];
+    var pool = { nfl: 'NFL teams', cfb: 'FBS teams', nba: 'NBA teams', cbb: 'Same-season D-I teams' }[sport];
+    var rows = [];
+    function stat(label, direction, read) {
+      var values = sides.map(read);
+      if (values.some(Boolean)) rows.push('<tr><th scope="row">' + esc(label) +
+        (direction ? '<small>' + esc(direction) + '</small>' : '') + '</th>' +
+        values.map(function (entry) { return cfbCell(entry); }).join('') + '</tr>');
+    }
+    function cfbStat(key, side) { return cfbTeamMetric(cfbRates(game, side)[key], pool); }
+    function nflStat(key, side, format) {
+      var form = game[side + '_form'] || {};
+      var rates = (game.__phoneNflScope === 'combined' ? form.rates : (form.current || {}).rates) || {};
+      var entry = rates[key];
+      return entry && nflLedgerEntry(entry.value, format, { rank: entry.rank, of: entry.of || 32, cohort: pool }, entry.label);
+    }
+    function cbbStat(key, side, higher, format) {
+      var rate = cbbRateRead(cbbTeam(game, side)).rates[key];
+      if (rate == null) return null;
+      var rank = cbbPlace(rate, global.ChaseSportCBB.rankSamples(cbbYear(game), 'team', key), higher);
+      return { value: rate, text: format(rate), rank: rank && rank.rank, of: rank && rank.of,
+        cohort: pool, better: higher ? 'high' : 'low' };
+    }
+    if (sport === 'nfl' || sport === 'cfb') {
+      stat('Quarterback', '', function (side) {
+        var qb = sport === 'nfl' ? availability.nflStarter(game, side, 'QB') :
+          availability.available(game, side, game[side + '_qbs'] || [game[side + '_starter']])[0];
+        var name = typeof qb === 'string' ? qb : qb && (qb.name || qb.player_name || qb.player);
+        var status = name && availability.status(game, side, qb);
+        return name ? { value: 0, text: name, sample: status } : { missing: 'Not confirmed' };
+      });
+      stat('Sack Rate Allowed', 'Lower is better', function (side) {
+        return sport === 'cfb' ? cfbStat('off_sack_rate', side) : nflStat('off_sack', side, 'pct');
+      });
+      stat('Rush Yds / Carry', 'Higher is better', function (side) {
+        if (sport === 'cfb') return cfbStat('off_ypc', side);
+        var window = game.__phoneNflScope === 'combined' ? 'combined' : 'current';
+        var unit = ((game[side + '_run_game'] || {})[window] || {}).offense || {};
+        return nflLedgerEntry(unit.yards_per_carry, 'num1', (unit.ranks || {}).yards_per_carry, 'Current-season designed runs');
+      });
+      stat(sport === 'cfb' ? 'Rush Yds Allowed / Carry' : 'Offense EPA / Play',
+        sport === 'cfb' ? 'Lower is better' : 'Higher is better', function (side) {
+          return sport === 'cfb' ? cfbStat('def_ypc', side) : nflStat('off_epa', side, 'epa');
+        });
+    } else if (sport === 'nba') {
+      stat('Rim FG%', 'Higher is better', function (side) {
+        return nbaMapMetric(game, side, 'offense', NBA_MAP_GROUPS[0], NBA_MAP_GROUPS[0][3][0]);
+      });
+      stat('Effective FG%', 'Higher is better', function (side) { return nbaRates(game, side).off_efg; });
+      stat('Turnover Rate', 'Lower is better', function (side) { return nbaRates(game, side).off_tov; });
+      stat('Points Allowed / 100', 'Lower is better', function (side) { return nbaRates(game, side).def_rtg; });
+    } else {
+      stat('Effective FG%', 'Higher is better', function (side) { return cbbStat('efg_o_all', side, true, cbbPct); });
+      stat('Effective FG% Allowed', 'Lower is better', function (side) { return cbbStat('efg_d_all', side, false, cbbPct); });
+      stat('Turnover Rate', 'Lower is better', function (side) { return cbbStat('tov_pct_o_all', side, false, cbbPct); });
+      stat('Fast-Break Points / 100', 'Higher is better', function (side) {
+        return cbbStat('fb_pts_per100_all', side, true, cbbNumber);
+      });
+    }
+    return '<header><h2>Matchup Snapshot</h2><span>' + esc(pool) + '</span></header>' +
+      (rows.length ? '<table class="ca-phone-snapshot__table"><thead><tr><th scope="col">Stat</th>' +
+        sides.map(function (side) { return '<th scope="col">' + esc(deskName(sport, game, side)) + '</th>'; }).join('') +
+        '</tr></thead><tbody>' + rows.join('') + '</tbody></table>' : pending('Team comparisons are loading or unavailable.'));
+  }
+
+  function refreshPhoneOverview(host) {
+    var context = host.__caRadar, slot = host.querySelector('.ca-phone-snapshot');
+    if (host.__phoneActive && context && slot) slot.innerHTML = phoneOverview(context.sport, context.game);
+  }
+
+  function prepareCfbEvidence(host, game, adapter, loader) {
+    var loading = false, failed = false;
+    var reports = {};
+    ['away', 'home'].forEach(function (side) { reports[side] = game[side + '_injuries']; });
+    host.__requestGameEvidence = function (retry) {
+      if (loading || failed && !retry) return;
+      var message = host.querySelector('.ca-desk-evidence-status');
+      loading = true;
+      failed = false;
+      message.innerHTML = pending('Loading game evidence…');
+      loader().then(function (full) {
+        ['away', 'home'].forEach(function (side) {
+          var key = side + '_injuries';
+          // The fixture report can update while the fuller snapshot travels.
+          if (game[key] && game[key] !== reports[side]) full[key] = game[key];
+        });
+        Object.assign(game, full);
+        host.__requestGameEvidence = null;
+        message.hidden = true;
+        var stack = host.querySelector('.ca-detail-stack');
+        replaceDeskSections(stack, cfbSections('cfb', game));
+        navigateDesk(host, host.__deskRoute, false);
+        refreshPhoneOverview(host);
+        if (host.__stopInjuryWatch) host.__stopInjuryWatch();
+        watchCfbInjuries(host, 'cfb', game, adapter);
+      }).catch(function () {
+        failed = true;
+        message.innerHTML = pending('Detailed evidence is temporarily unavailable.') +
+          '<button type="button" class="ca-btn" data-retry-game-evidence>Retry</button>';
+      }).finally(function () { loading = false; });
+    };
   }
 
   /* ---------------------------------------------------------------------
@@ -10406,15 +10746,20 @@ function seasonToggle(game) {
          ['rushing', 'Rushing'], ['receivers', 'Receiving'], ['redzone', 'Red Zone'],
          ['special-teams', 'Special Teams'], ['tendencies', 'Tendencies'],
          ['availability', 'Lineups'], ['radar', 'Radar'], ['team-context', 'Context']];
-    var html = '<a class="ca-detail-back" href="/' + sport + '/">← Back To ' + sport.toUpperCase() + ' Matchups</a>' +
+    var activeDesk = Boolean(PHONE_DESKS[sport]);
+    host.__phoneDesk = PHONE_DESKS[sport];
+    if (activeDesk && global.matchMedia) host.__phoneMedia = host.__phoneMedia || global.matchMedia('(max-width: 719px)');
+    host.__caRadar = { sport: sport, game: game };
+    var html = '<a class="ca-detail-back" href="/' + sport + '/"><span aria-hidden="true">←</span> ' + sport.toUpperCase() + ' Matchups</a>' +
       '<article class="ca-detail-hero" id="overview"><header class="ca-detail-hero__meta">' +
       '<p class="ca-detail-eyebrow">' + sport.toUpperCase() + ' · Matchup Analysis</p>' +
       '</header>' +
       '<div class="ca-detail-hero__teams">' + teamHero(sport, game, 'away') + '<div class="ca-detail-center">' +
-      detailCenter(sport, game) + '</div>' + teamHero(sport, game, 'home') + '</div>' +
+      detailCenter(sport, game) + (activeDesk ? phoneGameStatus(game) : '') + '</div>' + teamHero(sport, game, 'home') + '</div>' +
       // Conditions live in the banner now: they are read once, at the top,
       // beside where and when - not as their own section of dimensions and
       // capacities nobody came for.
+      (activeDesk ? '<details class="ca-matchup-details" open><summary>Game details</summary>' : '') +
       '<div class="ca-detail-facts">' + (sport === 'cbb'
         ? fact('Arena', venue(game)) + fact('Site', game.neutral ? 'Neutral court' : 'Home court') + fact('Broadcast', value(game.broadcast)) + fact('Status', gameStatus(game))
         : sport === 'nba'
@@ -10426,31 +10771,38 @@ function seasonToggle(game) {
         : sport === 'cfb'
         ? fact('Setting', venue(game)) +
           fact('Stadium', value(game.stadium)) +
+          wxFact(game) +
           fact('Broadcast', value(game.broadcast)) +
           fact('Status', gameStatus(game))
         : fact('Venue', venue(game)) +
           wxFact(game) + fact('Broadcast', value(game.broadcast)) +
-          fact('Status', gameStatus(game))) + '</div>' +
+          fact('Status', gameStatus(game))) + '</div>' + (activeDesk ? '</details>' : '') +
       '</article>' +
-      (sport === 'nfl' || sport === 'cfb' || sport === 'nba' || sport === 'cbb'
+      (activeDesk
         ? '<div class="ca-nfl-bar"><nav class="ca-detail-nav ca-nfl-tabs" aria-label="Matchup sections" role="tablist">' +
           deskTabsFor(sport).map(function (tab) {
             var glyph = SECTION_ICON[tab[2][0]] ? ico(SECTION_ICON[tab[2][0]], 'ca-detail-nav__ico', 14) : '';
             return '<a href="#' + tab[0] + '" role="tab" data-nfl-tab="' + tab[0] + '" aria-selected="false">' +
               glyph + esc(tab[1]) + '</a>';
-          }).join('') + '</nav>' + nflClubSwitch(sport, game) + '</div>' +
+          }).join('') + '</nav>' + nflClubSwitch(sport, game) + phoneNav() + '</div>' +
           (sport === 'nfl' ? seasonToggle(game) : sport === 'cbb' ? cbbControls(game) : sport === 'nba' ? nbaControls(game) : '')
         : '<nav class="ca-detail-nav" aria-label="Matchup sections">' + nav.map(function (item) {
           var glyph = item[0] === 'overview' ? ico('info', 'ca-detail-nav__ico', 14)
             : (SECTION_ICON[item[0]] ? ico(SECTION_ICON[item[0]], 'ca-detail-nav__ico', 14) : '');
           return '<a href="#' + item[0] + '">' + glyph + item[1] + '</a>';
         }).join('') + '</nav>') +
-      '<div class="ca-detail-stack">' +
+      '<div class="ca-detail-stack"' + (activeDesk ? ' id="matchup-sections"' : '') + '>' +
+      (activeDesk ? '<section class="ca-phone-only ca-phone-snapshot"></section>' +
+        '<section class="ca-phone-only ca-phone-directory"></section>' +
+        '<div class="ca-phone-only ca-phone-clubs"><span></span>' + nflClubSwitch(sport, game, true) +
+        '<p class="ca-phone-comparison-legend"></p></div>' : '') +
+      (result && result.loadEvidence ? '<div class="ca-desk-evidence-status" role="status" hidden></div>' : '') +
       (sport === 'mlb' ? mlbSections(sport, game, extra)
-        : sport === 'cfb' ? cfbSections(sport, game)
+        : sport === 'cfb' ? (result && result.loadEvidence ? '' : cfbSections(sport, game))
         : sport === 'cbb' ? cbbSections(sport, game)
         : sport === 'nba' ? nbaOrdered(nbaSections(sport, game))
         : nflSections(sport, game, (result && result.games) || [])) +
+      (activeDesk ? '<div class="ca-phone-only ca-phone-related"></div>' : '') +
       '</div>';
     host.innerHTML = html;
     host.__deskTabs = deskTabsFor(sport);
@@ -10461,7 +10813,6 @@ function seasonToggle(game) {
     }
     if (sport === 'nfl' || sport === 'cfb' || sport === 'nba' || sport === 'cbb') nflInitDesk(host);
     host.setAttribute('data-state', 'ready');
-    host.__caRadar = { sport: sport, game: game };
     fitRadar(host);
     // Delegated once on the host, so a repainted section keeps working.
     if (!host.dataset.seasonWired) {
@@ -10494,7 +10845,12 @@ function seasonToggle(game) {
     var requested = params().get('game') || params().get('gamePk') || '';
     var requestedAway = String(params().get('away') || '').toUpperCase();
     var requestedHome = String(params().get('home') || '').toUpperCase();
-    return global.ChaseMatchupCard.loadGames(sport, adapter, params().get('date')).then(function (result) {
+    var date = params().get('date');
+    var mobile = global.matchMedia && global.matchMedia('(max-width: 719px)').matches;
+    var single = sport === 'cfb' && adapter.loadMatchup ? adapter.loadMatchup(requested, date, mobile) : Promise.resolve(null);
+    return single.then(function (result) {
+      return result || global.ChaseMatchupCard.loadGames(sport, adapter, date);
+    }).then(function (result) {
       // A newly listed CBB fixture may arrive in the scoreboard before the daily export.
       if (sport === 'cbb' && requested && result.statusReady &&
           !result.games.some(function (game) { return String(game.id) === requested; })) return result.statusReady;
@@ -10524,6 +10880,8 @@ function seasonToggle(game) {
       // source must never hold back the hero, and a stage that resolves late
       // repaints only its own section so the reader never loses their place.
       var extra = {};
+      host.__requestGameEvidence = null;
+      if (result.loadEvidence) prepareCfbEvidence(host, game, adapter, result.loadEvidence);
       render(host, sport, game, extra, result);
       if (sport === 'cfb') watchCfbInjuries(host, sport, game, adapter);
       if (sport === 'nfl' || sport === 'nba') watchActiveInjuries(host, sport, game, adapter, result);
@@ -10538,7 +10896,7 @@ function seasonToggle(game) {
           paintSection(host,'cbb-game-log',cbbGameLogs(sport,game));
         }
         var center=host.querySelector('.ca-detail-center');
-        if(center)center.innerHTML=detailCenter(sport,game);
+        if(center)center.innerHTML=detailCenter(sport,game)+(PHONE_DESKS[sport]?phoneGameStatus(game):'');
         ['away','home'].forEach(function(side){
           var team=host.querySelector('.ca-detail-team--'+side);
           if(team)team.outerHTML=teamHero(sport,game,side);
@@ -10554,10 +10912,11 @@ function seasonToggle(game) {
       if (sport === 'cbb') {
         function repaintCbbEvidence() {
           var stack=host.querySelector('.ca-detail-stack'),tab=stack.getAttribute('data-nfl-tab'),club=stack.getAttribute('data-club');
-          stack.innerHTML=cbbSections(sport,game);nflSetTab(host,tab);nflSetClub(host,club);
+          replaceDeskSections(stack,cbbSections(sport,game));nflSetTab(host,tab);nflSetClub(host,club);
           // The controls carry the evidence's through-dates, known once the teams load.
           var controls=host.querySelector('.ca-cbb-controls');
           if(controls)controls.outerHTML=cbbControls(game);
+          refreshPhoneOverview(host);
         }
         host.querySelector('.ca-nfl-club').outerHTML=nflClubSwitch(sport,game);
         repaintCbbEvidence();

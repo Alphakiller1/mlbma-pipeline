@@ -227,7 +227,7 @@
       // CFB matchup pages set CHASE_SPORT_PAGE only after the nav has asked, so the
       // header read "Published: unknown - no public slate url" there.
       // The public desk's own slate, not the model site's (2026-11-18 audit).
-      if (!slateUrl && sport === 'cfb') slateUrl = PUBLIC_SLATES.cfb;
+      if (!slateUrl && sport === 'cfb') slateUrl = '/data/public/cfb/game-payloads/status.json';
       if (!slateUrl && global.ChaseSportNBA && sport === 'nba') slateUrl = ChaseSportNBA.SLATE_URL;
       if (!slateUrl) {
         var page = global.CHASE_SPORT_PAGE;
@@ -243,7 +243,11 @@
           issues: ['no public slate url']
         }));
       }
-      return readSlateStamp(slateUrl + (slateUrl.indexOf('?') >= 0 ? '&' : '?') + '_probe=' + Date.now())
+      var stamp = readSlateStamp(slateUrl + (slateUrl.indexOf('?') >= 0 ? '&' : '?') + '_probe=' + Date.now());
+      if (!opts.url && sport === 'cfb') {
+        stamp = stamp.catch(function () { return readSlateStamp(PUBLIC_SLATES.cfb + '?_probe=' + Date.now()); });
+      }
+      return stamp
         .then(function (asOf) {
           if (!asOf) return unknownFields({ source: 'public-slate', sport: sport });
           return fieldsFromParsed({ as_of: asOf, slateDateEt: null }, { source: 'public-slate', sport: sport });

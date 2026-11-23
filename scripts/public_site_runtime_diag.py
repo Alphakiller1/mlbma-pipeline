@@ -504,8 +504,12 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                   .map(s => s.id)""")
             check("NBA sections label the statistics and figures they contain", not missing_notes, str(missing_notes))
             page.set_viewport_size({"width": 375, "height": 824})
+            page.locator(".ca-phone-nav [href='#compare']").click()
+            check("NBA phone opens Compare on the Matchup Map",
+                  page.locator("#nba-edge-map.is-tab-on .ca-nba-map:visible").count() == 1)
             check("NBA Matchup Map fits a phone", page.evaluate("document.documentElement.scrollWidth") <= 375)
-            page.locator("a[data-nfl-tab='players']").click()
+            page.locator(".ca-phone-nav [href='#more']").click()
+            page.locator(".ca-phone-directory [href='#nba-player-types']").click()
             profile_headers = page.locator(".ca-nba-player-type-panel thead th:visible")
             if profile_headers.count():
                 unreadable = profile_headers.evaluate_all("""headers => headers.filter(th =>
@@ -886,17 +890,20 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("NFL detail no horizontal overflow", page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
         page.locator("[role='tab'][data-nfl-tab='passing']").click()
         page.set_viewport_size({"width": 390, "height": 844})
+        page.locator(".ca-phone-nav [href='#more']").click()
+        page.locator(".ca-phone-directory [href='#coverage']").click()
         check("NFL phone layout has no horizontal overflow",
               page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
         check("NFL phone stacks each duo into one column",
               page.locator("#coverage .ca-detail-duo").first.evaluate(
                   "el => getComputedStyle(el).gridTemplateColumns.split(' ').length") == 1)
         page.set_viewport_size({"width": 375, "height": 824})
-        page.locator("a[data-nfl-tab='tendencies']").click()
+        page.locator(".ca-phone-nav [href='#more']").click()
+        page.locator(".ca-phone-directory [href='#pace']").click()
         clipped_pace = page.locator("#pace thead th:visible").evaluate_all("""headers =>
           headers.filter(th => th.scrollWidth > th.clientWidth + 1).map(th => th.textContent)""")
         check("NFL phone keeps the pace headings readable", not clipped_pace, str(clipped_pace))
-        page.locator("a[data-nfl-tab='games']").click()
+        page.locator(".ca-phone-nav [href='#games']").click()
         scroll_panel = page.locator("#game-log .ca-lineup-scroll[data-table-scroll]:visible").first
         scroll_panel.wait_for(timeout=timeout_ms)
         check("NFL phone marks the wide game log as a focusable scroll region",
@@ -1150,9 +1157,12 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1)
         check("CFB phone reads one school at a time",
               page.locator(".ca-detail-stack").get_attribute("data-club") in ("away", "home"))
-        check("CFB phone section navigation hides its scrollbar",
-              page.locator(".ca-detail-nav").evaluate(
-                  "el => getComputedStyle(el).scrollbarWidth") == "none")
+        check("CFB phone keeps all five destinations in view",
+              page.locator(".ca-phone-nav a:visible").all_inner_texts() ==
+              ["Overview", "Compare", "Injuries", "Games", "More"])
+        page.locator(".ca-phone-nav [href='#overview']").click()
+        check("CFB phone opens on a ranked comparison without horizontal scrolling",
+              page.locator(".ca-phone-snapshot .ca-rank:visible").count() > 0)
         context.close()
         browser.close()
     return results

@@ -13,6 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 STAMP = (ROOT / "design" / "DESIGN_LAYER_VERSION").read_text(encoding="utf-8").strip()
 CFB_REVISION = "cfb-week-rollover"
+MOBILE_REVISION = "mobile-matchups-1"
 NAV = (ROOT / "dashboard" / "chase_nav.html").read_text(encoding="utf-8").strip()
 PUBLIC_SPORTS = ("nfl", "cfb", "nba", "cbb")
 PARKED_SPORTS = ("wnba",)
@@ -149,7 +150,8 @@ def page(sport: str, *, kind: str = "index") -> str:
     more_html = ""
     lede = spec["lede"]
     h1 = sport.upper() + " Matchups"
-    adapter_assets = f"{STAMP}&amp;rev={CFB_REVISION}" if sport == "cfb" else STAMP
+    card_assets = f"{STAMP}&amp;rev={MOBILE_REVISION}"
+    adapter_assets = card_assets if sport == "cfb" else STAMP
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -164,7 +166,7 @@ def page(sport: str, *, kind: str = "index") -> str:
   <link rel="stylesheet" href="/dashboard/styles/chase-patterns.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/styles/chase-shell.css?v={STAMP}">
   <link rel="stylesheet" href="/dashboard/chase_nav.css?v={STAMP}">
-  <link rel="stylesheet" href="/dashboard/styles/chase-public.css?v={STAMP}">
+  <link rel="stylesheet" href="/dashboard/styles/chase-public.css?v={card_assets}">
   <link rel="icon" type="image/png" href="/dashboard/assets/chase-icon-filled.png">
 </head>
 <body data-mode="{mode}" data-sport="{sport}" data-ca-product="research">
@@ -184,12 +186,12 @@ def page(sport: str, *, kind: str = "index") -> str:
   <footer class="ca-shell-footer">Chase Analytics</footer>
   <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
   <script src="/dashboard/mlbma_assets.js?v={STAMP}"></script>
-  <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_datastatus.js?v={adapter_assets}"></script>
   <script src="/dashboard/sports/public_sport_registry.js?v={STAMP}"></script>
   <script src="/dashboard/sports/chase_public_slate.js?v={STAMP}"></script>
   <script src="/dashboard/player_availability_shared.js?v={STAMP}"></script>
   <script src="/dashboard/chase_icons.js?v={STAMP}"></script>
-  <script src="/dashboard/matchup_card.js?v={STAMP}"></script>
+  <script src="/dashboard/matchup_card.js?v={card_assets}"></script>
   <script src="/dashboard/sports/{spec["adapter"]}.js?v={adapter_assets}"></script>
   <script src="/dashboard/chase_asyncstate.js?v={STAMP}"></script>
   <script src="/dashboard/chase_nav.js?v={STAMP}"></script>{extra_scripts}
@@ -230,7 +232,8 @@ def matchup_page(sport: str) -> str:
     spec = SPORTS[sport]
     detail_revision = {"nba": "nba-live-availability", "cfb": CFB_REVISION,
                        "nfl": "nfl-live-availability", "cbb": "cbb-roster-size"}.get(sport, "active-desk-audit")
-    detail_assets = f"{STAMP}&amp;rev={detail_revision}"
+    detail_assets = f"{STAMP}&amp;rev={detail_revision}&amp;mobile={MOBILE_REVISION}" if sport in PUBLIC_SPORTS else f"{STAMP}&amp;rev={detail_revision}"
+    card_assets = f"{STAMP}&amp;rev={MOBILE_REVISION}" if sport in PUBLIC_SPORTS else STAMP
     adapter_assets = detail_assets if sport in {"nba", "cbb", "cfb"} else STAMP
     availability_assets = detail_assets if sport in {"nfl", "nba", "cbb", "cfb"} else STAMP
     cbb_runtime = f'  <script src="/dashboard/cbb_charts.js?v={STAMP}"></script>' if sport == "cbb" else ""
@@ -259,13 +262,13 @@ def matchup_page(sport: str) -> str:
   <footer class="ca-shell-footer">Chase Analytics</footer>
   <script src="/dashboard/design_layer_version.js?v={STAMP}"></script>
   <script src="/dashboard/mlbma_assets.js?v={STAMP}"></script>
-  <script src="/dashboard/chase_datastatus.js?v={STAMP}"></script>
+  <script src="/dashboard/chase_datastatus.js?v={card_assets}"></script>
   <script src="/dashboard/sports/public_sport_registry.js?v={STAMP}"></script>
   <script src="/dashboard/sports/chase_public_slate.js?v={STAMP}"></script>
   <script src="/dashboard/sports/{spec['adapter']}.js?v={adapter_assets}"></script>
   <script src="/dashboard/player_availability_shared.js?v={availability_assets}"></script>
   <script src="/dashboard/chase_icons.js?v={STAMP}"></script>
-  <script src="/dashboard/matchup_card.js?v={STAMP}"></script>
+  <script src="/dashboard/matchup_card.js?v={card_assets}"></script>
   <script src="/dashboard/chase_nav.js?v={STAMP}"></script>
   <script src="/dashboard/chase_shell.js?v={STAMP}"></script>
 {cbb_runtime}
@@ -295,7 +298,7 @@ def shot_charts_page() -> str:
 
 
 def models_page() -> str:
-    model_assets = f"{STAMP}&amp;rev=4"
+    model_assets = f"{STAMP}&amp;rev={MOBILE_REVISION}"
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -344,9 +347,8 @@ def models_page() -> str:
 def main() -> int:
     def nfl_assets(markup: str, sport: str) -> str:
         if sport == "nfl":
-            for asset in ("player_availability_shared.js", "matchup_card.js", "public_game_detail.js", "chase-public.css"):
-                markup = re.sub(rf'({re.escape(asset)}\?v={STAMP})(?:&amp;rev=[^"\']+)?',
-                                rf'\1&amp;rev=nfl-player-20261122', markup)
+            markup = re.sub(rf'(player_availability_shared\.js\?v={STAMP})(?:&amp;rev=[^"\']+)?',
+                            rf'\1&amp;rev=nfl-player-20261122', markup)
         return markup
 
     for sport in SPORTS:

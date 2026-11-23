@@ -844,7 +844,8 @@ body:has(.mc-props-dialog[open]) { overflow: hidden; }
   .mc-props-dialog__head,
   .mc-props-dialog__toolbar,
   .mc-props-dialog__body { padding: var(--space-3); }
-  .mc-props__pick { width: 100%; }
+  .mc-props__pick { flex: 1 1 calc(50% - var(--space-3)); flex-direction: column; align-items: stretch; gap: var(--space-1); }
+  .mc-props__pick select { min-width: 0; width: 100%; }
 }
 
 .mc-cbb-method {

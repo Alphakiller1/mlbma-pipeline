@@ -1,5 +1,24 @@
 # MLBMA Responsive Migration Plan
 
+## Public matchup desks
+
+At phone widths, NFL, CFB, NBA, and CBB open on a matchup snapshot with
+the two teams in the same table. Overview, Compare, Injuries, Games, and More
+fit on one row. More groups each sport’s detailed sections and keeps their
+existing links. Directional comparisons show one offense and the defense
+it faces. Long tables start with a preview and keep the first column in view
+as the reader scrolls. CBB shot controls sit above the court.
+
+Mobile slate cards put Analyze Matchup ahead of expanded details. Sport
+boards have an in-place Completed view. Model Center’s prop dialog has a
+player picker for the selected matchup.
+
+The Cloudflare build generates CFB game summaries and detail payloads from
+the published slate. Phone matchup pages request the details when readers
+open a topic. The Completed view includes the latest archived CFB slate,
+and its game links open evidence from that week. Run
+`python scripts/build_cfb_game_payloads.py` before testing this path locally.
+
 ## Goal
 
 Make the deployed dashboard adapt seamlessly for desktop, tablet, and mobile users without separate platform modes, duplicate page logic, or page-specific layout drift.
