@@ -3,6 +3,20 @@ const SCORE_BOARD = 'https://raw.githubusercontent.com/Alphakiller1/cbb-model-bo
 const NOTE = 'Experimental score estimates based on completed team scores.';
 
 function label(s) { return typeof s === 'string' && s.length > 0 && s.length <= 100; }
+function text(s, max) { return typeof s === 'string' && s.length > 0 && s.length <= max ? s : null; }
+
+// DraftKings lines the producer published beside its projection. The board
+// quotes the home spread; Model Center reads the expected home margin, so the
+// sign flips. Anything out of range is dropped rather than shown.
+function marketFields(row) {
+  const m = row.market || {};
+  const spread = Number.isFinite(m.home_spread) && Math.abs(m.home_spread) <= 60 ? m.home_spread : null;
+  const total = Number.isFinite(m.total) && m.total >= 90 && m.total <= 220 ? m.total : null;
+  if (spread == null && total == null) return {};
+  const margin = spread == null ? null : (spread === 0 ? 0 : -spread);
+  return { market_margin: margin, market_total: total, priced: true,
+    book: { name: 'DraftKings', margin, total, source: 'Chase CBB model' } };
+}
 
 export function validateScoreBoard(board, fallback, now = Date.now()) {
   if (!board || board.schema !== 'chase-board/1' || board.sport !== 'cbb' || board.may_bet !== false ||
@@ -13,6 +27,7 @@ export function validateScoreBoard(board, fallback, now = Date.now()) {
       generated > now + 300000 || generated < Date.parse(fallback.generated_at_utc) ||
       board.as_of_date < fallback.as_of_date || cutoff >= generated ||
       !/^chase-cbb-score-[a-z0-9-]+$/.test(board.method || '')) return null;
+  const note = text(board.method_note, 200) || NOTE;
   const ids = new Set(), games = [];
   for (const row of board.games) {
     const { id, slate_date, kickoff_utc, projected_away, projected_home } = row;
@@ -26,7 +41,11 @@ export function validateScoreBoard(board, fallback, now = Date.now()) {
         ![row.away, row.home, row.away_name, row.home_name].every(label)) return null;
     ids.add(id);
     const game = { id, slate_date, kickoff_utc, projected_away, projected_home,
-      projected_total: row.projected_total, model_margin: row.model_margin, priced: false, evidence: NOTE };
+      projected_total: row.projected_total, model_margin: row.model_margin, priced: false, evidence: note,
+      ...marketFields(row) };
+    const lean = text(row.lean, 140), edgeNote = text(row.edge_note, 160);
+    if (lean) game.lean = lean;
+    if (edgeNote) game.edge_withheld_reason = edgeNote;
     for (const side of ['away', 'home']) {
       game[side] = row[side];
       game[side + '_name'] = row[side + '_name'];
@@ -39,7 +58,7 @@ export function validateScoreBoard(board, fallback, now = Date.now()) {
   }
   return { schema: 'chase-board/1', sport: 'cbb', generated_at_utc: board.generated_at_utc,
     data_through_utc: board.data_through_utc, as_of_date: board.as_of_date,
-    method: board.method, method_note: NOTE, may_bet: false, games };
+    method: board.method, method_note: note, may_bet: false, games };
 }
 
 export async function loadCbbScoreBoard(fallback) {

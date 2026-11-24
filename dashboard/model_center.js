@@ -91,7 +91,7 @@
      MLB is run margin, NFL is point margin. */
   function domainFor(sport) {
     sport = String(sport).toLowerCase();
-    if (sport === 'cfb') return 20;
+    if (sport === 'cfb' || sport === 'cbb') return 20;
     if (sport === 'nfl' || sport === 'wnba' || sport === 'nba') return 10;
     return 3;
   }
@@ -276,6 +276,15 @@
   function gameCard(sport, g, props) {
     var html = '<article class="mc-game" aria-label="' + esc(matchupLabel(g)) + '">';
     if (sport === 'cbb') {
+      // A CBB game with a DraftKings line reads like every other sport's card:
+      // the model against the market, the total, and any flagged opener edge.
+      if (cbbPriced(g)) {
+        return html + '<div class="mc-game__visuals">' + projectedScore(sport, g) +
+          '<section class="mc-line"><span class="mc-line__label">Model vs market</span>' +
+          gauge(sport, g.model_margin, g.market_margin) + '</section></div>' +
+          totalRead(g) + readRow(g, false) +
+          '<footer class="mc-game__actions">' + cbbResearchLink(g) + '</footer></article>';
+      }
       return html + projectedScore(sport, g) + cbbScoreSummary(g) +
         '<footer class="mc-game__actions">' + cbbResearchLink(g) + '</footer></article>';
     }
@@ -291,6 +300,10 @@
       gauge(sport, g.model_margin, g.market_margin) + '</section></div>' +
       totalRead(g) + readRow(g, false) +
       '</article>';
+  }
+
+  function cbbPriced(g) {
+    return num(g.market_margin) != null || num(g.market_total) != null;
   }
 
   function tile(label, value) {
@@ -326,8 +339,11 @@
       (g.home_record ? '<span class="mc-hero__sub">' + esc(g.home_record) + '</span>' : '') +
       '</div></div></section>';
 
-    if (sport === 'cbb') return html + '<section class="mc-panel">' + cbbScoreSummary(g) +
-      cbbResearchLink(g) + '</section>';
+    if (sport === 'cbb') {
+      var market = cbbPriced(g) ? '<section class="mc-panel"><h2 class="mc-panel__title">Model versus market</h2>' +
+        gauge(sport, g.model_margin, g.market_margin) + totalRead(g) + readRow(g, true) + '</section>' : '';
+      return html + market + '<section class="mc-panel">' + cbbScoreSummary(g) + cbbResearchLink(g) + '</section>';
+    }
 
     html += '<section class="mc-panel"><h2 class="mc-panel__title">Model versus market</h2>' +
       gauge(sport, g.model_margin, g.market_margin) + totalRead(g) + readRow(g, true) + '</section>';
@@ -1036,7 +1052,7 @@
     if (['nfl', 'nba', 'cfb', 'cbb'].indexOf(sport) < 0) sport = 'nfl';
     if (sport === 'cbb') {
       var lede = document.querySelector('.ca-public-page__lede');
-      if (lede) lede.textContent = 'Experimental score estimates with matchup analysis.';
+      if (lede) lede.textContent = 'Model projections set against DraftKings lines, with matchup analysis.';
     }
     var game = qs().get('game');
     setContext(game
