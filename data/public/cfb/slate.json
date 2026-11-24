@@ -3,8 +3,8 @@
   "sport": "cfb",
   "season": 2026,
   "week": 13,
-  "generated_at_utc": "2026-11-24T02:53:15Z",
-  "data_through_utc": "2026-11-24T02:53:15Z",
+  "generated_at_utc": "2026-11-24T22:39:12Z",
+  "data_through_utc": "2026-11-24T19:31:20Z",
   "games": [
     {
       "id": "KENT@EMU",
@@ -230,7 +230,7 @@
             "label": "Yards per rush attempt",
             "value": 2.9,
             "better": "high",
-            "rank": 135,
+            "rank": 136,
             "of": 138,
             "format": "num"
           },
@@ -4384,10 +4384,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -8.7165,
+            "value": -8.7188,
             "better": "high",
             "format": "num",
-            "rank": 113,
+            "rank": 114,
             "of": 138,
             "games": 10
           },
@@ -4413,7 +4413,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -17.769,
+            "value": -17.77,
             "better": "high",
             "format": "num",
             "rank": 129,
@@ -8122,7 +8122,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -10.2301,
+            "value": -10.2314,
             "better": "high",
             "format": "num",
             "rank": 128,
@@ -8151,7 +8151,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -24.945,
+            "value": -24.947,
             "better": "high",
             "format": "num",
             "rank": 136,
@@ -8656,9 +8656,10 @@
           {
             "player": "N. Kim",
             "position": "QB",
-            "status": "Out",
+            "status": "Questionable",
             "injury": "Undisclosed",
             "updated": "Sun, Oct 18",
+            "detail": "Kim is dealing due to an undisclosed injury, and it is uncertain if he will play against Ohio on Saturday, October 24th.",
             "source": "RotoWire + Covers",
             "return": "2026-11-24",
             "value": 2.92,
@@ -11065,382 +11066,6 @@
           "depth_rank": 1
         },
         {
-          "player_id": "5144207",
-          "player_name": "Jace Stuckey",
-          "position": "QB",
-          "ranked": false,
-          "line": {
-            "attempts": 20,
-            "completions": 15,
-            "interceptions": 1,
-            "completion_pct": {
-              "label": "Completion %",
-              "value": 0.75,
-              "better": "high",
-              "format": "pct",
-              "rank": 6,
-              "of": 217
-            },
-            "yards_per_attempt": {
-              "label": "Yards per attempt",
-              "value": 3.75,
-              "better": "high",
-              "format": "num",
-              "rank": 217,
-              "of": 217
-            },
-            "td_rate": {
-              "label": "TD rate",
-              "value": 0.05,
-              "better": "high",
-              "format": "pct",
-              "rank": 104,
-              "of": 217
-            },
-            "int_rate": {
-              "label": "INT rate",
-              "value": 0.05,
-              "better": "low",
-              "format": "pct",
-              "rank": 206,
-              "of": 217
-            },
-            "yards": {
-              "label": "Passing yards",
-              "value": 75.0,
-              "better": "high",
-              "format": "int",
-              "rank": 217,
-              "of": 217
-            },
-            "touchdowns": {
-              "label": "Passing TDs",
-              "value": 1.0,
-              "better": "high",
-              "format": "int",
-              "rank": 205,
-              "of": 217
-            }
-          },
-          "epa_splits": {
-            "all": {
-              "label": "All plays EPA per play",
-              "value": -0.955,
-              "better": "high",
-              "format": "ppa",
-              "rank": 217,
-              "of": 217
-            },
-            "pass": {
-              "label": "Dropbacks EPA per play",
-              "value": -1.351,
-              "better": "high",
-              "format": "ppa",
-              "rank": 216,
-              "of": 216
-            },
-            "rush": {
-              "label": "Rushes EPA per play",
-              "value": 0.39,
-              "better": "high",
-              "format": "ppa",
-              "rank": 47,
-              "of": 212
-            },
-            "standardDowns": {
-              "label": "Standard downs EPA per play",
-              "value": -0.786,
-              "better": "high",
-              "format": "ppa",
-              "rank": 217,
-              "of": 217
-            },
-            "passingDowns": {
-              "label": "Passing downs EPA per play",
-              "value": -1.096,
-              "better": "high",
-              "format": "ppa",
-              "rank": 216,
-              "of": 216
-            },
-            "firstDown": {
-              "label": "1st down EPA per play",
-              "value": -0.385,
-              "better": "high",
-              "format": "ppa",
-              "rank": 208,
-              "of": 216
-            },
-            "secondDown": {
-              "label": "2nd down EPA per play",
-              "value": -0.309,
-              "better": "high",
-              "format": "ppa",
-              "rank": 210,
-              "of": 215
-            },
-            "thirdDown": {
-              "label": "3rd down EPA per play",
-              "value": -1.256,
-              "better": "high",
-              "format": "ppa",
-              "rank": 216,
-              "of": 216
-            }
-          },
-          "looks": {
-            "all": {
-              "dropbacks": 16,
-              "attempts": 12,
-              "touchdowns": 0,
-              "interceptions": 1,
-              "qualified": false,
-              "completion_pct": {
-                "label": "All dropbacks: Completion %",
-                "value": 0.6667,
-                "better": "high",
-                "format": "pct",
-                "rank": 34,
-                "of": 190
-              },
-              "yards_per_attempt": {
-                "label": "All dropbacks: Yards per attempt",
-                "value": 1.4167,
-                "better": "high",
-                "format": "num",
-                "rank": 190,
-                "of": 190
-              },
-              "epa_per_dropback": {
-                "label": "All dropbacks: EPA per dropback",
-                "value": -1.5638,
-                "better": "high",
-                "format": "ppa",
-                "rank": 190,
-                "of": 190
-              }
-            },
-            "short": {
-              "dropbacks": 11,
-              "attempts": 11,
-              "touchdowns": 0,
-              "interceptions": 0,
-              "qualified": false,
-              "completion_pct": {
-                "label": "Short passes: Completion %",
-                "value": 0.7273,
-                "better": "high",
-                "format": "pct",
-                "rank": 29,
-                "of": 199
-              },
-              "yards_per_attempt": {
-                "label": "Short passes: Yards per attempt",
-                "value": 1.5455,
-                "better": "high",
-                "format": "num",
-                "rank": 199,
-                "of": 199
-              },
-              "epa_per_dropback": {
-                "label": "Short passes: EPA per dropback",
-                "value": -0.5193,
-                "better": "high",
-                "format": "ppa",
-                "rank": 199,
-                "of": 199
-              }
-            },
-            "left": {
-              "dropbacks": 5,
-              "attempts": 5,
-              "touchdowns": 0,
-              "interceptions": 0,
-              "qualified": false,
-              "completion_pct": {
-                "label": "Passes left: Completion %",
-                "value": 0.4,
-                "better": "high",
-                "format": "pct",
-                "rank": 188,
-                "of": 188
-              },
-              "yards_per_attempt": {
-                "label": "Passes left: Yards per attempt",
-                "value": 0.8,
-                "better": "high",
-                "format": "num",
-                "rank": 188,
-                "of": 188
-              },
-              "epa_per_dropback": {
-                "label": "Passes left: EPA per dropback",
-                "value": -0.4048,
-                "better": "high",
-                "format": "ppa",
-                "rank": 188,
-                "of": 188
-              }
-            },
-            "middle": {
-              "dropbacks": 1,
-              "attempts": 1,
-              "touchdowns": 0,
-              "interceptions": 0,
-              "qualified": false,
-              "completion_pct": {
-                "label": "Passes middle: Completion %",
-                "value": 1.0,
-                "better": "high",
-                "format": "pct",
-                "rank": 1,
-                "of": 172
-              },
-              "yards_per_attempt": {
-                "label": "Passes middle: Yards per attempt",
-                "value": -2.0,
-                "better": "high",
-                "format": "num",
-                "rank": 172,
-                "of": 172
-              },
-              "epa_per_dropback": {
-                "label": "Passes middle: EPA per dropback",
-                "value": -0.9676,
-                "better": "high",
-                "format": "ppa",
-                "rank": 172,
-                "of": 172
-              }
-            },
-            "right": {
-              "dropbacks": 5,
-              "attempts": 5,
-              "touchdowns": 0,
-              "interceptions": 0,
-              "qualified": false,
-              "completion_pct": {
-                "label": "Passes right: Completion %",
-                "value": 1.0,
-                "better": "high",
-                "format": "pct",
-                "rank": 1,
-                "of": 197
-              },
-              "yards_per_attempt": {
-                "label": "Passes right: Yards per attempt",
-                "value": 3.0,
-                "better": "high",
-                "format": "num",
-                "rank": 196,
-                "of": 197
-              },
-              "epa_per_dropback": {
-                "label": "Passes right: EPA per dropback",
-                "value": -0.5443,
-                "better": "high",
-                "format": "ppa",
-                "rank": 197,
-                "of": 197
-              }
-            },
-            "clean": {
-              "dropbacks": 9,
-              "attempts": 9,
-              "touchdowns": 0,
-              "interceptions": 1,
-              "qualified": false,
-              "completion_pct": {
-                "label": "Clean pocket: Completion %",
-                "value": 0.7778,
-                "better": "high",
-                "format": "pct",
-                "rank": 5,
-                "of": 202
-              },
-              "yards_per_attempt": {
-                "label": "Clean pocket: Yards per attempt",
-                "value": 2.1111,
-                "better": "high",
-                "format": "num",
-                "rank": 202,
-                "of": 202
-              },
-              "epa_per_dropback": {
-                "label": "Clean pocket: EPA per dropback",
-                "value": -1.2957,
-                "better": "high",
-                "format": "ppa",
-                "rank": 202,
-                "of": 202
-              }
-            },
-            "pressured": {
-              "dropbacks": 7,
-              "attempts": 3,
-              "touchdowns": 0,
-              "interceptions": 0,
-              "qualified": false,
-              "completion_pct": {
-                "label": "Under pressure: Completion %",
-                "value": 0.3333,
-                "better": "high",
-                "format": "pct",
-                "rank": 5,
-                "of": 189
-              },
-              "yards_per_attempt": {
-                "label": "Under pressure: Yards per attempt",
-                "value": -0.6667,
-                "better": "high",
-                "format": "num",
-                "rank": 189,
-                "of": 189
-              },
-              "epa_per_dropback": {
-                "label": "Under pressure: EPA per dropback",
-                "value": -1.9085,
-                "better": "high",
-                "format": "ppa",
-                "rank": 189,
-                "of": 189
-              }
-            },
-            "shotgun": {
-              "dropbacks": 16,
-              "attempts": 12,
-              "touchdowns": 0,
-              "interceptions": 1,
-              "qualified": false,
-              "completion_pct": {
-                "label": "From shotgun: Completion %",
-                "value": 0.6667,
-                "better": "high",
-                "format": "pct",
-                "rank": 38,
-                "of": 208
-              },
-              "yards_per_attempt": {
-                "label": "From shotgun: Yards per attempt",
-                "value": 1.4167,
-                "better": "high",
-                "format": "num",
-                "rank": 208,
-                "of": 208
-              },
-              "epa_per_dropback": {
-                "label": "From shotgun: EPA per dropback",
-                "value": -1.5638,
-                "better": "high",
-                "format": "ppa",
-                "rank": 208,
-                "of": 208
-              }
-            }
-          },
-          "depth_rank": 2
-        },
-        {
           "player_id": "4690158",
           "player_name": "Noah Kim",
           "position": "QB",
@@ -11876,9 +11501,9 @@
               }
             }
           },
-          "status": "Out",
+          "status": "Questionable",
           "injury": "Undisclosed",
-          "depth_rank": 3
+          "depth_rank": 2
         }
       ],
       "home_defense_splits": {
@@ -12079,7 +11704,7 @@
             "rank": 565,
             "of": 580
           },
-          "status": "Out",
+          "status": "Questionable",
           "injury": "Undisclosed"
         }
       ],
@@ -13119,7 +12744,7 @@
             "value": 0.0257,
             "better": "high",
             "format": "pct",
-            "rank": 58,
+            "rank": 57,
             "of": 138
           },
           "off_dropbacks_pg": {
@@ -16447,7 +16072,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -11.3576,
+            "value": -11.3575,
             "better": "high",
             "format": "num",
             "rank": 132,
@@ -16476,7 +16101,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -3.582,
+            "value": -3.588,
             "better": "high",
             "format": "num",
             "rank": 87,
@@ -16977,17 +16602,6 @@
             "value": null
           },
           {
-            "player": "Brayden Boeing",
-            "position": "TE",
-            "status": "Out",
-            "injury": "Undisclosed",
-            "updated": "Nov 24 7:00 PM",
-            "detail": "Boeing is bothered by an undisclosed injury, and it has yet to be determined if he will suit up against Central MI on Saturday, October 24th.",
-            "source": "RotoWire + Covers",
-            "return": "Nov 24th",
-            "value": null
-          },
-          {
             "player": "E. Karner",
             "position": "TE",
             "status": "Out",
@@ -17005,6 +16619,17 @@
             "updated": "Sat, Sep 5",
             "detail": "Reynolds has been sidelined due to an undisclosed injury, and has been shut down for the remainder of the season.",
             "source": "Covers",
+            "value": null
+          },
+          {
+            "player": "Brayden Boeing",
+            "position": "TE",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "updated": "Nov 24 7:00 PM",
+            "detail": "Boeing is bothered by an undisclosed injury, and it has yet to be determined if he will suit up against Central MI on Saturday, October 24th.",
+            "source": "RotoWire + Covers",
+            "return": "Nov 24th",
             "value": null
           }
         ],
@@ -20223,7 +19848,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -10.744,
+            "value": -10.7335,
             "better": "high",
             "format": "num",
             "rank": 130,
@@ -24108,7 +23733,7 @@
             "label": "Yards per rush attempt",
             "value": 3.5,
             "better": "high",
-            "rank": 122,
+            "rank": 121,
             "of": 138,
             "format": "num"
           },
@@ -24741,7 +24366,7 @@
             "value": 5.4345,
             "better": "low",
             "format": "num",
-            "rank": 63,
+            "rank": 64,
             "of": 138
           },
           "off_first_down_rate": {
@@ -28336,7 +27961,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.5703,
+            "value": 6.571,
             "better": "high",
             "format": "num",
             "rank": 37,
@@ -28365,7 +27990,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 17.062,
+            "value": 17.063,
             "better": "high",
             "format": "num",
             "rank": 15,
@@ -32046,7 +31671,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 3.2887,
+            "value": 3.2903,
             "better": "high",
             "format": "num",
             "rank": 62,
@@ -32078,7 +31703,7 @@
             "value": 6.689,
             "better": "high",
             "format": "num",
-            "rank": 43,
+            "rank": 42,
             "of": 138,
             "games": 1
           },
@@ -35871,7 +35496,7 @@
             "label": "Yards per pass allowed",
             "value": 7.689,
             "better": "low",
-            "rank": 108,
+            "rank": 109,
             "of": 138,
             "format": "num"
           },
@@ -39544,7 +39169,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -9.6778,
+            "value": -9.6779,
             "better": "high",
             "format": "num",
             "rank": 126,
@@ -39573,7 +39198,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -23.178,
+            "value": -23.179,
             "better": "high",
             "format": "num",
             "rank": 134,
@@ -43150,7 +42775,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -7.857,
+            "value": -7.8578,
             "better": "high",
             "format": "num",
             "rank": 108,
@@ -43179,7 +42804,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -10.285,
+            "value": -10.286,
             "better": "high",
             "format": "num",
             "rank": 106,
@@ -46290,8 +45915,8 @@
       "home_name": "Ole Miss",
       "away_conference": "SEC",
       "home_conference": "SEC",
-      "away_logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/344.png",
-      "home_logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/145.png",
+      "away_logo": "https://cdn.collegefootballdata.com/logos/500/344.png",
+      "home_logo": "https://cdn.collegefootballdata.com/logos/500/145.png",
       "away_color": "#5d1725",
       "home_color": "#13294b",
       "away_record": "5-6",
@@ -46695,7 +46320,7 @@
             "value": 17.9091,
             "better": "high",
             "format": "num",
-            "rank": 26,
+            "rank": 27,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -50646,7 +50271,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 9.5754,
+            "value": 9.6039,
             "better": "high",
             "format": "num",
             "rank": 17,
@@ -54431,7 +54056,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 12.0244,
+            "value": 12.0203,
             "better": "high",
             "format": "num",
             "rank": 4,
@@ -54460,7 +54085,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 3.785,
+            "value": 3.807,
             "better": "high",
             "format": "num",
             "rank": 54,
@@ -55054,7 +54679,7 @@
       "roof": "Outdoor",
       "broadcast": "CBS",
       "weather_temp": 39,
-      "weather_cond": "Partly sunny",
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -55446,7 +55071,7 @@
             "value": 17.5455,
             "better": "high",
             "format": "num",
-            "rank": 27,
+            "rank": 28,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -59433,7 +59058,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 4.4823,
+            "value": 4.4834,
             "better": "high",
             "format": "num",
             "rank": 56,
@@ -59462,7 +59087,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 15.651,
+            "value": 15.655,
             "better": "high",
             "format": "num",
             "rank": 17,
@@ -63287,7 +62912,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 4.8934,
+            "value": 4.9026,
             "better": "high",
             "format": "num",
             "rank": 53,
@@ -63316,7 +62941,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 14.947,
+            "value": 14.948,
             "better": "high",
             "format": "num",
             "rank": 19,
@@ -66546,7 +66171,7 @@
       "surface": "Indoor",
       "broadcast": "ESPN",
       "weather_temp": 56,
-      "weather_cond": "Intermittent clouds",
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -67185,7 +66810,7 @@
             "label": "Completion rate",
             "value": 0.664,
             "better": "high",
-            "rank": 27,
+            "rank": 28,
             "of": 138,
             "format": "pct"
           },
@@ -67378,7 +67003,7 @@
             "value": 5.4459,
             "better": "low",
             "format": "num",
-            "rank": 68,
+            "rank": 69,
             "of": 138
           },
           "off_first_down_rate": {
@@ -70920,7 +70545,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -6.408,
+            "value": -6.4044,
             "better": "high",
             "format": "num",
             "rank": 94,
@@ -74613,7 +74238,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -3.3935,
+            "value": -3.3945,
             "better": "high",
             "format": "num",
             "rank": 81,
@@ -74642,7 +74267,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 0.629,
+            "value": 0.632,
             "better": "high",
             "format": "num",
             "rank": 71,
@@ -77818,8 +77443,8 @@
       "venue_city": "Athens, OH",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 40,
-      "weather_cond": "Cloudy",
+      "weather_temp": 39,
+      "weather_cond": "Rain and snow",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -82064,7 +81689,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -13.6534,
+            "value": -13.6546,
             "better": "high",
             "format": "num",
             "rank": 136,
@@ -85792,7 +85417,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -3.166,
+            "value": -3.167,
             "better": "high",
             "format": "num",
             "rank": 85,
@@ -88985,7 +88610,7 @@
       "venue_city": "Mobile, AL",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 57,
+      "weather_temp": 55,
       "weather_cond": "Hazy sunshine",
       "away_form": {
         "rates": {
@@ -89490,7 +89115,7 @@
             "value": 33.2727,
             "better": "neutral",
             "format": "num",
-            "rank": 47,
+            "rank": 48,
             "of": 138
           },
           "def_disruption_rate": {
@@ -93337,7 +92962,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -9.5993,
+            "value": -9.5958,
             "better": "high",
             "format": "num",
             "rank": 125,
@@ -97086,7 +96711,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -11.151,
+            "value": -11.148,
             "better": "high",
             "format": "num",
             "rank": 112,
@@ -100902,7 +100527,7 @@
             "value": 5.4363,
             "better": "low",
             "format": "num",
-            "rank": 64,
+            "rank": 65,
             "of": 138
           },
           "off_first_down_rate": {
@@ -101622,7 +101247,7 @@
             "value": 0.0483,
             "better": "high",
             "format": "pct",
-            "rank": 89,
+            "rank": 90,
             "of": 138
           }
         },
@@ -104962,7 +104587,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 12.2591,
+            "value": 12.2876,
             "better": "high",
             "format": "num",
             "rank": 3,
@@ -104991,7 +104616,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 5.631,
+            "value": 5.64,
             "better": "high",
             "format": "num",
             "rank": 45,
@@ -108646,7 +108271,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 7.0398,
+            "value": 7.0492,
             "better": "high",
             "format": "num",
             "rank": 29,
@@ -108675,10 +108300,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 12.818,
+            "value": 12.467,
             "better": "high",
             "format": "num",
-            "rank": 22,
+            "rank": 23,
             "of": 138,
             "games": 1
           },
@@ -112116,8 +111741,8 @@
       "venue_city": "San Jose, CA",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 63,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 64,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -112836,7 +112461,7 @@
             "label": "Yards per rush attempt",
             "value": 3.5,
             "better": "high",
-            "rank": 122,
+            "rank": 121,
             "of": 138,
             "format": "num"
           },
@@ -116521,7 +116146,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -11.1171,
+            "value": -11.1162,
             "better": "high",
             "format": "num",
             "rank": 131,
@@ -120190,7 +119815,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -7.2075,
+            "value": -7.2068,
             "better": "high",
             "format": "num",
             "rank": 103,
@@ -120219,7 +119844,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -0.472,
+            "value": -0.471,
             "better": "high",
             "format": "num",
             "rank": 77,
@@ -123693,8 +123318,8 @@
       "venue_city": "Memphis, TN",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 56,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 52,
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -128027,7 +127652,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -5.8799,
+            "value": -5.8787,
             "better": "high",
             "format": "num",
             "rank": 89,
@@ -128056,7 +127681,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 2.671,
+            "value": 2.672,
             "better": "high",
             "format": "num",
             "rank": 56,
@@ -131676,7 +131301,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -6.4738,
+            "value": -6.4728,
             "better": "high",
             "format": "num",
             "rank": 95,
@@ -131705,7 +131330,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -13.239,
+            "value": -13.238,
             "better": "high",
             "format": "num",
             "rank": 118,
@@ -135138,7 +134763,7 @@
       "roof": "Outdoor",
       "broadcast": "CW",
       "weather_temp": 57,
-      "weather_cond": "Mostly cloudy",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -139492,7 +139117,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -9.4512,
+            "value": -9.4505,
             "better": "high",
             "format": "num",
             "rank": 124,
@@ -139524,7 +139149,7 @@
             "value": 5.631,
             "better": "high",
             "format": "num",
-            "rank": 45,
+            "rank": 46,
             "of": 138,
             "games": 1
           },
@@ -143415,7 +143040,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -8.8435,
+            "value": -8.8436,
             "better": "high",
             "format": "num",
             "rank": 117,
@@ -143444,7 +143069,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -0.031,
+            "value": -0.03,
             "better": "high",
             "format": "num",
             "rank": 75,
@@ -147479,7 +147104,7 @@
       "venue_city": "Madison, WI",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 42,
+      "weather_temp": 40,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -147671,7 +147296,7 @@
             "label": "Sacks per game",
             "value": 2.0909,
             "better": "high",
-            "rank": 69,
+            "rank": 70,
             "of": 138,
             "format": "num"
           },
@@ -151763,7 +151388,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.7966,
+            "value": 6.7988,
             "better": "high",
             "format": "num",
             "rank": 32,
@@ -151792,7 +151417,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 10.041,
+            "value": 10.036,
             "better": "high",
             "format": "num",
             "rank": 32,
@@ -155511,7 +155136,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 5.5609,
+            "value": 5.5493,
             "better": "high",
             "format": "num",
             "rank": 49,
@@ -155540,7 +155165,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 1.039,
+            "value": 1.033,
             "better": "high",
             "format": "num",
             "rank": 69,
@@ -158745,7 +158370,7 @@
       "roof": "Outdoor",
       "broadcast": "ABC",
       "weather_temp": 56,
-      "weather_cond": "Intermittent clouds",
+      "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -159544,7 +159169,7 @@
             "label": "Penalty yards per game",
             "value": 49.2727,
             "better": "low",
-            "rank": 48,
+            "rank": 47,
             "of": 138,
             "format": "num"
           },
@@ -163117,7 +162742,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 11.7265,
+            "value": 11.6941,
             "better": "high",
             "format": "num",
             "rank": 5,
@@ -166843,10 +166468,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 10.0143,
+            "value": 10.0134,
             "better": "high",
             "format": "num",
-            "rank": 12,
+            "rank": 13,
             "of": 138,
             "games": 10
           },
@@ -166872,7 +166497,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 25.373,
+            "value": 25.348,
             "better": "high",
             "format": "num",
             "rank": 3,
@@ -170056,7 +169681,7 @@
       "roof": "Outdoor",
       "broadcast": "Fox",
       "weather_temp": 46,
-      "weather_cond": "Showers",
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -170360,7 +169985,7 @@
             "value": 6.1188,
             "better": "high",
             "format": "num",
-            "rank": 38,
+            "rank": 37,
             "of": 138
           },
           "def_yards_per_play": {
@@ -170968,7 +170593,7 @@
             "value": 17.5455,
             "better": "high",
             "format": "num",
-            "rank": 27,
+            "rank": 28,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -174241,7 +173866,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.4066,
+            "value": 6.3964,
             "better": "high",
             "format": "num",
             "rank": 40,
@@ -174270,7 +173895,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 19.374,
+            "value": 19.378,
             "better": "high",
             "format": "num",
             "rank": 11,
@@ -178037,7 +177662,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 5.3811,
+            "value": 5.3856,
             "better": "high",
             "format": "num",
             "rank": 50,
@@ -178066,10 +177691,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 1.248,
+            "value": 1.242,
             "better": "high",
             "format": "num",
-            "rank": 66,
+            "rank": 67,
             "of": 138,
             "games": 1
           },
@@ -181122,8 +180747,8 @@
       "venue_city": "Miami Gardens, FL",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 69,
-      "weather_cond": "Cloudy",
+      "weather_temp": 71,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -181306,7 +180931,7 @@
             "label": "Sacks taken per game",
             "value": 2.7273,
             "better": "low",
-            "rank": 118,
+            "rank": 117,
             "of": 138,
             "format": "num"
           },
@@ -185260,7 +184885,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 5.7131,
+            "value": 5.7173,
             "better": "high",
             "format": "num",
             "rank": 48,
@@ -185289,7 +184914,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 24.282,
+            "value": 24.286,
             "better": "high",
             "format": "num",
             "rank": 4,
@@ -189097,7 +188722,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.6743,
+            "value": 6.6784,
             "better": "high",
             "format": "num",
             "rank": 35,
@@ -189126,7 +188751,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 8.2425,
+            "value": 8.246,
             "better": "high",
             "format": "num",
             "rank": 38,
@@ -196300,7 +195925,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -8.4371,
+            "value": -8.4374,
             "better": "high",
             "format": "num",
             "rank": 111,
@@ -200074,7 +199699,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -7.4359,
+            "value": -7.4358,
             "better": "high",
             "format": "num",
             "rank": 105,
@@ -203617,8 +203242,8 @@
       "venue_city": "Laramie, WY",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 44,
-      "weather_cond": "Showers",
+      "weather_temp": 40,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -207826,7 +207451,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -6.1546,
+            "value": -6.1543,
             "better": "high",
             "format": "num",
             "rank": 91,
@@ -207855,7 +207480,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -10.883,
+            "value": -10.881,
             "better": "high",
             "format": "num",
             "rank": 109,
@@ -211583,7 +211208,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -9.8808,
+            "value": -9.879,
             "better": "high",
             "format": "num",
             "rank": 127,
@@ -211612,7 +211237,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -4.276,
+            "value": -4.275,
             "better": "high",
             "format": "num",
             "rank": 89,
@@ -215036,7 +214661,7 @@
       "venue_city": "Lexington, KY",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 47,
+      "weather_temp": 46,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -215429,7 +215054,7 @@
             "value": 18.0,
             "better": "high",
             "format": "num",
-            "rank": 23,
+            "rank": 24,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -215748,7 +215373,7 @@
             "label": "Sacks per game",
             "value": 2.0909,
             "better": "high",
-            "rank": 69,
+            "rank": 70,
             "of": 138,
             "format": "num"
           },
@@ -215925,7 +215550,7 @@
             "value": 0.0691,
             "better": "low",
             "format": "pct",
-            "rank": 84,
+            "rank": 83,
             "of": 138
           },
           "def_sack_rate": {
@@ -219351,7 +218976,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 5.8298,
+            "value": 5.836,
             "better": "high",
             "format": "num",
             "rank": 46,
@@ -219380,7 +219005,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 9.288,
+            "value": 9.285,
             "better": "high",
             "format": "num",
             "rank": 36,
@@ -223099,7 +222724,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 11.5399,
+            "value": 11.5357,
             "better": "high",
             "format": "num",
             "rank": 6,
@@ -223128,7 +222753,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 15.927,
+            "value": 15.931,
             "better": "high",
             "format": "num",
             "rank": 16,
@@ -226157,7 +225782,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPNU",
       "weather_temp": 56,
-      "weather_cond": "Hazy sunshine",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -230606,7 +230231,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -6.585,
+            "value": -6.5844,
             "better": "high",
             "format": "num",
             "rank": 96,
@@ -230635,7 +230260,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 0.497,
+            "value": 0.498,
             "better": "high",
             "format": "num",
             "rank": 73,
@@ -234458,7 +234083,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -6.3378,
+            "value": -6.337,
             "better": "high",
             "format": "num",
             "rank": 93,
@@ -234487,7 +234112,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 2.482,
+            "value": 2.483,
             "better": "high",
             "format": "num",
             "rank": 58,
@@ -238091,8 +237716,8 @@
       "venue_city": "Columbus, OH",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 45,
-      "weather_cond": "Cloudy",
+      "weather_temp": 44,
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -242377,7 +242002,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 5.7371,
+            "value": 5.7265,
             "better": "high",
             "format": "num",
             "rank": 47,
@@ -246018,7 +245643,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 7.4493,
+            "value": 7.4478,
             "better": "high",
             "format": "num",
             "rank": 25,
@@ -246047,7 +245672,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 8.066,
+            "value": 8.175,
             "better": "high",
             "format": "num",
             "rank": 39,
@@ -246621,7 +246246,7 @@
             "updated": "Wed, Oct 21",
             "detail": "Sayin has been out of the lineup due to a arm injury, and he will miss an undetermined length of time.",
             "source": "RotoWire + Covers",
-            "return": "2026-11-28",
+            "return": "2026-12-05",
             "value": 3.17,
             "missed": 4,
             "value_recent": 0.0
@@ -250179,7 +249804,7 @@
             "value": 0.2255,
             "better": "low",
             "format": "pct",
-            "rank": 73,
+            "rank": 72,
             "of": 138
           },
           "off_pass_first_rate": {
@@ -253890,7 +253515,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -0.0932,
+            "value": -0.0912,
             "better": "high",
             "format": "num",
             "rank": 74,
@@ -253919,7 +253544,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -12.2245,
+            "value": -12.2235,
             "better": "high",
             "format": "num",
             "rank": 115,
@@ -257540,7 +257165,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -2.969,
+            "value": -2.9676,
             "better": "high",
             "format": "num",
             "rank": 80,
@@ -257569,7 +257194,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -3.374,
+            "value": -3.373,
             "better": "high",
             "format": "num",
             "rank": 86,
@@ -261328,7 +260953,7 @@
             "label": "Yards per rush allowed",
             "value": 4.428,
             "better": "low",
-            "rank": 97,
+            "rank": 96,
             "of": 138,
             "format": "num"
           },
@@ -261400,7 +261025,7 @@
             "label": "Penalty yards per game",
             "value": 49.2727,
             "better": "low",
-            "rank": 48,
+            "rank": 47,
             "of": 138,
             "format": "num"
           },
@@ -265369,7 +264994,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 3.5389,
+            "value": 3.577,
             "better": "high",
             "format": "num",
             "rank": 60,
@@ -265398,7 +265023,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 7.279,
+            "value": 7.281,
             "better": "high",
             "format": "num",
             "rank": 41,
@@ -269180,7 +268805,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 9.8908,
+            "value": 9.8941,
             "better": "high",
             "format": "num",
             "rank": 15,
@@ -269209,7 +268834,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 1.089,
+            "value": 1.118,
             "better": "high",
             "format": "num",
             "rank": 68,
@@ -272566,7 +272191,7 @@
       "surface": "Indoor",
       "broadcast": "ABC",
       "weather_temp": 46,
-      "weather_cond": "Rain",
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -272757,7 +272382,7 @@
             "label": "Sacks per game",
             "value": 2.0909,
             "better": "high",
-            "rank": 69,
+            "rank": 70,
             "of": 138,
             "format": "num"
           },
@@ -276822,7 +276447,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 3.4433,
+            "value": 3.4545,
             "better": "high",
             "format": "num",
             "rank": 61,
@@ -276851,7 +276476,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 0.829,
+            "value": 0.833,
             "better": "high",
             "format": "num",
             "rank": 70,
@@ -280609,7 +280234,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 3.2366,
+            "value": 3.2415,
             "better": "high",
             "format": "num",
             "rank": 63,
@@ -280638,7 +280263,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 27.212,
+            "value": 27.219,
             "better": "high",
             "format": "num",
             "rank": 2,
@@ -284078,6 +283703,8 @@
       "venue_city": "Evanston, IL",
       "roof": "Outdoor",
       "broadcast": "BTN",
+      "weather_temp": 49,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -284716,7 +284343,7 @@
             "label": "Completion rate",
             "value": 0.664,
             "better": "high",
-            "rank": 27,
+            "rank": 28,
             "of": 138,
             "format": "pct"
           },
@@ -288277,7 +287904,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 8.565,
+            "value": 8.5523,
             "better": "high",
             "format": "num",
             "rank": 22,
@@ -288306,7 +287933,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 11.641,
+            "value": 11.642,
             "better": "high",
             "format": "num",
             "rank": 28,
@@ -291990,7 +291617,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.7864,
+            "value": 6.789,
             "better": "high",
             "format": "num",
             "rank": 33,
@@ -292019,10 +291646,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 6.67,
+            "value": 6.664,
             "better": "high",
             "format": "num",
-            "rank": 44,
+            "rank": 43,
             "of": 138,
             "games": 1
           },
@@ -295593,7 +295220,7 @@
       "venue_city": "Fayetteville, AR",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 56,
+      "weather_temp": 55,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -296482,7 +296109,7 @@
             "value": 0.068,
             "better": "low",
             "format": "pct",
-            "rank": 81,
+            "rank": 80,
             "of": 138
           },
           "def_sack_rate": {
@@ -299997,7 +299624,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 12.7445,
+            "value": 12.7475,
             "better": "high",
             "format": "num",
             "rank": 2,
@@ -300026,7 +299653,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 2.284,
+            "value": 2.307,
             "better": "high",
             "format": "num",
             "rank": 60,
@@ -303677,7 +303304,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 13.6363,
+            "value": 13.6674,
             "better": "high",
             "format": "num",
             "rank": 1,
@@ -303706,7 +303333,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 20.583,
+            "value": 20.586,
             "better": "high",
             "format": "num",
             "rank": 9,
@@ -306884,8 +306511,8 @@
       "venue_city": "Greenville, NC",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 61,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 59,
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -307084,7 +306711,7 @@
             "label": "Yards per rush attempt",
             "value": 3.5,
             "better": "high",
-            "rank": 122,
+            "rank": 121,
             "of": 138,
             "format": "num"
           },
@@ -307261,7 +306888,7 @@
             "value": 0.0636,
             "better": "high",
             "format": "pct",
-            "rank": 72,
+            "rank": 73,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -311207,7 +310834,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -5.0017,
+            "value": -5.0357,
             "better": "high",
             "format": "num",
             "rank": 87,
@@ -311236,7 +310863,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -4.39,
+            "value": -4.387,
             "better": "high",
             "format": "num",
             "rank": 90,
@@ -314969,7 +314596,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -6.738,
+            "value": -6.7342,
             "better": "high",
             "format": "num",
             "rank": 98,
@@ -314998,7 +314625,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -6.182,
+            "value": -6.18,
             "better": "high",
             "format": "num",
             "rank": 95,
@@ -318433,8 +318060,8 @@
       "venue_city": "Bowling Green, KY",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 54,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 53,
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -319049,7 +318676,7 @@
             "label": "Yards per pass allowed",
             "value": 7.695,
             "better": "low",
-            "rank": 109,
+            "rank": 110,
             "of": 138,
             "format": "num"
           },
@@ -322760,7 +322387,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -7.9691,
+            "value": -7.9673,
             "better": "high",
             "format": "num",
             "rank": 109,
@@ -322789,7 +322416,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -15.121,
+            "value": -15.116,
             "better": "high",
             "format": "num",
             "rank": 124,
@@ -326395,7 +326022,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -3.8278,
+            "value": -3.8209,
             "better": "high",
             "format": "num",
             "rank": 84,
@@ -326424,7 +326051,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -10.316,
+            "value": -10.319,
             "better": "high",
             "format": "num",
             "rank": 107,
@@ -330157,7 +329784,7 @@
             "label": "Yards per pass allowed",
             "value": 7.683,
             "better": "low",
-            "rank": 107,
+            "rank": 108,
             "of": 138,
             "format": "num"
           },
@@ -334473,7 +334100,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -7.2551,
+            "value": -7.2552,
             "better": "high",
             "format": "num",
             "rank": 104,
@@ -334502,7 +334129,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -23.181,
+            "value": -23.18,
             "better": "high",
             "format": "num",
             "rank": 135,
@@ -338130,7 +337757,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -7.8076,
+            "value": -7.8048,
             "better": "high",
             "format": "num",
             "rank": 107,
@@ -338159,7 +337786,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -15.324,
+            "value": -15.322,
             "better": "high",
             "format": "num",
             "rank": 125,
@@ -341725,7 +341352,7 @@
       "venue_city": "Norfolk, VA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 57,
+      "weather_temp": 59,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -342638,7 +342265,7 @@
             "value": 18.0,
             "better": "high",
             "format": "num",
-            "rank": 23,
+            "rank": 24,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -345919,7 +345546,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -6.1236,
+            "value": -6.123,
             "better": "high",
             "format": "num",
             "rank": 90,
@@ -349670,7 +349297,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -4.8024,
+            "value": -4.8013,
             "better": "high",
             "format": "num",
             "rank": 86,
@@ -349699,7 +349326,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -16.259,
+            "value": -16.258,
             "better": "high",
             "format": "num",
             "rank": 126,
@@ -353195,7 +352822,7 @@
       "venue_city": "Houston, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 71,
+      "weather_temp": 70,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -357501,7 +357128,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -3.578,
+            "value": -3.5767,
             "better": "high",
             "format": "num",
             "rank": 83,
@@ -357530,7 +357157,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -8.87,
+            "value": -8.869,
             "better": "high",
             "format": "num",
             "rank": 100,
@@ -361300,7 +360927,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -0.9289,
+            "value": -0.9276,
             "better": "high",
             "format": "num",
             "rank": 76,
@@ -361329,7 +360956,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -3.161,
+            "value": -3.16,
             "better": "high",
             "format": "num",
             "rank": 84,
@@ -364528,7 +364155,7 @@
       "away_conference": "Sun Belt",
       "home_conference": "Sun Belt",
       "away_logo": "https://cdn.collegefootballdata.com/logos/500/324.png",
-      "home_logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/256.png",
+      "home_logo": "https://cdn.collegefootballdata.com/logos/500/256.png",
       "away_color": "#006f71",
       "home_color": "#450084",
       "away_record": "4-7",
@@ -364540,7 +364167,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN+",
       "weather_temp": 55,
-      "weather_cond": "Partly sunny",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -364633,9 +364260,9 @@
           },
           "def_ypa": {
             "label": "Yards per pass allowed",
-            "value": 7.697,
+            "value": 7.678,
             "better": "low",
-            "rank": 111,
+            "rank": 107,
             "of": 138,
             "format": "num"
           },
@@ -364649,7 +364276,7 @@
           },
           "def_pass_ypg": {
             "label": "Passing yards allowed per game",
-            "value": 216.909,
+            "value": 217.091,
             "better": "low",
             "rank": 78,
             "of": 138,
@@ -364665,7 +364292,7 @@
           },
           "def_comp": {
             "label": "Completion rate allowed",
-            "value": 0.629,
+            "value": 0.6302,
             "better": "low",
             "rank": 91,
             "of": 138,
@@ -364681,7 +364308,7 @@
           },
           "def_qbr": {
             "label": "Passer rating allowed",
-            "value": 142.6216,
+            "value": 142.535,
             "better": "low",
             "rank": 106,
             "of": 138,
@@ -364739,15 +364366,15 @@
             "label": "Yards per rush attempt",
             "value": 3.5,
             "better": "high",
-            "rank": 122,
+            "rank": 121,
             "of": 138,
             "format": "num"
           },
           "def_ypc": {
             "label": "Yards per rush allowed",
-            "value": 4.427,
+            "value": 4.432,
             "better": "low",
-            "rank": 96,
+            "rank": 97,
             "of": 138,
             "format": "num"
           },
@@ -364761,7 +364388,7 @@
           },
           "def_rush_ypg": {
             "label": "Rushing yards allowed per game",
-            "value": 169.818,
+            "value": 169.636,
             "better": "low",
             "rank": 100,
             "of": 138,
@@ -364897,10 +364524,10 @@
           },
           "def_pass_rate": {
             "label": "Opponent dropback share",
-            "value": 0.4536,
+            "value": 0.4549,
             "better": "neutral",
             "format": "pct",
-            "rank": 112,
+            "rank": 111,
             "of": 138
           },
           "off_sack_rate": {
@@ -364913,7 +364540,7 @@
           },
           "def_sack_rate": {
             "label": "Sacks generated per opponent dropback",
-            "value": 0.0663,
+            "value": 0.0661,
             "better": "high",
             "format": "pct",
             "rank": 65,
@@ -364945,10 +364572,10 @@
           },
           "def_rush_attempts_pg": {
             "label": "Opponent rushing attempts per game",
-            "value": 38.3636,
+            "value": 38.2727,
             "better": "neutral",
             "format": "num",
-            "rank": 27,
+            "rank": 28,
             "of": 138
           },
           "off_rush_first_rate": {
@@ -364961,10 +364588,10 @@
           },
           "def_rush_first_rate": {
             "label": "Rushing first downs allowed per attempt",
-            "value": 0.2251,
+            "value": 0.2257,
             "better": "low",
             "format": "pct",
-            "rank": 70,
+            "rank": 73,
             "of": 138
           },
           "off_pass_first_rate": {
@@ -364977,7 +364604,7 @@
           },
           "def_pass_first_rate": {
             "label": "Passing first downs allowed per attempt",
-            "value": 0.3484,
+            "value": 0.3473,
             "better": "low",
             "format": "pct",
             "rank": 118,
@@ -364993,7 +364620,7 @@
           },
           "def_yards_per_completion": {
             "label": "Yards allowed per completion",
-            "value": 12.2359,
+            "value": 12.1837,
             "better": "low",
             "format": "num",
             "rank": 101,
@@ -365009,10 +364636,10 @@
           },
           "def_pass_td_rate": {
             "label": "Passing touchdowns allowed per attempt",
-            "value": 0.0613,
+            "value": 0.0611,
             "better": "low",
             "format": "pct",
-            "rank": 113,
+            "rank": 112,
             "of": 138
           },
           "off_interception_rate": {
@@ -365025,7 +364652,7 @@
           },
           "def_interception_rate": {
             "label": "Interceptions forced per opponent attempt",
-            "value": 0.0258,
+            "value": 0.0257,
             "better": "high",
             "format": "pct",
             "rank": 57,
@@ -365041,7 +364668,7 @@
           },
           "def_dropbacks_pg": {
             "label": "Opponent dropbacks per game",
-            "value": 30.1818,
+            "value": 30.2727,
             "better": "neutral",
             "format": "num",
             "rank": 95,
@@ -368880,7 +368507,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -6.8474,
+            "value": -6.8455,
             "better": "high",
             "format": "num",
             "rank": 99,
@@ -368909,7 +368536,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 2.347,
+            "value": 2.348,
             "better": "high",
             "format": "num",
             "rank": 59,
@@ -372665,7 +372292,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -8.6762,
+            "value": -8.6757,
             "better": "high",
             "format": "num",
             "rank": 112,
@@ -372694,7 +372321,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -12.033,
+            "value": -12.036,
             "better": "high",
             "format": "num",
             "rank": 114,
@@ -374719,7 +374346,7 @@
       "venue_city": "Ames, IA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 49,
+      "weather_temp": 50,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -379086,7 +378713,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 3.9879,
+            "value": 3.9774,
             "better": "high",
             "format": "num",
             "rank": 57,
@@ -379115,7 +378742,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 2.248,
+            "value": 2.258,
             "better": "high",
             "format": "num",
             "rank": 61,
@@ -382840,7 +382467,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 7.4255,
+            "value": 7.4396,
             "better": "high",
             "format": "num",
             "rank": 26,
@@ -382869,7 +382496,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 1.938,
+            "value": 1.932,
             "better": "high",
             "format": "num",
             "rank": 62,
@@ -386932,7 +386559,7 @@
             "value": 0.0687,
             "better": "low",
             "format": "pct",
-            "rank": 83,
+            "rank": 82,
             "of": 138
           },
           "def_sack_rate": {
@@ -386940,7 +386567,7 @@
             "value": 0.0649,
             "better": "high",
             "format": "pct",
-            "rank": 68,
+            "rank": 69,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -387452,7 +387079,7 @@
             "value": 0.0687,
             "better": "low",
             "format": "pct",
-            "rank": 82,
+            "rank": 81,
             "of": 138
           },
           "def_sack_rate": {
@@ -390936,7 +390563,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -13.149,
+            "value": -13.1467,
             "better": "high",
             "format": "num",
             "rank": 135,
@@ -390965,7 +390592,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -11.0445,
+            "value": -11.041,
             "better": "high",
             "format": "num",
             "rank": 111,
@@ -394721,7 +394348,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -8.8485,
+            "value": -8.8441,
             "better": "high",
             "format": "num",
             "rank": 118,
@@ -394750,7 +394377,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 4.029,
+            "value": 4.033,
             "better": "high",
             "format": "num",
             "rank": 52,
@@ -398222,7 +397849,7 @@
           },
           "def_ypg": {
             "label": "Yards allowed per game",
-            "value": 361.455,
+            "value": 360.545,
             "better": "low",
             "rank": 67,
             "of": 138,
@@ -398382,9 +398009,9 @@
           },
           "def_sacks": {
             "label": "Sacks per game",
-            "value": 2.0909,
+            "value": 2.1818,
             "better": "high",
-            "rank": 69,
+            "rank": 58,
             "of": 138,
             "format": "num"
           },
@@ -398398,7 +398025,7 @@
           },
           "def_ypc": {
             "label": "Yards per rush allowed",
-            "value": 3.788,
+            "value": 3.762,
             "better": "low",
             "rank": 47,
             "of": 138,
@@ -398414,7 +398041,7 @@
           },
           "def_rush_ypg": {
             "label": "Rushing yards allowed per game",
-            "value": 133.273,
+            "value": 132.364,
             "better": "low",
             "rank": 48,
             "of": 138,
@@ -398502,10 +398129,10 @@
           },
           "def_yards_per_play": {
             "label": "Yards allowed per defensive play",
-            "value": 5.4466,
+            "value": 5.4329,
             "better": "low",
             "format": "num",
-            "rank": 69,
+            "rank": 63,
             "of": 138
           },
           "off_first_down_rate": {
@@ -398550,10 +398177,10 @@
           },
           "def_pass_rate": {
             "label": "Opponent dropback share",
-            "value": 0.5014,
+            "value": 0.5027,
             "better": "neutral",
             "format": "pct",
-            "rank": 55,
+            "rank": 53,
             "of": 138
           },
           "off_sack_rate": {
@@ -398566,10 +398193,10 @@
           },
           "def_sack_rate": {
             "label": "Sacks generated per opponent dropback",
-            "value": 0.0628,
+            "value": 0.0654,
             "better": "high",
             "format": "pct",
-            "rank": 74,
+            "rank": 67,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -398582,10 +398209,10 @@
           },
           "def_sack_yards_pg": {
             "label": "Opponent sack yards lost per game",
-            "value": 17.5455,
+            "value": 18.4545,
             "better": "high",
             "format": "num",
-            "rank": 27,
+            "rank": 20,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -398694,18 +398321,18 @@
           },
           "def_dropbacks_pg": {
             "label": "Opponent dropbacks per game",
-            "value": 33.2727,
+            "value": 33.3636,
             "better": "neutral",
             "format": "num",
-            "rank": 47,
+            "rank": 45,
             "of": 138
           },
           "def_disruption_rate": {
             "label": "Sacks plus takeaways per defensive play",
-            "value": 0.0479,
+            "value": 0.0493,
             "better": "high",
             "format": "pct",
-            "rank": 90,
+            "rank": 85,
             "of": 138
           }
         },
@@ -399185,7 +398812,7 @@
             "value": 0.0612,
             "better": "low",
             "format": "pct",
-            "rank": 112,
+            "rank": 113,
             "of": 138
           },
           "off_interception_rate": {
@@ -402416,7 +402043,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -7.619,
+            "value": -7.6143,
             "better": "high",
             "format": "num",
             "rank": 106,
@@ -402445,7 +402072,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -14.954,
+            "value": -14.965,
             "better": "high",
             "format": "num",
             "rank": 123,
@@ -405901,7 +405528,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -8.8041,
+            "value": -8.8138,
             "better": "high",
             "format": "num",
             "rank": 116,
@@ -405930,7 +405557,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -16.329,
+            "value": -16.315,
             "better": "high",
             "format": "num",
             "rank": 127,
@@ -409325,6 +408952,8 @@
       "venue_city": "Miami, FL",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
+      "weather_temp": 74,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -409636,7 +409265,7 @@
             "value": 5.4378,
             "better": "low",
             "format": "num",
-            "rank": 65,
+            "rank": 66,
             "of": 138
           },
           "off_first_down_rate": {
@@ -413746,7 +413375,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -7.136,
+            "value": -7.1342,
             "better": "high",
             "format": "num",
             "rank": 101,
@@ -413775,7 +413404,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -13.522,
+            "value": -13.52,
             "better": "high",
             "format": "num",
             "rank": 120,
@@ -417475,7 +417104,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -8.9526,
+            "value": -8.9499,
             "better": "high",
             "format": "num",
             "rank": 119,
@@ -417504,7 +417133,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -22.113,
+            "value": -22.11,
             "better": "high",
             "format": "num",
             "rank": 133,
@@ -420616,7 +420245,7 @@
       "venue_city": "Boulder, CO",
       "roof": "Outdoor",
       "broadcast": "TNT",
-      "weather_temp": 50,
+      "weather_temp": 51,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -421129,7 +420758,7 @@
             "value": 0.0486,
             "better": "high",
             "format": "pct",
-            "rank": 88,
+            "rank": 89,
             "of": 138
           }
         },
@@ -424905,7 +424534,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.4385,
+            "value": 6.4407,
             "better": "high",
             "format": "num",
             "rank": 39,
@@ -424934,7 +424563,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -0.012,
+            "value": -0.011,
             "better": "high",
             "format": "num",
             "rank": 74,
@@ -428763,7 +428392,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 8.724,
+            "value": 8.7251,
             "better": "high",
             "format": "num",
             "rank": 21,
@@ -428792,7 +428421,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 4.099,
+            "value": 4.101,
             "better": "high",
             "format": "num",
             "rank": 51,
@@ -432374,7 +432003,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN+",
       "weather_temp": 58,
-      "weather_cond": "Intermittent clouds",
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -432475,7 +432104,7 @@
           },
           "off_pass_ypg": {
             "label": "Passing yards per game",
-            "value": 180.3,
+            "value": 180.5,
             "better": "high",
             "rank": 118,
             "of": 138,
@@ -432491,7 +432120,7 @@
           },
           "off_comp": {
             "label": "Completion rate",
-            "value": 0.664,
+            "value": 0.665,
             "better": "high",
             "rank": 27,
             "of": 138,
@@ -432507,7 +432136,7 @@
           },
           "off_qbr": {
             "label": "Passer rating",
-            "value": 140.6678,
+            "value": 140.7113,
             "better": "high",
             "rank": 56,
             "of": 138,
@@ -432587,7 +432216,7 @@
           },
           "off_rush_ypg": {
             "label": "Rushing yards per game",
-            "value": 204.2,
+            "value": 204.0,
             "better": "high",
             "rank": 19,
             "of": 138,
@@ -432723,7 +432352,7 @@
           },
           "off_pass_rate": {
             "label": "Dropback share",
-            "value": 0.3826,
+            "value": 0.3841,
             "better": "neutral",
             "format": "pct",
             "rank": 130,
@@ -432739,7 +432368,7 @@
           },
           "off_sack_rate": {
             "label": "Sacks allowed per dropback",
-            "value": 0.0595,
+            "value": 0.0593,
             "better": "low",
             "format": "pct",
             "rank": 64,
@@ -432771,10 +432400,10 @@
           },
           "off_rush_attempts_pg": {
             "label": "Rushing attempts per game",
-            "value": 40.9091,
+            "value": 40.8182,
             "better": "neutral",
             "format": "num",
-            "rank": 16,
+            "rank": 17,
             "of": 138
           },
           "def_rush_attempts_pg": {
@@ -432787,7 +432416,7 @@
           },
           "off_rush_first_rate": {
             "label": "Rushing first downs per attempt",
-            "value": 0.2622,
+            "value": 0.2628,
             "better": "high",
             "format": "pct",
             "rank": 19,
@@ -432803,7 +432432,7 @@
           },
           "off_pass_first_rate": {
             "label": "Passing first downs per attempt",
-            "value": 0.3715,
+            "value": 0.3701,
             "better": "high",
             "format": "pct",
             "rank": 20,
@@ -432819,10 +432448,10 @@
           },
           "off_yards_per_completion": {
             "label": "Yards per completion",
-            "value": 11.8036,
+            "value": 11.7456,
             "better": "high",
             "format": "num",
-            "rank": 74,
+            "rank": 76,
             "of": 138
           },
           "def_yards_per_completion": {
@@ -432835,7 +432464,7 @@
           },
           "off_pass_td_rate": {
             "label": "Passing touchdowns per attempt",
-            "value": 0.0435,
+            "value": 0.0433,
             "better": "high",
             "format": "pct",
             "rank": 94,
@@ -432851,7 +432480,7 @@
           },
           "off_interception_rate": {
             "label": "Interceptions thrown per attempt",
-            "value": 0.0277,
+            "value": 0.0276,
             "better": "low",
             "format": "pct",
             "rank": 91,
@@ -432867,7 +432496,7 @@
           },
           "off_dropbacks_pg": {
             "label": "Dropbacks per game",
-            "value": 24.4545,
+            "value": 24.5455,
             "better": "neutral",
             "format": "num",
             "rank": 127,
@@ -432878,7 +432507,7 @@
             "value": 33.2727,
             "better": "neutral",
             "format": "num",
-            "rank": 47,
+            "rank": 48,
             "of": 138
           },
           "def_disruption_rate": {
@@ -433198,7 +432827,7 @@
             "value": 6.118,
             "better": "high",
             "format": "num",
-            "rank": 39,
+            "rank": 38,
             "of": 138
           },
           "def_yards_per_play": {
@@ -433286,7 +432915,7 @@
             "value": 18.3636,
             "better": "high",
             "format": "num",
-            "rank": 21,
+            "rank": 22,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -436718,7 +436347,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -10.3952,
+            "value": -10.395,
             "better": "high",
             "format": "num",
             "rank": 129,
@@ -440532,7 +440161,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -9.0188,
+            "value": -9.0184,
             "better": "high",
             "format": "num",
             "rank": 121,
@@ -444137,8 +443766,8 @@
       "venue_city": "Clemson, SC",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 62,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 60,
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -444586,7 +444215,7 @@
             "value": 11.79,
             "better": "high",
             "format": "num",
-            "rank": 75,
+            "rank": 74,
             "of": 138
           },
           "def_yards_per_completion": {
@@ -445042,7 +444671,7 @@
             "value": 16.3636,
             "better": "low",
             "format": "num",
-            "rank": 103,
+            "rank": 102,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -445050,7 +444679,7 @@
             "value": 18.0909,
             "better": "high",
             "format": "num",
-            "rank": 22,
+            "rank": 23,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -445082,7 +444711,7 @@
             "value": 0.2251,
             "better": "low",
             "format": "pct",
-            "rank": 71,
+            "rank": 70,
             "of": 138
           },
           "off_pass_first_rate": {
@@ -448483,7 +448112,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 9.9945,
+            "value": 9.9669,
             "better": "high",
             "format": "num",
             "rank": 14,
@@ -448512,7 +448141,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 5.586,
+            "value": 5.59,
             "better": "high",
             "format": "num",
             "rank": 47,
@@ -452384,7 +452013,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.2545,
+            "value": 6.2575,
             "better": "high",
             "format": "num",
             "rank": 42,
@@ -452413,7 +452042,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 9.574,
+            "value": 9.558,
             "better": "high",
             "format": "num",
             "rank": 35,
@@ -455664,7 +455293,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN+",
       "weather_temp": 62,
-      "weather_cond": "Intermittent clouds",
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -456088,7 +455717,7 @@
             "value": 0.2255,
             "better": "low",
             "format": "pct",
-            "rank": 72,
+            "rank": 71,
             "of": 138
           },
           "off_pass_first_rate": {
@@ -459896,7 +459525,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -6.1707,
+            "value": -6.1729,
             "better": "high",
             "format": "num",
             "rank": 92,
@@ -463612,7 +463241,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -7.1499,
+            "value": -7.1501,
             "better": "high",
             "format": "num",
             "rank": 102,
@@ -463641,7 +463270,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -14.271,
+            "value": -14.273,
             "better": "high",
             "format": "num",
             "rank": 121,
@@ -466773,7 +466402,7 @@
       "roof": "Outdoor",
       "broadcast": "CW",
       "weather_temp": 52,
-      "weather_cond": "Mostly sunny",
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -467085,7 +466714,7 @@
             "value": 5.4398,
             "better": "low",
             "format": "num",
-            "rank": 66,
+            "rank": 67,
             "of": 138
           },
           "off_first_down_rate": {
@@ -467149,7 +466778,7 @@
             "value": 0.0629,
             "better": "high",
             "format": "pct",
-            "rank": 73,
+            "rank": 74,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -467221,7 +466850,7 @@
             "value": 11.7864,
             "better": "high",
             "format": "num",
-            "rank": 76,
+            "rank": 75,
             "of": 138
           },
           "def_yards_per_completion": {
@@ -467548,7 +467177,7 @@
             "label": "Net punt average",
             "value": 43.3,
             "better": "high",
-            "rank": 65,
+            "rank": 64,
             "of": 138,
             "format": "num"
           },
@@ -471182,7 +470811,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 3.9472,
+            "value": 3.9536,
             "better": "high",
             "format": "num",
             "rank": 58,
@@ -471211,7 +470840,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 2.955,
+            "value": 2.957,
             "better": "high",
             "format": "num",
             "rank": 55,
@@ -474950,7 +474579,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 0.6115,
+            "value": 0.613,
             "better": "high",
             "format": "num",
             "rank": 69,
@@ -474979,7 +474608,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 5.538,
+            "value": 5.54,
             "better": "high",
             "format": "num",
             "rank": 48,
@@ -478224,8 +477853,8 @@
       "venue_city": "Provo, UT",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 47,
-      "weather_cond": "Mostly cloudy",
+      "weather_temp": 44,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -482515,7 +482144,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 5.3028,
+            "value": 5.3042,
             "better": "high",
             "format": "num",
             "rank": 51,
@@ -482544,7 +482173,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 15.318,
+            "value": 15.442,
             "better": "high",
             "format": "num",
             "rank": 18,
@@ -486291,7 +485920,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 7.7049,
+            "value": 7.6971,
             "better": "high",
             "format": "num",
             "rank": 24,
@@ -486320,7 +485949,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 2.495,
+            "value": 2.496,
             "better": "high",
             "format": "num",
             "rank": 57,
@@ -489234,9 +488863,9 @@
       "venue": "Allegacy Federal Credit Union Stadium",
       "venue_city": "Winston-Salem, NC",
       "roof": "Outdoor",
-      "broadcast": "ESPN",
+      "broadcast": "ESPN, Disney+",
       "weather_temp": 57,
-      "weather_cond": "Sunny",
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -493440,7 +493069,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 2.9691,
+            "value": 2.9735,
             "better": "high",
             "format": "num",
             "rank": 64,
@@ -493469,7 +493098,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 20.156,
+            "value": 20.161,
             "better": "high",
             "format": "num",
             "rank": 10,
@@ -497358,7 +496987,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 1.4131,
+            "value": 1.4165,
             "better": "high",
             "format": "num",
             "rank": 66,
@@ -497387,7 +497016,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 18.053,
+            "value": 18.057,
             "better": "high",
             "format": "num",
             "rank": 13,
@@ -501018,8 +500647,8 @@
       "venue_city": "Athens, GA",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 58,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 60,
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -505237,7 +504866,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 7.1437,
+            "value": 7.1465,
             "better": "high",
             "format": "num",
             "rank": 28,
@@ -505266,7 +504895,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 28.675,
+            "value": 28.703,
             "better": "high",
             "format": "num",
             "rank": 1,
@@ -509062,7 +508691,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 8.9628,
+            "value": 8.9617,
             "better": "high",
             "format": "num",
             "rank": 20,
@@ -509091,7 +508720,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -2.463,
+            "value": -2.461,
             "better": "high",
             "format": "num",
             "rank": 82,
@@ -512327,7 +511956,7 @@
       "roof": "Outdoor",
       "broadcast": "CBSSN",
       "weather_temp": 57,
-      "weather_cond": "Partly sunny",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -512839,7 +512468,7 @@
             "value": 0.0492,
             "better": "high",
             "format": "pct",
-            "rank": 85,
+            "rank": 86,
             "of": 138
           }
         },
@@ -512868,7 +512497,7 @@
           },
           "off_ypg": {
             "label": "Yards per game",
-            "value": 410.6,
+            "value": 409.7,
             "better": "high",
             "rank": 41,
             "of": 138,
@@ -513028,9 +512657,9 @@
           },
           "off_sacks": {
             "label": "Sacks taken per game",
-            "value": 2.6364,
+            "value": 2.7273,
             "better": "low",
-            "rank": 113,
+            "rank": 117,
             "of": 138,
             "format": "num"
           },
@@ -513044,9 +512673,9 @@
           },
           "off_ypc": {
             "label": "Yards per rush attempt",
-            "value": 3.6,
+            "value": 3.5,
             "better": "high",
-            "rank": 117,
+            "rank": 121,
             "of": 138,
             "format": "num"
           },
@@ -513060,9 +512689,9 @@
           },
           "off_rush_ypg": {
             "label": "Rushing yards per game",
-            "value": 108.3,
+            "value": 107.4,
             "better": "high",
-            "rank": 127,
+            "rank": 128,
             "of": 138,
             "format": "num"
           },
@@ -513148,10 +512777,10 @@
           },
           "off_yards_per_play": {
             "label": "Yards per offensive play",
-            "value": 6.1289,
+            "value": 6.1153,
             "better": "high",
             "format": "num",
-            "rank": 37,
+            "rank": 39,
             "of": 138
           },
           "def_yards_per_play": {
@@ -513196,7 +512825,7 @@
           },
           "off_pass_rate": {
             "label": "Dropback share",
-            "value": 0.5875,
+            "value": 0.5889,
             "better": "neutral",
             "format": "pct",
             "rank": 5,
@@ -513212,10 +512841,10 @@
           },
           "off_sack_rate": {
             "label": "Sacks allowed per dropback",
-            "value": 0.067,
+            "value": 0.0691,
             "better": "low",
             "format": "pct",
-            "rank": 80,
+            "rank": 84,
             "of": 138
           },
           "def_sack_rate": {
@@ -513228,10 +512857,10 @@
           },
           "off_sack_yards_pg": {
             "label": "Sack yards lost per game",
-            "value": 15.6364,
+            "value": 16.5455,
             "better": "low",
             "format": "num",
-            "rank": 97,
+            "rank": 104,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -513340,7 +512969,7 @@
           },
           "off_dropbacks_pg": {
             "label": "Dropbacks per game",
-            "value": 39.3636,
+            "value": 39.4545,
             "better": "neutral",
             "format": "num",
             "rank": 9,
@@ -516621,7 +516250,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -11.8416,
+            "value": -11.84,
             "better": "high",
             "format": "num",
             "rank": 133,
@@ -516650,7 +516279,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -2.076,
+            "value": -2.0665,
             "better": "high",
             "format": "num",
             "rank": 80,
@@ -520371,10 +520000,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -8.7411,
+            "value": -8.7051,
             "better": "high",
             "format": "num",
-            "rank": 114,
+            "rank": 113,
             "of": 138,
             "games": 10
           },
@@ -520400,10 +520029,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -6.183,
+            "value": -6.18,
             "better": "high",
             "format": "num",
-            "rank": 96,
+            "rank": 95,
             "of": 138,
             "games": 1
           },
@@ -523603,8 +523232,8 @@
       "venue_city": "Bowling Green, OH",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 46,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 49,
+      "weather_cond": "Mostly cloudy w/ showers",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -524219,7 +523848,7 @@
             "label": "Yards per pass allowed",
             "value": 7.695,
             "better": "low",
-            "rank": 109,
+            "rank": 110,
             "of": 138,
             "format": "num"
           },
@@ -528026,7 +527655,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -13.7186,
+            "value": -13.7181,
             "better": "high",
             "format": "num",
             "rank": 137,
@@ -531763,7 +531392,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -8.9677,
+            "value": -8.9676,
             "better": "high",
             "format": "num",
             "rank": 120,
@@ -535325,7 +534954,7 @@
       "roof": "Outdoor",
       "broadcast": "FS1",
       "weather_temp": 51,
-      "weather_cond": "Intermittent clouds",
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -539498,7 +539127,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 0.7067,
+            "value": 0.7156,
             "better": "high",
             "format": "num",
             "rank": 68,
@@ -539527,7 +539156,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -2.238,
+            "value": -2.245,
             "better": "high",
             "format": "num",
             "rank": 81,
@@ -543227,7 +542856,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 7.4032,
+            "value": 7.3902,
             "better": "high",
             "format": "num",
             "rank": 27,
@@ -543256,7 +542885,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 11.699,
+            "value": 11.703,
             "better": "high",
             "format": "num",
             "rank": 26,
@@ -546678,8 +546307,8 @@
       "venue_city": "Stanford, CA",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 63,
-      "weather_cond": "Showers",
+      "weather_temp": 64,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -547063,7 +546692,7 @@
             "value": 16.5455,
             "better": "low",
             "format": "num",
-            "rank": 105,
+            "rank": 104,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -547071,7 +546700,7 @@
             "value": 18.0,
             "better": "high",
             "format": "num",
-            "rank": 23,
+            "rank": 24,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -550999,7 +550628,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 4.9799,
+            "value": 4.9837,
             "better": "high",
             "format": "num",
             "rank": 52,
@@ -551028,7 +550657,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -5.696,
+            "value": -5.691,
             "better": "high",
             "format": "num",
             "rank": 94,
@@ -554638,7 +554267,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 8.1655,
+            "value": 8.1713,
             "better": "high",
             "format": "num",
             "rank": 23,
@@ -554667,7 +554296,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 8.469,
+            "value": 8.472,
             "better": "high",
             "format": "num",
             "rank": 37,
@@ -557550,8 +557179,8 @@
       "venue_city": "Tampa, FL",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 69,
-      "weather_cond": "Hazy sunshine",
+      "weather_temp": 68,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -558254,7 +557883,7 @@
             "label": "Sacks taken per game",
             "value": 2.7273,
             "better": "low",
-            "rank": 118,
+            "rank": 117,
             "of": 138,
             "format": "num"
           },
@@ -558383,7 +558012,7 @@
             "value": 5.4427,
             "better": "low",
             "format": "num",
-            "rank": 67,
+            "rank": 68,
             "of": 138
           },
           "off_first_down_rate": {
@@ -558583,7 +558212,7 @@
             "value": 0.0489,
             "better": "high",
             "format": "pct",
-            "rank": 87,
+            "rank": 88,
             "of": 138
           }
         },
@@ -561951,7 +561580,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -4.363,
+            "value": -4.3623,
             "better": "high",
             "format": "num",
             "rank": 85,
@@ -565659,7 +565288,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -9.4117,
+            "value": -9.4108,
             "better": "high",
             "format": "num",
             "rank": 123,
@@ -569277,8 +568906,8 @@
       "venue_city": "Pasadena, CA",
       "roof": "Outdoor",
       "broadcast": "CBS",
-      "weather_temp": 75,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 72,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -569654,7 +569283,7 @@
             "value": 0.0647,
             "better": "high",
             "format": "pct",
-            "rank": 69,
+            "rank": 70,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -573506,7 +573135,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.5108,
+            "value": 6.5124,
             "better": "high",
             "format": "num",
             "rank": 38,
@@ -573535,10 +573164,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 12.581,
+            "value": 12.462,
             "better": "high",
             "format": "num",
-            "rank": 23,
+            "rank": 24,
             "of": 138,
             "games": 1
           },
@@ -577275,7 +576904,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 1.9337,
+            "value": 1.9395,
             "better": "high",
             "format": "num",
             "rank": 65,
@@ -577304,7 +576933,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 13.997,
+            "value": 13.999,
             "better": "high",
             "format": "num",
             "rank": 21,
@@ -580655,7 +580284,7 @@
       "venue_city": "Dekalb, IL",
       "roof": "Outdoor",
       "broadcast": "MW+",
-      "weather_temp": 48,
+      "weather_temp": 46,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -585084,7 +584713,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -1.2508,
+            "value": -1.2417,
             "better": "high",
             "format": "num",
             "rank": 77,
@@ -585113,7 +584742,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -20.927,
+            "value": -20.926,
             "better": "high",
             "format": "num",
             "rank": 131,
@@ -588626,7 +588255,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -2.8044,
+            "value": -2.8029,
             "better": "high",
             "format": "num",
             "rank": 79,
@@ -588655,7 +588284,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -26.459,
+            "value": -26.456,
             "better": "high",
             "format": "num",
             "rank": 137,
@@ -592066,8 +591695,8 @@
       "venue_city": "Denton, TX",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 68,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 71,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -592250,7 +591879,7 @@
             "label": "Sacks taken per game",
             "value": 2.7273,
             "better": "low",
-            "rank": 118,
+            "rank": 117,
             "of": 138,
             "format": "num"
           },
@@ -592258,7 +591887,7 @@
             "label": "Sacks per game",
             "value": 2.0909,
             "better": "high",
-            "rank": 69,
+            "rank": 70,
             "of": 138,
             "format": "num"
           },
@@ -596424,7 +596053,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -6.6417,
+            "value": -6.6415,
             "better": "high",
             "format": "num",
             "rank": 97,
@@ -596453,10 +596082,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 1.345,
+            "value": 1.347,
             "better": "high",
             "format": "num",
-            "rank": 65,
+            "rank": 66,
             "of": 138,
             "games": 1
           },
@@ -600121,7 +599750,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -3.4474,
+            "value": -3.445,
             "better": "high",
             "format": "num",
             "rank": 82,
@@ -600150,7 +599779,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -11.258,
+            "value": -11.257,
             "better": "high",
             "format": "num",
             "rank": 113,
@@ -603162,8 +602791,8 @@
       "venue_city": "Piscataway, NJ",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 56,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 54,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -603184,7 +602813,7 @@
           },
           "off_ypg": {
             "label": "Yards per game",
-            "value": 288.3,
+            "value": 288.7,
             "better": "high",
             "rank": 133,
             "of": 138,
@@ -603360,9 +602989,9 @@
           },
           "off_ypc": {
             "label": "Yards per rush attempt",
-            "value": 2.9,
+            "value": 3.0,
             "better": "high",
-            "rank": 135,
+            "rank": 134,
             "of": 138,
             "format": "num"
           },
@@ -603376,7 +603005,7 @@
           },
           "off_rush_ypg": {
             "label": "Rushing yards per game",
-            "value": 106.5,
+            "value": 106.9,
             "better": "high",
             "rank": 129,
             "of": 138,
@@ -603440,9 +603069,9 @@
           },
           "off_pen": {
             "label": "Penalty yards per game",
-            "value": 48.9091,
+            "value": 49.3636,
             "better": "low",
-            "rank": 46,
+            "rank": 49,
             "of": 138,
             "format": "num"
           },
@@ -603464,7 +603093,7 @@
           },
           "off_yards_per_play": {
             "label": "Yards per offensive play",
-            "value": 4.4725,
+            "value": 4.4795,
             "better": "high",
             "format": "num",
             "rank": 137,
@@ -603539,7 +603168,7 @@
             "value": 0.0638,
             "better": "high",
             "format": "pct",
-            "rank": 71,
+            "rank": 72,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -604067,7 +603696,7 @@
             "value": 15.8182,
             "better": "low",
             "format": "num",
-            "rank": 99,
+            "rank": 98,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -607561,7 +607190,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 9.0448,
+            "value": 9.0438,
             "better": "high",
             "format": "num",
             "rank": 19,
@@ -607590,7 +607219,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -5.118,
+            "value": -5.111,
             "better": "high",
             "format": "num",
             "rank": 91,
@@ -608135,9 +607764,10 @@
           {
             "player": "C. Fancher",
             "position": "QB",
-            "status": "Out",
+            "status": "Questionable",
             "injury": "Knee",
             "updated": "Sat, Oct 17",
+            "detail": "Fancher is dealing with a knee injury, and it remains to be seen if he will be available against UCLA on Saturday.",
             "source": "RotoWire + Covers",
             "return": "2026-11-28",
             "value": 0.98,
@@ -611269,10 +610899,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.8349,
+            "value": 6.847,
             "better": "high",
             "format": "num",
-            "rank": 31,
+            "rank": 30,
             "of": 138,
             "games": 10
           },
@@ -612731,446 +612361,6 @@
             }
           },
           "depth_rank": 2
-        },
-        {
-          "player_id": "4700135",
-          "player_name": "Cam Fancher",
-          "position": "QB",
-          "ranked": false,
-          "line": {
-            "attempts": 33,
-            "completions": 22,
-            "interceptions": 2,
-            "completion_pct": {
-              "label": "Completion %",
-              "value": 0.6667,
-              "better": "high",
-              "format": "pct",
-              "rank": 42,
-              "of": 217
-            },
-            "yards_per_attempt": {
-              "label": "Yards per attempt",
-              "value": 5.8485,
-              "better": "high",
-              "format": "num",
-              "rank": 191,
-              "of": 217
-            },
-            "td_rate": {
-              "label": "TD rate",
-              "value": 0.0303,
-              "better": "high",
-              "format": "pct",
-              "rank": 178,
-              "of": 217
-            },
-            "int_rate": {
-              "label": "INT rate",
-              "value": 0.0606,
-              "better": "low",
-              "format": "pct",
-              "rank": 216,
-              "of": 217
-            },
-            "yards": {
-              "label": "Passing yards",
-              "value": 193.0,
-              "better": "high",
-              "format": "int",
-              "rank": 217,
-              "of": 217
-            },
-            "touchdowns": {
-              "label": "Passing TDs",
-              "value": 1.0,
-              "better": "high",
-              "format": "int",
-              "rank": 205,
-              "of": 217
-            }
-          },
-          "epa_splits": {
-            "all": {
-              "label": "All plays EPA per play",
-              "value": -0.163,
-              "better": "high",
-              "format": "ppa",
-              "rank": 207,
-              "of": 217
-            },
-            "pass": {
-              "label": "Dropbacks EPA per play",
-              "value": 0.193,
-              "better": "high",
-              "format": "ppa",
-              "rank": 102,
-              "of": 216
-            },
-            "rush": {
-              "label": "Rushes EPA per play",
-              "value": -0.329,
-              "better": "high",
-              "format": "ppa",
-              "rank": 183,
-              "of": 212
-            },
-            "standardDowns": {
-              "label": "Standard downs EPA per play",
-              "value": -0.066,
-              "better": "high",
-              "format": "ppa",
-              "rank": 174,
-              "of": 217
-            },
-            "passingDowns": {
-              "label": "Passing downs EPA per play",
-              "value": -0.338,
-              "better": "high",
-              "format": "ppa",
-              "rank": 211,
-              "of": 216
-            },
-            "firstDown": {
-              "label": "1st down EPA per play",
-              "value": 0.182,
-              "better": "high",
-              "format": "ppa",
-              "rank": 48,
-              "of": 216
-            },
-            "secondDown": {
-              "label": "2nd down EPA per play",
-              "value": -1.32,
-              "better": "high",
-              "format": "ppa",
-              "rank": 215,
-              "of": 215
-            },
-            "thirdDown": {
-              "label": "3rd down EPA per play",
-              "value": 0.603,
-              "better": "high",
-              "format": "ppa",
-              "rank": 53,
-              "of": 216
-            }
-          },
-          "looks": {
-            "all": {
-              "dropbacks": 33,
-              "attempts": 31,
-              "touchdowns": 0,
-              "interceptions": 2,
-              "qualified": false,
-              "completion_pct": {
-                "label": "All dropbacks: Completion %",
-                "value": 0.6129,
-                "better": "high",
-                "format": "pct",
-                "rank": 102,
-                "of": 190
-              },
-              "yards_per_attempt": {
-                "label": "All dropbacks: Yards per attempt",
-                "value": 5.3548,
-                "better": "high",
-                "format": "num",
-                "rank": 181,
-                "of": 190
-              },
-              "epa_per_dropback": {
-                "label": "All dropbacks: EPA per dropback",
-                "value": -0.3617,
-                "better": "high",
-                "format": "ppa",
-                "rank": 187,
-                "of": 190
-              }
-            },
-            "short": {
-              "dropbacks": 28,
-              "attempts": 28,
-              "touchdowns": 0,
-              "interceptions": 0,
-              "qualified": false,
-              "completion_pct": {
-                "label": "Short passes: Completion %",
-                "value": 0.6786,
-                "better": "high",
-                "format": "pct",
-                "rank": 93,
-                "of": 199
-              },
-              "yards_per_attempt": {
-                "label": "Short passes: Yards per attempt",
-                "value": 5.9286,
-                "better": "high",
-                "format": "num",
-                "rank": 132,
-                "of": 199
-              },
-              "epa_per_dropback": {
-                "label": "Short passes: EPA per dropback",
-                "value": 0.027,
-                "better": "high",
-                "format": "ppa",
-                "rank": 184,
-                "of": 199
-              }
-            },
-            "deep": {
-              "dropbacks": 1,
-              "attempts": 1,
-              "touchdowns": 0,
-              "interceptions": 0,
-              "qualified": false,
-              "completion_pct": {
-                "label": "Deep passes: Completion %",
-                "value": 0.0,
-                "better": "high",
-                "format": "pct",
-                "rank": 164,
-                "of": 164
-              },
-              "yards_per_attempt": {
-                "label": "Deep passes: Yards per attempt",
-                "value": 0.0,
-                "better": "high",
-                "format": "num",
-                "rank": 164,
-                "of": 164
-              },
-              "epa_per_dropback": {
-                "label": "Deep passes: EPA per dropback",
-                "value": -0.2539,
-                "better": "high",
-                "format": "ppa",
-                "rank": 158,
-                "of": 164
-              }
-            },
-            "left": {
-              "dropbacks": 18,
-              "attempts": 18,
-              "touchdowns": 0,
-              "interceptions": 0,
-              "qualified": false,
-              "completion_pct": {
-                "label": "Passes left: Completion %",
-                "value": 0.6111,
-                "better": "high",
-                "format": "pct",
-                "rank": 125,
-                "of": 188
-              },
-              "yards_per_attempt": {
-                "label": "Passes left: Yards per attempt",
-                "value": 6.3333,
-                "better": "high",
-                "format": "num",
-                "rank": 126,
-                "of": 188
-              },
-              "epa_per_dropback": {
-                "label": "Passes left: EPA per dropback",
-                "value": 0.0946,
-                "better": "high",
-                "format": "ppa",
-                "rank": 159,
-                "of": 188
-              }
-            },
-            "middle": {
-              "dropbacks": 4,
-              "attempts": 4,
-              "touchdowns": 0,
-              "interceptions": 0,
-              "qualified": false,
-              "completion_pct": {
-                "label": "Passes middle: Completion %",
-                "value": 0.75,
-                "better": "high",
-                "format": "pct",
-                "rank": 14,
-                "of": 172
-              },
-              "yards_per_attempt": {
-                "label": "Passes middle: Yards per attempt",
-                "value": 4.25,
-                "better": "high",
-                "format": "num",
-                "rank": 171,
-                "of": 172
-              },
-              "epa_per_dropback": {
-                "label": "Passes middle: EPA per dropback",
-                "value": -1.2379,
-                "better": "high",
-                "format": "ppa",
-                "rank": 172,
-                "of": 172
-              }
-            },
-            "right": {
-              "dropbacks": 7,
-              "attempts": 7,
-              "touchdowns": 0,
-              "interceptions": 0,
-              "qualified": false,
-              "completion_pct": {
-                "label": "Passes right: Completion %",
-                "value": 0.7143,
-                "better": "high",
-                "format": "pct",
-                "rank": 30,
-                "of": 197
-              },
-              "yards_per_attempt": {
-                "label": "Passes right: Yards per attempt",
-                "value": 5.0,
-                "better": "high",
-                "format": "num",
-                "rank": 168,
-                "of": 197
-              },
-              "epa_per_dropback": {
-                "label": "Passes right: EPA per dropback",
-                "value": 0.5357,
-                "better": "high",
-                "format": "ppa",
-                "rank": 16,
-                "of": 197
-              }
-            },
-            "clean": {
-              "dropbacks": 26,
-              "attempts": 26,
-              "touchdowns": 0,
-              "interceptions": 1,
-              "qualified": false,
-              "completion_pct": {
-                "label": "Clean pocket: Completion %",
-                "value": 0.7308,
-                "better": "high",
-                "format": "pct",
-                "rank": 32,
-                "of": 202
-              },
-              "yards_per_attempt": {
-                "label": "Clean pocket: Yards per attempt",
-                "value": 6.3846,
-                "better": "high",
-                "format": "num",
-                "rank": 174,
-                "of": 202
-              },
-              "epa_per_dropback": {
-                "label": "Clean pocket: EPA per dropback",
-                "value": -0.0706,
-                "better": "high",
-                "format": "ppa",
-                "rank": 194,
-                "of": 202
-              }
-            },
-            "pressured": {
-              "dropbacks": 7,
-              "attempts": 5,
-              "touchdowns": 0,
-              "interceptions": 1,
-              "qualified": false,
-              "completion_pct": {
-                "label": "Under pressure: Completion %",
-                "value": 0.0,
-                "better": "high",
-                "format": "pct",
-                "rank": 93,
-                "of": 189
-              },
-              "yards_per_attempt": {
-                "label": "Under pressure: Yards per attempt",
-                "value": 0.0,
-                "better": "high",
-                "format": "num",
-                "rank": 91,
-                "of": 189
-              },
-              "epa_per_dropback": {
-                "label": "Under pressure: EPA per dropback",
-                "value": -1.4427,
-                "better": "high",
-                "format": "ppa",
-                "rank": 169,
-                "of": 189
-              }
-            },
-            "shotgun": {
-              "dropbacks": 31,
-              "attempts": 29,
-              "touchdowns": 0,
-              "interceptions": 2,
-              "qualified": false,
-              "completion_pct": {
-                "label": "From shotgun: Completion %",
-                "value": 0.5862,
-                "better": "high",
-                "format": "pct",
-                "rank": 144,
-                "of": 208
-              },
-              "yards_per_attempt": {
-                "label": "From shotgun: Yards per attempt",
-                "value": 4.7241,
-                "better": "high",
-                "format": "num",
-                "rank": 202,
-                "of": 208
-              },
-              "epa_per_dropback": {
-                "label": "From shotgun: EPA per dropback",
-                "value": -0.4632,
-                "better": "high",
-                "format": "ppa",
-                "rank": 208,
-                "of": 208
-              }
-            },
-            "under_center": {
-              "dropbacks": 2,
-              "attempts": 2,
-              "touchdowns": 0,
-              "interceptions": 0,
-              "qualified": false,
-              "completion_pct": {
-                "label": "Under center: Completion %",
-                "value": 1.0,
-                "better": "high",
-                "format": "pct",
-                "rank": 1,
-                "of": 39
-              },
-              "yards_per_attempt": {
-                "label": "Under center: Yards per attempt",
-                "value": 14.5,
-                "better": "high",
-                "format": "num",
-                "rank": 4,
-                "of": 39
-              },
-              "epa_per_dropback": {
-                "label": "Under center: EPA per dropback",
-                "value": 1.2117,
-                "better": "high",
-                "format": "ppa",
-                "rank": 2,
-                "of": 39
-              }
-            }
-          },
-          "status": "Out",
-          "injury": "Knee",
-          "depth_rank": 3
         }
       ],
       "away_defense_splits": {
@@ -614902,8 +614092,8 @@
       "venue_city": "Columbia, MO",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 56,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 54,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -619222,7 +618412,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 9.5085,
+            "value": 9.4873,
             "better": "high",
             "format": "num",
             "rank": 18,
@@ -619251,10 +618441,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 12.521,
+            "value": 12.49,
             "better": "high",
             "format": "num",
-            "rank": 24,
+            "rank": 22,
             "of": 138,
             "games": 1
           },
@@ -622840,7 +622030,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 10.2565,
+            "value": 10.2134,
             "better": "high",
             "format": "num",
             "rank": 10,
@@ -622869,7 +622059,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 14.624,
+            "value": 14.604,
             "better": "high",
             "format": "num",
             "rank": 20,
@@ -626012,8 +625202,8 @@
       "venue_city": "Fort Collins, CO",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 54,
-      "weather_cond": "Partly sunny",
+      "weather_temp": 47,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -630256,7 +629446,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -0.7435,
+            "value": -0.743,
             "better": "high",
             "format": "num",
             "rank": 75,
@@ -630285,7 +629475,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -11.006,
+            "value": -11.0045,
             "better": "high",
             "format": "num",
             "rank": 110,
@@ -633931,7 +633121,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 0.01,
+            "value": 0.0227,
             "better": "high",
             "format": "num",
             "rank": 72,
@@ -633960,10 +633150,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 9.809,
+            "value": 9.81,
             "better": "high",
             "format": "num",
-            "rank": 33,
+            "rank": 34,
             "of": 138,
             "games": 1
           },
@@ -637598,7 +636788,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN2",
       "weather_temp": 61,
-      "weather_cond": "Partly sunny",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -641916,7 +641106,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.0367,
+            "value": 6.0449,
             "better": "high",
             "format": "num",
             "rank": 44,
@@ -641945,7 +641135,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 11.698,
+            "value": 11.7,
             "better": "high",
             "format": "num",
             "rank": 27,
@@ -645660,7 +644850,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.3816,
+            "value": 6.3827,
             "better": "high",
             "format": "num",
             "rank": 41,
@@ -645689,10 +644879,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 6.771,
+            "value": 6.648,
             "better": "high",
             "format": "num",
-            "rank": 42,
+            "rank": 44,
             "of": 138,
             "games": 1
           },
@@ -648863,8 +648053,8 @@
       "venue_city": "Pullman, WA",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 44,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 43,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -649637,9 +648827,9 @@
           },
           "off_punt": {
             "label": "Net punt average",
-            "value": 43.3469,
+            "value": 43.2449,
             "better": "high",
-            "rank": 64,
+            "rank": 66,
             "of": 138,
             "format": "num"
           },
@@ -649655,7 +648845,7 @@
             "label": "Punt-return average",
             "value": 13.375,
             "better": "high",
-            "rank": 21,
+            "rank": 20,
             "of": 138,
             "format": "num"
           },
@@ -653117,7 +652307,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -0.0005,
+            "value": -0.011,
             "better": "high",
             "format": "num",
             "rank": 73,
@@ -653146,7 +652336,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 1.739,
+            "value": 1.7405,
             "better": "high",
             "format": "num",
             "rank": 64,
@@ -656776,7 +655966,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 1.0363,
+            "value": 1.0373,
             "better": "high",
             "format": "num",
             "rank": 67,
@@ -656805,7 +655995,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -6.297,
+            "value": -6.302,
             "better": "high",
             "format": "num",
             "rank": 97,
@@ -660319,7 +659509,7 @@
       "venue_city": "Bloomington, IN",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 47,
+      "weather_temp": 46,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -660519,7 +659709,7 @@
             "label": "Yards per rush attempt",
             "value": 3.5,
             "better": "high",
-            "rank": 122,
+            "rank": 121,
             "of": 138,
             "format": "num"
           },
@@ -660599,7 +659789,7 @@
             "label": "Penalty yards per game",
             "value": 49.1818,
             "better": "low",
-            "rank": 47,
+            "rank": 46,
             "of": 138,
             "format": "num"
           },
@@ -664485,7 +663675,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 11.0732,
+            "value": 11.061,
             "better": "high",
             "format": "num",
             "rank": 8,
@@ -664514,7 +663704,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 20.765,
+            "value": 20.779,
             "better": "high",
             "format": "num",
             "rank": 8,
@@ -668237,7 +667427,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.1917,
+            "value": 6.2039,
             "better": "high",
             "format": "num",
             "rank": 43,
@@ -668266,7 +667456,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -0.965,
+            "value": -0.978,
             "better": "high",
             "format": "num",
             "rank": 78,
@@ -671636,7 +670826,7 @@
       "venue_city": "Nashville, TN",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 53,
+      "weather_temp": 51,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -672428,7 +671618,7 @@
             "label": "Punt-return average",
             "value": 13.4615,
             "better": "high",
-            "rank": 20,
+            "rank": 19,
             "of": 138,
             "format": "num"
           },
@@ -672517,7 +671707,7 @@
             "value": 0.5014,
             "better": "neutral",
             "format": "pct",
-            "rank": 54,
+            "rank": 55,
             "of": 138
           },
           "off_sack_rate": {
@@ -672669,7 +671859,7 @@
             "value": 0.049,
             "better": "high",
             "format": "pct",
-            "rank": 86,
+            "rank": 87,
             "of": 138
           }
         },
@@ -675992,7 +675182,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 9.8476,
+            "value": 9.849,
             "better": "high",
             "format": "num",
             "rank": 16,
@@ -676021,10 +675211,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 1.203,
+            "value": 1.549,
             "better": "high",
             "format": "num",
-            "rank": 67,
+            "rank": 65,
             "of": 138,
             "games": 1
           },
@@ -679726,7 +678916,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 10.1483,
+            "value": 10.1279,
             "better": "high",
             "format": "num",
             "rank": 11,
@@ -679755,7 +678945,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 19.071,
+            "value": 19.069,
             "better": "high",
             "format": "num",
             "rank": 12,
@@ -683183,9 +682373,9 @@
       "home_name": "Alabama",
       "away_conference": "SEC",
       "home_conference": "SEC",
-      "away_logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2.png",
-      "home_logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/333.png",
-      "away_color": "#002b5c",
+      "away_logo": "https://cdn.collegefootballdata.com/logos/500/2.png",
+      "home_logo": "https://cdn.collegefootballdata.com/logos/500/333.png",
+      "away_color": "#0c2340",
       "home_color": "#9e1b32",
       "away_record": "7-4",
       "home_record": "9-2",
@@ -683194,8 +682384,8 @@
       "venue": "Bryant-Denny Stadium",
       "venue_city": "Tuscaloosa, AL",
       "roof": "Outdoor",
-      "broadcast": "ABC",
-      "weather_temp": 55,
+      "broadcast": "ABC, Disney+",
+      "weather_temp": 54,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -684100,7 +683290,7 @@
             "value": 16.0909,
             "better": "low",
             "format": "num",
-            "rank": 100,
+            "rank": 99,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -687469,10 +686659,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 10.0107,
+            "value": 10.0179,
             "better": "high",
             "format": "num",
-            "rank": 13,
+            "rank": 12,
             "of": 138,
             "games": 10
           },
@@ -687498,7 +686688,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 24.21,
+            "value": 24.239,
             "better": "high",
             "format": "num",
             "rank": 5,
@@ -691193,7 +690383,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 10.3555,
+            "value": 10.3945,
             "better": "high",
             "format": "num",
             "rank": 9,
@@ -691222,10 +690412,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 9.808,
+            "value": 9.812,
             "better": "high",
             "format": "num",
-            "rank": 34,
+            "rank": 33,
             "of": 138,
             "games": 1
           },
@@ -691767,8 +690957,8 @@
       "venue_city": "Berkeley, CA",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 61,
-      "weather_cond": "Showers",
+      "weather_temp": 58,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -692543,7 +691733,7 @@
             "label": "Net punt average",
             "value": 43.2542,
             "better": "high",
-            "rank": 66,
+            "rank": 65,
             "of": 138,
             "format": "num"
           },
@@ -692792,7 +691982,7 @@
             "value": 30.1818,
             "better": "neutral",
             "format": "num",
-            "rank": 95,
+            "rank": 96,
             "of": 138
           },
           "def_disruption_rate": {
@@ -696152,7 +695342,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 4.6111,
+            "value": 4.6142,
             "better": "high",
             "format": "num",
             "rank": 55,
@@ -696181,7 +695371,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -8.872,
+            "value": -8.873,
             "better": "high",
             "format": "num",
             "rank": 101,
@@ -699814,7 +699004,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 4.7374,
+            "value": 4.7311,
             "better": "high",
             "format": "num",
             "rank": 54,
@@ -699843,7 +699033,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 5.297,
+            "value": 5.3,
             "better": "high",
             "format": "num",
             "rank": 49,
@@ -703806,7 +702996,7 @@
       "venue_city": "Eugene, OR",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 48,
+      "weather_temp": 50,
       "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
@@ -704356,7 +703546,7 @@
           },
           "def_ypg": {
             "label": "Yards allowed per game",
-            "value": 330.273,
+            "value": 330.727,
             "better": "low",
             "rank": 36,
             "of": 138,
@@ -704532,7 +703722,7 @@
           },
           "def_ypc": {
             "label": "Yards per rush allowed",
-            "value": 3.741,
+            "value": 3.755,
             "better": "low",
             "rank": 46,
             "of": 138,
@@ -704548,7 +703738,7 @@
           },
           "def_rush_ypg": {
             "label": "Rushing yards allowed per game",
-            "value": 128.909,
+            "value": 129.364,
             "better": "low",
             "rank": 42,
             "of": 138,
@@ -704636,7 +703826,7 @@
           },
           "def_yards_per_play": {
             "label": "Yards allowed per defensive play",
-            "value": 5.0458,
+            "value": 5.0528,
             "better": "low",
             "format": "num",
             "rank": 34,
@@ -704831,7 +704021,7 @@
             "value": 33.2727,
             "better": "neutral",
             "format": "num",
-            "rank": 47,
+            "rank": 48,
             "of": 138
           },
           "def_disruption_rate": {
@@ -708125,7 +707315,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.5781,
+            "value": 6.579,
             "better": "high",
             "format": "num",
             "rank": 36,
@@ -708154,7 +707344,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 21.349,
+            "value": 21.351,
             "better": "high",
             "format": "num",
             "rank": 7,
@@ -711846,7 +711036,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 11.3168,
+            "value": 11.3159,
             "better": "high",
             "format": "num",
             "rank": 7,
@@ -711875,7 +711065,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 7.921,
+            "value": 7.922,
             "better": "high",
             "format": "num",
             "rank": 40,
@@ -715484,8 +714674,8 @@
       "venue_city": "Tucson, AZ",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 63,
-      "weather_cond": "Clear",
+      "weather_temp": 64,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -715861,7 +715051,7 @@
             "value": 0.0647,
             "better": "high",
             "format": "pct",
-            "rank": 70,
+            "rank": 71,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -716365,7 +715555,7 @@
             "value": 0.5021,
             "better": "neutral",
             "format": "pct",
-            "rank": 53,
+            "rank": 54,
             "of": 138
           },
           "off_sack_rate": {
@@ -719836,7 +719026,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.6794,
+            "value": 6.6799,
             "better": "high",
             "format": "num",
             "rank": 34,
@@ -719865,7 +719055,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 12.237,
+            "value": 12.245,
             "better": "high",
             "format": "num",
             "rank": 25,
@@ -723539,7 +722729,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 3.9114,
+            "value": 3.9245,
             "better": "high",
             "format": "num",
             "rank": 59,
@@ -723568,7 +722758,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 3.894,
+            "value": 3.898,
             "better": "high",
             "format": "num",
             "rank": 53,
@@ -727028,8 +726218,8 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "CBSSN",
-      "weather_temp": 63,
-      "weather_cond": "Partly cloudy",
+      "weather_temp": 62,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -727533,7 +726723,7 @@
             "value": 30.1818,
             "better": "neutral",
             "format": "num",
-            "rank": 95,
+            "rank": 96,
             "of": 138
           },
           "def_disruption_rate": {
@@ -727909,7 +727099,7 @@
             "value": 0.4542,
             "better": "neutral",
             "format": "pct",
-            "rank": 111,
+            "rank": 112,
             "of": 138
           },
           "off_sack_rate": {
@@ -727925,7 +727115,7 @@
             "value": 0.0653,
             "better": "high",
             "format": "pct",
-            "rank": 67,
+            "rank": 68,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -731352,7 +730542,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -8.2953,
+            "value": -8.307,
             "better": "high",
             "format": "num",
             "rank": 110,
@@ -731381,7 +730571,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -4.133,
+            "value": -4.131,
             "better": "high",
             "format": "num",
             "rank": 88,
@@ -735012,7 +734202,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -7.0834,
+            "value": -7.0826,
             "better": "high",
             "format": "num",
             "rank": 100,
@@ -735041,7 +734231,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -8.081,
+            "value": -8.086,
             "better": "high",
             "format": "num",
             "rank": 98,
@@ -738537,8 +737727,8 @@
       "venue_city": "Houston, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 65,
-      "weather_cond": "Clear",
+      "weather_temp": 67,
+      "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -738922,7 +738112,7 @@
             "value": 16.0909,
             "better": "low",
             "format": "num",
-            "rank": 100,
+            "rank": 99,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -742823,10 +742013,10 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.8359,
+            "value": 6.8383,
             "better": "high",
             "format": "num",
-            "rank": 30,
+            "rank": 31,
             "of": 138,
             "games": 10
           },
@@ -746497,7 +745687,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.0238,
+            "value": 6.0239,
             "better": "high",
             "format": "num",
             "rank": 45,
@@ -746526,7 +745716,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 10.24,
+            "value": 10.242,
             "better": "high",
             "format": "num",
             "rank": 30,
@@ -749942,7 +749132,7 @@
       "roof": "Outdoor",
       "broadcast": "USA Net",
       "weather_temp": 40,
-      "weather_cond": "Cloudy",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -750211,9 +749401,9 @@
           },
           "off_pr": {
             "label": "Punt-return average",
-            "value": 13.6471,
+            "value": 13.3529,
             "better": "high",
-            "rank": 19,
+            "rank": 21,
             "of": 138,
             "format": "num"
           },
@@ -750846,7 +750036,7 @@
             "value": 16.0909,
             "better": "low",
             "format": "num",
-            "rank": 100,
+            "rank": 99,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -754085,7 +753275,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 0.2284,
+            "value": 0.227,
             "better": "high",
             "format": "num",
             "rank": 70,
@@ -754114,7 +753304,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -5.58,
+            "value": -5.579,
             "better": "high",
             "format": "num",
             "rank": 93,
@@ -757829,7 +757019,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 0.054,
+            "value": 0.0551,
             "better": "high",
             "format": "num",
             "rank": 71,
@@ -761039,8 +760229,8 @@
       "venue_city": "Fresno, CA",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 58,
-      "weather_cond": "Mostly cloudy",
+      "weather_temp": 55,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -761751,7 +760941,7 @@
             "label": "Sacks per game",
             "value": 2.0909,
             "better": "high",
-            "rank": 69,
+            "rank": 70,
             "of": 138,
             "format": "num"
           },
@@ -765329,7 +764519,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -1.7939,
+            "value": -1.7927,
             "better": "high",
             "format": "num",
             "rank": 78,
@@ -765358,7 +764548,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -0.173,
+            "value": -0.172,
             "better": "high",
             "format": "num",
             "rank": 76,
@@ -768930,7 +768120,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -5.5142,
+            "value": -5.5132,
             "better": "high",
             "format": "num",
             "rank": 88,
@@ -768959,7 +768149,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 1.839,
+            "value": 1.84,
             "better": "high",
             "format": "num",
             "rank": 63,
@@ -772401,9 +771591,9 @@
       "home_name": "Hawai'i",
       "away_conference": "Mid-American",
       "home_conference": "Mountain West",
-      "away_logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/16.png",
+      "away_logo": "https://cdn.collegefootballdata.com/logos/500/16.png",
       "home_logo": "https://cdn.collegefootballdata.com/logos/500/62.png",
-      "away_color": "#00573C",
+      "away_color": "#00573c",
       "home_color": "#024731",
       "away_record": "2-9",
       "home_record": "3-8",
@@ -772413,8 +771603,8 @@
       "venue_city": "Honolulu, HI",
       "roof": "Outdoor",
       "broadcast": "MW+",
-      "weather_temp": 77,
-      "weather_cond": "Partly cloudy",
+      "weather_temp": 75,
+      "weather_cond": "Mostly clear",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -772798,7 +771988,7 @@
             "value": 16.4545,
             "better": "low",
             "format": "num",
-            "rank": 104,
+            "rank": 103,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -776576,7 +775766,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -12.6477,
+            "value": -12.6479,
             "better": "high",
             "format": "num",
             "rank": 134,
@@ -776605,7 +775795,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": -10.455,
+            "value": -10.453,
             "better": "high",
             "format": "num",
             "rank": 108,
@@ -780285,7 +779475,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -8.7455,
+            "value": -8.7431,
             "better": "high",
             "format": "num",
             "rank": 115,

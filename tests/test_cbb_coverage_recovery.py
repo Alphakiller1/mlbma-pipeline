@@ -99,3 +99,36 @@ console.log(JSON.stringify([validateScoreBoard(raw,fallback,now),
         self.assertNotIn("secret_scores", board)
         self.assertNotIn("private_diagnostics", board["games"][0])
         self.assertIsNone(stale)
+
+    def test_scheduled_board_carries_validated_draftkings_lines_and_lean(self):
+        source = (ROOT / "functions/_shared/cbb-model-center.js").read_text(encoding="utf-8")
+        harness = """
+const now=Date.parse('2026-11-24T19:00Z');
+const fallback={as_of_date:'2026-11-08',generated_at_utc:'2026-11-08T19:00Z'};
+const base={slate_date:'2026-11-24',kickoff_utc:'2026-11-25T00:00Z',projected_away:70,projected_home:75,
+    projected_total:145,model_margin:5,away:'A',home:'B',away_name:'Away',home_name:'Home'};
+const games=[
+  {...base,id:'1',market:{home_spread:-3.5,total:147.5},lean:'Strong: B -3.5 at the opener (57.6%)',
+   edges:{spread:{probability:0.576}},market_moneyline:-150},
+  {...base,id:'2',market:{home_spread:99,total:400},edge_note:'Total moved to 152.5, toward the model.'},
+  {...base,id:'3'}];
+const raw={schema:'chase-board/1',sport:'cbb',as_of_date:'2026-11-24',generated_at_utc:'2026-11-24T18:00Z',
+    data_through_utc:'2026-11-24T05:00Z',method:'chase-cbb-score-sharp-v3',method_note:'Possession ratings.',
+    may_bet:false,games};
+console.log(JSON.stringify(validateScoreBoard(raw,fallback,now)));
+"""
+        process = subprocess.run(["node", "--input-type=module", "-e", source + harness],
+                                 text=True, capture_output=True, check=True)
+        board = json.loads(process.stdout)
+        priced, bad, plain = board["games"]
+        self.assertEqual(board["method_note"], "Possession ratings.")
+        self.assertEqual((priced["market_margin"], priced["market_total"], priced["priced"]), (3.5, 147.5, True))
+        self.assertEqual(priced["book"]["name"], "DraftKings")
+        self.assertEqual(priced["lean"], "Strong: B -3.5 at the opener (57.6%)")
+        self.assertNotIn("edges", priced)
+        self.assertNotIn("market", priced)
+        self.assertNotIn("market_moneyline", priced)
+        self.assertNotIn("market_margin", bad)
+        self.assertFalse(bad["priced"])
+        self.assertEqual(bad["edge_withheld_reason"], "Total moved to 152.5, toward the model.")
+        self.assertNotIn("lean", plain)

@@ -1,0 +1,112 @@
+{
+  "teams": {
+    "2633": {
+      "observed_tactics": {
+        "position_size": [
+          {
+            "position": "C",
+            "mean_height_inches": 82.0,
+            "players": 1
+          },
+          {
+            "position": "F",
+            "mean_height_inches": 80.83333333333333,
+            "players": 6
+          },
+          {
+            "position": "G",
+            "mean_height_inches": 75.8,
+            "players": 10
+          }
+        ],
+        "starter_position_size": [
+          {
+            "position": "G",
+            "mean_height_inches": 77.06666666666666,
+            "players": 5,
+            "recorded_starts": 15
+          },
+          {
+            "position": "F",
+            "mean_height_inches": 80.0,
+            "players": 2,
+            "recorded_starts": 6
+          },
+          {
+            "position": "C",
+            "mean_height_inches": 82.0,
+            "players": 1,
+            "recorded_starts": 4
+          }
+        ],
+        "size_summary": {
+          "whole_team": {
+            "mean_height_inches": 77.94117647058823,
+            "players": 17
+          },
+          "starters": {
+            "mean_height_inches": 78.56,
+            "players": 8,
+            "recorded_starts": 25,
+            "reported_starts": 25,
+            "games": 5,
+            "source": "ESPN starting lineups and rosters",
+            "data_through": "2026-11-20"
+          },
+          "basis": "Whole team: unweighted reported heights. Starters: height weighted by recorded season starts, among players with a reported height."
+        }
+      }
+    },
+    "120": {
+      "observed_tactics": {
+        "position_size": [
+          {
+            "position": "C",
+            "mean_height_inches": 84.0,
+            "players": 1
+          },
+          {
+            "position": "F",
+            "mean_height_inches": 80.33333333333333,
+            "players": 6
+          },
+          {
+            "position": "G",
+            "mean_height_inches": 76.88888888888889,
+            "players": 9
+          }
+        ],
+        "starter_position_size": [
+          {
+            "position": "G",
+            "mean_height_inches": 76.26666666666667,
+            "players": 4,
+            "recorded_starts": 15
+          },
+          {
+            "position": "F",
+            "mean_height_inches": 80.8,
+            "players": 4,
+            "recorded_starts": 10
+          }
+        ],
+        "size_summary": {
+          "whole_team": {
+            "mean_height_inches": 78.625,
+            "players": 16
+          },
+          "starters": {
+            "mean_height_inches": 78.08,
+            "players": 8,
+            "recorded_starts": 25,
+            "reported_starts": 25,
+            "games": 5,
+            "source": "ESPN starting lineups and rosters",
+            "data_through": "2026-11-20"
+          },
+          "basis": "Whole team: unweighted reported heights. Starters: height weighted by recorded season starts, among players with a reported height."
+        }
+      }
+    }
+  }
+}
