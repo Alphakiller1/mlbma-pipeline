@@ -1457,17 +1457,13 @@ NFL_SCOREBOARD_URL ="https://site.api.espn.com/apis/site/v2/sports/football/nfl/
 
 
 def _fetch_nfl_board(url: str) -> dict:
-    request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    request = urllib.request.Request(url, headers={"User-Agent": "ChaseAnalytics/1.0"})
     with urllib.request.urlopen(request, timeout=20) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
 
-def _nfl_week_played(board: dict) -> bool:
-    events = board.get("events") or []
-    return bool(events) and all(
-        ((event.get("status") or {}).get("type") or {}).get("state") == "post"
-        for event in events
-    )
+def _nfl_state(event: dict) -> str:
+    return str(((event.get("status") or {}).get("type") or {}).get("state") or "")
 
 
 def fetch_nfl_scoreboard(fetch=_fetch_nfl_board) -> dict | None:
@@ -1475,15 +1471,28 @@ def fetch_nfl_scoreboard(fetch=_fetch_nfl_board) -> dict | None:
 
     ESPN's default scoreboard stays on a finished week until midweek: on
     2026-10-20, the Tuesday after Monday night, it still served 14 finals and
-    the desk showed last week's scores instead of Thursday's game. Once every
-    game on it is final, the next week is the one a reader is looking for.
+    the desk showed last week's scores instead of Thursday's game. Once no
+    game on it is left to kick off, the next week is the one a reader is
+    waiting on.
+
+    The next week is published as soon as the week's last game is under way,
+    not once it ends (owner, 2026-11-24: "when a week ends the next week of
+    games should immediately pop up"). On 2026-11-23 Monday night ended about
+    04:30 UTC and the board read "Every game on this slate has finished" until
+    the next scheduled run, which GitHub delayed to 05:56. The games still in
+    progress ride along at the head of the next week (``carried``): their
+    cards stay up while they are played, and /api/game-status, which reads
+    ESPN's default board, turns each one final the moment it ends so the card
+    leaves and next week's games are already there.
     """
     try:
         board = fetch(NFL_SCOREBOARD_URL)
     except Exception as exc:
         print(f"  WARNING: NFL scoreboard fetch failed ({exc})")
         return None
-    if not _nfl_week_played(board):
+    events = board.get("events") or []
+    states = [_nfl_state(event) for event in events]
+    if not events or any(state not in ("in", "post") for state in states):
         return board
     week = (board.get("week") or {}).get("number")
     season_type = (board.get("season") or {}).get("type")
@@ -1496,8 +1505,16 @@ def fetch_nfl_scoreboard(fetch=_fetch_nfl_board) -> dict | None:
         return board
     if not upcoming.get("events"):
         return board
-    print(f"  nfl: week {week} is fully played; publishing week {int(week) + 1}")
-    return upcoming
+    live = [event for event in events if _nfl_state(event) == "in"]
+    if not live:
+        print(f"  nfl: week {week} is fully played; publishing week {int(week) + 1}")
+        return upcoming
+    print(f"  nfl: week {week} has no game left to kick off; publishing week {int(week) + 1} "
+          f"with {len(live)} game(s) still in progress")
+    upcoming_ids = {str(event.get("id")) for event in upcoming["events"]}
+    carried = [event for event in live if str(event.get("id")) not in upcoming_ids]
+    return dict(upcoming, events=carried + list(upcoming["events"]),
+                carried=[str(event.get("id")) for event in carried])
 
 
 def write_nfl_league_context(context: dict, rest: dict) -> None:
@@ -1694,7 +1711,10 @@ def publish_nfl() -> bool:
         season = int(((espn.get("season") or {}).get("year")) or datetime.now(ET).year)
         week = int((espn.get("week") or {}).get("number") or (context.get("source") or {}).get("week") or 0)
         fixtures = []
+        carried = set(espn.get("carried") or [])
         for event in espn.get("events") or []:
+            if str(event.get("id")) in carried:
+                continue  # last week's game still in progress: its practice report was last week's
             comp = (event.get("competitions") or [{}])[0]
             sides = {c.get("homeAway"): (c.get("team") or {}).get("abbreviation") for c in comp.get("competitors") or []}
             if sides.get("away") and sides.get("home") and event.get("date"):
