@@ -69,3 +69,11 @@ test('invalid heights stay missing and foot rounding carries at twelve inches', 
   assert.match(cell, /7′ 0\.0″/);
   assert.doesNotMatch(cell, /6′ 12/);
 });
+
+test('an invalid position height cannot contaminate the frontcourt average', () => {
+  const context = structuredClone(team('2633').observed_tactics);
+  context.starter_position_size.find(r => r.position === 'F').mean_height_inches = 0;
+  const row = render(context).rows.find(r => r[0] === 'Frontcourt (F/C)');
+  assert.match(row[1], /6′ 10\.0″/);
+  assert.match(row[1], /1 player.*4 starts/);
+});

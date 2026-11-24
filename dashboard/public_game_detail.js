@@ -10051,7 +10051,8 @@ function seasonToggle(game) {
     }
     function frontcourt(rows, countKey) {
       var group = rows.filter(function (row) {
-        return (row.position === 'F' || row.position === 'C') && Number.isFinite(row.mean_height_inches) && row[countKey] > 0;
+        return (row.position === 'F' || row.position === 'C') && Number.isFinite(row.mean_height_inches) &&
+          row.mean_height_inches >= 55 && row.mean_height_inches <= 100 && row[countKey] > 0;
       });
       if (!group.length) return null;
       var count = group.reduce(function (total, row) { return total + row[countKey]; }, 0);
