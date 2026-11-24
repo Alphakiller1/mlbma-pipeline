@@ -277,6 +277,15 @@ def matchup_baselines(contexts):
             record(ranked, ('height', basis, '', 'all'), (size.get(basis) or {}).get('mean_height_inches'))
             for row in observed.get(key, []):
                 record(ranked, ('height', basis, '', row['position']), row.get('mean_height_inches'))
+            count_key = 'recorded_starts' if basis == 'starters' else 'players'
+            frontcourt = [row for row in observed.get(key, [])
+                          if row['position'] in ('F', 'C') and (row.get(count_key) or 0) > 0
+                          and isinstance(row.get('mean_height_inches'), (int, float))
+                          and 55 <= row['mean_height_inches'] <= 100]
+            count = sum(row[count_key] for row in frontcourt)
+            if count:
+                record(ranked, ('height', basis, '', 'frontcourt'),
+                       sum(row['mean_height_inches'] * row[count_key] for row in frontcourt) / count)
     comparisons = []
     for key in sorted(frequency.keys() | ranked.keys()):
         family, side, basis, kind = key

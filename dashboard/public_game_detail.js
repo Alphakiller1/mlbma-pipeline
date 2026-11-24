@@ -10036,27 +10036,29 @@ function seasonToggle(game) {
     var summary=a.size_summary||{}, starters=summary.starters||{};
     var startsComplete=starters.reported_starts>0&&starterRows.reduce(function(total,row){return total+row.recorded_starts;},0)===starters.reported_starts;
     function height(r, basis, position, missing) {
-      if (!r || !Number.isFinite(r.mean_height_inches)) return cbbMissing(missing);
+      if (!r || !Number.isFinite(r.mean_height_inches) || r.mean_height_inches < 55 || r.mean_height_inches > 100) return cbbMissing(missing);
       var tenths = Math.round(r.mean_height_inches * 10), feet = Math.floor(tenths / 120);
       var text = feet+'′ '+((tenths-feet*120)/10).toFixed(1)+'″';
       var starter = basis === 'starters';
       var place = position && cbbComparison(game, 'height', {side:basis, kind:position}, r.mean_height_inches, true);
-      var value = global.ChaseCbbCharts.value(text, place && rankTone(place.rank, place.of));
+      var value = global.ChaseCbbCharts.value(text, place && rankTone(place.rank, place.of),
+        'Average listed height: '+r.mean_height_inches.toFixed(1)+' inches');
       var count = r.players == null ? cbbPlural(r.recorded_starts, 'start') : cbbPlural(r.players, 'player') +
         (starter ? '<span class="ca-cbb-count__games">'+cbbPlural(r.recorded_starts, 'start')+'</span>' : '');
       return cbbRanked(value, place, 'same-season D-I '+(starter?'starter groups':'rosters')+' · '+
-        (labels[position] || 'all positions')+' · tallest first')+
+        (labels[position] || (position === 'frontcourt' ? 'frontcourt (F/C)' : 'all positions'))+' · tallest first')+
         '<small class="ca-cbb-count">'+count+'</small>';
     }
     function frontcourt(rows, countKey) {
       var group = rows.filter(function (row) {
-        return (row.position === 'F' || row.position === 'C') && Number.isFinite(row.mean_height_inches) && row[countKey] > 0;
+        return (row.position === 'F' || row.position === 'C') && Number.isFinite(row.mean_height_inches) &&
+          row.mean_height_inches >= 55 && row.mean_height_inches <= 100 && row[countKey] > 0;
       });
       if (!group.length) return null;
       var count = group.reduce(function (total, row) { return total + row[countKey]; }, 0);
       return {
         mean_height_inches: group.reduce(function (total, row) { return total + row.mean_height_inches * row[countKey]; }, 0) / count,
-        players: countKey === 'players' ? count : null,
+        players: group.reduce(function (total, row) { return total + (row.players || 0); }, 0),
         recorded_starts: countKey === 'recorded_starts' ? count : null
       };
     }
@@ -10069,8 +10071,8 @@ function seasonToggle(game) {
       var noHeight = position === 'C' && summary.whole_team && summary.whole_team.players > 0 ? 'No center heights' : null;
       rows.push([labels[position], height(starter, 'starters', position, noStarts), height(roster, 'whole_team', position, noHeight)]);
     });
-    rows.push(['Frontcourt (F/C)', height(frontcourt(starterRows, 'recorded_starts'), 'starters'),
-      height(frontcourt(rosterRows, 'players'), 'whole_team')]);
+    rows.push(['Frontcourt (F/C)', height(frontcourt(starterRows, 'recorded_starts'), 'starters', 'frontcourt'),
+      height(frontcourt(rosterRows, 'players'), 'whole_team', 'frontcourt')]);
     var startSource=starters.source?' · starters '+starters.games+' games through '+starters.data_through:'';
     return cbbPanel(title,cbbSeason(game)+' · listed heights'+startSource,
       cbbTable(['Position','Starters (by starts)','Whole roster'],rows,'ca-cbb-factor-table'));

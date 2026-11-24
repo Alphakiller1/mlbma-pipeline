@@ -55,6 +55,11 @@ It uses that roster when it supplies a center height and at least as many
 measured players. Frontcourt combines reported forward and center heights,
 weighted by players for the roster and by recorded starts for starters.
 Center ranks still use only same-season teams with a measured center sample.
+Frontcourt now ranks against the same-season F/C cohort too, with separate
+starts-weighted and roster-weighted samples. Its counts include both measured
+players and starts. Heights retain a total-inches tooltip. Invalid heights remain
+unreported; an actual absence of recorded center starts is not filled with a
+forward's height.
 
 When NCAA possession tags are pending, score-matched ESPN finals can supply
 fast-break points, points off turnovers, and recorded starting groups. They also

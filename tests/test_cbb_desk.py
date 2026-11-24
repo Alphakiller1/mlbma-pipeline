@@ -4,6 +4,27 @@ from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
 
 class CbbDeskTests(unittest.TestCase):
+    def test_frontcourt_rank_samples_use_the_correct_player_and_start_weights(self):
+        from pipeline.cbb_public.export import matchup_baselines
+        context = {"rates": {}, "shots": {}, "observed_tactics": {
+            "position_size": [{"position": "F", "players": 3, "mean_height_inches": 76},
+                              {"position": "C", "players": 1, "mean_height_inches": 84}],
+            "starter_position_size": [{"position": "F", "players": 1, "recorded_starts": 1, "mean_height_inches": 76},
+                                      {"position": "C", "players": 1, "recorded_starts": 9, "mean_height_inches": 84}],
+        }}
+        rows = matchup_baselines([context])["matchup_comparisons"]
+        def sample(side, kind):
+            return next(r["rank_samples"] for r in rows if r["family"] == "height" and r["side"] == side and r["kind"] == kind)
+        self.assertEqual(sample("whole_team", "frontcourt"), [78])
+        self.assertEqual(sample("starters", "frontcourt"), [83.2])
+        self.assertEqual(sample("starters", "C"), [84])
+
+    def test_size_table_renderer_populates_ranked_frontcourts_and_keeps_missing_values_honest(self):
+        import subprocess
+        result = subprocess.run(["node", "--test", "tests/cbb_size.test.mjs"], cwd=ROOT,
+                                capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_verified_center_labels_fill_the_roster_without_shrinking_it(self):
         from pipeline.cbb_public.espn_roster import fill_missing_heights
         from copy import deepcopy
