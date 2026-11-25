@@ -237,6 +237,11 @@ def grade_baselines(contexts,year):
     # where a player shoots is style, not quality, so the shares stay neutral
     # the way the shot chart's shares do.
     shot_rows=[r for c in season for r in ((c.get('official_box') or {}).get('player_shots') or {}).get('players') or []]
+    # How much of a player's own scoring a team-mate set up. Style, not
+    # quality, so the desk tones it by volume; the pool only places him.
+    player['created_share']=distribution(
+        (100*r['assisted_share'] for r in shot_rows
+         if r.get('assisted_share') is not None and r['fga']>=ZONE_POOL_FLOOR), rank_samples=True)
     for key,zones in (('rim_fg',{'atr2'}),('three_fg',{'c3','atb3'})):
         samples=[]
         for row in shot_rows:

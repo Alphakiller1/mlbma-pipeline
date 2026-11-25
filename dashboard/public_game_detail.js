@@ -9800,14 +9800,32 @@ function seasonToggle(game) {
         :cbbMetric(game,100*m/a,cbbNumber(100*m/a)+'%',key,true,'player');
       return text+'<small class="ca-cbb-count'+(low?' is-low':'')+'">'+a+' att'+(low?' · Low n':'')+'</small>';
     }
+    /* Where a player shoots is style, so a share reads on the shot chart's own
+       volume bands (ChaseCbbCharts.shareTone: 30%+ primary, 18-30% secondary,
+       9-18% tertiary, under 9% rare) rather than a good-to-bad scale. Same
+       language the court already uses for a team's zones. */
+    function shareCell(p,zones){
+      var v=share(p,zones);
+      if(v==null)return cbbMissing('Not charted');
+      var tone=global.ChaseCbbCharts&&ChaseCbbCharts.shareTone?ChaseCbbCharts.shareTone(v/100):'';
+      return '<span class="ca-basketball-value '+tone+'" title="Share of his located attempts · volume, not quality">'+
+        cbbNumber(v,0)+'%</span>';
+    }
+    /* How much of his own scoring a team-mate set up is style too: a seven
+       footer finishing lobs and a guard creating his own are both doing their
+       job. Volume tone, and a place among the players the pool holds. */
+    function createdCell(p){
+      if(p.assisted_share==null)return cbbMissing('No makes');
+      var n=100*p.assisted_share;
+      var spot=cbbPlace(n,global.ChaseSportCBB.rankSamples(cbbYear(game),'player','created_share'),true);
+      var text=global.ChaseCbbCharts.value(cbbNumber(n,0)+'%','c-volume',
+        'Share of his makes a team-mate assisted · 1st is created for most');
+      return spot?cbbRanked(text,spot,'same-season D-I rotation players · 1st is created for most','c-volume'):text;
+    }
     var rows=players.map(function(p){
       return [esc(String(p.Name||'').replace(/\s*\(\d+\).*$/,'')),cbbNumber(p.fga,0)]
-        .concat(CBB_SHOT_GROUPS.map(function(g){
-          var v=share(p,g[1]);
-          return v==null?cbbMissing('Not charted'):'<span class="ca-basketball-value">'+cbbNumber(v,0)+'%</span>';
-        }))
-        .concat([finish(p,['atr2'],'rim_fg'),finish(p,['c3','atb3'],'three_fg'),
-          p.assisted_share==null?cbbMissing('No makes'):'<span class="ca-basketball-value">'+cbbNumber(100*p.assisted_share,0)+'%</span>']);
+        .concat(CBB_SHOT_GROUPS.map(function(g){ return shareCell(p,g[1]); }))
+        .concat([finish(p,['atr2'],'rim_fg'),finish(p,['c3','atb3'],'three_fg'),createdCell(p)]);
     });
     return cbbPanel(title,cbbSeason(game)+' · '+block.games+' charted games · each share is of his located attempts · players listed out are removed',
       cbbTable(['Player','FGA','Rim','Paint','3PT','Rim FG%','3P%','Created'],rows,'ca-cbb-rotation-table'));
