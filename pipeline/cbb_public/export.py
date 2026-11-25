@@ -36,6 +36,10 @@ PLAYER_FIELDS=['id','pid','athlete_id','Name','Team','G','Min_pct','Usg','Pts','
 FORBIDDEN={'predicted_score','predicted_margin','home_probability','home_win_probability','win_probability','confidence','pick','edge','odds','spread','moneyline','away_points','home_points','home_margin','total_points','power','rating','model_diagnostics','shooting_reversion','recent_shooting_reversion','shooting_scenario','regression_pressure_pp100','progression_pressure_pp100','net_reversion_pp100','geometric_sets','prior_reference_weight','tracking_tactics','posterior_per_regulation','posterior_mean'}
 
 UNTAGGED_SHOT_TYPES=('driving','floater','pullup')
+# A player's zone finishing is ranked, and shown, only on this many attempts
+# in that zone. The desk marks anything under it Low n rather than pricing a
+# handful of shots; the published pool and the table share the one floor.
+ZONE_POOL_FLOOR=20
 
 # The original 112–69 score stayed in Basketball Quant after both schools
 # updated the official final. Key by the entire old result before replacing it.
@@ -226,9 +230,21 @@ def grade_baselines(contexts,year):
     player={k:distribution((p.get(k) for p in players if k!='TS' or (p.get('FGA') or 0)+(p.get('FTA') or 0)>0
                             or ('FGA' not in p and p.get('TS') is not None)), rank_samples=True)
             for k in ['Pts','Reb','Ast','TS']}
+    # Shot-profile skill joins the player pool too. Only finishing is ranked:
+    # where a player shoots is style, not quality, so the shares stay neutral
+    # the way the shot chart's shares do.
+    shot_rows=[r for c in season for r in ((c.get('official_box') or {}).get('player_shots') or {}).get('players') or []]
+    for key,zones in (('rim_fg',{'atr2'}),('three_fg',{'c3','atb3'})):
+        samples=[]
+        for row in shot_rows:
+            attempts=sum(z['attempts'] for z in row['zones'] if z['zone'] in zones)
+            made=sum(z['made'] for z in row['zones'] if z['zone'] in zones)
+            if attempts>=ZONE_POOL_FLOOR: samples.append(100*made/attempts)
+        player[key]=distribution(samples,rank_samples=True)
     return {'team':team,'player':player, **matchup_baselines(season),
             'team_policy':'Same-season D-I teams with a reported game; equal team weighting.',
-            'player_policy':'Same-season players with a reported game and at least 10% reported MIN%; TS requires shooting attempts.'}
+            'player_policy':'Same-season players with a reported game and at least 10% reported MIN%; TS requires shooting attempts. '
+            f'Zone finishing pools require {ZONE_POOL_FLOOR} attempts in that zone; shot shares are style and are not ranked.'}
 
 def matchup_baselines(contexts):
     pace_samples = defaultdict(list)

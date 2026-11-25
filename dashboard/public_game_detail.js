@@ -9105,7 +9105,7 @@ function seasonToggle(game) {
   var CBB_TABS = [
     ['units','Units',['cbb-power','cbb-pace','cbb-efficiency','cbb-sos','cbb-predictability']],
     ['halves','Halves',['cbb-halves']],
-    ['shooting','Shot Profile',['cbb-shot-chart']],
+    ['shooting','Shot Profile',['cbb-shot-chart','cbb-player-shots']],
     ['possessions','Possessions',['cbb-transition','cbb-situations','cbb-restarts']],
     ['defense','Defense',['cbb-shot-types','cbb-personnel','cbb-tagged-schemes']],
     ['roster','Roster',['cbb-availability','cbb-rotation','cbb-size']],
@@ -9740,6 +9740,51 @@ function seasonToggle(game) {
         cbbRanked(efg,efgPlace,'same-source D-I teams · '+(defense?'lowest eFG% allowed first':'highest eFG% first'))+'</strong> eFG</span></div>'+
       cbbTable(share?['Zone','Offense share','Allowed share']:['Zone','Offense FG%','Allowed FG%'],rows,'ca-cbb-zone-table'));
   }
+  /* Where each player shoots, how he finishes there, and how much of his
+     scoring is created for him against how much he creates. Built from the
+     same ESPN play feed the team zones come from (espn_boxes.player_shots),
+     one zone scheme throughout. Shares are style, so they stay neutral the
+     way the shot chart's shares do; finishing is skill and is ranked. */
+  // Mid-range is the remainder: nearly every player takes under a tenth of
+  // his shots there, so the column carried no information worth a column.
+  // export.py ZONE_POOL_FLOOR: the attempts a zone needs before it is ranked.
+  var CBB_ZONE_FLOOR = 20;
+  var CBB_SHOT_GROUPS = [['Rim',['atr2']],['Paint',['paint2']],['3PT',['c3','atb3']]];
+  function cbbPlayerShots(sport,game,side) {
+    var c=cbbTeam(game,side);if(!c)return pending('Player evidence is unavailable.');
+    var block=(c.official_box||{}).player_shots;
+    var title=cbbSchool(game,side)+' Shot Creation';
+    if(!block||!block.players||!block.players.length)
+      return cbbPanel(title,cbbSeason(game),pending('No charted player shots are published for this team.'));
+    var available=availability.available(game,side,block.players.map(function(p){return {Name:p.Name,athlete_id:p.athlete_id,G:1,Min_pct:100};}));
+    var keep={};available.forEach(function(p){keep[String(p.athlete_id)]=true;});
+    var players=block.players.filter(function(p){return keep[String(p.athlete_id)]&&p.fga>=10;}).slice(0,8);
+    if(!players.length)return cbbPanel(title,cbbSeason(game),pending('No available player has ten charted attempts yet.'));
+    function share(p,zones){
+      var zoned=p.zones.reduce(function(a,z){return a+z.attempts;},0);
+      if(!zoned)return null;
+      var n=p.zones.reduce(function(a,z){return a+(zones.indexOf(z.zone)>=0?z.attempts:0);},0);
+      return 100*n/zoned;
+    }
+    function finish(p,zones,key){
+      var a=p.zones.reduce(function(s,z){return s+(zones.indexOf(z.zone)>=0?z.attempts:0);},0);
+      var m=p.zones.reduce(function(s,z){return s+(zones.indexOf(z.zone)>=0?z.made:0);},0);
+      if(a<CBB_ZONE_FLOOR)return cbbMissing(a?'Low n':'No attempts');
+      return cbbMetric(game,100*m/a,cbbNumber(100*m/a)+'%',key,true,'player');
+    }
+    var rows=players.map(function(p){
+      return [esc(String(p.Name||'').replace(/\s*\(\d+\).*$/,'')),cbbNumber(p.fga,0)]
+        .concat(CBB_SHOT_GROUPS.map(function(g){
+          var v=share(p,g[1]);
+          return v==null?cbbMissing('Not charted'):'<span class="ca-basketball-value">'+cbbNumber(v,0)+'%</span>';
+        }))
+        .concat([finish(p,['atr2'],'rim_fg'),finish(p,['c3','atb3'],'three_fg'),
+          p.assisted_share==null?cbbMissing('No makes'):'<span class="ca-basketball-value">'+cbbNumber(100*p.assisted_share,0)+'%</span>',
+          cbbNumber(p.assists,0)]);
+    });
+    return cbbPanel(title,cbbSeason(game)+' · '+block.games+' charted games · each share is of his located attempts · players listed out are removed',
+      cbbTable(['Player','FGA','Rim','Paint','3PT','Rim FG%','3P%','Created','AST'],rows,'ca-cbb-rotation-table'));
+  }
   function cbbRotation(sport,game,side) {
     if (game.cbb_availability_pending) return pending('Checking the current availability report…');
     var c=cbbTeam(game,side);if(!c)return pending('Player evidence is unavailable.');
@@ -10241,6 +10286,7 @@ function seasonToggle(game) {
       part('cbb-halves','First And Second Half','Each Offense Against The Defense It Meets, Half By Half · Pace',
         nflDuo(cbbHalves,sport,game))+
       part('cbb-shot-chart','Shot Chart','Zone Shooting Against The Defense It Meets',cbbChartControls(game)+nflDuo(cbbShotPanel,sport,game))+
+      part('cbb-player-shots','Shot Creation','Where Each Player Shoots, How He Finishes, Who Creates It',nflDuo(cbbPlayerShots,sport,game))+
       part('cbb-transition','Transition And Turnovers','Every D-I Game · Each Offense Against The Defense It Meets',nflDuo(cbbTransition,sport,game))+
       part('cbb-situations','Transition And Half Court','Possession-Tagged Efficiency',nflDuo(cbbSituations,sport,game))+
       part('cbb-restarts','Possession Starts','Efficiency By How The Possession Began',nflDuo(cbbRestarts,sport,game))+
@@ -10301,7 +10347,7 @@ function seasonToggle(game) {
     cbb: {
       compare: 'cbb-efficiency', injuries: 'cbb-availability', games: 'cbb-game-log',
       topics: [
-        ['Shooting And Possessions', ['cbb-shot-chart', 'cbb-transition', 'cbb-situations', 'cbb-restarts', 'cbb-shot-types']],
+        ['Shooting And Possessions', ['cbb-shot-chart', 'cbb-player-shots', 'cbb-transition', 'cbb-situations', 'cbb-restarts', 'cbb-shot-types']],
         ['Defense', ['cbb-personnel', 'cbb-tagged-schemes']]
       ]
     }

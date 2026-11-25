@@ -12,7 +12,7 @@ from . import possession_data as ncaa
 from . import pressure
 from . import halves as half_split
 from . import shot_quality
-from .data import read, write
+from .data import classify_zone, read, write
 from .espn_roster import fetch_roster
 
 BOX_URL = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/summary"
@@ -67,6 +67,53 @@ def player_lines(units, minutes, team_points):
             rows[str(pid)] = {"athlete_id": str(pid), "Name": name, "minutes": mins,
                               "Pts": pts, "Reb": reb, "Ast": ast, "FGA": fga, "FTA": fta}
     return list(rows.values()) if sum(row["Pts"] for row in rows.values()) == team_points else []
+
+
+# ESPN's summary play feed carries a coordinate and the participants on every
+# shooting play. Its origin differs from the shot files': x runs across the
+# floor (0-50) and y out from the baseline, while classify_zone wants Chase
+# coordinates v1, centre-court feet with the hoop at (+/-41.75, 0). Validated
+# against two full games: layups land 3.2 feet from the rim, dunks 2.9, tips
+# 4.2, jump shots 20.0, and nothing fails to classify.
+def chase_coordinates(coordinate):
+    x, y = ncaa.number((coordinate or {}).get("x")), ncaa.number((coordinate or {}).get("y"))
+    return (None, None) if x is None or y is None else (47 - y, x - 25)
+
+
+def player_shots(payload, teams):
+    """Per player: field goals by zone, how many of his makes were assisted,
+    and how many he assisted. Free throws are not field goals and are left out.
+
+    One zone scheme throughout (Chase coordinates v1), never mixed with a
+    provider's own, and a shot whose coordinate will not classify is counted
+    in the attempt totals but in no zone."""
+    out = {team: {} for team in teams}
+
+    def row(team, pid):
+        return out[team].setdefault(pid, {"fga": 0, "fgm": 0, "assisted": 0, "assists": 0, "zones": {}})
+
+    for play in payload.get("plays") or []:
+        team = str((play.get("team") or {}).get("id") or "")
+        kind = (play.get("type") or {}).get("text") or ""
+        if not play.get("shootingPlay") or team not in out or "FreeThrow" in kind:
+            continue
+        people = [str(((p.get("athlete") or {}).get("id") or "")) for p in (play.get("participants") or [])]
+        if not people or not people[0]:
+            continue
+        made = bool(play.get("scoringPlay"))
+        points = 3 if "three" in (play.get("text") or "").lower() else 2
+        shooter = row(team, people[0])
+        shooter["fga"] += 1
+        shooter["fgm"] += made
+        zone = classify_zone(*chase_coordinates(play.get("coordinate")), points)
+        if zone:
+            counts = shooter["zones"].setdefault(zone, [0, 0])
+            counts[0] += 1
+            counts[1] += made
+        if made and len(people) > 1 and people[1]:
+            shooter["assisted"] += 1
+            row(team, people[1])["assists"] += 1
+    return {team: rows for team, rows in out.items() if rows}
 
 
 def shot_kinds(payload, teams):
@@ -124,6 +171,7 @@ def parse_box(payload, game):
         raise ValueError("ESPN final period count unavailable")
     minutes = 40 + 5 * (periods.pop() - 2)
 
+    shots = player_shots(payload, {str(game[s + "_id"]) for s in SIDES})
     boxes = {str(r["team"]["id"]): r["statistics"] for r in payload["boxscore"]["teams"]}
     players = {str(r["team"]["id"]): r["statistics"] for r in payload["boxscore"].get("players", [])}
     result = {"fixture": fixture_key(game), "minutes": minutes, "teams": {}}
@@ -153,6 +201,7 @@ def parse_box(payload, game):
             "drb": drb, "ast": ast, "tov": tov, "stl": stl, "blk": blk, "pts": points, "poss": possessions,
             "starters": starters if len(starters) == 5 else {},
             "player_lines": player_lines(players.get(team, []), minutes, points),
+            "player_shots": shots.get(team, {}),
             "box_context": {key: n for key, field in BOX_CONTEXT.items()
                             if (n := ncaa.number(v.get(field))) is not None and 0 <= n <= points},
         }
@@ -178,7 +227,7 @@ def load_box(game, cache):
         cached = read(file)
         if cached.get("fixture") == fixture_key(game) and "pressure" in cached and all(
             "player_lines" in row and "box_context" in row and "stl" in row and "kinds" in row and "classes" in row
-            and "halves" in row
+            and "halves" in row and "player_shots" in row
             for row in cached["teams"].values()
         ):
             return cached
@@ -382,6 +431,37 @@ def add_box_context(context, box, games):
         box["rotation"] = {"players": rotation, "window_games": len(window),
                            "games": len(played), "source": START_SOURCE,
                            "data_through": window[-1][0]}
+    # Player shot profile: where a player shoots from, how he finishes there,
+    # how much of his scoring is created for him, and how much he creates.
+    # Season totals from the same play feed the team zones come from.
+    profiles = {}
+    for _, own in played:
+        for pid, line in (own.get("player_shots") or {}).items():
+            into = profiles.setdefault(pid, {"fga": 0, "fgm": 0, "assisted": 0, "assists": 0, "zones": {}})
+            for field in ("fga", "fgm", "assisted", "assists"):
+                into[field] += line.get(field, 0)
+            for zone, (attempts, makes) in (line.get("zones") or {}).items():
+                counts = into["zones"].setdefault(zone, [0, 0])
+                counts[0] += attempts
+                counts[1] += makes
+    if profiles:
+        names = {}
+        for _, own in played:
+            for line in own["player_lines"]:
+                names[line["athlete_id"]] = line["Name"]
+        rows = []
+        for pid, p in profiles.items():
+            zoned = sum(a for a, _ in p["zones"].values())
+            rows.append({"athlete_id": pid, "Name": names.get(pid), "fga": p["fga"], "fgm": p["fgm"],
+                         "assisted_share": p["assisted"] / p["fgm"] if p["fgm"] else None,
+                         "assists": p["assists"],
+                         "zones": [{"zone": z, "attempts": a, "made": m,
+                                    "share": a / zoned if zoned else None,
+                                    "fg_pct": 100 * m / a if a else None}
+                                   for z, (a, m) in sorted(p["zones"].items())]})
+        rows.sort(key=lambda r: -r["fga"])
+        box["player_shots"] = {"players": rows, "games": len(played), "source": START_SOURCE,
+                               "data_through": played[-1][0]}
     if not tactics.get("situations") or not tactics.get("restart_contexts"):
         for key in BOX_CONTEXT:
             pairs = [(own["box_context"][key], opp["box_context"][key])
