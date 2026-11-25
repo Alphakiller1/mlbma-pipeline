@@ -155,12 +155,11 @@ class RecentRotationTests(unittest.TestCase):
                 [game(f"2026-11-0{d}", late) for d in (4, 5, 6, 7, 8)])
 
     def rotation(self):
-        from pipeline.cbb_public.espn_boxes import add_box_context
-        context = {"observed_tactics": {"situations": {"x": 1}, "restart_contexts": {"x": 1},
-                                        "personnel": [{"x": 1}]},
-                   "players": [{"G": 5}]}
+        # Rotation is built for every team beside box pace, not in the fallback
+        # that fills a team whose counted source is missing.
+        from pipeline.cbb_public.espn_boxes import add_player_context
         box = {}
-        add_box_context(context, box, self.games())
+        add_player_context(box, self.games())
         return box["rotation"]
 
     def test_recent_minutes_are_per_team_game_not_per_game_played(self):
@@ -243,7 +242,7 @@ class PlayerShotProfileTests(unittest.TestCase):
         self.assertEqual(chase_coordinates(None), (None, None))
 
     def season(self):
-        from pipeline.cbb_public.espn_boxes import add_box_context, player_shots
+        from pipeline.cbb_public.espn_boxes import add_player_context, player_shots
         shots = player_shots(self.plays(), {"1", "2"})["1"]
         lines = [{"athlete_id": pid, "Name": name, "minutes": 30,
                   "Pts": 0, "Reb": 0, "Ast": 0, "FGA": 0, "FTA": 0}
@@ -252,9 +251,7 @@ class PlayerShotProfileTests(unittest.TestCase):
                   {"player_lines": lines, "player_shots": shots, "box_context": {}, "poss": 70},
                   {"player_lines": [], "box_context": {}, "poss": 70}, 70) for d in (1, 2)]
         box = {}
-        add_box_context({"observed_tactics": {"situations": {"x": 1}, "restart_contexts": {"x": 1},
-                                              "personnel": [{"x": 1}]},
-                         "players": [{"G": 2}]}, box, games)
+        add_player_context(box, games)
         return box["player_shots"]
 
     def test_season_totals_add_the_games_and_name_the_players(self):
@@ -448,3 +445,50 @@ class ArchivedBoxTopUpTests(unittest.TestCase):
             with patch.object(espn_boxes, "fetch_box", return_value=whole) as fetched:
                 self.assertIs(espn_boxes.load_box(game, cache), whole)
             self.assertEqual(fetched.call_count, 1)
+
+
+class PlayerContextReachesEveryTeamTests(unittest.TestCase):
+    """Rotation and the shot profile are built for every team.
+
+    They lived inside add_box_context, which supplement() calls only for a team
+    whose counted source is missing, so on 2026-11-25 they published for almost
+    nobody: High Point had complete Basketball Quant rates and therefore no
+    rotation and no player_shots at all.
+    """
+
+    def supplement_tree(self):
+        import ast
+        source = (ROOT / "pipeline/cbb_public/espn_boxes.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        return next(node for node in ast.walk(tree)
+                    if isinstance(node, ast.FunctionDef) and node.name == "supplement")
+
+    def test_the_call_is_not_gated_on_a_missing_source(self):
+        import ast
+        supplement = self.supplement_tree()
+        gated = set()
+        for node in ast.walk(supplement):
+            if isinstance(node, ast.If) and "fill" in ast.dump(node.test):
+                for inner in ast.walk(node):
+                    if isinstance(inner, ast.Call) and getattr(inner.func, "id", "") == "add_player_context":
+                        gated.add(inner.lineno)
+        calls = [n for n in ast.walk(supplement)
+                 if isinstance(n, ast.Call) and getattr(n.func, "id", "") == "add_player_context"]
+        self.assertTrue(calls, "supplement must build the player context")
+        self.assertFalse(gated, "add_player_context must not sit behind a missing-source branch")
+
+    def test_the_fallback_no_longer_owns_them(self):
+        from pipeline.cbb_public.espn_boxes import add_box_context
+        games = [("2026-11-01", 200,
+                  {"player_lines": [{"athlete_id": "1", "Name": "A", "minutes": 30, "Pts": 0,
+                                     "Reb": 0, "Ast": 0, "FGA": 0, "FTA": 0}],
+                   "player_shots": {"1": {"fga": 9, "fgm": 4, "assisted": 1, "assists": 2,
+                                          "zones": {"atr2": [9, 4]}}},
+                   "box_context": {}, "poss": 70},
+                  {"player_lines": [], "box_context": {}, "poss": 70}, 70)]
+        box = {}
+        add_box_context({"observed_tactics": {"situations": {"x": 1}, "restart_contexts": {"x": 1},
+                                              "personnel": [{"x": 1}]},
+                         "players": [{"G": 1}]}, box, games)
+        self.assertNotIn("rotation", box)
+        self.assertNotIn("player_shots", box)
