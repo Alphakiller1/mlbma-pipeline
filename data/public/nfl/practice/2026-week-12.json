@@ -3,14 +3,14 @@
   "sport": "nfl",
   "season": 2026,
   "week": 12,
-  "generated_at_utc": "2026-11-24T15:13:25.735857+00:00",
+  "generated_at_utc": "2026-11-25T01:02:26.620043+00:00",
   "teams": {
     "LAR": {
       "matthewstafford": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -25,22 +25,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           }
         ],
-        "participated": 2,
-        "full": 2,
+        "participated": 3,
+        "full": 3,
         "limited": 0,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "davisallen": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -55,22 +55,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           }
         ],
-        "participated": 2,
-        "full": 2,
+        "participated": 3,
+        "full": 3,
         "limited": 0,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "trentmcduffie": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -85,22 +85,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           }
         ],
-        "participated": 2,
-        "full": 2,
+        "participated": 3,
+        "full": 3,
         "limited": 0,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "colbyparkinson": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -115,22 +115,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           }
         ],
-        "participated": 2,
-        "full": 2,
+        "participated": 3,
+        "full": 3,
         "limited": 0,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "natelandman": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -145,22 +145,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           }
         ],
-        "participated": 2,
-        "full": 2,
+        "participated": 3,
+        "full": 3,
         "limited": 0,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "justindedich": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -175,22 +175,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           }
         ],
-        "participated": 2,
-        "full": 2,
+        "participated": 3,
+        "full": 3,
         "limited": 0,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "kobieturner": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -205,22 +205,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           }
         ],
-        "participated": 2,
-        "full": 2,
+        "participated": 3,
+        "full": 3,
         "limited": 0,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "joecardona": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -235,22 +235,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           }
         ],
-        "participated": 2,
-        "full": 2,
+        "participated": 3,
+        "full": 3,
         "limited": 0,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "mylesgarrett": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -265,22 +265,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           }
         ],
-        "participated": 1,
+        "participated": 2,
         "full": 0,
-        "limited": 1,
+        "limited": 2,
         "dnp": 1,
-        "reported": 2,
-        "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "reported": 3,
+        "last_practice": "Limited",
+        "last_practice_date": "2026-11-24"
       },
       "kyrenwilliams": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -295,22 +295,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           }
         ],
-        "participated": 2,
-        "full": 1,
+        "participated": 3,
+        "full": 2,
         "limited": 1,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "steveavila": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -325,22 +325,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "DNP"
           }
         ],
         "participated": 0,
         "full": 0,
         "limited": 0,
-        "dnp": 2,
-        "reported": 2,
+        "dnp": 3,
+        "reported": 3,
         "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "kamcurl": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -355,22 +355,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           }
         ],
-        "participated": 1,
+        "participated": 2,
         "full": 0,
-        "limited": 1,
+        "limited": 2,
         "dnp": 1,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "colemanshelton": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -385,22 +385,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "DNP"
           }
         ],
         "participated": 0,
         "full": 0,
         "limited": 0,
-        "dnp": 2,
-        "reported": 2,
+        "dnp": 3,
+        "reported": 3,
         "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "terranceferguson": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -415,22 +415,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "DNP"
           }
         ],
         "participated": 0,
         "full": 0,
         "limited": 0,
-        "dnp": 2,
-        "reported": 2,
+        "dnp": 3,
+        "reported": 3,
         "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "tylerhigbee": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -445,22 +445,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           }
         ],
-        "participated": 0,
-        "full": 0,
+        "participated": 1,
+        "full": 1,
         "limited": 0,
         "dnp": 1,
-        "reported": 1,
-        "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "reported": 2,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
       },
       "byronyoung": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -475,22 +475,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           }
         ],
-        "participated": 0,
-        "full": 0,
+        "participated": 1,
+        "full": 1,
         "limited": 0,
         "dnp": 1,
-        "reported": 1,
-        "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "reported": 2,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
       },
       "aarondonald": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -505,16 +505,16 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           }
         ],
-        "participated": 0,
-        "full": 0,
+        "participated": 1,
+        "full": 1,
         "limited": 0,
         "dnp": 1,
-        "reported": 1,
-        "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "reported": 2,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
       }
     },
     "GB": {
@@ -522,7 +522,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -537,22 +537,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           }
         ],
-        "participated": 2,
-        "full": 2,
+        "participated": 3,
+        "full": 3,
         "limited": 0,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "brandoncisse": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -567,22 +567,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           }
         ],
-        "participated": 2,
-        "full": 1,
+        "participated": 3,
+        "full": 2,
         "limited": 1,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "zairefranklin": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -597,22 +597,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           }
         ],
-        "participated": 2,
+        "participated": 3,
         "full": 0,
-        "limited": 2,
+        "limited": 3,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "travisglover": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -627,22 +627,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           }
         ],
-        "participated": 1,
+        "participated": 2,
         "full": 0,
-        "limited": 1,
+        "limited": 2,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "joshjacobs": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -657,22 +657,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           }
         ],
-        "participated": 2,
+        "participated": 3,
         "full": 0,
-        "limited": 2,
+        "limited": 3,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "isaiahmcduffie": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -687,22 +687,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           }
         ],
-        "participated": 2,
-        "full": 0,
+        "participated": 3,
+        "full": 1,
         "limited": 2,
         "dnp": 0,
-        "reported": 2,
-        "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "reported": 3,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
       },
       "bomelton": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -717,22 +717,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           }
         ],
-        "participated": 2,
+        "participated": 3,
         "full": 0,
-        "limited": 2,
+        "limited": 3,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "skyymoore": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -747,22 +747,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           }
         ],
-        "participated": 2,
+        "participated": 3,
         "full": 0,
-        "limited": 2,
+        "limited": 3,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "micahparsons": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -777,22 +777,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           }
         ],
-        "participated": 2,
+        "participated": 3,
         "full": 0,
-        "limited": 2,
+        "limited": 3,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "seanrhyan": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -807,22 +807,22 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           }
         ],
-        "participated": 2,
+        "participated": 3,
         "full": 0,
-        "limited": 2,
+        "limited": 3,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "kevinzeitler": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.therams.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.224500+00:00",
+        "checked_at_utc": "2026-11-25T01:02:24.972106+00:00",
         "history": [
           {
             "day": "Sun",
@@ -837,54 +837,24 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           }
         ],
-        "participated": 2,
+        "participated": 3,
         "full": 0,
-        "limited": 2,
+        "limited": 3,
         "dnp": 0,
-        "reported": 2,
+        "reported": 3,
         "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       }
     },
     "CHI": {
-      "theobenedet": {
-        "season": 2026,
-        "week": 12,
-        "source_url": "https://www.detroitlions.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.239207+00:00",
-        "history": [
-          {
-            "day": "Mon",
-            "date": "2026-11-23",
-            "status": "DNP"
-          },
-          {
-            "day": "Tue",
-            "date": "2026-11-24",
-            "status": "Pending"
-          },
-          {
-            "day": "Wed",
-            "date": "2026-11-25",
-            "status": "Pending"
-          }
-        ],
-        "participated": 0,
-        "full": 0,
-        "limited": 0,
-        "dnp": 1,
-        "reported": 1,
-        "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
-      },
       "kylergordon": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.detroitlions.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.239207+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.062155+00:00",
         "history": [
           {
             "day": "Mon",
@@ -894,7 +864,37 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
+            "status": "DNP"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
             "status": "Pending"
+          }
+        ],
+        "participated": 0,
+        "full": 0,
+        "limited": 0,
+        "dnp": 2,
+        "reported": 2,
+        "last_practice": "DNP",
+        "last_practice_date": "2026-11-24"
+      },
+      "elijahhicks": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.detroitlions.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.062155+00:00",
+        "history": [
+          {
+            "day": "Mon",
+            "date": "2026-11-23",
+            "status": "Pending"
+          },
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "DNP"
           },
           {
             "day": "Wed",
@@ -908,13 +908,13 @@
         "dnp": 1,
         "reported": 1,
         "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "roschonjohnson": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.detroitlions.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.239207+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.062155+00:00",
         "history": [
           {
             "day": "Mon",
@@ -924,7 +924,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "DNP"
           },
           {
             "day": "Wed",
@@ -935,26 +935,26 @@
         "participated": 0,
         "full": 0,
         "limited": 0,
-        "dnp": 1,
-        "reported": 1,
+        "dnp": 2,
+        "reported": 2,
         "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
-      "dmarcojackson": {
+      "theobenedet": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.detroitlions.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.239207+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.062155+00:00",
         "history": [
           {
             "day": "Mon",
             "date": "2026-11-23",
-            "status": "Full"
+            "status": "DNP"
           },
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -965,28 +965,26 @@
         "participated": 1,
         "full": 1,
         "limited": 0,
-        "dnp": 0,
-        "reported": 1,
+        "dnp": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
-      }
-    },
-    "DET": {
-      "chuckclark": {
+        "last_practice_date": "2026-11-24"
+      },
+      "dmarcojackson": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.detroitlions.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.239207+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.062155+00:00",
         "history": [
           {
             "day": "Mon",
             "date": "2026-11-23",
-            "status": "DNP"
+            "status": "Full"
           },
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -994,19 +992,21 @@
             "status": "Pending"
           }
         ],
-        "participated": 0,
-        "full": 0,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
-        "dnp": 1,
-        "reported": 1,
-        "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
-      },
+        "dnp": 0,
+        "reported": 2,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
+      }
+    },
+    "DET": {
       "skylergillhoward": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.detroitlions.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.239207+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.062155+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1016,7 +1016,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "DNP"
           },
           {
             "day": "Wed",
@@ -1027,16 +1027,16 @@
         "participated": 0,
         "full": 0,
         "limited": 0,
-        "dnp": 1,
-        "reported": 1,
+        "dnp": 2,
+        "reported": 2,
         "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "ennisrakestraw": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.detroitlions.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.239207+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.062155+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1046,7 +1046,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "DNP"
           },
           {
             "day": "Wed",
@@ -1057,16 +1057,16 @@
         "participated": 0,
         "full": 0,
         "limited": 0,
-        "dnp": 1,
-        "reported": 1,
+        "dnp": 2,
+        "reported": 2,
         "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "djwonnum": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.detroitlions.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.239207+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.062155+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1076,7 +1076,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "DNP"
           },
           {
             "day": "Wed",
@@ -1087,26 +1087,26 @@
         "participated": 0,
         "full": 0,
         "limited": 0,
-        "dnp": 1,
-        "reported": 1,
+        "dnp": 2,
+        "reported": 2,
         "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
-      "samlaporta": {
+      "chuckclark": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.detroitlions.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.239207+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.062155+00:00",
         "history": [
           {
             "day": "Mon",
             "date": "2026-11-23",
-            "status": "Limited"
+            "status": "DNP"
           },
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           },
           {
             "day": "Wed",
@@ -1117,16 +1117,16 @@
         "participated": 1,
         "full": 0,
         "limited": 1,
-        "dnp": 0,
-        "reported": 1,
+        "dnp": 1,
+        "reported": 2,
         "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "khalildorsey": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.detroitlions.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.239207+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.062155+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1136,7 +1136,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -1144,19 +1144,49 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
+      },
+      "samlaporta": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.detroitlions.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.062155+00:00",
+        "history": [
+          {
+            "day": "Mon",
+            "date": "2026-11-23",
+            "status": "Limited"
+          },
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "Full"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          }
+        ],
+        "participated": 2,
+        "full": 1,
+        "limited": 1,
+        "dnp": 0,
+        "reported": 2,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
       },
       "djreed": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.detroitlions.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.239207+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.062155+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1166,7 +1196,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -1174,13 +1204,13 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       }
     },
     "DAL": {
@@ -1188,7 +1218,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1198,7 +1228,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           },
           {
             "day": "Wed",
@@ -1206,19 +1236,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 0,
+        "participated": 1,
         "full": 0,
-        "limited": 0,
+        "limited": 1,
         "dnp": 1,
-        "reported": 1,
-        "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "reported": 2,
+        "last_practice": "Limited",
+        "last_practice_date": "2026-11-24"
       },
       "tylerbooker": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1228,7 +1258,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "DNP"
           },
           {
             "day": "Wed",
@@ -1239,16 +1269,16 @@
         "participated": 0,
         "full": 0,
         "limited": 0,
-        "dnp": 1,
-        "reported": 1,
+        "dnp": 2,
+        "reported": 2,
         "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "jakeferguson": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1258,7 +1288,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "DNP"
           },
           {
             "day": "Wed",
@@ -1269,16 +1299,16 @@
         "participated": 0,
         "full": 0,
         "limited": 0,
-        "dnp": 1,
-        "reported": 1,
+        "dnp": 2,
+        "reported": 2,
         "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "deewinters": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1288,7 +1318,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           },
           {
             "day": "Wed",
@@ -1296,19 +1326,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 0,
+        "participated": 1,
         "full": 0,
-        "limited": 0,
+        "limited": 1,
         "dnp": 1,
-        "reported": 1,
-        "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "reported": 2,
+        "last_practice": "Limited",
+        "last_practice_date": "2026-11-24"
       },
       "pjlocke": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1318,7 +1348,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           },
           {
             "day": "Wed",
@@ -1326,19 +1356,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
+        "participated": 2,
         "full": 0,
-        "limited": 1,
+        "limited": 2,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "jonathanmingo": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1348,7 +1378,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "DNP"
           },
           {
             "day": "Wed",
@@ -1359,16 +1389,16 @@
         "participated": 1,
         "full": 0,
         "limited": 1,
-        "dnp": 0,
-        "reported": 1,
-        "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "dnp": 1,
+        "reported": 2,
+        "last_practice": "DNP",
+        "last_practice_date": "2026-11-24"
       },
       "cobiedurant": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1378,7 +1408,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -1386,19 +1416,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "donovanezeiruaku": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1408,7 +1438,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -1416,19 +1446,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "devinmoore": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1438,7 +1468,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -1446,19 +1476,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "otitoogbonnia": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1468,7 +1498,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -1476,19 +1506,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "joeyporter": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1498,7 +1528,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -1506,19 +1536,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "dakprescott": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1528,7 +1558,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -1536,19 +1566,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "jalenthompson": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1558,7 +1588,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -1566,13 +1596,13 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       }
     },
     "PHI": {
@@ -1580,7 +1610,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1610,7 +1640,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1640,7 +1670,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1670,7 +1700,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1700,7 +1730,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1730,7 +1760,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1760,7 +1790,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1790,7 +1820,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1820,7 +1850,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1850,7 +1880,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1880,7 +1910,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1910,7 +1940,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1940,7 +1970,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.dallascowboys.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.157535+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.018523+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1972,7 +2002,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -1982,7 +2012,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           },
           {
             "day": "Wed",
@@ -1990,19 +2020,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 0,
+        "participated": 1,
         "full": 0,
-        "limited": 0,
+        "limited": 1,
         "dnp": 1,
-        "reported": 1,
-        "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "reported": 2,
+        "last_practice": "Limited",
+        "last_practice_date": "2026-11-24"
       },
       "colebishop": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2012,7 +2042,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -2020,19 +2050,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "spencerbrown": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2042,7 +2072,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -2050,19 +2080,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 0,
+        "participated": 2,
+        "full": 1,
         "limited": 1,
         "dnp": 0,
-        "reported": 1,
-        "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "reported": 2,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
       },
       "damarhamlin": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2072,7 +2102,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -2080,19 +2110,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 0,
+        "participated": 2,
+        "full": 1,
         "limited": 1,
         "dnp": 0,
-        "reported": 1,
-        "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "reported": 2,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
       },
       "jacksonhawes": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2102,7 +2132,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -2110,19 +2140,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "amanihooker": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2132,7 +2162,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -2140,19 +2170,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "daltonkincaid": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2162,7 +2192,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           },
           {
             "day": "Wed",
@@ -2170,19 +2200,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
+        "participated": 2,
         "full": 0,
-        "limited": 1,
+        "limited": 2,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "tyjohnson": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2192,7 +2222,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -2200,19 +2230,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "connormcgovern": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2222,7 +2252,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -2230,19 +2260,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "edoliver": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2252,7 +2282,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -2260,19 +2290,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "gregrousseau": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2282,7 +2312,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -2290,19 +2320,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 0,
+        "participated": 2,
+        "full": 1,
         "limited": 1,
         "dnp": 0,
-        "reported": 1,
-        "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "reported": 2,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
       },
       "tjsanders": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2312,7 +2342,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           },
           {
             "day": "Wed",
@@ -2320,19 +2350,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
+        "participated": 2,
         "full": 0,
-        "limited": 1,
+        "limited": 2,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "ocyrustorrence": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2342,7 +2372,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           },
           {
             "day": "Wed",
@@ -2350,19 +2380,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
+        "participated": 2,
         "full": 0,
-        "limited": 1,
+        "limited": 2,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "dorianwilliams": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2372,7 +2402,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Limited"
           },
           {
             "day": "Wed",
@@ -2380,13 +2410,13 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
+        "participated": 2,
         "full": 0,
-        "limited": 1,
+        "limited": 2,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       }
     },
     "KC": {
@@ -2394,7 +2424,7 @@
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2404,7 +2434,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -2412,19 +2442,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 0,
-        "full": 0,
+        "participated": 1,
+        "full": 1,
         "limited": 0,
         "dnp": 1,
-        "reported": 1,
-        "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "reported": 2,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
       },
       "jaylonmoore": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2434,7 +2464,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "DNP"
           },
           {
             "day": "Wed",
@@ -2445,16 +2475,16 @@
         "participated": 0,
         "full": 0,
         "limited": 0,
-        "dnp": 1,
-        "reported": 1,
+        "dnp": 2,
+        "reported": 2,
         "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "kennethwalker": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2464,127 +2494,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
-          },
-          {
-            "day": "Wed",
-            "date": "2026-11-25",
-            "status": "Pending"
-          }
-        ],
-        "participated": 0,
-        "full": 0,
-        "limited": 0,
-        "dnp": 1,
-        "reported": 1,
-        "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
-      },
-      "benvansumeren": {
-        "season": 2026,
-        "week": 12,
-        "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
-        "history": [
-          {
-            "day": "Mon",
-            "date": "2026-11-23",
-            "status": "DNP"
-          },
-          {
-            "day": "Tue",
-            "date": "2026-11-24",
-            "status": "Pending"
-          },
-          {
-            "day": "Wed",
-            "date": "2026-11-25",
-            "status": "Pending"
-          }
-        ],
-        "participated": 0,
-        "full": 0,
-        "limited": 0,
-        "dnp": 1,
-        "reported": 1,
-        "last_practice": "DNP",
-        "last_practice_date": "2026-11-23"
-      },
-      "mansoordelane": {
-        "season": 2026,
-        "week": 12,
-        "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
-        "history": [
-          {
-            "day": "Mon",
-            "date": "2026-11-23",
-            "status": "Full"
-          },
-          {
-            "day": "Tue",
-            "date": "2026-11-24",
-            "status": "Pending"
-          },
-          {
-            "day": "Wed",
-            "date": "2026-11-25",
-            "status": "Pending"
-          }
-        ],
-        "participated": 1,
-        "full": 1,
-        "limited": 0,
-        "dnp": 0,
-        "reported": 1,
-        "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
-      },
-      "patrickmahomes": {
-        "season": 2026,
-        "week": 12,
-        "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
-        "history": [
-          {
-            "day": "Mon",
-            "date": "2026-11-23",
-            "status": "Full"
-          },
-          {
-            "day": "Tue",
-            "date": "2026-11-24",
-            "status": "Pending"
-          },
-          {
-            "day": "Wed",
-            "date": "2026-11-25",
-            "status": "Pending"
-          }
-        ],
-        "participated": 1,
-        "full": 1,
-        "limited": 0,
-        "dnp": 0,
-        "reported": 1,
-        "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
-      },
-      "omarrnormanlott": {
-        "season": 2026,
-        "week": 12,
-        "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
-        "history": [
-          {
-            "day": "Mon",
-            "date": "2026-11-23",
             "status": "Limited"
-          },
-          {
-            "day": "Tue",
-            "date": "2026-11-24",
-            "status": "Pending"
           },
           {
             "day": "Wed",
@@ -2595,16 +2505,106 @@
         "participated": 1,
         "full": 0,
         "limited": 1,
-        "dnp": 0,
-        "reported": 1,
+        "dnp": 1,
+        "reported": 2,
         "last_practice": "Limited",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
+      },
+      "mansoordelane": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
+        "history": [
+          {
+            "day": "Mon",
+            "date": "2026-11-23",
+            "status": "Full"
+          },
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "Full"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          }
+        ],
+        "participated": 2,
+        "full": 2,
+        "limited": 0,
+        "dnp": 0,
+        "reported": 2,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
+      },
+      "patrickmahomes": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
+        "history": [
+          {
+            "day": "Mon",
+            "date": "2026-11-23",
+            "status": "Full"
+          },
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "Full"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          }
+        ],
+        "participated": 2,
+        "full": 2,
+        "limited": 0,
+        "dnp": 0,
+        "reported": 2,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
+      },
+      "omarrnormanlott": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
+        "history": [
+          {
+            "day": "Mon",
+            "date": "2026-11-23",
+            "status": "Limited"
+          },
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "Limited"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          }
+        ],
+        "participated": 2,
+        "full": 0,
+        "limited": 2,
+        "dnp": 0,
+        "reported": 2,
+        "last_practice": "Limited",
+        "last_practice_date": "2026-11-24"
       },
       "rasheerice": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2614,7 +2614,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -2622,19 +2622,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "treysmith": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2644,7 +2644,7 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
@@ -2652,19 +2652,19 @@
             "status": "Pending"
           }
         ],
-        "participated": 1,
-        "full": 1,
+        "participated": 2,
+        "full": 2,
         "limited": 0,
         "dnp": 0,
-        "reported": 1,
+        "reported": 2,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
       },
       "peterwoods": {
         "season": 2026,
         "week": 12,
         "source_url": "https://www.buffalobills.com/team/injury-report/week/REG-12",
-        "checked_at_utc": "2026-11-24T15:13:24.233625+00:00",
+        "checked_at_utc": "2026-11-25T01:02:25.615662+00:00",
         "history": [
           {
             "day": "Mon",
@@ -2674,11 +2674,43 @@
           {
             "day": "Tue",
             "date": "2026-11-24",
-            "status": "Pending"
+            "status": "Full"
           },
           {
             "day": "Wed",
             "date": "2026-11-25",
+            "status": "Pending"
+          }
+        ],
+        "participated": 2,
+        "full": 2,
+        "limited": 0,
+        "dnp": 0,
+        "reported": 2,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
+      }
+    },
+    "PIT": {
+      "michaelpittman": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.steelers.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.100790+00:00",
+        "history": [
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "Full"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          },
+          {
+            "day": "Thu",
+            "date": "2026-11-26",
             "status": "Pending"
           }
         ],
@@ -2688,18 +2720,378 @@
         "dnp": 0,
         "reported": 1,
         "last_practice": "Full",
-        "last_practice_date": "2026-11-23"
+        "last_practice_date": "2026-11-24"
+      },
+      "benskowronek": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.steelers.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.100790+00:00",
+        "history": [
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "DNP"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          },
+          {
+            "day": "Thu",
+            "date": "2026-11-26",
+            "status": "Pending"
+          }
+        ],
+        "participated": 0,
+        "full": 0,
+        "limited": 0,
+        "dnp": 1,
+        "reported": 1,
+        "last_practice": "DNP",
+        "last_practice_date": "2026-11-24"
+      },
+      "nickherbig": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.steelers.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.100790+00:00",
+        "history": [
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "Limited"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          },
+          {
+            "day": "Thu",
+            "date": "2026-11-26",
+            "status": "Pending"
+          }
+        ],
+        "participated": 1,
+        "full": 0,
+        "limited": 1,
+        "dnp": 0,
+        "reported": 1,
+        "last_practice": "Limited",
+        "last_practice_date": "2026-11-24"
+      },
+      "alexhighsmith": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.steelers.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.100790+00:00",
+        "history": [
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "DNP"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          },
+          {
+            "day": "Thu",
+            "date": "2026-11-26",
+            "status": "Pending"
+          }
+        ],
+        "participated": 0,
+        "full": 0,
+        "limited": 0,
+        "dnp": 1,
+        "reported": 1,
+        "last_practice": "DNP",
+        "last_practice_date": "2026-11-24"
+      },
+      "genningsdunker": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.steelers.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.100790+00:00",
+        "history": [
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "Full"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          },
+          {
+            "day": "Thu",
+            "date": "2026-11-26",
+            "status": "Pending"
+          }
+        ],
+        "participated": 1,
+        "full": 1,
+        "limited": 0,
+        "dnp": 0,
+        "reported": 1,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
+      }
+    },
+    "DEN": {
+      "tylerbadie": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.steelers.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.100790+00:00",
+        "history": [
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "Full"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          },
+          {
+            "day": "Thu",
+            "date": "2026-11-26",
+            "status": "Pending"
+          }
+        ],
+        "participated": 1,
+        "full": 1,
+        "limited": 0,
+        "dnp": 0,
+        "reported": 1,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
+      },
+      "patbryant": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.steelers.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.100790+00:00",
+        "history": [
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "Full"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          },
+          {
+            "day": "Thu",
+            "date": "2026-11-26",
+            "status": "Pending"
+          }
+        ],
+        "participated": 1,
+        "full": 1,
+        "limited": 0,
+        "dnp": 0,
+        "reported": 1,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
+      },
+      "brandonjones": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.steelers.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.100790+00:00",
+        "history": [
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "Full"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          },
+          {
+            "day": "Thu",
+            "date": "2026-11-26",
+            "status": "Pending"
+          }
+        ],
+        "participated": 1,
+        "full": 1,
+        "limited": 0,
+        "dnp": 0,
+        "reported": 1,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
+      },
+      "caleblohner": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.steelers.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.100790+00:00",
+        "history": [
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "Full"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          },
+          {
+            "day": "Thu",
+            "date": "2026-11-26",
+            "status": "Pending"
+          }
+        ],
+        "participated": 1,
+        "full": 1,
+        "limited": 0,
+        "dnp": 0,
+        "reported": 1,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
+      },
+      "jlskinner": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.steelers.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.100790+00:00",
+        "history": [
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "Full"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          },
+          {
+            "day": "Thu",
+            "date": "2026-11-26",
+            "status": "Pending"
+          }
+        ],
+        "participated": 1,
+        "full": 1,
+        "limited": 0,
+        "dnp": 0,
+        "reported": 1,
+        "last_practice": "Full",
+        "last_practice_date": "2026-11-24"
+      },
+      "taylorrapp": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.steelers.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.100790+00:00",
+        "history": [
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "Limited"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          },
+          {
+            "day": "Thu",
+            "date": "2026-11-26",
+            "status": "Pending"
+          }
+        ],
+        "participated": 1,
+        "full": 0,
+        "limited": 1,
+        "dnp": 0,
+        "reported": 1,
+        "last_practice": "Limited",
+        "last_practice_date": "2026-11-24"
+      },
+      "jkdobbins": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.steelers.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.100790+00:00",
+        "history": [
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "DNP"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          },
+          {
+            "day": "Thu",
+            "date": "2026-11-26",
+            "status": "Pending"
+          }
+        ],
+        "participated": 0,
+        "full": 0,
+        "limited": 0,
+        "dnp": 1,
+        "reported": 1,
+        "last_practice": "DNP",
+        "last_practice_date": "2026-11-24"
+      },
+      "saivionjones": {
+        "season": 2026,
+        "week": 12,
+        "source_url": "https://www.steelers.com/team/injury-report/week/REG-12",
+        "checked_at_utc": "2026-11-25T01:02:25.100790+00:00",
+        "history": [
+          {
+            "day": "Tue",
+            "date": "2026-11-24",
+            "status": "DNP"
+          },
+          {
+            "day": "Wed",
+            "date": "2026-11-25",
+            "status": "Pending"
+          },
+          {
+            "day": "Thu",
+            "date": "2026-11-26",
+            "status": "Pending"
+          }
+        ],
+        "participated": 0,
+        "full": 0,
+        "limited": 0,
+        "dnp": 1,
+        "reported": 1,
+        "last_practice": "DNP",
+        "last_practice_date": "2026-11-24"
       }
     }
   },
   "warnings": [
-    "PIT practice report: No official club practice tables found",
-    "DEN practice report: No official club practice tables found",
     "CIN practice report: No official club practice tables found",
     "NO practice report: No official club practice tables found",
     "IND practice report: No official club practice tables found",
     "NYG practice report: No official club practice tables found",
-    "MIA practice report: No official club practice tables found",
+    "MIA practice report: Official club report is for a different week",
     "NYJ practice report: No official club practice tables found",
     "MIN practice report: No official club practice tables found",
     "ATL practice report: No official club practice tables found",
