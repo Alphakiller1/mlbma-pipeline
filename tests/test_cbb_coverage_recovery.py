@@ -361,3 +361,90 @@ class SecondChanceTests(unittest.TestCase):
         self.assertAlmostEqual(rates["sc_points_def_all"], 4.0)
         # A zone neither side missed in is None, never a zero rate.
         self.assertIsNone(rates["orb_paint_off_all"])
+
+
+class ArchivedBoxTopUpTests(unittest.TestCase):
+    """A cached box is this season's archive of the feed as it read on the day.
+    A release that adds a field tops the archive up; it never re-derives what
+    the archive already holds from a feed ESPN may since have revised."""
+
+    def archive(self, directory):
+        from pipeline.cbb_public.data import write
+        game = {"game_id": "401900001", "game_date": "2026-11-03",
+                "home_id": "1", "away_id": "2", "home_score": 70, "away_score": 60}
+        row = lambda: {"player_lines": [], "box_context": {}, "stl": 5, "kinds": None,
+                       "classes": None, "halves": {"h1": 1}}
+        write(directory / "401900001.json",
+              {"fixture": ["2026-11-03", "1", "2", 70, 60], "minutes": 40,
+               "pressure": {"1": {"defense": {"after_score": 14}}},
+               "teams": {"1": row(), "2": row()}})
+        return game
+
+    def test_only_the_added_fields_are_refetched_and_the_rest_is_kept(self):
+        import tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        from pipeline.cbb_public import espn_boxes
+        with tempfile.TemporaryDirectory() as scratch:
+            cache = Path(scratch)
+            game = self.archive(cache)
+            fresh = {"teams": {t: {"player_shots": {"9": {"fga": 4}},
+                                   "second_chance": {"misses": {"rim": 2}, "orb": {"rim": 1},
+                                                     "second_chance_points": 2, "chances": 1},
+                                   # A revised feed: these must NOT reach the archive.
+                                   "stl": 99, "halves": {"h1": 99}}
+                               for t in ("1", "2")},
+                     "pressure": None}
+            with patch.object(espn_boxes, "fetch_box", return_value=fresh) as fetched:
+                box = espn_boxes.load_box(game, cache)
+            self.assertEqual(fetched.call_count, 1)
+            self.assertEqual(box["teams"]["1"]["player_shots"], {"9": {"fga": 4}})
+            self.assertEqual(box["teams"]["1"]["second_chance"]["chances"], 1)
+            # Everything the archive already held is untouched, pressure above
+            # all: re-deriving it dropped a game under the threshold and had
+            # the publication guard refuse the whole run (2026-11-25).
+            self.assertEqual(box["teams"]["1"]["stl"], 5)
+            self.assertEqual(box["teams"]["1"]["halves"], {"h1": 1})
+            self.assertEqual(box["pressure"], {"1": {"defense": {"after_score": 14}}})
+            # Topped up on disk, so the next run reads it without fetching again.
+            with patch.object(espn_boxes, "fetch_box") as again:
+                espn_boxes.load_box(game, cache)
+            again.assert_not_called()
+
+    def test_a_failed_refetch_keeps_the_archive_rather_than_dropping_it(self):
+        import tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        import requests
+        from pipeline.cbb_public import espn_boxes
+        with tempfile.TemporaryDirectory() as scratch:
+            cache = Path(scratch)
+            game = self.archive(cache)
+            with patch.object(espn_boxes, "fetch_box", side_effect=requests.RequestException("502")):
+                box = espn_boxes.load_box(game, cache)
+            self.assertEqual(box["teams"]["1"]["stl"], 5)
+            self.assertEqual(box["pressure"], {"1": {"defense": {"after_score": 14}}})
+            # The added fields read empty, not absent, so the game is not
+            # re-fetched on every later run.
+            self.assertEqual(box["teams"]["1"]["player_shots"], {})
+            self.assertEqual(box["teams"]["1"]["second_chance"]["chances"], 0)
+            with patch.object(espn_boxes, "fetch_box") as again:
+                espn_boxes.load_box(game, cache)
+            again.assert_not_called()
+
+    def test_a_box_missing_an_archived_field_is_fetched_whole(self):
+        import tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        from pipeline.cbb_public import espn_boxes
+        from pipeline.cbb_public.data import read, write
+        with tempfile.TemporaryDirectory() as scratch:
+            cache = Path(scratch)
+            game = self.archive(cache)
+            stale = read(cache / "401900001.json")
+            del stale["teams"]["1"]["halves"]
+            write(cache / "401900001.json", stale)
+            whole = {"fixture": ["2026-11-03", "1", "2", 70, 60], "teams": {}, "pressure": None}
+            with patch.object(espn_boxes, "fetch_box", return_value=whole) as fetched:
+                self.assertIs(espn_boxes.load_box(game, cache), whole)
+            self.assertEqual(fetched.call_count, 1)
