@@ -325,6 +325,9 @@ def starting_heights(games, roster):
     return size, [{"position": k, **summary(heights[k])} for k in ("G", "F", "C") if heights[k]]
 
 
+ROTATION_WINDOW = 5
+
+
 def add_box_context(context, box, games):
     """Publish alternate measured stats where possession tags or rotation lines are absent."""
     tactics = context["observed_tactics"]
@@ -348,6 +351,37 @@ def add_box_context(context, box, games):
                     "Min_pct": 100 * row["minutes"] / sample_minutes,
                     **{k: row[k] / row["G"] for k in ("Pts", "Reb", "Ast")},
                     "TS": 100 * row["Pts"] / (2 * attempts) if attempts else None})
+    # Recent rotation. A season minutes share misreads the player whose role
+    # has just changed - a starter back from injury, a freshman promoted, a
+    # senior dropped. Minutes are per team game in each window, not per game
+    # played, so a player who missed games carries the lower expectation he
+    # has earned. Facts only: no projection, no rating.
+    played = [(date, own) for date, _, own, _, _ in games if own.get("player_lines")]
+    if played:
+        window = played[-ROTATION_WINDOW:]
+
+        def totals(rows):
+            minutes, appearances, names = defaultdict(float), Counter(), {}
+            for _, own in rows:
+                for line in own["player_lines"]:
+                    minutes[line["athlete_id"]] += line["minutes"]
+                    appearances[line["athlete_id"]] += 1
+                    names[line["athlete_id"]] = line["Name"]
+            return minutes, appearances, names
+
+        season_minutes, season_games, names = totals(played)
+        recent_minutes, recent_games, _ = totals(window)
+        rotation = []
+        for pid, minutes in recent_minutes.items():
+            rotation.append({
+                "athlete_id": pid, "Name": names.get(pid),
+                "minutes_recent": minutes / len(window),
+                "minutes_season": season_minutes[pid] / len(played),
+                "games_recent": recent_games[pid], "games_season": season_games[pid]})
+        rotation.sort(key=lambda r: -r["minutes_recent"])
+        box["rotation"] = {"players": rotation, "window_games": len(window),
+                           "games": len(played), "source": START_SOURCE,
+                           "data_through": window[-1][0]}
     if not tactics.get("situations") or not tactics.get("restart_contexts"):
         for key in BOX_CONTEXT:
             pairs = [(own["box_context"][key], opp["box_context"][key])

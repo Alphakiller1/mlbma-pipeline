@@ -9748,15 +9748,30 @@ function seasonToggle(game) {
     var players=availability.available(game,side,useBox?box.players:c.players).sort(function(a,b){return (b.Min_pct||0)-(a.Min_pct||0);}).slice(0,12);
     var title=cbbSchool(game,side)+' Rotation';
     if (!players.length) return cbbPanel(title,cbbSeason(game),pending('No player lines are available for this matchup and season.'));
-    var rows=players.map(function(p){return [esc(String(p.Name||'').replace(/\s*\(\d+\).*$/,'')),cbbNumber(p.G,0),cbbNumber(p.Min_pct,0)].concat(['Pts','Reb','Ast','TS'].map(function(k){
+    // Minutes over the team's last five games, beside the season share. A
+    // season average misreads the player whose role just changed; the change
+    // is printed so the reader sees it without being told what it means.
+    var recent={},window=0;
+    (((box.rotation||{}).players)||[]).forEach(function(r){recent[String(r.athlete_id)]=r;});
+    window=(box.rotation||{}).window_games||0;
+    function recentCell(p){
+      var r=recent[String(p.athlete_id)];
+      if(!r||!window)return cbbMissing('Not reported');
+      var moved=r.minutes_season==null?null:r.minutes_recent-r.minutes_season;
+      return '<span class="ca-basketball-value">'+cbbNumber(r.minutes_recent,1)+'</span>'+
+        (moved==null||Math.abs(moved)<1?'':'<small class="ca-cbb-rot-move">'+(moved>0?'+':'−')+
+          cbbNumber(Math.abs(moved),1)+'</small>');
+    }
+    var rows=players.map(function(p){return [esc(String(p.Name||'').replace(/\s*\(\d+\).*$/,'')),cbbNumber(p.G,0),cbbNumber(p.Min_pct,0),recentCell(p)].concat(['Pts','Reb','Ast','TS'].map(function(k){
       if(p[k]==null)return cbbMissing(k==='TS'?'No attempts':'Not reported');
       // ESPN box lines publish TS only when the player shot (no FGA/FTA keys).
       var qualified=(p.G||0)>0&&(k!=='TS'||(p.FGA||0)+(p.FTA||0)>0||(p.FGA==null&&p.TS!=null));
       var text=cbbNumber(p[k])+(k==='TS'?'%':'');
       return qualified?cbbMetric(game,p[k],text,k,true,'player'):text;
     }));});
-    return cbbPanel(title,cbbSeason(game)+' · '+(useBox?'ESPN final boxes':'Basketball Quant')+' · per game · players listed out are removed',
-      cbbTable(['Player','GP','MIN%','PTS','REB','AST','TS%'],rows,'ca-cbb-rotation-table'));
+    return cbbPanel(title,cbbSeason(game)+' · '+(useBox?'ESPN final boxes':'Basketball Quant')+
+      ' · per game · minutes last '+(window||5)+' from ESPN boxes · players listed out are removed',
+      cbbTable(['Player','GP','MIN%','MIN last '+(window||5),'PTS','REB','AST','TS%'],rows,'ca-cbb-rotation-table'));
   }
   /* Each completed game's box line (pipeline/cbb_public/game_lines.py): every
      figure is coloured and placed among all D-I team-games that week, printed

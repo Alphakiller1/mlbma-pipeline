@@ -132,3 +132,55 @@ console.log(JSON.stringify(validateScoreBoard(raw,fallback,now)));
         self.assertFalse(bad["priced"])
         self.assertEqual(bad["edge_withheld_reason"], "Total moved to 152.5, toward the model.")
         self.assertNotIn("lean", plain)
+
+
+class RecentRotationTests(unittest.TestCase):
+    """Minutes over the team's last five games, beside the season rate."""
+
+    def games(self):
+        from collections import Counter  # noqa: F401  (documents the shape below)
+
+        def game(date, lines):
+            return (date, 200, {"player_lines": [
+                {"athlete_id": pid, "Name": name, "minutes": mins,
+                 "Pts": 0, "Reb": 0, "Ast": 0, "FGA": 0, "FTA": 0}
+                for pid, name, mins in lines], "box_context": {}, "poss": 70},
+                {"player_lines": [], "box_context": {}, "poss": 70}, 70)
+
+        # Eight games. The starter plays throughout; the freshman is promoted
+        # for the last five; the senior stops playing after the first three.
+        early = [("1", "Starter", 30), ("2", "Freshman", 6), ("3", "Senior", 24)]
+        late = [("1", "Starter", 30), ("2", "Freshman", 26)]
+        return ([game(f"2026-11-0{d}", early) for d in (1, 2, 3)] +
+                [game(f"2026-11-0{d}", late) for d in (4, 5, 6, 7, 8)])
+
+    def rotation(self):
+        from pipeline.cbb_public.espn_boxes import add_box_context
+        context = {"observed_tactics": {"situations": {"x": 1}, "restart_contexts": {"x": 1},
+                                        "personnel": [{"x": 1}]},
+                   "players": [{"G": 5}]}
+        box = {}
+        add_box_context(context, box, self.games())
+        return box["rotation"]
+
+    def test_recent_minutes_are_per_team_game_not_per_game_played(self):
+        rotation = self.rotation()
+        by_id = {r["athlete_id"]: r for r in rotation["players"]}
+        self.assertEqual(rotation["window_games"], 5)
+        self.assertEqual(rotation["games"], 8)
+        # The freshman played 26 in each of the last five.
+        self.assertAlmostEqual(by_id["2"]["minutes_recent"], 26.0)
+        # Season rate spreads his 3x6 + 5x26 across all eight games.
+        self.assertAlmostEqual(by_id["2"]["minutes_season"], (3 * 6 + 5 * 26) / 8)
+        self.assertEqual(by_id["2"]["games_recent"], 5)
+
+    def test_a_player_who_stopped_playing_leaves_the_recent_window(self):
+        by_id = {r["athlete_id"]: r for r in self.rotation()["players"]}
+        # The senior appears in no recent game, so he carries no recent minutes
+        # at all rather than a stale season average.
+        self.assertNotIn("3", by_id)
+        self.assertAlmostEqual(by_id["1"]["minutes_recent"], 30.0)
+
+    def test_players_are_ordered_by_the_minutes_they_are_playing_now(self):
+        order = [r["athlete_id"] for r in self.rotation()["players"]]
+        self.assertEqual(order, ["1", "2"])

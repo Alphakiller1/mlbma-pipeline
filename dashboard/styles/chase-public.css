@@ -6185,6 +6185,9 @@ body[data-sport="nfl"] .ca-detail-nav {
 .ca-cbb-summary strong{color:var(--text-primary);font-variant-numeric:tabular-nums}
 .ca-cbb-count{display:block;color:var(--grade,var(--text-muted));font-size:12px;margin-top:2px}
 .ca-basketball-value{color:var(--grade,var(--text-primary));font-weight:700;font-variant-numeric:tabular-nums}
+/* Rotation: how far a player's last-five minutes sit from his season rate.
+   Neutral by design - a minutes change is a fact, not a verdict on the team. */
+.ca-cbb-rot-move{margin-left:.35rem;color:var(--text-secondary);font-weight:600;font-variant-numeric:tabular-nums}
 .ca-cbb-controls>.ca-basketball-legend{flex-basis:100%;margin:0}
 .ca-cbb-court-title{margin:0 0 var(--space-2);font-size:var(--type-meta,13px);line-height:1.4;color:var(--text-secondary);text-align:center}
 .ca-basketball-legend{display:flex;flex-wrap:wrap;gap:var(--space-3);font-size:12px;line-height:1.5;color:var(--text-muted);margin:var(--space-3) 0;text-transform:none}
