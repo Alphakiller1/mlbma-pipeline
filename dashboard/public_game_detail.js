@@ -5315,6 +5315,8 @@ function seasonToggle(game) {
     ['Shells', ['cover_0', 'cover_1', 'cover_2', 'cover_2_man', 'cover_3', 'cover_4', 'cover_6']]
   ];
   var NFL_REC_FLOOR = 3;
+  // Mirrors TRACKING_FLOOR in outputs/nfl_public_context.py.
+  var NFL_TRACK_FLOOR = 20;
   /* What "success" means against a look, one stat at a time (owner
      2026-10-01: WR success against specific coverages and schemes). Success
      is nflfastR's: the target gained the offense positive EPA. */
@@ -5322,6 +5324,104 @@ function seasonToggle(game) {
     ['yards_per_target', 'Yds/Tgt', 'yds'], ['success_rate', 'Success%', 'pct'],
     ['catch_rate', 'Catch%', 'pct'], ['epa_per_target', 'EPA/Tgt', 'epa']
   ];
+
+  /* ---- how a receiver is actually covered (NGS + PFR charting) ----
+     outputs/nfl_advanced_context.py `_ngs_receiving` / `_pfr_receiving`.
+
+     The coverage matrix below is charted man/zone data, which publishes a
+     season late, so on an in-season page it is LAST year's. These are this
+     season: how far off a defender lines up (cushion), the daylight at the
+     catch point (separation), and what the receiver does with the ball.
+
+     Season figures, not per-coverage ones, so they sit in their own block
+     rather than as rows of the coverage table -- a cushion printed under a
+     "Cover 3" heading would claim a split nobody measured. */
+  var NFL_TRACK_GROUPS = [
+    ['Coverage Faced', [
+      ['avg_cushion', 'Cushion', 'yds'],
+      ['avg_separation', 'Separation', 'yds'],
+      ['adot', 'aDOT', 'yds'],
+      ['share_of_intended_air_yards', 'Air Yds Share', 'pct']
+    ]],
+    ['With The Ball', [
+      ['yards_before_catch_per_rec', 'YBC/Rec', 'yds'],
+      ['yards_after_catch_per_rec', 'YAC/Rec', 'yds'],
+      ['yac_above_expectation', 'YAC vs Exp', 'plus'],
+      ['broken_tackles', 'Broken Tkl', 'int']
+    ]],
+    ['Reliability', [
+      ['drop_rate', 'Drop%', 'pct'],
+      ['passer_rating_when_targeted', 'Rating Tgtd', 'num1']
+    ]]
+  ];
+
+  function nflTrackText(value, kind) {
+    var v = Number(value);
+    if (!isFinite(v)) return '—';
+    if (kind === 'pct') return pctText(v);
+    if (kind === 'int') return String(Math.round(v));
+    if (kind === 'num1') return v.toFixed(1);
+    if (kind === 'plus') return (v > 0 ? '+' : '') + v.toFixed(2);
+    return v.toFixed(2);
+  }
+
+  function nflReceiverTracking(leaders, byName, floor) {
+    // One column per receiver, the same three the coverage matrix shows.
+    var cols = leaders.map(function (k) {
+      var rows = byName[k] || [];
+      var withTracking = rows.filter(function (r) { return r && r.tracking; })[0];
+      return { profile: rows[0], tracking: (withTracking || {}).tracking || null };
+    });
+    if (!cols.some(function (c) { return c.tracking; })) return '';
+    var body = '';
+    NFL_TRACK_GROUPS.forEach(function (group) {
+      var present = group[1].filter(function (metric) {
+        return cols.some(function (c) { return c.tracking && c.tracking[metric[0]] != null; });
+      });
+      if (!present.length) return;
+      body += '<tr class="ca-split-group"><th colspan="' + (cols.length + 1) +
+        '" scope="colgroup">' + esc(group[0]) + '</th></tr>';
+      present.forEach(function (metric) {
+        var cells = cols.map(function (c) {
+          var tracking = c.tracking;
+          if (!tracking || tracking[metric[0]] == null) {
+            return '<td class="num is-low-cell" title="Not published for this receiver">' +
+              '—</td>';
+          }
+          // Under the pipeline target floor the figure is printed with its
+          // sample instead of ranked: `_grade_tracking` leaves it ungraded.
+          var rank = (tracking.league_ranks || {})[metric[0]];
+          var targets = Number(tracking.targets);
+          var thin = !rank;
+          var hint = esc(metric[1]) + ' · ' + (isFinite(targets) ? targets + ' targets' : 'targets unknown') +
+            (rank ? ' · ' + rank.place + ordinal(rank.place) + ' of ' + rank.of : '') +
+            (thin ? ' · under ' + floor + ' targets, not graded' : '');
+          return '<td class="num' + (rank ? ' ' + rankTone(rank.place, rank.of) : ' is-low-cell') +
+            '" title="' + esc(hint) + '">' +
+            esc(nflTrackText(tracking[metric[0]], metric[2])) +
+            (rank ? nflBadge(rank, 'qualified ' + ((c.profile || {}).position || '') + 's')
+              : '<span class="ca-rank is-sample">' + (isFinite(targets) ? esc(targets) + ' tgt' : 'thin') +
+                '</span>') + '</td>';
+        }).join('');
+        body += '<tr><td>' + esc(metric[1]) + '</td>' + cells + '</tr>';
+      });
+    });
+    if (!body) return '';
+    var heads = cols.map(function (c) {
+      var profile = c.profile || {};
+      return '<th class="num">' + esc(nflSurname(profile.player_name)) + ' ' +
+        '<span class="ca-lineup-player__position">' + esc(profile.position) + '</span></th>';
+    }).join('');
+    var season = cols.reduce(function (best, c) {
+      var year = c.tracking && Number(c.tracking.season);
+      return isFinite(year) && year > best ? year : best;
+    }, 0);
+    return '<div class="ca-split-block"><h4>' +
+      esc('How They Are Covered' + (season ? ' · ' + season : '')) + '</h4>' +
+      '<div class="ca-lineup-scroll"><table class="ca-lineup-table ca-split-table ca-nfl-split">' +
+      '<thead><tr><th>Tracking</th>' + heads + '</tr></thead><tbody>' + body +
+      '</tbody></table></div></div>';
+  }
 
   // "Marvin Mims Jr." -> "Mims": a generational suffix is never the surname.
   function nflSurname(name) {
@@ -5434,7 +5534,9 @@ function seasonToggle(game) {
       return '<div class="ca-rec-metric"><div class="ca-rec-metric__bar" role="group" ' +
         'aria-label="Receiver stat">' + buttons + '</div>' + views + '</div>';
     }
-    return nflSeasonViews(
+    // Tracking sits above the season tabs: it is this season either way, and
+    // it is the only current-season read on the coverage the tabs describe.
+    return nflReceiverTracking(leaders, byName, NFL_TRACK_FLOOR) + nflSeasonViews(
       switchable(combinedCols, allSeasons.join(' + '), oppScheme),
       switchable(currentCols, String(now), game[oppSide + '_scheme_current'] || {}));
   }
