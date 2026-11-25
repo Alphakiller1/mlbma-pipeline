@@ -9787,11 +9787,18 @@ function seasonToggle(game) {
       var n=p.zones.reduce(function(a,z){return a+(zones.indexOf(z.zone)>=0?z.attempts:0);},0);
       return 100*n/zoned;
     }
+    /* The figure always shows; what changes under the pool floor is that it
+       carries no rank and says so, the way a thin possession sample does in
+       Possession Starts. Hiding it left most of the table reading Low n in
+       November, when a rotation player has taken a dozen shots in a zone. */
     function finish(p,zones,key){
       var a=p.zones.reduce(function(s,z){return s+(zones.indexOf(z.zone)>=0?z.attempts:0);},0);
       var m=p.zones.reduce(function(s,z){return s+(zones.indexOf(z.zone)>=0?z.made:0);},0);
-      if(a<CBB_ZONE_FLOOR)return cbbMissing(a?'Low n':'No attempts');
-      return cbbMetric(game,100*m/a,cbbNumber(100*m/a)+'%',key,true,'player');
+      if(!a)return cbbMissing('No attempts');
+      var low=a<CBB_ZONE_FLOOR;
+      var text=low?'<span class="ca-basketball-value c-na">'+cbbNumber(100*m/a)+'%</span>'
+        :cbbMetric(game,100*m/a,cbbNumber(100*m/a)+'%',key,true,'player');
+      return text+'<small class="ca-cbb-count'+(low?' is-low':'')+'">'+a+' att'+(low?' · Low n':'')+'</small>';
     }
     var rows=players.map(function(p){
       return [esc(String(p.Name||'').replace(/\s*\(\d+\).*$/,'')),cbbNumber(p.fga,0)]
@@ -10067,8 +10074,16 @@ function seasonToggle(game) {
       var display = cbbNumber(n) + (global.ChaseIcons ? ChaseIcons.observedPace(n, peers, 'D-I teams on the same method',
         cbbPlural(games,'game')+' · '+team.source) : '');
       var spot = cbbPlace(n, peers, true);
+      /* The two rows rank in different pools: every D-I team has a season
+         pace, but only a team with six games has a last-five. In November
+         that is 169 teams against 365, so a bare "103rd" above a bare
+         "145th" reads as the faster of the two when it is the slower. The
+         pool is printed with the sample so the rows cannot be read as one
+         scale. */
+      var note = cbbPlural(games,'game') + (spot ? ' · of ' + spot.of + ' teams' : '');
       return cbbRanked('<span class="ca-basketball-value '+(spot?rankTone(spot.rank,spot.of):'c-na')+'">'+display+'</span>', spot,
-        'same-season D-I teams · fastest first · '+team.source);
+        'same-season D-I teams · fastest first · '+team.source) +
+        '<small class="ca-cbb-count">'+note+'</small>';
     }
     var rows=[['Season pace',cell(away,false),cell(home,false)]];
     if(away.games>5||home.games>5)rows.push(['Last 5 pace',cell(away,true),cell(home,true)]);
@@ -10299,7 +10314,7 @@ function seasonToggle(game) {
         powerPanel(cbbSchool(game,'away')+' vs '+cbbSchool(game,'home')+' Power Ranking',
           [[cbbSchool(game,'away'),cbbAdjusted(game,'away')],[cbbSchool(game,'home'),cbbAdjusted(game,'home')]],
           {cohort:'D-I teams',digits:1,first:'School',units:'Points per 100 possessions'},true))+
-      part('cbb-pace','Pace','Possessions Per 40 Minutes · Overtime Normalized',cbbPace(game))+
+      part('cbb-pace','Pace','Possessions Per 40 Minutes · Both Teams · Overtime Normalized',cbbPace(game))+
       part('cbb-efficiency','Efficiency','Each Offense Against The Defense It Meets',nflDuo(cbbEfficiency,sport,game))+
       part('cbb-sos','Strength Of Schedule','D-I Opponents Played · Opponent-Adjusted Ratings',cbbSos(game))+
       part('cbb-predictability','Predictability','How Often Each Offense Lands Off The D-I Curve',
