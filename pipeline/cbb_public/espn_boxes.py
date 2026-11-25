@@ -126,6 +126,9 @@ SECOND_CHANCE_ZONES = (("rim", {"atr2"}), ("paint", {"paint2"}), ("three", {"c3"
 BETWEEN_MISS_AND_REBOUND = ("Block Shot", "Substitution")
 
 
+EMPTY_SECOND_CHANCE = {"misses": {}, "orb": {}, "second_chance_points": 0, "chances": 0}
+
+
 def second_chances(payload, teams):
     """Per team: field-goal misses by zone, how many it rebounded itself, and
     the points it scored before the possession ended after those rebounds.
@@ -134,7 +137,7 @@ def second_chances(payload, teams):
     them. Second-chance points are counted once per possession however many
     offensive rebounds it takes, so a scramble is one chance, not three."""
     plays = payload.get("plays") or []
-    out = {team: {"misses": {}, "orb": {}, "second_chance_points": 0, "chances": 0} for team in teams}
+    out = {team: EMPTY_SECOND_CHANCE.copy() | {"misses": {}, "orb": {}} for team in teams}
 
     def is_rebound(play):
         kind = (play.get("type") or {}).get("text") or ""
@@ -336,21 +339,47 @@ def parse_box(payload, game):
     return result
 
 
-def load_box(game, cache):
-    file = cache / (str(game["game_id"]) + ".json")
-    if file.exists():
-        cached = read(file)
-        if cached.get("fixture") == fixture_key(game) and "pressure" in cached and all(
-            "player_lines" in row and "box_context" in row and "stl" in row and "kinds" in row and "classes" in row
-            and "halves" in row and "player_shots" in row and "second_chance" in row
-            for row in cached["teams"].values()
-        ):
-            return cached
+# What a cached box must already hold to stand on its own, and what a later
+# release added to it. The cache is not only a speed cache: it is this season's
+# archive of each feed as it read on the day, and the figures already published
+# were measured from it. So a box that is only missing the added fields is
+# topped up with them and keeps everything else it holds - re-deriving the lot
+# from a feed ESPN has since revised moves published figures under a reader (it
+# dropped a game under the backcourt-pressure threshold on 2026-11-25, and the
+# publication guard rightly refused the whole run).
+ARCHIVED_BOX_FIELDS = ("player_lines", "box_context", "stl", "kinds", "classes", "halves")
+ADDED_BOX_FIELDS = ("player_shots", "second_chance")
+
+
+def fetch_box(game):
     response = requests.get(BOX_URL, params={"event": game["game_id"]}, timeout=15)
     response.raise_for_status()
-    value = parse_box(response.json(), game)
-    write(file, value)
-    return value
+    return parse_box(response.json(), game)
+
+
+def load_box(game, cache):
+    file = cache / (str(game["game_id"]) + ".json")
+    cached = read(file) if file.exists() else None
+    if not (cached and cached.get("fixture") == fixture_key(game) and "pressure" in cached
+            and all(field in row for row in cached["teams"].values() for field in ARCHIVED_BOX_FIELDS)):
+        value = fetch_box(game)
+        write(file, value)
+        return value
+    if all(field in row for row in cached["teams"].values() for field in ADDED_BOX_FIELDS):
+        return cached
+    try:
+        fresh = fetch_box(game)
+    except (requests.RequestException, ValueError, KeyError, TypeError, IndexError) as error:
+        # The archive is worth more than the added fields. Mark them empty so
+        # the game is not re-fetched every run, and say so once.
+        print(f"ESPN final {game['game_id']} kept from the archive without the added fields: {error}")
+        fresh = None
+    for team, row in cached["teams"].items():
+        for field in ADDED_BOX_FIELDS:
+            row[field] = (fresh["teams"][team][field] if fresh and team in fresh["teams"]
+                          else ({} if field == "player_shots" else EMPTY_SECOND_CHANCE.copy()))
+    write(file, cached)
+    return cached
 
 
 def events(team):
