@@ -9800,11 +9800,10 @@ function seasonToggle(game) {
           return v==null?cbbMissing('Not charted'):'<span class="ca-basketball-value">'+cbbNumber(v,0)+'%</span>';
         }))
         .concat([finish(p,['atr2'],'rim_fg'),finish(p,['c3','atb3'],'three_fg'),
-          p.assisted_share==null?cbbMissing('No makes'):'<span class="ca-basketball-value">'+cbbNumber(100*p.assisted_share,0)+'%</span>',
-          cbbNumber(p.assists,0)]);
+          p.assisted_share==null?cbbMissing('No makes'):'<span class="ca-basketball-value">'+cbbNumber(100*p.assisted_share,0)+'%</span>']);
     });
     return cbbPanel(title,cbbSeason(game)+' · '+block.games+' charted games · each share is of his located attempts · players listed out are removed',
-      cbbTable(['Player','FGA','Rim','Paint','3PT','Rim FG%','3P%','Created','AST'],rows,'ca-cbb-rotation-table'));
+      cbbTable(['Player','FGA','Rim','Paint','3PT','Rim FG%','3P%','Created'],rows,'ca-cbb-rotation-table'));
   }
   function cbbRotation(sport,game,side) {
     if (game.cbb_availability_pending) return pending('Checking the current availability report…');
@@ -10309,7 +10308,7 @@ function seasonToggle(game) {
       part('cbb-halves','First And Second Half','Each Offense Against The Defense It Meets, Half By Half · Pace',
         nflDuo(cbbHalves,sport,game))+
       part('cbb-shot-chart','Shot Chart','Zone Shooting Against The Defense It Meets',cbbChartControls(game)+nflDuo(cbbShotPanel,sport,game))+
-      part('cbb-player-shots','Shot Creation','Where Each Player Shoots, How He Finishes, Who Creates It',nflDuo(cbbPlayerShots,sport,game))+
+      part('cbb-player-shots','Shot Creation','Where Each Player Shoots, How He Finishes, How Much Is Created For Him',nflDuo(cbbPlayerShots,sport,game))+
       part('cbb-transition','Transition And Turnovers','Every D-I Game · Each Offense Against The Defense It Meets',nflDuo(cbbTransition,sport,game))+
       part('cbb-situations','Transition And Half Court','Possession-Tagged Efficiency',nflDuo(cbbSituations,sport,game))+
       part('cbb-restarts','Possession Starts','Efficiency By How The Possession Began',nflDuo(cbbRestarts,sport,game))+
