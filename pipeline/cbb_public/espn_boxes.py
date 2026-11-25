@@ -521,29 +521,15 @@ def starting_heights(games, roster):
 ROTATION_WINDOW = 5
 
 
-def add_box_context(context, box, games):
-    """Publish alternate measured stats where possession tags or rotation lines are absent."""
-    tactics = context["observed_tactics"]
-    if not any(p.get("G") for p in context["players"]):
-        players = {}
-        sample_minutes = 0
-        for _, minutes, own, _, _ in games:
-            if not own["player_lines"]:
-                continue
-            sample_minutes += minutes
-            for row in own["player_lines"]:
-                count = players.setdefault(row["athlete_id"], Counter())
-                count.update({k: row[k] for k in ("minutes", "Pts", "Reb", "Ast", "FGA", "FTA")})
-                count.update({"G": 1})
-                count["Name"] = row["Name"]
-        if players:
-            box["players"] = []
-            for pid, row in players.items():
-                attempts = row["FGA"] + .475 * row["FTA"]
-                box["players"].append({"athlete_id": pid, "Name": row["Name"], "G": row["G"],
-                    "Min_pct": 100 * row["minutes"] / sample_minutes,
-                    **{k: row[k] / row["G"] for k in ("Pts", "Reb", "Ast")},
-                    "TS": 100 * row["Pts"] / (2 * attempts) if attempts else None})
+def add_player_context(box, games):
+    """Rotation and shot profile for every team, not only the teams whose
+    primary source is missing.
+
+    These read the ESPN box lines and play feed, which every D-I team has, so
+    they belong beside box pace rather than in the fallback that fills a team
+    with no counted source. Published as official_box.rotation and
+    official_box.player_shots.
+    """
     # Recent rotation. A season minutes share misreads the player whose role
     # has just changed - a starter back from injury, a freshman promoted, a
     # senior dropped. Minutes are per team game in each window, not per game
@@ -606,6 +592,30 @@ def add_box_context(context, box, games):
         rows.sort(key=lambda r: -r["fga"])
         box["player_shots"] = {"players": rows, "games": len(played), "source": START_SOURCE,
                                "data_through": played[-1][0]}
+
+def add_box_context(context, box, games):
+    """Publish alternate measured stats where possession tags or rotation lines are absent."""
+    tactics = context["observed_tactics"]
+    if not any(p.get("G") for p in context["players"]):
+        players = {}
+        sample_minutes = 0
+        for _, minutes, own, _, _ in games:
+            if not own["player_lines"]:
+                continue
+            sample_minutes += minutes
+            for row in own["player_lines"]:
+                count = players.setdefault(row["athlete_id"], Counter())
+                count.update({k: row[k] for k in ("minutes", "Pts", "Reb", "Ast", "FGA", "FTA")})
+                count.update({"G": 1})
+                count["Name"] = row["Name"]
+        if players:
+            box["players"] = []
+            for pid, row in players.items():
+                attempts = row["FGA"] + .475 * row["FTA"]
+                box["players"].append({"athlete_id": pid, "Name": row["Name"], "G": row["G"],
+                    "Min_pct": 100 * row["minutes"] / sample_minutes,
+                    **{k: row[k] / row["G"] for k in ("Pts", "Reb", "Ast")},
+                    "TS": 100 * row["Pts"] / (2 * attempts) if attempts else None})
     if not tactics.get("situations") or not tactics.get("restart_contexts"):
         for key in BOX_CONTEXT:
             pairs = [(own["box_context"][key], opp["box_context"][key])
@@ -754,6 +764,9 @@ def supplement(contexts, schedule, year, as_of, cache, *, season_through=None, r
         box = {"source": BOX_SOURCE, "data_through": measured[-1][0], "games": len(measured),
                "pace": box_pace(measured)}
         filled["box pace"] += 1
+        add_player_context(box, measured)
+        filled["rotation"] += bool(box.get("rotation"))
+        filled["shot profile"] += bool(box.get("player_shots"))
         if team in fill:
             fill_context(context, box, measured, team, year, filled)
         if refresh_rates and "rates" not in box:
