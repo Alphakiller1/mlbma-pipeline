@@ -463,3 +463,52 @@ class NflPublicContextTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ReceiverTrackingPublicTest(unittest.TestCase):
+    """Tracking crosses the public boundary allowlisted, and graded."""
+
+    def _board(self):
+        def profile(pid, name, team, sep, cushion, targets):
+            return {
+                "player_id": pid, "player_name": name, "team": team, "position": "WR",
+                "source_season": 2026,
+                "splits": {"all": {"targets": targets, "receptions": 20,
+                                   "receiving_yards": 260, "catch_rate": 0.62,
+                                   "yards_per_target": 8.1, "epa_per_target": 0.12}},
+                "tracking": {"targets": targets, "avg_separation": sep,
+                             "avg_cushion": cushion, "drop_rate": 0.03,
+                             "passer_rating_when_targeted": 101.2,
+                             "producer_only_key": "must not cross"},
+            }
+        return {"player_coverage_profiles": [
+            profile("a", "A One", "KC", 3.4, 7.8, 60),
+            profile("b", "B Two", "BUF", 2.6, 5.1, 55),
+            # Under the target floor: present, but not placed in the pool.
+            profile("c", "C Three", "NYJ", 9.9, 1.0, 4),
+        ]}
+
+    def test_unlisted_producer_keys_do_not_cross(self):
+        out = ctx.player_coverage(self._board())
+        self.assertNotIn("producer_only_key", out["KC"][0]["tracking"])
+        self.assertEqual(out["KC"][0]["tracking"]["avg_separation"], 3.4)
+
+    def test_cushion_is_graded_low_is_better(self):
+        """A defender lining up tight is respect. Ranking cushion the other way
+        would print the league's least feared receivers as its best."""
+        out = ctx.player_coverage(self._board())
+        kc = out["KC"][0]["tracking"]["league_ranks"]
+        buf = out["BUF"][0]["tracking"]["league_ranks"]
+        # KC has the MORE separation (better) and the LARGER cushion (worse).
+        self.assertEqual(kc["avg_separation"]["place"], 1)
+        self.assertEqual(buf["avg_separation"]["place"], 2)
+        self.assertEqual(kc["avg_cushion"]["place"], 2)
+        self.assertEqual(buf["avg_cushion"]["place"], 1)
+
+    def test_a_thin_sample_is_printed_but_not_ranked(self):
+        out = ctx.player_coverage(self._board())
+        thin = out["NYJ"][0]["tracking"]
+        self.assertEqual(thin["avg_separation"], 9.9)
+        self.assertNotIn("league_ranks", thin)
+        # ...and it did not enter anyone else's pool.
+        self.assertEqual(out["KC"][0]["tracking"]["league_ranks"]["avg_separation"]["of"], 2)

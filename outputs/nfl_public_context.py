@@ -399,6 +399,24 @@ PLAYER_COVERAGE_FIELDS = (
     "targets", "receptions", "receiving_yards", "touchdowns", "catch_rate",
     "yards_per_target", "epa_per_target", "success_rate",
 )
+# Named for receivers specifically: `PLAYER_TRACKING_FIELDS` below is already
+# taken by the quarterback/back allowlist, and defining a second constant under
+# that name silently lost to the later one -- the comprehension found none of
+# its keys and every tracking block was dropped at this boundary.
+# Tracking travels on the profile, not inside a split: NGS cushion and
+# separation are season figures, not per-coverage ones, and printing them under
+# a coverage heading would claim a split that was never measured. Allowlisted
+# field by field, like every other boundary here -- a blanket passthrough is how
+# an unvalidated producer key reaches the page.
+RECEIVER_TRACKING_FIELDS = (
+    "season", "week", "targets",
+    "avg_cushion", "avg_separation", "avg_intended_air_yards",
+    "share_of_intended_air_yards", "avg_yac", "avg_expected_yac",
+    "yac_above_expectation",
+    "yards_before_catch_per_rec", "yards_after_catch_per_rec", "adot",
+    "broken_tackles", "drops", "drop_rate", "passer_rating_when_targeted",
+    "league_ranks",
+)
 
 
 def player_coverage(board: dict) -> dict[str, list[dict]]:
@@ -422,13 +440,20 @@ def player_coverage(board: dict) -> dict[str, list[dict]]:
             splits.append({"coverage": coverage, **stats})
         if not splits:
             continue
-        out.setdefault(team, []).append({
+        profile = {
             "player_id": str(row.get("player_id") or ""),
             "player_name": name,
             "position": position,
             "source_season": int(season),
             "splits": splits,
-        })
+        }
+        tracking_in = row.get("tracking")
+        if isinstance(tracking_in, dict):
+            tracking = {key: tracking_in[key] for key in RECEIVER_TRACKING_FIELDS
+                        if tracking_in.get(key) is not None}
+            if tracking:
+                profile["tracking"] = tracking
+        out.setdefault(team, []).append(profile)
     # Grade each rate against players at the same position, in the same season
     # and coverage. A split needs three targets (twenty for the all-coverage
     # summary) before it enters a pool; volume itself is not graded as quality.
@@ -475,7 +500,69 @@ def player_coverage(board: dict) -> dict[str, list[dict]]:
                             split.setdefault("league_ranks", {})[metric] = {
                                 "place": ranks[identity], "of": len(pool)
                             }
+    _grade_tracking(rows)
     return out
+
+
+# Which way is better for each tracking figure, and the direction is the point.
+# Separation, YAC over expected, aDOT and the rating a quarterback earns
+# throwing to a receiver are all "high is better". **Cushion is not**: a
+# defender who lines up tight is respecting the receiver, and a big cushion is
+# a receiver being given room because he is not feared. Dropping balls is
+# worse. Grading cushion "high is better" would have printed the league's least
+# respected receivers as its best covered.
+TRACKING_DIRECTION = {
+    "avg_separation": "high",
+    "yac_above_expectation": "high",
+    "adot": "high",
+    "passer_rating_when_targeted": "high",
+    "yards_before_catch_per_rec": "high",
+    "yards_after_catch_per_rec": "high",
+    "share_of_intended_air_yards": "high",
+    "avg_cushion": "low",
+    "drop_rate": "low",
+}
+# A tracking figure is a season rate, so it needs a season's worth of targets
+# behind it before it is placed among the league.
+TRACKING_FLOOR = 20
+
+
+def _grade_tracking(rows: list[dict]) -> None:
+    """Place each receiver's tracking figures among players at his position.
+
+    Pooled by position and source season, exactly as the coverage splits are.
+    A figure under the target floor is left ungraded rather than ranked on a
+    handful of targets -- the page prints it with its sample instead.
+    """
+    for position in ("RB", "WR", "TE"):
+        seasons = {profile["source_season"] for profile in rows
+                   if profile["position"] == position and profile.get("tracking")}
+        for season in seasons:
+            for metric, better in TRACKING_DIRECTION.items():
+                pool = []
+                for profile in rows:
+                    if (profile["position"] != position
+                            or profile["source_season"] != season):
+                        continue
+                    tracking = profile.get("tracking") or {}
+                    if (tracking.get(metric) is None
+                            or float(tracking.get("targets") or 0) < TRACKING_FLOOR):
+                        continue
+                    pool.append((profile["player_id"] or profile["player_name"],
+                                 float(tracking[metric])))
+                if len(pool) < 2:
+                    continue
+                ranks = _ranked(pool, better)
+                for profile in rows:
+                    if (profile["position"] != position
+                            or profile["source_season"] != season):
+                        continue
+                    identity = profile["player_id"] or profile["player_name"]
+                    tracking = profile.get("tracking")
+                    if tracking is not None and identity in ranks:
+                        tracking.setdefault("league_ranks", {})[metric] = {
+                            "place": ranks[identity], "of": len(pool)
+                        }
 
 
 PLAYER_SCHEME_SPLITS = {

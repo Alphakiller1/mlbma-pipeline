@@ -33,6 +33,22 @@ NGS_PASSING_URL = (
     "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/"
     "ngs_passing.parquet"
 )
+# Cushion and separation are the closest thing to a free read on how a receiver
+# is *treated*: a defender lined up tight with little separation at the catch
+# point is man-leaning coverage, a soft cushion is zone. The charted man/zone
+# tag only exists for the prior season (2026 participation is still 404), so
+# these are the current-season signal that the coverage splits cannot be.
+NGS_RECEIVING_URL = (
+    "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/"
+    "ngs_receiving.parquet"
+)
+# The SEASON file, not the weekly one: `advstats_week_rec_{season}` carries only
+# drops, broken tackles and passer rating. Yards before/after the catch and
+# aDOT -- the parts that describe how a receiver is used -- are season-only.
+PFR_RECEIVING_URL = (
+    "https://github.com/nflverse/nflverse-data/releases/download/pfr_advstats/"
+    "advstats_season_rec.parquet"
+)
 PFR_RUSHING_URL = (
     "https://github.com/nflverse/nflverse-data/releases/download/pfr_advstats/"
     "advstats_week_rush_{season}.parquet"
@@ -47,6 +63,9 @@ PBP_COLUMNS = (
     "yards_gained", "tackled_for_loss", "fumble_forced", "fumble_lost",
     "down", "ydstogo", "yardline_100", "run_location", "run_gap",
     "qb_kneel", "qb_scramble", "first_down_rush", "touchdown", "qb_spike", "two_point_attempt",
+    # Depth of target, so a quarterback's aDOT can be read per coverage look
+    # rather than only as a season figure.
+    "air_yards",
 )
 
 
@@ -68,6 +87,9 @@ def _joined(season: int, participation: bool):
         "nflverse_game_id", "nflverse_play_id", "n_defense_box",
         "n_blitzers", "n_pass_rushers", "date_pulled",
         "is_play_action", "is_motion",
+        # Charted quarterback behaviour, available in the CURRENT season: did he
+        # leave the pocket, and was the throw one a defender should have had.
+        "is_qb_out_of_pocket", "is_interception_worthy",
     ))
     if ftn is not None:
         ftn = ftn.rename(columns={
@@ -78,6 +100,10 @@ def _joined(season: int, participation: bool):
         part = _frame(PARTICIPATION_URL.format(season=season), (
             "nflverse_game_id", "play_id", "defenders_in_box", "defense_personnel",
             "was_pressure", "defense_man_zone_type", "defense_coverage_type",
+            # Tracking, so time to throw reads per coverage look. Like the
+            # coverage tags themselves this is prior-season only until the
+            # participation file publishes.
+            "time_to_throw",
         ))
         if part is not None:
             part = part.rename(columns={"nflverse_game_id": "game_id"})
@@ -197,6 +223,91 @@ def _ngs_passing(season: int) -> dict[str, dict[str, Any]]:
     return out
 
 
+def _ngs_receiving(season: int) -> dict[str, dict[str, Any]]:
+    """Latest cumulative regular-season NGS receiving row per pass catcher.
+
+    `avg_cushion` is how far off the defender lines up, `avg_separation` is the
+    yards of daylight at the catch point, and `avg_yac_above_expectation` is
+    what the receiver added over what the tracking model expected from that
+    catch. Together they describe the coverage a receiver actually faces, in the
+    current season, which the charted man/zone splits cannot do until the
+    participation file publishes months later.
+    """
+    frame = _frame(NGS_RECEIVING_URL, (
+        "season", "season_type", "week", "player_position", "player_gsis_id", "targets",
+        "avg_cushion", "avg_separation", "avg_intended_air_yards",
+        "percent_share_of_intended_air_yards", "avg_yac_above_expectation",
+        "avg_expected_yac", "avg_yac",
+    ))
+    if frame is None:
+        return {}
+    frame = frame[frame["season"].eq(season) & frame["season_type"].eq("REG") &
+                  frame["player_position"].isin(["WR", "TE", "RB", "FB"])].copy()
+    frame = _season_rows(frame)
+    out: dict[str, dict[str, Any]] = {}
+    for row in frame.to_dict("records"):
+        player_id = str(row.get("player_gsis_id") or "")
+        targets = _finite(row.get("targets")) or 0
+        separation = _finite(row.get("avg_separation"))
+        if not player_id or targets <= 0 or separation is None:
+            continue
+        def rounded(key: str, places: int = 2):
+            value = _finite(row.get(key))
+            return None if value is None else round(value, places)
+        out[player_id] = {
+            "season": season,
+            "week": int(row.get("week") or 0),
+            "targets": int(targets),
+            "avg_cushion": rounded("avg_cushion"),
+            "avg_separation": round(separation, 2),
+            "avg_intended_air_yards": rounded("avg_intended_air_yards"),
+            # NGS publishes this as a percentage (18.4 = 18.4% of the team's
+            # intended air yards), so it is stored as a rate like every other
+            # share on the desk.
+            "share_of_intended_air_yards": (
+                None if rounded("percent_share_of_intended_air_yards", 4) is None
+                else round(rounded("percent_share_of_intended_air_yards", 4) / 100, 4)),
+            "avg_yac": rounded("avg_yac"),
+            "avg_expected_yac": rounded("avg_expected_yac"),
+            "yac_above_expectation": rounded("avg_yac_above_expectation"),
+            "source": "NFL Next Gen Stats via nflverse",
+        }
+    return out
+
+
+def _pfr_receiving(season: int) -> dict[str, dict[str, Any]]:
+    """PFR charted receiving: before/after contact, aDOT, drops, and the
+    passer rating a quarterback earns when throwing to this receiver."""
+    frame = _frame(PFR_RECEIVING_URL, (
+        "season", "pfr_id", "player", "tm", "pos", "g", "tgt", "rec", "yds",
+        "ybc_r", "yac_r", "adot", "brk_tkl", "drop", "drop_percent", "rat",
+    ))
+    if frame is None:
+        return {}
+    frame = frame[frame["season"].eq(season)].copy()
+    out: dict[str, dict[str, Any]] = {}
+    for row in frame.to_dict("records"):
+        targets = _finite(row.get("tgt")) or 0
+        if targets <= 0:
+            continue
+        def rounded(key: str, places: int = 2):
+            value = _finite(row.get(key))
+            return None if value is None else round(value, places)
+        out[_bare_name(str(row.get("player") or ""))] = {
+            "targets": int(targets),
+            "yards_before_catch_per_rec": rounded("ybc_r"),
+            "yards_after_catch_per_rec": rounded("yac_r"),
+            "adot": rounded("adot"),
+            "broken_tackles": int(_finite(row.get("brk_tkl")) or 0),
+            "drops": int(_finite(row.get("drop")) or 0),
+            # Already a rate in this file (0.028), unlike NGS's percentages.
+            "drop_rate": rounded("drop_percent", 4),
+            "passer_rating_when_targeted": rounded("rat", 1),
+            "source": "Pro Football Reference advanced receiving via nflverse",
+        }
+    return out
+
+
 def _pfr_rushing(season: int, rb_names: set[str]):
     frame = _frame(PFR_RUSHING_URL.format(season=season), (
         "season", "week", "game_type", "team", "opponent", "pfr_player_name",
@@ -227,7 +338,7 @@ def _player_stats(rows, position: str) -> dict[str, Any] | None:
         if not dropbacks:
             return None
         completions = int(rows["complete_pass"].fillna(0).sum())
-        return {
+        out = {
             "dropbacks": dropbacks,
             "attempts": attempts,
             "completions": completions,
@@ -242,6 +353,31 @@ def _player_stats(rows, position: str) -> dict[str, Any] | None:
             "epa_per_dropback": round(float(rows["epa"].fillna(0).sum()) / dropbacks, 4),
             "success_rate": round(float(rows["success"].fillna(0).mean()), 4),
         }
+        # How he played the look, not just how well. A coverage split that
+        # reports only volume, completion rate and EPA cannot say whether a
+        # quarterback solved Cover 1 by throwing shallow and fast or by holding
+        # the ball and winning downfield -- and that is the thing a matchup
+        # page is for. Each of these is omitted when its source column is
+        # absent, never defaulted: a missing time-to-throw is not a quick one.
+        if "sack" in rows:
+            out["sack_rate"] = _safe_ratio(float(rows["sack"].fillna(0).sum()), dropbacks)
+        if "qb_scramble" in rows:
+            out["scramble_rate"] = _safe_ratio(
+                float(rows["qb_scramble"].fillna(0).sum()), dropbacks)
+        for column, key in (("air_yards", "adot"),
+                            ("time_to_throw", "avg_time_to_throw")):
+            if column in rows:
+                values = rows[column].dropna()
+                if len(values):
+                    out[key] = round(float(values.mean()), 2)
+        for column, key in (("is_qb_out_of_pocket", "out_of_pocket_rate"),
+                            ("is_interception_worthy", "interception_worthy_rate")):
+            if column in rows:
+                known = rows[column].notna()
+                if int(known.sum()):
+                    out[key] = round(
+                        float(rows.loc[known, column].fillna(False).astype(bool).mean()), 4)
+        return out
     carries = int(rows["rush_attempt"].fillna(0).sum())
     if not carries:
         return None
@@ -282,13 +418,20 @@ def _receiver_stats(rows) -> dict[str, Any] | None:
 
 
 def _receiver_profiles(frame, season: int, names: dict[str, str],
-                       positions: dict[str, str]) -> list[dict]:
+                       positions: dict[str, str],
+                       ngs_receiving: dict[str, dict[str, Any]] | None = None,
+                       pfr_receiving: dict[str, dict[str, Any]] | None = None) -> list[dict]:
     """WR / TE / RB targets split by the defense's coverage, shell and rush.
 
     A target is a pass attempt with a named receiver (sacks and throwaways
     have none). Coverage, shell and pressure exist only where the season's
     participation data is joined; the current season carries its charted
     blitz and box looks until that data publishes.
+
+    ``tracking`` carries the current season's NGS cushion and separation and
+    PFR's charted before/after-contact split. Those are the only current-season
+    read on the coverage a receiver faces: the charted man/zone tag lags a full
+    season, so without them the splits beside it are last year's.
     """
     if "receiver_player_id" not in frame:
         return []
@@ -307,11 +450,23 @@ def _receiver_profiles(frame, season: int, names: dict[str, str],
             continue
         fallback = (str(rows["receiver_player_name"].dropna().iloc[0])
                     if rows["receiver_player_name"].notna().any() else str(player_id))
-        profiles.append({
+        profile = {
             "player_id": str(player_id), "player_name": names.get(str(player_id), fallback),
             "team": _team(team), "position": position, "source_season": season,
             "splits": splits,
-        })
+        }
+        tracking: dict[str, Any] = {}
+        if ngs_receiving and str(player_id) in ngs_receiving:
+            tracking.update(ngs_receiving[str(player_id)])
+        if pfr_receiving:
+            # PFR keys on its own player ids, so the join is by bare name, the
+            # same way `_player_profiles` joins quarterback pressure.
+            charted = pfr_receiving.get(_bare_name(profile["player_name"]))
+            if charted:
+                tracking.update(charted)
+        if tracking:
+            profile["tracking"] = tracking
+        profiles.append(profile)
     return profiles
 
 
@@ -1067,6 +1222,8 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
     ngs_passing = _ngs_passing(season)
     qb_pressure = pfr_pressure(season).get("qbs") or {}
     pfr_rushing = _pfr_rushing(season, rb_names)
+    ngs_receiving = _ngs_receiving(season)
+    pfr_receiving = _pfr_receiving(season)
     # Participation (coverage, man/zone, pressure, personnel) is requested for
     # the current season too: it is not released mid-season today and the pull
     # fails soft to charting-only splits, but the day nflverse publishes it the
@@ -1078,7 +1235,8 @@ def build(season: int, player_stats: dict[str, list[dict]]) -> dict:
     if current is not None:
         profiles.extend(_player_profiles(
             current, season, names, positions, ngs_rushing, ngs_passing, qb_pressure))
-        receivers.extend(_receiver_profiles(current, season, names, positions))
+        receivers.extend(_receiver_profiles(
+            current, season, names, positions, ngs_receiving, pfr_receiving))
         _credit_offense_coverage(profiles, current, season)
     if prior is not None:
         profiles.extend(_player_profiles(prior, season - 1, names, positions))

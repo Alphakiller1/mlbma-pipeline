@@ -76,3 +76,99 @@ class ReceiverCoverageTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ReceiverTrackingTest(unittest.TestCase):
+    """NGS cushion/separation and PFR charted receiving attach to the profile.
+
+    These are the only CURRENT-season read on the coverage a receiver faces:
+    the charted man/zone tag ships a season late (2026 participation is still
+    404), so the splits beside them are the prior year's.
+    """
+
+    def setUp(self):
+        if pd is None:
+            self.skipTest("pandas is required")
+
+    def test_tracking_joins_by_gsis_and_by_bare_name(self):
+        ngs = {"wr1": {"avg_cushion": 6.1, "avg_separation": 2.8,
+                       "yac_above_expectation": 0.7, "targets": 42}}
+        # PFR keys on its own ids, so the join is by bare name -- and the name
+        # on the profile carries a suffix the PFR spelling does not.
+        pfr = {"areceiver": {"adot": 11.4, "yards_before_catch_per_rec": 8.2,
+                             "yards_after_catch_per_rec": 3.2, "drop_rate": 0.031,
+                             "passer_rating_when_targeted": 104.8, "targets": 42}}
+        profiles = adv._receiver_profiles(
+            _plays(), 2026, {"wr1": "A.Receiver Jr."}, {"wr1": "WR"},
+            ngs, pfr)
+        self.assertEqual(len(profiles), 1)
+        tracking = profiles[0]["tracking"]
+        self.assertEqual(tracking["avg_separation"], 2.8)
+        self.assertEqual(tracking["adot"], 11.4)
+        self.assertEqual(tracking["passer_rating_when_targeted"], 104.8)
+
+    def test_a_profile_without_tracking_omits_the_key(self):
+        """A missing tracking row must not become a zeroed one: an absent
+        cushion is not a receiver pressed at the line."""
+        profiles = adv._receiver_profiles(
+            _plays(), 2026, {"wr1": "A.Receiver"}, {"wr1": "WR"}, {}, {})
+        self.assertNotIn("tracking", profiles[0])
+
+    def test_prior_season_profiles_carry_no_current_tracking(self):
+        """The prior-season split window must not be labelled with this
+        season's cushion and separation."""
+        ngs = {"wr1": {"avg_separation": 2.8, "targets": 42}}
+        profiles = adv._receiver_profiles(
+            _plays(), 2025, {"wr1": "A.Receiver"}, {"wr1": "WR"})
+        self.assertNotIn("tracking", profiles[0])
+        self.assertTrue(ngs)
+
+
+class QuarterbackLookDepthTest(unittest.TestCase):
+    """A coverage split must say HOW the look was played, not only how well."""
+
+    def setUp(self):
+        if pd is None:
+            self.skipTest("pandas is required")
+
+    def _qb_plays(self):
+        rows = []
+        for i, (air, ttt, pocket, worthy, sack, scramble) in enumerate([
+            (12.0, 2.7, False, False, 0, 0),
+            (4.0, 2.1, True, False, 0, 1),
+            (18.0, 3.4, False, True, 0, 0),
+            (None, 3.9, True, False, 1, 0),
+        ]):
+            rows.append({
+                "game_id": "g1", "play_id": i, "posteam": "BUF", "defteam": "KC",
+                "passer_player_id": "qb1", "passer_player_name": "A.Passer",
+                "qb_dropback": 1, "pass_attempt": 0 if sack else 1,
+                "complete_pass": 0, "passing_yards": 0, "pass_touchdown": 0,
+                "interception": 0, "sack": sack, "qb_scramble": scramble,
+                "epa": 0.1, "success": 1, "air_yards": air, "time_to_throw": ttt,
+                "is_qb_out_of_pocket": pocket, "is_interception_worthy": worthy,
+            })
+        return pd.DataFrame(rows)
+
+    def test_look_stats_carry_depth_speed_and_pocket(self):
+        stats = adv._player_stats(self._qb_plays(), "QB")
+        self.assertEqual(stats["dropbacks"], 4)
+        self.assertEqual(stats["attempts"], 3)        # the sack is not an attempt
+        self.assertEqual(stats["sack_rate"], 0.25)
+        self.assertEqual(stats["scramble_rate"], 0.25)
+        # aDOT averages the thrown balls only; the sack has no air yards.
+        self.assertAlmostEqual(stats["adot"], 11.33, places=2)
+        self.assertAlmostEqual(stats["avg_time_to_throw"], 3.03, places=2)
+        self.assertEqual(stats["out_of_pocket_rate"], 0.5)
+        self.assertEqual(stats["interception_worthy_rate"], 0.25)
+
+    def test_absent_columns_are_omitted_not_zeroed(self):
+        """A season with no participation file has no time to throw. Reporting
+        0.0 there would read as the fastest release in the league."""
+        frame = self._qb_plays().drop(
+            columns=["time_to_throw", "is_qb_out_of_pocket", "is_interception_worthy"])
+        stats = adv._player_stats(frame, "QB")
+        self.assertNotIn("avg_time_to_throw", stats)
+        self.assertNotIn("out_of_pocket_rate", stats)
+        self.assertNotIn("interception_worthy_rate", stats)
+        self.assertIn("adot", stats)
