@@ -20,11 +20,30 @@ from __future__ import annotations
 import json
 import re
 import sys
+import time
 from pathlib import Path
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import Error as PlaywrightError, sync_playwright
 
 ROOT = Path(__file__).resolve().parent.parent
+
+# Same guard as scripts/public_site_runtime_diag.py: wrangler's dev server
+# drops a connection now and then, and a dropped connection is not a finding
+# about the site. Kept local rather than imported, because this runs as a
+# script and a broken import in a deploy gate is the problem, not the cure.
+TRANSIENT_READ = ("ECONNRESET", "ECONNREFUSED", "EPIPE", "socket hang up",
+                  "Connection closed", "connection was reset")
+
+
+def fetch(page, url: str, attempts: int = 4, **options):
+    for attempt in range(attempts):
+        try:
+            return page.request.get(url, **options)
+        except PlaywrightError as error:
+            if attempt == attempts - 1 or not any(t in str(error) for t in TRANSIENT_READ):
+                raise
+            time.sleep(0.4 * (attempt + 1))
+
 SPEC = json.loads((ROOT / "design" / "public_metric_classification.json")
                   .read_text(encoding="utf-8"))
 PRIVATE_CLASSES = {n for n, m in SPEC["classes"].items() if not m["public"]}
@@ -149,11 +168,11 @@ def main(argv: list[str]) -> int:
             page.remove_listener("request", on_request)
 
         # Past results are not a public destination.
-        retired = page.request.get(f"{base}/mlb/results.html", max_redirects=0)
+        retired = fetch(page, f"{base}/mlb/results.html", max_redirects=0)
         check("mlb: retired section redirects home", retired.status == 301 and retired.headers.get("location") == "/",
               f"status={retired.status}, destination={retired.headers.get('location')}")
         for sport in ("cbb", "nfl", "wnba", "cfb"):
-            status = page.request.get(f"{base}/{sport}/results.html").status
+            status = fetch(page, f"{base}/{sport}/results.html").status
             check(f"{sport}: results route is gone", status == 404, f"status={status}")
 
         # Model Center is public and loads its read-only board directly. It must
