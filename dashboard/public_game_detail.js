@@ -5355,6 +5355,12 @@ function seasonToggle(game) {
     ]]
   ];
 
+  function nflTrackNum(value) {
+    if (value == null) return null;
+    var v = Number(value);
+    return isFinite(v) ? v : null;
+  }
+
   function nflTrackText(value, kind) {
     var v = Number(value);
     if (!isFinite(v)) return '—';
@@ -5376,7 +5382,7 @@ function seasonToggle(game) {
     var body = '';
     NFL_TRACK_GROUPS.forEach(function (group) {
       var present = group[1].filter(function (metric) {
-        return cols.some(function (c) { return c.tracking && c.tracking[metric[0]] != null; });
+        return cols.some(function (c) { return c.tracking && nflTrackNum(c.tracking[metric[0]]) != null; });
       });
       if (!present.length) return;
       body += '<tr class="ca-split-group"><th colspan="' + (cols.length + 1) +
@@ -5384,9 +5390,22 @@ function seasonToggle(game) {
       present.forEach(function (metric) {
         var cells = cols.map(function (c) {
           var tracking = c.tracking;
-          if (!tracking || tracking[metric[0]] == null) {
-            return '<td class="num is-low-cell" title="Not published for this receiver">' +
-              '—</td>';
+          // Finiteness, not just presence: `nflTrackText` falls back to an em
+          // dash for anything non-numeric, and a dash cell fails the desk's
+          // no-empty-cells contract. A bad value is unavailable, not a dash.
+          if (!tracking || nflTrackNum(tracking[metric[0]]) == null) {
+            // Never a bare em dash. The desk forbids empty cells outright
+            // ("NFL desk has no empty (dash) cells" in the runtime diag), and
+            // an unavailable figure carries a neutral sample pill the way the
+            // coverage matrix below does -- the target count when the player is
+            // charted at all, and "not charted" when NGS and PFR have no row
+            // for him.
+            var seen = tracking && Number(tracking.targets);
+            return '<td class="num is-low-cell" title="' +
+              esc(metric[1] + ' is not published for this receiver') + '">' +
+              '<span class="ca-rank is-sample">' +
+              (isFinite(seen) && seen > 0 ? esc(seen) + ' tgt' : 'not charted') +
+              '</span></td>';
           }
           // Under the pipeline target floor the figure is printed with its
           // sample instead of ranked: `_grade_tracking` leaves it ungraded.

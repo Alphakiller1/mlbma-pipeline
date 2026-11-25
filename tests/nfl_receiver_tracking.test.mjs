@@ -41,7 +41,7 @@ function render(cols, floor = 20) {
     nflSurname: name => String(name || '').split(/\s+/).pop(),
   });
   vm.runInContext(
-    [constant('NFL_TRACK_GROUPS'), declaration('nflTrackText'),
+    [constant('NFL_TRACK_GROUPS'), declaration('nflTrackNum'), declaration('nflTrackText'),
       declaration('nflReceiverTracking')].join('\n'),
     sandbox);
   const leaders = cols.map((_, i) => `k${i}`);
@@ -97,11 +97,31 @@ test('an ungraded figure is printed with its sample, never bare', () => {
   assert.doesNotMatch(html, /data-place=/);
 });
 
-test('a receiver with no tracking row gets an em dash, not a zero', () => {
+test('an unavailable figure never renders a bare dash cell', () => {
+  // The desk forbids empty cells: `public_site_runtime_diag.py` fails on any
+  // visible cell whose text is exactly an em dash, and the first version of
+  // this render shipped four of them and broke the deploy. A test asserting
+  // the dash is a test of the wrong contract.
   const html = render([GRADED, NONE]);
-  assert.match(html, /Not published for this receiver/);
-  assert.match(html, /—/);
+  assert.match(html, /is not published for this receiver/);
+  assert.match(html, /ca-rank is-sample">not charted</);
+  assert.doesNotMatch(html, />—</);
   assert.doesNotMatch(html, />0\.00</);
+});
+
+test('a charted receiver missing one metric shows his sample, not "not charted"', () => {
+  // Two columns: a row only renders when SOME column publishes the metric, so
+  // the unavailable cell needs a neighbour that has it.
+  const partial = {
+    player_name: 'G Partial', position: 'WR',
+    tracking: { season: 2026, targets: 31, avg_separation: 2.9,
+      league_ranks: { avg_separation: { place: 44, of: 86 } } },
+  };
+  const html = render([GRADED, partial]);
+  // GRADED publishes drop_rate, partial does not, so partial's cell carries
+  // his target count rather than claiming he is uncharted.
+  assert.match(html, /ca-rank is-sample">31 tgt</);
+  assert.doesNotMatch(html, />—</);
 });
 
 test('the block disappears entirely when nobody has tracking', () => {
@@ -134,9 +154,30 @@ test('tracking is read from whichever season window published it', () => {
       nflBadge: r => `<b data-place="${r.place}"></b>`,
       nflSurname: n => String(n || '').split(/\s+/).pop(),
     });
-    vm.runInContext([constant('NFL_TRACK_GROUPS'), declaration('nflTrackText'),
+    vm.runInContext([constant('NFL_TRACK_GROUPS'), declaration('nflTrackNum'), declaration('nflTrackText'),
       declaration('nflReceiverTracking')].join('\n'), ctx);
     return vm.runInContext('nflReceiverTracking', ctx)(['k0'], sandbox, 20);
   })();
   assert.match(html, /data-place="3"/);
+});
+
+test('a non-numeric tracking value is unavailable, not a dash', () => {
+  // `nflTrackText` falls back to an em dash for anything non-numeric, and a
+  // dash cell fails the desk contract. The guard checks finiteness, so a
+  // malformed value can never reach that fallback from the table.
+  const broken = {
+    player_name: 'H Broken', position: 'WR',
+    tracking: { season: 2026, targets: 44, avg_separation: 'n/a', avg_cushion: NaN },
+  };
+  const html = render([GRADED, broken]);
+  assert.doesNotMatch(html, />—</);
+  assert.match(html, /ca-rank is-sample">44 tgt</);
+});
+
+test('a group whose only values are malformed is omitted, not rendered empty', () => {
+  const broken = {
+    player_name: 'I Broken', position: 'WR',
+    tracking: { season: 2026, targets: 44, drop_rate: 'oops' },
+  };
+  assert.equal(render([broken]), '');
 });
