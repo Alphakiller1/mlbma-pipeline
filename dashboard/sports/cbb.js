@@ -144,12 +144,10 @@
       return true;
     }).catch(function () { return false; });
     return Promise.all([covered(2027,'away'),covered(2027,'home'),covered(2026,'away'),covered(2026,'home'),
-      json(ROOT+'tagged-schemes-2026.json').catch(function(){return null;}),
-      json(ROOT+'film-coverage.json').catch(function(){return null;})]).then(function (items) {
+      json(ROOT+'tagged-schemes-2026.json').catch(function(){return null;})]).then(function (items) {
       game.away_cbb = items[0]; game.home_cbb = items[1];
       game.away_cbb_prior = items[2]; game.home_cbb_prior = items[3];
       game.cbb_tagged_schemes = items[4];
-      game.cbb_film_coverage = items[5];
       game.cbbDetailReady = true;
       return game;
     });

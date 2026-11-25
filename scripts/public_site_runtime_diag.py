@@ -47,12 +47,6 @@ NFL_GRADING_AUDIT = r"""
     if (!sec) return;
     sec.querySelectorAll('td.num, .ca-stat__value').forEach(el => {
       if (el.closest('[hidden]')) return;
-      // Reviewed coverage plays (#209) list single plays - what happened and
-      // that play's EPA - from a film review. A play is a result, as a W/L is
-      // in UNPILLED_AUDIT: there is no pool to grade or rank it against.
-      // 2026-11-24: first met when GB (in the GB @ NE review) led the board,
-      // and it held every deploy for 13 hours.
-      if (el.closest('table.ca-film-table')) return;
       const text = el.innerText.trim();
       if (!text || text === '—' || !/\d/.test(text)) return;
       checked++;

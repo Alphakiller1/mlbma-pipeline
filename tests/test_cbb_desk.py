@@ -147,7 +147,7 @@ class CbbMatchupLayoutTests(unittest.TestCase):
             self.assertIn(key,json.loads((ROOT/'data/public/cbb/2027/teams/150.json').read_text(encoding='utf-8'))['rates'])
 
     def test_pressure_covers_every_team_and_ranks_like_the_desk(self):
-        # Measured pressure is the section's base; Synergy and film tags join it.
+        # Measured pressure is the section's base; Synergy tags join it.
         self.assertIn("var coverage = (pressed ? nflDuo(cbbPressure,sport,game) : '') + tags;",self.block)
         teams=list((ROOT/'data/public/cbb/2026/teams').glob('*.json'))
         measured=[json.loads(f.read_text(encoding='utf-8')).get('pressure') for f in teams]

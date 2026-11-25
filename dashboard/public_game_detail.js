@@ -8897,7 +8897,7 @@ function seasonToggle(game) {
       section('nba-play-types', 'Play Types Against The Defense', 'Usage, Points Per Possession And Possessions Per Game',
         nflDuo(nbaPlayTypePanel, sport, game)),
       section('nba-coverage', 'Measured Coverage', 'Zone And Non-Zone Usage And Points Per Possession',
-        nflDuo(nbaCoveragePanel, sport, game) + filmCoverageCards('nba', game, game.__nbaYear || game.season)),
+        nflDuo(nbaCoveragePanel, sport, game)),
       section('nba-databallr', 'Databallr Shot Zones', 'FG% And Shot Share By Databallr Zone',
         nflDuo(nbaDataballrPanel, sport, game)),
       section('nba-defenders', 'Closest Defender By Zone', 'Opponent FG% Against Each Defender, Relative To The Shooter’s Norm',
@@ -9399,68 +9399,6 @@ function seasonToggle(game) {
   /* CBB panels carry a title and their table only: the owner removed the
      caption line beneath titles (2026-11-11). Callers still pass one. */
   function cbbPanel(title,caption,body) { return deskPanel(title,'',body); }
-  function filmEvidenceLink(label, url) {
-    return /^https:\/\//i.test(url || '') ? '<a href="'+esc(url)+'">'+esc(label)+'</a>' : '';
-  }
-  function nflFilmCoverage(game) {
-    var archive = game.nfl_film_coverage;
-    var kickoff = String(game.kickoff_utc || '');
-    var season = Number(kickoff.slice(0,4)) - (Number(kickoff.slice(5,7)) <= 2 ? 1 : 0);
-    var teams = [String(game.away),String(game.home)];
-    return (archive && archive.film_samples || []).filter(function (sample) {
-      return sample.season === season && [sample.away.team_id,sample.home.team_id].some(function (id) { return teams.indexOf(id) !== -1; });
-    }).map(function (sample) {
-      var rows = sample.film_plays.map(function (play) {
-        var other = play.side === 'away' ? 'home' : 'away';
-        var epa = (play.play_epa >= 0 ? '+' : '') + play.play_epa.toFixed(2);
-        return ['<strong>'+esc(play.kind)+'</strong><br><small>'+esc(sample[play.side].team_id+' O vs '+sample[other].team_id+' D · Q'+play.period+' '+play.game_clock)+'</small>',
-          esc(play.result), '<span class="ca-basketball-value">'+epa+'</span>'];
-      });
-      return deskPanel('Reviewed coverage plays: '+sample.away.team_name+' at '+sample.home.team_name,
-        'Week '+sample.week+' · '+sample.game_date+' · '+rows.length+(rows.length===1?' example':' examples'),
-        cbbTable(['Coverage','Result','Offense EPA'],rows,'ca-nba-evidence-table ca-film-table')+
-        '<p class="ca-cbb-note ca-cbb-cite">'+
-        filmEvidenceLink('Patriots film review',sample.film_url)+' · '+filmEvidenceLink('Play-by-play',sample.results_url)+
-        ' · <a href="/data/public/nfl/film-coverage.json">Charted plays</a></p>');
-    }).join('');
-  }
-  function filmCoverageCards(sport, game, season) {
-    var archive = game[sport + '_film_coverage'];
-    var teams = [String(game.away), String(game.home)];
-    var labels = {man:'Man-to-man',zone:'Zone',press:'Backcourt press',drop:'Drop',switch:'Switch',blitz:'Blitz',unclassified:'Unclassified'};
-    var seasonSamples = (archive && archive.film_samples || []).filter(function (sample) {
-      return Number(sample.season) === Number(season);
-    });
-    var relevant = seasonSamples.filter(function (sample) {
-      return [sample.away.team_id,sample.home.team_id].some(function (id) { return teams.indexOf(id) !== -1; });
-    });
-    var cards = relevant.sort(function (a,b) {
-      return Number(b.game_id === String(game.id)) - Number(a.game_id === String(game.id)) || b.game_date.localeCompare(a.game_date);
-    }).map(function (sample) {
-      var rows = [];
-      ['away','home'].forEach(function (side) {
-        var other = side === 'away' ? 'home' : 'away';
-        var plays = sample.film_possessions.filter(function (play) { return play.side === side; });
-        Object.keys(labels).forEach(function (kind) {
-          var tagged = plays.filter(function (play) { return kind === 'press' ? play.press_observed === true : play.kind === kind; });
-          if (!tagged.length) return;
-          var points = tagged.reduce(function (total, play) { return total + play.points; },0);
-          rows.push(['<strong>'+esc(labels[kind])+'</strong><br><small>'+esc(sample[side].team_name+' O vs '+sample[other].team_name+' D')+'</small>',
-            '<span class="ca-basketball-value ca-film-volume">'+tagged.length+'</span>',
-            kind === 'unclassified' ? '—' : '<span class="ca-basketball-value">'+points+'</span>',
-            kind === 'unclassified' ? '—' : '<span class="ca-basketball-value">'+(points/tagged.length).toFixed(2)+'</span>']);
-        });
-      });
-      if (!rows.length) return '';
-      var title = (sport === 'nba' ? 'Reviewed ball screens: ' : 'Reviewed defense: ')+sample.away.team_name+' at '+sample.home.team_name;
-      var caption = sample.game_date+' · '+sample.film_scope+' · '+sample.film_possessions.length+' reviewed';
-      return (sport === 'cbb' ? cbbPanel : deskPanel)(title, caption, cbbTable(['Coverage','Poss','Pts','PPP'],rows,'ca-nba-evidence-table ca-film-table')+
-        '<p class="ca-cbb-note ca-cbb-cite">'+
-        filmEvidenceLink(sample.film_source,sample.film_url)+' · '+filmEvidenceLink('Play-by-play',sample.results_url)+
-        ' · <a href="/data/public/'+sport+'/film-coverage.json">Charted possessions</a></p>');
-    }).join('');
-    return cards;
-  }
   function cbbControls(game) {
     return '<div class="ca-analysis-scope ca-cbb-controls" aria-label="CBB evidence controls"><div><span class="ca-lineup-context">Evidence window</span><strong class="ca-cbb-control-title">Choose the season in view</strong></div>'+cbbOptions('season',[['2027','2026–27'],['2026','2025–26']],String(cbbYear(game)))+
       global.ChaseCbbCharts.metricLegend()+cbbThroughLine(game)+'</div>';
@@ -10289,10 +10227,10 @@ function seasonToggle(game) {
       return section(id,title,note,game.cbbDetailReady||id==='cbb-availability' ? body : pending('Loading matchup evidence…'));
     }
     // Pressure is measured from every D-I game's play-by-play. Man and zone
-    // tags exist only in charted film or Synergy's published tournament sample
-    // (no free feed tags them, and the box-score fingerprint failed against
-    // Synergy, r = -0.09), so they join only where such a sample covers a team.
-    var tags = filmCoverageCards('cbb',game,cbbYear(game)) || (cbbYear(game) === 2026 && cbbTagged(game) ? nflDuo(cbbTaggedCoverage,sport,game) : '');
+    // tags exist only in Synergy's published tournament sample (no free feed
+    // tags them, and the box-score fingerprint failed against Synergy,
+    // r = -0.09), so they join only where that sample covers a team.
+    var tags = cbbYear(game) === 2026 && cbbTagged(game) ? nflDuo(cbbTaggedCoverage,sport,game) : '';
     var pressed = ['away','home'].some(function (s) { var t = cbbTeam(game,s); return t && t.pressure; });
     var coverage = (pressed ? nflDuo(cbbPressure,sport,game) : '') + tags;
     return part('cbb-power','Power Ranking','Opponent-Adjusted, Luck-Adjusted · Per 100 Possessions · D-I Games',
@@ -10987,11 +10925,7 @@ function seasonToggle(game) {
         });
         var status=host.querySelector('.ca-detail-facts .ca-detail-fact:last-child strong');if(status)status.textContent=gameStatus(game);
       });
-      return ((sport === 'cbb' || sport === 'nba' || sport === 'nfl') && adapter.detail ? adapter.detail(game) : Promise.resolve(game)).then(function () {
-      if (sport === 'nfl') {
-        var coverageBody=host.querySelector('[data-body="coverage"]');
-        if(coverageBody) coverageBody.insertAdjacentHTML('beforeend',nflFilmCoverage(game));
-      }
+      return ((sport === 'cbb' || sport === 'nba') && adapter.detail ? adapter.detail(game) : Promise.resolve(game)).then(function () {
       if (sport === 'nba') repaintNba(host,game);
       if (sport === 'cbb') {
         function repaintCbbEvidence() {

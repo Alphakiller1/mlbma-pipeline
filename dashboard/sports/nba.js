@@ -253,12 +253,11 @@
   function detail(game) {
     var stats = game.nba_fixture_only && game.slate_date !== easternToday() ? Promise.resolve(null)
       : evidence().catch(function () { game.__nbaEvidenceError = true; return null; });
-    return Promise.all([stats, loadJson('/data/public/nba/film-coverage.json').catch(function () { return null; })]).then(function (items) {
-      if (items[0]) {
-        game.__nbaEvidence = items[0];
+    return stats.then(function (evidence) {
+      if (evidence) {
+        game.__nbaEvidence = evidence;
         selectSeason(game, game.__nbaYear || game.season);
       }
-      game.nba_film_coverage = items[1];
       return game;
     });
   }
