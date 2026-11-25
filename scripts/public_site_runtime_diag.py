@@ -5,12 +5,13 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import time
 import urllib.parse
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import Error as PlaywrightError, sync_playwright
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -119,13 +120,35 @@ REGRESSION_AUDIT = r"""(id) => {
 ENDED_STATE = '.ca-empty-state[data-empty="ended"]'
 
 
+# wrangler's dev server drops a connection now and then under this crawl's
+# load. One reset reading the CFB slate failed the whole deploy on
+# 2026-11-25 - on a file the change had not touched - and the site stayed on
+# the previous build until the job was re-run by hand. A dropped connection
+# is not a finding about the site, so read it again before calling it one.
+TRANSIENT_READ = ("ECONNRESET", "ECONNREFUSED", "EPIPE", "socket hang up",
+                  "Connection closed", "connection was reset")
+
+
+def fetch(page, url: str, attempts: int = 4):
+    """GET through the browser's request context, retrying a dropped local
+    connection. Anything else raises on the first try, so a real failure is
+    still a failure."""
+    for attempt in range(attempts):
+        try:
+            return page.request.get(url)
+        except PlaywrightError as error:
+            if attempt == attempts - 1 or not any(t in str(error) for t in TRANSIENT_READ):
+                raise
+            time.sleep(0.4 * (attempt + 1))
+
+
 def slate_text(page, base_url: str, sport: str, attempts: int = 3) -> str:
     """A published slate's text, read whole. The CFB slate runs to ~10 MB and
     the local server cut one read short (2026-11-21, a deploy failed on a
     JSON decode error at 9.8 MB of an intact file): read it again."""
     url = f"{base_url.rstrip('/')}/data/public/{sport}/slate.json"
     for attempt in range(attempts):
-        text = page.request.get(url).text()
+        text = fetch(page, url).text()
         try:
             json.loads(text)
             return text
@@ -142,7 +165,7 @@ def first_detail_url(page, base_url: str, sport: str) -> str:
     link = page.locator(".ca-matchup-card__detail-link").first
     if page.locator(".ca-matchup-card__detail-link").count():
         return link.get_attribute("href") or ""
-    games = page.request.get(f"{base_url.rstrip('/')}/data/public/{sport}/slate.json").json().get("games") or []
+    games = fetch(page, f"{base_url.rstrip('/')}/data/public/{sport}/slate.json").json().get("games") or []
     return f"/{sport}/matchup.html?game={urllib.parse.quote(str(games[0]['id']))}" if games else ""
 
 
@@ -359,14 +382,14 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         # published source, not the launch day's frozen shot totals.
         cbb_counts = {}
         for year in (2026, 2027):
-            a = page.request.get(base_url.rstrip('/') + f'/data/public/cbb/{year}/teams/127.json').json()
-            h = page.request.get(base_url.rstrip('/') + f'/data/public/cbb/{year}/teams/150.json').json()
+            a = fetch(page, base_url.rstrip('/') + f'/data/public/cbb/{year}/teams/127.json').json()
+            h = fetch(page, base_url.rstrip('/') + f'/data/public/cbb/{year}/teams/150.json').json()
             schema = 'coordinates'  # every matchup reads Chase zones so every zone ranks
             total = h['shots'][schema]['offense']['totals']
             cbb_counts[year] = f"{total['made']}/{total['attempts']}"
         page.goto(base_url.rstrip("/") + "/cbb/matchup.html?game=401909564#shooting", wait_until="domcontentloaded", timeout=timeout_ms)
         page.wait_for_selector("#cbb-shot-chart .ca-cbb-court", timeout=timeout_ms)
-        cbb_watch = all((page.request.get(base_url.rstrip('/') + f'/data/public/cbb/2027/teams/{t}.json').json()
+        cbb_watch = all((fetch(page, base_url.rstrip('/') + f'/data/public/cbb/2027/teams/{t}.json').json()
                          .get('regression') or {}).get('margin') for t in (127, 150))
         cbb_regression = page.evaluate(REGRESSION_AUDIT, "cbb-regression")
         check("CBB Regression Watch reads margin, luck by source and close games, and reconciles",
@@ -394,7 +417,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.wait_for_timeout(1500)
         cbb_pills = page.evaluate(UNPILLED_AUDIT)
         # 2026-11-19: first- and second-half figures and pace, where the export publishes them.
-        halves_published = '"h1_ppp_o":0' in page.request.get(
+        halves_published = '"h1_ppp_o":0' in fetch(page, 
             base_url.rstrip('/') + '/data/public/cbb/2027/teams/150.json').text().replace(' ', '')
         halves_text = page.locator("#cbb-halves").inner_text().lower()
         check("CBB halves set each offense against the defense, half by half, with pace, where published",
@@ -412,7 +435,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         check("CBB shot types print no untracked cells",
               "not tracked" not in page.locator("#cbb-shot-types").inner_text().lower())
         # Shot quality (pipeline/cbb_public/shot_quality.py), once the export publishes it.
-        quality_published = '"pefg_o_all":0' in page.request.get(
+        quality_published = '"pefg_o_all":0' in fetch(page, 
             base_url.rstrip('/') + '/data/public/cbb/2027/teams/150.json').text().replace(' ', '')
         efficiency_text = page.locator("#cbb-efficiency").inner_text().lower()
         check("CBB efficiency carries xeFG and predicted eFG where published",
@@ -426,7 +449,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
         page.wait_for_selector("#cbb-game-log .ca-cbb-log-table", timeout=timeout_ms)
         final_rows = []
         for team in ("52", "50"):
-            context_data = page.request.get(f"{base_url.rstrip('/')}/data/public/cbb/2027/teams/{team}.json").json()
+            context_data = fetch(page, f"{base_url.rstrip('/')}/data/public/cbb/2027/teams/{team}.json").json()
             stored = next(row for row in context_data["games"] if str(row["id"]) == "401909694")
             mark = "W" if stored["points"] > stored["opponent_points"] else "L"
             score = f"{mark} {stored['points']}–{stored['opponent_points']}"
@@ -435,7 +458,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
             final_rows.append(rows.count() == 1 and rows.first.locator("td").count() == 13 and
                               adjusted in rows.first.text_content())
         check("CBB finals retain both stored box scores and adjusted results", all(final_rows))
-        cbb_index = page.request.get(base_url.rstrip("/") + "/data/public/cbb/teams.json").json()["teams"]
+        cbb_index = fetch(page, base_url.rstrip("/") + "/data/public/cbb/teams.json").json()["teams"]
         team_count = sum("2027" in team["seasons"] for team in cbb_index.values())
         log_badges = page.locator("#cbb-game-log .ca-rank")
         invalid_ranks = log_badges.evaluate_all(TEAM_RANK_AUDIT, team_count)
@@ -443,7 +466,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               team_count > 1 and log_badges.count() > 0 and not invalid_ranks, str(invalid_ranks[:4]))
         page.unroute(rank_url)
 
-        nba = page.request.get(base_url.rstrip('/') + '/data/public/nba/slate.json').json()
+        nba = fetch(page, base_url.rstrip('/') + '/data/public/nba/slate.json').json()
         if nba.get('games'):
             fixture = nba['games'][0]
             page.goto(base_url.rstrip('/') + '/nba/matchup.html?game=' + str(fixture['id']) + '#defense',
@@ -465,7 +488,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                   nba_pills['graded'] > 100 and nba_pills['unpilled'] == 0, str(nba_pills))
             nba_dashes = page.evaluate(DASH_AUDIT)
             check('NBA desk has no dash cells', not nba_dashes, str(nba_dashes))
-            nba_power = page.request.get(base_url.rstrip('/') + '/data/public/nba/power.json').json()
+            nba_power = fetch(page, base_url.rstrip('/') + '/data/public/nba/power.json').json()
             nba_watch = all((nba_power.get('regression') or {}).get(fixture[s]) for s in ('away', 'home'))
             page.wait_for_function("() => !/is loading/i.test((document.getElementById('nba-regression') || {}).textContent || '')",
                                    timeout=timeout_ms)
@@ -523,7 +546,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
                 check("NBA phone shows readable player play-type columns", not unreadable, str(unreadable))
 
         for sport in ("cbb", "nfl", "cfb", "nba"):
-            response = page.request.get(f"{base_url.rstrip('/')}/{sport}/results.html")
+            response = fetch(page, f"{base_url.rstrip('/')}/{sport}/results.html")
             check(f"{sport.upper()} has no public results route", response.status == 404,
                   f"status={response.status}")
         context.close()
@@ -552,7 +575,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               ("nsi · net" in strength_text and "osi · offense" in strength_text and "dsi · defense" in strength_text
                and "home field" in strength_text and page.locator("#strength tbody .ca-rank").count() >= 26)
               or "not published" in strength_text, strength_text[:200])
-        nfl_slate_text = page.request.get(base_url.rstrip("/") + "/data/public/nfl/slate.json").text()
+        nfl_slate_text = fetch(page, base_url.rstrip("/") + "/data/public/nfl/slate.json").text()
         qb_published = '"qb_epa"' in nfl_slate_text
         # 2026-11-19: penalties by team and unit, their own tab; no longer in Situational.
         page.locator('a[data-nfl-tab="penalties"]').click()
@@ -587,7 +610,7 @@ def run(base_url: str, timeout_ms: int, channel: str = "") -> list[Result]:
               and log_cells["strips"] == 2 and log_cells["rows"] >= 4, str(log_cells))
         check("NFL game log grades every rate with a pill and no dash cells",
               log_cells["unpilled"] == 0 and log_cells["dashes"] == 0, str(log_cells))
-        nfl_logs = page.request.get(base_url.rstrip("/") + "/data/public/nfl/game_logs.json").json()
+        nfl_logs = fetch(page, base_url.rstrip("/") + "/data/public/nfl/game_logs.json").json()
         nfl_watch = bool(nfl_logs.get("regression"))
         nfl_regression = page.evaluate(REGRESSION_AUDIT, "regression")
         check("NFL Regression Watch reads margin, luck by kick and fumble and one-score games, and reconciles",
