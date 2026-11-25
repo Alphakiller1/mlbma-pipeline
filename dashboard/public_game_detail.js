@@ -9106,7 +9106,7 @@ function seasonToggle(game) {
     ['units','Units',['cbb-power','cbb-pace','cbb-efficiency','cbb-sos','cbb-predictability']],
     ['halves','Halves',['cbb-halves']],
     ['shooting','Shot Profile',['cbb-shot-chart','cbb-player-shots']],
-    ['possessions','Possessions',['cbb-transition','cbb-situations','cbb-restarts']],
+    ['possessions','Possessions',['cbb-transition','cbb-situations','cbb-restarts','cbb-second-chances']],
     ['defense','Defense',['cbb-shot-types','cbb-personnel','cbb-tagged-schemes']],
     ['roster','Roster',['cbb-availability','cbb-rotation','cbb-size']],
     ['games','Games',['cbb-game-log']],
@@ -9539,6 +9539,27 @@ function seasonToggle(game) {
     return cbbPanel(title, '', cfbLedgerTable([offName, 'Offense'], [defName, 'Defense'], groups));
   }
   function cbbPct(n) { return global.ChaseCbbCharts.pct(n); }
+  function cbbOne(n) { return cbbNumber(n,1); }
+  /* Second chances. A miss is only a second chance where it is taken from: a
+     team that crashes behind its own threes lives on a different possession
+     than one that only rebounds its layups, and nothing else on the desk
+     separates the two. Rebounds are paired with the miss that drew them in
+     ESPN's play-by-play (pipeline/cbb_public/espn_boxes.py second_chances);
+     free throws are not field goals and are left out. */
+  function cbbSecondChances(sport,game,side) {
+    return cbbLedger(game,side,[
+      ['Offensive Rebounding By The Miss',[
+        ['ORB% After A Rim Miss','orb_rim_off_all',true,'orb_rim_def_all',false,cbbPct],
+        ['ORB% After A Paint Miss','orb_paint_off_all',true,'orb_paint_def_all',false,cbbPct],
+        ['ORB% After A Three','orb_three_off_all',true,'orb_three_def_all',false,cbbPct],
+        ['ORB% On All FG Misses','orb_fg_off_all',true,'orb_fg_def_all',false,cbbPct]
+      ]],
+      ['What The Second Chances Brought',[
+        ['2nd-Chance Pts/G','sc_points_off_all',true,'sc_points_def_all',false,cbbOne],
+        ['Pts/2nd Chance','sc_points_per_chance_off_all',true,'sc_points_per_chance_def_all',false,function(n){return cbbNumber(n,2);}]
+      ]]
+    ]);
+  }
   function cbbPer100(n) { return cbbNumber(n==null?null:100*n); }
   function cbbEfficiency(sport,game,side) {
     // [label, offense key, higher is favorable, defense key, higher is favorable, format]
@@ -10290,6 +10311,7 @@ function seasonToggle(game) {
       part('cbb-transition','Transition And Turnovers','Every D-I Game · Each Offense Against The Defense It Meets',nflDuo(cbbTransition,sport,game))+
       part('cbb-situations','Transition And Half Court','Possession-Tagged Efficiency',nflDuo(cbbSituations,sport,game))+
       part('cbb-restarts','Possession Starts','Efficiency By How The Possession Began',nflDuo(cbbRestarts,sport,game))+
+      part('cbb-second-chances','Second Chances','Offensive Rebounding By Where The Miss Came From',nflDuo(cbbSecondChances,sport,game))+
       part('cbb-shot-types','Shot Types','Every D-I Game · What Each Offense Takes Against What The Defense Allows',nflDuo(cbbShotTypes,sport,game))+
       part('cbb-personnel','Defensive Lineups','Lineup Shapes Each Defense Uses',nflDuo(cbbPersonnel,sport,game))+
       (coverage||!game.cbbDetailReady ? part('cbb-tagged-schemes',tags?'Press And Zone':'Full-Court Pressure',
@@ -10347,7 +10369,7 @@ function seasonToggle(game) {
     cbb: {
       compare: 'cbb-efficiency', injuries: 'cbb-availability', games: 'cbb-game-log',
       topics: [
-        ['Shooting And Possessions', ['cbb-shot-chart', 'cbb-player-shots', 'cbb-transition', 'cbb-situations', 'cbb-restarts', 'cbb-shot-types']],
+        ['Shooting And Possessions', ['cbb-shot-chart', 'cbb-player-shots', 'cbb-transition', 'cbb-situations', 'cbb-restarts', 'cbb-second-chances', 'cbb-shot-types']],
         ['Defense', ['cbb-personnel', 'cbb-tagged-schemes']]
       ]
     }

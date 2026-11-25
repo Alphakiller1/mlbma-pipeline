@@ -276,3 +276,88 @@ class PlayerShotProfileTests(unittest.TestCase):
 
     def test_players_are_ordered_by_the_shots_they_take(self):
         self.assertEqual([r["athlete_id"] for r in self.season()["players"]], ["20", "10"])
+
+
+class SecondChanceTests(unittest.TestCase):
+    """Offensive rebounding read against the zone of the miss it answers."""
+
+    def plays(self):
+        out = []
+
+        def add(team, kind, text, scoring=False, coordinate=None, shooting=False, value=0):
+            out.append({"team": {"id": team}, "type": {"text": kind}, "text": text,
+                        "shootingPlay": shooting, "scoringPlay": scoring,
+                        "coordinate": coordinate, "scoreValue": value})
+
+        rim, arc = {"x": 25, "y": 5}, {"x": 25, "y": 27}
+        # A missed three the shooter's team rebounds, then scores at the rim.
+        add("1", "JumpShot", "Wing misses three point jumper", coordinate=arc, shooting=True)
+        add("1", "Offensive Rebound", "Big Offensive Rebound.")
+        add("1", "LayUpShot", "Big makes layup", scoring=True, coordinate=rim, shooting=True, value=2)
+        # A missed layup the other team rebounds: a miss, no second chance.
+        add("1", "LayUpShot", "Big misses layup", coordinate=rim, shooting=True)
+        add("2", "Defensive Rebound", "Guard Defensive Rebound.")
+        # Two offensive rebounds inside one possession, then a made three.
+        add("1", "JumpShot", "Wing misses three point jumper", coordinate=arc, shooting=True)
+        add("1", "Offensive Rebound", "Big Offensive Rebound.")
+        add("1", "LayUpShot", "Big misses layup", coordinate=rim, shooting=True)
+        add("1", "Offensive Rebound", "Wing Offensive Rebound.")
+        add("1", "JumpShot", "Wing makes three point jumper", scoring=True, coordinate=arc,
+            shooting=True, value=3)
+        # A missed free throw and its rebound are not field-goal business.
+        add("1", "MissedFreeThrow", "Big misses free throw", shooting=True)
+        add("1", "Offensive Rebound", "Big Offensive Rebound.")
+        # A miss the feed never rebounds: the period simply ends.
+        add("1", "JumpShot", "Wing misses three point jumper", coordinate=arc, shooting=True)
+        add("", "End Period", "End of the 1st Half")
+        return {"plays": out}
+
+    def chances(self):
+        from pipeline.cbb_public.espn_boxes import second_chances
+        return second_chances(self.plays(), {"1", "2"})["1"]
+
+    def test_a_rebound_is_credited_to_the_zone_of_the_miss_it_answers(self):
+        row = self.chances()
+        # Three three-point misses the feed rebounds, two of them by the shooters.
+        self.assertEqual(row["misses"], {"three": 2, "rim": 2})
+        self.assertEqual(row["orb"], {"three": 2, "rim": 1})
+
+    def test_free_throws_and_unrebounded_misses_are_left_out(self):
+        row = self.chances()
+        # Five field goals were missed and a free throw with them; the feed
+        # rebounds four of the five, and the free throw is not a field goal.
+        # So four misses are read, and the free throw's offensive rebound is
+        # neither a second chance nor a rebound of any zone.
+        self.assertEqual(sum(row["misses"].values()), 4)
+        self.assertEqual(sum(row["orb"].values()), 3)
+
+    def test_points_are_counted_once_per_possession_not_once_per_rebound(self):
+        row = self.chances()
+        # Two possessions reached a second chance: the layup (2) and, after two
+        # offensive rebounds on one possession, the three (3).
+        self.assertEqual(row["chances"], 2)
+        self.assertEqual(row["second_chance_points"], 5)
+
+    def test_the_defending_side_keeps_its_own_row(self):
+        from pipeline.cbb_public.espn_boxes import second_chances
+        self.assertEqual(second_chances(self.plays(), {"1", "2"})["2"],
+                         {"misses": {}, "orb": {}, "second_chance_points": 0, "chances": 0})
+
+    def test_season_rates_read_offense_and_what_it_allowed(self):
+        from pipeline.cbb_public.espn_boxes import second_chance_rates
+        own = {"misses": {"rim": 10, "three": 20}, "orb": {"rim": 4, "three": 5},
+               "second_chance_points": 12, "chances": 9}
+        opp = {"misses": {"rim": 10, "three": 10}, "orb": {"rim": 2, "three": 2},
+               "second_chance_points": 4, "chances": 4}
+        rates = second_chance_rates([(own, opp), (own, opp)])
+        self.assertEqual(rates["second_chance_games_all"], 2)
+        self.assertAlmostEqual(rates["orb_rim_off_all"], 0.4)
+        self.assertAlmostEqual(rates["orb_three_off_all"], 0.25)
+        self.assertAlmostEqual(rates["orb_fg_off_all"], 9 / 30)
+        self.assertAlmostEqual(rates["sc_points_off_all"], 12.0)
+        self.assertAlmostEqual(rates["sc_points_per_chance_off_all"], 12 / 9)
+        # The defense side reads what the opponents did to it, not its own.
+        self.assertAlmostEqual(rates["orb_fg_def_all"], 4 / 20)
+        self.assertAlmostEqual(rates["sc_points_def_all"], 4.0)
+        # A zone neither side missed in is None, never a zero rate.
+        self.assertIsNone(rates["orb_paint_off_all"])

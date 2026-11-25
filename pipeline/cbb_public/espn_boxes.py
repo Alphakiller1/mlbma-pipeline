@@ -116,6 +116,91 @@ def player_shots(payload, teams):
     return {team: rows for team, rows in out.items() if rows}
 
 
+# A miss is a second chance only where it is taken from: a team that crashes
+# the glass behind its own three-point misses lives on a different possession
+# than one that only rebounds its own layups. The zone groups the desk reads.
+SECOND_CHANCE_ZONES = (("rim", {"atr2"}), ("paint", {"paint2"}), ("three", {"c3", "atb3"}))
+# Plays that can stand between a miss and the rebound that answers it. Anything
+# else means the feed never recorded a rebound for that miss (a foul on the
+# shot, the end of a period), and the miss belongs to neither side.
+BETWEEN_MISS_AND_REBOUND = ("Block Shot", "Substitution")
+
+
+def second_chances(payload, teams):
+    """Per team: field-goal misses by zone, how many it rebounded itself, and
+    the points it scored before the possession ended after those rebounds.
+
+    Free throws are not field goals and are left out, their rebounds with
+    them. Second-chance points are counted once per possession however many
+    offensive rebounds it takes, so a scramble is one chance, not three."""
+    plays = payload.get("plays") or []
+    out = {team: {"misses": {}, "orb": {}, "second_chance_points": 0, "chances": 0} for team in teams}
+
+    def is_rebound(play):
+        kind = (play.get("type") or {}).get("text") or ""
+        return "Rebound" in kind and "Dead Ball" not in kind
+
+    def points_after(start, team):
+        """Points the team scores from the rebound at ``start`` until the
+        possession ends: its made field goal, its turnover, the other side's
+        rebound, or the period."""
+        points = 0
+        for play in plays[start + 1:]:
+            kind = (play.get("type") or {}).get("text") or ""
+            whose = str((play.get("team") or {}).get("id") or "")
+            if kind.startswith("End "):
+                break
+            if play.get("scoringPlay") and whose == team:
+                points += int(play.get("scoreValue") or 0)
+                if "FreeThrow" not in kind:
+                    break
+                continue
+            if whose and whose != team and (is_rebound(play) or play.get("shootingPlay")):
+                break
+            if whose == team and "Turnover" in kind:
+                break
+        return points
+
+    counted = set()
+    for i, play in enumerate(plays):
+        team = str((play.get("team") or {}).get("id") or "")
+        kind = (play.get("type") or {}).get("text") or ""
+        if (not play.get("shootingPlay") or team not in out or "FreeThrow" in kind
+                or play.get("scoringPlay")):
+            continue
+        points = 3 if "three" in (play.get("text") or "").lower() else 2
+        zone = classify_zone(*chase_coordinates(play.get("coordinate")), points)
+        group = next((name for name, zones in SECOND_CHANCE_ZONES if zone in zones), None)
+        rebound = None
+        for j in range(i + 1, len(plays)):
+            nxt = (plays[j].get("type") or {}).get("text") or ""
+            if is_rebound(plays[j]):
+                rebound = j
+                break
+            if nxt not in BETWEEN_MISS_AND_REBOUND:
+                break
+        if rebound is None:
+            continue
+        row = out[team]
+        if group:
+            row["misses"][group] = row["misses"].get(group, 0) + 1
+        own = str((plays[rebound].get("team") or {}).get("id") or "") == team
+        if not own:
+            continue
+        if group:
+            row["orb"][group] = row["orb"].get(group, 0) + 1
+        if rebound not in counted:
+            # One possession, however many rebounds it takes.
+            row["chances"] += 1
+            row["second_chance_points"] += points_after(rebound, team)
+            for j in range(rebound, len(plays)):
+                if is_rebound(plays[j]) and str((plays[j].get("team") or {}).get("id") or "") == team:
+                    counted.add(j)
+                elif (plays[j].get("scoringPlay") and str((plays[j].get("team") or {}).get("id") or "") == team)                         or (is_rebound(plays[j]) and str((plays[j].get("team") or {}).get("id") or "") != team):
+                    break
+    return out
+
+
 def shot_kinds(payload, teams):
     """Each side's field-goal attempts in the play-by-play and, per kind,
     [attempts, points]; None for both sides when the feed does not name the
@@ -157,6 +242,33 @@ def kind_rates(pairs):
     return out
 
 
+SECOND_CHANCE_KEYS = ["second_chance_games_all"] + [
+    f"{stat}_{side}_all" for stat in [f"orb_{name}" for name, _ in SECOND_CHANCE_ZONES]
+    + ["orb_fg", "sc_points", "sc_points_per_chance"] for side in ("off", "def")]
+
+
+def second_chance_rates(pairs):
+    """Offensive rebounding by the zone of the miss, and what the second
+    chances brought, for offense (own misses) and defense (allowed).
+    pairs: (own second chances, opponent second chances) per game."""
+    out = {"second_chance_games_all": len(pairs)}
+    for side, pick in (("off", 0), ("def", 1)):
+        rows = [pair[pick] for pair in pairs]
+        misses, orb = Counter(), Counter()
+        for row in rows:
+            misses.update(row["misses"])
+            orb.update(row["orb"])
+        for name, _ in SECOND_CHANCE_ZONES:
+            out[f"orb_{name}_{side}_all"] = orb[name] / misses[name] if misses[name] else None
+        taken, won = sum(misses.values()), sum(orb.values())
+        points = sum(row["second_chance_points"] for row in rows)
+        chances = sum(row["chances"] for row in rows)
+        out[f"orb_fg_{side}_all"] = won / taken if taken else None
+        out[f"sc_points_{side}_all"] = points / len(rows) if rows else None
+        out[f"sc_points_per_chance_{side}_all"] = points / chances if chances else None
+    return out
+
+
 def parse_box(payload, game):
     comp = payload["header"]["competitions"][0]
     if str(comp["id"]) != str(game["game_id"]) or not comp["status"]["type"]["completed"]:
@@ -171,7 +283,9 @@ def parse_box(payload, game):
         raise ValueError("ESPN final period count unavailable")
     minutes = 40 + 5 * (periods.pop() - 2)
 
-    shots = player_shots(payload, {str(game[s + "_id"]) for s in SIDES})
+    sides = {str(game[s + "_id"]) for s in SIDES}
+    shots = player_shots(payload, sides)
+    chances = second_chances(payload, sides)
     boxes = {str(r["team"]["id"]): r["statistics"] for r in payload["boxscore"]["teams"]}
     players = {str(r["team"]["id"]): r["statistics"] for r in payload["boxscore"].get("players", [])}
     result = {"fixture": fixture_key(game), "minutes": minutes, "teams": {}}
@@ -202,6 +316,7 @@ def parse_box(payload, game):
             "starters": starters if len(starters) == 5 else {},
             "player_lines": player_lines(players.get(team, []), minutes, points),
             "player_shots": shots.get(team, {}),
+            "second_chance": chances[team],
             "box_context": {key: n for key, field in BOX_CONTEXT.items()
                             if (n := ncaa.number(v.get(field))) is not None and 0 <= n <= points},
         }
@@ -227,7 +342,7 @@ def load_box(game, cache):
         cached = read(file)
         if cached.get("fixture") == fixture_key(game) and "pressure" in cached and all(
             "player_lines" in row and "box_context" in row and "stl" in row and "kinds" in row and "classes" in row
-            and "halves" in row and "player_shots" in row
+            and "halves" in row and "player_shots" in row and "second_chance" in row
             for row in cached["teams"].values()
         ):
             return cached
@@ -619,6 +734,12 @@ def supplement(contexts, schedule, year, as_of, cache, *, season_through=None, r
         named = [(own["kinds"], opp["kinds"]) for _, _, own, opp, _ in measured if own.get("kinds") and opp.get("kinds")]
         context["rates"].update(kind_rates(named))
         filled["shot kinds"] += bool(named)
+        # Second chances over the games whose feed rebounds its own misses.
+        chanced = [(own["second_chance"], opp["second_chance"]) for _, _, own, opp, _ in measured
+                   if (own.get("second_chance") or {}).get("misses") and (opp.get("second_chance") or {}).get("misses")]
+        context["rates"].update(second_chance_rates(chanced) if chanced
+                                else {k: None for k in SECOND_CHANCE_KEYS})
+        filled["second chances"] += bool(chanced)
         # Half by half over the same games, where the play-by-play reconciles.
         halved = [(own["halves"], opp["halves"]) for _, _, own, opp, _ in measured
                   if own.get("halves") and opp.get("halves")]

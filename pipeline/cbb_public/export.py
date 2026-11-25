@@ -27,6 +27,9 @@ EXTRA_RATE_FIELDS+=[f'{shot}_{stat}_{side}_all' for shot in SHOT_TYPES for stat 
 EXTRA_RATE_FIELDS+=['xefg_o_all','xefg_d_all','pefg_o_all','pefg_d_all']
 # How many games the drive, floater and pull-up rates count (espn_boxes.kind_rates).
 EXTRA_RATE_FIELDS+=['shot_kinds_games_all']
+# Second chances by the zone of the miss (espn_boxes.second_chance_rates).
+from .espn_boxes import SECOND_CHANCE_KEYS
+EXTRA_RATE_FIELDS+=list(SECOND_CHANCE_KEYS)
 # First- and second-half figures (pipeline/cbb_public/halves.py).
 from .halves import KEYS as HALF_KEYS
 EXTRA_RATE_FIELDS+=list(HALF_KEYS)
