@@ -132,3 +132,232 @@ console.log(JSON.stringify(validateScoreBoard(raw,fallback,now)));
         self.assertFalse(bad["priced"])
         self.assertEqual(bad["edge_withheld_reason"], "Total moved to 152.5, toward the model.")
         self.assertNotIn("lean", plain)
+
+
+class RecentRotationTests(unittest.TestCase):
+    """Minutes over the team's last five games, beside the season rate."""
+
+    def games(self):
+        from collections import Counter  # noqa: F401  (documents the shape below)
+
+        def game(date, lines):
+            return (date, 200, {"player_lines": [
+                {"athlete_id": pid, "Name": name, "minutes": mins,
+                 "Pts": 0, "Reb": 0, "Ast": 0, "FGA": 0, "FTA": 0}
+                for pid, name, mins in lines], "box_context": {}, "poss": 70},
+                {"player_lines": [], "box_context": {}, "poss": 70}, 70)
+
+        # Eight games. The starter plays throughout; the freshman is promoted
+        # for the last five; the senior stops playing after the first three.
+        early = [("1", "Starter", 30), ("2", "Freshman", 6), ("3", "Senior", 24)]
+        late = [("1", "Starter", 30), ("2", "Freshman", 26)]
+        return ([game(f"2026-11-0{d}", early) for d in (1, 2, 3)] +
+                [game(f"2026-11-0{d}", late) for d in (4, 5, 6, 7, 8)])
+
+    def rotation(self):
+        from pipeline.cbb_public.espn_boxes import add_box_context
+        context = {"observed_tactics": {"situations": {"x": 1}, "restart_contexts": {"x": 1},
+                                        "personnel": [{"x": 1}]},
+                   "players": [{"G": 5}]}
+        box = {}
+        add_box_context(context, box, self.games())
+        return box["rotation"]
+
+    def test_recent_minutes_are_per_team_game_not_per_game_played(self):
+        rotation = self.rotation()
+        by_id = {r["athlete_id"]: r for r in rotation["players"]}
+        self.assertEqual(rotation["window_games"], 5)
+        self.assertEqual(rotation["games"], 8)
+        # The freshman played 26 in each of the last five.
+        self.assertAlmostEqual(by_id["2"]["minutes_recent"], 26.0)
+        # Season rate spreads his 3x6 + 5x26 across all eight games.
+        self.assertAlmostEqual(by_id["2"]["minutes_season"], (3 * 6 + 5 * 26) / 8)
+        self.assertEqual(by_id["2"]["games_recent"], 5)
+
+    def test_a_player_who_stopped_playing_leaves_the_recent_window(self):
+        by_id = {r["athlete_id"]: r for r in self.rotation()["players"]}
+        # The senior appears in no recent game, so he carries no recent minutes
+        # at all rather than a stale season average.
+        self.assertNotIn("3", by_id)
+        self.assertAlmostEqual(by_id["1"]["minutes_recent"], 30.0)
+
+    def test_players_are_ordered_by_the_minutes_they_are_playing_now(self):
+        order = [r["athlete_id"] for r in self.rotation()["players"]]
+        self.assertEqual(order, ["1", "2"])
+
+
+class PlayerShotProfileTests(unittest.TestCase):
+    """Per-player shot location, finishing and creation, from the same play
+    feed the team zone profile is built from."""
+
+    def plays(self):
+        def shot(team, kind, coordinate, text, scoring, people):
+            return {"team": {"id": team}, "type": {"text": kind}, "shootingPlay": True,
+                    "scoringPlay": scoring, "coordinate": coordinate, "text": text,
+                    "participants": [{"athlete": {"id": p}} for p in people]}
+
+        return {"plays": [
+            # Wing takes the threes; Big finishes at the rim off his passes.
+            shot("1", "JumpShot", {"x": 25, "y": 27}, "Wing makes three point jumper", True, ["10"]),
+            shot("1", "JumpShot", {"x": 3, "y": 6}, "Wing misses three point jumper", False, ["10"]),
+            shot("1", "LayUpShot", {"x": 25, "y": 5}, "Big makes layup", True, ["20", "10"]),
+            shot("1", "DunkShot", {"x": 25, "y": 5}, "Big makes dunk", True, ["20", "10"]),
+            shot("1", "LayUpShot", {"x": 25, "y": 5}, "Big misses layup", False, ["20"]),
+            # No coordinate: a real attempt that belongs to no zone.
+            shot("1", "JumpShot", None, "Big misses jumper", False, ["20"]),
+            # Free throws are not field goals, and the other side is not ours.
+            shot("1", "FreeThrow", None, "Wing makes free throw", True, ["10"]),
+            shot("2", "JumpShot", {"x": 25, "y": 20}, "Guard makes jumper", True, ["30"]),
+            {"team": {"id": "1"}, "type": {"text": "Rebound"}, "text": "Big rebound",
+             "participants": [{"athlete": {"id": "20"}}]}]}
+
+    def test_shots_land_in_one_zone_scheme_and_free_throws_are_left_out(self):
+        from pipeline.cbb_public.espn_boxes import player_shots
+        rows = player_shots(self.plays(), {"1", "2"})
+        wing, big = rows["1"]["10"], rows["1"]["20"]
+        self.assertEqual((wing["fga"], wing["fgm"]), (2, 1))
+        self.assertEqual({z: tuple(c) for z, c in wing["zones"].items()}, {"atb3": (1, 1), "c3": (1, 0)})
+        # Four attempts, three of them located; the uncharted one is in no zone.
+        self.assertEqual((big["fga"], big["fgm"]), (4, 2))
+        self.assertEqual(sum(a for a, _ in big["zones"].values()), 3)
+        self.assertEqual({z: tuple(c) for z, c in big["zones"].items()}, {"atr2": (3, 2)})
+
+    def test_an_assist_credits_the_passer_and_marks_the_make_as_created(self):
+        from pipeline.cbb_public.espn_boxes import player_shots
+        rows = player_shots(self.plays(), {"1", "2"})
+        self.assertEqual(rows["1"]["20"]["assisted"], 2)
+        self.assertEqual(rows["1"]["10"]["assists"], 2)
+        # The passer's own attempts are never counted as assisted makes.
+        self.assertEqual(rows["1"]["10"]["assisted"], 0)
+
+    def test_the_other_side_keeps_its_own_players(self):
+        from pipeline.cbb_public.espn_boxes import player_shots
+        rows = player_shots(self.plays(), {"1", "2"})
+        self.assertEqual(list(rows["2"]), ["30"])
+        self.assertEqual(rows["2"]["30"]["zones"], {"mid2": [1, 1]})
+
+    def test_espn_play_coordinates_map_onto_the_chase_scheme(self):
+        from pipeline.cbb_public.espn_boxes import chase_coordinates
+        self.assertEqual(chase_coordinates({"x": 25, "y": 5}), (42.0, 0.0))
+        self.assertEqual(chase_coordinates({"x": 3, "y": 6}), (41.0, -22.0))
+        self.assertEqual(chase_coordinates(None), (None, None))
+
+    def season(self):
+        from pipeline.cbb_public.espn_boxes import add_box_context, player_shots
+        shots = player_shots(self.plays(), {"1", "2"})["1"]
+        lines = [{"athlete_id": pid, "Name": name, "minutes": 30,
+                  "Pts": 0, "Reb": 0, "Ast": 0, "FGA": 0, "FTA": 0}
+                 for pid, name in (("10", "Wing"), ("20", "Big"))]
+        games = [(f"2026-11-0{d}", 200,
+                  {"player_lines": lines, "player_shots": shots, "box_context": {}, "poss": 70},
+                  {"player_lines": [], "box_context": {}, "poss": 70}, 70) for d in (1, 2)]
+        box = {}
+        add_box_context({"observed_tactics": {"situations": {"x": 1}, "restart_contexts": {"x": 1},
+                                              "personnel": [{"x": 1}]},
+                         "players": [{"G": 2}]}, box, games)
+        return box["player_shots"]
+
+    def test_season_totals_add_the_games_and_name_the_players(self):
+        profile = self.season()
+        by_id = {r["athlete_id"]: r for r in profile["players"]}
+        self.assertEqual(profile["games"], 2)
+        self.assertEqual(by_id["20"]["Name"], "Big")
+        self.assertEqual((by_id["20"]["fga"], by_id["20"]["fgm"]), (8, 4))
+        rim = next(z for z in by_id["20"]["zones"] if z["zone"] == "atr2")
+        self.assertEqual((rim["attempts"], rim["made"]), (6, 4))
+
+    def test_created_share_is_of_makes_and_zone_share_is_of_located_attempts(self):
+        by_id = {r["athlete_id"]: r for r in self.season()["players"]}
+        # Both of the big's four makes were assisted.
+        self.assertAlmostEqual(by_id["20"]["assisted_share"], 1.0)
+        # Six located attempts of eight taken; the share is of the located ones.
+        self.assertAlmostEqual(sum(z["share"] for z in by_id["20"]["zones"]), 1.0)
+        self.assertAlmostEqual(next(z["fg_pct"] for z in by_id["20"]["zones"]), 100 * 4 / 6)
+
+    def test_players_are_ordered_by_the_shots_they_take(self):
+        self.assertEqual([r["athlete_id"] for r in self.season()["players"]], ["20", "10"])
+
+
+class SecondChanceTests(unittest.TestCase):
+    """Offensive rebounding read against the zone of the miss it answers."""
+
+    def plays(self):
+        out = []
+
+        def add(team, kind, text, scoring=False, coordinate=None, shooting=False, value=0):
+            out.append({"team": {"id": team}, "type": {"text": kind}, "text": text,
+                        "shootingPlay": shooting, "scoringPlay": scoring,
+                        "coordinate": coordinate, "scoreValue": value})
+
+        rim, arc = {"x": 25, "y": 5}, {"x": 25, "y": 27}
+        # A missed three the shooter's team rebounds, then scores at the rim.
+        add("1", "JumpShot", "Wing misses three point jumper", coordinate=arc, shooting=True)
+        add("1", "Offensive Rebound", "Big Offensive Rebound.")
+        add("1", "LayUpShot", "Big makes layup", scoring=True, coordinate=rim, shooting=True, value=2)
+        # A missed layup the other team rebounds: a miss, no second chance.
+        add("1", "LayUpShot", "Big misses layup", coordinate=rim, shooting=True)
+        add("2", "Defensive Rebound", "Guard Defensive Rebound.")
+        # Two offensive rebounds inside one possession, then a made three.
+        add("1", "JumpShot", "Wing misses three point jumper", coordinate=arc, shooting=True)
+        add("1", "Offensive Rebound", "Big Offensive Rebound.")
+        add("1", "LayUpShot", "Big misses layup", coordinate=rim, shooting=True)
+        add("1", "Offensive Rebound", "Wing Offensive Rebound.")
+        add("1", "JumpShot", "Wing makes three point jumper", scoring=True, coordinate=arc,
+            shooting=True, value=3)
+        # A missed free throw and its rebound are not field-goal business.
+        add("1", "MissedFreeThrow", "Big misses free throw", shooting=True)
+        add("1", "Offensive Rebound", "Big Offensive Rebound.")
+        # A miss the feed never rebounds: the period simply ends.
+        add("1", "JumpShot", "Wing misses three point jumper", coordinate=arc, shooting=True)
+        add("", "End Period", "End of the 1st Half")
+        return {"plays": out}
+
+    def chances(self):
+        from pipeline.cbb_public.espn_boxes import second_chances
+        return second_chances(self.plays(), {"1", "2"})["1"]
+
+    def test_a_rebound_is_credited_to_the_zone_of_the_miss_it_answers(self):
+        row = self.chances()
+        # Three three-point misses the feed rebounds, two of them by the shooters.
+        self.assertEqual(row["misses"], {"three": 2, "rim": 2})
+        self.assertEqual(row["orb"], {"three": 2, "rim": 1})
+
+    def test_free_throws_and_unrebounded_misses_are_left_out(self):
+        row = self.chances()
+        # Five field goals were missed and a free throw with them; the feed
+        # rebounds four of the five, and the free throw is not a field goal.
+        # So four misses are read, and the free throw's offensive rebound is
+        # neither a second chance nor a rebound of any zone.
+        self.assertEqual(sum(row["misses"].values()), 4)
+        self.assertEqual(sum(row["orb"].values()), 3)
+
+    def test_points_are_counted_once_per_possession_not_once_per_rebound(self):
+        row = self.chances()
+        # Two possessions reached a second chance: the layup (2) and, after two
+        # offensive rebounds on one possession, the three (3).
+        self.assertEqual(row["chances"], 2)
+        self.assertEqual(row["second_chance_points"], 5)
+
+    def test_the_defending_side_keeps_its_own_row(self):
+        from pipeline.cbb_public.espn_boxes import second_chances
+        self.assertEqual(second_chances(self.plays(), {"1", "2"})["2"],
+                         {"misses": {}, "orb": {}, "second_chance_points": 0, "chances": 0})
+
+    def test_season_rates_read_offense_and_what_it_allowed(self):
+        from pipeline.cbb_public.espn_boxes import second_chance_rates
+        own = {"misses": {"rim": 10, "three": 20}, "orb": {"rim": 4, "three": 5},
+               "second_chance_points": 12, "chances": 9}
+        opp = {"misses": {"rim": 10, "three": 10}, "orb": {"rim": 2, "three": 2},
+               "second_chance_points": 4, "chances": 4}
+        rates = second_chance_rates([(own, opp), (own, opp)])
+        self.assertEqual(rates["second_chance_games_all"], 2)
+        self.assertAlmostEqual(rates["orb_rim_off_all"], 0.4)
+        self.assertAlmostEqual(rates["orb_three_off_all"], 0.25)
+        self.assertAlmostEqual(rates["orb_fg_off_all"], 9 / 30)
+        self.assertAlmostEqual(rates["sc_points_off_all"], 12.0)
+        self.assertAlmostEqual(rates["sc_points_per_chance_off_all"], 12 / 9)
+        # The defense side reads what the opponents did to it, not its own.
+        self.assertAlmostEqual(rates["orb_fg_def_all"], 4 / 20)
+        self.assertAlmostEqual(rates["sc_points_def_all"], 4.0)
+        # A zone neither side missed in is None, never a zero rate.
+        self.assertIsNone(rates["orb_paint_off_all"])

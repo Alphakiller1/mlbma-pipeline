@@ -9105,8 +9105,8 @@ function seasonToggle(game) {
   var CBB_TABS = [
     ['units','Units',['cbb-power','cbb-pace','cbb-efficiency','cbb-sos','cbb-predictability']],
     ['halves','Halves',['cbb-halves']],
-    ['shooting','Shot Profile',['cbb-shot-chart']],
-    ['possessions','Possessions',['cbb-transition','cbb-situations','cbb-restarts']],
+    ['shooting','Shot Profile',['cbb-shot-chart','cbb-player-shots']],
+    ['possessions','Possessions',['cbb-transition','cbb-situations','cbb-restarts','cbb-second-chances']],
     ['defense','Defense',['cbb-shot-types','cbb-personnel','cbb-tagged-schemes']],
     ['roster','Roster',['cbb-availability','cbb-rotation','cbb-size']],
     ['games','Games',['cbb-game-log']],
@@ -9539,6 +9539,27 @@ function seasonToggle(game) {
     return cbbPanel(title, '', cfbLedgerTable([offName, 'Offense'], [defName, 'Defense'], groups));
   }
   function cbbPct(n) { return global.ChaseCbbCharts.pct(n); }
+  function cbbOne(n) { return cbbNumber(n,1); }
+  /* Second chances. A miss is only a second chance where it is taken from: a
+     team that crashes behind its own threes lives on a different possession
+     than one that only rebounds its layups, and nothing else on the desk
+     separates the two. Rebounds are paired with the miss that drew them in
+     ESPN's play-by-play (pipeline/cbb_public/espn_boxes.py second_chances);
+     free throws are not field goals and are left out. */
+  function cbbSecondChances(sport,game,side) {
+    return cbbLedger(game,side,[
+      ['Offensive Rebounding By The Miss',[
+        ['ORB% After A Rim Miss','orb_rim_off_all',true,'orb_rim_def_all',false,cbbPct],
+        ['ORB% After A Paint Miss','orb_paint_off_all',true,'orb_paint_def_all',false,cbbPct],
+        ['ORB% After A Three','orb_three_off_all',true,'orb_three_def_all',false,cbbPct],
+        ['ORB% On All FG Misses','orb_fg_off_all',true,'orb_fg_def_all',false,cbbPct]
+      ]],
+      ['What The Second Chances Brought',[
+        ['2nd-Chance Pts/G','sc_points_off_all',true,'sc_points_def_all',false,cbbOne],
+        ['Pts/2nd Chance','sc_points_per_chance_off_all',true,'sc_points_per_chance_def_all',false,function(n){return cbbNumber(n,2);}]
+      ]]
+    ]);
+  }
   function cbbPer100(n) { return cbbNumber(n==null?null:100*n); }
   function cbbEfficiency(sport,game,side) {
     // [label, offense key, higher is favorable, defense key, higher is favorable, format]
@@ -9740,6 +9761,51 @@ function seasonToggle(game) {
         cbbRanked(efg,efgPlace,'same-source D-I teams · '+(defense?'lowest eFG% allowed first':'highest eFG% first'))+'</strong> eFG</span></div>'+
       cbbTable(share?['Zone','Offense share','Allowed share']:['Zone','Offense FG%','Allowed FG%'],rows,'ca-cbb-zone-table'));
   }
+  /* Where each player shoots, how he finishes there, and how much of his
+     scoring is created for him against how much he creates. Built from the
+     same ESPN play feed the team zones come from (espn_boxes.player_shots),
+     one zone scheme throughout. Shares are style, so they stay neutral the
+     way the shot chart's shares do; finishing is skill and is ranked. */
+  // Mid-range is the remainder: nearly every player takes under a tenth of
+  // his shots there, so the column carried no information worth a column.
+  // export.py ZONE_POOL_FLOOR: the attempts a zone needs before it is ranked.
+  var CBB_ZONE_FLOOR = 20;
+  var CBB_SHOT_GROUPS = [['Rim',['atr2']],['Paint',['paint2']],['3PT',['c3','atb3']]];
+  function cbbPlayerShots(sport,game,side) {
+    var c=cbbTeam(game,side);if(!c)return pending('Player evidence is unavailable.');
+    var block=(c.official_box||{}).player_shots;
+    var title=cbbSchool(game,side)+' Shot Creation';
+    if(!block||!block.players||!block.players.length)
+      return cbbPanel(title,cbbSeason(game),pending('No charted player shots are published for this team.'));
+    var available=availability.available(game,side,block.players.map(function(p){return {Name:p.Name,athlete_id:p.athlete_id,G:1,Min_pct:100};}));
+    var keep={};available.forEach(function(p){keep[String(p.athlete_id)]=true;});
+    var players=block.players.filter(function(p){return keep[String(p.athlete_id)]&&p.fga>=10;}).slice(0,8);
+    if(!players.length)return cbbPanel(title,cbbSeason(game),pending('No available player has ten charted attempts yet.'));
+    function share(p,zones){
+      var zoned=p.zones.reduce(function(a,z){return a+z.attempts;},0);
+      if(!zoned)return null;
+      var n=p.zones.reduce(function(a,z){return a+(zones.indexOf(z.zone)>=0?z.attempts:0);},0);
+      return 100*n/zoned;
+    }
+    function finish(p,zones,key){
+      var a=p.zones.reduce(function(s,z){return s+(zones.indexOf(z.zone)>=0?z.attempts:0);},0);
+      var m=p.zones.reduce(function(s,z){return s+(zones.indexOf(z.zone)>=0?z.made:0);},0);
+      if(a<CBB_ZONE_FLOOR)return cbbMissing(a?'Low n':'No attempts');
+      return cbbMetric(game,100*m/a,cbbNumber(100*m/a)+'%',key,true,'player');
+    }
+    var rows=players.map(function(p){
+      return [esc(String(p.Name||'').replace(/\s*\(\d+\).*$/,'')),cbbNumber(p.fga,0)]
+        .concat(CBB_SHOT_GROUPS.map(function(g){
+          var v=share(p,g[1]);
+          return v==null?cbbMissing('Not charted'):'<span class="ca-basketball-value">'+cbbNumber(v,0)+'%</span>';
+        }))
+        .concat([finish(p,['atr2'],'rim_fg'),finish(p,['c3','atb3'],'three_fg'),
+          p.assisted_share==null?cbbMissing('No makes'):'<span class="ca-basketball-value">'+cbbNumber(100*p.assisted_share,0)+'%</span>',
+          cbbNumber(p.assists,0)]);
+    });
+    return cbbPanel(title,cbbSeason(game)+' · '+block.games+' charted games · each share is of his located attempts · players listed out are removed',
+      cbbTable(['Player','FGA','Rim','Paint','3PT','Rim FG%','3P%','Created','AST'],rows,'ca-cbb-rotation-table'));
+  }
   function cbbRotation(sport,game,side) {
     if (game.cbb_availability_pending) return pending('Checking the current availability report…');
     var c=cbbTeam(game,side);if(!c)return pending('Player evidence is unavailable.');
@@ -9748,15 +9814,30 @@ function seasonToggle(game) {
     var players=availability.available(game,side,useBox?box.players:c.players).sort(function(a,b){return (b.Min_pct||0)-(a.Min_pct||0);}).slice(0,12);
     var title=cbbSchool(game,side)+' Rotation';
     if (!players.length) return cbbPanel(title,cbbSeason(game),pending('No player lines are available for this matchup and season.'));
-    var rows=players.map(function(p){return [esc(String(p.Name||'').replace(/\s*\(\d+\).*$/,'')),cbbNumber(p.G,0),cbbNumber(p.Min_pct,0)].concat(['Pts','Reb','Ast','TS'].map(function(k){
+    // Minutes over the team's last five games, beside the season share. A
+    // season average misreads the player whose role just changed; the change
+    // is printed so the reader sees it without being told what it means.
+    var recent={},window=0;
+    (((box.rotation||{}).players)||[]).forEach(function(r){recent[String(r.athlete_id)]=r;});
+    window=(box.rotation||{}).window_games||0;
+    function recentCell(p){
+      var r=recent[String(p.athlete_id)];
+      if(!r||!window)return cbbMissing('Not reported');
+      var moved=r.minutes_season==null?null:r.minutes_recent-r.minutes_season;
+      return '<span class="ca-basketball-value">'+cbbNumber(r.minutes_recent,1)+'</span>'+
+        (moved==null||Math.abs(moved)<1?'':'<small class="ca-cbb-rot-move">'+(moved>0?'+':'−')+
+          cbbNumber(Math.abs(moved),1)+'</small>');
+    }
+    var rows=players.map(function(p){return [esc(String(p.Name||'').replace(/\s*\(\d+\).*$/,'')),cbbNumber(p.G,0),cbbNumber(p.Min_pct,0),recentCell(p)].concat(['Pts','Reb','Ast','TS'].map(function(k){
       if(p[k]==null)return cbbMissing(k==='TS'?'No attempts':'Not reported');
       // ESPN box lines publish TS only when the player shot (no FGA/FTA keys).
       var qualified=(p.G||0)>0&&(k!=='TS'||(p.FGA||0)+(p.FTA||0)>0||(p.FGA==null&&p.TS!=null));
       var text=cbbNumber(p[k])+(k==='TS'?'%':'');
       return qualified?cbbMetric(game,p[k],text,k,true,'player'):text;
     }));});
-    return cbbPanel(title,cbbSeason(game)+' · '+(useBox?'ESPN final boxes':'Basketball Quant')+' · per game · players listed out are removed',
-      cbbTable(['Player','GP','MIN%','PTS','REB','AST','TS%'],rows,'ca-cbb-rotation-table'));
+    return cbbPanel(title,cbbSeason(game)+' · '+(useBox?'ESPN final boxes':'Basketball Quant')+
+      ' · per game · minutes last '+(window||5)+' from ESPN boxes · players listed out are removed',
+      cbbTable(['Player','GP','MIN%','MIN last '+(window||5),'PTS','REB','AST','TS%'],rows,'ca-cbb-rotation-table'));
   }
   /* Each completed game's box line (pipeline/cbb_public/game_lines.py): every
      figure is coloured and placed among all D-I team-games that week, printed
@@ -10228,9 +10309,11 @@ function seasonToggle(game) {
       part('cbb-halves','First And Second Half','Each Offense Against The Defense It Meets, Half By Half · Pace',
         nflDuo(cbbHalves,sport,game))+
       part('cbb-shot-chart','Shot Chart','Zone Shooting Against The Defense It Meets',cbbChartControls(game)+nflDuo(cbbShotPanel,sport,game))+
+      part('cbb-player-shots','Shot Creation','Where Each Player Shoots, How He Finishes, Who Creates It',nflDuo(cbbPlayerShots,sport,game))+
       part('cbb-transition','Transition And Turnovers','Every D-I Game · Each Offense Against The Defense It Meets',nflDuo(cbbTransition,sport,game))+
       part('cbb-situations','Transition And Half Court','Possession-Tagged Efficiency',nflDuo(cbbSituations,sport,game))+
       part('cbb-restarts','Possession Starts','Efficiency By How The Possession Began',nflDuo(cbbRestarts,sport,game))+
+      part('cbb-second-chances','Second Chances','Offensive Rebounding By Where The Miss Came From',nflDuo(cbbSecondChances,sport,game))+
       part('cbb-shot-types','Shot Types','Every D-I Game · What Each Offense Takes Against What The Defense Allows',nflDuo(cbbShotTypes,sport,game))+
       part('cbb-personnel','Defensive Lineups','Lineup Shapes Each Defense Uses',nflDuo(cbbPersonnel,sport,game))+
       (coverage||!game.cbbDetailReady ? part('cbb-tagged-schemes',tags?'Press And Zone':'Full-Court Pressure',
@@ -10288,7 +10371,7 @@ function seasonToggle(game) {
     cbb: {
       compare: 'cbb-efficiency', injuries: 'cbb-availability', games: 'cbb-game-log',
       topics: [
-        ['Shooting And Possessions', ['cbb-shot-chart', 'cbb-transition', 'cbb-situations', 'cbb-restarts', 'cbb-shot-types']],
+        ['Shooting And Possessions', ['cbb-shot-chart', 'cbb-player-shots', 'cbb-transition', 'cbb-situations', 'cbb-restarts', 'cbb-second-chances', 'cbb-shot-types']],
         ['Defense', ['cbb-personnel', 'cbb-tagged-schemes']]
       ]
     }
