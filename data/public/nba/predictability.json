@@ -2,14 +2,14 @@
  "schema": "chase-public-nba-predictability/1",
  "sport": "nba",
  "season": 2027,
- "games": 261,
+ "games": 266,
  "teams": {
   "BOS": {
    "offense": {
     "predictability": 0,
     "place": 30,
     "of": 30,
-    "off_curve": 0.1523,
+    "off_curve": 0.1522,
     "volatility": 1.048,
     "game_spread": 12.0317,
     "games": 18
@@ -18,7 +18,7 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -28,7 +28,7 @@
     "predictability": 31,
     "place": 21,
     "of": 30,
-    "off_curve": 0.1373,
+    "off_curve": 0.1372,
     "volatility": 1.009,
     "game_spread": 11.5884,
     "games": 17
@@ -37,7 +37,7 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -47,16 +47,16 @@
     "predictability": 76,
     "place": 8,
     "of": 30,
-    "off_curve": 0.1271,
-    "volatility": 0.983,
-    "game_spread": 11.2891,
-    "games": 18
+    "off_curve": 0.1283,
+    "volatility": 0.986,
+    "game_spread": 11.326,
+    "games": 19
    },
    "curve": {
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -66,16 +66,16 @@
     "predictability": 3,
     "place": 29,
     "of": 30,
-    "off_curve": 0.1489,
-    "volatility": 1.039,
-    "game_spread": 11.9298,
-    "games": 17
+    "off_curve": 0.1497,
+    "volatility": 1.041,
+    "game_spread": 11.9574,
+    "games": 18
    },
    "curve": {
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -87,14 +87,14 @@
     "of": 30,
     "off_curve": 0.125,
     "volatility": 0.978,
-    "game_spread": 11.2263,
-    "games": 18
+    "game_spread": 11.2294,
+    "games": 19
    },
    "curve": {
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -104,7 +104,7 @@
     "predictability": 69,
     "place": 10,
     "of": 30,
-    "off_curve": 0.129,
+    "off_curve": 0.1289,
     "volatility": 0.988,
     "game_spread": 11.3452,
     "games": 18
@@ -113,45 +113,45 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
   },
   "MIN": {
    "offense": {
-    "predictability": 59,
-    "place": 13,
+    "predictability": 52,
+    "place": 15,
     "of": 30,
-    "off_curve": 0.1309,
-    "volatility": 0.993,
-    "game_spread": 11.3991,
-    "games": 18
+    "off_curve": 0.1317,
+    "volatility": 0.995,
+    "game_spread": 11.428,
+    "games": 19
    },
    "curve": {
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
   },
   "MIA": {
    "offense": {
-    "predictability": 79,
-    "place": 7,
+    "predictability": 83,
+    "place": 6,
     "of": 30,
-    "off_curve": 0.1269,
-    "volatility": 0.983,
-    "game_spread": 11.2816,
-    "games": 16
+    "off_curve": 0.1264,
+    "volatility": 0.981,
+    "game_spread": 11.2687,
+    "games": 17
    },
    "curve": {
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -161,8 +161,8 @@
     "predictability": 14,
     "place": 26,
     "of": 30,
-    "off_curve": 0.144,
-    "volatility": 1.027,
+    "off_curve": 0.1439,
+    "volatility": 1.026,
     "game_spread": 11.7855,
     "games": 17
    },
@@ -170,17 +170,17 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
   },
   "LAL": {
    "offense": {
-    "predictability": 55,
-    "place": 14,
+    "predictability": 59,
+    "place": 13,
     "of": 30,
-    "off_curve": 0.1314,
+    "off_curve": 0.1313,
     "volatility": 0.994,
     "game_spread": 11.4148,
     "games": 18
@@ -189,7 +189,7 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -199,7 +199,7 @@
     "predictability": 62,
     "place": 12,
     "of": 30,
-    "off_curve": 0.1305,
+    "off_curve": 0.1304,
     "volatility": 0.992,
     "game_spread": 11.389,
     "games": 17
@@ -208,7 +208,7 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -218,7 +218,7 @@
     "predictability": 10,
     "place": 27,
     "of": 30,
-    "off_curve": 0.1442,
+    "off_curve": 0.1441,
     "volatility": 1.027,
     "game_spread": 11.7917,
     "games": 17
@@ -227,7 +227,7 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -237,7 +237,7 @@
     "predictability": 17,
     "place": 25,
     "of": 30,
-    "off_curve": 0.1408,
+    "off_curve": 0.1407,
     "volatility": 1.018,
     "game_spread": 11.6927,
     "games": 18
@@ -246,7 +246,7 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -256,7 +256,7 @@
     "predictability": 93,
     "place": 3,
     "of": 30,
-    "off_curve": 0.1243,
+    "off_curve": 0.1242,
     "volatility": 0.976,
     "game_spread": 11.205,
     "games": 19
@@ -265,7 +265,7 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -275,16 +275,16 @@
     "predictability": 7,
     "place": 28,
     "of": 30,
-    "off_curve": 0.1472,
+    "off_curve": 0.1473,
     "volatility": 1.035,
-    "game_spread": 11.8817,
-    "games": 16
+    "game_spread": 11.8863,
+    "games": 17
    },
    "curve": {
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -294,7 +294,7 @@
     "predictability": 34,
     "place": 20,
     "of": 30,
-    "off_curve": 0.1368,
+    "off_curve": 0.1367,
     "volatility": 1.008,
     "game_spread": 11.5759,
     "games": 16
@@ -303,26 +303,26 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
   },
   "CHI": {
    "offense": {
-    "predictability": 86,
-    "place": 5,
+    "predictability": 79,
+    "place": 7,
     "of": 30,
-    "off_curve": 0.1253,
-    "volatility": 0.978,
-    "game_spread": 11.2334,
-    "games": 17
+    "off_curve": 0.127,
+    "volatility": 0.983,
+    "game_spread": 11.2879,
+    "games": 18
    },
    "curve": {
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -332,7 +332,7 @@
     "predictability": 72,
     "place": 9,
     "of": 30,
-    "off_curve": 0.1287,
+    "off_curve": 0.1286,
     "volatility": 0.987,
     "game_spread": 11.3361,
     "games": 17
@@ -341,18 +341,18 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
   },
   "UTAH": {
    "offense": {
-    "predictability": 52,
-    "place": 15,
+    "predictability": 55,
+    "place": 14,
     "of": 30,
-    "off_curve": 0.1315,
-    "volatility": 0.995,
+    "off_curve": 0.1314,
+    "volatility": 0.994,
     "game_spread": 11.4186,
     "games": 19
    },
@@ -360,7 +360,7 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -370,26 +370,26 @@
     "predictability": 28,
     "place": 22,
     "of": 30,
-    "off_curve": 0.1382,
-    "volatility": 1.012,
-    "game_spread": 11.6148,
-    "games": 18
+    "off_curve": 0.1377,
+    "volatility": 1.011,
+    "game_spread": 11.6049,
+    "games": 19
    },
    "curve": {
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
   },
   "IND": {
    "offense": {
-    "predictability": 83,
-    "place": 6,
+    "predictability": 86,
+    "place": 5,
     "of": 30,
-    "off_curve": 0.1255,
+    "off_curve": 0.1254,
     "volatility": 0.979,
     "game_spread": 11.2408,
     "games": 18
@@ -398,7 +398,7 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -409,7 +409,7 @@
     "place": 1,
     "of": 30,
     "off_curve": 0.1126,
-    "volatility": 0.946,
+    "volatility": 0.945,
     "game_spread": 10.8555,
     "games": 19
    },
@@ -417,7 +417,7 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -427,7 +427,7 @@
     "predictability": 48,
     "place": 16,
     "of": 30,
-    "off_curve": 0.1325,
+    "off_curve": 0.1324,
     "volatility": 0.997,
     "game_spread": 11.4488,
     "games": 18
@@ -436,7 +436,7 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -446,7 +446,7 @@
     "predictability": 45,
     "place": 17,
     "of": 30,
-    "off_curve": 0.1335,
+    "off_curve": 0.1334,
     "volatility": 1.0,
     "game_spread": 11.478,
     "games": 18
@@ -455,7 +455,7 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -474,7 +474,7 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -484,7 +484,7 @@
     "predictability": 21,
     "place": 24,
     "of": 30,
-    "off_curve": 0.1394,
+    "off_curve": 0.1393,
     "volatility": 1.015,
     "game_spread": 11.6516,
     "games": 17
@@ -493,7 +493,7 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -503,7 +503,7 @@
     "predictability": 66,
     "place": 11,
     "of": 30,
-    "off_curve": 0.1291,
+    "off_curve": 0.129,
     "volatility": 0.988,
     "game_spread": 11.3474,
     "games": 17
@@ -512,7 +512,7 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -522,16 +522,16 @@
     "predictability": 24,
     "place": 23,
     "of": 30,
-    "off_curve": 0.1393,
-    "volatility": 1.015,
-    "game_spread": 11.6474,
-    "games": 16
+    "off_curve": 0.1381,
+    "volatility": 1.011,
+    "game_spread": 11.6148,
+    "games": 17
    },
    "curve": {
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -541,16 +541,16 @@
     "predictability": 38,
     "place": 19,
     "of": 30,
-    "off_curve": 0.1368,
-    "volatility": 1.008,
-    "game_spread": 11.5749,
-    "games": 18
+    "off_curve": 0.1361,
+    "volatility": 1.006,
+    "game_spread": 11.5557,
+    "games": 19
    },
    "curve": {
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
@@ -560,8 +560,8 @@
     "predictability": 97,
     "place": 2,
     "of": 30,
-    "off_curve": 0.1242,
-    "volatility": 0.976,
+    "off_curve": 0.1241,
+    "volatility": 0.975,
     "game_spread": 11.2006,
     "games": 16
    },
@@ -569,11 +569,11 @@
     "metric": "Points per 100 possessions",
     "event": "possession",
     "z": 1.5,
-    "league_spread": 11.4808,
+    "league_spread": 11.4835,
     "league_off_curve": 0.1336,
     "units": 30
    }
   }
  },
- "generated_at_utc": "2026-11-25T11:10:37+00:00"
+ "generated_at_utc": "2026-11-26T03:24:13+00:00"
 }
