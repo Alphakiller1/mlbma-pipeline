@@ -3,7 +3,7 @@
   "sport": "cfb",
   "season": 2026,
   "week": 13,
-  "generated_at_utc": "2026-11-25T21:52:34Z",
+  "generated_at_utc": "2026-11-26T21:46:55Z",
   "data_through_utc": "2026-11-24T23:27:54Z",
   "games": [
     {
@@ -4382,7 +4382,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -9.5641,
+            "value": -9.5642,
             "better": "high",
             "format": "num",
             "rank": 124,
@@ -12177,7 +12177,7 @@
             "value": 36.9167,
             "better": "neutral",
             "format": "num",
-            "rank": 13,
+            "rank": 14,
             "of": 138
           },
           "def_disruption_rate": {
@@ -19791,7 +19791,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -10.5219,
+            "value": -10.522,
             "better": "high",
             "format": "num",
             "rank": 129,
@@ -23422,7 +23422,7 @@
       "venue_city": "Lubbock, TX",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 46,
+      "weather_temp": 50,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -28402,6 +28402,18 @@
             "value_recent": 2.46
           },
           {
+            "player": "Kari Ashley",
+            "position": "TE",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "return": "Nov 26th",
+            "updated": "Nov 26 8:00 PM",
+            "source": "RotoWire",
+            "value": 0.3,
+            "missed": 0,
+            "value_recent": 0.3
+          },
+          {
             "player": "Ansel Din-Mbuh",
             "position": "DT",
             "status": "Probable",
@@ -28411,18 +28423,6 @@
             "source": "RotoWire",
             "value": null,
             "missed": 2
-          },
-          {
-            "player": "Kari Ashley",
-            "position": "TE",
-            "status": "Probable",
-            "injury": "Undisclosed",
-            "return": "Nov 26th",
-            "updated": "Nov 26 8:00 PM",
-            "source": "RotoWire",
-            "value": 0.3,
-            "missed": 0,
-            "value_recent": 0.3
           }
         ],
         "sources": "Covers, RotoWire"
@@ -32094,7 +32094,7 @@
           {
             "player": "Bryce Butler",
             "position": "DT",
-            "status": "Questionable",
+            "status": "Probable",
             "injury": "Undisclosed",
             "return": "Nov 26th",
             "updated": "Nov 26 8:00 PM",
@@ -32105,7 +32105,7 @@
           {
             "player": "Cash Cleveland",
             "position": "OG",
-            "status": "Questionable",
+            "status": "Probable",
             "injury": "Undisclosed",
             "return": "Nov 26th",
             "updated": "Nov 26 8:00 PM",
@@ -34830,8 +34830,8 @@
       "venue_city": "Akron, OH",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 42,
-      "weather_cond": "Rain",
+      "weather_temp": 40,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -42725,7 +42725,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -7.8656,
+            "value": -7.8657,
             "better": "high",
             "format": "num",
             "rank": 108,
@@ -50221,7 +50221,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 9.5865,
+            "value": 9.5863,
             "better": "high",
             "format": "num",
             "rank": 17,
@@ -54006,7 +54006,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 12.0075,
+            "value": 12.0073,
             "better": "high",
             "format": "num",
             "rank": 4,
@@ -59008,7 +59008,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 4.4862,
+            "value": 4.4863,
             "better": "high",
             "format": "num",
             "rank": 56,
@@ -62862,7 +62862,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 4.8922,
+            "value": 4.8923,
             "better": "high",
             "format": "num",
             "rank": 53,
@@ -66120,7 +66120,7 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "ESPN",
-      "weather_temp": 56,
+      "weather_temp": 57,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -77393,8 +77393,8 @@
       "venue_city": "Athens, OH",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 40,
-      "weather_cond": "Rain and snow",
+      "weather_temp": 41,
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -81639,7 +81639,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -13.7659,
+            "value": -13.766,
             "better": "high",
             "format": "num",
             "rank": 137,
@@ -85338,7 +85338,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -13.8957,
+            "value": -13.8958,
             "better": "high",
             "format": "num",
             "rank": 138,
@@ -88560,7 +88560,7 @@
       "venue_city": "Mobile, AL",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 55,
+      "weather_temp": 56,
       "weather_cond": "Hazy sunshine",
       "away_form": {
         "rates": {
@@ -89457,7 +89457,7 @@
             "value": 0.0609,
             "better": "high",
             "format": "pct",
-            "rank": 81,
+            "rank": 82,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -100165,7 +100165,7 @@
       "roof": "Outdoor",
       "broadcast": "ABC",
       "weather_temp": 59,
-      "weather_cond": "Intermittent clouds",
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -104537,7 +104537,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 12.2699,
+            "value": 12.2697,
             "better": "high",
             "format": "num",
             "rank": 3,
@@ -119765,7 +119765,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -7.2459,
+            "value": -7.246,
             "better": "high",
             "format": "num",
             "rank": 103,
@@ -123268,8 +123268,8 @@
       "venue_city": "Memphis, TN",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 53,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 51,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -147055,7 +147055,7 @@
       "roof": "Outdoor",
       "broadcast": "NBC",
       "weather_temp": 40,
-      "weather_cond": "Partly cloudy",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -155086,7 +155086,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 5.5016,
+            "value": 5.5015,
             "better": "high",
             "format": "num",
             "rank": 49,
@@ -158319,7 +158319,7 @@
       "venue_city": "College Station, TX",
       "roof": "Outdoor",
       "broadcast": "ABC",
-      "weather_temp": 57,
+      "weather_temp": 59,
       "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
@@ -158824,7 +158824,7 @@
             "value": 36.9091,
             "better": "neutral",
             "format": "num",
-            "rank": 14,
+            "rank": 15,
             "of": 138
           },
           "def_disruption_rate": {
@@ -166418,7 +166418,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 9.9957,
+            "value": 9.9955,
             "better": "high",
             "format": "num",
             "rank": 13,
@@ -169630,8 +169630,8 @@
       "venue_city": "Salt Lake City, UT",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 45,
-      "weather_cond": "Cloudy",
+      "weather_temp": 48,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -169822,7 +169822,7 @@
             "label": "Sacks per game",
             "value": 2.1818,
             "better": "high",
-            "rank": 58,
+            "rank": 59,
             "of": 138,
             "format": "num"
           },
@@ -170527,7 +170527,7 @@
             "value": 0.0601,
             "better": "high",
             "format": "pct",
-            "rank": 83,
+            "rank": 84,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -180697,8 +180697,8 @@
       "venue_city": "Miami Gardens, FL",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 71,
-      "weather_cond": "Mostly cloudy",
+      "weather_temp": 72,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -181594,7 +181594,7 @@
             "value": 0.0606,
             "better": "high",
             "format": "pct",
-            "rank": 82,
+            "rank": 83,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -191538,8 +191538,8 @@
       "venue_city": "Muncie, IN",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 43,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 45,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -195875,7 +195875,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -8.4713,
+            "value": -8.4714,
             "better": "high",
             "format": "num",
             "rank": 111,
@@ -199649,7 +199649,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -7.4015,
+            "value": -7.4014,
             "better": "high",
             "format": "num",
             "rank": 105,
@@ -203192,8 +203192,8 @@
       "venue_city": "Laramie, WY",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 38,
-      "weather_cond": "Cloudy",
+      "weather_temp": 37,
+      "weather_cond": "Snow",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -214611,7 +214611,7 @@
       "venue_city": "Lexington, KY",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 46,
+      "weather_temp": 47,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -215508,7 +215508,7 @@
             "value": 0.0596,
             "better": "high",
             "format": "pct",
-            "rank": 84,
+            "rank": 85,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -222674,7 +222674,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 11.5175,
+            "value": 11.5173,
             "better": "high",
             "format": "num",
             "rank": 6,
@@ -225731,7 +225731,7 @@
       "venue_city": "Statesboro, GA",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 56,
+      "weather_temp": 57,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -226092,7 +226092,7 @@
             "value": 0.4931,
             "better": "neutral",
             "format": "pct",
-            "rank": 66,
+            "rank": 67,
             "of": 138
           },
           "off_sack_rate": {
@@ -226612,7 +226612,7 @@
             "value": 0.4933,
             "better": "neutral",
             "format": "pct",
-            "rank": 65,
+            "rank": 66,
             "of": 138
           },
           "off_sack_rate": {
@@ -230181,7 +230181,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -6.5851,
+            "value": -6.5852,
             "better": "high",
             "format": "num",
             "rank": 96,
@@ -237666,7 +237666,7 @@
       "venue_city": "Columbus, OH",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 44,
+      "weather_temp": 42,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -241981,7 +241981,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 23.247,
+            "value": 23.248,
             "better": "high",
             "format": "num",
             "rank": 6,
@@ -250362,7 +250362,7 @@
             "value": 0.0471,
             "better": "high",
             "format": "pct",
-            "rank": 93,
+            "rank": 94,
             "of": 138
           }
         },
@@ -260696,7 +260696,7 @@
       "roof": "Outdoor",
       "broadcast": "ACC Network",
       "weather_temp": 56,
-      "weather_cond": "Mostly sunny",
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -272140,8 +272140,8 @@
       "roof": "Indoor",
       "surface": "Indoor",
       "broadcast": "ABC",
-      "weather_temp": 46,
-      "weather_cond": "Cloudy",
+      "weather_temp": 43,
+      "weather_cond": "Showers",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -283653,7 +283653,7 @@
       "venue_city": "Evanston, IL",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 49,
+      "weather_temp": 52,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -287854,7 +287854,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 8.5451,
+            "value": 8.5452,
             "better": "high",
             "format": "num",
             "rank": 22,
@@ -291567,7 +291567,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.7855,
+            "value": 6.7856,
             "better": "high",
             "format": "num",
             "rank": 32,
@@ -295170,7 +295170,7 @@
       "venue_city": "Fayetteville, AR",
       "roof": "Outdoor",
       "broadcast": "SEC Network",
-      "weather_temp": 54,
+      "weather_temp": 53,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -303254,7 +303254,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 13.6496,
+            "value": 13.6494,
             "better": "high",
             "format": "num",
             "rank": 1,
@@ -303283,7 +303283,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 20.569,
+            "value": 20.568,
             "better": "high",
             "format": "num",
             "rank": 9,
@@ -318010,7 +318010,7 @@
       "venue_city": "Bowling Green, KY",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 53,
+      "weather_temp": 54,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -325972,7 +325972,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -3.8235,
+            "value": -3.8236,
             "better": "high",
             "format": "num",
             "rank": 84,
@@ -329638,8 +329638,8 @@
       "venue_city": "Monroe, LA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 64,
-      "weather_cond": "Sunny",
+      "weather_temp": 67,
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -341303,7 +341303,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN+",
       "weather_temp": 59,
-      "weather_cond": "Mostly sunny",
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -341494,7 +341494,7 @@
             "label": "Sacks per game",
             "value": 2.1818,
             "better": "high",
-            "rank": 58,
+            "rank": 59,
             "of": 138,
             "format": "num"
           },
@@ -349769,7 +349769,20 @@
         ]
       ],
       "home_injuries": {
-        "players": [],
+        "players": [
+          {
+            "player": "Q. Henicle",
+            "position": "QB",
+            "status": "Probable",
+            "injury": "Undisclosed",
+            "updated": "Fri, Oct 16",
+            "source": "RotoWire + Covers",
+            "return": "2026-11-28",
+            "value": 1.28,
+            "missed": 0,
+            "value_recent": 0.76
+          }
+        ],
         "sources": "Covers, RotoWire"
       },
       "away_run_game": {
@@ -352542,6 +352555,8 @@
               }
             }
           },
+          "status": "Probable",
+          "injury": "Undisclosed",
           "depth_rank": 2
         }
       ],
@@ -352664,7 +352679,9 @@
             "format": "int",
             "rank": 32,
             "of": 580
-          }
+          },
+          "status": "Probable",
+          "injury": "Undisclosed"
         },
         {
           "player_id": "5193349",
@@ -352773,7 +352790,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN+",
       "weather_temp": 71,
-      "weather_cond": "Mostly sunny",
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -374296,8 +374313,8 @@
       "venue_city": "Ames, IA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 51,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 50,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -379243,6 +379260,18 @@
             "value": 0.03,
             "missed": 8,
             "value_recent": 0.0
+          },
+          {
+            "player": "D. Duff",
+            "position": "QB",
+            "status": "Questionable",
+            "injury": "Undisclosed",
+            "updated": "Sat, Oct 17",
+            "source": "RotoWire + Covers",
+            "return": "2026-11-28",
+            "value": 2.77,
+            "missed": 0,
+            "value_recent": 2.77
           }
         ],
         "sources": "Covers, RotoWire"
@@ -383970,6 +383999,8 @@
               }
             }
           },
+          "status": "Questionable",
+          "injury": "Undisclosed",
           "depth_rank": 1
         },
         {
@@ -386140,8 +386171,8 @@
       "venue_city": "Springfield, MO",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 58,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 56,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -387173,7 +387204,7 @@
             "value": 0.047,
             "better": "high",
             "format": "pct",
-            "rank": 94,
+            "rank": 95,
             "of": 138
           }
         },
@@ -397961,7 +397992,7 @@
             "label": "Sacks per game",
             "value": 2.1818,
             "better": "high",
-            "rank": 58,
+            "rank": 59,
             "of": 138,
             "format": "num"
           },
@@ -409815,7 +409846,7 @@
             "value": 13.5455,
             "better": "high",
             "format": "num",
-            "rank": 70,
+            "rank": 71,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -420196,7 +420227,7 @@
       "roof": "Outdoor",
       "broadcast": "TNT",
       "weather_temp": 52,
-      "weather_cond": "Mostly cloudy",
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -431952,7 +431983,7 @@
       "venue_city": "Atlanta, GA",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 57,
+      "weather_temp": 58,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -443716,7 +443747,7 @@
       "venue_city": "Clemson, SC",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 63,
+      "weather_temp": 60,
       "weather_cond": "Sunny",
       "away_form": {
         "rates": {
@@ -448062,7 +448093,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 9.9783,
+            "value": 9.9782,
             "better": "high",
             "format": "num",
             "rank": 14,
@@ -451963,7 +451994,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.2566,
+            "value": 6.2565,
             "better": "high",
             "format": "num",
             "rank": 42,
@@ -451992,7 +452023,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 9.498,
+            "value": 9.497,
             "better": "high",
             "format": "num",
             "rank": 35,
@@ -455619,7 +455650,7 @@
             "value": 0.061,
             "better": "high",
             "format": "pct",
-            "rank": 80,
+            "rank": 81,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -466351,7 +466382,7 @@
       "venue_city": "Blacksburg, VA",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 52,
+      "weather_temp": 54,
       "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
@@ -477803,8 +477834,8 @@
       "venue_city": "Provo, UT",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 45,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 49,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -478507,7 +478538,7 @@
             "label": "Sacks taken per game",
             "value": 0.8182,
             "better": "low",
-            "rank": 7,
+            "rank": 6,
             "of": 138,
             "format": "num"
           },
@@ -478515,7 +478546,7 @@
             "label": "Sacks per game",
             "value": 2.1818,
             "better": "high",
-            "rank": 58,
+            "rank": 59,
             "of": 138,
             "format": "num"
           },
@@ -488815,7 +488846,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN, Disney+",
       "weather_temp": 59,
-      "weather_cond": "Mostly sunny",
+      "weather_cond": "Sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -489711,7 +489742,7 @@
             "value": 0.0594,
             "better": "high",
             "format": "pct",
-            "rank": 85,
+            "rank": 86,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -504845,7 +504876,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (remaining)",
-            "value": 28.683,
+            "value": 28.682,
             "better": "high",
             "format": "num",
             "rank": 1,
@@ -508641,7 +508672,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 8.9447,
+            "value": 8.9446,
             "better": "high",
             "format": "num",
             "rank": 20,
@@ -511905,8 +511936,8 @@
       "venue_city": "Newark, DE",
       "roof": "Outdoor",
       "broadcast": "CBSSN",
-      "weather_temp": 57,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 54,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -512097,7 +512128,7 @@
             "label": "Sacks per game",
             "value": 2.1818,
             "better": "high",
-            "rank": 58,
+            "rank": 59,
             "of": 138,
             "format": "num"
           },
@@ -523182,7 +523213,7 @@
       "venue_city": "Bowling Green, OH",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 49,
+      "weather_temp": 47,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -527605,7 +527636,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -13.6728,
+            "value": -13.6729,
             "better": "high",
             "format": "num",
             "rank": 136,
@@ -542806,7 +542837,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 7.3915,
+            "value": 7.3916,
             "better": "high",
             "format": "num",
             "rank": 27,
@@ -546257,8 +546288,8 @@
       "venue_city": "Stanford, CA",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 64,
-      "weather_cond": "Partly sunny",
+      "weather_temp": 62,
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -557129,7 +557160,7 @@
       "venue_city": "Tampa, FL",
       "roof": "Outdoor",
       "broadcast": "ESPN+",
-      "weather_temp": 67,
+      "weather_temp": 68,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -557642,7 +557673,7 @@
             "value": 0.0465,
             "better": "high",
             "format": "pct",
-            "rank": 95,
+            "rank": 96,
             "of": 138
           }
         },
@@ -557841,7 +557872,7 @@
             "label": "Sacks per game",
             "value": 2.1818,
             "better": "high",
-            "rank": 58,
+            "rank": 59,
             "of": 138,
             "format": "num"
           },
@@ -558042,7 +558073,7 @@
             "value": 13.5455,
             "better": "high",
             "format": "num",
-            "rank": 70,
+            "rank": 71,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -568857,7 +568888,7 @@
       "roof": "Outdoor",
       "broadcast": "CBS",
       "weather_temp": 72,
-      "weather_cond": "Partly sunny",
+      "weather_cond": "Mostly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -573085,7 +573116,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.5028,
+            "value": 6.5029,
             "better": "high",
             "format": "num",
             "rank": 38,
@@ -580235,7 +580266,7 @@
       "roof": "Outdoor",
       "broadcast": "MW+",
       "weather_temp": 49,
-      "weather_cond": "Intermittent clouds",
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -591645,8 +591676,8 @@
       "venue_city": "Denton, TX",
       "roof": "Outdoor",
       "broadcast": "ESPNU",
-      "weather_temp": 68,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 69,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -592357,7 +592388,7 @@
             "label": "Sacks per game",
             "value": 2.1818,
             "better": "high",
-            "rank": 58,
+            "rank": 59,
             "of": 138,
             "format": "num"
           },
@@ -602741,7 +602772,7 @@
       "venue_city": "Piscataway, NJ",
       "roof": "Outdoor",
       "broadcast": "BTN",
-      "weather_temp": 54,
+      "weather_temp": 52,
       "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
@@ -607140,7 +607171,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 8.9869,
+            "value": 8.9868,
             "better": "high",
             "format": "num",
             "rank": 19,
@@ -611406,6 +611437,18 @@
             "source": "Covers",
             "value": null,
             "missed": 6
+          },
+          {
+            "player": "D. Lonergan",
+            "position": "QB",
+            "status": "Probable",
+            "injury": "Undisclosed",
+            "updated": "Sun, Oct 4",
+            "source": "RotoWire + Covers",
+            "return": "2026-11-28",
+            "value": 1.71,
+            "missed": 4,
+            "value_recent": 0.0
           }
         ],
         "sources": "Covers, RotoWire"
@@ -613812,6 +613855,8 @@
               }
             }
           },
+          "status": "Probable",
+          "injury": "Undisclosed",
           "depth_rank": 2
         }
       ],
@@ -614012,7 +614057,9 @@
             "format": "int",
             "rank": 565,
             "of": 580
-          }
+          },
+          "status": "Probable",
+          "injury": "Undisclosed"
         }
       ],
       "away_starter": "Kayd Coffman",
@@ -614043,7 +614090,7 @@
       "roof": "Outdoor",
       "broadcast": "SEC Network",
       "weather_temp": 53,
-      "weather_cond": "Mostly cloudy",
+      "weather_cond": "Cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -614746,7 +614793,7 @@
             "label": "Sacks taken per game",
             "value": 0.8182,
             "better": "low",
-            "rank": 7,
+            "rank": 6,
             "of": 138,
             "format": "num"
           },
@@ -614931,7 +614978,7 @@
             "value": 0.025,
             "better": "low",
             "format": "pct",
-            "rank": 5,
+            "rank": 4,
             "of": 138
           },
           "def_sack_rate": {
@@ -618362,7 +618409,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 9.4639,
+            "value": 9.4637,
             "better": "high",
             "format": "num",
             "rank": 18,
@@ -621980,7 +622027,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 10.2013,
+            "value": 10.2012,
             "better": "high",
             "format": "num",
             "rank": 10,
@@ -625152,7 +625199,7 @@
       "venue_city": "Fort Collins, CO",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 41,
+      "weather_temp": 39,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -625334,9 +625381,9 @@
           },
           "off_sacks": {
             "label": "Sacks taken per game",
-            "value": 0.7273,
+            "value": 0.8182,
             "better": "low",
-            "rank": 5,
+            "rank": 6,
             "of": 138,
             "format": "num"
           },
@@ -625502,7 +625549,7 @@
           },
           "off_pass_rate": {
             "label": "Dropback share",
-            "value": 0.4308,
+            "value": 0.4321,
             "better": "neutral",
             "format": "pct",
             "rank": 117,
@@ -625518,10 +625565,10 @@
           },
           "off_sack_rate": {
             "label": "Sacks allowed per dropback",
-            "value": 0.0242,
+            "value": 0.0272,
             "better": "low",
             "format": "pct",
-            "rank": 4,
+            "rank": 5,
             "of": 138
           },
           "def_sack_rate": {
@@ -625534,10 +625581,10 @@
           },
           "off_sack_yards_pg": {
             "label": "Sack yards lost per game",
-            "value": 4.2727,
+            "value": 4.3636,
             "better": "low",
             "format": "num",
-            "rank": 6,
+            "rank": 7,
             "of": 138
           },
           "def_sack_yards_pg": {
@@ -625646,10 +625693,10 @@
           },
           "off_dropbacks_pg": {
             "label": "Dropbacks per game",
-            "value": 30.0,
+            "value": 30.0909,
             "better": "neutral",
             "format": "num",
-            "rank": 99,
+            "rank": 98,
             "of": 138
           },
           "def_dropbacks_pg": {
@@ -636737,8 +636784,8 @@
       "venue_city": "Stillwater, OK",
       "roof": "Outdoor",
       "broadcast": "ESPN2",
-      "weather_temp": 60,
-      "weather_cond": "Mostly sunny",
+      "weather_temp": 59,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -636929,7 +636976,7 @@
             "label": "Sacks per game",
             "value": 2.1818,
             "better": "high",
-            "rank": 58,
+            "rank": 59,
             "of": 138,
             "format": "num"
           },
@@ -648003,8 +648050,8 @@
       "venue_city": "Pullman, WA",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 43,
-      "weather_cond": "Intermittent clouds",
+      "weather_temp": 41,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -648193,9 +648240,9 @@
           },
           "def_sacks": {
             "label": "Sacks per game",
-            "value": 2.1818,
+            "value": 2.2727,
             "better": "high",
-            "rank": 58,
+            "rank": 51,
             "of": 138,
             "format": "num"
           },
@@ -648361,10 +648408,10 @@
           },
           "def_pass_rate": {
             "label": "Opponent dropback share",
-            "value": 0.4927,
+            "value": 0.4939,
             "better": "neutral",
             "format": "pct",
-            "rank": 67,
+            "rank": 65,
             "of": 138
           },
           "off_sack_rate": {
@@ -648377,10 +648424,10 @@
           },
           "def_sack_rate": {
             "label": "Sacks generated per opponent dropback",
-            "value": 0.0591,
+            "value": 0.0614,
             "better": "high",
             "format": "pct",
-            "rank": 86,
+            "rank": 80,
             "of": 138
           },
           "off_sack_yards_pg": {
@@ -648393,10 +648440,10 @@
           },
           "def_sack_yards_pg": {
             "label": "Opponent sack yards lost per game",
-            "value": 13.5455,
+            "value": 13.6364,
             "better": "high",
             "format": "num",
-            "rank": 70,
+            "rank": 68,
             "of": 138
           },
           "off_rush_attempts_pg": {
@@ -648505,18 +648552,18 @@
           },
           "def_dropbacks_pg": {
             "label": "Opponent dropbacks per game",
-            "value": 36.9091,
+            "value": 37.0,
             "better": "neutral",
             "format": "num",
-            "rank": 14,
+            "rank": 11,
             "of": 138
           },
           "def_disruption_rate": {
             "label": "Sacks plus takeaways per defensive play",
-            "value": 0.0461,
+            "value": 0.0473,
             "better": "high",
             "format": "pct",
-            "rank": 96,
+            "rank": 91,
             "of": 138
           }
         },
@@ -659459,8 +659506,8 @@
       "venue_city": "Bloomington, IN",
       "roof": "Outdoor",
       "broadcast": "FS1",
-      "weather_temp": 41,
-      "weather_cond": "Partly cloudy",
+      "weather_temp": 42,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -667377,7 +667424,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 6.1956,
+            "value": 6.1957,
             "better": "high",
             "format": "num",
             "rank": 43,
@@ -670776,7 +670823,7 @@
       "venue_city": "Nashville, TN",
       "roof": "Outdoor",
       "broadcast": "ESPN",
-      "weather_temp": 51,
+      "weather_temp": 52,
       "weather_cond": "Partly cloudy",
       "away_form": {
         "rates": {
@@ -671488,7 +671535,7 @@
             "label": "Sacks per game",
             "value": 2.1818,
             "better": "high",
-            "rank": 58,
+            "rank": 59,
             "of": 138,
             "format": "num"
           },
@@ -675132,7 +675179,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 9.8326,
+            "value": 9.8324,
             "better": "high",
             "format": "num",
             "rank": 16,
@@ -678866,7 +678913,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 10.1168,
+            "value": 10.1167,
             "better": "high",
             "format": "num",
             "rank": 11,
@@ -682335,7 +682382,7 @@
       "venue_city": "Tuscaloosa, AL",
       "roof": "Outdoor",
       "broadcast": "ABC, Disney+",
-      "weather_temp": 54,
+      "weather_temp": 55,
       "weather_cond": "Clear",
       "away_form": {
         "rates": {
@@ -686609,7 +686656,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 10.0068,
+            "value": 10.0066,
             "better": "high",
             "format": "num",
             "rank": 12,
@@ -690333,7 +690380,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 10.3774,
+            "value": 10.3771,
             "better": "high",
             "format": "num",
             "rank": 9,
@@ -690907,7 +690954,7 @@
       "venue_city": "Berkeley, CA",
       "roof": "Outdoor",
       "broadcast": "ACC Network",
-      "weather_temp": 62,
+      "weather_temp": 59,
       "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
@@ -702946,8 +702993,8 @@
       "venue_city": "Eugene, OR",
       "roof": "Outdoor",
       "broadcast": "NBC",
-      "weather_temp": 49,
-      "weather_cond": "Cloudy",
+      "weather_temp": 51,
+      "weather_cond": "Partly sunny",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -710986,7 +711033,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": 11.2964,
+            "value": 11.2965,
             "better": "high",
             "format": "num",
             "rank": 7,
@@ -714624,8 +714671,8 @@
       "venue_city": "Tucson, AZ",
       "roof": "Outdoor",
       "broadcast": "Fox",
-      "weather_temp": 64,
-      "weather_cond": "Partly cloudy",
+      "weather_temp": 62,
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -726681,7 +726728,7 @@
             "value": 0.0473,
             "better": "high",
             "format": "pct",
-            "rank": 91,
+            "rank": 92,
             "of": 138
           }
         },
@@ -737678,7 +737725,7 @@
       "roof": "Outdoor",
       "broadcast": "ESPN2",
       "weather_temp": 68,
-      "weather_cond": "Partly cloudy",
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -749081,7 +749128,7 @@
       "venue_city": "Logan, UT",
       "roof": "Outdoor",
       "broadcast": "USA Net",
-      "weather_temp": 39,
+      "weather_temp": 38,
       "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
@@ -749578,7 +749625,7 @@
             "value": 30.0,
             "better": "neutral",
             "format": "num",
-            "rank": 99,
+            "rank": 100,
             "of": 138
           },
           "def_dropbacks_pg": {
@@ -760179,8 +760226,8 @@
       "venue_city": "Fresno, CA",
       "roof": "Outdoor",
       "broadcast": "CW",
-      "weather_temp": 55,
-      "weather_cond": "Mostly clear",
+      "weather_temp": 56,
+      "weather_cond": "Mostly cloudy",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -760371,7 +760418,7 @@
             "label": "Sacks per game",
             "value": 2.1818,
             "better": "high",
-            "rank": 58,
+            "rank": 59,
             "of": 138,
             "format": "num"
           },
@@ -771554,7 +771601,7 @@
       "roof": "Outdoor",
       "broadcast": "MW+",
       "weather_temp": 74,
-      "weather_cond": "Partly cloudy",
+      "weather_cond": "Intermittent clouds",
       "away_form": {
         "rates": {
           "off_ppg": {
@@ -772586,7 +772633,7 @@
             "value": 0.0471,
             "better": "high",
             "format": "pct",
-            "rank": 92,
+            "rank": 93,
             "of": 138
           }
         },
@@ -775716,7 +775763,7 @@
           },
           "fpi": {
             "label": "Opponents' average FPI (played)",
-            "value": -12.6554,
+            "value": -12.6555,
             "better": "high",
             "format": "num",
             "rank": 134,
