@@ -1,8 +1,8 @@
 {
   "schema": "chase-public-nfl-context/1",
   "sport": "nfl",
-  "generated_at_utc": "2026-11-26T04:20:42Z",
-  "data_through_utc": "2026-11-25T21:37:25+00:00",
+  "generated_at_utc": "2026-11-26T14:21:26Z",
+  "data_through_utc": "2026-11-26T07:42:23+00:00",
   "season": 2026,
   "week": 12,
   "note": "Ten observed rates per club with ranks recomputed from each rate against the 32-team pool. No power rating, projected win total or playoff probability is present.",
@@ -4950,8 +4950,8 @@
       "through": "2026-11-22"
     },
     "GB": {
-      "games": 10,
-      "through": "2026-11-15"
+      "games": 11,
+      "through": "2026-11-26"
     },
     "HOU": {
       "games": 10,
@@ -4974,8 +4974,8 @@
       "through": "2026-11-22"
     },
     "LAR": {
-      "games": 10,
-      "through": "2026-11-15"
+      "games": 11,
+      "through": "2026-11-26"
     },
     "LV": {
       "games": 11,
