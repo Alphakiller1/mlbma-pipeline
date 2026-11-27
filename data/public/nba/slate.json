@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-27",
- "generated_at_utc": "2026-11-26T13:15:08+00:00",
+ "generated_at_utc": "2026-11-26T21:33:34+00:00",
  "data_through_utc": "2026-11-26T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -2929,7 +2929,7 @@
       "player_name": "Giannis Antetokounmpo",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3032977.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 32.4,
       "ppg": 28.4,
       "height_in": 83.0,
@@ -3113,7 +3113,7 @@
       "player_name": "Andrew Wiggins",
       "position": "F",
       "headshot": "https://a.espncdn.com/i/headshots/nba/players/full/3059319.png",
-      "status": null,
+      "status": "Day-To-Day",
       "mpg": 26.1,
       "ppg": 9.1,
       "height_in": 78.0,
@@ -4304,9 +4304,76 @@
      "player_id": "4066993",
      "player_name": "Dru Smith",
      "value": 0.27
+    },
+    {
+     "player_id": "4700818",
+     "player_name": "Vladislav Goldin",
+     "value": 0.08
+    },
+    {
+     "player_id": "4837356",
+     "player_name": "Tre Donaldson",
+     "value": 0.05
     }
    ],
-   "away_injuries": [],
+   "away_injuries": [
+    {
+     "player_id": "4700818",
+     "player_name": "Vladislav Goldin",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.08,
+     "value_recent": 0.0,
+     "missed": null
+    },
+    {
+     "player_id": "4837356",
+     "player_name": "Tre Donaldson",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.05,
+     "value_recent": 0.05,
+     "missed": 2
+    },
+    {
+     "player_id": "3032977",
+     "player_name": "Giannis Antetokounmpo",
+     "status": "Probable",
+     "source": "official",
+     "reason": "Injury/Illness - Right Groin Tendinitis",
+     "detail": "Right Groin",
+     "comment": "Antetokounmpo is probable for Friday's game against the Knicks due to right groin tendinitis.",
+     "date": "2026-11-26T21:15Z",
+     "return_date": "2026-11-27",
+     "value": 3.58,
+     "value_recent": 3.61,
+     "missed": 0
+    },
+    {
+     "player_id": "3059319",
+     "player_name": "Andrew Wiggins",
+     "status": "Probable",
+     "source": "official",
+     "reason": "Injury/Illness - Right Ankle Sprain",
+     "detail": "Right Ankle Sprain",
+     "comment": "Wiggins is probable for Friday's game against the Knicks due to a right ankle sprain.",
+     "date": "2026-11-26T21:08Z",
+     "return_date": "2026-11-27",
+     "value": 1.0,
+     "value_recent": 1.0,
+     "missed": 0
+    }
+   ],
    "home_form": {
     "source": "espn-box",
     "season": 2027,
@@ -16933,8 +17000,8 @@
      "source": "espn",
      "reason": null,
      "detail": "Right Hamstring Strain",
-     "comment": "Duren (hamstring) is being assigned to the Motor City Cruise on Wednesday for practice as he ramps up for a return, Eric Vincent of ClutchPoints.com reports.",
-     "date": "2026-11-24T18:27Z",
+     "comment": "Detroit recalled Duren (hamstring) from the G League's Motor City Cruise on Wednesday.",
+     "date": "2026-11-26T15:31Z",
      "return_date": "2026-11-30",
      "value": 1.28,
      "value_recent": 0.0,
@@ -21145,13 +21212,13 @@
      "value": 0.95
     },
     {
-     "player_id": "4871141",
-     "player_name": "Ariel Hukporti",
+     "player_id": "2581018",
+     "player_name": "Kentavious Caldwell-Pope",
      "value": 0.94
     },
     {
-     "player_id": "2581018",
-     "player_name": "Kentavious Caldwell-Pope",
+     "player_id": "4871141",
+     "player_name": "Ariel Hukporti",
      "value": 0.94
     },
     {
@@ -29591,6 +29658,16 @@
      "player_id": "3907823",
      "player_name": "Terance Mann",
      "value": 0.37
+    },
+    {
+     "player_id": "5037873",
+     "player_name": "Drake Powell",
+     "value": 0.24
+    },
+    {
+     "player_id": "4870564",
+     "player_name": "Joshua Jefferson",
+     "value": 0.13
     }
    ],
    "away_injuries": [
@@ -29598,8 +29675,8 @@
      "player_id": "5279130",
      "player_name": "Nolan Traore",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Right Hamstring Strain",
      "detail": "Right Hamstring Strain",
      "comment": "Traore will be re-evaluated in approximately 8-10 weeks due to a right hamstring strain, Michael Scotto of HoopsHype.com reports.",
      "date": "2026-11-23T15:22Z",
@@ -29612,8 +29689,8 @@
      "player_id": "3150844",
      "player_name": "Moritz Wagner",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Left Knee Injury Management",
      "detail": "Left Knee Soreness",
      "comment": "Wagner (knee) will not return to Wednesday's game against the Bucks, C.J. Holmes of the New York Daily News reports.",
      "date": "2026-11-26T02:48Z",
@@ -29621,6 +29698,46 @@
      "value": 0.72,
      "value_recent": 0.72,
      "missed": 0
+    },
+    {
+     "player_id": "5037873",
+     "player_name": "Drake Powell",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - On Assignment",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.24,
+     "value_recent": 0.21,
+     "missed": 5
+    },
+    {
+     "player_id": "4870564",
+     "player_name": "Joshua Jefferson",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - On Assignment",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.13,
+     "value_recent": 0.0,
+     "missed": 14
+    },
+    {
+     "player_id": "5105626",
+     "player_name": "Tyler Bilodeau",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": null
     }
    ],
    "home_form": {
@@ -33762,6 +33879,11 @@
      "player_id": "4431684",
      "player_name": "Trayce Jackson-Davis",
      "value": 0.38
+    },
+    {
+     "player_id": "4397784",
+     "player_name": "Malachi Smith",
+     "value": 0.13
     }
    ],
    "home_injuries": [
@@ -33769,8 +33891,8 @@
      "player_id": "4395625",
      "player_name": "RJ Barrett",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Right Hamstring Strain",
      "detail": "Right Hamstring Strain",
      "comment": "Barrett has been diagnosed with a right hamstring strain and will be re-evaluated in two weeks, Brett Siegel of ClutchPoints.com reports.",
      "date": "2026-11-19T21:13Z",
@@ -33783,8 +33905,8 @@
      "player_id": "6450",
      "player_name": "Kawhi Leonard",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Left Knee Injury Management",
      "detail": "Left Knee Inflammation",
      "comment": "Leonard has begun individual on-court workouts following treatment to address swelling in his left knee, and he will be re-evaluated in one week, Marc J. Spears of ESPN.com reports.",
      "date": "2026-11-24T21:15Z",
@@ -33794,16 +33916,58 @@
      "missed": 15
     },
     {
+     "player_id": "4411057",
+     "player_name": "Kevin McCullar Jr.",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.45,
+     "value_recent": 0.0,
+     "missed": null
+    },
+    {
+     "player_id": "4397784",
+     "player_name": "Malachi Smith",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.13,
+     "value_recent": 0.13,
+     "missed": 1
+    },
+    {
      "player_id": "4432586",
      "player_name": "Nate Bittle",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "G League - Two-Way",
      "detail": "Right Foot Fracture",
      "comment": "Bittle (foot) has been ruled out for Monday's game against the Bucks, Blake Murphy of Sportsnet.ca reports.",
      "date": "2026-11-22T21:13Z",
      "return_date": "2026-11-27",
      "value": null
+    },
+    {
+     "player_id": "4702656",
+     "player_name": "Alijah Martin",
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Left Knee Soreness",
+     "detail": "Left Knee Soreness",
+     "comment": "Martin contributed two rebounds in eight minutes during Tuesday's 111-102 loss to the Knicks.",
+     "date": "2026-11-26T21:19Z",
+     "return_date": "2026-11-27",
+     "value": 0.57,
+     "value_recent": 0.57,
+     "missed": 0
     }
    ]
   },
@@ -37990,13 +38154,13 @@
      "value": 1.95
     },
     {
-     "player_id": "4278039",
-     "player_name": "Nickeil Alexander-Walker",
+     "player_id": "4431680",
+     "player_name": "Onyeka Okongwu",
      "value": 1.87
     },
     {
-     "player_id": "4431680",
-     "player_name": "Onyeka Okongwu",
+     "player_id": "4278039",
+     "player_name": "Nickeil Alexander-Walker",
      "value": 1.87
     },
     {
@@ -38035,13 +38199,13 @@
      "value": 0.99
     },
     {
-     "player_id": "4280151",
-     "player_name": "Corey Kispert",
+     "player_id": "3146557",
+     "player_name": "Jock Landale",
      "value": 0.61
     },
     {
-     "player_id": "3146557",
-     "player_name": "Jock Landale",
+     "player_id": "4280151",
+     "player_name": "Corey Kispert",
      "value": 0.61
     },
     {
@@ -42308,13 +42472,13 @@
      "value": 0.9
     },
     {
-     "player_id": "4351852",
-     "player_name": "Mitchell Robinson",
+     "player_id": "4593841",
+     "player_name": "Baylor Scheierman",
      "value": 0.66
     },
     {
-     "player_id": "4593841",
-     "player_name": "Baylor Scheierman",
+     "player_id": "4351852",
+     "player_name": "Mitchell Robinson",
      "value": 0.66
     },
     {
@@ -42341,18 +42505,70 @@
      "player_id": "4702745",
      "player_name": "Amari Williams",
      "value": 0.39
+    },
+    {
+     "player_id": "4433188",
+     "player_name": "Devin Carter",
+     "value": 0.25
+    },
+    {
+     "player_id": "5106283",
+     "player_name": "Dillon Mitchell",
+     "value": 0.06
     }
    ],
    "home_injuries": [
     {
+     "player_id": "4702745",
+     "player_name": "Amari Williams",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.39,
+     "value_recent": 0.0,
+     "missed": null
+    },
+    {
+     "player_id": "4433188",
+     "player_name": "Devin Carter",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.25,
+     "value_recent": 0.0,
+     "missed": 2
+    },
+    {
+     "player_id": "5106283",
+     "player_name": "Dillon Mitchell",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.06,
+     "value_recent": 0.0,
+     "missed": 11
+    },
+    {
      "player_id": "4351852",
      "player_name": "Mitchell Robinson",
-     "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "status": "Questionable",
+     "source": "official",
+     "reason": "Injury/Illness - Illness",
      "detail": "Illness",
-     "comment": "Robinson (illness) is out for Tuesday's game against Washington, Taylor Snow of the Celtics' official site reports.",
-     "date": "2026-11-23T21:09Z",
+     "comment": "Robinson (illness) is questionable for Friday's game against the Hawks.",
+     "date": "2026-11-26T19:00Z",
      "return_date": "2026-11-27",
      "value": 0.66,
      "value_recent": 0.65,
@@ -58959,13 +59175,13 @@
      "value": 1.24
     },
     {
-     "player_id": "4278585",
-     "player_name": "Collin Gillespie",
+     "player_id": "3155526",
+     "player_name": "Dillon Brooks",
      "value": 1.15
     },
     {
-     "player_id": "3155526",
-     "player_name": "Dillon Brooks",
+     "player_id": "4278585",
+     "player_name": "Collin Gillespie",
      "value": 1.15
     },
     {
@@ -79963,9 +80179,19 @@
      "value": 0.5
     },
     {
+     "player_id": "4703115",
+     "player_name": "Jaron Pierre Jr.",
+     "value": 0.48
+    },
+    {
      "player_id": "4683742",
      "player_name": "Julian Reese",
      "value": 0.17
+    },
+    {
+     "player_id": "4712862",
+     "player_name": "Malik Dia",
+     "value": 0.15
     }
    ],
    "away_injuries": [
@@ -79973,50 +80199,36 @@
      "player_id": "3907497",
      "player_name": "Dejounte Murray",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
+     "source": "official",
+     "reason": "Injury/Illness - Left Ankle Sprain",
      "detail": "Ankle",
      "comment": "Murray (ankle) is out for Friday's game against Memphis.",
      "date": "2026-11-13T20:19Z",
-     "return_date": "2026-11-27",
+     "return_date": "2026-11-29",
      "value": 1.48,
      "value_recent": 0.87,
      "missed": 7
     },
     {
-     "player_id": "4431675",
-     "player_name": "Trendon Watford",
+     "player_id": "4703115",
+     "player_name": "Jaron Pierre Jr.",
      "status": "Out",
-     "source": "espn",
-     "reason": null,
-     "detail": "Right Ankle Sprain",
-     "comment": "Watford (ankle) is out for Saturday's game against the Spurs.",
-     "date": "2026-11-21T18:21Z",
-     "return_date": "2026-11-27",
-     "value": 0.75,
-     "value_recent": 0.0,
-     "missed": 9
-    },
-    {
-     "player_id": "4683634",
-     "player_name": "Bennedict Mathurin",
-     "status": "Out",
-     "source": "espn",
-     "reason": null,
-     "detail": "Left Foot Plantar Fasciitis",
-     "comment": "Mathurin (foot) has been ruled out for Friday's game against the Thunder.",
-     "date": "2026-11-19T21:07Z",
-     "return_date": "2026-11-27",
-     "value": 0.5,
-     "value_recent": 0.46,
-     "missed": 6
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.48,
+     "value_recent": 0.48,
+     "missed": 1
     },
     {
      "player_id": "4683742",
      "player_name": "Julian Reese",
-     "status": "Day-To-Day",
-     "source": "espn",
-     "reason": null,
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
      "detail": "Right Knee",
      "comment": "The Pelicans transferred Reese from the G League's Laketown Squadron, and he will be available for New Orleans' game against the Warriors on Monday.",
      "date": "2026-11-25T16:11Z",
@@ -80024,6 +80236,48 @@
      "value": 0.17,
      "value_recent": 0.18,
      "missed": 4
+    },
+    {
+     "player_id": "4712862",
+     "player_name": "Malik Dia",
+     "status": "Out",
+     "source": "official",
+     "reason": "G League - Two-Way",
+     "detail": null,
+     "comment": null,
+     "date": null,
+     "return_date": null,
+     "value": 0.15,
+     "value_recent": 0.0,
+     "missed": 4
+    },
+    {
+     "player_id": "4683634",
+     "player_name": "Bennedict Mathurin",
+     "status": "Doubtful",
+     "source": "official",
+     "reason": "Injury/Illness - Left Plantar Fasciitis",
+     "detail": "Left Foot Plantar Fasciitis",
+     "comment": "Mathurin (foot) is doubtful for Friday's game against the Clippers.",
+     "date": "2026-11-26T21:21Z",
+     "return_date": "2026-11-27",
+     "value": 0.5,
+     "value_recent": 0.46,
+     "missed": 6
+    },
+    {
+     "player_id": "4431675",
+     "player_name": "Trendon Watford",
+     "status": "Probable",
+     "source": "official",
+     "reason": "Injury/Illness - Right Ankle Sprain",
+     "detail": "Right Ankle Sprain",
+     "comment": "Watford (ankle) is out for Saturday's game against the Spurs.",
+     "date": "2026-11-21T18:21Z",
+     "return_date": "2026-11-27",
+     "value": 0.75,
+     "value_recent": 0.0,
+     "missed": 9
     }
    ],
    "home_form": {
@@ -84160,13 +84414,13 @@
      "value": 0.66
     },
     {
-     "player_id": "6580",
-     "player_name": "Bradley Beal",
+     "player_id": "4432170",
+     "player_name": "Isaiah Jackson",
      "value": 0.63
     },
     {
-     "player_id": "4432170",
-     "player_name": "Isaiah Jackson",
+     "player_id": "6580",
+     "player_name": "Bradley Beal",
      "value": 0.63
     },
     {
@@ -92526,7 +92780,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-26_08_15AM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-26_04_30PM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -92659,5 +92913,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-26T16:46:36+00:00"
+ "published_at_utc": "2026-11-27T01:40:46+00:00"
 }
