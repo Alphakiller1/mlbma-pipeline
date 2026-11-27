@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-27",
- "generated_at_utc": "2026-11-27T08:29:34+00:00",
+ "generated_at_utc": "2026-11-27T14:24:10+00:00",
  "data_through_utc": "2026-11-26T03:00Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -21407,13 +21407,13 @@
      "value": 0.95
     },
     {
-     "player_id": "2581018",
-     "player_name": "Kentavious Caldwell-Pope",
+     "player_id": "4871141",
+     "player_name": "Ariel Hukporti",
      "value": 0.94
     },
     {
-     "player_id": "4871141",
-     "player_name": "Ariel Hukporti",
+     "player_id": "2581018",
+     "player_name": "Kentavious Caldwell-Pope",
      "value": 0.94
     },
     {
@@ -29956,13 +29956,13 @@
      "value": 0.47
     },
     {
-     "player_id": "3907823",
-     "player_name": "Terance Mann",
+     "player_id": "4702670",
+     "player_name": "Grant Nelson",
      "value": 0.37
     },
     {
-     "player_id": "4702670",
-     "player_name": "Grant Nelson",
+     "player_id": "3907823",
+     "player_name": "Terance Mann",
      "value": 0.37
     },
     {
@@ -42840,13 +42840,13 @@
      "value": 0.9
     },
     {
-     "player_id": "4351852",
-     "player_name": "Mitchell Robinson",
+     "player_id": "4593841",
+     "player_name": "Baylor Scheierman",
      "value": 0.66
     },
     {
-     "player_id": "4593841",
-     "player_name": "Baylor Scheierman",
+     "player_id": "4351852",
+     "player_name": "Mitchell Robinson",
      "value": 0.66
     },
     {
@@ -55513,13 +55513,13 @@
      "value": 0.45
     },
     {
-     "player_id": "4432107",
-     "player_name": "Marcus Sasser",
+     "player_id": "5279129",
+     "player_name": "Sergio de Larrea",
      "value": 0.42
     },
     {
-     "player_id": "5279129",
-     "player_name": "Sergio de Larrea",
+     "player_id": "4432107",
+     "player_name": "Marcus Sasser",
      "value": 0.42
     },
     {
@@ -59679,23 +59679,23 @@
      "value": 1.24
     },
     {
-     "player_id": "4278585",
-     "player_name": "Collin Gillespie",
-     "value": 1.15
-    },
-    {
      "player_id": "3155526",
      "player_name": "Dillon Brooks",
      "value": 1.15
     },
     {
-     "player_id": "4278402",
-     "player_name": "Jordan Goodwin",
-     "value": 0.96
+     "player_id": "4278585",
+     "player_name": "Collin Gillespie",
+     "value": 1.15
     },
     {
      "player_id": "4601023",
      "player_name": "Oso Ighodaro",
+     "value": 0.96
+    },
+    {
+     "player_id": "4278402",
+     "player_name": "Jordan Goodwin",
      "value": 0.96
     },
     {
@@ -85171,24 +85171,19 @@
      "value": 0.66
     },
     {
-     "player_id": "4432170",
-     "player_name": "Isaiah Jackson",
+     "player_id": "6580",
+     "player_name": "Bradley Beal",
      "value": 0.63
     },
     {
-     "player_id": "6580",
-     "player_name": "Bradley Beal",
+     "player_id": "4432170",
+     "player_name": "Isaiah Jackson",
      "value": 0.63
     },
     {
      "player_id": "4702352",
      "player_name": "Kobe Sanders",
      "value": 0.58
-    },
-    {
-     "player_id": "5105832",
-     "player_name": "Nick Martinelli",
-     "value": 0.15
     },
     {
      "player_id": "4845363",
@@ -85198,6 +85193,11 @@
     {
      "player_id": "4398390",
      "player_name": "Jalen Pickett",
+     "value": 0.15
+    },
+    {
+     "player_id": "5105832",
+     "player_name": "Nick Martinelli",
      "value": 0.15
     }
    ],
@@ -93635,7 +93635,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-27_03_15AM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-27_09_15AM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -93768,5 +93768,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-27T10:46:13+00:00"
+ "published_at_utc": "2026-11-27T21:06:01+00:00"
 }
