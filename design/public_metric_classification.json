@@ -1721,6 +1721,8 @@
    ".rates.*.of": "provenance",
    ".rates.*.rank": "derived_descriptive",
    ".rates[].rank": "derived_descriptive",
+   ".away_x_factor.place.rank": "derived_descriptive",
+   ".home_x_factor.place.rank": "derived_descriptive",
    ".windows.*.rank": "derived_descriptive",
    ".philosophy.metrics": "derived_descriptive",
    ".reads[].evidence": "derived_descriptive",

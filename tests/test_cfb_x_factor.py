@@ -56,7 +56,11 @@ class ScoreTests(unittest.TestCase):
             self.assertIsNotNone(row["value"])
             if not row["scored"]:
                 self.assertIsNone(row["points"])
-                self.assertIn("does not improve", row["note"])
+                # The held-out number it was rejected on travels with it; the
+                # panel phrases the sentence, because a free-text note on a
+                # published row classifies as a model label.
+                self.assertIsNotNone(row["held_out_r2_with_it"])
+                self.assertNotIn("note", row)
 
     def test_distance_is_priced_on_its_square_root(self):
         """A linear mile priced a 3,000-mile flight at nine points; the first
@@ -93,6 +97,32 @@ class EvidenceTests(unittest.TestCase):
         for key in ("rest", "letdown"):
             self.assertFalse(FIT["not_scored"][key]["helps"])
             self.assertLessEqual(FIT["not_scored"][key]["held_out_r2_with_it"], base)
+
+    def test_a_published_block_passes_the_boundary_classifier(self):
+        """The publisher refuses an unclassified or model-classed key, and an
+        unclassified key stops the whole CFB slate. Run the real classifier
+        over a real block rather than a list of names (2026-11-28)."""
+        import sys
+        sys.path.insert(0, str(ROOT / "scripts"))
+        import validate_public_fields as guard
+        spec = json.loads(guard.CLASSIFICATION.read_text(encoding="utf-8"))
+        values = {"rest": 7.0, "miles": 900.0, "tz": 1.0, "letdown": 4.0, "lookahead": 6.0}
+        prices = cfb_trip.priced(FIT, values)
+        block = {
+            "schema": cfb_trip.SCHEMA, "score": prices["points"]["margin"],
+            "home_game": False, "neutral": False,
+            "inputs": [cfb_trip._entry(FIT, key, label, unit, values, prices["by_input"])
+                       for key, label, unit in cfb_trip.ROWS],
+            "units": {r: {"points": prices["points"][r], "stands_alone": True,
+                          "held_out_r2": FIT["fit"][r]["held_out_r2"],
+                          "shuffled_p": FIT["fit"][r]["shuffled_p"]} for r in ("offense", "defense")},
+            "basis": "empirical", "place": {"rank": 3, "of": 108},
+            "fit": {k: FIT["fit"]["margin"][k] for k in ("held_out_r2", "shuffled_p", "response_sd")},
+            "method": FIT["method"], "sequence_note": FIT["sequence_note"],
+        }
+        for side in ("away", "home"):
+            issues = guard.classify_artifact(spec, {"games": [{side + "_x_factor": block}]}, "slate.json")
+            self.assertEqual(issues, [], issues)
 
     def test_the_published_keys_are_classified(self):
         spec = json.loads((ROOT / "design" / "public_metric_classification.json").read_text(encoding="utf-8"))
