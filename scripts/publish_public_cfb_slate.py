@@ -24,12 +24,13 @@ try:  # run as a script (scripts/ on the path) or imported as scripts.*
     import cfb_penalties
     import cfb_run_lanes
     import cfb_strength
+    import cfb_trip
     import cfb_injuries
     import cfb_injury_value
     import cfb_power
 except ImportError:  # pragma: no cover - package import in tests
     from scripts import (cfb_charting, cfb_depth, cfb_injuries, cfb_injury_value, cfb_pace, cfb_penalties,
-                         cfb_power, cfb_run_lanes, cfb_strength)
+                         cfb_power, cfb_run_lanes, cfb_strength, cfb_trip)
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "public" / "cfb" / "slate.json"
@@ -986,6 +987,8 @@ def public_game(raw: dict, stats: dict, events: dict, pools: dict,
         row[side + "_charting"] = ((depth.get("charting") or {}).get("teams") or {}).get(key)
         # OSI, DSI and NSI (scripts/cfb_strength.py, outputs/strength_index.py).
         row[side + "_strength"] = (depth.get("strength") or {}).get(key)
+        # The X Factor Score: what this week's spot is worth (scripts/cfb_trip.py).
+        row[side + "_x_factor"] = (depth.get("x_factor") or {}).get(key)
         # Fouls by team and unit (scripts/cfb_penalties.py), keyed like the game logs.
         row[side + "_penalties"] = (depth.get("penalties") or {}).get(abbr)
         # Tempo by situation and time of possession (scripts/cfb_pace.py), keyed like the game logs.
@@ -1100,6 +1103,12 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
         print(f"  strength: unavailable ({exc})")
         depth["strength"] = {}
     try:
+        depth["x_factor"] = cfb_trip.build(season)
+        print(f"  x factor: {len(depth['x_factor'])} schools priced this week")
+    except Exception as exc:  # noqa: BLE001 - the slate still publishes without it
+        print(f"  x factor: unavailable ({exc})")
+        depth["x_factor"] = {}
+    try:
         depth["penalties"] = cfb_penalties.build(season, week, wanted, fbs)
     except Exception as exc:  # noqa: BLE001 - the slate still publishes without it
         print(f"  penalties: unavailable ({exc})")
@@ -1123,6 +1132,8 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
 DEPTH_KEYS = ("_run_game", "_scheme_stats", "_charting", "_strength", "_penalties", "_run_lanes", "_qbs", "_defense_splits", "_rushers", "_receivers",
               "_defenders",
               "_schedule_strength", "_power", "_predictability", "_regression", "_value_table", "_pace")
+# The X Factor Score is this week's spot, not a season figure: a school that
+# was not priced this run must not keep last week's trip.
 
 
 def previous_power(season: int, path: Path | None = None) -> dict | None:

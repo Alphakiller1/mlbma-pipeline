@@ -7359,6 +7359,96 @@ function seasonToggle(game) {
   var CFB_SOS_COLS = [['sp', 'Opp SP+'], ['sp_off', 'Opp SP+ Offense'],
     ['sp_def', 'Opp SP+ Defense'], ['fpi', 'Opp FPI'], ['win_rate', 'Opp Win%']];
 
+  /* The X Factor Score (scripts/cfb_trip.py, outputs/trip_difficulty_cfb.json):
+     what this week's spot is worth in points of margin, from the two inputs a
+     walk-forward fit over 2021-2026 scores - the square root of travel miles
+     and the gap from the next opponent's rating to this one's. Rest, zones and
+     the previous opponent are measured and printed beside them, each marked,
+     because adding any of them makes the held-out fit worse.
+
+     Scores and Allows are the same fit against points scored and points
+     allowed, each with a home-field term of its own, and they add back to the
+     score. A line whose inputs do not stand on their own says so rather than
+     reading as a claim about which unit a trip touches. */
+  var X_FACTOR_INPUTS = ['Travel', 'Next Opponent', 'Rest', 'Zones', 'Previous Opponent'];
+
+  function xFactorPoints(value) {
+    return (value < 0 ? '−' : '+') + Math.abs(Number(value)).toFixed(1);
+  }
+
+  function xFactorSpotCell(block) {
+    if (!block || block.score == null) return '<td class="num ca-vs-none">Not Priced</td>';
+    var place = block.place;
+    var tone = place ? rankTone(place.rank, place.of) : '';
+    var words = place ? place.rank + ordinal(place.rank) + ' of ' + place.of + ' this week' : '';
+    var title = 'Points of margin this week’s spot is worth, against the league’s average week' +
+      (words ? ' · ' + words : '') +
+      ' · held-out R² ' + block.fit.held_out_r2 + ' over ' + block.fit.games + ' games';
+    return '<td class="num" title="' + esc(title) + '"><span class="' + tone + '">' +
+      esc(xFactorPoints(block.score)) + '</span><small> pts</small>' +
+      (place ? rankBadge(place, tone, words) : '') + '</td>';
+  }
+
+  function xFactorUnitCell(block, which, note) {
+    var unit = block && block.units && block.units[which];
+    if (!unit || unit.points == null) return '<td class="num ca-vs-none">Not Priced</td>';
+    var title = note + ' · held-out R² ' + unit.held_out_r2 +
+      ', shuffled p ' + unit.shuffled_p +
+      (unit.stands_alone ? '' : ' · a share of the score, not separable on its own');
+    return '<td class="num" title="' + esc(title) + '">' + esc(xFactorPoints(unit.points)) +
+      '<small> pts</small>' +
+      (unit.stands_alone ? '' : '<small class="ca-qb-volume">Share Only</small>') + '</td>';
+  }
+
+  function xFactorInputCell(part) {
+    if (!part || part.value == null) {
+      return '<td class="num ca-vs-none">' + esc(part && part.key === 'lookahead' ?
+        'No Next Game' : 'Not Measured') + '</td>';
+    }
+    var shown = part.unit === 'miles' ? Math.round(part.value).toLocaleString() :
+      part.unit === 'rating' ? xFactorPoints(part.value) : String(part.value);
+    var title = part.label + ' · ' + shown + ' ' + part.unit +
+      (part.scored ? '' : ' · measured; it does not improve the held-out fit, so it is not scored');
+    return '<td class="num" title="' + esc(title) + '">' + esc(shown) +
+      (part.scored && part.points != null ?
+        '<small class="ca-qb-volume">' + esc(xFactorPoints(part.points) + ' pts') + '</small>' :
+        '<small class="ca-qb-volume">Not Scored</small>') + '</td>';
+  }
+
+  function cfbXFactorBody(sport, game) {
+    var blocks = ['away', 'home'].map(function (side) { return game[side + '_x_factor']; });
+    var head = '<section class="ca-form-panel ca-cfb-panel"><h3>' +
+      esc(cfbName(sport, game, 'away') + ' vs ' + cfbName(sport, game, 'home') + ' X Factor Score') +
+      '</h3>';
+    if (!blocks.some(Boolean)) {
+      return head + pending('The X Factor Score is not published for this matchup yet.') + '</section>';
+    }
+    var spot = ['away', 'home'].map(function (side) {
+      var block = game[side + '_x_factor'];
+      return '<tr><td>' + esc(cfbName(sport, game, side)) +
+        (block && block.neutral ? '<small class="ca-qb-volume">Neutral Site</small>' :
+          block && block.home_game ? '<small class="ca-qb-volume">At Home</small>' : '') + '</td>' +
+        xFactorSpotCell(block) +
+        xFactorUnitCell(block, 'offense', 'Points it scores against what its offense was expected to') +
+        xFactorUnitCell(block, 'defense', 'Points it allows against what its defense was expected to') +
+        '</tr>';
+    });
+    var built = ['away', 'home'].map(function (side) {
+      var block = game[side + '_x_factor'];
+      var parts = (block && block.inputs) || [];
+      var byLabel = {};
+      parts.forEach(function (part) { byLabel[part.label] = part; });
+      return '<tr><td>' + esc(cfbName(sport, game, side)) + '</td>' +
+        X_FACTOR_INPUTS.map(function (label) { return xFactorInputCell(byLabel[label]); }).join('') +
+        '</tr>';
+    });
+    return '<div class="ca-detail-stack-inner">' + head +
+      '<div class="ca-split-block"><h4>' + esc(deskCase('This Week’s Spot')) + '</h4>' +
+      nflSplitTable(['X Factor', 'Scores', 'Allows'], spot, 'School') + '</div>' +
+      '<div class="ca-split-block"><h4>' + esc(deskCase('What It Is Built From')) + '</h4>' +
+      nflSplitTable(X_FACTOR_INPUTS, built, 'School') + '</div></section></div>';
+  }
+
   function cfbScheduleBody(sport, game) {
     function table(window, title) {
       var rows = ['away', 'home'].map(function (side) {
@@ -10967,6 +11057,8 @@ function seasonToggle(game) {
             pending: 'The Regression Watch is not published for these schools yet.' })),
       section('cfb-schedule', 'Strength Of Schedule', 'FBS Opponents Played And Remaining',
         cfbScheduleBody(sport, game)),
+      section('cfb-x-factor', 'X Factor Score', 'Travel And Schedule Spot · Fitted On 2021-2026',
+        cfbXFactorBody(sport, game)),
       section('cfb-passing', 'Pass Game', 'Efficiency, Volume, Scoring And Protection',
         nflDuo(cfbLedgerPanel, sport, game, 'passing')),
       section('cfb-pass-map', 'Pass Map', 'Depth, Direction, Air Yards And The Pocket, Offense Against Defense',

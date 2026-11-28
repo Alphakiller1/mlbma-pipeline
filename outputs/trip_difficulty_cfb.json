@@ -10,114 +10,120 @@
  ],
  "games": 2260,
  "features": [
+  "sqrt_miles",
+  "lookahead"
+ ],
+ "measured": [
   "rest",
   "miles",
   "tz",
   "letdown",
   "lookahead"
  ],
+ "not_scored": {
+  "scored_alone": 0.0065,
+  "rest": {
+   "held_out_r2_with_it": 0.0061,
+   "helps": false
+  },
+  "tz": {
+   "held_out_r2_with_it": 0.0066,
+   "helps": true
+  },
+  "letdown": {
+   "held_out_r2_with_it": 0.0051,
+   "helps": false
+  }
+ },
  "league_mean": {
-  "rest": 8.3883,
+  "sqrt_miles": 11.5735,
   "miles": 313.5278,
   "tz": 0.2746,
-  "letdown": 0.0462,
-  "lookahead": 0.0266
+  "rest": 8.3883,
+  "lookahead": 0.0266,
+  "letdown": 0.0462
  },
  "weights": {
   "margin": {
-   "intercept": -2.9583,
-   "rest": 0.122199,
-   "miles": -0.003018,
-   "tz": 1.044791,
-   "letdown": 0.029954,
-   "lookahead": 0.075225
+   "intercept": -3.948132,
+   "sqrt_miles": -0.099973,
+   "lookahead": 0.085422
   },
   "offense": {
-   "intercept": -0.1141,
-   "rest": -0.029352,
-   "miles": 0.001213,
-   "tz": -0.559127,
-   "letdown": 0.006085,
-   "lookahead": 0.018714
+   "intercept": 1.5263,
+   "home": -2.447274,
+   "sqrt_miles": -0.037686,
+   "lookahead": 0.027042
   },
   "defense": {
-   "intercept": 0.7934,
-   "rest": -0.09679,
-   "miles": -0.000211,
-   "tz": -0.168018,
-   "letdown": -0.016343,
-   "lookahead": -0.047423
+   "intercept": -2.421572,
+   "home": 3.094643,
+   "sqrt_miles": 0.064207,
+   "lookahead": -0.060864
   }
  },
  "fit": {
   "margin": {
-   "held_out_r2": 0.0045,
+   "held_out_r2": 0.0066,
    "by_season": {
-    "2021": 0.0191,
-    "2022": 0.0094,
-    "2023": 0.0077,
-    "2024": 0.008,
-    "2025": -0.0091,
-    "2026": -0.008
+    "2021": 0.0187,
+    "2022": 0.0058,
+    "2023": 0.0082,
+    "2024": 0.0109,
+    "2025": -0.0038,
+    "2026": -0.0005
    },
    "rows": 2260,
    "response_sd": 16.18,
    "null": "an intercept fitted on the training seasons",
    "t_values": {
-    "intercept": -5.39,
-    "rest": 1.27,
-    "miles": -2.66,
-    "tz": 1.36,
-    "letdown": 1.01,
-    "lookahead": 2.62
+    "intercept": -4.44,
+    "sqrt_miles": -2.82,
+    "lookahead": 3.36
    },
-   "shuffled_p": 0.0025
+   "shuffled_p": 0.0
   },
   "offense": {
-   "held_out_r2": -0.0006,
+   "held_out_r2": 0.0042,
    "by_season": {
-    "2021": 0.0001,
-    "2022": 0.0005,
-    "2023": -0.0022,
-    "2024": -0.005,
-    "2025": 0.0013,
-    "2026": 0.0016
+    "2021": 0.005,
+    "2022": 0.0086,
+    "2023": -0.0044,
+    "2024": -0.0016,
+    "2025": 0.0069,
+    "2026": 0.0104
    },
    "rows": 4520,
    "response_sd": 11.64,
    "null": "an intercept fitted on the training seasons",
    "t_values": {
-    "intercept": -0.21,
-    "rest": -0.48,
-    "miles": 1.79,
-    "tz": -1.05,
-    "letdown": 0.28,
-    "lookahead": 0.87
+    "intercept": 2.38,
+    "home": -3.57,
+    "sqrt_miles": -1.47,
+    "lookahead": 1.46
    },
-   "shuffled_p": 0.2475
+   "shuffled_p": 0.0
   },
   "defense": {
-   "held_out_r2": -0.0009,
+   "held_out_r2": 0.006,
    "by_season": {
-    "2021": 0.0041,
-    "2022": 0.0031,
-    "2023": 0.0041,
-    "2024": -0.0176,
-    "2025": 0.0,
-    "2026": 0.0012
+    "2021": 0.0091,
+    "2022": 0.0141,
+    "2023": 0.0015,
+    "2024": -0.0049,
+    "2025": 0.0025,
+    "2026": 0.0137
    },
    "rows": 4520,
    "response_sd": 11.64,
    "null": "an intercept fitted on the training seasons",
    "t_values": {
-    "intercept": 1.44,
-    "rest": -1.58,
-    "miles": -0.31,
-    "tz": -0.31,
-    "letdown": -0.76,
-    "lookahead": -2.21
+    "intercept": -3.79,
+    "home": 4.52,
+    "sqrt_miles": 2.51,
+    "lookahead": -3.3
    },
-   "shuffled_p": 0.2675
+   "shuffled_p": 0.0
   }
  },
  "method": "Walk-forward over 2021, 2022, 2023, 2024, 2025, 2026: teams rated on the weeks before each one, then the game's own result against that expectation regressed on rest days, great-circle miles, time zones crossed, and the rating gap from the previous and next opponent to this one. Margin is fitted on the home-minus-away difference; points scored and allowed are fitted per side. Each season is scored by weights fitted on the other seasons.",
