@@ -1078,9 +1078,11 @@ def load_depth(season: int, week: int, games_in: list[dict], adjusted: dict | No
         "receivers": cfb_depth.receivers(season, fbs) if fbs else {},
         "defenders": cfb_depth.defenders(season, fbs) if fbs else {},
         "logs": cfb_depth.game_logs(season, week, wanted, fbs),
-        "schedule": cfb_depth.schedule_strength(season, {
-            key[5:]: profile["overall"]["value"] for key, profile in (adjusted or {}).items()
-            if key.startswith("name:") and (profile.get("overall") or {}).get("value") is not None}),
+        "schedule": cfb_depth.schedule_strength(
+            season,
+            *(({key[5:]: profile[part]["value"] for key, profile in (adjusted or {}).items()
+                if key.startswith("name:") and (profile.get(part) or {}).get("value") is not None}
+               for part in ("overall", "offense", "defense")))),
         "injuries": cfb_injuries.load(previous_injuries()),
         "last_game": cfb_depth.last_game_players(season, week, wanted),
         "usage": cfb_depth.recent_usage(season, week, wanted),
