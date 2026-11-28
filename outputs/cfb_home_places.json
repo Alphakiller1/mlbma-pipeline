@@ -1,0 +1,830 @@
+{
+ "USC": {
+  "lat": 34.05223,
+  "lon": -118.24368,
+  "elevation_ft": 292,
+  "timezone": "America/Los_Angeles"
+ },
+ "Virginia": {
+  "lat": 38.02931,
+  "lon": -78.47668,
+  "elevation_ft": 466,
+  "timezone": "America/New_York"
+ },
+ "North Dakota State": {
+  "lat": 46.87719,
+  "lon": -96.7898,
+  "elevation_ft": 906,
+  "timezone": "America/Chicago"
+ },
+ "Eastern Michigan": {
+  "lat": 42.24115,
+  "lon": -83.61299,
+  "elevation_ft": 719,
+  "timezone": "America/Detroit"
+ },
+ "Stanford": {
+  "lat": 37.42411,
+  "lon": -122.16608,
+  "elevation_ft": 75,
+  "timezone": "America/Los_Angeles"
+ },
+ "Florida State": {
+  "lat": 30.43826,
+  "lon": -84.28073,
+  "elevation_ft": 203,
+  "timezone": "America/New_York"
+ },
+ "UNLV": {
+  "lat": 36.17497,
+  "lon": -115.13722,
+  "elevation_ft": 2001,
+  "timezone": "America/Los_Angeles"
+ },
+ "Utah": {
+  "lat": 40.76078,
+  "lon": -111.89105,
+  "elevation_ft": 4262,
+  "timezone": "America/Denver"
+ },
+ "Missouri": {
+  "lat": 38.95171,
+  "lon": -92.33407,
+  "elevation_ft": 705,
+  "timezone": "America/Chicago"
+ },
+ "Rutgers": {
+  "lat": 40.49927,
+  "lon": -74.39904,
+  "elevation_ft": 98,
+  "timezone": "America/New_York"
+ },
+ "UCF": {
+  "lat": 28.53834,
+  "lon": -81.37924,
+  "elevation_ft": 98,
+  "timezone": "America/New_York"
+ },
+ "Wake Forest": {
+  "lat": 36.09986,
+  "lon": -80.24422,
+  "elevation_ft": 961,
+  "timezone": "America/New_York"
+ },
+ "Delaware": {
+  "lat": 39.68372,
+  "lon": -75.74966,
+  "elevation_ft": 125,
+  "timezone": "America/New_York"
+ },
+ "Kennesaw State": {
+  "lat": 34.02343,
+  "lon": -84.61549,
+  "elevation_ft": 1089,
+  "timezone": "America/New_York"
+ },
+ "Buffalo": {
+  "lat": 42.88645,
+  "lon": -78.87837,
+  "elevation_ft": 600,
+  "timezone": "America/New_York"
+ },
+ "Georgia Tech": {
+  "lat": 33.749,
+  "lon": -84.38798,
+  "elevation_ft": 1050,
+  "timezone": "America/New_York"
+ },
+ "Minnesota": {
+  "lat": 44.97997,
+  "lon": -93.26384,
+  "elevation_ft": 830,
+  "timezone": "America/Chicago"
+ },
+ "Illinois": {
+  "lat": 40.11642,
+  "lon": -88.24338,
+  "elevation_ft": 738,
+  "timezone": "America/Chicago"
+ },
+ "Oklahoma": {
+  "lat": 35.22257,
+  "lon": -97.43948,
+  "elevation_ft": 1171,
+  "timezone": "America/Chicago"
+ },
+ "Purdue": {
+  "lat": 40.42587,
+  "lon": -86.90807,
+  "elevation_ft": 610,
+  "timezone": "America/Indiana/Indianapolis"
+ },
+ "Georgia State": {
+  "lat": 33.749,
+  "lon": -84.38798,
+  "elevation_ft": 1050,
+  "timezone": "America/New_York"
+ },
+ "Kansas": {
+  "lat": 38.97167,
+  "lon": -95.23525,
+  "elevation_ft": 863,
+  "timezone": "America/Chicago"
+ },
+ "Michigan State": {
+  "lat": 42.73698,
+  "lon": -84.48387,
+  "elevation_ft": 856,
+  "timezone": "America/Detroit"
+ },
+ "Ohio State": {
+  "lat": 39.96118,
+  "lon": -82.99879,
+  "elevation_ft": 771,
+  "timezone": "America/New_York"
+ },
+ "Oregon": {
+  "lat": 44.05207,
+  "lon": -123.08675,
+  "elevation_ft": 430,
+  "timezone": "America/Los_Angeles"
+ },
+ "Georgia": {
+  "lat": 33.96095,
+  "lon": -83.37794,
+  "elevation_ft": 748,
+  "timezone": "America/New_York"
+ },
+ "Texas": {
+  "lat": 30.26715,
+  "lon": -97.74306,
+  "elevation_ft": 489,
+  "timezone": "America/Chicago"
+ },
+ "Indiana": {
+  "lat": 39.16533,
+  "lon": -86.52639,
+  "elevation_ft": 771,
+  "timezone": "America/Indiana/Indianapolis"
+ },
+ "Texas A&M": {
+  "lat": 30.62798,
+  "lon": -96.33441,
+  "elevation_ft": 338,
+  "timezone": "America/Chicago"
+ },
+ "LSU": {
+  "lat": 30.44332,
+  "lon": -91.18747,
+  "elevation_ft": 46,
+  "timezone": "America/Chicago"
+ },
+ "Texas Tech": {
+  "lat": 33.57786,
+  "lon": -101.85517,
+  "elevation_ft": 3202,
+  "timezone": "America/Chicago"
+ },
+ "Alabama": {
+  "lat": 33.20984,
+  "lon": -87.56917,
+  "elevation_ft": 223,
+  "timezone": "America/Chicago"
+ },
+ "BYU": {
+  "lat": 40.23384,
+  "lon": -111.65853,
+  "elevation_ft": 4551,
+  "timezone": "America/Denver"
+ },
+ "Michigan": {
+  "lat": 42.27756,
+  "lon": -83.74088,
+  "elevation_ft": 883,
+  "timezone": "America/Detroit"
+ },
+ "Penn State": {
+  "lat": 40.80201,
+  "lon": -77.85639,
+  "elevation_ft": 1142,
+  "timezone": "America/New_York"
+ },
+ "Tennessee": {
+  "lat": 35.96064,
+  "lon": -83.92074,
+  "elevation_ft": 906,
+  "timezone": "America/New_York"
+ },
+ "Iowa": {
+  "lat": 41.66113,
+  "lon": -91.53017,
+  "elevation_ft": 669,
+  "timezone": "America/Chicago"
+ },
+ "Houston": {
+  "lat": 29.76328,
+  "lon": -95.36327,
+  "elevation_ft": 39,
+  "timezone": "America/Chicago"
+ },
+ "West Virginia": {
+  "lat": 39.62953,
+  "lon": -79.9559,
+  "elevation_ft": 889,
+  "timezone": "America/New_York"
+ },
+ "Syracuse": {
+  "lat": 43.04812,
+  "lon": -76.14742,
+  "elevation_ft": 397,
+  "timezone": "America/New_York"
+ },
+ "Nebraska": {
+  "lat": 40.8,
+  "lon": -96.66696,
+  "elevation_ft": 1204,
+  "timezone": "America/Chicago"
+ },
+ "UConn": {
+  "lat": 41.78232,
+  "lon": -72.61203,
+  "elevation_ft": 52,
+  "timezone": "America/New_York"
+ },
+ "Army": {
+  "lat": 41.39148,
+  "lon": -73.95597,
+  "elevation_ft": 154,
+  "timezone": "America/New_York"
+ },
+ "Bowling Green": {
+  "lat": 41.37477,
+  "lon": -83.65132,
+  "elevation_ft": 696,
+  "timezone": "America/New_York"
+ },
+ "James Madison": {
+  "lat": 38.44957,
+  "lon": -78.86892,
+  "elevation_ft": 1325,
+  "timezone": "America/New_York"
+ },
+ "Pittsburgh": {
+  "lat": 40.44062,
+  "lon": -79.99589,
+  "elevation_ft": 764,
+  "timezone": "America/New_York"
+ },
+ "South Carolina": {
+  "lat": 34.00071,
+  "lon": -81.03481,
+  "elevation_ft": 292,
+  "timezone": "America/New_York"
+ },
+ "Kentucky": {
+  "lat": 37.98869,
+  "lon": -84.47772,
+  "elevation_ft": 968,
+  "timezone": "America/New_York"
+ },
+ "Iowa State": {
+  "lat": 42.03471,
+  "lon": -93.61994,
+  "elevation_ft": 942,
+  "timezone": "America/Chicago"
+ },
+ "Air Force": {
+  "lat": 38.75764,
+  "lon": -104.30059,
+  "elevation_ft": 6030,
+  "timezone": "America/Denver"
+ },
+ "Temple": {
+  "lat": 39.95238,
+  "lon": -75.16362,
+  "elevation_ft": 39,
+  "timezone": "America/New_York"
+ },
+ "Cincinnati": {
+  "lat": 39.12711,
+  "lon": -84.51439,
+  "elevation_ft": 627,
+  "timezone": "America/New_York"
+ },
+ "Duke": {
+  "lat": 35.99403,
+  "lon": -78.89862,
+  "elevation_ft": 404,
+  "timezone": "America/New_York"
+ },
+ "Charlotte": {
+  "lat": 35.22709,
+  "lon": -80.84313,
+  "elevation_ft": 751,
+  "timezone": "America/New_York"
+ },
+ "Navy": {
+  "lat": 38.97859,
+  "lon": -76.49184,
+  "elevation_ft": 39,
+  "timezone": "America/New_York"
+ },
+ "UTSA": {
+  "lat": 29.42412,
+  "lon": -98.49363,
+  "elevation_ft": 650,
+  "timezone": "America/Chicago"
+ },
+ "App State": {
+  "lat": 36.21679,
+  "lon": -81.67455,
+  "elevation_ft": 3219,
+  "timezone": "America/New_York"
+ },
+ "Tulsa": {
+  "lat": 36.15398,
+  "lon": -95.99277,
+  "elevation_ft": 722,
+  "timezone": "America/Chicago"
+ },
+ "Arkansas": {
+  "lat": 36.06258,
+  "lon": -94.15743,
+  "elevation_ft": 1401,
+  "timezone": "America/Chicago"
+ },
+ "Southern Miss": {
+  "lat": 31.32712,
+  "lon": -89.29034,
+  "elevation_ft": 171,
+  "timezone": "America/Chicago"
+ },
+ "Colorado State": {
+  "lat": 40.58526,
+  "lon": -105.08442,
+  "elevation_ft": 5003,
+  "timezone": "America/Denver"
+ },
+ "Old Dominion": {
+  "lat": 36.84681,
+  "lon": -76.28522,
+  "elevation_ft": 7,
+  "timezone": "America/New_York"
+ },
+ "Vanderbilt": {
+  "lat": 36.16589,
+  "lon": -86.78444,
+  "elevation_ft": 558,
+  "timezone": "America/Chicago"
+ },
+ "Kansas State": {
+  "lat": 39.18361,
+  "lon": -96.57167,
+  "elevation_ft": 1020,
+  "timezone": "America/Chicago"
+ },
+ "Utah State": {
+  "lat": 41.73549,
+  "lon": -111.83439,
+  "elevation_ft": 4534,
+  "timezone": "America/Denver"
+ },
+ "Memphis": {
+  "lat": 35.14953,
+  "lon": -90.04898,
+  "elevation_ft": 256,
+  "timezone": "America/Chicago"
+ },
+ "Rice": {
+  "lat": 29.76328,
+  "lon": -95.36327,
+  "elevation_ft": 39,
+  "timezone": "America/Chicago"
+ },
+ "South Florida": {
+  "lat": 27.94752,
+  "lon": -82.45843,
+  "elevation_ft": 3,
+  "timezone": "America/New_York"
+ },
+ "Jacksonville State": {
+  "lat": 33.81382,
+  "lon": -85.7613,
+  "elevation_ft": 709,
+  "timezone": "America/Chicago"
+ },
+ "Georgia Southern": {
+  "lat": 32.44879,
+  "lon": -81.78317,
+  "elevation_ft": 253,
+  "timezone": "America/New_York"
+ },
+ "South Alabama": {
+  "lat": 30.69436,
+  "lon": -88.04305,
+  "elevation_ft": 10,
+  "timezone": "America/Chicago"
+ },
+ "Troy": {
+  "lat": 31.80877,
+  "lon": -85.96995,
+  "elevation_ft": 541,
+  "timezone": "America/Chicago"
+ },
+ "Mississippi State": {
+  "lat": 33.45049,
+  "lon": -88.81961,
+  "elevation_ft": 331,
+  "timezone": "America/Chicago"
+ },
+ "Virginia Tech": {
+  "lat": 37.22957,
+  "lon": -80.41394,
+  "elevation_ft": 2077,
+  "timezone": "America/New_York"
+ },
+ "Louisiana Tech": {
+  "lat": 32.52321,
+  "lon": -92.63793,
+  "elevation_ft": 335,
+  "timezone": "America/Chicago"
+ },
+ "Florida": {
+  "lat": 29.65163,
+  "lon": -82.32483,
+  "elevation_ft": 177,
+  "timezone": "America/New_York"
+ },
+ "Middle Tennessee": {
+  "lat": 35.84562,
+  "lon": -86.39027,
+  "elevation_ft": 610,
+  "timezone": "America/Chicago"
+ },
+ "Maryland": {
+  "lat": 38.98067,
+  "lon": -76.93692,
+  "elevation_ft": 69,
+  "timezone": "America/New_York"
+ },
+ "Northwestern": {
+  "lat": 42.04114,
+  "lon": -87.69006,
+  "elevation_ft": 614,
+  "timezone": "America/Chicago"
+ },
+ "Louisiana": {
+  "lat": 30.22409,
+  "lon": -92.01984,
+  "elevation_ft": 36,
+  "timezone": "America/Chicago"
+ },
+ "New Mexico State": {
+  "lat": 32.31232,
+  "lon": -106.77834,
+  "elevation_ft": 3907,
+  "timezone": "America/Denver"
+ },
+ "Arizona": {
+  "lat": 32.22174,
+  "lon": -110.92648,
+  "elevation_ft": 2490,
+  "timezone": "America/Phoenix"
+ },
+ "San Diego State": {
+  "lat": 32.71571,
+  "lon": -117.16472,
+  "elevation_ft": 66,
+  "timezone": "America/Los_Angeles"
+ },
+ "Arizona State": {
+  "lat": 33.41477,
+  "lon": -111.90931,
+  "elevation_ft": 1181,
+  "timezone": "America/Phoenix"
+ },
+ "Hawai'i": {
+  "lat": 21.30694,
+  "lon": -157.85834,
+  "elevation_ft": 16,
+  "timezone": "Pacific/Honolulu"
+ },
+ "New Mexico": {
+  "lat": 35.08449,
+  "lon": -106.65114,
+  "elevation_ft": 4957,
+  "timezone": "America/Denver"
+ },
+ "Sacramento State": {
+  "lat": 38.58157,
+  "lon": -121.4944,
+  "elevation_ft": 30,
+  "timezone": "America/Los_Angeles"
+ },
+ "California": {
+  "lat": 37.87159,
+  "lon": -122.27275,
+  "elevation_ft": 171,
+  "timezone": "America/Los_Angeles"
+ },
+ "Nevada": {
+  "lat": 39.52963,
+  "lon": -119.8138,
+  "elevation_ft": 4505,
+  "timezone": "America/Los_Angeles"
+ },
+ "Washington": {
+  "lat": 47.60621,
+  "lon": -122.33207,
+  "elevation_ft": 184,
+  "timezone": "America/Los_Angeles"
+ },
+ "Miami": {
+  "lat": 25.94204,
+  "lon": -80.2456,
+  "elevation_ft": 7,
+  "timezone": "America/New_York"
+ },
+ "Louisville": {
+  "lat": 38.25424,
+  "lon": -85.75941,
+  "elevation_ft": 466,
+  "timezone": "America/Kentucky/Louisville"
+ },
+ "NC State": {
+  "lat": 35.7721,
+  "lon": -78.63861,
+  "elevation_ft": 315,
+  "timezone": "America/New_York"
+ },
+ "Boston College": {
+  "lat": 42.33065,
+  "lon": -71.16616,
+  "elevation_ft": 197,
+  "timezone": "America/New_York"
+ },
+ "Notre Dame": {
+  "lat": 41.70019,
+  "lon": -86.23793,
+  "elevation_ft": 745,
+  "timezone": "America/Indiana/Indianapolis"
+ },
+ "Oklahoma State": {
+  "lat": 36.11561,
+  "lon": -97.05837,
+  "elevation_ft": 896,
+  "timezone": "America/Chicago"
+ },
+ "Ole Miss": {
+  "lat": 34.3665,
+  "lon": -89.51925,
+  "elevation_ft": 505,
+  "timezone": "America/Chicago"
+ },
+ "Oregon State": {
+  "lat": 44.56457,
+  "lon": -123.26204,
+  "elevation_ft": 233,
+  "timezone": "America/Los_Angeles"
+ },
+ "SMU": {
+  "lat": 32.78306,
+  "lon": -96.80667,
+  "elevation_ft": 420,
+  "timezone": "America/Chicago"
+ },
+ "North Carolina": {
+  "lat": 35.9132,
+  "lon": -79.05584,
+  "elevation_ft": 486,
+  "timezone": "America/New_York"
+ },
+ "East Carolina": {
+  "lat": 35.61266,
+  "lon": -77.36635,
+  "elevation_ft": 59,
+  "timezone": "America/New_York"
+ },
+ "Kent State": {
+  "lat": 41.15367,
+  "lon": -81.35789,
+  "elevation_ft": 1066,
+  "timezone": "America/New_York"
+ },
+ "Liberty": {
+  "lat": 37.41375,
+  "lon": -79.14225,
+  "elevation_ft": 630,
+  "timezone": "America/New_York"
+ },
+ "Central Michigan": {
+  "lat": 43.59781,
+  "lon": -84.76751,
+  "elevation_ft": 771,
+  "timezone": "America/Detroit"
+ },
+ "Miami (OH)": {
+  "lat": 39.507,
+  "lon": -84.74523,
+  "elevation_ft": 928,
+  "timezone": "America/New_York"
+ },
+ "Ball State": {
+  "lat": 40.19338,
+  "lon": -85.38636,
+  "elevation_ft": 932,
+  "timezone": "America/Indiana/Indianapolis"
+ },
+ "Colorado": {
+  "lat": 40.01499,
+  "lon": -105.27055,
+  "elevation_ft": 5328,
+  "timezone": "America/Denver"
+ },
+ "Texas State": {
+  "lat": 29.88327,
+  "lon": -97.94139,
+  "elevation_ft": 617,
+  "timezone": "America/Chicago"
+ },
+ "UAB": {
+  "lat": 33.52066,
+  "lon": -86.80249,
+  "elevation_ft": 614,
+  "timezone": "America/Chicago"
+ },
+ "Akron": {
+  "lat": 41.08144,
+  "lon": -81.51901,
+  "elevation_ft": 955,
+  "timezone": "America/New_York"
+ },
+ "Toledo": {
+  "lat": 41.66394,
+  "lon": -83.55521,
+  "elevation_ft": 610,
+  "timezone": "America/New_York"
+ },
+ "Massachusetts": {
+  "lat": 42.36723,
+  "lon": -72.51852,
+  "elevation_ft": 269,
+  "timezone": "America/New_York"
+ },
+ "North Texas": {
+  "lat": 33.21484,
+  "lon": -97.13307,
+  "elevation_ft": 659,
+  "timezone": "America/Chicago"
+ },
+ "Wyoming": {
+  "lat": 41.31137,
+  "lon": -105.5911,
+  "elevation_ft": 7165,
+  "timezone": "America/Denver"
+ },
+ "Boise State": {
+  "lat": 43.6135,
+  "lon": -116.20345,
+  "elevation_ft": 2700,
+  "timezone": "America/Boise"
+ },
+ "Florida International": {
+  "lat": 25.77427,
+  "lon": -80.19366,
+  "elevation_ft": 7,
+  "timezone": "America/New_York"
+ },
+ "Ohio": {
+  "lat": 39.32924,
+  "lon": -82.10126,
+  "elevation_ft": 719,
+  "timezone": "America/New_York"
+ },
+ "Western Michigan": {
+  "lat": 42.29171,
+  "lon": -85.58723,
+  "elevation_ft": 784,
+  "timezone": "America/Detroit"
+ },
+ "Sam Houston": {
+  "lat": 30.72353,
+  "lon": -95.55078,
+  "elevation_ft": 371,
+  "timezone": "America/Chicago"
+ },
+ "Northern Illinois": {
+  "lat": 41.92947,
+  "lon": -88.75036,
+  "elevation_ft": 879,
+  "timezone": "America/Chicago"
+ },
+ "Tulane": {
+  "lat": 29.95465,
+  "lon": -90.07507,
+  "elevation_ft": 0,
+  "timezone": "America/Chicago"
+ },
+ "Arkansas State": {
+  "lat": 35.8423,
+  "lon": -90.70428,
+  "elevation_ft": 325,
+  "timezone": "America/Chicago"
+ },
+ "Marshall": {
+  "lat": 38.41925,
+  "lon": -82.44515,
+  "elevation_ft": 568,
+  "timezone": "America/New_York"
+ },
+ "Missouri State": {
+  "lat": 37.21533,
+  "lon": -93.29824,
+  "elevation_ft": 1299,
+  "timezone": "America/Chicago"
+ },
+ "UCLA": {
+  "lat": 34.14778,
+  "lon": -118.14452,
+  "elevation_ft": 863,
+  "timezone": "America/Los_Angeles"
+ },
+ "Wisconsin": {
+  "lat": 43.07305,
+  "lon": -89.40123,
+  "elevation_ft": 876,
+  "timezone": "America/Chicago"
+ },
+ "Florida Atlantic": {
+  "lat": 26.35869,
+  "lon": -80.0831,
+  "elevation_ft": 13,
+  "timezone": "America/New_York"
+ },
+ "Coastal Carolina": {
+  "lat": 33.836,
+  "lon": -79.04781,
+  "elevation_ft": 33,
+  "timezone": "America/New_York"
+ },
+ "TCU": {
+  "lat": 32.72541,
+  "lon": -97.32085,
+  "elevation_ft": 653,
+  "timezone": "America/Chicago"
+ },
+ "Baylor": {
+  "lat": 31.54933,
+  "lon": -97.14667,
+  "elevation_ft": 469,
+  "timezone": "America/Chicago"
+ },
+ "Auburn": {
+  "lat": 32.60986,
+  "lon": -85.48078,
+  "elevation_ft": 705,
+  "timezone": "America/Chicago"
+ },
+ "San Jos\u00e9 State": {
+  "lat": 37.33939,
+  "lon": -121.89496,
+  "elevation_ft": 85,
+  "timezone": "America/Los_Angeles"
+ },
+ "UTEP": {
+  "lat": 31.75872,
+  "lon": -106.48693,
+  "elevation_ft": 3717,
+  "timezone": "America/Denver"
+ },
+ "Clemson": {
+  "lat": 34.68344,
+  "lon": -82.83737,
+  "elevation_ft": 725,
+  "timezone": "America/New_York"
+ },
+ "Fresno State": {
+  "lat": 36.74773,
+  "lon": -119.77237,
+  "elevation_ft": 308,
+  "timezone": "America/Los_Angeles"
+ },
+ "Washington State": {
+  "lat": 46.73127,
+  "lon": -117.17962,
+  "elevation_ft": 2352,
+  "timezone": "America/Los_Angeles"
+ },
+ "UL Monroe": {
+  "lat": 32.50931,
+  "lon": -92.1193,
+  "elevation_ft": 75,
+  "timezone": "America/Chicago"
+ },
+ "Western Kentucky": {
+  "lat": 36.99032,
+  "lon": -86.4436,
+  "elevation_ft": 528,
+  "timezone": "America/Chicago"
+ }
+}
