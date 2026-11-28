@@ -65,5 +65,22 @@ class UnitScheduleTests(unittest.TestCase):
         self.assertNotIn("sp_off", out["auburn"]["played"])  # LSU has no offense rating
 
 
+class ClassificationTests(unittest.TestCase):
+    def test_every_schedule_figure_the_slate_publishes_is_classified(self):
+        """The publisher refuses an unclassified key, so a new column that is
+        not in the spec stops the whole CFB slate (2026-11-28)."""
+        import json
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[1]
+        spec = json.loads((root / "design" / "public_metric_classification.json").read_text(encoding="utf-8"))
+        classified = {k for v in spec.values() if isinstance(v, list) for k in v}
+        published = set()
+        for block in build(sp_offense=OFFENSE, sp_defense=DEFENSE).values():
+            for window in block.values():
+                published |= set(window)
+        self.assertTrue(published)
+        self.assertLessEqual(published, classified, sorted(published - classified))
+
+
 if __name__ == "__main__":
     unittest.main()

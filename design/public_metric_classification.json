@@ -1081,6 +1081,8 @@
   "sos_off_played",
   "sos_off_remaining",
   "sp",
+  "sp_off",
+  "sp_def",
   "special_teams",
   "speed",
   "speed_def",
