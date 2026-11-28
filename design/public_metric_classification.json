@@ -1367,6 +1367,7 @@
   "by_status_reason",
   "by_status_practice",
   "value_recent",
+  "value_basis",
   "missed",
   "resume",
   "quadrants",

@@ -22,7 +22,43 @@ class TableTests(unittest.TestCase):
             "3": {"name": "", "shares": {"car": 1.0}, "recent": {}, "missed": 0},
         }
         rows = civ.table(usage, COEF)
-        self.assertEqual(rows, [["Ronnie Royal III", None, None, 0, 31, 10], ["Will Wilson", 9.0, 3.0, 2, 140, 8]])
+        self.assertEqual(rows, [["Ronnie Royal III", None, None, 0, 31, 10, civ.UNPRICED],
+                                ["Will Wilson", 9.0, 3.0, 2, 140, 8, civ.PRICED]])
+
+    def test_every_listed_player_reads_as_one_of_three_things(self):
+        """Owner 2026-11-28: rate everyone, and say Negligible when a player
+        genuinely cannot move the game."""
+        # A share the fit priced.
+        self.assertEqual(civ.basis({"att": 0.9}), civ.PRICED)
+        self.assertEqual(civ.basis({"rec": 0.002}), civ.PRICED)
+        # A defensive regular: measured, but tackle share carries no price.
+        self.assertEqual(civ.basis({"tkl": 0.07}), civ.UNPRICED)
+        self.assertEqual(civ.basis({"tkl": 0.31}), civ.UNPRICED)
+        # A regular in no unit: the closing lines never moved for him.
+        self.assertEqual(civ.basis({"tkl": 0.069}), civ.NEGLIGIBLE)
+        self.assertEqual(civ.basis({"att": 0.0, "car": 0.0, "rec": 0.0, "tkl": 0.0}), civ.NEGLIGIBLE)
+        self.assertEqual(civ.basis({}), civ.NEGLIGIBLE)
+        self.assertEqual(civ.basis(None), civ.NEGLIGIBLE)
+
+    def test_the_regular_shares_are_the_ones_the_fit_was_built_on(self):
+        """One gate, one number: the reading and the fit must not drift apart."""
+        source = (ROOT / "scripts" / "fit_cfb_injury_value.py").read_text(encoding="utf-8")
+        for stat, share in civ.REGULAR.items():
+            self.assertIn(f'"{stat}", {share:.2f}', source)
+
+    def test_a_player_the_box_scores_never_name_stays_unrated(self):
+        entries = [{"player": "Ghost Player"}]
+        self.assertEqual(civ.attach(entries, {}, COEF), 0)
+        self.assertIsNone(entries[0]["value"])
+        self.assertNotIn("value_basis", entries[0])
+
+    def test_a_matched_player_carries_his_reading(self):
+        usage = {"1": {"name": "Ronnie Royal III", "shares": {"tkl": 0.2}, "recent": {"tkl": 0.2}, "missed": 1},
+                 "2": {"name": "Deep Reserve", "shares": {"tkl": 0.01}, "recent": {}, "missed": 0}}
+        entries = [{"player": "Ronnie Royal III"}, {"player": "Deep Reserve"}]
+        civ.attach(entries, usage, COEF)
+        self.assertEqual([e["value_basis"] for e in entries], [civ.UNPRICED, civ.NEGLIGIBLE])
+        self.assertTrue(all(e["value"] is None for e in entries))
 
     def test_the_table_is_a_classified_slate_key(self):
         spec = json.loads((ROOT / "design" / "public_metric_classification.json").read_text(encoding="utf-8"))
