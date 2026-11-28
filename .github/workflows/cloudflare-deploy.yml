@@ -23,13 +23,28 @@ on:
     branches: [master]
   workflow_dispatch:
 
+# Two deploys raced on 2026-11-28 and the site lost a publication. The CFB
+# slate commit and the merge commit before it each started a deploy three
+# seconds apart; the one carrying the older site finished 27 seconds later and
+# overwrote the newer. Deploys now queue instead of running together, and each
+# one ships the tip of master rather than whichever commit happened to trigger
+# it, so the last deploy to finish always serves the newest publication.
+concurrency:
+  group: cloudflare-deploy
+  cancel-in-progress: false
+
 jobs:
   quality-gate:
     # A pipeline that failed has nothing new worth shipping.
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
+      # The tip of master, not the triggering commit: a data refresh lands on
+      # master without raising a push event, so the SHA that triggers a deploy
+      # is routinely older than what is published.
       - uses: actions/checkout@v4
+        with:
+          ref: master
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -76,6 +91,8 @@ jobs:
       LIVE_DOMAIN: chase-analytics.com
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: master
 
       - name: Build clean web-only directory
         run: |
