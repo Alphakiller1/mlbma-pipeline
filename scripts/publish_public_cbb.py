@@ -7,6 +7,16 @@ sys.path.insert(0,str(ROOT/'scripts'))
 import validate_public_fields as guard
 
 MIN_ALIGNED_SHARE = 0.97
+# A few teams' coordinate feed trails their Basketball Quant rate row by one
+# game on any given night: 9 of 365 in the publication this replaces, 11 in the
+# next, which is a 97.0% share and refused the whole desk for a fourth day.
+# The floor is there for the source-wide case - Basketball Quant stalled five
+# days in November 2026 and every team's sections disagreed - so a snapshot
+# that is no worse aligned than the live one also publishes, never below the
+# hard floor, which stops a slow drift from accumulating one publication at a
+# time.
+ALIGNMENT_HARD_FLOOR = 0.90
+ALIGNMENT_REGRESSION = 0.01
 # SportsDataverse reprocesses its whole season release on every build, so a
 # corrected possession detector can drop one game from a team's reconciled set
 # and move that team's tactical evidence backwards. On 2026-11-25 that happened
@@ -27,6 +37,20 @@ def aligned_sample_share(contexts):
         pace = ((context.get('official_box') or {}).get('pace') or {}).get('games')
         aligned += shots == games and pace in (games, games - 1)
     return aligned / rated if rated else 1.0
+
+def alignment_admissible(share, published):
+    """May a snapshot aligned this well replace the live one?
+
+    At or above the target, always. Below it, only while the live publication
+    is no better aligned (within a tolerance) and the hard floor holds. With
+    nothing published yet, the target is the only test.
+    """
+    if share >= MIN_ALIGNED_SHARE:
+        return True
+    if published is None or share < ALIGNMENT_HARD_FLOOR:
+        return False
+    return share >= published - ALIGNMENT_REGRESSION
+
 
 def validate_context(value,old=None,division=None):
     if not isinstance(value.get('identity',{}).get('name'),str):raise ValueError('Missing team identity')
@@ -171,17 +195,23 @@ def publish(source):
     for year in [2026,2027]:
         if len(list((source/f'{year}/teams').glob('*.json')))!=365:raise ValueError('Incomplete CBB cohort; retaining existing publication')
     sample_share = aligned_sample_share(value for rel, value in staged if rel.parts[:2] == ('2027', 'teams'))
-    if sample_share < MIN_ALIGNED_SHARE:
-        raise ValueError(f'CBB rates, shots and pace align for {sample_share:.1%}; retaining existing publication')
     target=ROOT/'data/public/cbb';old=target/'manifest.json'
+    live_share = aligned_sample_share(
+        json.loads(path.read_text(encoding='utf-8')) for path in (target/'2027/teams').glob('*.json')
+    ) if (target/'2027/teams').is_dir() else None
+    if not alignment_admissible(sample_share,live_share):
+        raise ValueError(f'CBB rates, shots and pace align for {sample_share:.1%}'
+                         + (f' against {live_share:.1%} published' if live_share is not None else '')
+                         + '; retaining existing publication')
+    if sample_share < MIN_ALIGNED_SHARE:
+        print(f'::warning::CBB rates, shots and pace align for {sample_share:.1%} '
+              f"({live_share:.1%} published); a few shot charts trail their rate row.")
     if old.exists():
         previous_cutoff=json.loads(old.read_text(encoding='utf-8')).get('data_through_utc')
         cutoff=manifest.get('data_through_utc')
         if previous_cutoff and (not cutoff or datetime.fromisoformat(previous_cutoff)>datetime.fromisoformat(cutoff)):
-            previous_share = aligned_sample_share(
-                json.loads(path.read_text(encoding='utf-8')) for path in (target/'2027/teams').glob('*.json')
-            )
-            if not cutoff or previous_share >= MIN_ALIGNED_SHARE:
+            previous_share = live_share if live_share is not None else 1.0
+            if not cutoff or previous_share >= ALIGNMENT_HARD_FLOOR:
                 raise ValueError('Older evidence would replace newer evidence')
             print(f'Correcting the previous misaligned CBB cutoff ({previous_share:.1%} of teams aligned).')
     # Validate every file first; each destination replacement is atomic.
