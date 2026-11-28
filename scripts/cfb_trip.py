@@ -97,8 +97,9 @@ def _entry(fit: dict, key: str, label: str, unit: str, values: dict, by_input: d
     row = {"key": key, "label": label, "unit": unit, "value": values.get(key), "scored": scored,
            "points": by_input.get(model_key) if scored else None}
     if not scored:
+        # `scored` and the held-out number say it; the panel phrases it. A
+        # free-text note here would publish as a model label.
         rejected = (fit.get("not_scored") or {}).get(key) or {}
-        row["note"] = "measured; it does not improve the held-out fit"
         row["held_out_r2_with_it"] = rejected.get("held_out_r2_with_it")
     return row
 
