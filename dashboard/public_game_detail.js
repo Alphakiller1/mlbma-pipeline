@@ -7349,9 +7349,15 @@ function seasonToggle(game) {
   }
 
   /* Schedule strength (scripts/cfb_depth.py schedule_strength): each school's
-     FBS opponents - average SP+, average ESPN FPI and combined win rate - over
-     games played and games remaining, each ranked of FBS (1st = hardest). */
-  var CFB_SOS_COLS = [['sp', 'Opp SP+'], ['fpi', 'Opp FPI'], ['win_rate', 'Opp Win%']];
+     FBS opponents - average SP+, the average SP+ offense and defense it met,
+     average ESPN FPI and combined win rate - over games played and games
+     remaining, each ranked of FBS (1st = hardest). The two unit columns say
+     which side of the ball a schedule taxed: the offenses a school met are
+     the test its defense faced, the defenses it met the test its offense
+     faced. SP+ defense allows points, so the hardest schedule met the
+     lowest, and `better` on the entry carries that. */
+  var CFB_SOS_COLS = [['sp', 'Opp SP+'], ['sp_off', 'Opp SP+ Offense'],
+    ['sp_def', 'Opp SP+ Defense'], ['fpi', 'Opp FPI'], ['win_rate', 'Opp Win%']];
 
   function cfbScheduleBody(sport, game) {
     function table(window, title) {

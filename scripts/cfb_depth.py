@@ -980,17 +980,28 @@ def game_logs(season: int, through_week: int, wanted: dict[str, str],
 
 
 # -- strength of schedule (CFBD: the season's games, ESPN FPI and SP+) -----------
-def schedule_strength(season: int, sp_ratings: dict[str, float]) -> dict[str, dict]:
+def schedule_strength(season: int, sp_ratings: dict[str, float],
+                      sp_offense: dict[str, float] | None = None,
+                      sp_defense: dict[str, float] | None = None) -> dict[str, dict]:
     """{normalized school: {...}}: how hard each FBS school's schedule has been
-    and will be - its FBS opponents' average SP+ rating, average ESPN FPI
-    rating and combined win rate, over games played and games remaining. Each
-    figure carries its value and its rank of FBS (1st = the hardest).
+    and will be - its FBS opponents' average SP+ rating, the average SP+
+    offense and defense it met, average ESPN FPI rating and combined win rate,
+    over games played and games remaining. Each figure carries its value and
+    its rank of FBS (1st = the hardest).
+
+    The two unit figures answer which side of the ball a schedule taxed, as
+    the CBB desk's "Vs Offenses"/"Vs Defenses" do (pipeline/power.py): the
+    offenses a school met are the test its defense faced, and the defenses it
+    met are the test its offense faced. SP+ offense scores points, so the
+    hardest schedule met the highest; SP+ defense allows them, so the hardest
+    met the lowest.
 
     ESPN's own SOS ranks are published without the number they rank, so they
     are not shown: a rank the reader cannot check against a value is not
     published on this site.
 
-    ``sp_ratings`` maps normalized school -> SP+ overall rating.
+    ``sp_ratings`` maps normalized school -> SP+ overall rating, and
+    ``sp_offense``/``sp_defense`` its offensive and defensive ratings.
     """
     fpi = espn_fpi(season)
     games = season_games(season)
@@ -1013,12 +1024,14 @@ def schedule_strength(season: int, sp_ratings: dict[str, float]) -> dict[str, di
         for me, opp in ((home, away), (away, home)):
             if me in fbs and opp in fbs:
                 opponents.setdefault(me, {}).setdefault(window, []).append(opp)
-    specs = (("sp", "Opponents' average SP+", sp_ratings, "num"),
-             ("fpi", "Opponents' average FPI", fpi, "num"),
-             ("win_rate", "Opponents' combined win rate", win_rate, "pct"))
+    specs = (("sp", "Opponents' average SP+", sp_ratings, "num", "high"),
+             ("sp_off", "Opponents' average SP+ offense", sp_offense or {}, "num", "high"),
+             ("sp_def", "Opponents' average SP+ defense", sp_defense or {}, "num", "low"),
+             ("fpi", "Opponents' average FPI", fpi, "num", "high"),
+             ("win_rate", "Opponents' combined win rate", win_rate, "pct", "high"))
     out: dict[str, dict] = {}
     for window in ("played", "remaining"):
-        for key, label, table, fmt in specs:
+        for key, label, table, fmt, better in specs:
             values = {}
             for team, lists in opponents.items():
                 rated = [table[o] for o in lists.get(window, []) if o in table]
@@ -1026,7 +1039,7 @@ def schedule_strength(season: int, sp_ratings: dict[str, float]) -> dict[str, di
                     values[team] = (sum(rated) / len(rated), len(rated))
             pool = [v for v, _ in values.values()]
             for team, (value, n) in values.items():
-                entry = _entry(f"{label} ({window})", value, "high", fmt, pool)
+                entry = _entry(f"{label} ({window})", value, better, fmt, pool)
                 if entry:
                     entry["games"] = n
                     out.setdefault(team, {}).setdefault(window, {})[key] = entry
