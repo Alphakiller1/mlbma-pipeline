@@ -109,7 +109,7 @@
     tendencies: 'lineup', 'game-log': 'calendar', regression: 'trend', pace: 'trend',
     'cfb-efficiency': 'trend', 'cfb-passing': 'football', 'cfb-rushing': 'football',
     'cfb-rushers': 'users', 'cfb-quarterbacks': 'football', 'cfb-situational': 'target',
-    'cfb-game-log': 'calendar', 'cfb-pace': 'trend', 'cfb-regression': 'trend', 'cfb-schedule': 'calendar', 'cfb-availability': 'whistle',
+    'cfb-game-log': 'calendar', 'cfb-pace': 'trend', 'cfb-regression': 'trend', 'cfb-schedule': 'calendar', 'cfb-x-factor': 'calendar', 'cfb-availability': 'whistle',
     'cfb-special': 'target',
     'nba-ratings': 'gauge', 'nba-efficiency': 'trend', 'nba-shooting': 'target',
     'nba-rotation': 'users', 'nba-availability': 'whistle', 'nba-game-log': 'calendar',
@@ -6615,7 +6615,7 @@ function seasonToggle(game) {
    * ------------------------------------------------------------------ */
   var CFB_TABS = [
     ['units', 'Units', ['cfb-power', 'cfb-strength', 'cfb-dvoa', 'cfb-efficiency', 'cfb-predictability']],
-    ['games', 'Games', ['cfb-game-log', 'cfb-regression', 'cfb-schedule']],
+    ['games', 'Games', ['cfb-game-log', 'cfb-regression', 'cfb-schedule', 'cfb-x-factor']],
     ['passing', 'Passing', ['cfb-passing', 'cfb-pass-map', 'cfb-quarterbacks', 'cfb-receivers']],
     ['rushing', 'Rushing', ['cfb-rushing', 'cfb-run-direction', 'cfb-rushers']],
     ['defense', 'Defense', ['cfb-defenders']],
