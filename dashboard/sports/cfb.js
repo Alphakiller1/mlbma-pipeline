@@ -138,7 +138,8 @@
       // CFBD depth (scripts/cfb_depth.py): run game and lines, scheme rates,
       // quarterbacks with the defense's splits, ball carriers, game logs.
       ['_run_game', '_scheme_stats', '_charting', '_strength', '_penalties', '_run_lanes', '_qbs', '_defense_splits', '_rushers', '_receivers',
-        '_defenders', '_game_log', '_schedule_strength', '_power', '_predictability', '_regression', '_value_table', '_pace']
+        '_defenders', '_game_log', '_schedule_strength', '_power', '_predictability', '_regression', '_value_table', '_pace',
+        '_x_factor']
         .forEach(function (key) {
           if (pub[side + key]) mapped[side + key] = pub[side + key];
         });
