@@ -1,0 +1,125 @@
+{
+ "sport": "cfb",
+ "seasons": [
+  2021,
+  2022,
+  2023,
+  2024,
+  2025,
+  2026
+ ],
+ "games": 2260,
+ "features": [
+  "rest",
+  "miles",
+  "tz",
+  "letdown",
+  "lookahead"
+ ],
+ "league_mean": {
+  "rest": 8.3883,
+  "miles": 313.5278,
+  "tz": 0.2746,
+  "letdown": 0.0462,
+  "lookahead": 0.0266
+ },
+ "weights": {
+  "margin": {
+   "intercept": -2.9583,
+   "rest": 0.122199,
+   "miles": -0.003018,
+   "tz": 1.044791,
+   "letdown": 0.029954,
+   "lookahead": 0.075225
+  },
+  "offense": {
+   "intercept": -0.1141,
+   "rest": -0.029352,
+   "miles": 0.001213,
+   "tz": -0.559127,
+   "letdown": 0.006085,
+   "lookahead": 0.018714
+  },
+  "defense": {
+   "intercept": 0.7934,
+   "rest": -0.09679,
+   "miles": -0.000211,
+   "tz": -0.168018,
+   "letdown": -0.016343,
+   "lookahead": -0.047423
+  }
+ },
+ "fit": {
+  "margin": {
+   "held_out_r2": 0.0045,
+   "by_season": {
+    "2021": 0.0191,
+    "2022": 0.0094,
+    "2023": 0.0077,
+    "2024": 0.008,
+    "2025": -0.0091,
+    "2026": -0.008
+   },
+   "rows": 2260,
+   "response_sd": 16.18,
+   "null": "an intercept fitted on the training seasons",
+   "t_values": {
+    "intercept": -5.39,
+    "rest": 1.27,
+    "miles": -2.66,
+    "tz": 1.36,
+    "letdown": 1.01,
+    "lookahead": 2.62
+   },
+   "shuffled_p": 0.0025
+  },
+  "offense": {
+   "held_out_r2": -0.0006,
+   "by_season": {
+    "2021": 0.0001,
+    "2022": 0.0005,
+    "2023": -0.0022,
+    "2024": -0.005,
+    "2025": 0.0013,
+    "2026": 0.0016
+   },
+   "rows": 4520,
+   "response_sd": 11.64,
+   "null": "an intercept fitted on the training seasons",
+   "t_values": {
+    "intercept": -0.21,
+    "rest": -0.48,
+    "miles": 1.79,
+    "tz": -1.05,
+    "letdown": 0.28,
+    "lookahead": 0.87
+   },
+   "shuffled_p": 0.2475
+  },
+  "defense": {
+   "held_out_r2": -0.0009,
+   "by_season": {
+    "2021": 0.0041,
+    "2022": 0.0031,
+    "2023": 0.0041,
+    "2024": -0.0176,
+    "2025": 0.0,
+    "2026": 0.0012
+   },
+   "rows": 4520,
+   "response_sd": 11.64,
+   "null": "an intercept fitted on the training seasons",
+   "t_values": {
+    "intercept": 1.44,
+    "rest": -1.58,
+    "miles": -0.31,
+    "tz": -0.31,
+    "letdown": -0.76,
+    "lookahead": -2.21
+   },
+   "shuffled_p": 0.2675
+  }
+ },
+ "method": "Walk-forward over 2021, 2022, 2023, 2024, 2025, 2026: teams rated on the weeks before each one, then the game's own result against that expectation regressed on rest days, great-circle miles, time zones crossed, and the rating gap from the previous and next opponent to this one. Margin is fitted on the home-minus-away difference; points scored and allowed are fitted per side. Each season is scored by weights fitted on the other seasons.",
+ "sequence_note": "Over these seasons a team between two tougher games beats expectation rather than falling short, with or without a control for how its own last game went. The measure is a schedule spot, not a let-down."
+}
