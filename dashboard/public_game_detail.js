@@ -7498,11 +7498,30 @@ function seasonToggle(game) {
   function injuryPoints(v) {
     return (v < 0 ? '-' : '') + Math.abs(v).toFixed(1);
   }
+  /* Every listed player reads as one of three things (owner 2026-11-28):
+     his points, Negligible when the box scores show he is a regular in no
+     unit - so the closing lines this was fitted to never moved for him - or
+     Not Priced for a defensive regular, whose tackle share was measured
+     against the closing line and did not help. Nothing measured at all stays
+     Not Rated. */
+  var NEGLIGIBLE_TITLE = 'In the box scores and a regular in no unit: ' +
+    'below 50% of the pass attempts, 25% of the carries, 15% of the receptions ' +
+    'and 7% of the tackles, the shares this was fitted on';
+  var UNPRICED_TITLE = 'A defensive regular. Tackle share was measured against the closing line ' +
+    'and did not help, and free college box scores carry no snaps, so no price for him exists';
   function injuryValueCell(pl, label, options) {
-    if (pl.value == null) return injuryMetricCell(label, 'Not rated', '', true);
+    if (pl.value == null) {
+      if (pl.value_basis === 'negligible') return injuryMetricCell(label, 'Negligible', NEGLIGIBLE_TITLE, true);
+      if (pl.value_basis === 'unpriced') return injuryMetricCell(label, 'Not Priced', UNPRICED_TITLE, true);
+      return injuryMetricCell(label, 'Not Rated', 'His name is in no box score for this school this season', true);
+    }
     var title = options.valueNote || 'Points of the spread his club gives up without him';
     if (pl.value_recent != null) {
       title += ' · ' + injuryPoints(Number(pl.value_recent)) + ' pts of it on the last three games';
+    }
+    // A share this small does not move a spread: say so rather than print 0.0.
+    if (Math.abs(Number(pl.value)) < 0.05) {
+      return injuryMetricCell(label, 'Negligible', injuryPoints(Number(pl.value)) + ' pts · ' + title, true);
     }
     return injuryMetricCell(label, esc(injuryPoints(Number(pl.value))) + '<small> pts</small>', title);
   }
@@ -7639,7 +7658,13 @@ function seasonToggle(game) {
       players = players.map(function (pl) {
         var row = {}, rate = CFB_PLAY_RATES[pl.status];
         Object.keys(pl).forEach(function (k) { row[k] = pl[k]; });
-        if (hasTable) row.logged = cfbLogged(game, side, values, pl.player);
+        if (hasTable) {
+          row.logged = cfbLogged(game, side, values, pl.player);
+          // The published table reads every player in the box scores; a report
+          // the publisher could not value still gets his reading from it.
+          var seen = values[cfbPlayerKey(pl.player)];
+          if (seen && row.value == null && row.value_basis == null) row.value_basis = seen[5];
+        }
         if (rate) { row.plays = rate[0]; row.plays_n = rate[1]; row.plays_basis = pl.status + ' (NFL official report record)'; }
         // A roster status, not a game designation: he does not play.
         if (/^(Out For Season|IR|Suspended)$/.test(pl.status)) {
@@ -7653,7 +7678,9 @@ function seasonToggle(game) {
       'No player designations verified for this matchup.';
     return head + note +
       (players.length ? injuryTable(players, { label: title, showDate: !report.coverage, playsNote: playsNote, valueNote: valueNote,
-        peers: sport === 'cfb' ? peers.map(function (pl) { return { value: pl.value, missed: pl.missed, plays: 0 }; }) : peers }) :
+        peers: sport === 'cfb' ? peers.map(function (pl) {
+          return { value: pl.value, value_basis: pl.value_basis, missed: pl.missed, plays: 0 };
+        }) : peers }) :
         pending(empty)) + '</section>';
   }
 
@@ -7665,9 +7692,9 @@ function seasonToggle(game) {
     if (!parts.length) return '';
     return (parts[0].charAt(0) + parts[parts.length - 1]).toLowerCase().replace(/['-]/g, '');
   }
-  /* {key: [value, value_recent, missed, plays, played]} from the school's
-     published value table; a key two players share is left out rather than
-     guessed. */
+  /* {key: [value, value_recent, missed, plays, played, basis]} from the
+     school's published value table; a key two players share is left out
+     rather than guessed. */
   function cfbPlayerValues(game, side) {
     var out = {}, seen = {};
     (game[side + '_value_table'] || []).forEach(function (row) {
