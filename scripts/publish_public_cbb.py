@@ -185,6 +185,22 @@ def publish(source):
                     **after,'retrieved_at_utc':before.get('retrieved_at_utc')}}:
                     continue
         staged.append((file.relative_to(source),value))
+    if retained_tactics:
+        # The export built matchup-ranks.json and teams.json from the contexts
+        # it had, before a retained team's published tactics were put back. The
+        # ranks a reader sees must be the ranks of the evidence beside them, so
+        # they are rebuilt from the staged contexts.
+        from pipeline.cbb_public.export import grade_baselines, split_matchup_ranks
+        contexts = {(int(rel.parts[0]), Path(rel).stem): value for rel, value in staged
+                    if len(rel.parts) == 3 and rel.parts[1] == 'teams'}
+        if contexts:
+            baselines = {str(year): grade_baselines(contexts, year) for year in (2026, 2027)}
+            rebuilt = split_matchup_ranks(baselines)
+            for index, (rel, value) in enumerate(staged):
+                if rel.name == 'matchup-ranks.json':
+                    staged[index] = (rel, rebuilt)
+                elif rel.name == 'teams.json':
+                    staged[index] = (rel, {**value, 'grade_baselines': baselines})
     for season,names in sorted(retained_tactics.items()):
         cohort=len(divisions.get(season) or ())
         limit=max(5,round(TACTICAL_RETENTION_SHARE*cohort))

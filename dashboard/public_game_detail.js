@@ -9882,7 +9882,11 @@ function seasonToggle(game) {
           cohort:'same-source D-I teams · '+(onDefense?'smallest share allowed first':'largest share first')};
       }
       var place=cbbComparison(game,'shot_accuracy',key,z.fg_pct,!onDefense,10,true);
-      return {tone:place?rankTone(place.rank,place.of):chart.grade(z.delta_pp,onDefense), place:place,
+      // No place, no grade. Only six schools carry CBB Analytics defensive
+      // zones, so those pools sit under the ten this ranks on; colouring the
+      // cell by its gap to the D-I average would grade a figure the desk
+      // cannot place, which is the one thing every graded figure may not do.
+      return {tone:place?rankTone(place.rank,place.of):'c-na', place:place,
         cohort:'D-I teams with 10+ zone attempts · '+(onDefense?'lowest FG% allowed first':'highest FG% first')};
     }
     function zoneCell(z, role) {
@@ -9903,8 +9907,7 @@ function seasonToggle(game) {
     });
     var t=shown.totals, efgPlace=t.attempts ? cbbComparison(game,'shot_accuracy',
       {side:shownRole,basis:schema,kind:'efg'},t.efg_pct,!defense,10,true) : null;
-    var efgDelta=t.efg_pct!=null&&t.league_efg_pct!=null?100*(t.efg_pct-t.league_efg_pct):null;
-    var efg=chart.value(chart.pct(t.efg_pct),efgPlace?rankTone(efgPlace.rank,efgPlace.of):chart.grade(efgDelta,defense),
+    var efg=chart.value(chart.pct(t.efg_pct),efgPlace?rankTone(efgPlace.rank,efgPlace.of):'c-na',
       'D-I average '+chart.pct(t.league_efg_pct));
     var court=defense?defender+' shots allowed':attacker+' shots taken';
     var through=[off.totals.data_through,def.totals.data_through].filter(Boolean).sort().pop();
