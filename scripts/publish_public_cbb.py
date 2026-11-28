@@ -7,6 +7,13 @@ sys.path.insert(0,str(ROOT/'scripts'))
 import validate_public_fields as guard
 
 MIN_ALIGNED_SHARE = 0.97
+# SportsDataverse reprocesses its whole season release on every build, so a
+# corrected possession detector can drop one game from a team's reconciled set
+# and move that team's tactical evidence backwards. On 2026-11-25 that happened
+# to 2 of 365 teams and refused three days of CBB publication, which froze the
+# desk. One team's correction retains that team's published tactics; a share of
+# the cohort this large is the source breaking, and retains everything.
+TACTICAL_RETENTION_SHARE = 0.03
 
 
 def aligned_sample_share(contexts):
@@ -112,7 +119,10 @@ def validate_context(value,old=None,division=None):
         if old.get('players') and not value.get('players'):raise ValueError('Player coverage regressed; existing publication retained')
         prior=old.get('observed_tactics') or {}
         if tactics and prior.get('data_through') and (tactics.get('data_through') or '')<prior['data_through']:
-            raise ValueError('Tactical evidence regressed; existing publication retained')
+            # Reported to the caller, which keeps this team's published tactics
+            # as one consistent block and holds the whole publication only when
+            # too much of the cohort regresses at once.
+            return 'tactics'
 
 def publish(source):
     source=Path(source).resolve();manifest=json.loads((source/'manifest.json').read_text(encoding='utf-8'))
@@ -120,6 +130,7 @@ def publish(source):
     spec=json.loads(guard.CLASSIFICATION.read_text(encoding='utf-8'));restricted=json.loads(guard.RESTRICTED.read_text(encoding='utf-8'))
     files=sorted(source.rglob('*.json'));staged=[]
     divisions={year:{f.stem for f in (source/str(year)/'teams').glob('*.json')} for year in (2026,2027)}
+    retained_tactics={}
     for file in files:
         value=json.loads(file.read_text(encoding='utf-8'));issues=guard.classify_artifact(spec,value,str(file.relative_to(source)))
         def check(v):
@@ -134,7 +145,15 @@ def publish(source):
         if file.parent.name=='teams':
             old=ROOT/'data/public/cbb'/file.relative_to(source)
             previous=json.loads(old.read_text(encoding='utf-8')) if old.is_file() else None
-            validate_context(value,previous,divisions.get(value.get('season')))
+            verdict=validate_context(value,previous,divisions.get(value.get('season')))
+            if verdict=='tactics':
+                # Keep the vintage whole: pace, personnel, situations, restarts
+                # and data_through all come from the publication they were
+                # measured in, and the retained block is classified again.
+                value['observed_tactics']=previous['observed_tactics']
+                retained_tactics.setdefault(value['season'],[]).append(value['identity']['name'])
+                if (issues:=guard.classify_artifact(spec,value,str(file.relative_to(source)))):
+                    raise ValueError(chr(10).join(issues[:40]))
             if previous and value['season']<manifest['season']:
                 before=previous.get('observed_tactics') or {}
                 after=value.get('observed_tactics') or {}
@@ -142,6 +161,13 @@ def publish(source):
                     **after,'retrieved_at_utc':before.get('retrieved_at_utc')}}:
                     continue
         staged.append((file.relative_to(source),value))
+    for season,names in sorted(retained_tactics.items()):
+        cohort=len(divisions.get(season) or ())
+        limit=max(5,round(TACTICAL_RETENTION_SHARE*cohort))
+        if len(names)>limit:
+            raise ValueError(f'Tactical evidence regressed for {len(names)} of {cohort} {season} teams; existing publication retained')
+        print(f"::warning::{season}: kept the published tactics of {len(names)} team(s) whose reconciled "
+              f"evidence moved backwards: {', '.join(sorted(names))}")
     for year in [2026,2027]:
         if len(list((source/f'{year}/teams').glob('*.json')))!=365:raise ValueError('Incomplete CBB cohort; retaining existing publication')
     sample_share = aligned_sample_share(value for rel, value in staged if rel.parts[:2] == ('2027', 'teams'))
