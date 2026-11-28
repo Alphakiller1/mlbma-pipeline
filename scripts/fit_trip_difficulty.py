@@ -37,6 +37,7 @@ seasons (leave-one-season-out), against predicting zero.
 from __future__ import annotations
 
 import json
+import math
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -47,7 +48,16 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
-FEATURES = ("rest", "miles", "tz", "letdown", "lookahead")
+# Everything measured about a team's week, and the two that earn a place in
+# the score. Adding rest, time zones or the previous-opponent gap to these two
+# makes the held-out fit worse, so they are measured and shown, not scored:
+#   rest + miles + tz + letdown + lookahead  +0.0045
+#   rest + miles + letdown + lookahead       +0.0043
+#   sqrt(miles) + lookahead                  +0.0065   <- scored
+# Distance enters as its square root: the first few hundred miles of a trip
+# are most of it, and a linear term priced a 3,000 mile flight at nine points.
+MEASURED = ("rest", "miles", "tz", "letdown", "lookahead")
+FEATURES = ("sqrt_miles", "lookahead")
 RESPONSES = ("margin", "offense", "defense")
 RIDGE = 4.0
 MIN_GAMES_BEFORE = 250
@@ -55,6 +65,13 @@ MIN_GAMES_BEFORE = 250
 
 def _when(value) -> datetime:
     return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+
+
+def feature(side: dict, key: str):
+    """One model feature from a side's measured week."""
+    if key == "sqrt_miles":
+        return None if side.get("miles") is None else math.sqrt(max(float(side["miles"]), 0.0))
+    return side.get(key)
 
 
 # --------------------------------------------------------------------------
@@ -240,11 +257,16 @@ def _design(rows: list[dict], response: str):
     X, y = [], []
     for r in rows:
         if response == "margin":
-            X.append([1.0] + [r["home"][k] - r["away"][k] for k in FEATURES])
+            X.append([1.0] + [feature(r["home"], k) - feature(r["away"], k) for k in FEATURES])
             y.append(r["margin"])
         else:
+            # A home indicator of its own. The expectation over-rates home
+            # sides by about 1.5 points of margin, and every home side travels
+            # zero miles, so without this column the distance term absorbs the
+            # whole home-field bias and reads as a travel effect on the unit.
             for side in ("home", "away"):
-                X.append([1.0] + [r[side][k] for k in FEATURES])
+                X.append([1.0, 1.0 if side == "home" else 0.0]
+                         + [feature(r[side], k) for k in FEATURES])
                 y.append(r[f"{side}_{response}"])
     return np.array(X), np.array(y)
 
@@ -273,13 +295,17 @@ def _permutation(X, y, seasons, real: float, draws: int = 400, seed: int = 20261
     return round(hits / draws, 4)
 
 
-def _t_values(X, y, beta) -> dict:
+def _names(response: str) -> tuple:
+    return ("intercept",) + (() if response == "margin" else ("home",)) + FEATURES
+
+
+def _t_values(X, y, beta, response: str) -> dict:
     resid = y - X @ beta
     dof = len(y) - X.shape[1]
     sigma2 = float(resid @ resid) / dof
     se = np.sqrt(np.diag(sigma2 * np.linalg.inv(X.T @ X)))
     return {name: round(float(b / s), 2) if s else 0.0
-            for name, b, s in zip(("intercept",) + FEATURES, beta, se)}
+            for name, b, s in zip(_names(response), beta, se)}
 
 
 def fit(rows: list[dict]) -> dict:
@@ -302,16 +328,47 @@ def fit(rows: list[dict]) -> dict:
             ss_res = float(((y[test] - prediction) ** 2).sum())
             ss_tot = float(((y[test] - null) ** 2).sum())
             scores[int(season)] = round(1 - ss_res / ss_tot, 4)
-        out["weights"][response] = {"intercept": round(float(beta[0]), 4),
-                                    **{k: round(float(v), 6) for k, v in zip(FEATURES, beta[1:])}}
+        names = _names(response)
+        out["weights"][response] = {k: round(float(v), 6) for k, v in zip(names, beta)}
         held_out = float(np.mean(list(scores.values())))
         out["fit"][response] = {"held_out_r2": round(held_out, 4),
                                 "by_season": scores, "rows": int(len(y)),
                                 "response_sd": round(float(y.std()), 2),
                                 "null": "an intercept fitted on the training seasons",
-                                "t_values": _t_values(X, y, beta),
+                                "t_values": _t_values(X, y, beta, response),
                                 "shuffled_p": _permutation(X, y, seasons, held_out)}
     return out
+
+
+def _rejected(rows: list[dict]) -> dict:
+    """Every measured input that is shown but not scored, with the held-out
+    score of adding it to the two that are: the record of why it is out."""
+    base, *_ = _held_out(rows, list(FEATURES))
+    out = {"scored_alone": round(base, 4)}
+    for key in MEASURED:
+        if key in FEATURES or (key == "miles" and "sqrt_miles" in FEATURES):
+            continue
+        added, *_ = _held_out(rows, list(FEATURES) + [key])
+        out[key] = {"held_out_r2_with_it": round(added, 4),
+                    "helps": bool(added > base)}
+    return out
+
+
+def _held_out(rows: list[dict], keys: list[str]):
+    y = np.array([r["margin"] for r in rows])
+    X = np.column_stack([np.ones(len(rows))] +
+                        [np.array([feature(r["home"], k) - feature(r["away"], k) for r in rows])
+                         for k in keys])
+    seasons = np.array([r["season"] for r in rows])
+    each = []
+    for season in sorted(set(seasons.tolist())):
+        train, test = seasons != season, seasons == season
+        b, *_ = np.linalg.lstsq(X[train], y[train], rcond=None)
+        null = float(y[train].mean())
+        ss_res = float(((y[test] - X[test] @ b) ** 2).sum())
+        ss_tot = float(((y[test] - null) ** 2).sum())
+        each.append(1 - ss_res / ss_tot)
+    return float(np.mean(each)), each
 
 
 def main(argv: list[str]) -> int:
@@ -331,10 +388,11 @@ def main(argv: list[str]) -> int:
         print("no rated games; nothing written")
         return 1
     report = fit(rows)
-    means = {k: round(float(np.mean([r[side][k] for r in rows for side in ("home", "away")])), 4)
-             for k in FEATURES}
-    payload = {"sport": sport, "seasons": seasons, "games": len(rows), "features": list(FEATURES),
-               "league_mean": means, **report,
+    means = {k: round(float(np.mean([feature(r[side], k) for r in rows for side in ("home", "away")])), 4)
+             for k in set(FEATURES) | set(MEASURED)}
+    payload = {"sport": sport, "seasons": seasons, "games": len(rows),
+               "features": list(FEATURES), "measured": list(MEASURED),
+               "not_scored": _rejected(rows), "league_mean": means, **report,
                "method": (
                    "Walk-forward over %s: teams rated on the weeks before each one, then the game's own "
                    "result against that expectation regressed on rest days, great-circle miles, time zones "
