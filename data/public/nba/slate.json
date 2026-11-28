@@ -3,7 +3,7 @@
  "sport": "nba",
  "season": 2027,
  "slate_date": "2026-11-28",
- "generated_at_utc": "2026-11-28T07:50:38+00:00",
+ "generated_at_utc": "2026-11-28T12:25:01+00:00",
  "data_through_utc": "2026-11-28T02:30Z",
  "profile_sources": {
   "stats_nba_season": "2026-27",
@@ -8336,11 +8336,6 @@
      "value": 3.09
     },
     {
-     "player_id": "5174563",
-     "player_name": "Kyshawn George",
-     "value": 1.69
-    },
-    {
      "player_id": "4277905",
      "player_name": "Trae Young",
      "value": 1.69
@@ -8348,6 +8343,11 @@
     {
      "player_id": "5142718",
      "player_name": "AJ Dybantsa",
+     "value": 1.69
+    },
+    {
+     "player_id": "5174563",
+     "player_name": "Kyshawn George",
      "value": 1.69
     },
     {
@@ -38300,13 +38300,13 @@
      "value": 0.97
     },
     {
-     "player_id": "3912848",
-     "player_name": "Dean Wade",
+     "player_id": "2581018",
+     "player_name": "Kentavious Caldwell-Pope",
      "value": 0.95
     },
     {
-     "player_id": "2581018",
-     "player_name": "Kentavious Caldwell-Pope",
+     "player_id": "3912848",
+     "player_name": "Dean Wade",
      "value": 0.95
     },
     {
@@ -42650,7 +42650,7 @@
    ]
   }
  ],
- "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-28_02_45AM.pdf",
+ "official_injury_report": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-28_07_15AM.pdf",
  "designation_play_rates": {
   "by_status": {
    "Available": {
@@ -42783,5 +42783,5 @@
   ],
   "method": "Official NBA injury report about an hour before each date's first tip, joined to the team's box score: played = logged minutes."
  },
- "published_at_utc": "2026-11-28T12:10:47+00:00"
+ "published_at_utc": "2026-11-28T12:53:14+00:00"
 }
