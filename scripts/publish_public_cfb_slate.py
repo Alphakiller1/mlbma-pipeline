@@ -1135,10 +1135,52 @@ def previous_power(season: int, path: Path | None = None) -> dict | None:
     return previous.get("power") or None
 
 
+# Every block computed for a school this season, beside the box-score cache
+# that CI restores between runs. The published slate only carries the schools
+# on it, so when the slate rolled from 66 games to 69 on 2026-11-23 - four days
+# into the spent CFBD allowance - the schools that came back into the window
+# (Alabama, Auburn, Ole Miss, Mississippi State, James Madison) had nothing to
+# carry, and their Strength Index and quarterback room stayed empty for the
+# rest of the outage. This store is what a school comes back to.
+DEPTH_STORE = cfb_depth.CACHE / "depth_carry.json"
+
+
+def read_depth_store(season: int) -> dict:
+    try:
+        store = json.loads(DEPTH_STORE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return store.get("teams") or {} if int(store.get("season") or 0) == season else {}
+
+
+def write_depth_store(games: list[dict], season: int) -> int:
+    """Keep this run's blocks, carried ones included: a school that leaves the
+    window must still find its last known blocks when it returns."""
+    teams = read_depth_store(season)
+    for game in games:
+        for side in ("away", "home"):
+            abbr = game.get(side)
+            if not abbr:
+                continue
+            for key in DEPTH_KEYS:
+                if game.get(side + key):
+                    teams.setdefault(str(abbr), {})[key] = game[side + key]
+    try:
+        DEPTH_STORE.parent.mkdir(parents=True, exist_ok=True)
+        DEPTH_STORE.write_text(json.dumps(
+            {"season": season, "updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+             "teams": teams}, separators=(",", ":")), encoding="utf-8")
+    except OSError as exc:  # the slate still publishes without the store
+        print(f"  depth: the carry store could not be written ({exc})")
+        return 0
+    return len(teams)
+
+
 def carry_forward_depth(games: list[dict], season: int) -> int:
     """A CFBD outage (no key, a spent allowance) must not blank the desk:
     a school whose CFBD blocks are missing this run keeps the ones last
-    published for it this season. Returns how many blocks were carried."""
+    published for it this season, and otherwise the last ones computed for it.
+    Returns how many blocks were carried."""
     try:
         previous = json.loads(OUT.read_text(encoding="utf-8"))
     except (OSError, ValueError):
@@ -1151,12 +1193,17 @@ def carry_forward_depth(games: list[dict], season: int) -> int:
             for key in DEPTH_KEYS:
                 if game.get(side + key) and game.get(side):
                     last[(str(game[side]), key)] = game[side + key]
+    stored = read_depth_store(season)
     carried = 0
     for game in games:
         for side in ("away", "home"):
+            abbr = str(game.get(side))
             for key in DEPTH_KEYS:
-                if not game.get(side + key) and (str(game.get(side)), key) in last:
-                    game[side + key] = last[(str(game.get(side)), key)]
+                if game.get(side + key):
+                    continue
+                block = last.get((abbr, key)) or (stored.get(abbr) or {}).get(key)
+                if block:
+                    game[side + key] = block
                     carried += 1
     return carried
 
@@ -1205,7 +1252,10 @@ def main() -> int:
              for raw in games_in]
     carried = carry_forward_depth(games, season)
     if carried:
-        print(f"  depth: carried {carried} school blocks forward from the published slate")
+        print(f"  depth: carried {carried} school blocks forward from the published slate and the carry store")
+    kept = write_depth_store(games, season)
+    if kept:
+        print(f"  depth: the carry store holds {kept} schools")
     counts = apply_availability(games, depth.get("last_game") or {}, season)
     print(f"  availability: {len(depth.get('last_game') or {})} schools' last games read; "
           f"{counts['changed_starter']} starters differ from the attempts leader "
